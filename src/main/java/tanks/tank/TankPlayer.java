@@ -103,6 +103,13 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		boolean left = Game.game.input.moveLeft.isPressed();
 		boolean right = Game.game.input.moveRight.isPressed();
 		boolean trace = Game.game.input.aim.isPressed();
+		boolean jump = Game.game.input.jump.isPressed();
+
+		if (jump)
+		{
+			this.jump();
+			Game.game.input.jump.invalidate();
+		}
 
 		boolean destroy = Game.game.window.pressedKeys.contains(InputCodes.KEY_BACKSPACE);
 
@@ -468,6 +475,10 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 		}
 
 		b.setPolarMotion(this.angle + offset, speed);
+		b.vX += this.vX;
+		b.vY += this.vY;
+		b.vZ += this.vZ;
+
 		b.speed = speed;
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
@@ -491,6 +502,8 @@ public class TankPlayer extends Tank implements ILocalPlayerTank, IServerPlayerT
 			CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
 			cp.addItemUse(b.item);
 		}
+
+		this.riding = b;
 	}
 
 	public void layMine(Mine m)

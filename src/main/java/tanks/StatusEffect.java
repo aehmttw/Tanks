@@ -14,9 +14,9 @@ public class StatusEffect
 
     public static final StatusEffect ice = new StatusEffect("ice", new AttributeModifier[]
     {
-        new AttributeModifier("ice_accel", AttributeModifier.acceleration, AttributeModifier.Operation.multiply, -0.75),
+        new AttributeModifier("ice_accel", AttributeModifier.acceleration, AttributeModifier.Operation.multiply, 5),
                 new AttributeModifier("ice_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.875),
-                new AttributeModifier("ice_max_speed", AttributeModifier.max_speed, AttributeModifier.Operation.multiply, 3)
+                new AttributeModifier("ice_max_speed", AttributeModifier.max_speed, AttributeModifier.Operation.multiply, 8)
     });
 
     public static final StatusEffect snow_velocity = new StatusEffect("snow_velocity", new AttributeModifier[]
@@ -39,14 +39,15 @@ public class StatusEffect
     public static final StatusEffect boost_tank = new StatusEffect("boost_tank", new AttributeModifier[]
     {
         new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3),
-                new AttributeModifier("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1),
-                new AttributeModifier("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75),
-                new AttributeModifier("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1)
+            new AttributeModifier("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1),
+            new AttributeModifier("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75),
+            new AttributeModifier("boost_accel", AttributeModifier.acceleration, AttributeModifier.Operation.multiply, -2),
+            new AttributeModifier("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1)
     });
 
     public static final StatusEffect boost_bullet = new StatusEffect("boost_bullet", new AttributeModifier[]
             {
-                    new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 1),
+                    new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -4),
                     new AttributeModifier("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1)
             });
 
@@ -60,11 +61,11 @@ public class StatusEffect
         {
             s[i] = new StatusEffect("rampage", "rampage_" + (i + 1), new AttributeModifier[]
                     {
-                            new AttributeModifier("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            new AttributeModifier("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            new AttributeModifier("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            new AttributeModifier("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
-                            new AttributeModifier("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)
+                            new AttributeModifier("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -(i + 1) / 5.0),
+                            new AttributeModifier("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, -(i + 1) / 5.0),
+                            new AttributeModifier("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, -(i + 1) / 5.0),
+                            new AttributeModifier("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, -1.0 / (1 + (i + 1) / 5.0) - 1),
+                            new AttributeModifier("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, -(i + 1) / 5.0)
                     });
         }
 

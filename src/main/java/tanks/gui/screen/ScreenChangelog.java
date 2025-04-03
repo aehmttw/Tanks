@@ -476,6 +476,21 @@ public class ScreenChangelog extends Screen
                     }
             );
 
+            new Changelog("v1.5.3", new String[]
+                    {
+                            "*What's new in Tanks v1.5.3:\n\n" +
+                                    "Tanks has gone 3D!\n" +
+                                    "Added jumping. Jump with 'space'.\n" +
+                                    "You can jump onto other tanks or walls\n" +
+                                    "Adjusted bullet physics to be more realistic\n" +
+                                    "Slightly adjusted boost panels and ice\n" +
+                                    "Made Arcade mode rampages more exciting\n" +
+                                    "Adjusted sound bitrate for optimal performance\n" +
+                                    "Made the user interface a bit more engaging\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
+
         }
     }
 }

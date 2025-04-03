@@ -272,8 +272,24 @@ public class TextBox implements IDrawable, ITrigger
 			Drawing.drawing.drawInterfaceText(posX, posY, inputText);
 	}
 
+	public double vX = Math.random() * 8 - 4;
+	public double vY = Math.random() * 8 - 4;
+
 	public void update()
 	{
+		this.posX += this.vX;
+		this.posY += this.vY;
+
+		if (this.posX > Drawing.drawing.interfaceSizeX)
+			this.vX = -Math.abs(this.vX);
+		if (this.posX < 0)
+			this.vX = Math.abs(this.vX);
+
+		if (this.posY > Drawing.drawing.interfaceSizeY)
+			this.vY = -Math.abs(this.vY);
+		if (this.posY < 0)
+			this.vY = Math.abs(this.vY);
+
 		if (!Game.game.window.touchscreen)
 		{
 			double mx = Drawing.drawing.getInterfaceMouseX();

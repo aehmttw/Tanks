@@ -102,6 +102,9 @@ public class Button implements IDrawable, ITrigger
 	 * 1 = bottom*/
 	public int yAlignment = 0;
 
+	public double vX = Math.random() * 8 - 4;
+	public double vY = Math.random() * 8 - 4;
+
 	public Button(double x, double y, double sX, double sY, String text, Runnable f)
 	{
 		this.function = f;
@@ -277,6 +280,19 @@ public class Button implements IDrawable, ITrigger
 	public void update()
 	{
 		this.justPressed = false;
+
+		this.posX += this.vX;
+		this.posY += this.vY;
+
+		if (this.posX > Drawing.drawing.interfaceSizeX)
+			this.vX = -Math.abs(this.vX);
+		if (this.posX < 0)
+			this.vX = Math.abs(this.vX);
+
+		if (this.posY > Drawing.drawing.interfaceSizeY)
+			this.vY = -Math.abs(this.vY);
+		if (this.posY < 0)
+			this.vY = Math.abs(this.vY);
 
 		if (!Game.game.window.touchscreen)
 		{

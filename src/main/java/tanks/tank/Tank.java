@@ -45,6 +45,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double angle = 0;
 	public double pitch = 0;
 
+	public Bullet riding = null;
+
 	public boolean depthTest = true;
 
 	public boolean invulnerable = false;
@@ -219,6 +221,10 @@ public abstract class Tank extends Movable implements ISolidObject
 	public long lastFarthestInSightUpdate = 0;
 	public Tank lastFarthestInSight = null;
 
+	public boolean grounded = true;
+
+	public double lastStackHeight = 0;
+
 	public Tank(String name, double x, double y, double size, double r, double g, double b)
 	{
 		super(x, y);
@@ -283,6 +289,19 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	}
 
+	public void jump()
+	{
+		if (this.riding != null && !this.riding.destroy)
+		{
+			this.riding = null;
+		}
+
+		if (!this.grounded)
+			return;
+
+		this.grounded = false;
+		this.vZ = 7;
+	}
 
 	public void checkCollision()
 	{
@@ -301,10 +320,19 @@ public abstract class Tank extends Movable implements ISolidObject
 				Tank t = (Tank) m;
 				double distSq = Math.pow(this.posX - m.posX, 2) + Math.pow(this.posY - m.posY, 2);
 
+				if (Math.abs(this.posZ - t.posZ) > (this.size + t.size) * 0.6)
+					continue;
+
 				if (distSq <= Math.pow((this.size + t.size) / 2, 2))
 				{
 					this.hasCollided = true;
 					t.hasCollided = true;
+
+					if (this.posZ - t.posZ > (this.size + t.size) * 0.4 && this.posZ - t.posZ < (this.size + t.size) * 0.6 && this.vZ < 0)
+					{
+						Drawing.drawing.playSound("slam2.ogg");
+						t.damage(1, this);
+					}
 
 					double ourMass = this.size * this.size;
 					double theirMass = t.size * t.size;
@@ -368,12 +396,15 @@ public abstract class Tank extends Movable implements ISolidObject
 			hasCollided = true;
 		}
 
+		if (this.posZ > 0)
+			this.grounded = false;
+
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
 			Obstacle o = Game.obstacles.get(i);
 			boolean bouncy = o.bouncy;
 
-			if (!o.tankCollision && !o.checkForObjects || o.startHeight > 1)
+			if (!o.tankCollision && !o.checkForObjects || o.startHeight > 1 || o.stackHeight * Game.tile_size < this.posZ)
 				continue;
 
 			double horizontalDist = Math.abs(this.posX - o.posX);
@@ -388,6 +419,13 @@ public abstract class Tank extends Movable implements ISolidObject
 			{
 				if (o.checkForObjects)
 					o.onObjectEntry(this);
+
+				if (o.enableStacking && o.stackHeight == this.lastStackHeight)
+				{
+					this.grounded = true;
+					this.posZ = o.stackHeight * Game.tile_size;
+					continue;
+				}
 
 				if (!o.tankCollision)
 					continue;
@@ -441,6 +479,30 @@ public abstract class Tank extends Movable implements ISolidObject
 		{
 			// If you get this crash, please make sure you call Game.addTank() to add them to movables, or use registerNetworkID()!
 			Game.exitToCrash(new RuntimeException("Network ID not assigned to tank!"));
+		}
+
+		this.lastStackHeight = ((int) this.posZ / 25) * 0.5;
+
+		if (this.posZ <= 0 && this.vZ <= 0)
+		{
+			this.vZ = 0;
+			this.posZ = 0;
+			this.grounded = true;
+		}
+
+		if (!this.grounded)
+			this.vZ -= 0.2 * Panel.frameFrequency;
+		else
+			this.vZ = 0;
+
+		if (this.riding != null && !this.riding.destroy)
+		{
+			this.posX = this.riding.posX;
+			this.posY = this.riding.posY;
+			this.posZ = this.riding.posZ;
+			this.vX = this.riding.vX;
+			this.vY = this.riding.vY;
+			this.vZ = this.riding.vZ;
 		}
 
 		this.age += Panel.frameFrequency;
@@ -633,6 +695,13 @@ public abstract class Tank extends Movable implements ISolidObject
 		e2.setPolarMotion(0, 0);
 		this.setEffectHeight(e1);
 		this.setEffectHeight(e2);
+
+		if (this.posZ > e1.posZ)
+			e1.posZ = this.posZ;
+
+		if (this.posZ > e2.posZ)
+			e2.posZ = this.posZ;
+
 		e1.firstDraw();
 		e2.firstDraw();
 		Game.tracks.add(e1);
@@ -687,7 +756,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			else if (!Game.enable3d)
 				Drawing.drawing.fillGlow(this.posX, this.posY, size, size);
 			else
-				Drawing.drawing.fillGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size,true, false);
+				Drawing.drawing.fillGlow(this.posX, this.posY, Math.max(this.size / 4, 11) + this.posZ, size, size,true, false);
 		}
 
 		if (this.lightIntensity > 0 && this.lightSize > 0)
@@ -700,7 +769,7 @@ public abstract class Tank extends Movable implements ISolidObject
 				Drawing.drawing.setColor(255, 255, 255, i * 255);
 
 				if (!(forInterface && !interface3d))
-					Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, size, size, false, false, false, true);
+					Drawing.drawing.fillForcedGlow(this.posX, this.posY, this.posZ, size, size, false, false, false, true);
 
 				i--;
 			}
@@ -803,14 +872,14 @@ public abstract class Tank extends Movable implements ISolidObject
 			if (forInterface)
 			{
 				if (interface3d)
-					drawing.drawInterfaceImage(0, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
+					drawing.drawInterfaceImage(0, this.emblem, this.posX, this.posY, 0.82 * s + this.posZ, s * sizeMod, s * sizeMod);
 				else
 					drawing.drawInterfaceImage(this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}
 			else
 			{
 				if (Game.enable3d)
-					drawing.drawImage(this.angle, this.emblem, this.posX, this.posY, 0.82 * s, s * sizeMod, s * sizeMod);
+					drawing.drawImage(this.angle, this.emblem, this.posX, this.posY, 0.82 * s + this.posZ, s * sizeMod, s * sizeMod);
 				else
 					drawing.drawImage(this.angle, this.emblem, this.posX, this.posY, s * sizeMod, s * sizeMod);
 			}

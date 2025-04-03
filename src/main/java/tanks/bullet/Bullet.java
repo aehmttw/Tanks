@@ -79,6 +79,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 	@TankProperty(category = appearanceGlow, id = "glow_size", name = "Aura size")
 	public double glowSize = 4;
 
+	public double actualPosZ;
 	public double iPosZ;
 	public boolean autoZ = true;
 
@@ -200,6 +201,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 	{
 		super(x, y);
 
+		this.actualPosZ = t.posZ;
 		this.item = item;
 		this.vX = 0;
 		this.vY = 0;
@@ -218,7 +220,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 		this.team = t.team;
 		this.name = bullet_name;
 
-		this.iPosZ = this.tank.size / 2 + this.tank.turretSize / 2;
+		this.iPosZ = this.tank.size / 2 + this.tank.turretSize / 2 + tank.posZ;
 
 		this.isRemote = t.isRemote;
 
@@ -577,7 +579,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 			{
 				Obstacle o = Game.obstacles.get(i);
 
-				if ((!o.bulletCollision && !o.checkForObjects) || o.startHeight > 1)
+				if ((!o.bulletCollision && !o.checkForObjects) || o.startHeight > 1 || this.posZ > o.stackHeight * Game.tile_size)
 					continue;
 
 				double dx = this.posX - o.posX;
@@ -714,6 +716,9 @@ public class Bullet extends Movable implements IDrawableLightSource
 		for (int i = 0; i < Game.movables.size(); i++)
 		{
 			Movable o = Game.movables.get(i);
+
+			if ((o == this.tank) || Math.abs(this.posZ - o.posZ) > Game.tile_size / 2)
+				continue;
 
 			if (o instanceof Tank && !o.destroy)
 			{
@@ -882,7 +887,7 @@ public class Bullet extends Movable implements IDrawableLightSource
 			double frac = 1 / (1 + this.age / 100);
 
 			if (this.autoZ)
-				this.posZ = this.iPosZ * frac + (Game.tile_size / 4) * (1 - frac);
+				this.posZ = this.iPosZ * frac + (Game.tile_size / 4 + this.actualPosZ) * (1 - frac);
 
 			this.ageFrac += Panel.frameFrequency * Game.effectMultiplier;
 			this.halfAgeFrac += Panel.frameFrequency * Game.effectMultiplier;

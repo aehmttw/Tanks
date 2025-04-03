@@ -1,15 +1,16 @@
 package lwjglwindow;
 
 import basewindow.BaseSoundPlayer;
-import org.apache.commons.io.IOUtils;
 import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,42 +22,81 @@ import static org.lwjgl.system.libc.LibCStdlib.free;
 
 public class SoundPlayer extends BaseSoundPlayer
 {
+    public static final int total_sounds = 255;
+    public static final int max_music = 50;
+    public final HashMap<String, Integer> finishedMusicBuffers = new HashMap<>();
     public LWJGLWindow window;
-
     public long context;
     public long device;
-
     public HashMap<String, Integer> buffers = new HashMap<>();
     public ArrayList<Integer> sources = new ArrayList<>();
-
     public HashMap<String, Integer> musicBuffers = new HashMap<>();
     public ArrayList<Integer> musicSources = new ArrayList<>();
     public ArrayList<Integer> playingMusicSources = new ArrayList<>();
-
     public boolean musicsToLoad = false;
-    public final HashMap<String, Integer> finishedMusicBuffers = new HashMap<>();
-
     public HashMap<String, Integer> syncedTracks = new HashMap<>();
     public HashMap<String, Integer> stoppingSyncedTracks = new HashMap<>();
     public HashMap<String, Float> syncedTrackCurrentVolumes = new HashMap<>();
     public HashMap<String, Float> syncedTrackMaxVolumes = new HashMap<>();
     public HashMap<String, Float> syncedTrackFadeRate = new HashMap<>();
-    protected ArrayList<String> removeTracks = new ArrayList<>();
-
     public int currentMusic = -1;
     public int prevMusic = -1;
-
     public String musicID = null;
     public float musicSpeed = 1;
-
     public long fadeBegin = 0;
     public long fadeEnd = 0;
-
     public float prevVolume;
     public float currentVolume;
+    public long musicStart = 0;
+    protected ArrayList<String> removeTracks = new ArrayList<>();
 
-    public static final int total_sounds = 255;
-    public static final int max_music = 50;
+    /**
+     * Warning! This will give an exception if there are no audio devices plugged into the computer!
+     */
+    public SoundPlayer(LWJGLWindow window)
+    {
+        String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
+        device = alcOpenDevice(defaultDeviceName);
+
+        int[] attributes = {0};
+        context = alcCreateContext(device, attributes);
+        alcMakeContextCurrent(context);
+
+        ALCCapabilities alcCapabilities = ALC.createCapabilities(device);
+        AL.createCapabilities(alcCapabilities);
+
+        this.window = window;
+    }
+
+    public static ByteBuffer toByteBuffer(InputStream in) throws IOException
+    {
+        try (ReadableByteChannel channel = Channels.newChannel(in))
+        {
+            // Start with some reasonable size
+            ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
+
+            int totalRead = 0;
+            while (true)
+            {
+                int bytesRead = channel.read(buffer);
+                if (bytesRead == -1)
+                    break;  // EOF
+
+                totalRead += bytesRead;
+
+                // Expand buffer if there’s no more room
+                if (!buffer.hasRemaining())
+                {
+                    ByteBuffer bigger = ByteBuffer.allocateDirect(buffer.capacity() * 2);
+                    buffer.flip();
+                    bigger.put(buffer);
+                    buffer = bigger;
+                }
+            }
+            buffer.flip();
+            return buffer;
+        }
+    }
 
     protected void playMusicSource(int i)
     {
@@ -87,24 +127,6 @@ public class SoundPlayer extends BaseSoundPlayer
         }
 
         return alGenSources();
-    }
-
-    /**
-     * Warning! This will give an exception if there are no audio devices plugged into the computer!
-     */
-    public SoundPlayer(LWJGLWindow window)
-    {
-        String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
-        device = alcOpenDevice(defaultDeviceName);
-
-        int[] attributes = {0};
-        context = alcCreateContext(device, attributes);
-        alcMakeContextCurrent(context);
-
-        ALCCapabilities alcCapabilities = ALC.createCapabilities(device);
-        ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
-
-        this.window = window;
     }
 
     @Override
@@ -205,9 +227,10 @@ public class SoundPlayer extends BaseSoundPlayer
         }
         else
         {
-            for (int i: this.syncedTracks.values())
+            for (int i : this.syncedTracks.values())
                 stopMusicSource(i);
 
+            this.musicStart = System.currentTimeMillis();
             musicSpeed = 1;
             this.syncedTracks.clear();
             this.stoppingSyncedTracks.clear();
@@ -247,13 +270,26 @@ public class SoundPlayer extends BaseSoundPlayer
 
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
         alSourcef(sourcePointer, AL_LOOPING, loop);
-        alSourcef(sourcePointer, AL_GAIN, 0f);
         alSourcef(sourcePointer, AL_PITCH, musicSpeed);
-        alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET));
+        float pos = alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET);
+        alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, pos);
         this.syncedTracks.put(path, sourcePointer);
-        this.syncedTrackCurrentVolumes.put(path, 0f);
-        this.syncedTrackMaxVolumes.put(path, volume);
-        this.syncedTrackFadeRate.put(path, volume / fadeTime * 10);
+
+        if (fadeTime <= 0)
+        {
+            this.syncedTrackCurrentVolumes.put(path, volume);
+            this.syncedTrackMaxVolumes.put(path, volume);
+            this.syncedTrackFadeRate.put(path, 0f);
+            alSourcef(sourcePointer, AL_GAIN, volume);
+        }
+        else
+        {
+            this.syncedTrackCurrentVolumes.put(path, 0f);
+            this.syncedTrackMaxVolumes.put(path, volume);
+            this.syncedTrackFadeRate.put(path, volume / fadeTime * 10);
+            alSourcef(sourcePointer, AL_GAIN, 0f);
+        }
+
         playMusicSource(sourcePointer);
 
         musicSources.add(sourcePointer);
@@ -285,7 +321,7 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcef(this.currentMusic, AL_PITCH, speed);
         alSourcef(this.prevMusic, AL_PITCH, speed);
 
-        for (int i: this.syncedTracks.values())
+        for (int i : this.syncedTracks.values())
             alSourcef(i, AL_PITCH, speed);
     }
 
@@ -296,7 +332,7 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcef(this.currentMusic, AL_GAIN, volume);
         alSourcef(this.prevMusic, AL_GAIN, volume);
 
-        for (int i: this.syncedTracks.values())
+        for (int i : this.syncedTracks.values())
             alSourcef(i, AL_GAIN, volume);
     }
 
@@ -311,7 +347,7 @@ public class SoundPlayer extends BaseSoundPlayer
         this.prevMusic = -1;
         this.musicID = null;
 
-        for (int i: this.syncedTracks.values())
+        for (int i : this.syncedTracks.values())
             stopMusicSource(i);
 
         this.syncedTracks.clear();
@@ -350,11 +386,7 @@ public class SoundPlayer extends BaseSoundPlayer
             else
                 path = "/" + path;
 
-            byte[] bytes = IOUtils.toByteArray(in);
-            ByteBuffer b = MemoryUtil.memAlloc(bytes.length);
-            b.put(bytes);
-            b.flip();
-
+            ByteBuffer b = toByteBuffer(in);
             rawAudioBuffer = stb_vorbis_decode_memory(b, channelsBuffer, sampleRateBuffer);
             in.close();
 
@@ -384,8 +416,16 @@ public class SoundPlayer extends BaseSoundPlayer
 
         //Send the data to OpenAL
         if (rawAudioBuffer != null)
+        {
+//            for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+//            {
+//                short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+//                rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+//                rawAudioBuffer.put(i, s);
+//            }
+            processAudio(rawAudioBuffer);
             alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
-
+        }
         //Free the memory allocated by STB
         free(rawAudioBuffer);
 
@@ -397,12 +437,58 @@ public class SoundPlayer extends BaseSoundPlayer
         return this.setupMusic(path, null);
     }
 
+    double[] kernel;
+    public void processAudio(ShortBuffer rawAudioBuffer)
+    {
+//        if (kernel == null)
+//        {
+//            kernel = new double[1000];
+//            for (int j = 0; j < 1000; j++)
+//            {
+//                kernel[j] = Math.sin(j / 10.0) * (1000.0 - j) / 1000;
+//            }
+//        }
+//
+//        short[] n = new short[rawAudioBuffer.limit()];
+//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
+//        {
+//            double s = rawAudioBuffer.get(i);
+//            for (int j = 0; j < 1000; j++)
+//            {
+//                if (i - j >= 0)
+//                {
+//                    s += rawAudioBuffer.get(i - j) * kernel[j];
+//                }
+//            }
+//            n[i] = (short) Math.min(32767, Math.max(-32768, s / 50));
+//        }
+//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
+//        {
+//            rawAudioBuffer.put(i, n[i]);
+//        }
+
+        int k = 16;
+        for (int i = 0; i < rawAudioBuffer.limit(); i++)
+        {
+            rawAudioBuffer.put(i, rawAudioBuffer.get(i / k * k));
+        }
+
+//        for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+//        {
+//            if ((i / 48000) % 2 == 0)
+//            {
+//                short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+//                rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+//                rawAudioBuffer.put(i, s);
+//            }
+//        }
+    }
+
+
     protected int setupMusic(String path, InputStream in)
     {
-        ShortBuffer rawAudioBuffer = null;
-
-        int channels = -1;
-        int sampleRate = -1;
+        ShortBuffer rawAudioBuffer;
+        int channels, sampleRate;
 
         try (MemoryStack stack = stackPush())
         {
@@ -415,11 +501,7 @@ public class SoundPlayer extends BaseSoundPlayer
             else
                 path = "/" + path;
 
-            byte[] bytes = IOUtils.toByteArray(in);
-            ByteBuffer b = MemoryUtil.memAlloc(bytes.length);
-            b.put(bytes);
-            b.flip();
-
+            ByteBuffer b = toByteBuffer(in);
             rawAudioBuffer = stb_vorbis_decode_memory(b, channelsBuffer, sampleRateBuffer);
             in.close();
 
@@ -429,25 +511,30 @@ public class SoundPlayer extends BaseSoundPlayer
         }
         catch (Exception e)
         {
-            System.err.println("Failed to create music " + path);
-            e.printStackTrace();
+            throw new RuntimeException("Failed to create music " + path);
         }
 
         //Find the correct OpenAL format
         int format = -1;
         if (channels == 1)
-        {
             format = AL_FORMAT_MONO16;
-        }
         else if (channels == 2)
-        {
             format = AL_FORMAT_STEREO16;
-        }
 
         //Request space for the buffer
         int bufferPointer = alGenBuffers();
 
         //Send the data to OpenAL
+        assert rawAudioBuffer != null;
+
+//        for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+//        {
+//            short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+//            rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+//            rawAudioBuffer.put(i, s);
+//        }
+
+        processAudio(rawAudioBuffer);
         alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
 
         //Free the memory allocated by STB
@@ -471,7 +558,7 @@ public class SoundPlayer extends BaseSoundPlayer
         alcDestroyContext(context);
         alcCloseDevice(device);
 
-        for (String s: this.buffers.keySet())
+        for (String s : this.buffers.keySet())
         {
             int i = this.buffers.get(s);
             alDeleteBuffers(i);
@@ -511,7 +598,7 @@ public class SoundPlayer extends BaseSoundPlayer
             }
         }
 
-        for (String s: this.syncedTracks.keySet())
+        for (String s : this.syncedTracks.keySet())
         {
             int i = this.syncedTracks.get(s);
             float vol = this.syncedTrackCurrentVolumes.get(s);
@@ -543,10 +630,8 @@ public class SoundPlayer extends BaseSoundPlayer
             }
         }
 
-        for (String r: removeTracks)
-        {
+        for (String r : removeTracks)
             this.syncedTracks.remove(r);
-        }
 
         this.removeTracks.clear();
     }

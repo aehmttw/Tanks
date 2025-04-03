@@ -12,9 +12,10 @@ public class InputBindings
     public InputBindingGroup moveDown = new InputBindingGroup("tank.down", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_DOWN), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_S));
     public InputBindingGroup moveLeft = new InputBindingGroup("tank.left", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_LEFT), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_A));
     public InputBindingGroup moveRight = new InputBindingGroup("tank.right", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_RIGHT), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_D));
-    public InputBindingGroup shoot = new InputBindingGroup("tank.shoot", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_SPACE), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_1));
+    public InputBindingGroup shoot = new InputBindingGroup("tank.shoot", new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_1));
     public InputBindingGroup mine = new InputBindingGroup("tank.mine", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ENTER), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_2));
     public InputBindingGroup aim = new InputBindingGroup("tank.aim", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_PERIOD), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_4));
+    public InputBindingGroup jump = new InputBindingGroup("tank.jump", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_SPACE), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_3));
 
     public InputBindingGroup hotbarToggle = new InputBindingGroup("hotbar.toggle", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_LEFT_SHIFT), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_RIGHT_SHIFT));
     public InputBindingGroup hotbar1 = new InputBindingGroup("hotbar.1", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_1));
@@ -134,6 +135,8 @@ public class InputBindings
                     }
                 }
             }
+
+            shoot.reset();
 
             file.stopReading();
         }

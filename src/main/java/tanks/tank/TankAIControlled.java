@@ -822,6 +822,7 @@ public class TankAIControlled extends Tank
 	/** Actually fire a bullet*/
 	public void fireBullet(Bullet b, double speed, double offset)
 	{
+		this.riding = b;
 		if (b.itemSound != null)
 			Drawing.drawing.playGlobalSound(b.itemSound, (float) ((Bullet.bullet_size / this.bullet.size) * (1 - (Math.random() * 0.5) * b.pitchVariation)));
 
@@ -829,6 +830,10 @@ public class TankAIControlled extends Tank
 			Drawing.drawing.playGlobalSound(this.shotSound, (float) (Bullet.bullet_size / this.bullet.size));
 
 		b.setPolarMotion(angle + offset + this.shotOffset, speed);
+		b.vX += this.vX;
+		b.vY += this.vY;
+		b.vZ += this.vZ;
+
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 		b.speed = speed;
 
@@ -1420,6 +1425,9 @@ public class TankAIControlled extends Tank
 
 			if (nearest == null)
 				return;
+
+			if (nearestDist < 20)
+				this.jump();
 
 			double direction = nearest.getPolarDirection();
 			double distance = Movable.distanceBetween(this, nearest);

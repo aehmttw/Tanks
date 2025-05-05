@@ -118,9 +118,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         this.musicInstruments = true;
 
-        TankPlayer tp = new TankPlayer(0, 0, 0);
-        tp.setDefaultColor();
-        movePlayerButton = new ButtonObject(tp, this.centerX - 50, this.centerY, 75, 75, () -> editor.movePlayer = true, "Move the player");
+        movePlayerButton = new ButtonObject(new TankPlayer(0, 0, 0).setDefaultColor(), this.centerX - 50, this.centerY, 75, 75, () -> editor.movePlayer = true, "Move the player");
 
         sort.imageSizeX = 25;
         sort.imageSizeY = 25;

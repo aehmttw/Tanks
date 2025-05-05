@@ -286,9 +286,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			for (Item.ItemStack<?> i: h.itemBar.slots)
 			{
 				if (i != null && !i.isEmpty)
-				{
-					i.updateCooldown(reload);
-				}
+                    i.updateCooldown(reload);
 			}
 		}
 
@@ -346,7 +344,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 					{
 						InputPoint p = Game.game.window.touchPoints.get(i);
 
-						if (!p.tag.equals("") && !p.tag.equals("aim") && !p.tag.equals("shoot"))
+						if (!p.tag.isEmpty() && !p.tag.equals("aim") && !p.tag.equals("shoot"))
 							continue;
 
 						if (Game.screen instanceof ScreenGame)
@@ -702,7 +700,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@TanksONable("shop_build")
 	public static class ShopTankBuild extends TankPlayer
 	{
-		@TankBuildProperty @Property(id = "price", name = "Price", category = general, miscType = Property.MiscType.defaultBuildForbidden)
+		@TankBuildProperty @Property(id = "price", name = "Price", category = general)
 		public int price;
 
 		public ShopTankBuild()

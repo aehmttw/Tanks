@@ -62,6 +62,6 @@ public class FieldPointer<T> extends Pointer<T>
     @Override
     public <U> Pointer<U> cast()
     {
-        return new FieldPointer<U>(object, field, nullable);
+        return new FieldPointer<>(object, field, nullable);
     }
 }

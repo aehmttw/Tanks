@@ -165,6 +165,95 @@ public final class Serializer
             throw new RuntimeException("Unexpected type of object: " + o.toString());
     }
 
+    public static boolean equivalent(Object a, Object b)
+    {
+        if (a == null && b == null)
+            return true;
+        else if (a != null && b != null)
+        {
+            if (a instanceof ArrayList && b instanceof ArrayList)
+            {
+                ArrayList<?> al = (ArrayList<?>) a;
+                ArrayList<?> bl = (ArrayList<?>) b;
+
+                if (al.size() == bl.size())
+                {
+                    for (int i = 0; i < al.size(); i++)
+                    {
+                        if (!equivalent(al.get(i), bl.get(i)))
+                            return false;
+                    }
+
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else if (a.getClass().isArray() && b.getClass().isArray())
+            {
+                if (a instanceof Object[] && b instanceof Object[])
+                {
+                    Object[] al = (Object[]) a;
+                    Object[] bl = (Object[]) b;
+
+                    if (al.length == bl.length)
+                    {
+                        for (int i = 0; i < al.length; i++)
+                        {
+                            if (!equivalent(al[i], bl[i]))
+                                return false;
+                        }
+
+                        return true;
+                    }
+                    else
+                        return false;
+                } // sigh
+                else if (a instanceof int[] && b instanceof int[])
+                    return Arrays.equals((int[]) a, (int[]) b);
+                else if (a instanceof long[] && b instanceof long[])
+                    return Arrays.equals((long[]) a, (long[]) b);
+                else if (a instanceof short[] && b instanceof short[])
+                    return Arrays.equals((short[]) a, (short[]) b);
+                else if (a instanceof byte[] && b instanceof byte[])
+                    return Arrays.equals((byte[]) a, (byte[]) b);
+                else if (a instanceof boolean[] && b instanceof boolean[])
+                    return Arrays.equals((boolean[]) a, (boolean[]) b);
+                else if (a instanceof char[] && b instanceof char[])
+                    return Arrays.equals((char[]) a, (char[]) b);
+                else if (a instanceof float[] && b instanceof float[])
+                    return Arrays.equals((float[]) a, (float[]) b);
+                else if (a instanceof double[] && b instanceof double[])
+                    return Arrays.equals((double[]) a, (double[]) b);
+                else
+                    return false;
+            }
+            else if (isTanksONable(a) && isTanksONable(b))
+            {
+                if (!a.getClass().equals(b.getClass()))
+                    return false;
+
+                for (Field f : a.getClass().getFields())
+                {
+                    try
+                    {
+                        if (f.getAnnotation(Property.class) != null && !equivalent(f.get(a), f.get(b)))
+                            return false;
+                    }
+                    catch (Exception e)
+                    {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                return true;
+            }
+            else
+                return Objects.equals(a, b);
+        }
+        return false;
+    }
+
     public static Object parseObject(Map<String, Object> m)
     {
         if (m == null)

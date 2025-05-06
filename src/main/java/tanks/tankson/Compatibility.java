@@ -26,7 +26,7 @@ public class Compatibility {
         if (general_table.containsKey(o.getClass()))
             return general_table.get(o.getClass()).apply(f, o);
 
-        return compatibility_table.get(Serializer.getId(f)).apply(o);
+        return compatibility_table.get(Serializer.getid(f)).apply(o);
     }
 
     public static String convert(String f) {

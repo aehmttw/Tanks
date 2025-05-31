@@ -1688,7 +1688,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Game.clouds.add(new Cloud(Math.random() * (Game.currentSizeX * 50), Math.random() * (Game.currentSizeY * 50)));*/
 
 			setupFaces();
-
 			updateGameField();
 
 			for (Movable m: Game.movables)

@@ -162,6 +162,7 @@ public class SelectorImage extends Selector
         s.buttonList.imageR = this.imageR;
         s.buttonList.imageG = this.imageG;
         s.buttonList.imageB = this.imageB;
+        s.buttonList.controlsYOffset += 30;
 
         if (this.images != null || this.drawImages)
             s.drawImages = true;

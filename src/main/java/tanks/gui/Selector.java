@@ -231,11 +231,13 @@ public class Selector implements IDrawable, ITrigger
         if (format)
             s = Game.formatString(s);
 
+        String t = translate ? Translation.translate(s) : s;
 
-        if (translate)
-            Drawing.drawing.drawInterfaceText(posX, posY, Translation.translate(s));
-        else
-            Drawing.drawing.drawInterfaceText(posX, posY, s);
+        double size = this.sizeY * 0.6;
+        if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, t) / Drawing.drawing.interfaceScale > this.sizeX - 80)
+            Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, t) / Drawing.drawing.interfaceScale));
+
+        Drawing.drawing.drawInterfaceText(posX, posY, t);
     }
 
     public void update()

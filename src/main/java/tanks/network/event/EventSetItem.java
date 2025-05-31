@@ -16,14 +16,8 @@ public class EventSetItem extends PersonalEvent
     public String name;
     public UUID playerID;
     public int slot;
-    public String texture;
-    public int count;
-    public int bounces = -1;
 
-    public double lifespan = -1;
-    public double rangeMin = -1;
-    public double rangeMax = -1;
-    public boolean showTrace = true;
+    public String itemStackString;
 
     public EventSetItem()
     {
@@ -35,27 +29,7 @@ public class EventSetItem extends PersonalEvent
         this.playerID = p.clientID;
         this.slot = slot;
 
-        if (item.item.icon == null)
-            this.texture = "";
-        else
-            this.texture = item.item.icon;
-
-        this.count = item.stackSize;
-        this.name = item.item.name;
-
-        if (item.destroy)
-            this.count = -1;
-
-        if (item.item instanceof ItemBullet)
-        {
-            ItemBullet i = (ItemBullet) item.item;
-            bounces = i.bullet.bounces;
-            lifespan = i.bullet.lifespan * i.bullet.speed;
-            rangeMin = i.bullet.getRangeMin();
-            rangeMax = i.bullet.getRangeMax();
-            showTrace = i.bullet.showTrace;
-        }
-
+        this.itemStackString = item.toString();
     }
 
     @Override
@@ -63,15 +37,7 @@ public class EventSetItem extends PersonalEvent
     {
         NetworkUtils.writeString(b, this.playerID.toString());
         b.writeInt(this.slot);
-        NetworkUtils.writeString(b, this.texture);
-        b.writeInt(this.count);
-        NetworkUtils.writeString(b, this.name);
-        b.writeInt(this.bounces);
-
-        b.writeDouble(this.lifespan);
-        b.writeDouble(this.rangeMin);
-        b.writeDouble(this.rangeMax);
-        b.writeBoolean(this.showTrace);
+        NetworkUtils.writeString(b, this.itemStackString);
     }
 
     @Override
@@ -79,15 +45,7 @@ public class EventSetItem extends PersonalEvent
     {
         this.playerID = UUID.fromString(NetworkUtils.readString(b));
         this.slot = b.readInt();
-        this.texture = NetworkUtils.readString(b);
-        this.count = b.readInt();
-        this.name = NetworkUtils.readString(b);
-        this.bounces = b.readInt();
-
-        this.lifespan = b.readDouble();
-        this.rangeMin = b.readDouble();
-        this.rangeMax = b.readDouble();
-        this.showTrace = b.readBoolean();
+        this.itemStackString = NetworkUtils.readString(b);
     }
 
     @Override
@@ -95,18 +53,7 @@ public class EventSetItem extends PersonalEvent
     {
         if (this.clientID == null && this.playerID.equals(Game.clientID))
         {
-            ItemRemote i = new ItemRemote();
-            i.icon = this.texture.equals("") ? null : this.texture;
-            i.name = this.name;
-            i.bounces = this.bounces;
-
-            i.lifespan = this.lifespan;
-            i.rangeMin = this.rangeMin;
-            i.rangeMax = this.rangeMax;
-            i.showTrace = this.showTrace;
-
-            Item.ItemStack<?> s = new ItemRemote.ItemStackRemote(Game.player, i, 0);
-            s.stackSize = this.count;
+            Item.ItemStack<?> s = Item.ItemStack.fromString(Game.player, this.itemStackString);
 
             if (s.stackSize < 0)
                 s = new ItemEmpty.ItemStackEmpty();

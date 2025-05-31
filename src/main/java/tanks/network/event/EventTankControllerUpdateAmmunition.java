@@ -16,13 +16,15 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
     public int action2Max;
     public double cooldown;
     public double cooldownBase;
+    public double cooldown2;
+    public double cooldownBase2;
 
     public EventTankControllerUpdateAmmunition()
     {
 
     }
 
-    public EventTankControllerUpdateAmmunition(UUID clientID, int a1, int a1max, int a2, int a2max, double cooldown, double cooldownBase)
+    public EventTankControllerUpdateAmmunition(UUID clientID, int a1, int a1max, int a2, int a2max, double cooldown, double cooldownBase, double cooldown2, double cooldownBase2)
     {
         this.clientIdTarget = clientID;
         this.action1Live = a1;
@@ -31,6 +33,8 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
         this.action2Max = a2max;
         this.cooldown = cooldown;
         this.cooldownBase = cooldownBase;
+        this.cooldown2 = cooldown2;
+        this.cooldownBase2 = cooldownBase2;
     }
 
     @Override
@@ -43,6 +47,8 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
         b.writeInt(this.action2Max);
         b.writeDouble(this.cooldown);
         b.writeDouble(this.cooldownBase);
+        b.writeDouble(this.cooldown2);
+        b.writeDouble(this.cooldownBase2);
     }
 
     @Override
@@ -55,6 +61,8 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
         this.action2Max = b.readInt();
         this.cooldown = b.readDouble();
         this.cooldownBase = b.readDouble();
+        this.cooldown2 = b.readDouble();
+        this.cooldownBase2 = b.readDouble();
     }
 
     @Override
@@ -69,6 +77,8 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
             c.maxLiveMines = action2Max;
             c.bulletCooldownBase = cooldownBase;
             c.bulletCooldown = cooldown;
+            c.mineCooldownBase = cooldownBase2;
+            c.mineCooldown = cooldown2;
         }
     }
 }

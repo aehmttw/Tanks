@@ -20,6 +20,7 @@ freeze.ogg
 hiss.ogg
 hit_chain.ogg
 hit_chain_2.ogg
+impact.ogg
 key.ogg
 lay_mine.ogg
 obliterate.ogg

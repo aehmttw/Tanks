@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import tanks.Drawing;
+import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.item.ItemBullet;
@@ -49,6 +50,7 @@ public class BulletAirStrike extends Bullet
         this.moveOut = false;
         this.vZ = 0.1;
         this.autoZ = false;
+        this.showDefaultTrace = false;
         this.revertSpeed = false;
     }
 
@@ -142,5 +144,21 @@ public class BulletAirStrike extends Bullet
         this.vY = 0;
         this.finalX = x;
         this.finalY = y;
+    }
+
+    public void drawTrace(double ix, double iy, double fx, double fy)
+    {
+        double posZ = 25;
+
+        while (posZ < 1100)
+        {
+            Effect e1 = Effect.createNewEffect(ix, iy, posZ, Effect.EffectType.ray);
+            Effect e2 = Effect.createNewEffect(fx, fy, posZ, Effect.EffectType.ray);
+            e1.size = this.size;
+            e2.size = this.size;
+            Game.effects.add(e1);
+            Game.effects.add(e2);
+            posZ += this.size * 1.5;
+        }
     }
 }

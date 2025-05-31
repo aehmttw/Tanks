@@ -2,7 +2,9 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Panel;
+import tanks.hotbar.Hotbar;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerController;
 import tanks.tank.TankPlayerRemote;
 
@@ -18,6 +20,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
     public double mY;
     public boolean action1;
     public boolean action2;
+    public boolean[] quickActions = new boolean[TankPlayer.max_abilities];
     public double time;
     public long sysTime = System.currentTimeMillis();
 
@@ -38,6 +41,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         this.angle = t.angle;
         this.action1 = t.action1;
         this.action2 = t.action2;
+        System.arraycopy(t.quickActions, 0, this.quickActions, 0, this.quickActions.length);
         this.time = Panel.frameFrequency;
     }
 
@@ -54,6 +58,10 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         b.writeDouble(this.mY);
         b.writeBoolean(this.action1);
         b.writeBoolean(this.action2);
+        for (boolean quickAction : this.quickActions)
+        {
+            b.writeBoolean(quickAction);
+        }
         b.writeDouble(this.time);
     }
 
@@ -70,6 +78,10 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         this.mY = b.readDouble();
         this.action1 = b.readBoolean();
         this.action2 = b.readBoolean();
+        for (int i = 0; i < this.quickActions.length; i++)
+        {
+           this.quickActions[i] = b.readBoolean();
+        }
         this.time = b.readDouble();
     }
 
@@ -80,7 +92,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
 
         if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).player.clientID.equals(this.clientID))
         {
-            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.time, this.sysTime);
+            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.quickActions, this.time, this.sysTime);
         }
     }
 

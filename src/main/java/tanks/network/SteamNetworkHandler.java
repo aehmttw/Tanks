@@ -297,10 +297,7 @@ public class SteamNetworkHandler
 		else if (friends.isFriendAccountID(target))
 			steamIDReceiver = friends.getFriendSteamID(target);
 		else
-		{
-			Game.exitToCrash(new RuntimeException(";("));
 			return null;
-		}
 
 		send(steamIDReceiver, event, type);
 		return steamIDReceiver;

@@ -7,6 +7,7 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
+import tanks.gui.screen.leveleditor.OverlayPlayerBuilds;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayable;
@@ -259,9 +260,9 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
 
         files = searchDirectory(Game.tankDir);
 
-        if (tankScreen instanceof OverlayObjectMenu)
+        if (tankScreen instanceof OverlayPlayerBuilds)
         {
-            for (TankAIControlled t: ((OverlayObjectMenu) tankScreen).editor.level.customTanks)
+            for (TankAIControlled t: ((OverlayPlayerBuilds) tankScreen).editor.level.customTanks)
             {
                 String desc = t.description;
                 if (!t.description.equals(""))

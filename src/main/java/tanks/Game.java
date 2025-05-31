@@ -67,6 +67,7 @@ public class Game
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
+	public static ArrayList<IAvoidObject> avoidObjects = new ArrayList<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
 	public static ArrayList<Effect> tracks = new ArrayList<>();
 	public static ArrayList<Cloud> clouds = new ArrayList<>();
@@ -349,8 +350,9 @@ public class Game
 		NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
 		NetworkEventMap.register(EventSetLevelVersus.class);
-		NetworkEventMap.register(EventLevelEndQuick.class);
-		NetworkEventMap.register(EventLevelEnd.class);
+		NetworkEventMap.register(EventLevelFinishedQuick.class);
+		NetworkEventMap.register(EventLevelFinished.class);
+		NetworkEventMap.register(EventLevelExit.class);
 		NetworkEventMap.register(EventReturnToLobby.class);
 		NetworkEventMap.register(EventBeginCrusade.class);
 		NetworkEventMap.register(EventReturnToCrusade.class);
@@ -503,9 +505,14 @@ public class Game
 		Game.registryModelTank.registerFullModel(dir);
 	}
 
-	public static void registerTankEmblem(String dir)
+	public static void registerTankEmblems()
 	{
-		Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + dir));
+		ArrayList<String> emblems = Game.game.fileManager.getInternalFileContents("/images/emblems/emblems.txt");
+
+		for (String s: emblems)
+		{
+			Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + s + ".png"));
+		}
 	}
 
 	public static void registerMinigame(Class<? extends Minigame> minigame, String name, String desc)
@@ -1006,6 +1013,9 @@ public class Game
 
 		ScreenPartyHost.isServer = false;
 		ScreenPartyLobby.isClient = false;
+
+		Game.eventsIn.clear();
+		Game.eventsOut.clear();
 
 		cleanUp();
 

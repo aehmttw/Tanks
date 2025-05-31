@@ -128,10 +128,10 @@ public abstract class Item extends GameObject
 		@Property(id = "item", name = "Item")
 		public T item;
 
-		@Property(id = "amount", name = "Amount", desc = "Set to 0 for unlimited")
+		@Property(id = "amount", name = "Amount", desc = "Set to 0 for unlimited", minValue = 0)
 		public int stackSize;
 
-		@Property(id = "max", name = "Max stack size", desc = "Set to 0 for unlimited")
+		@Property(id = "max", name = "Max stack size", desc = "Set to 0 for unlimited", minValue = 0)
 		public int maxStackSize;
 
 		public boolean isEmpty = false;
@@ -245,7 +245,7 @@ public abstract class Item extends GameObject
 			Tank user = this.getUser();
 
 			if (user != null)
-				user.setBufferCooldown(20);
+				user.setBufferCooldown(this, 20);
 		}
 
 		public void subtractItem()

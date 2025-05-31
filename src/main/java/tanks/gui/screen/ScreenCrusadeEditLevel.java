@@ -421,6 +421,6 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     @Override
     public void onAttemptClose()
     {
-        //Game.screen = new ScreenConfirmSaveCrusade(Game.screen, this.previous2);
+        Game.screen = new ScreenConfirmSaveCrusade(Game.screen, this.previous2);
     }
 }

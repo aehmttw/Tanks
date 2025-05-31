@@ -13,7 +13,7 @@ public class Trail3D extends Trail
 {
     double backZ;
     double frontZ;
-    double pitch;
+    public double pitch;
 
     protected double frontAngleOffsetPitch;
     protected double backAngleOffsetPitch;
@@ -35,9 +35,9 @@ public class Trail3D extends Trail
     }
 
     @Override
-    public double update(double trailLength)
+    public double update(double trailLength, boolean destroy)
     {
-        if (this.movable.destroy)
+        if (destroy)
             this.age += speed * Panel.frameFrequency;
         else
             this.age = trailLength;
@@ -235,6 +235,8 @@ public class Trail3D extends Trail
     {
         rotations[0].angle = -(angle - Math.PI / 2);
         rotations[1].angle = -(pitch);
+        Game.game.window.setForceModelGlow(glow);
         Drawing.drawing.drawModel(cap, x, y, z, width, width, width, rotations);
+        Game.game.window.setForceModelGlow(false);
     }
 }

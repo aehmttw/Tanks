@@ -21,6 +21,10 @@ public abstract class BaseShapeRenderer
 
     public abstract void fillFacingOval(double x, double y, double z, double sX, double sY, double oZ, boolean depthTest);
 
+    public abstract void fillPartialRing(double x, double y, double size, double thickness, double start, double end);
+
+    public abstract void fillPartialRing(double x, double y, double z, double size, double thickness, double start, double end);
+
     public abstract void fillGlow(double x, double y, double sX, double sY);
 
     public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest);

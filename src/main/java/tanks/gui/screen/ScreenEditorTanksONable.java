@@ -370,6 +370,10 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
                         t.inputText = f.get().toString();
                     }
+                    catch (NumberFormatException e)
+                    {
+                        t.inputText = t.previousInputText;
+                    }
                     catch (Exception e)
                     {
                         Game.exitToCrash(e);

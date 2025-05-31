@@ -19,7 +19,6 @@ import tanks.registry.RegistryObstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 import tanks.tankson.Serializer;
-import tanks.translation.Translation;
 
 import java.io.IOException;
 import java.util.*;
@@ -476,7 +475,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			{
 				this.currentPlaceable = Placeable.playerTank;
 				this.setMousePlaceable();
-				mousePlaceable.setMetadata(t.getMetadata());
+				setMousePlaceableMetadata(t.getMetadata());
 
 				((TankPlayer) mousePlaceable).setDefaultColor();
 				return true;
@@ -491,7 +490,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						tankNum = i;
 						this.currentPlaceable = Placeable.enemyTank;
 						this.setMousePlaceable();
-						mousePlaceable.setMetadata(t.getMetadata());
+						setMousePlaceableMetadata(t.getMetadata());
 						return true;
 					}
 				}
@@ -503,7 +502,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 						tankNum = Game.registryTank.tankEntries.size() + i;
 						this.currentPlaceable = Placeable.enemyTank;
 						this.setMousePlaceable();
-						mousePlaceable.setMetadata(t.getMetadata());
+						setMousePlaceableMetadata(t.getMetadata());
 						return true;
 					}
 				}
@@ -533,11 +532,20 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			this.currentPlaceable = Placeable.obstacle;
 			obstacleNum = i;
 			this.setMousePlaceable();
-			mousePlaceable.setMetadata(o.getMetadata());
+			setMousePlaceableMetadata(o.getMetadata());
 			return true;
 		}
 
 		return false;
+	}
+
+	public void setMousePlaceableMetadata(String meta)
+	{
+		mousePlaceable.setMetadata(meta);
+		for (String s: mousePlaceable.getMetadataProperties().keySet())
+		{
+			currentMetadata.put(s, mousePlaceable.getMetadataProperty(s).getMetadata(mousePlaceable));
+		}
 	}
 
 	@Override
@@ -881,8 +889,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 				panDown = false;
 		}
 
-		double px = Drawing.drawing.toInterfaceCoordsX(panCurrentX);
-		double py = Drawing.drawing.toInterfaceCoordsY(panCurrentY);
+		double px = Drawing.drawing.gameToInterfaceCoordsX(panCurrentX);
+		double py = Drawing.drawing.gameToInterfaceCoordsY(panCurrentY);
 
 		if (!zoomDown && panDown)
 		{
@@ -899,8 +907,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		if (zoomDown)
 		{
-			double zx = Drawing.drawing.toInterfaceCoordsX(zoomCurrentX);
-			double zy = Drawing.drawing.toInterfaceCoordsY(zoomCurrentY);
+			double zx = Drawing.drawing.gameToInterfaceCoordsX(zoomCurrentX);
+			double zy = Drawing.drawing.gameToInterfaceCoordsY(zoomCurrentY);
 			double d = Math.sqrt(Math.pow(px - zx, 2) + Math.pow(py - zy, 2));
 
 			if (prevZoomDown)

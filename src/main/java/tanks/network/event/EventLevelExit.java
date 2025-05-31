@@ -7,16 +7,16 @@ import tanks.gui.screen.ScreenPartyInterlevel;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 
-public class EventLevelEnd extends PersonalEvent
+public class EventLevelExit extends PersonalEvent
 {	
 	public String winningTeam;
 
-	public EventLevelEnd()
+	public EventLevelExit()
 	{
 		
 	}
 	
-	public EventLevelEnd(String winner)
+	public EventLevelExit(String winner)
 	{
 		this.winningTeam = winner;
 	}

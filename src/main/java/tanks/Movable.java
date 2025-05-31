@@ -91,8 +91,6 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	public void update()
 	{
-		//this.randomize();
-
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 
 		if (!destroy)

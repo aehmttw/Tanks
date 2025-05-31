@@ -6,6 +6,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
+import tanks.hotbar.Hotbar;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 import tanks.translation.Translation;
@@ -219,6 +220,7 @@ public class ScreenOptions extends Screen
 			f.println("preview_crusades=" + Game.previewCrusades);
 			f.println("tank_textures=" + Game.tankTextures);
 			f.println("xray_bullets=" + Game.xrayBullets);
+			f.println("circular_hotbar=" + Hotbar.circular);
 			f.println("mouse_target=" + Panel.showMouseTarget);
 			f.println("mouse_target_height=" + Panel.showMouseTargetHeight);
 			f.println("constrain_mouse=" + Game.constrainMouse);
@@ -388,6 +390,9 @@ public class ScreenOptions extends Screen
 					case "timer":
 						Game.showSpeedrunTimer = Boolean.parseBoolean(optionLine[1]);
 						break;
+					case "best_run":
+						Game.showBestTime = Boolean.parseBoolean(optionLine[1]);
+						break;
 					case "deterministic":
 						Game.deterministicMode = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -430,6 +435,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "xray_bullets":
 						Game.xrayBullets = Boolean.parseBoolean(optionLine[1]);
+						break;
+					case "circular_hotbar":
+						Hotbar.circular = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "preview_crusades":
 						Game.previewCrusades = Boolean.parseBoolean(optionLine[1]);

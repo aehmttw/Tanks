@@ -92,13 +92,12 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 		Level lev = new Level(ls);
 
-		ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen);
+		ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen, true);
 
 		lev.preview = true;
 		lev.loadLevel(sc);
 		Game.screen = sc;
 
-		sc.fromInterlevel = true;
 		sc.music = music;
 		sc.musicID = musicID;
 		sc.updateDownloadButton();

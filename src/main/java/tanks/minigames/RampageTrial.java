@@ -150,6 +150,20 @@ public class RampageTrial extends Minigame
         else
             chainOpacity = Math.max(0, chainOpacity - Panel.frameFrequency / 20);
 
+        for (Movable m: Game.movables)
+        {
+            int power = Math.min(maxPower, chain / 3);
+            if (m instanceof TeleporterOrb)
+            {
+                if (chain / 3 > 0)
+                {
+                    double duration = 10 + 10;
+                    double detAge = 10;
+                    m.addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
+                }
+            }
+        }
+
         if (!ScreenPartyLobby.isClient)
         {
             for (int i = 0; i < this.includedPlayers.size(); i++)

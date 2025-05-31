@@ -176,5 +176,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 
 		Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(s.clientID, s.rawUsername), true));
 		Game.eventsOut.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
+
+		s.joined = true;
 	}
 }

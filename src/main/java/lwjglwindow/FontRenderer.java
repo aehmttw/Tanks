@@ -56,6 +56,7 @@ public class FontRenderer extends BaseFontRenderer
 		int col = (int) (i % size);
 		int row = (int) (i / size);
 		int width = charSizes[i];
+
 		//this.window.shapeRenderer.drawRect(x, y - sY * 16, sX * width * 4, sY * 64);
 
 		if (this.drawBox)
@@ -75,7 +76,16 @@ public class FontRenderer extends BaseFontRenderer
 
 	public void drawString(double x, double y, double z, double sX, double sY, String s)
 	{
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		drawString(x, y, z, sX, sY, s, true);
+	}
+
+	public void drawString(double x, double y, double z, double sX, double sY, String s, boolean depth)
+	{
+		if (depth)
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+		else
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+
 		double opacity = this.window.colorA;
 
 		double curX = x;
@@ -106,7 +116,7 @@ public class FontRenderer extends BaseFontRenderer
 				i += 12;
 			}
 			else
-				curX += (drawChar(curX, y, z, sX, sY, c[i], true) + 1) * sX * 4;
+				curX += (drawChar(curX, y, z, sX, sY, c[i], depth) + 1) * sX * 4;
 		}
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);

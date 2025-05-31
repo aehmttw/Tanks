@@ -1,7 +1,12 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.bullet.Bullet;
+import tanks.bullet.Trail;
+import tanks.bullet.Trail3D;
 import tanks.network.event.EventTankTeleport;
+
+import java.util.ArrayList;
 
 /**
  * The orb that transfers the player's tank which is fired from the teleporter.
@@ -22,6 +27,20 @@ public class TeleporterOrb extends Movable
 	public double maxAge = 200;
 	public double endAge = 300;
 
+	public double prevX;
+	public double prevY;
+	public double prevZ;
+
+	public double lastTrailAngle = -1;
+	public double lastTrailPitch = -1;
+	public boolean addedTrail = false;
+
+	Trail[] trailSet = new Trail[]{
+			new Trail(this, 12.5, 0, 0, 0,0, 0.5, 8, 0, 127, 127, 127, 100, 255, 255, 255, 0, false, 1, true, true),
+			new Trail(this, 12.5, 0, 0, 0,0, 1, 10, 0, 127, 127, 127, 100, 0, 0, 0, 0, true, 1, true, true)
+	};
+
+	public ArrayList<Trail>[] trails = null;
 	public double size;
 
 	public TeleporterOrb(double x, double y, double iX, double iY, double destX, double destY, Tank t)
@@ -52,6 +71,17 @@ public class TeleporterOrb extends Movable
 	{
 		double frac = 1 - Math.min(this.posZ / 200, 1);
 
+		if (trails != null)
+		{
+			for (ArrayList<Trail> tr : trails)
+			{
+				for (Trail t: tr)
+				{
+					t.draw();
+				}
+			}
+		}
+
 		//Drawing.drawing.setColor(255, 255, 255);
 		Drawing.drawing.setColor(this.tank.colorR * (1 - frac) + 255 * frac, this.tank.colorG * (1 - frac) + 255 * frac, this.tank.colorB * (1 - frac) + 255 * frac);
 
@@ -81,7 +111,7 @@ public class TeleporterOrb extends Movable
 		if (Game.game.window.touchscreen)
 			freq = 1;
 
-		this.age += Panel.frameFrequency;
+		this.age += Panel.frameFrequency * this.getAttributeValue(AttributeModifier.velocity, 1);
 
 		this.tank.vX = 0;
 		this.tank.vY = 0;
@@ -152,7 +182,129 @@ public class TeleporterOrb extends Movable
 		if (Math.random() < Panel.frameFrequency * Game.effectMultiplier)
 			this.createEffect();
 
+		if (this.age > 0)
+			this.updateTrails();
+
 		super.update();
+	}
+
+	public void updateTrails()
+	{
+		if (trails == null)
+		{
+			this.trails = (ArrayList<Trail>[])(new ArrayList[2]);
+
+			for (int i = 0; i < this.trails.length; i++)
+				this.trails[i] = new ArrayList<>();
+		}
+
+		for (ArrayList<Trail> trails: this.trails)
+		{
+			double trailLength = 0;
+			for (int i = 0; i < trails.size(); i++)
+			{
+				Trail t = trails.get(i);
+
+				if (this.age > this.maxAge)
+					t.spawning = false;
+
+				if (t.expired)
+				{
+					trails.remove(i);
+					i--;
+				}
+				else
+				{
+					trailLength += t.update(trailLength, this.age > maxAge);
+				}
+			}
+		}
+
+		this.vX = this.posX - prevX;
+		this.vY = this.posY - prevY;
+		this.vZ = this.posZ - prevZ;
+
+		this.prevX = this.posX;
+		this.prevY = this.posY;
+		this.prevZ = this.posZ;
+
+		if (!this.addedTrail && !this.destroy &&
+				(Movable.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (Game.enable3d && Movable.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
+		{
+			this.addTrail();
+		}
+
+		this.addedTrail = false;
+	}
+
+	public void addTrail()
+	{
+		this.addedTrail = true;
+
+		double speed = 6.25;
+
+		double x = this.posX;
+		double y = this.posY;
+		double z = this.posZ;
+
+		this.lastTrailAngle = this.getPolarDirection();
+
+		if (Game.enable3d)
+			this.lastTrailPitch = this.getPolarPitch();
+
+		this.trailSet[0].frontR = this.tank.colorR;
+		this.trailSet[0].frontG = this.tank.colorG;
+		this.trailSet[0].frontB = this.tank.colorB;
+
+		this.trailSet[1].frontR = this.tank.secondaryColorR;
+		this.trailSet[1].frontG = this.tank.secondaryColorG;
+		this.trailSet[1].frontB = this.tank.secondaryColorB;
+
+		int i = 0;
+		for (Trail t : this.trailSet)
+		{
+			if (!Game.enable3d)
+				this.addTrailObj(new Trail(this, speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle,
+						t.frontR, t.frontG, t.frontB, t.frontA, t.backR, t.backG, t.backB, t.backA, t.glow, t.luminosity, t.frontCircle, t.backCircle), i);
+			else
+				this.addTrailObj(new Trail3D(this, speed, x, y, z, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, this.lastTrailPitch,
+						t.frontR, t.frontG, t.frontB, t.frontA, t.backR, t.backG, t.backB, t.backA, t.glow, t.luminosity, t.frontCircle, t.backCircle), i);
+			i++;
+		}
+	}
+
+	protected void addTrailObj(Trail t, int slot)
+	{
+		Trail old = null;
+
+		if (this.trails[slot].size() > 0)
+			old = this.trails[slot].get(0);
+
+		this.trails[slot].add(0, t);
+
+		if (old != null && old.spawning)
+		{
+			old.spawning = false;
+			old.frontX = t.backX;
+			old.frontY = t.backY;
+
+			double angle = this.getPolarDirection();
+			double offset = Movable.angleBetween(angle, old.angle) / 2;
+
+			if (t instanceof Trail3D && old instanceof Trail3D)
+			{
+				Trail3D t1 = (Trail3D) t;
+				Trail3D old1 = (Trail3D) old;
+				double offset2 = Movable.angleBetween(t1.pitch, old1.pitch) / 2;
+				old1.setFrontAngleOffset(offset, offset2);
+				t1.setBackAngleOffset(-offset, -offset2);
+			}
+			else
+			{
+				old.setFrontAngleOffset(offset);
+				t.setBackAngleOffset(-offset);
+			}
+		}
 	}
 	
 	public void createEffect()

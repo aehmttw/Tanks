@@ -72,20 +72,34 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
         if (this.getAbility(this.selectedPrimaryAbility) != null && this.getAbility(this.selectedPrimaryAbility).item.rightClick)
         {
+            boolean found = false;
             for (int i = 0; i < this.abilities.size(); i++)
             {
                 if (!this.abilities.get(i).item.rightClick)
+                {
                     this.selectedPrimaryAbility = i;
+                    found = true;
+                }
             }
+
+            if (!found)
+                this.selectedPrimaryAbility = -1;
         }
 
         if (this.getAbility(this.selectedSecondaryAbility) != null && !this.getAbility(this.selectedSecondaryAbility).item.rightClick)
         {
+            boolean found = false;
             for (int i = 0; i < this.abilities.size(); i++)
             {
                 if (this.abilities.get(i).item.rightClick)
+                {
                     this.selectedSecondaryAbility = i;
+                    found = true;
+                }
             }
+
+            if (!found)
+                this.selectedSecondaryAbility = -1;
         }
 
         for (int i = 0; i < this.abilities.size(); i++)
@@ -95,7 +109,6 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
             if (!this.abilities.get(i).item.rightClick && this.selectedPrimaryAbility < 0)
                 this.selectedPrimaryAbility = i;
-
         }
     }
 

@@ -6,6 +6,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
+import tanks.bullet.BulletGas;
 import tanks.gui.Button;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
@@ -19,7 +20,6 @@ import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
-import tanks.item.ItemRemote;
 import tanks.network.ConnectedPlayer;
 import tanks.network.event.EventLayMine;
 import tanks.network.event.EventShootBullet;
@@ -63,6 +63,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	protected double drawLifespan = -1;
 	protected boolean drawTrace = true;
 
+	public double bufferCooldown = 0;
+	public Item.ItemStack<?> lastItem = null;
+
 	public double mouseX;
 	public double mouseY;
 
@@ -101,14 +104,14 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		if (enableDestroyCheat)
 		{
-			this.showName = true;
+			this.hasName = true;
 			this.nameTag.name = "Destroy cheat enabled!!!";
 		}
 
 		if (Game.nameInMultiplayer && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
 		{
 			this.nameTag.name = Game.player.username;
-			this.showName = true;
+			this.hasName = true;
 		}
 	}
 
@@ -280,6 +283,8 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			s.updateCooldown(reload);
 		}
 
+		this.bufferCooldown -= Panel.frameFrequency;
+
 		Hotbar h = Game.player.hotbar;
 		if (h.enabledItemBar)
 		{
@@ -296,14 +301,14 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		boolean mine = !Game.game.window.touchscreen && Game.game.input.mine.isPressed();
 
 		boolean hideShootStick = false;
-		if (h.enabledItemBar && h.itemBar.selected >= 0)
+		int hotbarSlots = (this.player.hotbar.itemBar.showItems ? ItemBar.item_bar_size : 0);
+
+		if (h.enabledItemBar && h.itemBar.selected >= 0 && h.itemBar.selected < hotbarSlots)
 		{
 			Item.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
 
 			if (i.item instanceof ItemBullet)
 				hideShootStick = ((ItemBullet) i.item).bullet instanceof BulletArc || ((ItemBullet) i.item).bullet instanceof BulletAirStrike;
-			else if (i.item instanceof ItemRemote)
-				hideShootStick = ((ItemRemote) i.item).hideShootStick;
 		}
 
 		TankPlayer.shootStickHidden = hideShootStick;
@@ -370,8 +375,8 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 							this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
 						}
 
-						distSq = Math.pow(px - Drawing.drawing.toInterfaceCoordsX(this.posX), 2)
-								+ Math.pow(py - Drawing.drawing.toInterfaceCoordsY(this.posY), 2);
+						distSq = Math.pow(px - Drawing.drawing.gameToInterfaceCoordsX(this.posX), 2)
+								+ Math.pow(py - Drawing.drawing.gameToInterfaceCoordsY(this.posY), 2);
 
 						if (distSq <= Math.pow(this.touchCircleSize / 4, 2) || p.tag.equals("aim"))
 						{
@@ -424,20 +429,25 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		if (mine && !this.disabled)
 			this.action(true);
 
+		if (!this.disabled)
+		{
+			for (int i = 0; i < this.abilities.size(); i++)
+			{
+				if (Game.game.input.abilityBindings[i].isPressed())
+					this.quickAction(i);
+			}
+		}
+
 		if ((trace || lockTrace) && !Game.bulletLocked && !this.disabled && (Game.screen instanceof ScreenGame || Game.screen instanceof ScreenTitle))
 		{
-			double lifespan = -1;
-			double rangeMin = -1;
-			double rangeMax = -1;
 			boolean showTrace = true;
 
-			Ray r = new Ray(this.posX, this.posY, this.angle, 1, this);
 			ItemBullet.ItemStackBullet i = null;
 
 			if (this.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
 				i = (ItemBullet.ItemStackBullet) this.getPrimaryAbility();
 
-			if (h.enabledItemBar && h.itemBar.selected >= 0)
+			if (h.enabledItemBar && h.itemBar.selected >= 0 && h.itemBar.selected < hotbarSlots)
 			{
 				Item.ItemStack<?> is = h.itemBar.slots[h.itemBar.selected];
 				if (is instanceof ItemBullet.ItemStackBullet)
@@ -448,36 +458,72 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 			if (i != null)
 			{
-				Bullet b = ((ItemBullet.ItemStackBullet) i).item.bullet;
-				r.bounces = b.bounces;
-				lifespan = b.lifespan > 0 ? b.lifespan * b.speed + this.turretLength : 0;
-				rangeMax = b.getRangeMax();
-				rangeMin = b.getRangeMin();
-				showTrace = b.showTrace;
+				Bullet b = i.item.bullet;
+				double lifespan = b.lifespan > 0 ? b.lifespan * b.speed + this.turretLength : 0;
+				double rangeMax = b.getRangeMax();
+				double rangeMin = b.getRangeMin();
+				showTrace = b.showDefaultTrace;
 
 				if (lifespan > 0)
 					lifespan *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+
+				for (int j = 0; j < b.shotCount; j++)
+				{
+					double baseOff = 0;
+					int gasSpread = (b instanceof BulletGas || b.accuracySpread > 0) ? 1 : 0;
+
+					for (int k = -gasSpread; k <= gasSpread; k++)
+					{
+						double gasOff = 0;
+						if (b instanceof BulletGas)
+							gasOff = Math.atan(((BulletGas) b).endSize / lifespan) / 2 * k;
+
+						gasOff += Math.toRadians(b.accuracySpread / 2) * k;
+
+						if (b.shotCount > 1)
+						{
+							if (b.multishotSpread >= 360)
+								baseOff = Math.PI * 2 * j / b.shotCount;
+							else
+								baseOff = Math.toRadians(b.multishotSpread) * ((j * 1.0 / (b.shotCount - 1)) - 0.5);
+						}
+
+						Ray r = new Ray(this.posX, this.posY, this.angle + baseOff + gasOff, 1, this);
+						r.bounces = b.bounces;
+						r.size = b.size;
+						if (k != 0)
+							r.size /= 2;
+
+						r.range = lifespan - this.turretLength;
+
+						if (b instanceof BulletArc)
+							((BulletArc) b).drawTrace(this.posX, this.posY, this.mouseX, this.mouseY, this.angle + baseOff + gasOff);
+
+						if (b instanceof BulletAirStrike)
+							((BulletAirStrike) b).drawTrace(this.posX, this.posY, this.mouseX, this.mouseY);
+
+						r.vX /= 2;
+						r.vY /= 2;
+						r.trace = true;
+						r.dotted = true;
+						r.moveOut(10 * this.size / Game.tile_size);
+
+						if (rangeMax > 0)
+							this.drawRangeMax = rangeMax;
+
+						if (rangeMin > 0)
+							this.drawRangeMin = rangeMin;
+
+						if (lifespan > 0)
+							this.drawLifespan = lifespan;
+
+						if (showTrace)
+							r.getTarget();
+					}
+				}
 			}
 			else
 				showTrace = false;
-
-			r.vX /= 2;
-			r.vY /= 2;
-			r.trace = true;
-			r.dotted = true;
-			r.moveOut(10 * this.size / Game.tile_size);
-
-			if (rangeMax > 0)
-				this.drawRangeMax = rangeMax;
-
-			if (rangeMin > 0)
-				this.drawRangeMin = rangeMin;
-
-			if (lifespan > 0)
-				this.drawLifespan = lifespan;
-
-			if (showTrace)
-				r.getTarget();
 		}
 
 		super.update();
@@ -504,6 +550,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		if (Game.bulletLocked || this.destroy)
 			return;
 
+		if (Game.player.hotbar.itemBar.getSelectedAction(right) != this.lastItem && this.bufferCooldown > 0)
+			return;
+
 		if (Game.player.hotbar.enabledItemBar)
 		{
 			if (Game.player.hotbar.itemBar.useItem(right))
@@ -516,8 +565,6 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		{
 			s.networkIndex = -a;
 			s.attemptUse(this);
-			if (s.destroy && this.player.hotbar.itemBar != null)
-				this.player.hotbar.itemBar.setItem(a + ItemBar.item_bar_size);
 		}
 	}
 
@@ -527,6 +574,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			return;
 
 		Item.ItemStack<?> s = this.getAbility(click);
+
+		if (s != this.lastItem && this.bufferCooldown > 0)
+			return;
+
 		if (s != null)
 		{
 			s.networkIndex = -click;
@@ -679,24 +730,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	}
 
 	@Override
-	public void setBufferCooldown(double value)
+	public void setBufferCooldown(Item.ItemStack<?> stack, double value)
 	{
-		for (Item.ItemStack<?> s: this.abilities)
-		{
-			s.cooldown = Math.max(s.cooldown, value);
-		}
-
-		Hotbar h = Game.player.hotbar;
-		if (h.enabledItemBar)
-		{
-			for (Item.ItemStack<?> i: h.itemBar.slots)
-			{
-				if (i != null && !i.isEmpty)
-				{
-					i.cooldown = Math.max(i.cooldown, value);
-				}
-			}
-		}
+		this.lastItem = stack;
+		this.bufferCooldown = value;
 	}
 
 	@TanksONable("shop_build")

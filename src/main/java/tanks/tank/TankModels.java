@@ -59,21 +59,7 @@ public class TankModels
         flames = new FullTankModel("tankflames");
         Tank.health_model = Drawing.drawing.createModel("/models/tankhealth/");
 
-        Game.registerTankEmblem("medic.png");
-        Game.registerTankEmblem("player_spawn.png");
-        Game.registerTankEmblem("bang.png");
-        Game.registerTankEmblem("laser.png");
-        Game.registerTankEmblem("x.png");
-        Game.registerTankEmblem("circle.png");
-        Game.registerTankEmblem("circle_outline.png");
-        Game.registerTankEmblem("circle_double.png");
-        Game.registerTankEmblem("electric.png");
-        Game.registerTankEmblem("squares.png");
-        Game.registerTankEmblem("square.png");
-        Game.registerTankEmblem("angry.png");
-        Game.registerTankEmblem("snowflake.png");
-        Game.registerTankEmblem("curve.png");
-        Game.registerTankEmblem("star.png");
-        Game.registerTankEmblem("pinwheel.png");
+        Game.registerTankEmblems();
+
     }
 }

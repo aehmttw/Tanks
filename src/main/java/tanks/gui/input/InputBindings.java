@@ -16,6 +16,14 @@ public class InputBindings
     public InputBindingGroup mine = new InputBindingGroup("tank.mine", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_ENTER), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_2));
     public InputBindingGroup aim = new InputBindingGroup("tank.aim", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_PERIOD), new InputBinding(InputBinding.InputType.mouse, InputCodes.MOUSE_BUTTON_4));
 
+    public InputBindingGroup ability1 = new InputBindingGroup("tank.ability.1", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_Z));
+    public InputBindingGroup ability2 = new InputBindingGroup("tank.ability.2", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_X));
+    public InputBindingGroup ability3 = new InputBindingGroup("tank.ability.3", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_C));
+    public InputBindingGroup ability4 = new InputBindingGroup("tank.ability.4", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_V));
+    public InputBindingGroup ability5 = new InputBindingGroup("tank.ability.5", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_B));
+
+    public InputBindingGroup[] abilityBindings = new InputBindingGroup[]{ability1, ability2, ability3, ability4, ability5};
+
     public InputBindingGroup hotbarToggle = new InputBindingGroup("hotbar.toggle", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_LEFT_SHIFT), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_RIGHT_SHIFT));
     public InputBindingGroup hotbar1 = new InputBindingGroup("hotbar.1", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_1));
     public InputBindingGroup hotbar2 = new InputBindingGroup("hotbar.2", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_2));

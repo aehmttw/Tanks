@@ -14,8 +14,6 @@ import tanks.item.ItemMine;
 import tanks.network.ConnectedPlayer;
 import tanks.network.event.*;
 
-import java.util.ArrayList;
-
 public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 {
     public double lastPosX;
@@ -79,11 +77,14 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     public long lastUpdate;
     public double localAge;
 
+    public double bufferCooldown = 0;
+    public Item.ItemStack<?> lastItem = null;
+
     public TankPlayerRemote(double x, double y, double angle, Player p)
     {
         super(x, y);
         this.player = p;
-        this.showName = true;
+        this.hasName = true;
         this.angle = angle;
         this.orientation = angle;
 
@@ -159,6 +160,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     {
         this.updateMovement();
 
+        this.bufferCooldown -= Panel.frameFrequency;
         double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
         for (Item.ItemStack<?> s: this.abilities)
@@ -233,7 +235,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (this.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
             im = (ItemMine.ItemStackMine) this.getSecondaryAbility();
 
-        if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1)
+        int hotbarSlots = (this.player.hotbar.itemBar.showItems ? ItemBar.item_bar_size : 0);
+
+        if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1 && b.selected < hotbarSlots)
         {
             if (b.slots[b.selected] instanceof ItemBullet.ItemStackBullet)
                 ib = (ItemBullet.ItemStackBullet) b.slots[b.selected];
@@ -250,8 +254,11 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         double cooldown = ib == null ? 0 : ib.cooldown;
         double cooldownBase = ib == null ? 0 : ib.item.cooldownBase;
 
+        double cooldown2 = im == null ? 0 : im.cooldown;
+        double cooldownBase2 = im == null ? 0 : im.item.cooldownBase;
+
         if (lastLiveBullets != lb || mlb != lastMaxLiveBullets || lm != lastLiveMines || mlm != lastMaxLiveMines)
-            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, lb, mlb, lm, mlm, cooldown, cooldownBase));
+            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, lb, mlb, lm, mlm, cooldown, cooldownBase, cooldown2, cooldownBase2));
 
         lastLiveBullets = lb;
         lastLiveMines = lm;
@@ -259,7 +266,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         lastMaxLiveMines = mlm;
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions, double time, long receiveTime)
     {
         if (checkMotion)
         {
@@ -421,6 +428,15 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             if (action2 && !this.disabled)
                 this.action(true);
 
+            if (!this.disabled)
+            {
+                for (int i = 0; i < this.abilities.size(); i++)
+                {
+                    if (quickActions[i])
+                        this.quickAction(i);
+                }
+            }
+
             this.posX = this.prevKnownPosX;
             this.posY = this.prevKnownPosY;
             this.vX = this.prevKnownVX;
@@ -460,6 +476,10 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             return;
 
         int a = right ? selectedSecondaryAbility : selectedPrimaryAbility;
+
+        if (this.player.hotbar.itemBar.getSelectedAction(right) != this.lastItem && this.bufferCooldown > 0)
+            return;
+
         if (this.player.hotbar.enabledItemBar)
         {
             if (this.player.hotbar.itemBar.useItem(right))
@@ -483,6 +503,10 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (this.abilities.size() > click)
         {
             this.getAbility(click).networkIndex = -click;
+
+            if (this.getAbility(click) != this.lastItem && this.bufferCooldown > 0)
+                return;
+
             if (this.getAbility(click).attemptUse(this))
                 Game.eventsOut.add(new EventUpdateTankAbility(this.player, click));
         }
@@ -583,20 +607,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     }
 
     @Override
-    public void setBufferCooldown(double value)
+    public void setBufferCooldown(Item.ItemStack<?> stack, double value)
     {
-        super.setBufferCooldown(value);
-
-        Hotbar h = this.player.hotbar;
-        if (h.enabledItemBar)
-        {
-            for (Item.ItemStack<?> i: h.itemBar.slots)
-            {
-                if (i != null && !(i.isEmpty))
-                {
-                    i.cooldown = Math.max(i.cooldown, value);
-                }
-            }
-        }
+        this.lastItem = stack;
+        this.bufferCooldown = value;
     }
 }

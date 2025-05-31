@@ -79,7 +79,7 @@ public class ObstacleStackable extends Obstacle
 
         if (Game.enable3d)
         {
-            for (int i = 0; i < Math.min(this.stackHeight, default_max_height); i++)
+            for (int i = 0; i < Math.min(stackHeight, default_max_height); i++)
             {
                 int in = default_max_height - 1 - i;
                 drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA, this.glow);
@@ -192,34 +192,14 @@ public class ObstacleStackable extends Obstacle
                 if (effect == Effect.EffectType.obstaclePiece)
                     effect = Effect.EffectType.obstaclePiece3d;
 
-                double s = 12.5;
-                for (double j = 0; j < Game.tile_size; j += s)
+                double h = 0;
+                if (this.stackHeight % 1.0 != 0)
+                    h = this.stackHeight % 1.0 - 1.0;
+
+                for (; h < this.stackHeight; h++)
                 {
-                    for (double k = 0; k < Game.tile_size; k += s)
-                    {
-                        for (double l = 0; l < Game.tile_size * this.stackHeight; l += s)
-                        {
-                            if (Math.random() > this.destroyEffectAmount * freq * freq * Game.effectMultiplier)
-                                continue;
-
-                            Effect e = Effect.createNewEffect(this.posX + j + s / 2 - Game.tile_size / 2, this.posY + k + s / 2 - Game.tile_size / 2, l, effect);
-
-                            int block = (int) ((this.stackHeight * Game.tile_size - (l + s)) / Game.tile_size);
-
-                            e.colR = this.stackColorR[block];
-                            e.colG = this.stackColorG[block];
-                            e.colB = this.stackColorB[block];
-
-                            double dist = Movable.distanceBetween(this, e);
-                            double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);
-                            double rad = radius - Game.tile_size / 2;
-                            double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
-                            e.addPolarMotion(angle, (v + Math.random() * 2) * 1.5);
-                            e.vZ = 1.5 * (v + Math.random() * 2);
-
-                            Game.effects.add(e);
-                        }
-                    }
+                    int block = (int) (default_max_height - 1 - h);
+                    destroyAnimation3d(this.posX, this.posY, Math.max(h, 0) * Game.tile_size, posX, posY, Game.tile_size - Math.min(h, 0), effect, this.destroyEffectAmount * freq * freq, radius, this.stackColorR[block], this.stackColorG[block], this.stackColorB[block]);
                 }
             }
             else
@@ -244,6 +224,37 @@ public class ObstacleStackable extends Obstacle
 
                         Game.effects.add(e);
                     }
+                }
+            }
+        }
+    }
+
+    public static void destroyAnimation3d(double x, double y, double z, double posX, double posY, double height, Effect.EffectType effect, double freq, double radius, double r, double g, double b)
+    {
+        double s = 12.5;
+        for (double j = 0; j < Game.tile_size; j += s)
+        {
+            for (double k = 0; k < Game.tile_size; k += s)
+            {
+                for (double l = 0; l < height; l += s)
+                {
+                    if (Math.random() > freq * Game.effectMultiplier)
+                        continue;
+
+                    Effect e = Effect.createNewEffect(x + j + s / 2 - Game.tile_size / 2, y + k + s / 2 - Game.tile_size / 2, l + z, effect);
+
+                    e.colR = r;
+                    e.colG = g;
+                    e.colB = b;
+
+                    double dist = Math.sqrt(Math.pow(posX - x, 2) + Math.pow(posY - y, 2));
+                    double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);
+                    double rad = radius - Game.tile_size / 2;
+                    double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
+                    e.addPolarMotion(angle, (v + Math.random() * 2) * 1.5);
+                    e.vZ = 1.5 * (v + Math.random() * 2);
+
+                    Game.effects.add(e);
                 }
             }
         }

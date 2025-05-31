@@ -171,8 +171,14 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
     public ScreenSaveLevel(String name, String level, Screen s)
     {
+        this(name, level, s, false);
+    }
+
+    public ScreenSaveLevel(String name, String level, Screen s, boolean fromInterlevel)
+    {
         super(350, 40, 380, 60);
 
+        this.fromInterlevel = fromInterlevel;
         this.music = "menu_4.ogg";
         this.musicID = "menu";
 
@@ -197,11 +203,11 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
         {
-            levelName.posY -= 20;
-            download.posY -= 20;
+            levelName.posY += 20;
+            download.posY += 20;
             back.posY += 40;
         }
-        else if (ScreenPartyHost.isServer)
+        else if (ScreenPartyHost.isServer && !fromInterlevel)
         {
             quickPlay.posY -= 40;
             levelName.posY -= 60;
@@ -261,7 +267,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 more.update();
             }
 
-            if (ScreenPartyHost.isServer)
+            if (ScreenPartyHost.isServer && !fromInterlevel)
                 quickPlay.update();
         }
 
@@ -292,7 +298,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             this.download.draw();
             this.back.draw();
 
-            if (this.description != null)
+            if (this.description != null && this.description.length > 0)
                 Drawing.drawing.drawTooltip(this.description, delete.posX - this.objWidth / 2, delete.posY - this.objYSpace * 1.5);
 
             if (this.queuedLevel != null)
@@ -338,7 +344,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 more.draw();
             }
 
-            if (ScreenPartyHost.isServer)
+            if (ScreenPartyHost.isServer && !fromInterlevel)
                 quickPlay.draw();
         }
     }

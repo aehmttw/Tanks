@@ -55,7 +55,7 @@ public class AreaEffectFreeze extends AreaEffect
 
 				if (Movable.distanceBetween(this, m) <= this.size / 2 && !m.destroy)
 				{
-					AttributeModifier a = new AttributeModifier("freeze", AttributeModifier.velocity, Operation.multiply, -1);
+					AttributeModifier a = AttributeModifier.obtain("freeze", AttributeModifier.velocity, Operation.multiply, -1);
 					a.duration = 500;
 					a.warmupAge = 50;
 					a.deteriorationAge = 400;
@@ -88,7 +88,7 @@ public class AreaEffectFreeze extends AreaEffect
 
 		for (Movable m : Game.movables)
 		{
-			if (Movable.withinRange(this, m, this.size / 2) && !m.destroy)
+			if (Movable.distanceBetween(this, m) < this.size / 2 && !m.destroy)
                 m.em().addStatusEffect(StatusEffect.ice, 0, 5, 10);
 		}
 

@@ -3,6 +3,7 @@ package tanks.tank;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
+import tanks.effect.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
@@ -680,7 +681,7 @@ public class TankAIControlled extends Tank implements ITankField
 				this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
 		}
 
-		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+		double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 		this.bulletItem.updateCooldown(reload);
 		this.mineItem.updateCooldown(reload);
 		super.update();
@@ -710,7 +711,7 @@ public class TankAIControlled extends Tank implements ITankField
 				this.aim = false;
 				this.stoppedAiming = true;
 
-				double lifeRange = this.bullet.lifespan * this.bullet.speed * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+				double lifeRange = this.bullet.lifespan * this.bullet.speed * em().getAttributeValue(AttributeModifier.bullet_speed, 1);
 				double limitRange = this.bullet.getRangeMax();
 				double range = Math.min(limitRange, lifeRange);
 
@@ -781,7 +782,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void charge()
 	{
-		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+		double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
 		this.cooldown -= Panel.frameFrequency * reload;
 		this.justCharged = true;
@@ -891,7 +892,7 @@ public class TankAIControlled extends Tank implements ITankField
 			speed = Double.MIN_VALUE;
 
 		b.setPolarMotion(angle + offset + this.shotOffset, speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 		b.speed = Math.abs(speed);
 
 		if (b instanceof BulletArc || b instanceof BulletAirStrike)
@@ -1643,7 +1644,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (!this.chargeUp)
 		{
-			double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+			double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 			this.cooldown -= Panel.frameFrequency * reload;
 		}
 

@@ -1,35 +1,40 @@
 package tanks.effect;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.Panel;
 
 import java.util.HashMap;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AttributeModifier
 {
 	public enum Operation {add, multiply}
 
-	/** A unique name for the modifier, to prevent double effects*/
+	// Object recycling system
+	private static final Queue<AttributeModifier> recycleQueue = new ConcurrentLinkedQueue<>();
+	private static final int MAX_POOL_SIZE = 2000; // Prevent memory leaks from excessive pooling
+
+	/**An unique name for the modifier, to prevent double effects*/
 	public String name = UUID.randomUUID().toString();
-	
+
 	/**Duration of the Attribute Modifier, leave at 0 for indefinite duration*/
 	public double duration = 0;
-	
+
 	/**Age at which the Attribute starts to wear off*/
 	public double deteriorationAge = 0;
-	
+
 	/**Age at which the Attribute is at full strength*/
 	public double warmupAge = 0;
-	
+
 	public double value;
-	
-	public Operation operation;
-	
+
+	public Operation effect;
+
 	public double age;
-	
+
 	public boolean expired = false;
-	
+
 	public Type type;
 
 	public static HashMap<String, Type> attributeModifierTypes = new HashMap<>();
@@ -74,106 +79,90 @@ public class AttributeModifier
 			return this.name.equals(other.name);
 		}
 	}
-	
-	public AttributeModifier(Type type, Operation op, double amount)
+
+	private AttributeModifier() {}
+
+	public AttributeModifier set(Type type, Operation op, double amount)
 	{
 		this.type = type;
-		this.operation = op;
+		this.effect = op;
 		this.value = amount;
+		return this;
 	}
-	
-	public AttributeModifier(String name, Type type, Operation op, double amount)
+
+	public AttributeModifier set(String name, Type type, Operation op, double amount)
 	{
-		this(type, op, amount);
+		set(type, op, amount);
 		this.name = name;
+		return this;
 	}
-	
+
+	private static int add = 0;
+
+	/**
+	 * Factory method to obtain an AttributeModifier instance, either from the recycle pool or create new
+	 */
+	public static AttributeModifier obtain(Type type, Operation op, double amount)
+	{
+		AttributeModifier modifier = recycleQueue.poll();
+		if (modifier != null)
+            return modifier.set(type, op, amount);
+		return new AttributeModifier().set(type, op, amount);
+	}
+
+	/**
+	 * Factory method to obtain an AttributeModifier instance with a specific name
+	 */
+	public static AttributeModifier obtain(String name, Type type, Operation op, double amount)
+	{
+		AttributeModifier modifier = obtain(type, op, amount);
+		modifier.name = name;
+		return modifier;
+	}
+
+	/**
+	 * Recycle this AttributeModifier instance for reuse
+	 */
+	public static void recycle(AttributeModifier modifier)
+	{
+		if (modifier != null && recycleQueue.size() < MAX_POOL_SIZE)
+            recycleQueue.offer(modifier);
+	}
+
 	public void update()
 	{
 		this.age += Panel.frameFrequency;
-	
+
 		if (this.duration > 0 && this.age >= this.duration)
 			this.expired = true;
 	}
-	
+
 	public double getValue(double in)
 	{
 		double val;
-		
+
 		if (this.expired)
 			return in;
+		else if (this.age < this.warmupAge)
+			val = this.value * this.age / this.warmupAge;
+		else if (this.age < this.deteriorationAge || this.deteriorationAge <= 0)
+			val = this.value;
+		else
+			val = this.value * (this.duration - this.age) / (this.duration - this.deteriorationAge);
 
-        if (this.age < this.warmupAge)
-            val = this.value * this.age / this.warmupAge;
-        else if (this.age < this.deteriorationAge || this.deteriorationAge <= 0)
-            val = this.value;
-        else
-            val = this.value * (this.duration - this.age) / (this.duration - this.deteriorationAge);
-
-        if (this.operation == Operation.add)
+		if (this.effect == Operation.add)
 			return in + val;
-		else if (this.operation == Operation.multiply)
+		else if (this.effect == Operation.multiply)
 			return in * (val + 1);
 		else
 			return in;
-	}
-
-	public static class Instance
-	{
-		public final AttributeModifier.Type type;
-		/** All AttributeModifiers that modify 'type'. */
-		public ObjectArrayList<AttributeModifier> attributeList = new ObjectArrayList<>();
-
-		public Instance(AttributeModifier.Type type)
-		{
-			this.type = type;
-		}
-
-		/**
-		 * Applies all attribute modifiers of this type to the given base value,
-		 * in no guaranteed order.
-		 */
-		public double apply(double baseValue)
-		{
-			for (AttributeModifier m : attributeList)
-			{
-				if (!m.expired)
-					baseValue = m.getValue(baseValue);
-			}
-			return baseValue;
-		}
-
-		public AttributeModifier last()
-		{
-			return attributeList.get(attributeList.size() - 1);
-		}
-
-		public double age()
-		{
-			return last().age;
-		}
-
-		public double deteriorationAge()
-		{
-			return last().deteriorationAge;
-		}
-
-		public double duration()
-		{
-			return last().duration;
-		}
-
-		public boolean isEmpty()
-		{
-			return attributeList.isEmpty();
-		}
 	}
 
 	@Override
 	public boolean equals(Object obj)
 	{
 		if (obj instanceof AttributeModifier)
-			return name.equals(((AttributeModifier) obj).name);
+			return this.name.equals(((AttributeModifier) obj).name);
 		return super.equals(obj);
 	}
 }

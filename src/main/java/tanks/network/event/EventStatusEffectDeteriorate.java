@@ -68,9 +68,6 @@ public class EventStatusEffectDeteriorate extends PersonalEvent
             m = Bullet.idMap.get(this.networkID);
 
         if (m != null)
-        {
-            m.em().removeStatusEffect(this.effect);
             m.em().addStatusEffect(StatusEffect.statusEffectRegistry.get(this.effect), 1, 0, 1, remainingTime + 1);
-        }
     }
 }

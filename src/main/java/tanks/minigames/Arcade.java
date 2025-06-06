@@ -2,14 +2,21 @@ package tanks.minigames;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.*;
+import tanks.effect.StatusEffect;
+import tanks.gui.screen.IDarkScreen;
+import tanks.gui.screen.ScreenArcadeBonuses;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.Hotbar;
 import tanks.item.Item;
 import tanks.item.ItemShield;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
-import tanks.tank.*;
+import tanks.tank.Crate;
+import tanks.tank.IServerPlayerTank;
+import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -252,7 +259,7 @@ public class Arcade extends Minigame
                             detAge = 0;
                         }
 
-                        m.addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
+                        m.em().addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
                     }
                 }
 

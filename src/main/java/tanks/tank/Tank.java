@@ -3,13 +3,13 @@ package tanks.tank;
 import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.effect.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.Item;
 import tanks.item.ItemDummyTankExplosion;
-import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.network.event.EventTankUpdateVisibility;
@@ -566,14 +566,14 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 
-		this.accelerationModifier = this.getAttributeValue(AttributeModifier.acceleration, this.accelerationModifier);
+		this.accelerationModifier = em().getAttributeValue(AttributeModifier.acceleration, this.accelerationModifier);
 
 		if (!(this instanceof TankAIControlled))
-			this.frictionModifier = this.getAttributeValue(AttributeModifier.friction, this.frictionModifier);
+			this.frictionModifier = em().getAttributeValue(AttributeModifier.friction, this.frictionModifier);
 
-		this.maxSpeedModifier = this.getAttributeValue(AttributeModifier.max_speed, this.maxSpeedModifier);
+		this.maxSpeedModifier = em().getAttributeValue(AttributeModifier.max_speed, this.maxSpeedModifier);
 
-		boost = this.getAttributeValue(AttributeModifier.ember_effect, boost);
+		boost = em().getAttributeValue(AttributeModifier.ember_effect, boost);
 
 		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled && !ScreenGame.finishedQuick)
 		{
@@ -743,8 +743,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void drawTank(boolean forInterface, boolean in3d, boolean transparent)
 	{
-		double luminance = this.getAttributeValue(AttributeModifier.glow, this.luminance);
-		double glow = this.getAttributeValue(AttributeModifier.glow, 1);
+		double luminance = em().getAttributeValue(AttributeModifier.glow, this.luminance);
+		double glow = em().getAttributeValue(AttributeModifier.glow, 1);
 
 		double s = (this.size * (Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1);
 		double sizeMod = 1;
@@ -988,24 +988,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.posY = y1;
 	}
 
-	@Override
-	public void addAttribute(AttributeModifier m)
-	{
-		super.addAttribute(m);
-
-		if (!this.isRemote)
-			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, false));
-	}
-
-	@Override
-	public void addUnduplicateAttribute(AttributeModifier m)
-	{
-		super.addUnduplicateAttribute(m);
-
-		if (!this.isRemote)
-			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, true));
-	}
-
 	public void onDestroy()
 	{
 		if (this.explodeOnDestroy != null && !(this.droppedFromCrate && this.age < 250) && !ScreenPartyLobby.isClient)
@@ -1066,16 +1048,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.health = Math.max(prev, Math.min(this.health, this.baseHealth + ((Bullet) source).maxExtraHealth));
 
 		if (this.health <= 1)
-		{
-			for (int i = 0; i < this.attributes.size(); i++)
-			{
-				if (this.attributes.get(i).type.name.equals("healray"))
-				{
-					this.attributes.remove(i);
-					i--;
-				}
-			}
-		}
+            em().removeAttribute(AttributeModifier.healray);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(this));
 

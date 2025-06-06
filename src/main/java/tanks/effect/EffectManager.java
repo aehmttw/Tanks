@@ -13,22 +13,15 @@ import java.util.*;
 
 public class EffectManager
 {
-    private static final ObjectArrayList<String> toRemove = new ObjectArrayList<>();
-    private static final ObjectArrayList<AttributeModifier> expiredAttributes = new ObjectArrayList<>();
-    private static final ObjectArrayList<StatusEffect.Instance> expiredStatusEffects = new ObjectArrayList<>();
-    private static final BiConsumer<AttributeModifier, Boolean> empty = (a, b) -> {};
-
     public Movable movable;
 
-    public Object2ObjectOpenHashMap<String, AttributeModifier> attributes = new Object2ObjectOpenHashMap<>();
-    public HashSet<String> attributeImmunities = new HashSet<>();
-    private final ObjectCollection<AttributeModifier> attValues = attributes.values();
+    public BiConsumer<AttributeModifier, Boolean> addAttributeCallback = (a, b) -> {};
 
-    public HashMap<AttributeModifier.Type, AttributeModifier.Instance> typeInstances = new HashMap<>();
-    public Object2ObjectOpenHashMap<String, StatusEffect.Instance> statusEffects = new Object2ObjectOpenHashMap<>();
-    private final ObjectCollection<StatusEffect.Instance> stValues = statusEffects.values();
-
-    public BiConsumer<AttributeModifier, Boolean> addAttributeCallback = empty;
+    public HashMap<String, AttributeModifier> attributeImmunities = new HashMap<>();
+    public ObjectArraySet<AttributeModifier> attributes = new ObjectArraySet<>();
+    public Object2ObjectArrayMap<StatusEffect, StatusEffect.Instance> statusEffects = new Object2ObjectArrayMap<>();
+    public ObjectArrayList<StatusEffect> removeStatusEffects = new ObjectArrayList<>();
+    public ObjectArrayList<AttributeModifier> removeAttributes = new ObjectArrayList<>();
 
     public EffectManager(Movable m)
     {
@@ -41,142 +34,44 @@ public class EffectManager
         updateStatusEffects();
     }
 
-    public long lastEventTime = 0;
-
-    /**
-     * Increment ages of status effects, remove them if past duration,
-     * and rely on each effect’s attribute modifiers to auto-update partial intensities.
-     */
-    public void updateStatusEffects()
+    public void updateAttributes()
     {
-        double frameFrequency = movable.affectedByFrameFrequency ? Panel.frameFrequency : 1;
-
-        for (StatusEffect.Instance inst : stValues)
+        for (AttributeModifier a : this.attributes)
         {
-            double oldAge = inst.age;
-
-            // Check for transition into deterioration
-            if (oldAge < inst.deteriorationAge && oldAge + frameFrequency >= inst.deteriorationAge
-                    && ScreenPartyHost.isServer && (movable instanceof Bullet || movable instanceof Tank) &&
-                        System.currentTimeMillis() - lastEventTime > 100)
+            if (a.duration > 0 && a.age > a.duration)
             {
-                Game.eventsOut.add(new EventStatusEffectDeteriorate(movable, inst.effect, inst.duration - inst.deteriorationAge));
-                lastEventTime = System.currentTimeMillis();
+                a.expired = true;
+                this.removeAttributes.add(a);
             }
-
-            // Advance age
-            if (inst.duration <= 0 || inst.age + frameFrequency <= inst.duration)
-                inst.age += frameFrequency;
-            else
-                expiredStatusEffects.add(inst);
         }
 
-       for (StatusEffect.Instance e : expiredStatusEffects)
-       {
-           removeStatusEffect(e.effect.name);
-
-           if (movable instanceof Bullet || movable instanceof Tank)
-               Game.eventsOut.add(new EventStatusEffectEnd(movable, e.effect));
-       }
-       expiredStatusEffects.clear();
-    }
-
-    /**
-     * Returns the final value for a given attribute type,
-     * factoring in all active attributes in the attributes map.
-     */
-    public double getAttributeValue(AttributeModifier.Type type, double baseValue)
-    {
-        AttributeModifier.Instance inst = typeInstances.get(type);
-        if (inst != null)
-            baseValue = inst.apply(baseValue);
-        return baseValue;
-    }
-
-    /**
-     * Retrieves the group of attributes for a given Type
-     */
-    public AttributeModifier.Instance getAttribute(AttributeModifier.Type type)
-    {
-        AttributeModifier.Instance instance = typeInstances.get(type);
-        if (instance == null || instance.isEmpty())
-            return null;
-        return instance;
-    }
-
-    /**
-     * Remove attribute by name
-     */
-    public void removeAttribute(String name)
-    {
-        AttributeModifier a = attributes.remove(name);
-        if (a == null)
-            return;
-
-        typeInstances.get(a.type).attributeList.remove(a);
-    }
-
-    /**
-     * Remove all attributes of a given type (both normal & status-effect attributes).
-     */
-    public void removeAttribute(AttributeModifier.Type type)
-    {
-        for (Map.Entry<String, AttributeModifier> e : attributes.entrySet())
+        // Remove expired attributes and recycle them
+        for (AttributeModifier a : this.removeAttributes)
         {
-            if (e.getValue().type == type)
-                toRemove.add(e.getKey());
+            this.attributes.remove(a);
+            AttributeModifier.recycle(a);
         }
-        for (String k : toRemove)
-            removeAttribute(k);
 
-        typeInstances.remove(type);
-        toRemove.clear();
+        this.removeAttributes.clear();
     }
 
-    /**
-     * Adds a normal attribute if not immune.
-     */
     public void addAttribute(AttributeModifier m)
     {
-        if (this.attributeImmunities.contains(m.name))
-            return;
-
-        attributes.put(m.name, m);
-        typeInstances.computeIfAbsent(m.type, AttributeModifier.Instance::new).attributeList.add(m);
-        addAttributeCallback.accept(m, false);
+        if (!this.attributeImmunities.containsKey(m.name))
+            this.attributes.add(m);
+        this.addAttributeCallback.accept(m, false);
     }
 
-    /**
-     * Removes any previous attribute with the same name, then adds the new one if not immune.
-     */
     public void addUnduplicateAttribute(AttributeModifier m)
     {
-        if (this.attributeImmunities.contains(m.name))
+        if (this.attributeImmunities.containsKey(m.name))
             return;
 
-        AttributeModifier old = attributes.remove(m.name);
-        if (old != null)
-        {
-            AttributeModifier.Instance inst = typeInstances.get(old.type);
-            if (inst != null)
-                inst.attributeList.remove(old);
-        }
-        else
-            addAttributeCallback.accept(m, true);
-
-        attributes.put(m.name, m);
-        typeInstances.computeIfAbsent(m.type, AttributeModifier.Instance::new).attributeList.add(m);
+        this.attributes.remove(m);      // will be removed if name is equal, as defined by AttributeModifier.equals()
+        this.attributes.add(m);
+        this.addAttributeCallback.accept(m, true);
     }
 
-    public void addImmunities(String... immunities)
-    {
-        Collections.addAll(attributeImmunities, immunities);
-    }
-
-    /**
-     * Creates an effect instance, also spawns a StatusEffectAttributeModifier
-     * for each attribute in the effect, then adds them to the attributes map.
-     */
     public void addStatusEffect(StatusEffect s, double warmup, double deterioration, double duration)
     {
         this.addStatusEffect(s, 0, warmup, deterioration, duration);
@@ -187,123 +82,176 @@ public class EffectManager
         if (deterioration > duration)
             throw new RuntimeException("Deterioration age > duration");
 
-        // If there's an existing effect in the same "family", remove it
         StatusEffect prevEffect = null;
-        for (StatusEffect.Instance inst : stValues)
+        for (StatusEffect e: this.statusEffects.keySet())
         {
-            if (inst.effect.family != null && inst.effect.family.equals(s.family))
-                prevEffect = inst.effect;
+            if (e.family != null && e.family.equals(s.family))
+                prevEffect = e;
         }
+
         if (prevEffect != null)
-            removeStatusEffect(prevEffect.name);
-
-        // Possibly skip if partially overlapping, etc. (same logic as before)
-        StatusEffect.Instance existing = this.statusEffects.get(s.name);
-        boolean skipAddition = false;
-        if (warmup <= age && existing != null)
         {
-            if (existing.age >= existing.warmupAge && existing.age < existing.deteriorationAge)
-                skipAddition = true;
+            StatusEffect.Instance prevInstance = this.statusEffects.remove(prevEffect);
+            if (prevInstance != null)
+                StatusEffect.Instance.recycle(prevInstance);
         }
 
-        // Fire network event
-        if (!skipAddition && (movable instanceof Bullet || movable instanceof Tank) && ScreenPartyHost.isServer)
-            Game.eventsOut.add(new EventStatusEffectBegin(movable, s, age, warmup));
-
-        // Create the new instance
-        StatusEffect.Instance newInst = new StatusEffect.Instance(s, age, warmup, deterioration, duration);
-        this.statusEffects.put(s.name, newInst);
-
-        // Insert each attribute from the StatusEffect as a dynamic attribute
-        for (AttributeModifier baseMod : s.attributeModifiers)
+        boolean dontAdd = false;
+        if (warmup <= age && this.statusEffects.get(s) != null)
         {
-            StatusEffectAttributeModifier sm = new StatusEffectAttributeModifier(newInst, baseMod);
-            // Add it to the normal attributes map so that it is fully integrated
-            this.addUnduplicateAttribute(sm);
+            StatusEffect.Instance i = this.statusEffects.get(s);
+            if (i.age >= i.warmupAge && i.age < i.deteriorationAge)
+                dontAdd = true;
         }
+
+        if (!dontAdd && (this.movable instanceof Bullet || this.movable instanceof Tank) && ScreenPartyHost.isServer)
+            Game.eventsOut.add(new EventStatusEffectBegin(this.movable, s, age, warmup));
+
+        this.statusEffects.put(s, StatusEffect.Instance.newInstance(s, age, warmup, deterioration, duration));
     }
 
-    /**
-     * Removes the status effect and all its associated attribute modifiers from the map.
-     */
-    public void removeStatusEffect(String effectName)
+    public void updateStatusEffects()
     {
-        StatusEffect.Instance inst = this.statusEffects.remove(effectName);
-        if (inst != null)
+        double frameFrequency = this.movable.affectedByFrameFrequency ? Panel.frameFrequency : 1;
+
+        for (StatusEffect s: this.statusEffects.keySet())
         {
-            // Also remove all attribute modifiers belonging to this effect
-            // We know their names start with "statusEffect:<effectName>_"
-            for (Map.Entry<String, AttributeModifier> e : attributes.entrySet())
+            StatusEffect.Instance i = this.statusEffects.get(s);
+
+            if (i.age < i.deteriorationAge && i.age + frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer && (this.movable instanceof Bullet || this.movable instanceof Tank))
             {
-                if (e.getKey().startsWith("statusEffect:" + effectName + "_"))
-                    toRemove.add(e.getKey());
+                Game.eventsOut.add(new EventStatusEffectDeteriorate(this.movable, s, i.duration - i.deteriorationAge));
             }
-            for (String k : toRemove)
-                removeAttribute(k);
 
-            toRemove.clear();
+            if (i.duration <= 0 || i.age + frameFrequency <= i.duration)
+                i.age += frameFrequency;
+            else
+            {
+                this.removeStatusEffects.add(s);
+
+                if (this.movable instanceof Bullet || this.movable instanceof Tank)
+                    Game.eventsOut.add(new EventStatusEffectEnd(this.movable, s));
+            }
         }
+
+        for (StatusEffect s: this.removeStatusEffects)
+        {
+            StatusEffect.Instance instance = this.statusEffects.remove(s);
+            if (instance != null)
+                StatusEffect.Instance.recycle(instance);
+        }
+
+        removeStatusEffects.clear();
     }
 
-    /**
-     * Updates normal attributes: increments age, removes if expired, etc.
-     * (Status-effect-based attributes will also get updated if they override update().)
-     */
-    public void updateAttributes()
+    public double getAttributeValue(AttributeModifier.Type type, double value)
     {
-        for (AttributeModifier a : attValues)
+        for (AttributeModifier a : attributes)
         {
-            a.update();
-            if (a.expired)
-                expiredAttributes.add(a);
+            if (!a.expired && a.type.equals(type))
+                value = a.getValue(value);
         }
 
-        for (AttributeModifier expired : expiredAttributes)
-        {
-            if (attributes.get(expired.name) != expired)
-                continue;
+        for (StatusEffect.Instance s : this.statusEffects.values())
+            value = s.getValue(value, type);
 
-            removeAttribute(expired.name);
-
-            // Also remove from typeInstances if present
-            AttributeModifier.Instance inst = typeInstances.get(expired.type);
-            if (inst != null)
-                inst.attributeList.remove(expired);
-        }
-
-        expiredAttributes.clear();
+        return value;
     }
 
-    /**
-     * A subclass of {@linkplain AttributeModifier} that is driven by a {@linkplain StatusEffect.Instance}.<br>
-     * This allows each effect's partial intensity to be directly updated as the effect ages.<br>
-     * Mainly serves the purpose of copying the base modifier.
-     */
-    public static class StatusEffectAttributeModifier extends AttributeModifier
+    public AttributeModifier getAttribute(AttributeModifier.Type type)
     {
-        public StatusEffect.Instance instance;
-        /** the original modifier from the StatusEffect, none of its properties should change (other than age) */
-        public AttributeModifier baseModifier;
+        AttributeModifier best = null;
+        double bestTime = Double.MIN_VALUE;
 
-        public StatusEffectAttributeModifier(StatusEffect.Instance inst, AttributeModifier baseMod)
+        for (AttributeModifier a : attributes)
         {
-            // We build a name to differentiate it from normal attributes:
-            // e.g. "statusEffect:<effectName>_<baseMod.name>"
-            super("statusEffect:" + inst.effect.name + "_" + baseMod.name,
-                    baseMod.type, baseMod.operation, baseMod.value);
-            this.instance = inst;
-            this.baseModifier = baseMod;
+            if (!a.expired && a.type.equals(type))
+            {
+                if (a.deteriorationAge - a.age > bestTime || a.deteriorationAge <= 0)
+                {
+                    bestTime = a.deteriorationAge - a.age;
+                    best = a;
+
+                    if (a.deteriorationAge <= 0)
+                        bestTime = Double.MAX_VALUE;
+                }
+            }
         }
 
-        @Override
-        public double getValue(double in)
+        for (StatusEffect s : this.statusEffects.keySet())
         {
-            baseModifier.age = instance.age;
-            baseModifier.duration = instance.duration;
-            baseModifier.deteriorationAge = instance.deteriorationAge;
-            baseModifier.warmupAge = instance.warmupAge;
+            StatusEffect.Instance i = this.statusEffects.get(s);
 
-            return baseModifier.getValue(in);
+            if (i != null)
+            {
+                for (AttributeModifier a : s.attributeModifiers)
+                {
+                    if (a.type.equals(type))
+                    {
+                        if (i.deteriorationAge - i.age > bestTime || a.deteriorationAge <= 0)
+                        {
+                            bestTime = i.deteriorationAge - i.age;
+                            best = AttributeModifier.obtain(a.type, a.effect, a.value);
+                            best.warmupAge = i.warmupAge;
+                            best.deteriorationAge = i.deteriorationAge;
+                            best.age = i.age;
+                            best.duration = i.duration;
+
+                            if (a.deteriorationAge <= 0)
+                                bestTime = Double.MAX_VALUE;
+                        }
+                    }
+                }
+            }
         }
+
+        return best;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean removeAttribute(AttributeModifier.Type type)
+    {
+        boolean removed = false;
+        for (AttributeModifier a : new ObjectArraySet<>(attributes))
+        {
+            if (a.type.equals(type))
+            {
+                attributes.remove(a);
+                AttributeModifier.recycle(a);
+                removed = true;
+            }
+        }
+        return removed;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean removeStatusEffect(String effect)
+    {
+        boolean removed = false;
+        for (StatusEffect e : statusEffects.keySet())
+        {
+            if (e.name.equals(effect))
+            {
+                StatusEffect.Instance instance = statusEffects.remove(e);
+                if (instance != null)
+                {
+                    StatusEffect.Instance.recycle(instance);
+                    removed = true;
+                }
+            }
+        }
+        return removed;
+    }
+
+    public void recycle()
+    {
+        for (StatusEffect.Instance i: this.statusEffects.values())
+            StatusEffect.Instance.recycle(i);
+
+        for (AttributeModifier a: this.attributes)
+            AttributeModifier.recycle(a);
+
+        statusEffects.clear();
+        attributes.clear();
     }
 }

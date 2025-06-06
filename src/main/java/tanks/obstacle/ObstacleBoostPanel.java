@@ -69,8 +69,9 @@ public class ObstacleBoostPanel extends Obstacle
         this.onObjectEntryLocal(m);
 
         EffectManager mem = m.em();
-        AttributeModifier.Instance am = mem.getAttribute(AttributeModifier.glow);
-        boolean effect = am == null || (am.age() >= am.deteriorationAge() && am.deteriorationAge() > 0);
+        AttributeModifier am = mem.getAttribute(AttributeModifier.glow);
+        boolean effect = am == null || (am.age >= am.deteriorationAge && am.deteriorationAge > 0);
+        AttributeModifier.recycle(am);
 
         if (effect)
             addEntryEffect(m);

@@ -34,7 +34,7 @@ public class EventTankAddAttributeModifier extends PersonalEvent
         this.deteriorationAge = m.deteriorationAge;
         this.warmupAge = m.warmupAge;
         this.value = m.value;
-        this.effect = m.operation.toString();
+        this.effect = m.effect.toString();
         this.age = m.age;
         this.type = m.type.name;
         this.expired = m.expired;
@@ -86,7 +86,7 @@ public class EventTankAddAttributeModifier extends PersonalEvent
             if (this.effect.equals("multiply"))
                 o = AttributeModifier.Operation.multiply;
 
-            AttributeModifier m = new AttributeModifier(this.name, AttributeModifier.attributeModifierTypes.get(this.type), o, this.value);
+            AttributeModifier m = AttributeModifier.obtain(this.name, AttributeModifier.attributeModifierTypes.get(this.type), o, this.value);
 
             m.duration = this.duration;
             m.deteriorationAge = this.deteriorationAge;

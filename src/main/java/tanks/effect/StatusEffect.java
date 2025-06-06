@@ -3,6 +3,8 @@ package tanks.effect;
 import tanks.minigames.Arcade;
 
 import java.util.HashMap;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class StatusEffect
 {
@@ -14,40 +16,40 @@ public class StatusEffect
 
     public static final StatusEffect ice = new StatusEffect("ice", new AttributeModifier[]
     {
-        new AttributeModifier("ice_accel", AttributeModifier.acceleration, AttributeModifier.Operation.multiply, -0.75),
-                new AttributeModifier("ice_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.875),
-                new AttributeModifier("ice_max_speed", AttributeModifier.max_speed, AttributeModifier.Operation.multiply, 3)
+        AttributeModifier.obtain("ice_accel", AttributeModifier.acceleration, AttributeModifier.Operation.multiply, -0.75),
+                AttributeModifier.obtain("ice_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.875),
+                AttributeModifier.obtain("ice_max_speed", AttributeModifier.max_speed, AttributeModifier.Operation.multiply, 3)
     });
 
     public static final StatusEffect snow_velocity = new StatusEffect("snow_velocity", new AttributeModifier[]
     {
-        new AttributeModifier("snow_velocity", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.25),
+        AttributeModifier.obtain("snow_velocity", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.25),
     });
 
     public static final StatusEffect snow_friction = new StatusEffect("snow_friction", new AttributeModifier[]
     {
-        new AttributeModifier("snow_friction", AttributeModifier.friction, AttributeModifier.Operation.multiply, 4)
+        AttributeModifier.obtain("snow_friction", AttributeModifier.friction, AttributeModifier.Operation.multiply, 4)
     });
 
 
     public static final StatusEffect mud = new StatusEffect("mud", new AttributeModifier[]
     {
-        new AttributeModifier("mud", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.5)
+        AttributeModifier.obtain("mud", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.5)
     });
 
 
     public static final StatusEffect boost_tank = new StatusEffect("boost_tank", new AttributeModifier[]
     {
-        new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3),
-                new AttributeModifier("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1),
-                new AttributeModifier("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75),
-                new AttributeModifier("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1)
+        AttributeModifier.obtain("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3),
+                AttributeModifier.obtain("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1),
+                AttributeModifier.obtain("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75),
+                AttributeModifier.obtain("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1)
     });
 
     public static final StatusEffect boost_bullet = new StatusEffect("boost_bullet", new AttributeModifier[]
             {
-                    new AttributeModifier("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 1),
-                    new AttributeModifier("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1)
+                    AttributeModifier.obtain("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 1),
+                    AttributeModifier.obtain("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1)
             });
 
     public static final StatusEffect[] arcade_rampage = createArcadeRampage();
@@ -60,11 +62,11 @@ public class StatusEffect
         {
             s[i] = new StatusEffect("rampage", "rampage_" + (i + 1), new AttributeModifier[]
                     {
-                            new AttributeModifier("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            new AttributeModifier("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            new AttributeModifier("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            new AttributeModifier("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
-                            new AttributeModifier("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)
+                            AttributeModifier.obtain("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                            AttributeModifier.obtain("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                            AttributeModifier.obtain("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                            AttributeModifier.obtain("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
+                            AttributeModifier.obtain("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)
                     });
         }
 
@@ -73,6 +75,10 @@ public class StatusEffect
 
     public static class Instance
     {
+        // Object recycling system
+        private static final Queue<Instance> recycleQueue = new ConcurrentLinkedQueue<>();
+        private static final int MAX_POOL_SIZE = 1000; // Prevent memory leaks from excessive pooling
+
         public StatusEffect effect;
         public double age;
 
@@ -85,13 +91,74 @@ public class StatusEffect
         /**Age at which the Attribute is at full strength*/
         public double warmupAge;
 
-        public Instance(StatusEffect effect, double age, double warmupAge, double deteriorationAge, double maxAge)
+        private Instance() {}
+
+        public StatusEffect.Instance set(StatusEffect effect, double age, double warmupAge, double deteriorationAge, double maxAge)
         {
             this.effect = effect;
             this.age = age;
             this.deteriorationAge = deteriorationAge;
             this.duration = maxAge;
             this.warmupAge = warmupAge;
+            return this;
+        }
+
+        public static Instance newInstance(StatusEffect effect, double age, double warmupAge, double deteriorationAge, double maxAge)
+        {
+            Instance instance = recycleQueue.poll();
+            if (instance != null)
+                return instance.set(effect, age, warmupAge, deteriorationAge, maxAge);
+            return new Instance().set(effect, age, warmupAge, deteriorationAge, maxAge);
+        }
+
+        public static void recycle(Instance instance)
+        {
+            if (instance != null && recycleQueue.size() < MAX_POOL_SIZE)
+            {
+                instance.reset();
+                recycleQueue.offer(instance);
+            }
+        }
+
+        /**
+         * Reset this Instance to default state for reuse
+         */
+        private void reset()
+        {
+            this.effect = null;
+            this.age = 0;
+            this.duration = 0;
+            this.deteriorationAge = 0;
+            this.warmupAge = 0;
+        }
+
+        public double getValue(double in, AttributeModifier.Type type)
+        {
+            for (AttributeModifier a: effect.attributeModifiers)
+            {
+                if (a.type.equals(type))
+                {
+                    if (age >= duration && duration > 0)
+                        return in;
+
+                    double val;
+                    if (age < warmupAge)
+                        val = a.value * age / warmupAge;
+                    else if (age < deteriorationAge || deteriorationAge <= 0)
+                        val = a.value;
+                    else
+                        val = a.value * (duration - age) / (duration - deteriorationAge);
+
+                    if (a.effect == AttributeModifier.Operation.add)
+                        return in + val;
+                    else if (a.effect == AttributeModifier.Operation.multiply)
+                        return in * (val + 1);
+                    else
+                        return in;
+                }
+            }
+
+            return in;
         }
     }
 

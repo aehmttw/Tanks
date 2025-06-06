@@ -66,7 +66,6 @@ void main(void)
     vec3 normal;
 
     getVertVecs(pos, normal);
-
     gl_Position = gl_ModelViewProjectionMatrix * pos;
     lightBiasedClipPosition = biasMatrix * lightViewProjectionMatrix * gl_ModelViewMatrix * vec4(pos.xyz, 1.0);
     position = gl_ModelViewMatrix * pos;

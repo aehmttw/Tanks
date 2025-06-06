@@ -79,6 +79,16 @@ public class TankRemote extends Tank
 		this.drawAge = t.drawAge;
 		this.managedMotion = false;
 
+		if (t instanceof TankAIControlled)
+		{
+			((TankAIControlled) t).bulletItem.item.bullet = ((TankAIControlled) t).bullet;
+			((TankAIControlled) t).mineItem.item.mine = ((TankAIControlled) t).mine;
+
+			((TankAIControlled) t).bulletItem.item.cooldownBase = Math.min(1, ((TankAIControlled) t).cooldownBase);
+			if (((TankAIControlled) t).cooldownRandom > 0)
+				((TankAIControlled) t).bulletItem.item.cooldownBase = Math.max(((TankAIControlled) t).bulletItem.item.cooldownBase, Double.MIN_VALUE);
+		}
+
 		this.copyTank(t);
 
 		this.invulnerable = true;

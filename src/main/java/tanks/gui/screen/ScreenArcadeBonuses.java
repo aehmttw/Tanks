@@ -119,6 +119,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         else if (digits.length() == 4 && a.score % 1111 == 0)
             bonuses.add(new Bonus("Quadruple digits!!", 250, 255, 40, 160));
 
+        if (a.score > 9000)
+            bonuses.add(new Bonus("It's over 9000!!!!", 250, 255, 0, 0));
+
         if (a.score > 0)
         {
             if (a.score % 1000 == 0)
@@ -258,13 +261,22 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         if (age >= firstBonusTime + interBonusTime * 3 && bonusCount < 4)
         {
-            Drawing.drawing.playSound("destroy.ogg");
+            Drawing.drawing.playSound("impact.ogg");
 
             if (!this.music.equals("ready_music_3.ogg"))
             {
                 Drawing.drawing.playSound("win.ogg", 1.0f, true);
                 this.music = "waiting_win.ogg";
                 Panel.forceRefreshMusic = true;
+            }
+
+            int bonusPoints = bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value;
+            String s = "Total: " + bonusPoints;
+            for (int j = 0; j < Game.effectMultiplier * Math.min(1000, bonusPoints) / 2; j++)
+            {
+                Drawing.drawing.setInterfaceFontSize(this.textSize);
+                double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+                addEffect(this.centerX, this.centerY + this.objYSpace * 2, size, this.objHeight, Game.effects, 1 + Math.min(bonusPoints, 1000) / 40.0, -1, 0.5, 100 + Math.random() * 155, 100 + Math.random() * 155, 100 + Math.random() * 155);
             }
 
             bonusCount = 4;
@@ -375,7 +387,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         {
             int p = bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value;
             Drawing.drawing.setColor(255, 255, 255, 255);
-            Drawing.drawing.setInterfaceFontSize(this.titleSize);
+            Drawing.drawing.setInterfaceFontSize(this.titleSize * (1 + 2 * Math.max((15 - (this.age - (firstBonusTime + interBonusTime * 3))) / 15, 0)));
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2, "Total: " + p);
         }
 
@@ -396,7 +408,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 fireworksToSpawn--;
                 fireworksSpawned++;
                 fireworkCooldown = (Math.random() * 5 + 2.5) / 2 * fireworkCooldownMultiplier;
-                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + this.objYSpace * 2 + 5, this.fireworksDisplay.getFireworkArray());
+                Firework f = new Firework(Firework.FireworkType.rocket, this.centerX + (Math.random() - 0.5) * 120, this.centerY + this.objYSpace * 2 + 15, this.fireworksDisplay.getFireworkArray());
                 f.setRandomColor();
                 f.setVelocity();
                 f.maxAge /= 2;

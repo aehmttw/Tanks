@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Consumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.*;
 import tanks.item.Item;
@@ -18,7 +15,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPlayer>
+public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEditorTanksONable<T>
 {
     public boolean writeTank(Tank t)
     {
@@ -27,7 +24,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
 
     public boolean writeTank(Tank t, boolean overwrite)
     {
-        BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.tankDir + "/" + t.name.replace(" ", "_") + ".tanks");
+        BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.buildDir + "/" + t.name.replace(" ", "_") + ".tanks");
 
         if (!f.exists() || overwrite)
         {
@@ -53,34 +50,17 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
 
     public void writeTankAndShowConfirmation(TankPlayer t, boolean overwrite)
     {
-//        if (this.writeTank(t, overwrite))
-//        {
-//            HashSet<String> linked = new HashSet<>();
-//            t.getAllLinkedTankNames(linked);
-//            ArrayList<Tank> copied = new ArrayList<>();
-//            ArrayList<Tank> notCopied = new ArrayList<>();
-//
-//            for (String s: linked)
-//            {
-//                Tank t1 = Game.currentLevel.lookupTank(s);
-//                if (writeTank(t1))
-//                    copied.add(t1);
-//                else
-//                    notCopied.add(t1);
-//            }
-//
-//            Game.screen = new ScreenTankSavedInfo(this, t, copied, notCopied);
-//        }
-//        else
-//            Game.screen = new ScreenTankSaveOverwrite(this, t);
+        if (this.writeTank(t, overwrite))
+            Game.screen = new ScreenTankSavedInfo(this, t, new ArrayList<>(), new ArrayList<>());
+        else
+            Game.screen = new ScreenTankSaveOverwrite(this, t);
     }
 
-    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template"
-            /*, () ->
+    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
     {
         TankPlayer t = target.get();
         this.writeTankAndShowConfirmation(t, false);
-    }*/
+    }
     );
 
     public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
@@ -110,11 +90,11 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
         Tab movement = new TabTankBuild(this, "Movement", TankPropertyCategory.movementGeneral);
         Tab abilities = new TabAbilities(this, "Abilities", TankPropertyCategory.abilities);
 
-        new TabWithPreview(this, appearance, "Emblem", TankPropertyCategory.appearanceEmblem);
-        new TabWithPreview(this, appearance, "Turret base", TankPropertyCategory.appearanceTurretBase);
-        new TabWithPreview(this, appearance, "Turret barrel", TankPropertyCategory.appearanceTurretBarrel);
-        new TabWithPreview(this, appearance, "Tank body", TankPropertyCategory.appearanceBody);
-        new TabWithPreview(this, appearance, "Tank treads", TankPropertyCategory.appearanceTreads);
+        new TabPartPicker(this, appearance, "Emblem", TankPropertyCategory.appearanceEmblem, 4);
+        new TabPartPicker(this, appearance, "Turret base", TankPropertyCategory.appearanceTurretBase, 3);
+        new TabPartPicker(this, appearance, "Turret barrel", TankPropertyCategory.appearanceTurretBarrel, 2);
+        new TabPartPicker(this, appearance, "Tank body", TankPropertyCategory.appearanceBody, 1);
+        new TabPartPicker(this, appearance, "Tank treads", TankPropertyCategory.appearanceTreads, 2);
         new TabGlow(this, appearance, "Glow", TankPropertyCategory.appearanceGlow);
         new TabTankBuild(this, appearance, "Tracks", TankPropertyCategory.appearanceTracks);
 
@@ -148,7 +128,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
         }
     }
 
-    public ScreenEditorPlayerTankBuild(Pointer<TankPlayer> t, Screen screen)
+    public ScreenEditorPlayerTankBuild(Pointer<T> t, Screen screen)
     {
         super(t, screen);
 
@@ -206,7 +186,8 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
                 Property p = f.getAnnotation(Property.class);
                 TankBuildProperty p1 = f.getAnnotation(TankBuildProperty.class);
 
-                if (p1 != null && p != null && ((p1.category().equals("default") && p.category().equals(this.category)) || p1.category().equals(this.category)) && p.miscType() != Property.MiscType.color)
+                if (p1 != null && p != null && ((p1.category().equals("default") && p.category().equals(this.category)) || p1.category().equals(this.category)) &&
+                !(target instanceof ArrayListIndexPointer && ((ArrayListIndexPointer<T>) target).getIndex() == 0 && p.miscType() == Property.MiscType.defaultBuildForbidden))
                 {
                     if (p.miscType() == Property.MiscType.description)
                     {
@@ -304,9 +285,9 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
             this.preview.tertiaryColorR = tank.tertiaryColorR;
             this.preview.tertiaryColorG = tank.tertiaryColorG;
             this.preview.tertiaryColorB = tank.tertiaryColorB;
-            this.preview.emblemR = tank.secondaryColorR;
-            this.preview.emblemG = tank.secondaryColorG;
-            this.preview.emblemB = tank.secondaryColorB;
+            this.preview.emblemR = tank.emblemR;
+            this.preview.emblemG = tank.emblemG;
+            this.preview.emblemB = tank.emblemB;
             this.preview.luminance = tank.luminance;
             this.preview.glowIntensity = tank.glowIntensity;
             this.preview.glowSize = tank.glowSize;
@@ -317,7 +298,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
             if (this.preview.size > Game.tile_size * 2)
                 this.preview.size = Game.tile_size * 2;
 
-            this.preview.enableTertiaryColor = tank.enableTertiaryColor;
+            this.preview.enableTertiaryColor = true;
 
             this.preview.size *= 2;
             this.preview.invulnerable = true;
@@ -414,7 +395,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
 
             if (tank.emblem != null)
             {
-                Drawing.drawing.setColor(tank.secondaryColorR, tank.secondaryColorG, tank.secondaryColorB);
+                Drawing.drawing.setColor(tank.emblemR, tank.emblemG, tank.emblemB);
                 Drawing.drawing.drawInterfaceImage(tank.emblem, margin, screen.centerY + 60 - space * 3, s, s);
             }
 
@@ -453,9 +434,390 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
         }
     }
 
+    public class TabPartPicker extends TabWithPreview
+    {
+        public int colorIndex;
+
+        public TextBoxSlider colorRed;
+        public TextBoxSlider colorGreen;
+        public TextBoxSlider colorBlue;
+
+        String enableColorText = "Override color: ";
+        Button enableColor = new Button(0, 0, this.screen.objWidth, this.screen.objHeight, "", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                boolean enable = false;
+                TankPlayer tank = screen.target.get();
+
+                if (colorIndex == 1)
+                {
+                    tank.overridePrimaryColor = !tank.overridePrimaryColor;
+                    enable = tank.overridePrimaryColor;
+                }
+                else if (colorIndex == 2)
+                {
+                    tank.overrideSecondaryColor = !tank.overrideSecondaryColor;
+                    enable = tank.overrideSecondaryColor;
+                }
+                else if (colorIndex == 3)
+                {
+                    tank.overrideTertiaryColor = !tank.overrideTertiaryColor;
+                    enable = tank.overrideTertiaryColor;
+                }
+                else if (colorIndex == 4)
+                {
+                    tank.overrideEmblemColor = !tank.overrideEmblemColor;
+                    enable = tank.overrideEmblemColor;
+                }
+
+                colorRed.inputText = (int) colorRed.value + "";
+                colorGreen.inputText = (int) colorGreen.value + "";
+                colorBlue.inputText = (int) colorBlue.value + "";
+
+                setColorText(enable);
+            }
+        },
+                "Overrides a player's selection of color---for this part with a specified color.");
+
+        Button autoColor = new Button(0, 0, this.screen.objWidth, this.screen.objHeight, "Auto-calculate color", () ->
+        {
+            TankPlayer tank = screen.target.get();
+
+            if (colorIndex == 2)
+            {
+                tank.secondaryColorR = Turret.calculateSecondaryColor(tank.colorR);
+                tank.secondaryColorG = Turret.calculateSecondaryColor(tank.colorG);
+                tank.secondaryColorB = Turret.calculateSecondaryColor(tank.colorB);
+            }
+            else if (colorIndex == 3)
+            {
+                tank.tertiaryColorR = (tank.secondaryColorR + tank.colorR) / 2;
+                tank.tertiaryColorG = (tank.secondaryColorG + tank.colorG) / 2;
+                tank.tertiaryColorB = (tank.secondaryColorB + tank.colorB) / 2;
+            }
+            else if (colorIndex == 4)
+            {
+                if (tank.overrideSecondaryColor)
+                {
+                    tank.emblemR = tank.secondaryColorR;
+                    tank.emblemG = tank.secondaryColorG;
+                    tank.emblemB = tank.secondaryColorB;
+                }
+                else
+                {
+                    tank.emblemR = Turret.calculateSecondaryColor(tank.colorR);
+                    tank.emblemG = Turret.calculateSecondaryColor(tank.colorG);
+                    tank.emblemB = Turret.calculateSecondaryColor(tank.colorB);
+                }
+            }
+
+            setColorTextboxes();
+        }, "Sets the color automatically based on---the way default tank color schemes are---calculated");
+
+        public void setColorText(boolean enable)
+        {
+            if (enable)
+                enableColor.setText(enableColorText, ScreenOptions.onText);
+            else
+                enableColor.setText(enableColorText, ScreenOptions.offText);
+        }
+
+        public TabPartPicker(ScreenEditorPlayerTankBuild screen, Tab parent, String name, String category, int colorIndex)
+        {
+            super(screen, parent, name, category);
+            this.colorIndex = colorIndex;
+
+            colorRed = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Red", () ->
+            {
+                TankPlayer tank = (TankPlayer) screen.target.get();
+                if (colorRed.inputText.length() <= 0)
+                    colorRed.inputText = colorRed.previousInputText;
+
+                int red = Integer.parseInt(colorRed.inputText);
+
+                if (colorIndex == 1)
+                    tank.colorR = red;
+                else if (colorIndex == 2)
+                    tank.secondaryColorR = red;
+                else if (colorIndex == 3)
+                    tank.tertiaryColorR = red;
+                else if (colorIndex == 4)
+                    tank.emblemR = red;
+            }
+                    , 0, 0, 255, 1);
+
+            colorRed.allowLetters = false;
+            colorRed.allowSpaces = false;
+            colorRed.maxChars = 3;
+            colorRed.maxValue = 255;
+            colorRed.checkMaxValue = true;
+            colorRed.integer = true;
+
+            colorGreen = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight,"Green", () ->
+            {
+                TankPlayer tank = (TankPlayer) screen.target.get();
+
+                if (colorGreen.inputText.length() <= 0)
+                    colorGreen.inputText = colorGreen.previousInputText;
+
+                int green = Integer.parseInt(colorGreen.inputText);
+
+                if (colorIndex == 1)
+                    tank.colorG = green;
+                else if (colorIndex == 2)
+                    tank.secondaryColorG = green;
+                else if (colorIndex == 3)
+                    tank.tertiaryColorG = green;
+                else if (colorIndex == 4)
+                    tank.emblemG = green;
+            }
+                    , 0, 0, 255, 1);
+
+            colorGreen.allowLetters = false;
+            colorGreen.allowSpaces = false;
+            colorGreen.maxChars = 3;
+            colorGreen.maxValue = 255;
+            colorGreen.checkMaxValue = true;
+            colorGreen.integer = true;
+
+            colorBlue = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Blue", () ->
+            {
+                TankPlayer tank = (TankPlayer) screen.target.get();
+
+                if (colorBlue.inputText.length() <= 0)
+                    colorBlue.inputText = colorBlue.previousInputText;
+
+                int blue = Integer.parseInt(colorBlue.inputText);
+
+                if (colorIndex == 1)
+                    tank.colorB = blue;
+                else if (colorIndex == 2)
+                    tank.secondaryColorB = blue;
+                else if (colorIndex == 3)
+                    tank.tertiaryColorB = blue;
+                else if (colorIndex == 4)
+                    tank.emblemB = blue;
+            }
+                    , 0, 0, 255, 1);
+
+            colorBlue.allowLetters = false;
+            colorBlue.allowSpaces = false;
+            colorBlue.maxChars = 3;
+            colorBlue.maxValue = 255;
+            colorBlue.checkMaxValue = true;
+            colorBlue.integer = true;
+        }
+
+        public TabPartPicker(ScreenEditorPlayerTankBuild screen, String name, String category, int colorIndex)
+        {
+            this(screen, null, name, category, colorIndex);
+        }
+
+        @Override
+        public void set()
+        {
+            super.set();
+
+            this.setColorTextboxes();
+        }
+
+        public void setColorTextboxes()
+        {
+            TankPlayer tank = screen.target.get();
+
+            int r = (int) tank.colorR;
+            int g = (int) tank.colorG;
+            int b = (int) tank.colorB;
+
+            if (colorIndex == 2)
+            {
+                r = (int) tank.secondaryColorR;
+                g = (int) tank.secondaryColorG;
+                b = (int) tank.secondaryColorB;
+            }
+            else if (colorIndex == 3)
+            {
+                r = (int) tank.tertiaryColorR;
+                g = (int) tank.tertiaryColorG;
+                b = (int) tank.tertiaryColorB;
+            }
+            else if (colorIndex == 4)
+            {
+                r = (int) tank.emblemR;
+                g = (int) tank.emblemG;
+                b = (int) tank.emblemB;
+            }
+
+            if (colorIndex == 1)
+                this.setColorText(tank.overridePrimaryColor);
+            else if (colorIndex == 2)
+                this.setColorText(tank.overrideSecondaryColor);
+            else if (colorIndex == 3)
+                this.setColorText(tank.overrideTertiaryColor);
+            else if (colorIndex == 4)
+                this.setColorText(tank.overrideEmblemColor);
+
+            this.colorRed.value = r;
+            this.colorGreen.value = g;
+            this.colorBlue.value = b;
+
+            this.colorRed.inputText = r + "";
+            this.colorGreen.inputText = g + "";
+            this.colorBlue.inputText = b + "";
+        }
+
+        @Override
+        public void sortUIElements()
+        {
+            while (this.uiElements.size() < 8)
+                this.uiElements.add(new EmptySpace());
+
+            this.uiElements.add(enableColor);
+
+            this.uiElements.add(colorRed);
+            this.uiElements.add(colorGreen);
+            this.uiElements.add(colorBlue);
+
+            super.sortUIElements();
+
+            this.uiElements.remove(colorRed);
+            this.uiElements.remove(colorGreen);
+            this.uiElements.remove(colorBlue);
+
+            this.uiElements.remove(enableColor);
+
+            autoColor.posX = colorBlue.posX - this.screen.objXSpace;
+            autoColor.posY = colorBlue.posY;
+        }
+
+        @Override
+        public void updateUIElements()
+        {
+            super.updateUIElements();
+            TankPlayer tank = screen.target.get();
+
+            if (!tank.overridePrimaryColor)
+            {
+                tank.colorR = TankPlayer.default_primary_color[0];
+                tank.colorG = TankPlayer.default_primary_color[1];
+                tank.colorB = TankPlayer.default_primary_color[2];
+            }
+
+            if (!tank.overrideSecondaryColor)
+            {
+                tank.secondaryColorR = TankPlayer.default_secondary_color[0];
+                tank.secondaryColorG = TankPlayer.default_secondary_color[1];
+                tank.secondaryColorB = TankPlayer.default_secondary_color[2];
+            }
+
+            if (!tank.overrideTertiaryColor)
+            {
+                tank.tertiaryColorR = TankPlayer.default_tertiary_color[0];
+                tank.tertiaryColorG = TankPlayer.default_tertiary_color[1];
+                tank.tertiaryColorB = TankPlayer.default_tertiary_color[2];
+            }
+
+            if (!tank.overrideEmblemColor)
+            {
+                tank.emblemR = TankPlayer.default_secondary_color[0];
+                tank.emblemG = TankPlayer.default_secondary_color[1];
+                tank.emblemB = TankPlayer.default_secondary_color[2];
+            }
+
+            if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||  (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
+            {
+                this.colorRed.update();
+                this.colorGreen.update();
+                this.colorBlue.update();
+
+                if ((this.colorIndex == 2 && tank.overridePrimaryColor) ||
+                        (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
+                        (this.colorIndex == 4 && (tank.overrideSecondaryColor || tank.overridePrimaryColor)))
+                    autoColor.update();
+            }
+
+            if (!(this.colorIndex == 4 && tank.emblem == null))
+                this.enableColor.update();
+        }
+
+        @Override
+        public void drawUIElements()
+        {
+            TankPlayer tank = screen.target.get();
+
+            if (!(this.colorIndex == 4 && tank.emblem == null))
+                this.enableColor.draw();
+
+            if (this.colorIndex == 2)
+            {
+                Drawing.drawing.setInterfaceFontSize(24);
+                if (Level.isDark())
+                    Drawing.drawing.setColor(255, 255, 255);
+                else
+                    Drawing.drawing.setColor(0, 0, 0);
+
+                Drawing.drawing.displayInterfaceText(this.screen.centerX, this.screen.centerY + 200, "Note: Tank treads and turret barrel share colors.");
+                Drawing.drawing.displayInterfaceText(this.screen.centerX, this.screen.centerY + 230, "Tanks on a team with a color will use that color for their treads.");
+            }
+
+            super.drawUIElements();
+
+            if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||  (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
+            {
+                this.updateColors();
+                this.colorRed.draw();
+                this.colorGreen.draw();
+                this.colorBlue.draw();
+
+                if ((this.colorIndex == 2 && tank.overridePrimaryColor) ||
+                        (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
+                        (this.colorIndex == 4 && (tank.overrideSecondaryColor || tank.overridePrimaryColor)))
+                    autoColor.draw();
+            }
+        }
+
+        public void updateColors()
+        {
+            colorRed.r1 = 0;
+            colorRed.r2 = 255;
+            colorRed.g1 = colorGreen.value;
+            colorRed.g2 = colorGreen.value;
+            colorRed.b1 = colorBlue.value;
+            colorRed.b2 = colorBlue.value;
+
+            colorGreen.r1 = colorRed.value;
+            colorGreen.r2 = colorRed.value;
+            colorGreen.g1 = 0;
+            colorGreen.g2 = 255;
+            colorGreen.b1 = colorBlue.value;
+            colorGreen.b2 = colorBlue.value;
+
+            colorBlue.r1 = colorRed.value;
+            colorBlue.r2 = colorRed.value;
+            colorBlue.g1 = colorGreen.value;
+            colorBlue.g2 = colorGreen.value;
+            colorBlue.b1 = 0;
+            colorBlue.b2 = 255;
+
+            if (!colorRed.selected)
+                colorRed.function.run();
+
+            if (!colorGreen.selected)
+                colorGreen.function.run();
+
+            if (!colorBlue.selected)
+                colorBlue.function.run();
+        }
+    }
+
     public class TabAbilities extends TabTankBuild
     {
         public ArrayList<Button> deleteButtons = new ArrayList<>();
+        public ArrayList<Button> upButtons = new ArrayList<>();
+        public ArrayList<Button> downButtons = new ArrayList<>();
+
         public Selector itemSelector;
 
         public Button create = new Button(screen.centerX, -1000, 60, 60, "+", () ->
@@ -551,6 +913,33 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
                 delete.textColB = 255;
 
                 deleteButtons.add(delete);
+
+                Button up = new Button(-1000, -1000, 60, 60, "", () ->
+                {
+                    t.abilities.add(j - 1, t.abilities.remove(j));
+                    uiElements.clear();
+                    addFields();
+                    sortUIElements();
+                });
+
+                up.imageSizeX = 30;
+                up.imageSizeY = 30;
+                up.image = "icons/arrow_up.png";
+
+                Button down = new Button(-1000, -1000, 60, 60, "", () ->
+                {
+                    t.abilities.add(j, t.abilities.remove(j + 1));
+                    uiElements.clear();
+                    addFields();
+                    sortUIElements();
+                });
+
+                down.imageSizeX = 30;
+                down.imageSizeY = 30;
+                down.image = "icons/arrow_down.png";
+
+                upButtons.add(up);
+                downButtons.add(down);
             }
 
             if (t.abilities.size() < TankPlayer.max_abilities)
@@ -565,6 +954,14 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
             {
                 Button b = this.deleteButtons.get(i);
                 b.update();
+
+                Button up = this.upButtons.get(i);
+                Button down = this.downButtons.get(i);
+
+                up.enabled = i > 0;
+                down.enabled = i < target.get().abilities.size() - 1;
+                up.update();
+                down.update();
             }
         }
 
@@ -573,11 +970,22 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
             super.draw();
             for (int i = 0; i < this.deleteButtons.size(); i++)
             {
-                Button b = this.deleteButtons.get(i);
                 SelectorDrawable d = ((SelectorDrawable) this.uiElements.get(i));
+
+                Button b = this.deleteButtons.get(i);
                 b.posX = d.posX - screen.objXSpace * 0.85;
                 b.posY = d.posY - screen.objHeight / 4;
                 b.draw();
+
+                Button up = this.upButtons.get(i);
+                up.posX = d.posX + screen.objXSpace * 0.85;
+                up.posY = d.posY - screen.objHeight / 4;
+                up.draw();
+
+                Button down = this.downButtons.get(i);
+                down.posX = up.posX + screen.objYSpace * 1.25;
+                down.posY = d.posY - screen.objHeight / 4;
+                down.draw();
             }
         }
     }
@@ -592,7 +1000,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
     @Override
     public void updateOverlay()
     {
-        if (!this.target.nullable)
+        if (!this.target.nullable && !(target instanceof ArrayListIndexPointer && ((ArrayListIndexPointer<T>) target).getIndex() == 0))
             this.delete.update();
 
         this.save.update();
@@ -601,7 +1009,7 @@ public class ScreenEditorPlayerTankBuild extends ScreenEditorTanksONable<TankPla
     @Override
     public void drawOverlay()
     {
-        if (!this.target.nullable)
+        if (!this.target.nullable && !(target instanceof ArrayListIndexPointer && ((ArrayListIndexPointer<T>) target).getIndex() == 0))
             this.delete.draw();
 
         this.save.draw();

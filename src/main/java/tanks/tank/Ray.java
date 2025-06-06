@@ -8,9 +8,12 @@ import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Ray
 {
+	public static double min_trace_size = 5;
+
 	public double size = 10;
 	public double tankHitSizeMul = 1;
 
@@ -42,8 +45,13 @@ public class Ray
 	public double targetX;
 	public double targetY;
 
+	public double range = -1;
+
+	public static long count = 0;
+
 	public Ray(double x, double y, double angle, int bounces, Tank tank)
 	{
+		count++;
 		this.vX = speed * Math.cos(angle);
 		this.vY = speed * Math.sin(angle);
 
@@ -56,6 +64,7 @@ public class Ray
 
 	public Ray(double x, double y, double angle, int bounces, Tank tank, double speed)
 	{
+		count++;
 		this.vX = speed * Math.cos(angle);
 		this.vY = speed * Math.sin(angle);
 
@@ -106,60 +115,27 @@ public class Ray
 	{
 		if (f.horizontal)
 		{
-			int a = 0;
-			int b = Game.horizontalFaces.size() - 1;
+			int i = Collections.binarySearch(Game.horizontalFaces, f);
+			if (i < 0)
+				i = -i - 1;
 
-			boolean added = false;
-			int m = 0;
-			while (a <= b)
-			{
-				m = (a + b) / 2;
-
-				if (Game.horizontalFaces.get(m).startY < f.startY)
-					a = m + 1;
-				else if (Game.horizontalFaces.get(m).startY > f.startY)
-					b = m - 1;
-				else
-				{
-					added = true;
-					Game.horizontalFaces.add(m, f);
-					break;
-				}
-			}
-
-			if (!added)
-				Game.horizontalFaces.add(m, f);
+			Game.horizontalFaces.add(i, f);
 		}
 		else
 		{
-			int a = 0;
-			int b = Game.verticalFaces.size() - 1;
+			int i = Collections.binarySearch(Game.verticalFaces, f);
+			if (i < 0)
+				i = -i - 1;
 
-			boolean added = false;
-			int m = 0;
-			while (a <= b)
-			{
-				m = (a + b) / 2;
-
-				if (Game.verticalFaces.get(m).startX < f.startX)
-					a = m + 1;
-				else if (Game.verticalFaces.get(m).startX > f.startX)
-					b = m - 1;
-				else
-				{
-					added = true;
-					Game.verticalFaces.add(m, f);
-					break;
-				}
-			}
-
-			if (!added)
-				Game.verticalFaces.add(m, f);
+			Game.verticalFaces.add(i, f);
 		}
 	}
 
 	public Movable getTarget()
 	{
+		this.bounceX.add(0, this.posX);
+		this.bounceY.add(0, this.posY);
+
 		double remainder = 0;
 
 		if (isInsideObstacle(this.posX - size / 2, this.posY - size / 2) ||
@@ -190,9 +166,16 @@ public class Ray
 			double collisionY = -1;
 			Face collisionFace = null;
 
+			int skipped = 0;
+			int passed = 0;
+
 			if (vX > 0)
 			{
-				for (int i = 0; i < Game.verticalFaces.size(); i++)
+				int s = Collections.binarySearch(Game.verticalFaces, new Face(null, this.posX + size / 2 * tankHitSizeMul, 0, this.posX + size / 2 * tankHitSizeMul, 0, false, false, false, false));
+				if (s < 0)
+					s = -s - 1;
+
+				for (int i = s; i < Game.verticalFaces.size(); i++)
 				{
 					double size = this.size;
 
@@ -210,8 +193,14 @@ public class Ray
 					}
 
 					if (f.startX < this.posX + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
+					{
+						//Game.effects.add(Effect.createNewEffect( (f.startX + f.endX) / 2, (f.startY + f.endY) / 2, 60, Effect.EffectType.laser));
+						skipped++;
 						continue;
+					}
 
+					//Game.effects.add(Effect.createNewEffect( (f.startX + f.endX) / 2, (f.startY + f.endY) / 2, 60, Effect.EffectType.healing));
+					passed++;
 					double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
 					if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
 					{
@@ -221,11 +210,18 @@ public class Ray
 						collisionFace = f;
 						break;
 					}
+
+					if (y < 0 || y > Game.currentSizeY * Game.tile_size)
+						break;
 				}
 			}
 			else if (vX < 0)
 			{
-				for (int i = Game.verticalFaces.size() - 1; i >= 0; i--)
+				int s = Collections.binarySearch(Game.verticalFaces, new Face(null, this.posX - size / 2 * tankHitSizeMul, 0, this.posX - size / 2 * tankHitSizeMul, 0, false, false, false, false));
+				if (s < 0)
+					s = -s - 2;
+
+				for (int i = s; i >= 0; i--)
 				{
 					Face f = Game.verticalFaces.get(i);
 
@@ -233,7 +229,6 @@ public class Ray
 
 					if (f.owner instanceof Movable)
 						size *= tankHitSizeMul;
-
 
 					boolean passThrough = false;
 					if (f.owner instanceof Obstacle)
@@ -245,8 +240,14 @@ public class Ray
 					}
 
 					if (f.startX > this.posX - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
+					{
+						//Game.effects.add(Effect.createNewEffect( (f.startX + f.endX) / 2, (f.startY + f.endY) / 2, 60, Effect.EffectType.laser));
+						skipped++;
 						continue;
+					}
 
+					//Game.effects.add(Effect.createNewEffect( (f.startX + f.endX) / 2, (f.startY + f.endY) / 2, 60, Effect.EffectType.healing));
+					passed++;
 					double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
 					if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
 					{
@@ -256,13 +257,20 @@ public class Ray
 						collisionFace = f;
 						break;
 					}
+
+					if (y < 0 || y > Game.currentSizeY * Game.tile_size)
+						break;
 				}
 			}
 
 			boolean corner = false;
 			if (vY > 0)
 			{
-				for (int i = 0; i < Game.horizontalFaces.size(); i++)
+				int s = Collections.binarySearch(Game.horizontalFaces, new Face(null, 0, this.posY + size / 2 * tankHitSizeMul, 0, this.posY + size / 2 * tankHitSizeMul, true, false, false, false));
+				if (s < 0)
+					s = -s - 1;
+
+				for (int i = s; i < Game.horizontalFaces.size(); i++)
 				{
 					Face f = Game.horizontalFaces.get(i);
 
@@ -281,8 +289,14 @@ public class Ray
 					}
 
 					if (f.startY < this.posY + size / 2 || !f.solidBullet || !f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
+					{
+						//Game.effects.add(Effect.createNewEffect( (f.startX + f.endX) / 2, (f.startY + f.endY) / 2, 60, Effect.EffectType.laser));
+						skipped++;
 						continue;
+					}
 
+					//Game.effects.add(Effect.createNewEffect( (f.startX + f.endX) / 2, (f.startY + f.endY) / 2, 60, Effect.EffectType.healing));
+					passed++;
 					double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
 					if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
 					{
@@ -300,11 +314,18 @@ public class Ray
 
 						break;
 					}
+
+					if (x < 0 || x > Game.currentSizeX * Game.tile_size)
+						break;
 				}
 			}
 			else if (vY < 0)
 			{
-				for (int i = Game.horizontalFaces.size() - 1; i >= 0; i--)
+				int s = Collections.binarySearch(Game.horizontalFaces, new Face(null, 0, this.posY - size / 2 * tankHitSizeMul, 0, this.posY - size / 2 * tankHitSizeMul, true, false, false, false));
+				if (s < 0)
+					s = -s - 2;
+
+				for (int i = s; i >= 0; i--)
 				{
 					Face f = Game.horizontalFaces.get(i);
 
@@ -323,8 +344,14 @@ public class Ray
 					}
 
 					if (f.startY > this.posY - size / 2 || !f.solidBullet || f.positiveCollision || (f.owner == this.tank && firstBounce) || passThrough)
+					{
+						//Game.effects.add(Effect.createNewEffect( (f.startX + f.endX) / 2, (f.startY + f.endY) / 2, 60, Effect.EffectType.laser));
+						skipped++;
 						continue;
+					}
 
+					//Game.effects.add(Effect.createNewEffect( (f.startX + f.endX) / 2, (f.startY + f.endY) / 2, 60, Effect.EffectType.healing));
+					passed++;
 					double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;
 					if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
 					{
@@ -341,8 +368,13 @@ public class Ray
 						}
 						break;
 					}
+
+					if (x < 0 || x > Game.currentSizeX * Game.tile_size)
+						break;
 				}
 			}
+
+//			System.out.println(skipped + " " + passed + " " + vX + " " + vY);
 
 			this.age += t;
 
@@ -350,12 +382,27 @@ public class Ray
 
 			if (collisionFace != null)
 			{
+				double dx = collisionX - posX;
+				double dy = collisionY - posY;
+
+				if (this.range > 0)
+				{
+					double dist = Math.sqrt(dx * dx + dy * dy);
+					if (this.range < dist)
+					{
+						collisionX = posX + dx * range / dist;
+						collisionY = posY + dy * range / dist;
+						dx = collisionX - posX;
+						dy = collisionY - posY;
+						this.bounces = -1;
+					}
+					else
+						this.range -= dist;
+				}
+
 				if (trace)
 				{
-					double dx = collisionX - posX;
-					double dy = collisionY - posY;
-
-					double steps = (Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)) / (1 + Math.pow(this.vX, 2) + Math.pow(this.vY, 2))) + 1);
+					double steps = (Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)) / (1 + Math.pow(this.vX, 2) + Math.pow(this.vY, 2))) / Math.max(this.size, 2) * 10 + 1);
 
 					if (dotted)
 						steps /= 2;
@@ -371,7 +418,11 @@ public class Ray
 						double frac = 1 / (1 + this.traceAge / 100.0);
 						double z = this.tank.size / 2 + this.tank.turretSize / 2 * frac + (Game.tile_size / 4) * (1 - frac);
 						if (Game.screen instanceof ScreenGame && !ScreenGame.finished)
-							Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray));
+						{
+							Effect e = Effect.createNewEffect(x, y, z, Effect.EffectType.ray);
+							e.size = Math.max(this.size, min_trace_size);
+							Game.effects.add(e);
+						}
 					}
 
 					remainder = s - steps;
@@ -421,10 +472,8 @@ public class Ray
 
 	public double getDist()
 	{
-		this.bounceX.add(0, this.posX);
-		this.bounceY.add(0, this.posY);
-
-		this.getTarget();
+		if (this.bounceX.isEmpty())
+			this.getTarget();
 
 		double dist = 0;
 		for (int i = 0; i < this.bounceX.size() - 1; i++)
@@ -437,9 +486,6 @@ public class Ray
 
 	public double getTargetDist(double mul, Tank m)
 	{
-		this.bounceX.add(0, this.posX);
-		this.bounceY.add(0, this.posY);
-
 		if (this.getTarget(mul, m) != m)
 			return -1;
 

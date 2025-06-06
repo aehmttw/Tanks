@@ -7,6 +7,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
+import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
     public String level;
     public TextBox levelName;
+    public String[] description = null;
     public boolean downloaded = false;
 
     public boolean fromInterlevel = false;
@@ -95,6 +97,28 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         }
     });
 
+    public Button quickPlay = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Quick play", () ->
+    {
+        ArrayList<Obstacle> obstacles = new ArrayList<>(Game.obstacles);
+        Game.cleanUp();
+
+        Level l = new Level(this.level);
+        l.loadLevel();
+        Obstacle.draw_size = Game.tile_size;
+
+        Game.obstacles.clear();
+        Game.obstacles.addAll(obstacles);
+
+        for (Movable m: Game.movables)
+        {
+            if (m instanceof Tank)
+                ((Tank) m).drawAge = 50;
+        }
+
+        ScreenInterlevel.fromQuickPlay = this;
+        Game.screen = new ScreenGame();
+    });
+
     public Button delete = new Button(200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Remove from server", () ->
     {
         confirmingDelete = true;
@@ -112,7 +136,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
         Game.cleanUp();
-        Game.steamNetworkHandler.workshop.delete(workshopDetails);
+        Game.steamNetworkHandler.workshop.delete(workshopDetails, "Level");
         Game.screen = new ScreenWaiting("Removing level from server...");
     }
     );
@@ -140,15 +164,21 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         Game.steamNetworkHandler.workshop.workshop.setUserItemVote(workshopDetails.getPublishedFileID(), false);
     }, "Dislike the level");
 
-    public Button showPage = new Button(Drawing.drawing.interfaceSizeX - 45, Drawing.drawing.interfaceSizeY - 190, this.objHeight, this.objHeight, "", () ->
+    public Button showPage = new Button(Drawing.drawing.interfaceSizeX - 435, Drawing.drawing.interfaceSizeY - 200, this.objHeight, this.objHeight, "", () ->
     {
         Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
     }, "View level page on Steam");
 
     public ScreenSaveLevel(String name, String level, Screen s)
     {
+        this(name, level, s, false);
+    }
+
+    public ScreenSaveLevel(String name, String level, Screen s, boolean fromInterlevel)
+    {
         super(350, 40, 380, 60);
 
+        this.fromInterlevel = fromInterlevel;
         this.music = "menu_4.ogg";
         this.musicID = "menu";
 
@@ -173,9 +203,15 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
         {
-            levelName.posY += 40;
-            download.posY += 40;
+            levelName.posY += 20;
+            download.posY += 20;
             back.posY += 40;
+        }
+        else if (ScreenPartyHost.isServer && !fromInterlevel)
+        {
+            quickPlay.posY -= 40;
+            levelName.posY -= 60;
+            download.posY -= 60;
         }
 
         voteUp.fullInfo = true;
@@ -218,10 +254,21 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 voteUp.update();
                 voteDown.update();
 
+                if (Game.game.input.play.isValid())
+                {
+                    Game.game.input.play.invalidate();
+                    quickPlay.function.run();
+                }
+                else
+                    quickPlay.update();
+
                 showPage.update();
 
                 more.update();
             }
+
+            if (ScreenPartyHost.isServer && !fromInterlevel)
+                quickPlay.update();
         }
 
         if (Game.enable3d)
@@ -250,6 +297,9 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         {
             this.download.draw();
             this.back.draw();
+
+            if (this.description != null && this.description.length > 0)
+                Drawing.drawing.drawTooltip(this.description, delete.posX - this.objWidth / 2, delete.posY - this.objYSpace * 1.5);
 
             if (this.queuedLevel != null)
             {
@@ -283,6 +333,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
                 voteDown.draw();
                 voteUp.draw();
+                quickPlay.draw();
 
                 showPage.draw();
 
@@ -292,6 +343,9 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
                 more.draw();
             }
+
+            if (ScreenPartyHost.isServer && !fromInterlevel)
+                quickPlay.draw();
         }
     }
 

@@ -132,6 +132,40 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glEnd();
     }
 
+    @Override
+    public void fillPartialRing(double x, double y, double size, double thickness, double start, double end)
+    {
+        fillPartialRing(x, y, 0, size, thickness, start, end);
+    }
+
+    @Override
+    public void fillPartialRing(double x, double y, double z, double size, double thickness, double start, double end)
+    {
+        int sides = Math.max(4, (int) (2 * size) / 4 + 5);
+
+        glBegin(GL_TRIANGLES);
+        for (double i = 0; i < sides; i++)
+        {
+            double a = Math.PI * 2 * ((i / sides) * (end - start) + start);
+            double a1 = Math.PI * 2 * (((i + 1) / sides) * (end - start) + start);
+
+            glVertex3d(x + Math.cos(a) * size / 2, y + Math.sin(a) * size / 2, z);
+            double v = x + Math.cos(a1) * size / 2;
+            double v1 = y + Math.sin(a1) * size / 2;
+            glVertex3d(v, v1, z);
+            double v2 = Math.cos(a) * (size - thickness) / 2;
+            double v3 = Math.sin(a) * (size - thickness) / 2;
+            glVertex3d(x + v2, y + v3, z);
+
+            glVertex3d(v, v1, z);
+            glVertex3d(x + Math.cos(a1) * (size - thickness) / 2, y + Math.sin(a1) * (size - thickness) / 2, z);
+            glVertex3d(x + v2, y + v3, z);
+        }
+
+        glEnd();
+    }
+
+
     public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
     {
         this.fillGlow(x, y, z, sX, sY, depthTest, shade, false);
@@ -952,15 +986,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         if (!this.window.textures.containsKey(image))
             this.window.createImage(image);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
         if (depthtest)
             this.window.enableDepthtest();
-
-        this.window.loadPerspective();
-
-        glMatrixMode(GL_MODELVIEW);
 
         this.window.enableTexture();
         glEnable(GL_BLEND);
@@ -991,7 +1018,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         glEnd();
 
-        glMatrixMode(GL_PROJECTION);
         this.window.disableTexture();
 
         glDepthMask(true);
@@ -1013,14 +1039,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         if (!this.window.textures.containsKey(image))
             this.window.createImage(image);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-
         if (depthtest)
             this.window.enableDepthtest();
-
-        this.window.loadPerspective();
-        glMatrixMode(GL_MODELVIEW);
 
         this.window.enableTexture();
         glEnable(GL_BLEND);
@@ -1051,7 +1071,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         glEnd();
 
-        glMatrixMode(GL_PROJECTION);
         this.window.disableTexture();
 
         glDepthMask(true);

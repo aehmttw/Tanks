@@ -21,9 +21,8 @@ public class ArcadeBeatBlocks extends Arcade
                 "12-17-beat-0#2.0,13-4-beat-1#2.0,13-13-beat-1#2.5,14-4-beat-1#2.5,14-13-beat-1#2.0,15-0-beat-0#2.0,15-1-beat-0#2.5,15-2-beat-0#2.0,15-3-beat-0#2.5,15-4-beat-0#2.0," +
                 "15-13-beat-1#2.5,16-4-beat-0#2.5,16-13-beat-1#2.0,17-4-beat-0#2.0,17-13-beat-1#2.5,18-4-beat-0#2.5,18-13-beat-1#2.0,19-4-beat-0#2.0,19-13-beat-0#2.5,20-4-beat-0#2.5," +
                 "20-5-beat-1#2.0,20-6-beat-1#2.5,20-7-beat-1#2.0,20-13-beat-0#2.0,21-7-beat-1#2.5,21-13-beat-0#2.5,22-7-beat-1#2.0,22-13-beat-0#2.0,23-7-beat-1#2.5,23-8-beat-0#2.0," +
-                "23-9-beat-0#2.5,23-10-beat-0#2.0,23-11-beat-0#2.5,23-12-beat-0#2.0,23-13-beat-0#2.5,24-7-beat-1#2.0,25-7-beat-1#2.5,26-7-beat-1#2.0,27-7-beat-1#2.5|10-10-player-0-ally," +
-                "12-10-player-0-ally,14-10-player-0-ally,16-10-player-0-ally,18-10-player-0-ally,17-7-player-2-ally,15-7-player-2-ally,13-7-player-2-ally,11-7-player-2-ally,9-7-player-2-ally" +
-                "|ally-true,enemy-true}\n");
+                "23-9-beat-0#2.5,23-10-beat-0#2.0,23-11-beat-0#2.5,23-12-beat-0#2.0,23-13-beat-0#2.5,24-7-beat-1#2.0,25-7-beat-1#2.5,26-7-beat-1#2.0,27-7-beat-1#2.5|10-10-player-0," +
+                "12-10-player-0,14-10-player-0,16-10-player-0,18-10-player-0,17-7-player-2,15-7-player-2,13-7-player-2,11-7-player-2,9-7-player-2}\n");
 
         this.waveSize *= 2;
         this.waveTriggerCount *= 2;

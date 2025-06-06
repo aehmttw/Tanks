@@ -14,6 +14,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	public static boolean fromSavedLevels = false;
 	public static boolean fromMinigames = false;
 	public static boolean tutorial = false;
+	public static ILevelPreviewScreen fromQuickPlay = null;
 
 	public boolean showCrusadeResultsNow = false;
 	public DisplayFireworks fireworksDisplay;
@@ -30,7 +31,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	{
 		Crusade.currentCrusade.retry = true;
 		Crusade.currentCrusade.loadLevel();
-		Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+		Game.screen = new ScreenGame(Crusade.currentCrusade);
 	}
 	);
 
@@ -69,7 +70,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 	{
 		Crusade.currentCrusade.loadLevel();
 		Crusade.currentCrusade.replay = true;
-		Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+		Game.screen = new ScreenGame(Crusade.currentCrusade);
 	}
 			, "You will not gain extra lives---"
 			+ "from replaying a level you've already cleared.---"
@@ -91,13 +92,12 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 		Level lev = new Level(ls);
 
-		ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen);
+		ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen, true);
 
 		lev.preview = true;
 		lev.loadLevel(sc);
 		Game.screen = sc;
 
-		sc.fromInterlevel = true;
 		sc.music = music;
 		sc.musicID = musicID;
 		sc.updateDownloadButton();
@@ -118,7 +118,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		Crusade.currentCrusade.replay = false;
 		Crusade.currentCrusade.retry = false;
 		Crusade.currentCrusade.loadLevel();
-		Game.screen = new ScreenGame(Crusade.currentCrusade.getShop());
+		Game.screen = new ScreenGame(Crusade.currentCrusade);
 	}
 	);
 

@@ -13,6 +13,7 @@ public class ButtonObject extends Button
 	public IDrawableForInterface object;
 	public boolean tempDisableHover = false;
 	public Runnable drawBeforeTooltip = null;
+	public boolean showText = false;
 
 	public double disabledColA = 127;
 	public double selectedColA = 64;
@@ -93,7 +94,7 @@ public class ButtonObject extends Button
 		drawing.fillInterfaceRect(posX, posY - sizeY / 2 + thickness / 2, sizeX - thickness * 2, thickness);
 		drawing.fillInterfaceRect(posX, posY + sizeY / 2 - thickness / 2, sizeX - thickness * 2, thickness);
 
-		if (!this.text.equals(""))
+		if (!this.text.equals("") && this.showText)
 		{
 			drawing.setColor(255, 255, 255);
 			drawing.setInterfaceFontSize(12);

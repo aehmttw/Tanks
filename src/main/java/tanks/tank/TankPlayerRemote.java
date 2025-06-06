@@ -2,15 +2,16 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.effect.AttributeModifier;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
+import tanks.network.ConnectedPlayer;
 import tanks.network.event.*;
 
 public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
@@ -76,11 +77,14 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     public long lastUpdate;
     public double localAge;
 
+    public double bufferCooldown = 0;
+    public Item.ItemStack<?> lastItem = null;
+
     public TankPlayerRemote(double x, double y, double angle, Player p)
     {
         super(x, y);
         this.player = p;
-        this.showName = true;
+        this.hasName = true;
         this.angle = angle;
         this.orientation = angle;
 
@@ -115,8 +119,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         double pvx = this.prevKnownVXFinal;
         double pvy = this.prevKnownVYFinal;
-        double cvx = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-        double cvy = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+        double cvx = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+        double cvy = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
         this.posX = TankRemote.cubicInterpolationVelocity(this.prevKnownPosX, pvx, this.currentKnownPosX, cvx, this.timeSinceRefresh, this.interpolationTime);
         this.posY = TankRemote.cubicInterpolationVelocity(this.prevKnownPosY, pvy, this.currentKnownPosY, cvy, this.timeSinceRefresh, this.interpolationTime);
@@ -156,10 +160,12 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     {
         this.updateMovement();
 
-        double reload = em().getAttributeValue(AttributeModifier.reload, 1);
+        this.bufferCooldown -= Panel.frameFrequency;
+        double reload = this.getAttributeValue(AttributeModifier.reload, 1);
 
         for (Item.ItemStack<?> s: this.abilities)
         {
+            s.player = this.player;
             s.updateCooldown(reload);
         }
 
@@ -229,7 +235,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (this.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
             im = (ItemMine.ItemStackMine) this.getSecondaryAbility();
 
-        if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1)
+        int hotbarSlots = (this.player.hotbar.itemBar.showItems ? ItemBar.item_bar_size : 0);
+
+        if (b != null && this.player.hotbar.enabledItemBar && b.selected != -1 && b.selected < hotbarSlots)
         {
             if (b.slots[b.selected] instanceof ItemBullet.ItemStackBullet)
                 ib = (ItemBullet.ItemStackBullet) b.slots[b.selected];
@@ -246,8 +254,11 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         double cooldown = ib == null ? 0 : ib.cooldown;
         double cooldownBase = ib == null ? 0 : ib.item.cooldownBase;
 
+        double cooldown2 = im == null ? 0 : im.cooldown;
+        double cooldownBase2 = im == null ? 0 : im.item.cooldownBase;
+
         if (lastLiveBullets != lb || mlb != lastMaxLiveBullets || lm != lastLiveMines || mlm != lastMaxLiveMines)
-            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, lb, mlb, lm, mlm, cooldown, cooldownBase));
+            Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, lb, mlb, lm, mlm, cooldown, cooldownBase, cooldown2, cooldownBase2));
 
         lastLiveBullets = lb;
         lastLiveMines = lm;
@@ -255,7 +266,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         lastMaxLiveMines = mlm;
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions, double time, long receiveTime)
     {
         if (checkMotion)
         {
@@ -321,8 +332,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                     vY *= maxSpeed / speed;
                 }
 
-                double vX2 = em().getAttributeValue(AttributeModifier.velocity, vX * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
-                double vY2 = em().getAttributeValue(AttributeModifier.velocity, vY * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
+                double vX2 = this.getAttributeValue(AttributeModifier.velocity, vX * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
+                double vY2 = this.getAttributeValue(AttributeModifier.velocity, vY * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
 
                 double maxDist = 1;
 
@@ -417,6 +428,15 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             if (action2 && !this.disabled)
                 this.action(true);
 
+            if (!this.disabled)
+            {
+                for (int i = 0; i < this.abilities.size(); i++)
+                {
+                    if (quickActions[i])
+                        this.quickAction(i);
+                }
+            }
+
             this.posX = this.prevKnownPosX;
             this.posY = this.prevKnownPosY;
             this.vX = this.prevKnownVX;
@@ -456,6 +476,10 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             return;
 
         int a = right ? selectedSecondaryAbility : selectedPrimaryAbility;
+
+        if (this.player.hotbar.itemBar.getSelectedAction(right) != this.lastItem && this.bufferCooldown > 0)
+            return;
+
         if (this.player.hotbar.enabledItemBar)
         {
             if (this.player.hotbar.itemBar.useItem(right))
@@ -479,6 +503,10 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (this.abilities.size() > click)
         {
             this.getAbility(click).networkIndex = -click;
+
+            if (this.getAbility(click) != this.lastItem && this.bufferCooldown > 0)
+                return;
+
             if (this.getAbility(click).attemptUse(this))
                 Game.eventsOut.add(new EventUpdateTankAbility(this.player, click));
         }
@@ -494,7 +522,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         double vX = this.vX;
         double vY = this.vY;
-        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
+        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
         if (b.moveOut)
             b.moveOut(50 * this.size / Game.tile_size);
@@ -560,6 +588,16 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                     ((Scoreboard) m).addPlayerScore(this.player, 1);
             }
         }
+
+        if (Game.screen instanceof ScreenGame)
+        {
+            if (ScreenPartyHost.includedPlayers.contains(this.player.clientID))
+            {
+                ((ScreenGame) Game.screen).eliminatedPlayers.add(new ConnectedPlayer(this.player));
+                Game.eventsOut.add(new EventUpdateEliminatedPlayers(((ScreenGame) Game.screen).eliminatedPlayers));
+            }
+            ((ScreenGame) Game.screen).onPlayerDeath(this.player);
+        }
     }
 
     @Override
@@ -569,20 +607,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     }
 
     @Override
-    public void setBufferCooldown(double value)
+    public void setBufferCooldown(Item.ItemStack<?> stack, double value)
     {
-        super.setBufferCooldown(value);
-
-        Hotbar h = this.player.hotbar;
-        if (h.enabledItemBar)
-        {
-            for (Item.ItemStack<?> i: h.itemBar.slots)
-            {
-                if (i != null && !(i.isEmpty))
-                {
-                    i.cooldown = Math.max(i.cooldown, value);
-                }
-            }
-        }
+        this.lastItem = stack;
+        this.bufferCooldown = value;
     }
 }

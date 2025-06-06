@@ -91,5 +91,11 @@ public class ScreenInviteSteamFriends extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Invite Steam friends");
+
+        if (friends.buttons.isEmpty())
+        {
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "You don't have any online friends :(");
+        }
     }
 }

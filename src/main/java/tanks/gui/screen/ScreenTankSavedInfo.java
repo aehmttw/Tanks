@@ -6,6 +6,7 @@ import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayable;
 
 import java.util.ArrayList;
 
@@ -36,6 +37,8 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
 
     public int pageEntries = 10;
 
+    public boolean isBuild = false;
+
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Ok", () ->
     {
         Game.screen = this.previous;
@@ -47,6 +50,8 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         this.previous = s;
         this.music = this.previous.music;
         this.musicID = this.previous.musicID;
+
+        this.isBuild = tank instanceof TankPlayable;
 
         double cY = this.centerY + 40;
 
@@ -107,21 +112,25 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         this.nextCopiedPage.imageSizeX = 35;
         this.nextCopiedPage.imageSizeY = 35;
         this.nextCopiedPage.imageXOffset = 0;
+        this.nextCopiedPage.enabled = false;
 
         this.prevCopiedPage.image = "icons/back.png";
         this.prevCopiedPage.imageSizeX = 35;
         this.prevCopiedPage.imageSizeY = 35;
         this.prevCopiedPage.imageXOffset = 0;
+        this.prevCopiedPage.enabled = false;
 
         this.nextNotCopiedPage.image = "icons/forward.png";
         this.nextNotCopiedPage.imageSizeX = 35;
         this.nextNotCopiedPage.imageSizeY = 35;
         this.nextNotCopiedPage.imageXOffset = 0;
+        this.nextNotCopiedPage.enabled = false;
 
         this.prevNotCopiedPage.image = "icons/back.png";
         this.prevNotCopiedPage.imageSizeX = 35;
         this.prevNotCopiedPage.imageSizeY = 35;
         this.prevNotCopiedPage.imageXOffset = 0;
+        this.prevNotCopiedPage.enabled = false;
     }
 
     @Override
@@ -171,10 +180,20 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
         else
             Drawing.drawing.setColor(0, 0, 0);
 
-        if (this.copiedToTemplate)
-            Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank saved to templates!");
+        if (isBuild)
+        {
+            if (this.copiedToTemplate)
+                Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Player build saved to templates!");
+            else
+                Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Player build added to level!");
+        }
         else
-            Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank added to level!");
+        {
+            if (this.copiedToTemplate)
+                Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank saved to templates!");
+            else
+                Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank added to level!");
+        }
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
 

@@ -34,7 +34,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             Game.cleanUp();
-            previous2.refreshLevelButtons();
+            previous2.refreshButtons();
 
             Game.screen = previous;
         }
@@ -53,7 +53,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             Game.cleanUp();
-            previous2.refreshLevelButtons();
+            previous2.refreshButtons();
 
             Game.screen = previous;
         }
@@ -65,7 +65,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             previous2.crusade.levels.add(insertionIndex, level);
-            previous2.refreshLevelButtons();
+            previous2.refreshButtons();
 
             Game.cleanUp();
 
@@ -289,8 +289,24 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             {
                 this.saveLevel.update();
                 this.remove.update();
-                this.next.update();
-                this.prev.update();
+
+                if (Game.game.window.validScrollUp)
+                {
+                    Game.game.window.validScrollUp = false;
+                    if (this.prev.enabled)
+                        this.prev.function.run();
+                }
+                else if (Game.game.window.validScrollDown)
+                {
+                    Game.game.window.validScrollDown = false;
+                    if (this.next.enabled)
+                        this.next.function.run();
+                }
+                else
+                {
+                    this.next.update();
+                    this.prev.update();
+                }
             }
             else
                 this.back.update();

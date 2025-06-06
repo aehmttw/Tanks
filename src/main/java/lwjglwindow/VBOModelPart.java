@@ -28,9 +28,9 @@ public class VBOModelPart extends ModelPart
         IBaseShader shader = (IBaseShader) this.window.currentShader;
 
         if (this.material.useDefaultDepthMask)
-            window.setDrawOptions(depthTest, this.material.glow, this.window.colorA >= 1.0);
+            window.setDrawOptions(depthTest, this.material.glow || this.window.forceModelGlow, this.window.colorA >= 1.0);
         else
-            window.setDrawOptions(depthTest, this.material.glow, this.material.depthMask);
+            window.setDrawOptions(depthTest, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
 
         if (this.material.customLight)
             window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
@@ -68,9 +68,9 @@ public class VBOModelPart extends ModelPart
         IBaseShader shader = (IBaseShader) this.window.currentShader;
 
         if (this.material.useDefaultDepthMask)
-            window.setDrawOptions(depthTest, this.material.glow, this.window.colorA >= 1.0);
+            window.setDrawOptions(depthTest, this.material.glow || this.window.forceModelGlow, this.window.colorA >= 1.0);
         else
-            window.setDrawOptions(depthTest, this.material.glow, this.material.depthMask);
+            window.setDrawOptions(depthTest, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
 
         if (this.material.customLight)
             window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
@@ -103,9 +103,9 @@ public class VBOModelPart extends ModelPart
         IBaseShader shader = (IBaseShader) this.window.currentShader;
 
         if (this.material.useDefaultDepthMask)
-            window.setDrawOptions(false, this.material.glow, this.window.colorA >= 1.0);
+            window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.window.colorA >= 1.0);
         else
-            window.setDrawOptions(false, this.material.glow, this.material.depthMask);
+            window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -130,9 +130,9 @@ public class VBOModelPart extends ModelPart
         IBaseShader shader = (IBaseShader) this.window.currentShader;
 
         if (this.material.useDefaultDepthMask)
-            window.setDrawOptions(false, this.material.glow);
+            window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow);
         else
-            window.setDrawOptions(false, this.material.glow, this.material.depthMask);
+            window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
 
         if (this.material.customLight)
             window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);

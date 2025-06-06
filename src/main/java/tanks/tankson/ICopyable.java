@@ -1,12 +1,16 @@
 package tanks.tankson;
 
 import tanks.Game;
-import tanks.tank.Mine;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 
+@SuppressWarnings("unchecked")
 public interface ICopyable<T>
 {
+    HashMap<Class<? extends ICopyable<?>>, ArrayList<Field>> copyFields = new HashMap<>();
+
     /**
      * Clone this object's properties to another object
      * @param m the another object
@@ -16,21 +20,22 @@ public interface ICopyable<T>
     {
         try
         {
-            for (Field f : m.getClass().getFields())
+            ArrayList<Field> fields = copyFields.computeIfAbsent((Class<? extends ICopyable<?>>) m.getClass(), k -> new ArrayList<>());
+            if (fields.isEmpty())
             {
-                Property p = f.getAnnotation(Property.class);
-                if (p != null)
+                for (Field f : m.getClass().getFields())
                 {
-                    try
-                    {
-                        Object v = f.get(this);
-                        if (v instanceof ICopyable)
-                            f.set(m, ((ICopyable<?>) v).getCopy());
-                        else
-                            f.set(m, v);
-                    }
-                    catch (Exception ignored) { }
+                    Property p = f.getAnnotation(Property.class);
+                    if (p == null) continue;
+                    copyTo(m, f);
+                    fields.add(f);
                 }
+            }
+            else
+            {
+                //noinspection ForLoopReplaceableByForEach
+                for (int i = 0; i < fields.size(); i++)
+                    copyTo(m, fields.get(i));
             }
         }
         catch (Exception e)
@@ -39,6 +44,19 @@ public interface ICopyable<T>
         }
 
         return m;
+    }
+
+    default void copyTo(T m, Field f)
+    {
+        try
+        {
+            Object v = f.get(this);
+            if (v instanceof ICopyable)
+                f.set(m, ((ICopyable<?>) v).getCopy());
+            else
+                f.set(m, v);
+        }
+        catch (Exception ignored) { }
     }
 
     /**

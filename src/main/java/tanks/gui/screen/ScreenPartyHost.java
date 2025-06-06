@@ -8,13 +8,18 @@ import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Server;
 import tanks.network.ServerHandler;
+import tanks.network.SteamNetworkHandler;
 import tanks.network.SynchronizedList;
-import tanks.network.event.EventPlayerChat;
+import tanks.network.event.*;
+import tanks.obstacle.ObstacleTeleporter;
 import tanks.tank.Tank;
+import tanks.tank.Turret;
 import tanks.translation.Translation;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class ScreenPartyHost extends Screen
@@ -49,6 +54,8 @@ public class ScreenPartyHost extends Screen
     public static final String publicText = "\u00A7000200000255public";
     public static final String privateText = "\u00A7200000000255private";
 
+    public static ArrayList<String> botNames;
+
     public Button visibility = new Button(this.centerX - 190, this.centerY - 340, this.objWidth, this.objHeight, "", () ->
     {
         if (Game.steamVisibility == SteamMatchmaking.LobbyType.Public)
@@ -64,6 +71,12 @@ public class ScreenPartyHost extends Screen
     {
         Game.screen = new ScreenInviteSteamFriends(Game.screen);
     });
+
+    public Button steamHostFailed = new Button(this.centerX, this.centerY - 340, this.objWidth, this.objHeight, "Retry Steam hosting", () ->
+    {
+        if (Game.steamNetworkHandler.initialized)
+            Game.steamNetworkHandler.hostParty();
+    }, "Hosting failed");
 
     Button newLevel = new Button(this.centerX + 190, this.centerY - 250, this.objWidth, this.objHeight, "Random co-op", () ->
     {
@@ -132,7 +145,7 @@ public class ScreenPartyHost extends Screen
     {
         super(350, 40, 380, 60);
 
-        if (ScreenPartyHost.server == null || ScreenPartyHost.server.connections.size() <= 0)
+        if (ScreenPartyHost.server == null || Game.players.size() <= 1)
             this.music = "menu_3.ogg";
         else
             this.music = "menu_4.ogg";
@@ -242,16 +255,26 @@ public class ScreenPartyHost extends Screen
 
         if (Game.steamNetworkHandler.initialized)
         {
-            visibility.update();
-            invite.update();
+            if (Game.steamNetworkHandler.currentLobby != null)
+            {
+                visibility.update();
+                invite.update();
+            }
+            else if (Game.steamNetworkHandler.lobbyHostStatus != null)
+            {
+                steamHostFailed.setHoverText("Hosting failed:---%s------If you keep getting this error try restarting the game.", SteamResults.getMessage(Game.steamNetworkHandler.lobbyHostStatus));
+                steamHostFailed.update();
+            }
         }
 
         if (server != null && server.connections != null)
         {
+            this.usernamePage = Math.min(this.usernamePage, (server.connections.size() + Game.botPlayers.size() - 1) / 10);
+
             if (this.usernamePage > 0)
                 this.previousUsernamePage.update();
 
-            if ((this.usernamePage + 1) * 10 < server.connections.size())
+            if ((this.usernamePage + 1) * 10 < server.connections.size() + Game.botPlayers.size())
                 this.nextUsernamePage.update();
 
             int entries = Math.min(10, server.connections.size() - this.usernamePage * entries_per_page);
@@ -296,15 +319,43 @@ public class ScreenPartyHost extends Screen
         quit.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+
+        Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY - 290, "Play:");
+
+        Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY + 40, "Level and crusade sharing:");
+
+        if (Game.players.size() > 1)
+            Drawing.drawing.displayInterfaceText(this.centerX - 190, this.centerY - 280, "%d players in this party:", Game.players.size());
+        else
+            Drawing.drawing.displayInterfaceText(this.centerX - 190, this.centerY - 280, "1 player in this party:");
+
 
         double ipY = 400;
         if (Game.steamNetworkHandler.initialized)
         {
-            visibility.draw();
-            invite.draw();
+            if (Game.steamNetworkHandler.currentLobby != null)
+            {
+                invite.draw();
+                visibility.draw();
+            }
+            else
+            {
+                if (Game.steamNetworkHandler.lobbyHostStatus != null)
+                    steamHostFailed.draw();
+                else
+                {
+                    Drawing.drawing.setColor(0, 0, 0);
+                    Drawing.drawing.setInterfaceFontSize(this.textSize);
+                    Drawing.drawing.drawInterfaceText(steamHostFailed.posX, steamHostFailed.posY, "Starting Steam party...");
+                }
+            }
         }
         else
             ipY = 330;
+
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.setColor(0, 0, 0);
 
         String title = this.ip;
 
@@ -323,21 +374,12 @@ public class ScreenPartyHost extends Screen
         if (!this.ip.equals(Translation.translate("Party host")))
             this.toggleIP.draw();
 
-        Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.setInterfaceFontSize(this.textSize);
-
-        Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY - 290, "Play:");
-
-        Drawing.drawing.displayInterfaceText(this.centerX + 190, this.centerY + 40, "Level and crusade sharing:");
-
-        Drawing.drawing.displayInterfaceText(this.centerX - 190, this.centerY - 280, "Players in this party:");
-
         if (server != null && server.connections != null)
         {
             if (this.usernamePage > 0)
                 this.previousUsernamePage.draw();
 
-            if ((this.usernamePage + 1) * entries_per_page <  server.connections.size())
+            if ((this.usernamePage + 1) * entries_per_page < server.connections.size() + Game.botPlayers.size())
                 this.nextUsernamePage.draw();
 
             if (this.usernamePage <= 0)
@@ -355,26 +397,33 @@ public class ScreenPartyHost extends Screen
 
             if (server.connections != null)
             {
-                for (int i = this.usernamePage * entries_per_page; i < Math.min(((this.usernamePage + 1) * entries_per_page), server.connections.size()); i++)
+                for (int i = this.usernamePage * entries_per_page; i < Math.min(((this.usernamePage + 1) * entries_per_page), server.connections.size() + Game.botPlayers.size()); i++)
                 {
-                    ServerHandler h = server.connections.get(i);
-                    if (h.username != null)
+                    ServerHandler h = i < server.connections.size() ? server.connections.get(i) : null;
+                    Player p = i < server.connections.size() ? h.player : Game.botPlayers.get(i - server.connections.size());
+                    if (p == null)
+                        continue;
+                    String username = p.username;
+                    if (username != null)
                     {
                         try
                         {
                             double y = this.centerY + (1 + i - this.usernamePage * entries_per_page) * username_spacing + username_y_offset;
-                            Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, server.connections.get(i).username);
-                            double w = Drawing.drawing.getStringWidth(h.username) / 2;
+                            Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, username);
+                            double w = Drawing.drawing.getStringWidth(username) / 2;
                             Drawing.drawing.setColor(0, 0, 0);
-                            Drawing.drawing.drawInterfaceText(this.centerX - 190, y, server.connections.get(i).username);
+                            Drawing.drawing.drawInterfaceText(this.centerX - 190, y, username);
 
-                            Tank.drawTank(this.centerX - w - 230, y, h.player.colorR, h.player.colorG, h.player.colorB, h.player.colorR2, h.player.colorG2, h.player.colorB2, h.player.colorR3, h.player.colorG3, h.player.colorB3);
+                            Tank.drawTank(this.centerX - w - 230, y, p.colorR, p.colorG, p.colorB, p.colorR2, p.colorG2, p.colorB2, p.colorR3, p.colorG3, p.colorB3);
 
-                            this.kickButtons[i - this.usernamePage * entries_per_page].draw();
+                            if (i < server.connections.size())
+                            {
+                                this.kickButtons[i - this.usernamePage * entries_per_page].draw();
 
-                            Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
-                            Drawing.drawing.setColor(0, 0, 0);
-                            Drawing.drawing.drawInterfaceText(this.centerX - w - 255, y, server.connections.get(i).lastLatency + "ms", true);
+                                Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
+                                Drawing.drawing.setColor(0, 0, 0);
+                                Drawing.drawing.drawInterfaceText(this.centerX - w - 255, y, server.connections.get(i).lastLatency + "ms", true);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -419,6 +468,118 @@ public class ScreenPartyHost extends Screen
             this.crusade = crusade;
             this.name = name;
             this.creator = creator;
+        }
+    }
+
+    public static void readBots()
+    {
+        botNames = Game.game.fileManager.getInternalFileContents("/bot_names.txt");
+    }
+
+    public static void setBotCount(int bots)
+    {
+        if (botNames == null)
+            readBots();
+
+        int old = Game.botPlayers.size();
+        Game.players.removeAll(Game.botPlayers);
+
+        for (int i = bots; i < Game.botPlayers.size(); i++)
+        {
+            Player p = Game.botPlayers.remove(i);
+            EventAnnounceConnection e = new EventAnnounceConnection();
+            e.clientIdTarget = p.clientID;
+            e.joined = false;
+            e.name = p.username;
+            Game.eventsOut.add(e);
+            i--;
+        }
+
+        ArrayList<String> namesList = new ArrayList<>(botNames);
+        for (Player p: Game.botPlayers)
+            namesList.remove(p.username);
+
+        for (int i = Game.botPlayers.size(); i < bots; i++)
+        {
+            if (namesList.isEmpty())
+                namesList.addAll(botNames);
+
+            Player p = new Player(UUID.randomUUID(), namesList.remove((int) (Math.random() * namesList.size())));
+
+            double shade = (int) (Math.random() * 5) / 5.0 * 255.0;
+            double power = (int) Math.min(5, Math.max(0, Math.random() * 9 - 2)) / 5.0;
+
+            double[] col = Game.getRainbowColor(Math.random());
+            p.colorR = (int) (col[0] * (1 - power) + shade * power);
+            p.colorG = (int) (col[1] * (1 - power) + shade * power);
+            p.colorB = (int) (col[2] * (1 - power) + shade * power);
+
+            boolean two = false;
+            if (Math.random() < 0.8)
+            {
+                two = true;
+                shade = (int) (Math.random() * 5) / 5.0 * 255.0;
+                power = (int) Math.min(5, Math.max(0, Math.random() * 9 - 2)) / 5.0;
+                col = Game.getRainbowColor(Math.random());
+                p.colorR2 = (int) (col[0] * (1 - power) + shade * power);
+                p.colorG2 = (int) (col[1] * (1 - power) + shade * power);
+                p.colorB2 = (int) (col[2] * (1 - power) + shade * power);
+            }
+            else
+            {
+                p.colorR2 = (int) Turret.calculateSecondaryColor(col[0]);
+                p.colorG2 = (int) Turret.calculateSecondaryColor(col[1]);
+                p.colorB2 = (int) Turret.calculateSecondaryColor(col[2]);
+            }
+
+            if (two && Math.random() < 0.2)
+            {
+                shade = (int) (Math.random() * 5) / 5.0 * 255.0;
+                power = (int) Math.min(5, Math.max(0, Math.random() * 9 - 2)) / 5.0;
+                col = Game.getRainbowColor(Math.random());
+                p.colorR3 = (int) (col[0] * (1 - power) + shade * power);
+                p.colorG3 = (int) (col[1] * (1 - power) + shade * power);
+                p.colorB3 = (int) (col[2] * (1 - power) + shade * power);
+            }
+            else
+            {
+                p.colorR3 = (p.colorR + p.colorR2) / 2;
+                p.colorG3 = (p.colorG + p.colorG2) / 2;
+                p.colorB3 = (p.colorB + p.colorB2) / 2;
+            }
+
+            p.isBot = true;
+            Game.botPlayers.add(p);
+
+            EventAnnounceConnection e = new EventAnnounceConnection();
+            e.clientIdTarget = p.clientID;
+            e.joined = true;
+            e.name = p.username;
+            Game.eventsOut.add(e);
+            Game.eventsOut.add(new EventUpdateTankColors(p));
+        }
+
+        Game.players.addAll(Game.botPlayers);
+
+        if (old < Game.botPlayers.size())
+        {
+            Drawing.drawing.playGlobalSound("join.ogg");
+            int c = (Game.botPlayers.size() - old);
+            String s = "\u00A7000127255255" + c + " bots have joined the party\u00A7000000000255";
+            if (c == 1)
+                s = "\u00A7000127255255" + c + " bot has joined the party\u00A7000000000255";
+            ScreenPartyHost.chat.add(0, new ChatMessage(s));
+            Game.eventsOut.add(new EventChat(s));
+        }
+        else if (old > Game.botPlayers.size())
+        {
+            Drawing.drawing.playGlobalSound("leave.ogg");
+            int c = (old - Game.botPlayers.size());
+            String s = "\u00A7000127255255" + c + " bots have left the party\u00A7000000000255";
+            if (c == 1)
+                s = "\u00A7000127255255" + c + " bot has left the party\u00A7000000000255";
+            ScreenPartyHost.chat.add(0, new ChatMessage(s));
+            Game.eventsOut.add(new EventChat(s));
         }
     }
 

@@ -11,7 +11,7 @@ import tanks.tank.Turret;
 
 public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderableObject
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress}
+    public enum EffectType {fire, smokeTrail, trail, ray, blockMarker, circleMarker, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, teleporterPiece, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress}
 
     public enum State {live, removed, recycle}
 
@@ -99,6 +99,10 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         else if (type == EffectType.trail)
             this.maxAge = 50;
         else if (type == EffectType.ray)
+            this.maxAge = 20;
+        else if (type == EffectType.blockMarker)
+            this.maxAge = 20;
+        else if (type == EffectType.circleMarker)
             this.maxAge = 20;
         else if (type == EffectType.explosion)
         {
@@ -213,7 +217,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         if (this.maxAge > 0 && this.maxAge < this.age)
             return;
 
-        if (this.type == EffectType.ray)
+        if (this.type == EffectType.ray || this.type == EffectType.blockMarker || this.type == EffectType.circleMarker)
         {
             this.state = State.removed;
             Game.removeEffects.add(this);
@@ -273,7 +277,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         }
         else if (this.type == EffectType.ray)
         {
-            int size = 6;
+            double size = 6 * this.size / Bullet.bullet_size;
 
             if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255, 50);
@@ -284,6 +288,26 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
+        }
+        else if (this.type == EffectType.blockMarker)
+        {
+            double size = Game.tile_size;
+
+            if (Level.isDark())
+                Drawing.drawing.setColor(255, 255, 255, 50);
+            else
+                Drawing.drawing.setColor(0, 0, 0, 50);
+
+            drawing.drawRect(this.posX, this.posY, size, size, 10);
+        }
+        else if (this.type == EffectType.circleMarker)
+        {
+            if (Level.isDark())
+                Drawing.drawing.setColor(255, 255, 255, 50);
+            else
+                Drawing.drawing.setColor(0, 0, 0, 50);
+
+            Mine.drawRange2D(this.posX, this.posY, size);
         }
         else if (this.type == EffectType.explosion)
         {
@@ -731,11 +755,12 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         else if (this.type == EffectType.ray)
         {
             drawing.setColor(255, 255, 255, 50, 1);
+            double size = this.size / Bullet.bullet_size * 24;
 
             if (Game.enable3d)
-                drawing.fillGlow(this.posX, this.posY, this.posZ, 24, 24, false);
+                drawing.fillGlow(this.posX, this.posY, this.posZ, size, size, false);
             else
-                drawing.fillGlow(this.posX, this.posY, 24, 24, false);
+                drawing.fillGlow(this.posX, this.posY, size, size, false);
         }
     }
 

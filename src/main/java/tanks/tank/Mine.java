@@ -3,15 +3,12 @@ package tanks.tank;
 import tanks.*;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
-import tanks.gui.screen.ScreenEditorBullet;
-import tanks.gui.screen.ScreenEditorMine;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemMine;
 import tanks.network.event.EventMineChangeTimer;
 import tanks.network.event.EventMineRemove;
 import tanks.tankson.*;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -204,7 +201,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
         {
             if (Math.pow(Math.abs(m.posX - this.posX), 2) + Math.pow(Math.abs(m.posY - this.posY), 2) < Math.pow(this.explosion.radius, 2))
             {
-                if (m instanceof Tank && !m.destroy && ((Tank) m).targetable)
+                if (m instanceof Tank && !m.destroy && ((Tank) m).currentlyTargetable)
                 {
                     if (Team.isAllied(m, this.tank))
                         allyNear = true;
@@ -214,7 +211,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
             }
         }
 
-        if (enemyNear && !allyNear && this.timer > this.triggeredTimer && !this.isRemote)
+        if (enemyNear && !allyNear && this.timer > this.triggeredTimer && !ScreenPartyLobby.isClient)
         {
             this.timer = this.triggeredTimer;
             Game.eventsOut.add(new EventMineChangeTimer(this));

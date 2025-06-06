@@ -4,12 +4,15 @@ import io.netty.buffer.ByteBuf;
 import tanks.Crusade;
 import tanks.Game;
 import tanks.Level;
+import tanks.Movable;
 import tanks.gui.screen.ScreenFailedToLoadLevel;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.Item;
 import tanks.minigames.Minigame;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankAIControlled;
+import tanks.tank.TankPlayer;
+import tanks.tank.TankRemote;
 
 public class EventLoadLevel extends PersonalEvent
 {
@@ -39,6 +42,13 @@ public class EventLoadLevel extends PersonalEvent
 			s.append("shop\n");
 
 			for (Item.ShopItem i: Crusade.currentCrusade.getShop())
+			{
+				s.append(i.toString()).append("\n");
+			}
+
+			s.append("builds\n");
+
+			for (TankPlayer.ShopTankBuild i: Crusade.currentCrusade.getBuildsShop())
 			{
 				s.append(i.toString()).append("\n");
 			}

@@ -9,14 +9,16 @@ import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class CrusadePlayer
 {
     public Player player;
 
     public ItemBar itemBar;
-
     public int coins;
+    public HashSet<String> ownedBuilds = new HashSet<>();
+    public String currentBuild = "player";
 
     public CrusadePlayer(Player p)
     {
@@ -160,6 +162,8 @@ public class CrusadePlayer
             f.println(this.itemUses.toString());
             f.println(this.itemHits.toString());
             f.println(Crusade.currentCrusade.livingTankIDs.toString());
+            f.println(this.ownedBuilds.toString());
+            f.println(this.currentBuild);
 
             f.stopWriting();
 

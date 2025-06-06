@@ -82,7 +82,7 @@ public class Level
 	public int startingCoins;
 	public ArrayList<Item.ShopItem> shop = new ArrayList<>();
 	public ArrayList<Item.ItemStack<?>> startingItems = new ArrayList<>();
-	public ArrayList<TankPlayer> playerBuilds = new ArrayList<>();
+	public ArrayList<TankPlayer.ShopTankBuild> playerBuilds = new ArrayList<>();
 
 	// Saved on the client to keep track of what each item is
 	public int clientStartingCoins;
@@ -164,11 +164,13 @@ public class Level
 					else if (parsing == 4)
 					{
 						TankAIControlled t = TankAIControlled.fromString(s);
-						this.customTanks.add(t);
+						if (t != null)
+							this.customTanks.add(t);
 					}
 					else if (parsing == 5)
 					{
-						TankPlayer t = TankPlayer.fromString(s);
+						TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(s);
+						t.enableTertiaryColor = true;
 						this.playerBuilds.add(t);
 					}
 					else
@@ -186,7 +188,7 @@ public class Level
 
 		if (playerBuilds.isEmpty())
 		{
-			TankPlayer tp = new TankPlayer();
+			TankPlayer.ShopTankBuild tp = new TankPlayer.ShopTankBuild();
 			playerBuilds.add(tp);
 		}
 
@@ -526,6 +528,9 @@ public class Level
 				t.networkID = Tank.nextFreeNetworkID();
 				Tank.idMap.put(t.networkID, t);
 
+				if (sc != null)
+					t.drawAge = 50;
+
 				if (remote)
 					Game.movables.add(new TankRemote(t));
 				else
@@ -568,7 +573,7 @@ public class Level
 
 		int playerCount = 1;
 		if (ScreenPartyHost.isServer && ScreenPartyHost.server != null && sc == null)
-			playerCount += ScreenPartyHost.server.connections.size();
+			playerCount = Game.players.size();
 
 		if (!this.includedPlayers.isEmpty())
 			playerCount = this.includedPlayers.size();
@@ -708,8 +713,20 @@ public class Level
 				else if (!remote)
 				{
 					TankPlayer tank = new TankPlayer(x, y, angle);
-					this.playerBuilds.get(0).clonePropertiesTo(tank);
+
+					TankPlayer.ShopTankBuild build = this.playerBuilds.get(0);
+					if (Crusade.crusadeMode)
+					{
+						ArrayList<TankPlayer.ShopTankBuild> builds = Crusade.currentCrusade.getBuildsShop();
+						for (TankPlayer.ShopTankBuild shopTankBuild : builds)
+						{
+							if (shopTankBuild.name.equals(Game.player.buildName))
+								build = shopTankBuild;
+						}
+					}
+					build.clonePropertiesTo(tank);
 					Game.playerTank = tank;
+					Game.player.buildName = tank.buildName;
 					tank.team = team;
 					tank.registerNetworkID();
 					Game.movables.add(tank);
@@ -722,6 +739,7 @@ public class Level
 			{
 				TankSpawnMarker t = new TankSpawnMarker("player", this.playerSpawnsX.get(i), this.playerSpawnsY.get(i), this.playerSpawnsAngle.get(i));
 				t.team = this.playerSpawnsTeam.get(i);
+				t.drawAge = 50;
 				Game.movables.add(t);
 
 				if (sc != null)

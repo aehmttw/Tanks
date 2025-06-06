@@ -5,6 +5,7 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBoxInstant;
+import tanks.gui.TextBox;
 
 public class ScreenShareLevel extends Screen
 {

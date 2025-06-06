@@ -24,6 +24,8 @@ public class TextBox implements IDrawable, ITrigger
 	public String previousInputText;
 	public String inputText;
 
+	public String hintText = null;
+
 	public boolean enableHover = false;
 	public String[] hoverText;
 	public String hoverTextRaw = "";
@@ -270,6 +272,11 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (selected)
 			Drawing.drawing.drawInterfaceText(posX, posY, inputText + "\u00a7127127127255_");
+		else if (inputText.isEmpty() && this.hintText != null)
+		{
+			Drawing.drawing.setColor(0, 0, 0, 127);
+			Drawing.drawing.drawInterfaceText(posX, posY, hintText);
+		}
 		else
 			Drawing.drawing.drawInterfaceText(posX, posY, inputText);
 	}

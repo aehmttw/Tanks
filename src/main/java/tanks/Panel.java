@@ -6,21 +6,21 @@ import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.item.Item;
 import tanks.network.Client;
 import tanks.network.MessageReader;
 import tanks.network.NetworkEventMap;
-import tanks.network.event.EventBeginLevelCountdown;
-import tanks.network.event.EventPlayerRevealBuild;
-import tanks.network.event.INetworkEvent;
-import tanks.network.event.IStackableEvent;
+import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleTeleporter;
 import tanks.rendering.*;
 import tanks.tank.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class Panel
 {
@@ -99,6 +99,8 @@ public class Panel
 	public LoadingTerrainContinuation continuation = null;
 	public long continuationStartTime = 0;
 	public boolean continuationMusic = false;
+
+	public double timeSinceBotUpdate;
 
 	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
 	public String saveScreenshotDir = null;
@@ -203,6 +205,8 @@ public class Panel
 			Game.game.window.soundPlayer.loadMusic("/music/beatblocks/beat_beeps_4.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/beatblocks/beat_beeps_8.ogg");
 			Game.game.window.soundPlayer.loadMusic("/music/battle.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/results.ogg");
+			Game.game.window.soundPlayer.loadMusic("/music/finished_music.ogg");
 
 			for (int i = 1; i <= 8; i++)
 			{
@@ -372,8 +376,12 @@ public class Panel
 					for (int j = 0; j < Game.movables.size(); j++)
 					{
 						Movable m = Game.movables.get(j);
+
 						if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
+						{
 							((TankPlayerRemote) m).health = 0;
+							m.destroy = true;
+						}
 					}
 
 					ScreenPartyHost.includedPlayers.remove(ScreenPartyHost.disconnectedPlayers.get(i));
@@ -383,6 +391,20 @@ public class Panel
 						if (p.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
 						{
 							ScreenPartyHost.readyPlayers.remove(p);
+
+							if (Game.screen instanceof ScreenGame)
+							{
+								ScreenGame sg = (ScreenGame) Game.screen;
+								for (int j = 0; j < sg.eliminatedPlayers.size(); j++)
+								{
+									if (sg.eliminatedPlayers.get(j).clientId.equals(p.clientID))
+									{
+										sg.eliminatedPlayers.remove(j);
+										Game.eventsOut.add(new EventUpdateEliminatedPlayers(sg.eliminatedPlayers));
+										break;
+									}
+								}
+							}
 
 							if (Crusade.currentCrusade != null)
 							{
@@ -403,25 +425,35 @@ public class Panel
 				if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).cancelCountdown)
 				{
 					Game.eventsOut.add(new EventBeginLevelCountdown());
-					((ScreenGame) Game.screen).cancelCountdown = false;
+					ScreenGame s = (ScreenGame) Game.screen;
+					s.cancelCountdown = false;
 
 					for (Movable m: Game.movables)
 					{
 						if (m instanceof TankPlayable)
 						{
 							int build = -1;
-							for (int i = 0; i < Game.currentLevel.playerBuilds.size(); i++)
+							for (int i = 0; i < s.builds.size(); i++)
 							{
-								TankPlayable t = Game.currentLevel.playerBuilds.get(i);
+								TankPlayable t = s.builds.get(i);
 								if (t.name.equals(((TankPlayable) m).buildName))
 								{
 									build = i;
+									boolean d = m.destroy;
 									t.clonePropertiesTo((TankPlayable) m);
+									if (d)
+										((TankPlayable) m).health = 0;
 									break;
 								}
 							}
 
 							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayable) m).networkID, build));
+						}
+						else if (m instanceof TankPlayerBot)
+						{
+							int b = (int) (Math.random() * s.builds.size());
+							s.builds.get(b).clonePropertiesTo((TankPlayerBot) m);
+							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayerBot) m).networkID, b));
 						}
 					}
 				}
@@ -463,8 +495,20 @@ public class Panel
 				}
 			}
 
-			this.pastPlayerX.add(Drawing.drawing.playerX);
-			this.pastPlayerY.add(Drawing.drawing.playerY);
+			if (Drawing.drawing.spectateTransitionTime > 0)
+			{
+				double frac = 0.5 + Math.cos(Drawing.drawing.spectateTransitionTime / Drawing.drawing.spectateTransitionTimeBase * Math.PI) / 2;
+				Drawing.drawing.spectateTransitionTime -= Panel.frameFrequency;
+
+				this.pastPlayerX.add(Drawing.drawing.playerX * frac + Drawing.drawing.lastSwitchedPlayerX * (1 - frac));
+				this.pastPlayerY.add(Drawing.drawing.playerY * frac + Drawing.drawing.lastSwitchedPlayerY * (1 - frac));
+			}
+			else
+			{
+				this.pastPlayerX.add(Drawing.drawing.playerX);
+				this.pastPlayerY.add(Drawing.drawing.playerY);
+			}
+
 			this.pastPlayerTime.add(this.age);
 
 			while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.drawing.getTrackOffset())
@@ -585,10 +629,8 @@ public class Panel
 			{
 				for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
 				{
-					synchronized (ScreenPartyHost.server.connections.get(j).events)
-					{
-						ScreenPartyHost.server.connections.get(j).events.addAll(Game.eventsOut);
-					}
+					if (ScreenPartyHost.server.connections.get(j).joined)
+						ScreenPartyHost.server.connections.get(j).addEvents(Game.eventsOut);
 
 					ScreenPartyHost.server.connections.get(j).reply();
 				}
@@ -797,6 +839,11 @@ public class Panel
 			this.drawBar();
 		}
 
+		if (Drawing.drawing.tooltip != null)
+			Drawing.drawing.drawTooltip(Drawing.drawing.tooltip, Drawing.drawing.getInterfaceMouseX(), Drawing.drawing.getInterfaceMouseY());
+
+		Drawing.drawing.tooltip = null;
+
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 
@@ -847,6 +894,16 @@ public class Panel
 				Drawing.drawing.setColor(0, 0, 0);
 			}
 
+			if (Game.playerTank != null && Game.screen instanceof ScreenGame)
+			{
+				Item.ItemStack<?> i = Game.playerTank.player.hotbar.itemBar.getSelectedAction(false);
+				if (i == null || i.destroy)
+				{
+					Drawing.drawing.setColor(255, 0, 0);
+					Drawing.drawing.drawInterfaceImage("cursor_deny.png", mx, my, 48, 48);
+					return;
+				}
+			}
 			Drawing.drawing.drawInterfaceImage("cursor.png", mx, my, 48, 48);
 		}
 

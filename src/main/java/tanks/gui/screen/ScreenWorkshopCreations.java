@@ -118,6 +118,13 @@ public class ScreenWorkshopCreations extends Screen
 					SteamUGCDetails d = Game.steamNetworkHandler.workshop.publishedFiles.get(i);
 					b.text = d.getTitle();
 					b.setSubtext("\u00A7000200000255+%d \u00A7200000000255-%d", d.getVotesUp(), d.getVotesDown());
+					ArrayList<String> desc = Drawing.drawing.wrapText(d.getDescription(), 300, 12);
+					if (!d.getDescription().isEmpty())
+					{
+						b.enableHover = true;
+						b.hoverText = new String[desc.size()];
+						desc.toArray(b.hoverText);
+					}
 					b.function = () ->
 					{
 						Game.screen = new ScreenWaitingCancelable("Downloading...");

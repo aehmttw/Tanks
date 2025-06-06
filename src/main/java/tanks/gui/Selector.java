@@ -45,6 +45,7 @@ public class Selector implements IDrawable, ITrigger
     public double hoverColorR = 240;
     public double hoverColorG = 240;
     public double hoverColorB = 255;
+    public boolean manualDarkMode = false;
 
     public long lastFrame;
     public double effectTimer;
@@ -230,11 +231,13 @@ public class Selector implements IDrawable, ITrigger
         if (format)
             s = Game.formatString(s);
 
+        String t = translate ? Translation.translate(s) : s;
 
-        if (translate)
-            Drawing.drawing.drawInterfaceText(posX, posY, Translation.translate(s));
-        else
-            Drawing.drawing.drawInterfaceText(posX, posY, s);
+        double size = this.sizeY * 0.6;
+        if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, t) / Drawing.drawing.interfaceScale > this.sizeX - 80)
+            Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, t) / Drawing.drawing.interfaceScale));
+
+        Drawing.drawing.drawInterfaceText(posX, posY, t);
     }
 
     public void update()
@@ -364,6 +367,7 @@ public class Selector implements IDrawable, ITrigger
         ScreenSelector s = new ScreenSelector(this, Game.screen);
         s.images = this.images;
         s.models = this.models;
+        s.buttonList.manualDarkMode = this.manualDarkMode;
 
         if (this.images != null)
             s.drawImages = true;

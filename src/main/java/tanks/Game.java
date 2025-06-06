@@ -34,7 +34,6 @@ import tanks.rendering.ShaderGroundIntro;
 import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
-import tanks.tankson.Compatibility;
 
 import java.io.*;
 import java.util.*;
@@ -67,10 +66,14 @@ public class Game
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
+	public static ArrayList<IAvoidObject> avoidObjects = new ArrayList<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
 	public static ArrayList<Effect> tracks = new ArrayList<>();
 	public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
+
+	public static ArrayList<Player> botPlayers = new ArrayList<>();
+	public static int botPlayerCount = 0;
 
 	/**
 	 * Obstacles that need to change how they look next frame
@@ -145,7 +148,7 @@ public class Game
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
 
-    public static final int network_protocol = 57;
+    public static final int network_protocol = 58;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
@@ -196,8 +199,10 @@ public class Game
 	public static boolean enableVibrations = true;
 
 	public static boolean enableChatFilter = true;
-	public static boolean showSpeedrunTimer = false;
 	public static boolean nameInMultiplayer = true;
+
+	public static boolean showSpeedrunTimer = false;
+	public static boolean showBestTime = false;
 
 	public static boolean previewCrusades = true;
 
@@ -265,7 +270,7 @@ public class Game
 	public static boolean autoLoadExtensions = true;
 	public static ExtensionRegistry extensionRegistry = new ExtensionRegistry();
 
-	public static Extension[] extraExtensions;
+	public static Extension[] extraExtensions = null;
 	public static int[] extraExtensionOrder;
 
 	public BaseWindow window;
@@ -298,6 +303,7 @@ public class Game
 	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String itemDir = directoryPath + "/items";
 	public static final String tankDir = directoryPath + "/tanks";
+	public static final String buildDir = directoryPath + "/builds";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
 	public static final String screenshotsPath = directoryPath + "/screenshots/";
@@ -342,8 +348,10 @@ public class Game
 		NetworkEventMap.register(EventPlayerChat.class);
 		NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
-		NetworkEventMap.register(EventLevelEndQuick.class);
-		NetworkEventMap.register(EventLevelEnd.class);
+		NetworkEventMap.register(EventSetLevelVersus.class);
+		NetworkEventMap.register(EventLevelFinishedQuick.class);
+		NetworkEventMap.register(EventLevelFinished.class);
+		NetworkEventMap.register(EventLevelExit.class);
 		NetworkEventMap.register(EventReturnToLobby.class);
 		NetworkEventMap.register(EventBeginCrusade.class);
 		NetworkEventMap.register(EventReturnToCrusade.class);
@@ -353,6 +361,7 @@ public class Game
 		NetworkEventMap.register(EventAddShopItem.class);
 		NetworkEventMap.register(EventSortShopButtons.class);
 		NetworkEventMap.register(EventPurchaseItem.class);
+		NetworkEventMap.register(EventPurchaseBuild.class);
 		NetworkEventMap.register(EventSetItem.class);
 		NetworkEventMap.register(EventSetItemBarSlot.class);
 		NetworkEventMap.register(EventLoadItemBarSlot.class);
@@ -364,6 +373,7 @@ public class Game
 		NetworkEventMap.register(EventPlayerSetBuild.class);
 		NetworkEventMap.register(EventPlayerRevealBuild.class);
 		NetworkEventMap.register(EventUpdateReadyPlayers.class);
+		NetworkEventMap.register(EventUpdateEliminatedPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
 		NetworkEventMap.register(EventTankUpdate.class);
@@ -494,9 +504,14 @@ public class Game
 		Game.registryModelTank.registerFullModel(dir);
 	}
 
-	public static void registerTankEmblem(String dir)
+	public static void registerTankEmblems()
 	{
-		Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + dir));
+		ArrayList<String> emblems = Game.game.fileManager.getInternalFileContents("/images/emblems/emblems.txt");
+
+		for (String s: emblems)
+		{
+			Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + s + ".png"));
+		}
 	}
 
 	public static void registerMinigame(Class<? extends Minigame> minigame, String name, String desc)
@@ -519,7 +534,6 @@ public class Game
 		Drawing.initialize();
 		Panel.initialize();
 		Game.exitToTitle();
-		Compatibility.init();
 
 		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 
@@ -589,7 +603,7 @@ public class Game
 
 		registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
-//		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
+		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
 
 		registerMetadataSelector(SelectorStackHeight.selector_name, SelectorStackHeight.class);
@@ -712,7 +726,7 @@ public class Game
 		catch (FileNotFoundException e)
 		{
 			Game.logger = System.err;
-			Game.logger.println(new Date().toString() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
+			Game.logger.println(new Date() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
 		}
 
 		BaseFile optionsFile = Game.game.fileManager.getFile(Game.homedir + Game.optionsPath);
@@ -736,6 +750,11 @@ public class Game
 			}
 		}
 
+		if (!enableExtensions && extraExtensions != null)
+		{
+			System.err.println("Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. Only extensions provided to launchWithExtensions() will be used.");
+		}
+
 		for (Extension e: extensionRegistry.extensions)
 			e.setUp();
 
@@ -756,6 +775,8 @@ public class Game
 	public static void createModels()
 	{
 		TankModels.initialize();
+
+		BulletBlock.block = Drawing.drawing.createModel("/models/cube/");
 	}
 
 	/**
@@ -766,7 +787,7 @@ public class Game
 	 */
 	public static void addTank(Tank tank)
 	{
-		if (tank instanceof TankPlayer || tank instanceof TankPlayerController || tank instanceof TankPlayerRemote || tank instanceof TankRemote)
+		if (tank instanceof TankPlayer || tank instanceof TankPlayerRemote || tank instanceof TankRemote)
 			Game.exitToCrash(new RuntimeException("Invalid tank added with Game.addTank(" + tank + ")"));
 
 		tank.registerNetworkID();
@@ -833,6 +854,7 @@ public class Game
 			Arrays.fill(Game.game.heightGrid[i], -1000);
 			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
 			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
+			Arrays.fill(Game.tileDrawables[i], null);
 		}
 
 		for (int i = 0; i < Game.obstacles.size(); i++)
@@ -990,6 +1012,9 @@ public class Game
 		ScreenPartyHost.isServer = false;
 		ScreenPartyLobby.isClient = false;
 
+		Game.eventsIn.clear();
+		Game.eventsOut.clear();
+
 		cleanUp();
 
 		Game.crashMessage = e.toString();
@@ -1006,10 +1031,10 @@ public class Game
 		}
 
 		Game.crashTime = System.currentTimeMillis();
-		Game.logger.println(new Date().toString() + " (syserr) the game has crashed! below is a crash report, good luck:");
+		Game.logger.println(new Date() + " (syserr) the game has crashed! below is a crash report, good luck:");
 		e.printStackTrace(Game.logger);
 
-		if (!(Game.screen instanceof ScreenCrashed) && !(Game.screen instanceof ScreenOutOfMemory))
+		if (!(Game.screen instanceof ScreenCrashed))
 		{
 			try
 			{
@@ -1021,7 +1046,7 @@ public class Game
 				f.create();
 
 				f.startWriting();
-				f.println("Tanks crash report: " + Game.version + " - " + new Date().toString() + "\n");
+				f.println("Tanks crash report: " + Game.version + " - " + new Date() + "\n");
 
 				f.println(e.toString());
 				for (StackTraceElement el: e.getStackTrace())
@@ -1330,6 +1355,8 @@ public class Game
 		Game.player.hotbar.enabledCoins = false;
 		Game.player.hotbar.itemBar = new ItemBar(Game.player);
 		Game.player.hotbar.itemBar.showItems = false;
+		Game.player.ownedBuilds = new HashSet<>();
+		Game.player.buildName = "player";
 
 		//if (Game.game.window != null)
 		//	Game.game.window.setShowCursor(false);
@@ -1426,7 +1453,7 @@ public class Game
 				return lb.toString().length() - la.toString().length();
 			else if (la.toString().length() != lb.toString().length())
 				return la.toString().length() - lb.toString().length();
-			else if (!la.toString().equals(lb.toString()))
+			else if (!la.toString().contentEquals(lb))
 				return la.toString().compareTo(lb.toString());
 		}
 

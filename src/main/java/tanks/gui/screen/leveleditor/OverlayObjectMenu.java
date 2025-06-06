@@ -56,9 +56,13 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     }
     );
 
-    public Button playerItems = new Button(this.centerX - this.objXSpace / 2, this.centerY + 120, 350, 40, "Player items", () -> Game.screen = new OverlayPlayerItems(Game.screen, editor));
+    public Button playerItems = new Button(this.centerX - this.objXSpace / 2, this.centerY + 120, 350, 40, "Player items",
+            () -> Game.screen = new OverlayPlayerItems(Game.screen, editor),
+            "Adjust items which players start---with or which can be bought in the shop");
 
-    public Button playerBuilds = new Button(this.centerX + this.objXSpace / 2, this.centerY + 120, 350, 40, "Player builds", () -> Game.screen = new OverlayPlayerBuilds(Game.screen, editor));
+    public Button playerBuilds = new Button(this.centerX + this.objXSpace / 2, this.centerY + 120, 350, 40, "Player builds",
+            () -> Game.screen = new OverlayPlayerBuilds(Game.screen, editor),
+            "Adjust or create new configurations---of stats for player tanks");
 
     public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {
@@ -114,9 +118,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         this.musicInstruments = true;
 
-        TankPlayer tp = new TankPlayer(0, 0, 0);
-        tp.setDefaultColor();
-        movePlayerButton = new ButtonObject(tp, this.centerX - 50, this.centerY, 75, 75, () -> editor.movePlayer = true, "Move the player");
+        movePlayerButton = new ButtonObject(new TankPlayer(0, 0, 0).setDefaultColor(), this.centerX - 50, this.centerY, 75, 75, () -> editor.movePlayer = true, "Move the player");
 
         sort.imageSizeX = 25;
         sort.imageSizeY = 25;

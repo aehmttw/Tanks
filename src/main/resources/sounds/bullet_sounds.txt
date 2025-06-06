@@ -19,11 +19,16 @@ explosion.ogg
 freeze.ogg
 hiss.ogg
 hit_chain.ogg
+hit_chain_2.ogg
+impact.ogg
 key.ogg
 lay_mine.ogg
 obliterate.ogg
 open.ogg
+open2.ogg
+plop.ogg
 rampage.ogg
+rampage2.ogg
 shield.ogg
 slam.ogg
 slam2.ogg

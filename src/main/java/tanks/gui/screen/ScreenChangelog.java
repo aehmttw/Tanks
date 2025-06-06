@@ -504,6 +504,43 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements\n"
                     }
             );
+
+            new Changelog("v1.6.c", new String[]
+                    {
+                            "*What's new in Tanks v1.6.c:\n\n" +
+                                    "Added configurable player tank builds\n" +
+                                    "Added Steam Workshop support\n" +
+                                    "Added public Steam parties\n" +
+                                    "New crusade editor\n" +
+                                    "Added option to add bot players to parties\n" +
+                                    "Added best run display option for speedrunning\n" +
+                                    "Added new versus mode rankings screen\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
+
+            new Changelog("v1.6.d", new String[]
+                    {
+                            "*What's new in Tanks v1.6.d:\n\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
+
+            new Changelog("v1.6.e", new String[]
+                    {
+                            "*What's new in Tanks v1.6.e:\n\n" +
+                                    "Added new circular hotbar option\n" +
+                                    "Improvements and new UI for tank spectating\n" +
+                                    "New emblems added, made by the Tanks community!\n" +
+                                    "Aim indicators for bullets now reflect size, range, type, etc...\n" +
+                                    "Added hotkeys to instantly use tank abilities\n" +
+                                    "Abilities can now be scrolled to like other hotbar slots\n" +
+                                    "Teleporter orbs now have trails\n" +
+                                    "Improved physics of arc and block bullets\n" +
+                                    "Several performance improvements\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
         }
     }
 }

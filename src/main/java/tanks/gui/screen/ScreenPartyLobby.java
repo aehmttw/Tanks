@@ -19,6 +19,7 @@ import java.util.UUID;
 public class ScreenPartyLobby extends Screen
 {
 	public static ArrayList<ConnectedPlayer> connections = new ArrayList<>();
+	public static int connectedBots = 0;
 	public static boolean isClient = false;
 	public static ArrayList<UUID> includedPlayers = new ArrayList<>();
 	public static ArrayList<ConnectedPlayer> readyPlayers = new ArrayList<>();
@@ -76,7 +77,7 @@ public class ScreenPartyLobby extends Screen
 		if (this.usernamePage > 0)
 			this.previousUsernamePage.update();
 
-		if ((this.usernamePage + 1) * 10 < connections.size())
+		if ((this.usernamePage + 1) * entries_per_page < connections.size() - 1)
 			this.nextUsernamePage.update();
 
 		share.update();
@@ -115,16 +116,22 @@ public class ScreenPartyLobby extends Screen
 
 		Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, title);
 
-		Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "Players in this party:");
+		if (connections != null && connections.size() > 1)
+			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "%d players in this party:", connections.size());
+		else
+			Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "1 player in this party:");
+
 
 		Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Level and crusade sharing:");
 
 		if (connections != null)
 		{
+			this.usernamePage = Math.min(this.usernamePage, (connections.size() - 2) / 10);
+
 			if (this.usernamePage > 0)
 				this.previousUsernamePage.draw();
 
-			if ((this.usernamePage + 1) * entries_per_page < connections.size())
+			if ((this.usernamePage + 1) * entries_per_page < connections.size() - 1)
 				this.nextUsernamePage.draw();
 
 

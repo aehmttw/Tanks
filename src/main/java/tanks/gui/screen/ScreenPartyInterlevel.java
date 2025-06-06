@@ -10,6 +10,7 @@ import tanks.gui.SpeedrunTimer;
 
 public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 {
+    public ScreenGame previous;
     public DisplayFireworks fireworksDisplay = new DisplayFireworks();
 
     Button newLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Generate new level", () ->
@@ -91,13 +92,12 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
     Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
     {
-        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen);
+        ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen, true);
         Level lev = new Level(Game.currentLevelString);
         lev.preview = true;
         lev.loadLevel(sc);
         Game.screen = sc;
 
-        sc.fromInterlevel = true;
         sc.music = music;
         sc.musicID = musicID;
         sc.updateDownloadButton();
@@ -108,6 +108,9 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
     {
         Game.player.hotbar.percentHidden = 100;
 
+        if (Game.screen instanceof ScreenGame)
+            this.previous = (ScreenGame) Game.screen;
+
         if (Panel.win)
         {
             //Drawing.drawing.playSound("win.ogg");
@@ -117,6 +120,12 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         {
             //Drawing.drawing.playSound("lose.ogg");
             this.music = "lose_music.ogg";
+        }
+
+        if (this.previous != null && this.previous.isVersus)
+        {
+            this.music = "finished_music.ogg";
+            this.musicID = "versus_results";
         }
 
         save.posX = Drawing.drawing.interfaceSizeX - Drawing.drawing.interfaceScaleZoom * 40;
@@ -201,6 +210,9 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, Panel.winlose);
+
+        if (this.previous != null && this.previous.isVersus)
+            previous.rankingsOverlay.draw();
 
         if (!ScreenInterlevel.fromMinigames)
            save.draw();

@@ -16,11 +16,13 @@ import java.util.UUID;
 public class Player
 {
     public int remainingLives;
-    public Hotbar hotbar = new Hotbar();
+    public Hotbar hotbar = new Hotbar(this);
 
     public UUID clientID;
     public String username;
     public Tank tank;
+    public String buildName = "player";
+    public HashSet<String> ownedBuilds = new HashSet<>();
 
     public int colorR = 0;
     public int colorG = 150;
@@ -36,6 +38,8 @@ public class Player
 
     public boolean enableSecondaryColor = false;
     public boolean enableTertiaryColor = false;
+
+    public boolean isBot = false;
 
     protected ConnectedPlayer connectedPlayer;
 
@@ -70,7 +74,7 @@ public class Player
             else
                 c = new Crusade(Game.game.fileManager.getFile(fileName), name);
 
-            this.hotbar = new Hotbar();
+            this.hotbar = new Hotbar(this);
             this.hotbar.itemBar = new ItemBar(this);
 
             c.currentLevel = Integer.parseInt(f.nextLine());
@@ -107,6 +111,12 @@ public class Player
             {
                 parseIntHashSet(c.livingTankIDs, f.nextLine());
                 c.retry = c.livingTankIDs.size() > 0;
+            }
+
+            if (f.hasNextLine())
+            {
+                parseStringHashSet(cp.ownedBuilds, f.nextLine());
+                cp.currentBuild = f.nextLine();
             }
 
             f.stopReading();
@@ -182,6 +192,19 @@ public class Player
         }
     }
 
+    public static void parseStringHashSet(HashSet<String> set, String str)
+    {
+        String[] parts = str.replace("[", "").replace("]", "").split(", ");
+
+        for (String s: parts)
+        {
+            if (s.length() <= 0)
+                continue;
+
+            set.add(s);
+        }
+    }
+
     public static void parseLevelPerformances(ArrayList<Crusade.LevelPerformance> performances, String str)
     {
         String[] parts = str.replace("[", "").replace("]", "").split(", ");
@@ -214,6 +237,20 @@ public class Player
         this.connectedPlayer.colorR3 = this.colorR3;
         this.connectedPlayer.colorG3 = this.colorG3;
         this.connectedPlayer.colorB3 = this.colorB3;
+
+        if (this.tank != null && this.tank.team != null && this.tank.team.enableColor)
+        {
+            this.connectedPlayer.teamColorR = this.tank.team.teamColorR;
+            this.connectedPlayer.teamColorG = this.tank.team.teamColorG;
+            this.connectedPlayer.teamColorB = this.tank.team.teamColorB;
+        }
+        else
+        {
+            this.connectedPlayer.teamColorR = 255;
+            this.connectedPlayer.teamColorG = 255;
+            this.connectedPlayer.teamColorB = 255;
+        }
+
         return this.connectedPlayer;
     }
 }

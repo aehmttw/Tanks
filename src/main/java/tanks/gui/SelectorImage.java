@@ -162,6 +162,7 @@ public class SelectorImage extends Selector
         s.buttonList.imageR = this.imageR;
         s.buttonList.imageG = this.imageG;
         s.buttonList.imageB = this.imageB;
+        s.buttonList.controlsYOffset += 30;
 
         if (this.images != null || this.drawImages)
             s.drawImages = true;
@@ -169,10 +170,10 @@ public class SelectorImage extends Selector
         if (this.models != null)
             s.drawModels = true;
 
-        s.buttonList.objHeight *= 2;
-        s.buttonList.objWidth = s.buttonList.objHeight;
-        s.buttonList.objXSpace = s.buttonList.objWidth + 30;
-        s.buttonList.objYSpace = s.buttonList.objHeight + 30;
+        s.buttonList.buttonHeight *= 2;
+        s.buttonList.buttonWidth = s.buttonList.buttonHeight;
+        s.buttonList.buttonXSpace = s.buttonList.buttonWidth + 30;
+        s.buttonList.buttonYSpace = s.buttonList.buttonHeight + 30;
         s.buttonList.hideText = true;
         s.buttonList.rows = 3;
         s.buttonList.columns = 10;

@@ -60,8 +60,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         }
     });
 
-
-
     public ScreenCrusadePreviewLevel(Crusade crusade, String level, int index, Screen s)
     {
         super(350, 40, 380, 60);
@@ -102,8 +100,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
     public void update()
     {
         this.back.update();
-        this.next.update();
-        this.prev.update();
 
         if (Game.enable3d)
             Game.recomputeHeightGrid();
@@ -112,6 +108,24 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         {
             back.function.run();
             Game.game.input.editorPause.invalidate();
+        }
+
+        if (Game.game.window.validScrollUp)
+        {
+            Game.game.window.validScrollUp = false;
+            if (this.prev.enabled)
+                this.prev.function.run();
+        }
+        else if (Game.game.window.validScrollDown)
+        {
+            Game.game.window.validScrollDown = false;
+            if (this.next.enabled)
+                this.next.function.run();
+        }
+        else
+        {
+            this.next.update();
+            this.prev.update();
         }
     }
 

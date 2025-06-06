@@ -68,6 +68,6 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
     @Override
     public void onAttemptClose()
     {
-        Game.screen = new ScreenConfirmSaveCrusade(Game.screen, previous);
+        //Game.screen = new ScreenConfirmSaveCrusade(Game.screen, previous);
     }
 }

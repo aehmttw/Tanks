@@ -80,7 +80,7 @@ public class EventShootBullet extends PersonalEvent
 					t2 = ((TankRemote) t).tank;
 
 				if (t2 instanceof TankAIControlled)
-					sb = ((TankAIControlled) ((TankRemote) t).tank).bulletItem;
+					sb = ((TankAIControlled) t2).bulletItem;
 				else if (t2 instanceof TankPlayer)
 					sb = ((ItemBullet.ItemStackBullet)(((TankPlayer) t2).abilities.get(-this.item)));
 			}

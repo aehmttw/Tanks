@@ -1,19 +1,8 @@
 package tanks.tank;
 
-import basewindow.InputPoint;
-import tanks.AttributeModifier;
-import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletAirStrike;
-import tanks.bullet.BulletArc;
-import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.Hotbar;
-import tanks.hotbar.ItemBar;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemRemote;
 import tanks.network.event.EventTankControllerUpdateC;
 
 import java.util.Arrays;

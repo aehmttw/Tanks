@@ -2,7 +2,6 @@ package tanks;
 
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
-import tanks.effect.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.tank.NameTag;
@@ -10,9 +9,6 @@ import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 public abstract class Movable extends GameObject implements IDrawableForInterface
 {
@@ -37,10 +33,6 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	public int drawLevel = 3;
 	public boolean isRemote = false;
 	public boolean managedMotion = true;
-
-	public ArrayList<AttributeModifier> attributes = new ArrayList<>();
-	public HashMap<StatusEffect, StatusEffect.Instance> statusEffects = new HashMap<>();
-	public HashSet<String> attributeImmunities = new HashSet<>();
 
 	@MetadataProperty(id = "team", name = "Team", selector = SelectorTeam.selector_name, image = "team.png", keybind = "editor.team")
 	public Team team;

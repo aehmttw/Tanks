@@ -86,7 +86,7 @@ public class EventBulletAddAttributeModifier extends PersonalEvent
             if (this.effect.equals("multiply"))
                 o = AttributeModifier.Operation.multiply;
 
-            AttributeModifier m = AttributeModifier.obtain(this.name, AttributeModifier.attributeModifierTypes.get(this.type), o, this.value);
+            AttributeModifier m = AttributeModifier.newInstance(this.name, AttributeModifier.attributeModifierTypes.get(this.type), o, this.value);
 
             m.duration = this.duration;
             m.deteriorationAge = this.deteriorationAge;

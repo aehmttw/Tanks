@@ -55,7 +55,7 @@ public class AreaEffectFreeze extends AreaEffect
 
 				if (Movable.distanceBetween(this, m) <= this.size / 2 && !m.destroy)
 				{
-					AttributeModifier a = AttributeModifier.obtain("freeze", AttributeModifier.velocity, Operation.multiply, -1);
+					AttributeModifier a = AttributeModifier.newInstance("freeze", AttributeModifier.velocity, Operation.multiply, -1);
 					a.duration = 500;
 					a.warmupAge = 50;
 					a.deteriorationAge = 400;

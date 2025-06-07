@@ -2389,9 +2389,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			this.readyForInitialSpawn = false;
 			for (int i = 0; i < this.spawnedInitialCount; i++)
-			{
-				spawnTank();
-			}
+                spawnTank();
 		}
 
 		if (this.random.nextDouble() < this.spawnChance * Panel.frameFrequency && this.spawnedTanks.size() < this.spawnedMaxCount && !this.destroy && !ScreenGame.finishedQuick)

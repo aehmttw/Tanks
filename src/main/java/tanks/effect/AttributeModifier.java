@@ -97,12 +97,10 @@ public class AttributeModifier
 		return this;
 	}
 
-	private static int add = 0;
-
 	/**
 	 * Factory method to obtain an AttributeModifier instance, either from the recycle pool or create new
 	 */
-	public static AttributeModifier obtain(Type type, Operation op, double amount)
+	public static AttributeModifier newInstance(Type type, Operation op, double amount)
 	{
 		AttributeModifier modifier = recycleQueue.poll();
 		if (modifier != null)
@@ -113,9 +111,9 @@ public class AttributeModifier
 	/**
 	 * Factory method to obtain an AttributeModifier instance with a specific name
 	 */
-	public static AttributeModifier obtain(String name, Type type, Operation op, double amount)
+	public static AttributeModifier newInstance(String name, Type type, Operation op, double amount)
 	{
-		AttributeModifier modifier = obtain(type, op, amount);
+		AttributeModifier modifier = newInstance(type, op, amount);
 		modifier.name = name;
 		return modifier;
 	}

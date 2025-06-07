@@ -17,8 +17,8 @@ public class EffectManager
 
     public BiConsumer<AttributeModifier, Boolean> addAttributeCallback = (a, b) -> {};
 
-    public HashMap<String, AttributeModifier> attributeImmunities = new HashMap<>();
-    public ObjectArraySet<AttributeModifier> attributes = new ObjectArraySet<>();
+    public HashSet<String> attributeImmunities = new HashSet<>();
+    public ObjectArrayList<AttributeModifier> attributes = new ObjectArrayList<>();
     public Object2ObjectArrayMap<StatusEffect, StatusEffect.Instance> statusEffects = new Object2ObjectArrayMap<>();
     public ObjectArrayList<StatusEffect> removeStatusEffects = new ObjectArrayList<>();
     public ObjectArrayList<AttributeModifier> removeAttributes = new ObjectArrayList<>();
@@ -38,6 +38,7 @@ public class EffectManager
     {
         for (AttributeModifier a : this.attributes)
         {
+            a.age += Panel.frameFrequency;
             if (a.duration > 0 && a.age > a.duration)
             {
                 a.expired = true;
@@ -57,17 +58,27 @@ public class EffectManager
 
     public void addAttribute(AttributeModifier m)
     {
-        if (!this.attributeImmunities.containsKey(m.name))
+        if (!this.attributeImmunities.contains(m.name))
             this.attributes.add(m);
         this.addAttributeCallback.accept(m, false);
     }
 
     public void addUnduplicateAttribute(AttributeModifier m)
     {
-        if (this.attributeImmunities.containsKey(m.name))
+        if (this.attributeImmunities.contains(m.name))
             return;
 
-        this.attributes.remove(m);      // will be removed if name is equal, as defined by AttributeModifier.equals()
+        for (int i = 0; i < attributes.size(); i++)
+        {
+            AttributeModifier a = attributes.get(i);
+            if (m.name.equals(a.name))
+            {
+                AttributeModifier.recycle(a);
+                attributes.remove(i);
+                i--;
+            }
+        }
+
         this.attributes.add(m);
         this.addAttributeCallback.accept(m, true);
     }
@@ -170,7 +181,11 @@ public class EffectManager
                 if (a.deteriorationAge - a.age > bestTime || a.deteriorationAge <= 0)
                 {
                     bestTime = a.deteriorationAge - a.age;
-                    best = a;
+                    best = AttributeModifier.newInstance(a.name, a.type, a.effect, a.value);
+                    best.warmupAge = a.warmupAge;
+                    best.deteriorationAge = a.deteriorationAge;
+                    best.age = a.age;
+                    best.duration = a.duration;
 
                     if (a.deteriorationAge <= 0)
                         bestTime = Double.MAX_VALUE;
@@ -191,7 +206,7 @@ public class EffectManager
                         if (i.deteriorationAge - i.age > bestTime || a.deteriorationAge <= 0)
                         {
                             bestTime = i.deteriorationAge - i.age;
-                            best = AttributeModifier.obtain(a.type, a.effect, a.value);
+                            best = AttributeModifier.newInstance(a.type, a.effect, a.value);
                             best.warmupAge = i.warmupAge;
                             best.deteriorationAge = i.deteriorationAge;
                             best.age = i.age;
@@ -212,13 +227,15 @@ public class EffectManager
     public boolean removeAttribute(AttributeModifier.Type type)
     {
         boolean removed = false;
-        for (AttributeModifier a : new ObjectArraySet<>(attributes))
+        for (int i = 0; i < attributes.size(); i++)
         {
+            AttributeModifier a = attributes.get(i);
             if (a.type.equals(type))
             {
-                attributes.remove(a);
+                attributes.remove(i);
                 AttributeModifier.recycle(a);
                 removed = true;
+                i--;
             }
         }
         return removed;
@@ -228,7 +245,7 @@ public class EffectManager
     public boolean removeStatusEffect(String effect)
     {
         boolean removed = false;
-        for (StatusEffect e : statusEffects.keySet())
+        for (StatusEffect e : Collections.unmodifiableSet(statusEffects.keySet()))
         {
             if (e.name.equals(effect))
             {
@@ -253,5 +270,10 @@ public class EffectManager
 
         statusEffects.clear();
         attributes.clear();
+    }
+
+    public void addImmunities(String... immunities)
+    {
+        Collections.addAll(this.attributeImmunities, immunities);
     }
 }

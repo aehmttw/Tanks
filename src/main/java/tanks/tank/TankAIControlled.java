@@ -1111,8 +1111,7 @@ public class TankAIControlled extends Tank implements ITankField
 		t.drawAge = this.drawAge;
 		t.possessor = this;
 		t.skipNextUpdate = true;
-		t.attributes = this.attributes;
-		t.statusEffects = this.statusEffects;
+		t.setEffectManager(this.em());
 		t.coinValue = this.coinValue;
 		t.currentlyVisible = true;
 		t.cooldown = Math.min(t.cooldownBase, this.cooldown);
@@ -2626,8 +2625,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.orientation = this.sightTransformTank.orientation;
 			this.pitch = this.sightTransformTank.pitch;
 			this.drawAge = this.sightTransformTank.drawAge;
-			this.attributes = this.sightTransformTank.attributes;
-			this.statusEffects = this.sightTransformTank.statusEffects;
+			this.setEffectManager(this.sightTransformTank.em());
 			this.possessingTank = null;
 			this.currentlyVisible = true;
 			this.targetEnemy = null;
@@ -2700,8 +2698,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.health = t.health;
 			this.orientation = t.orientation;
 			this.drawAge = t.drawAge;
-			this.attributes = t.attributes;
-			this.statusEffects = t.statusEffects;
+			this.setEffectManager(t.em());
 			this.targetEnemy = null;
 
 			if (t instanceof TankAIControlled)
@@ -2786,8 +2783,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.possessingTank = t;
 			t.possessor = this;
 			t.skipNextUpdate = true;
-			t.attributes = this.attributes;
-			t.statusEffects = this.statusEffects;
+			t.setEffectManager(this.em());
 			t.coinValue = this.coinValue;
 
 			t.baseModel = this.baseModel;

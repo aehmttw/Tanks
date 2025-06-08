@@ -58,8 +58,10 @@ public class EffectManager
 
     public void addAttribute(AttributeModifier m)
     {
-        if (!this.attributeImmunities.contains(m.name))
-            this.attributes.add(m);
+        if (this.attributeImmunities.contains(m.name))
+            return;
+
+        this.attributes.add(m);
         this.addAttributeCallback.accept(m, false);
     }
 

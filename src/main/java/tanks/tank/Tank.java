@@ -4,12 +4,14 @@ import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.effect.AttributeModifier;
+import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.Item;
 import tanks.item.ItemDummyTankExplosion;
+import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.network.event.EventTankUpdateVisibility;
@@ -20,7 +22,10 @@ import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
 
 import static tanks.tank.TankPropertyCategory.*;
 
@@ -940,7 +945,19 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 	}
 
-	public void drawOutline() 
+	@Override
+	public void initEffectManager(EffectManager em)
+	{
+		em.addAttributeCallback = this::sendEvent;
+	}
+
+	public void sendEvent(AttributeModifier m, boolean unduplicate)
+	{
+		if (!this.isRemote)
+			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, unduplicate));
+	}
+
+	public void drawOutline()
 	{
 		drawAge = Game.tile_size;
 

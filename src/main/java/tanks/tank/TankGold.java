@@ -26,9 +26,7 @@ public class TankGold extends TankAIControlled
 		this.mine.explosion.radius *= 1.5;
 
 		if (Game.tankTextures)
-		{
-			this.colorModel = TankModels.arrow.color;
-		}
+            this.colorModel = TankModels.arrow.color;
 
 		this.coinValue = 4;
 

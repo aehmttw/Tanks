@@ -87,6 +87,8 @@ public class AttributeModifier
 		this.type = type;
 		this.effect = op;
 		this.value = amount;
+		this.age = 0;
+		this.expired = false;
 		return this;
 	}
 

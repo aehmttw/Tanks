@@ -1383,18 +1383,14 @@ public class TankAIControlled extends Tank implements ITankField
 	public void addIdleMotionOffset()
 	{
 		double offsetMotion = Math.sin(this.age * 0.02);
-		if (offsetMotion < 0)
-		{
-			double dist = this.distances[(int) (this.direction * 2 + 6) % 8];
-			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
-		}
+        double dist;
+        if (offsetMotion < 0)
+            dist = this.distances[(int) (this.direction * 2 + 6) % 8];
 		else
-		{
-			double dist = this.distances[(int) (this.direction * 2 + 2) % 8];
-			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
-		}
+            dist = this.distances[(int) (this.direction * 2 + 2) % 8];
+        offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
 
-		this.addPolarAcceleration((this.direction + 1) / 2 * Math.PI, offsetMotion);
+        this.addPolarAcceleration((this.direction + 1) / 2 * Math.PI, offsetMotion);
 	}
 
 	public void checkForBulletThreats()

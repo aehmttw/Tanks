@@ -557,10 +557,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.em().removeAttribute(AttributeModifier.healray);
 
 		this.accelerationModifier = em().getAttributeValue(AttributeModifier.acceleration, this.accelerationModifier);
-
-		if (!(this instanceof TankAIControlled))
-			this.frictionModifier = em().getAttributeValue(AttributeModifier.friction, this.frictionModifier);
-
+		this.frictionModifier = em().getAttributeValue(AttributeModifier.friction, this.frictionModifier);
 		this.maxSpeedModifier = em().getAttributeValue(AttributeModifier.max_speed, this.maxSpeedModifier);
 
 		double boost = em().getAttributeValue(AttributeModifier.ember_effect, 0);
@@ -632,9 +629,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		if (this.hasCollided)
-		{
-			this.recoilSpeed *= 0.5;
-		}
+            this.recoilSpeed *= 0.5;
 
 		if (this.possessor != null)
 			this.possessor.updatePossessing();

@@ -112,7 +112,7 @@ public class Tanks
         }
         else
         {
-            System.out.println("TanksOnline has started!");
+            System.out.println("TanksOnline has started! Port=" + port + "\n");
             Game.registerEvents();
             PlayerMap.instance.load();
             new CommandExecutor().run();

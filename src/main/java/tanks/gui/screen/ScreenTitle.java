@@ -106,7 +106,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			}
 		}
 	}
-		);
+	);
 
 	Button languages = new Button(-1000, -1000, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
 	{

@@ -129,6 +129,10 @@ public class BulletArc extends Bullet
         this.justBounced = true;
         this.checkCollisionLocal();
 
+        this.collisionX = this.posX;
+        this.collisionY = this.posY;
+        this.addTrail();
+
         return ht;
     }
 

@@ -13,6 +13,7 @@ import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
+import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 
 import java.util.ArrayList;
@@ -393,13 +394,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void addItems()
     {
-        //TODO
-        ItemBullet b = new ItemBullet(TankPlayer.default_bullet);
-        b.name = TankPlayer.default_bullet_name;
-        ItemMine m = new ItemMine(TankPlayer.default_mine);
-        m.name = TankPlayer.default_mine_name;
-        this.addItem(b);
-        this.addItem(m);
+        for (TankPlayer.ShopTankBuild b: crusade.getBuildsShop())
+        {
+            for (Item.ItemStack<?> i: b.abilities)
+            {
+                this.addItem(i.item);
+            }
+        }
 
         for (Item.ShopItem i: crusade.getShop())
         {

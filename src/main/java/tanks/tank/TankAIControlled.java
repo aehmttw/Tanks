@@ -2820,6 +2820,11 @@ public class TankAIControlled extends Tank implements ITankField
 				this.possessingTank.secondaryColorR = ((Tank) this.targetEnemy).secondaryColorR;
 				this.possessingTank.secondaryColorG = ((Tank) this.targetEnemy).secondaryColorG;
 				this.possessingTank.secondaryColorB = ((Tank) this.targetEnemy).secondaryColorB;
+
+				this.possessingTank.tertiaryColorR = ((Tank) this.targetEnemy).tertiaryColorR;
+				this.possessingTank.tertiaryColorG = ((Tank) this.targetEnemy).tertiaryColorG;
+				this.possessingTank.tertiaryColorB = ((Tank) this.targetEnemy).tertiaryColorB;
+				this.possessingTank.enableTertiaryColor = true;
 			}
 
 			for (RegistryTank.TankEntry e: Game.registryTank.tankEntries)

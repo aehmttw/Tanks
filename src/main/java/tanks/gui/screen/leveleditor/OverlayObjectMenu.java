@@ -550,12 +550,22 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         for (int i = 0; i < Game.movables.size(); i++)
         {
             Movable m = Game.movables.get(i);
-            if (m instanceof TankAIControlled && ((TankAIControlled) m).name.equals(t.name))
+            if (m instanceof TankAIControlled)
             {
-                actions.add(new EditorAction.ActionTank((Tank) m, false));
-                Game.movables.remove(i);
-                i--;
+                if (((TankAIControlled) m).name.equals(t.name))
+                {
+                    actions.add(new EditorAction.ActionTank((Tank) m, false));
+                    Game.movables.remove(i);
+                    i--;
+                }
+                else
+                    ((TankAIControlled) m).removeBrokenLinks();
             }
+        }
+
+        for (TankAIControlled t1: this.editor.level.customTanks)
+        {
+            t1.removeBrokenLinks();
         }
 
         this.editor.undoActions.add(new EditorAction.ActionDeleteCustomTank(this.editor, actions, t));

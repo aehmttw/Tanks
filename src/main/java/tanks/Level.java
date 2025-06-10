@@ -915,4 +915,9 @@ public class Level
 				return e.getTank(0, 0, 0);
 		}
 	}
+
+	public boolean isLarge()
+	{
+		return !(this.sizeX * this.sizeY <= 100000 && this.tanks.length < 500);
+	}
 }

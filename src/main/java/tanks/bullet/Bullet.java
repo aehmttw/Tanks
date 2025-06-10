@@ -124,6 +124,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	@Property(id = "boosting", name = "Boosting", category = BulletPropertyCategory.impact, desc = "If set, will boost the speed of tanks hit. Boost duration scales with bullet size.")
 	public boolean boosting = false;
 
+	@Property(id = "destroy_blocks", name = "Destroys blocks", category = BulletPropertyCategory.impact, desc = "If set, will destroy breakable blocks the bullet collides with.")
+	public boolean destroyBlocks = false;
+
 	//@Property(id = "area_effect", name = "Area effect", category = BulletPropertyCategory.impact)
 	public AreaEffect hitAreaEffect = null;
 
@@ -365,7 +368,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	}
 
-	public void rebound(Movable m)
+	public Bullet rebound(Movable m)
 	{
 		try
 		{
@@ -386,11 +389,14 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			Game.movables.add(new BulletReboundIndicator(b));
 
 			this.reboundSuccessor = b;
+			return b;
 		}
 		catch (Exception e)
 		{
 			Game.exitToCrash(e);
 		}
+
+		return null;
 	}
 
 	/**
@@ -815,6 +821,19 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 					if (!o.bulletCollision)
 						continue;
+
+					if (this.destroyBlocks && o.destructible)
+					{
+						if (!Game.removeObstacles.contains(o))
+						{
+							Game.removeObstacles.add(o);
+							o.playDestroyAnimation(this.posX, this.posY, Game.tile_size);
+							Drawing.drawing.playGlobalSound("break.ogg");
+						}
+
+						if (this.heavy)
+							continue;
+					}
 
 					boolean left = o.hasLeftNeighbor();
 					boolean right = o.hasRightNeighbor();

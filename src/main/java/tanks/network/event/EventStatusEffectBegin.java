@@ -2,7 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Movable;
-import tanks.StatusEffect;
+import tanks.effect.StatusEffect;
 import tanks.bullet.Bullet;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
@@ -72,6 +72,6 @@ public class EventStatusEffectBegin extends PersonalEvent
             m = Bullet.idMap.get(this.networkID);
 
         if (m != null)
-            m.addStatusEffect(StatusEffect.statusEffectRegistry.get(this.effect), age, warmup, 0, 0);
+            m.em().addStatusEffect(StatusEffect.statusEffectRegistry.get(this.effect), age, warmup, 0, 0);
     }
 }

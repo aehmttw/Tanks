@@ -7,6 +7,7 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
+import tanks.effect.AttributeModifier;
 import tanks.gui.Button;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
@@ -275,7 +276,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 				this.setPolarMotion(this.getPolarDirection(), maxVelocity);
 		}
 
-		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+		double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
 		for (Item.ItemStack<?> s: this.abilities)
 		{
@@ -463,7 +464,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 				showTrace = b.showDefaultTrace;
 
 				if (lifespan > 0)
-					lifespan *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+					lifespan *= em().getAttributeValue(AttributeModifier.bullet_speed, 1);
 
 				for (int j = 0; j < b.shotCount; j++)
 				{
@@ -590,7 +591,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		b.setPolarMotion(this.angle + offset, speed);
 		b.speed = Math.abs(speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
 		if (b.recoil != 0)
 		{

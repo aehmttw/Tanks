@@ -1,10 +1,10 @@
 package tanks.tank;
 
-import tanks.AttributeModifier;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.bullet.Bullet;
+import tanks.effect.AttributeModifier;
 
 public class Turret extends Movable
 {
@@ -24,7 +24,7 @@ public class Turret extends Movable
 
 	public void draw(double rotation, double vAngle, boolean forInterface, boolean in3d, boolean transparent)
 	{
-		double luminance = this.tank.getAttributeValue(AttributeModifier.glow, this.tank.luminance);
+		double luminance = this.tank.em().getAttributeValue(AttributeModifier.glow, this.tank.luminance);
 
 		if (this.tank.fullBrightness)
 			luminance = 1;

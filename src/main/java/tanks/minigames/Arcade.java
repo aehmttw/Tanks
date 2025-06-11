@@ -789,7 +789,7 @@ public class Arcade extends Minigame
 
         Drawing.drawing.setInterfaceFontSize(36 * (1 + 0.25 * frac));
         String s = Translation.translate("Score: %d", score);
-        double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        double size = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
         Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
 
     }

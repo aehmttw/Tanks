@@ -24,6 +24,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -134,7 +135,13 @@ public class LWJGLWindow extends BaseWindow
 
 	protected void init()
 	{
-		this.fontRenderer = new FontRenderer(this, "/font.png");
+		this.fontRendererDefault = new FontRenderer(this, "/font.png");
+
+		// Load zh cn font
+		String chinese_chars = "一三坦克十字军东征游戏开始退出多人上下单不好友选择小反返回模式";
+		int[] chinese_chars_sizes = new int[chinese_chars.length()];
+		Arrays.fill(chinese_chars_sizes, 8);
+		this.fontRendererDefault.addFont("/font_zh_cn.png", chinese_chars, chinese_chars_sizes);
 
 		GLFWErrorCallback.createPrint(System.err).set();
 

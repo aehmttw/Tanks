@@ -95,7 +95,7 @@ public class ScreenOverlayChat
                         double width = 0;
 
                         for (String s : c.lines)
-                            width = Math.max(width, Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale);
+                            width = Math.max(width, Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale);
 
                         double height = 22 * c.lines.size() + 8 * (c.lines.size() - 1);
                         double radius = 13.5;

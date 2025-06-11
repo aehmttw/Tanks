@@ -127,8 +127,8 @@ public class ScreenCrashed extends Screen
 		drawing.displayInterfaceText(50, 350,  false, "Crash details:");
 
 		double boxWidth = 1300;
-		double width = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashMessage) / Drawing.drawing.interfaceScale;
-		double width2 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashLine) / Drawing.drawing.interfaceScale;
+		double width = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, Game.crashMessage) / Drawing.drawing.interfaceScale;
+		double width2 = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, Game.crashLine) / Drawing.drawing.interfaceScale;
 
 		double scale = Math.min(1, boxWidth / width);
 		double scale2 = Math.min(1, boxWidth / width2);

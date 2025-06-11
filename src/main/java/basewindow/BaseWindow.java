@@ -1,6 +1,7 @@
 package basewindow;
 
 import basewindow.transformation.*;
+import lwjglwindow.FontRenderer;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -15,7 +16,7 @@ public abstract class BaseWindow
     protected ArrayList<String> overrideLocations = new ArrayList<>();
 
     public BaseShapeRenderer shapeRenderer;
-    public BaseFontRenderer fontRenderer;
+    public FontRenderer fontRendererDefault;
 
     public boolean angled = false;
 

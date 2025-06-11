@@ -1026,8 +1026,8 @@ public class Drawing
 		if (text)
 		{
 			img = img.substring(5);
-			sizeX = Game.game.window.fontRenderer.getStringSizeX(drawSizeX / 36, img);
-			sizeY = Game.game.window.fontRenderer.getStringSizeY(drawSizeY / 36, img);
+			sizeX = Game.game.window.fontRendererDefault.getStringSizeX(drawSizeX / 36, img);
+			sizeY = Game.game.window.fontRendererDefault.getStringSizeY(drawSizeY / 36, img);
 		}
 
 		double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
@@ -1040,7 +1040,7 @@ public class Drawing
 		else
 		{
 			Drawing.drawing.setColor(0, 0, 0);
-			Game.game.window.fontRenderer.drawString(drawX, drawY, drawSizeX / 36, drawSizeY / 36, img);
+			Game.game.window.fontRendererDefault.drawString(drawX, drawY, drawSizeX / 36, drawSizeY / 36, img);
 		}
 	}
 
@@ -1087,13 +1087,13 @@ public class Drawing
 
 	public void drawText(double x, double y, String text)
 	{
-		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
-		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
+		double sizeX = Game.game.window.fontRendererDefault.getStringSizeX(this.fontSize, text) / scale;
+		double sizeY = Game.game.window.fontRendererDefault.getStringSizeY(this.fontSize, text) / scale;
 
 		double drawX = gameToAbsoluteX(x, sizeX);
 		double drawY = gameToAbsoluteY(y, sizeY);
 
-		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
+		Game.game.window.fontRendererDefault.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
 	public void drawText(double x, double y, double z, String text)
@@ -1103,20 +1103,20 @@ public class Drawing
 
 	public void drawText(double x, double y, double z, String text, boolean depth)
 	{
-		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
-		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
+		double sizeX = Game.game.window.fontRendererDefault.getStringSizeX(this.fontSize, text) / scale;
+		double sizeY = Game.game.window.fontRendererDefault.getStringSizeY(this.fontSize, text) / scale;
 
 		double drawX = gameToAbsoluteX(x, sizeX);
 		double drawY = gameToAbsoluteY(y, sizeY);
 		double drawZ = z * scale;
 
-		Game.game.window.fontRenderer.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text, depth);
+		Game.game.window.fontRendererDefault.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text, depth);
 	}
 
 	public void drawText(double x, double y, double z, String text, boolean rightAligned, boolean depth)
 	{
-		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
-		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
+		double sizeX = Game.game.window.fontRendererDefault.getStringSizeX(this.fontSize, text) / scale;
+		double sizeY = Game.game.window.fontRendererDefault.getStringSizeY(this.fontSize, text) / scale;
 
 		double offX = sizeX;
 
@@ -1127,20 +1127,20 @@ public class Drawing
 		double drawY = gameToAbsoluteY(y, sizeY);
 		double drawZ = z * scale;
 
-		Game.game.window.fontRenderer.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text, depth);
+		Game.game.window.fontRendererDefault.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text, depth);
 	}
 
 	public void drawInterfaceText(double x, double y, String text)
 	{
-		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
-		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
+		double sizeX = Game.game.window.fontRendererDefault.getStringSizeX(this.fontSize, text);
+		double sizeY = Game.game.window.fontRendererDefault.getStringSizeY(this.fontSize, text);
 
 		double drawX = (interfaceScale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
 
-		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
+		Game.game.window.fontRendererDefault.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 
-		if (Game.game.window.fontRenderer.drawBox)
+		if (Game.game.window.fontRendererDefault.drawBox)
 		{
 			Drawing.drawing.setColor(0, 255, 0);
 			Game.game.window.shapeRenderer.drawRect(drawX, drawY, sizeX, sizeY);
@@ -1149,8 +1149,8 @@ public class Drawing
 
 	public void drawInterfaceText(double x, double y, String text, boolean rightAligned)
 	{
-		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
-		double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
+		double sizeX = Game.game.window.fontRendererDefault.getStringSizeX(this.fontSize, text);
+		double sizeY = Game.game.window.fontRendererDefault.getStringSizeY(this.fontSize, text);
 
 		double offX = sizeX;
 
@@ -1159,14 +1159,14 @@ public class Drawing
 
 		double drawX = (interfaceScale * x - offX + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
+		Game.game.window.fontRendererDefault.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
 	public void drawUncenteredInterfaceText(double x, double y, String text)
 	{
 		double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
 		double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-		Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
+		Game.game.window.fontRendererDefault.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 	}
 
 	public void displayInterfaceText(double x, double y, String text, Object... objects)
@@ -1186,12 +1186,12 @@ public class Drawing
 
 	public double getStringWidth(String s)
 	{
-		return Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+		return Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
 	}
 
 	public double getStringHeight(String s)
 	{
-		return Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+		return Game.game.window.fontRendererDefault.getStringSizeY(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
 	}
 
 	public void setFontSize(double size)
@@ -1210,7 +1210,7 @@ public class Drawing
 
 		if (width > 0)
 		{
-			double sizeRaw = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / Drawing.drawing.interfaceScale;
+			double sizeRaw = Game.game.window.fontRendererDefault.getStringSizeX(this.fontSize, text) / Drawing.drawing.interfaceScale;
 			this.setInterfaceFontSize(maxFontSize * Math.min(1, width / sizeRaw));
 		}
 	}
@@ -1279,7 +1279,7 @@ public class Drawing
 		int sizeX = 0;
 		for (String s : text)
 		{
-			sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, s) / this.interfaceScale) + xPadding);
+			sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRendererDefault.getStringSizeX(fontSize, s) / this.interfaceScale) + xPadding);
 		}
 
 		double sizeY = 14;
@@ -1781,21 +1781,21 @@ public class Drawing
 				continue;
 			}
 
-			if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, l + " " + s) / Drawing.drawing.interfaceScale <= max)
+			if (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, l + " " + s) / Drawing.drawing.interfaceScale <= max)
 			{
 				if (!first)
 					l.append(" ");
 
 				l.append(s);
 			}
-			else if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale > max)
+			else if (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale > max)
 			{
 				if (!first)
 					l.append(" ");
 
 				for (char c : s.toCharArray())
 				{
-					if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, l.toString() + c) / Drawing.drawing.interfaceScale > max)
+					if (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, l.toString() + c) / Drawing.drawing.interfaceScale > max)
 					{
 						lines.add(l.toString());
 						l = new StringBuilder();

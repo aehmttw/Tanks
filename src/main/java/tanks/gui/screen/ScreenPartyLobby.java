@@ -101,7 +101,7 @@ public class ScreenPartyLobby extends Screen
 		if (!Game.showIP)
 			title = Translation.translate("Connected to party");
 
-		this.toggleIP.posX = this.centerX + Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
+		this.toggleIP.posX = this.centerX + Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
 		this.toggleIP.posY = this.centerY - 270;
 
 		if (Game.showIP)

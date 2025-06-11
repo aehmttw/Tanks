@@ -2,32 +2,48 @@ package lwjglwindow;
 
 import basewindow.BaseFontRenderer;
 import org.lwjgl.opengl.GL11;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FontRenderer extends BaseFontRenderer
 {
-	public String chars;
-	public int[] charSizes;
-	public String image;
+	public static class FontInfo {
+		public String chars;
+		public int[] charSizes;
+		public String image;
+		public float size = 16;
+		public int hSpace = 2;
+		public Map<Character, Integer> charIndexMap = new HashMap<>();
 
-	//how many characters fit per horizontal line
-	public float size = 16;
+		public FontInfo(String image, String chars, int[] charSizes) {
+			this.image = image;
+			this.chars = chars;
+			this.charSizes = charSizes;
 
-	//spacing between rows, increase this to 2 for antialiasing to prevent weird artifacts
-	public int hSpace = 2;
+			for (int i = 0; i < chars.length(); i++) {
+				charIndexMap.put(chars.charAt(i), i);
+			}
+		}
+	}
 
-	public FontRenderer(LWJGLWindow h, String fontFile)
-	{
+	private final List<FontInfo> fontInfos = new ArrayList<>();
+	private final FontInfo defaultFont;
+
+	public FontRenderer(LWJGLWindow h, String defaultFontFile) {
 		super(h);
-		this.chars = " !\"#$%&'()*+,-./" +
-				"0123456789:;<=>?" +
-				"@ABCDEFGHIJKLMNO" +
-				"PQRSTUVWXYZ[\\]^_" +
-				"'abcdefghijklmno" +
-				"pqrstuvwxyz{|}~`" +
-				"âăîşţàçæèéêëïôœù" +
-				"úûüÿáíóñ¡¿äöå";
-		this.charSizes = new int[]
-				{
+
+		defaultFont = new FontInfo(defaultFontFile,
+				" !\"#$%&'()*+,-./" +
+						"0123456789:;<=>?" +
+						"@ABCDEFGHIJKLMNO" +
+						"PQRSTUVWXYZ[\\]^_" +
+						"'abcdefghijklmno" +
+						"pqrstuvwxyz{|}~`" +
+						"âăîşţàçæèéêëïôœù" +
+						"úûüÿáíóñ¡¿äöå",
+				new int[] {
 						3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 1, 5, 1, 5,
 						5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 5, 5, 5, 5,
 						7, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5,
@@ -36,51 +52,70 @@ public class FontRenderer extends BaseFontRenderer
 						5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2,
 						5, 5, 5, 5, 3, 5, 5, 7, 5, 5, 5, 5, 3, 5, 7, 5,
 						5, 5, 5, 5, 5, 3, 5, 5, 3, 5, 5, 5, 5
-				};
+				});
 
-		this.image = fontFile;
+		fontInfos.add(defaultFont);
 	}
 
-	public boolean supportsChar(char c)
-	{
-		return this.chars.indexOf(c) >= 0;
+	/**
+	 * Add a new font to the renderer.
+	 * @param imageFile The image file path.
+	 * @param chars The characters to include in the font.
+	 * @param charSizes The width of each character in (pixels / 4).
+	 */
+	public void addFont(String imageFile, String chars, int[] charSizes) {
+		fontInfos.add(new FontInfo(imageFile, chars, charSizes));
 	}
 
-	protected int drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest)
-	{
-		int i = this.chars.indexOf(c);
+	public boolean supportsChar(char c) {
+		for (FontInfo font : fontInfos) {
+			if (font.charIndexMap.containsKey(c)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-		if (i == -1)
-			i = 31;
+	protected FontInfo findFontForChar(char c) {
+		for (FontInfo font : fontInfos) {
+			if (font.charIndexMap.containsKey(c)) {
+				return font;
+			}
+		}
+		return defaultFont;
+	}
 
-		int col = (int) (i % size);
-		int row = (int) (i / size);
-		int width = charSizes[i];
+	protected int drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest) {
+		FontInfo font = findFontForChar(c);
+		Integer i = font.charIndexMap.get(c);
 
-		//this.window.shapeRenderer.drawRect(x, y - sY * 16, sX * width * 4, sY * 64);
+		if (i == null) {
+			i = font.charIndexMap.getOrDefault('?', 31);
+		}
 
-		if (this.drawBox)
-		{
+		int col = (int) (i % font.size);
+		int row = (int) (i / font.size);
+		int width = font.charSizes[i];
+
+		if (this.drawBox) {
 			this.window.shapeRenderer.drawRect(x, y, sX * width * 2, sY * 32);
 			this.window.shapeRenderer.drawRect(x, y + sY * 16, sX * width * 2, sY * 16);
 			this.window.shapeRenderer.drawRect(x + sX * width * 2, y, sX * width * 2, sY * 32);
 			this.window.shapeRenderer.drawRect(x + sX * width * 2, y + sY * 16, sX * width * 2, sY * 16);
 		}
 
-		this.window.shapeRenderer.drawImage(x, y - sY * 16, z, sX * 32 * size, sY * 32 * size,
-				col / size, (row * hSpace) / size,
-				(col + width / 8f) / size, (row * hSpace + 2) / size,
-				image, false, depthtest);
+		this.window.shapeRenderer.drawImage(x, y - sY * 16, z, sX * 32 * font.size, sY * 32 * font.size,
+				col / font.size, (row * font.hSpace) / font.size,
+				(col + width / 8f) / font.size, (row * font.hSpace + 2) / font.size,
+				font.image, false, depthtest);
 		return width;
 	}
 
-	public void drawString(double x, double y, double z, double sX, double sY, String s)
-	{
+	public void drawString(double x, double y, double z, double sX, double sY, String s) {
 		drawString(x, y, z, sX, sY, s, true);
 	}
 
-	public void drawString(double x, double y, double z, double sX, double sY, String s, boolean depth)
-	{
+	public void drawString(double x, double y, double z, double sX, double sY, String s, boolean depth) {
 		if (depth)
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		else
@@ -91,25 +126,21 @@ public class FontRenderer extends BaseFontRenderer
 		double curX = x;
 		char[] c = s.toCharArray();
 
-		for (int i = 0; i < c.length; i++)
-		{
+		for (int i = 0; i < c.length; i++) {
 			if (c[i] == '\u00C2')
 				continue;
-			else if (c[i] == '\u00A7')
-			{
+			else if (c[i] == '\u00A7') {
 				if (s.length() <= i + 12)
 					continue;
 
-				try
-				{
+				try {
 					int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
 					int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
 					int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
 					int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
 					this.window.setColor(r, g, b, a * opacity);
 				}
-				catch (Exception e)
-				{
+				catch (Exception e) {
 					continue;
 				}
 
@@ -122,31 +153,27 @@ public class FontRenderer extends BaseFontRenderer
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 
-	public void drawString(double x, double y, double sX, double sY, String s)
-	{
+	@Override
+	public void drawString(double x, double y, double sX, double sY, String s) {
 		double curX = x;
 		char[] c = s.toCharArray();
 		double opacity = this.window.colorA;
 
-		for (int i = 0; i < c.length; i++)
-		{
+		for (int i = 0; i < c.length; i++) {
 			if (c[i] == '\u00C2')
 				continue;
-			else if (c[i] == '\u00A7')
-			{
+			else if (c[i] == '\u00A7') {
 				if (s.length() <= i + 12)
 					continue;
 
-				try
-				{
+				try {
 					int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
 					int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
 					int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
 					int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
 					this.window.setColor(r, g, b, a * opacity);
 				}
-				catch (Exception e)
-				{
+				catch (Exception e) {
 					continue;
 				}
 
@@ -157,33 +184,31 @@ public class FontRenderer extends BaseFontRenderer
 		}
 	}
 
-	public double getStringSizeX(double sX, String s)
-	{
+	public double getStringSizeX(double sX, String s) {
 		double w = 0;
 		char[] c = s.toCharArray();
 
-		for (int i = 0; i < c.length; i++)
-		{
+		for (int i = 0; i < c.length; i++) {
 			if (c[i] == '\u00C2')
 				continue;
-			else if (c[i] == '\u00A7')
-			{
+			else if (c[i] == '\u00A7') {
 				if (s.length() <= i + 12)
 					continue;
 
 				i += 12;
 			}
-			else if (this.chars.indexOf(c[i]) == -1)
-				c[i] = '?';
-			else
-				w += (charSizes[this.chars.indexOf(c[i])] + 1) * sX * 4;
+			else {
+				FontInfo font = findFontForChar(c[i]);
+				Integer index = font.charIndexMap.get(c[i]);
+				if (index == null) index = font.charIndexMap.getOrDefault('?', 31);
+				w += (font.charSizes[index] + 1) * sX * 4;
+			}
 		}
 
 		return Math.max(w - sX * 4, 0);
 	}
 
-	public double getStringSizeY(double sY, String s)
-	{
+	public double getStringSizeY(double sY, String s) {
 		return (sY * 32);
 	}
 }

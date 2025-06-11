@@ -1,4 +1,6 @@
-简体中文
+# 简体中文 (Chinese Simplified)
+# The structure is based on fr.lang and adds more translations. (结构基于fr.lang并添加了更多翻译)
+# Game version: v1.6.e (基于游戏版本: v1.6.e)
 Languages=语言
 Tanks=坦克
 The Crusades=十字军东征
@@ -530,3 +532,35 @@ Time elapsed=过去的时间
 Coins spent=花费的硬币
 Coins remaining=剩余的硬币
 Return to title=返回标题
+
+# Add more translations (增加更多翻译)
+# Level Editor (关卡编辑器)
+Exit=退出
+Make a copy=复制关卡
+Level save name=要保存的关卡名称
+Pick a name for the copy!=填写一个名称来保存副本!
+Save copy=保存副本
+Delete level=删除关卡
+
+# Multiplayer (多人游戏)
+Random co-op=随机合作关卡
+Random versus=随机对战关卡
+
+# Options (设置)
+Window options=窗口选项
+Miscellaneous options=杂项
+Open game folder=打开游戏文件夹
+My profile=我的资料
+
+# In game (游戏内界面)
+Start now=立即开始
+# Game menu (游戏菜单)
+Generate new level=生成一个新关卡
+Restart level=重新开始关卡
+# Multiplayer game menu (多人游戏暂停菜单)
+Game menu=暂停菜单
+Close menu=关闭菜单
+Back to party=回到派对界面
+# Singleplayer game menu (单人游戏暂停菜单)
+Resume=继续游戏
+Quit=退出关卡

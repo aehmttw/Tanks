@@ -657,9 +657,9 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
         else
         {
             Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
-            double w1 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, this.crusade.name.replace("_", " ")) / Drawing.drawing.interfaceScale;
+            double w1 = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, this.crusade.name.replace("_", " ")) / Drawing.drawing.interfaceScale;
             Drawing.drawing.setInterfaceFontSize(this.textSize);
-            double w2 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, "Bonus life frequency: " + this.crusade.bonusLifeFrequency) / Drawing.drawing.interfaceScale;
+            double w2 = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, "Bonus life frequency: " + this.crusade.bonusLifeFrequency) / Drawing.drawing.interfaceScale;
             double o = this.objYSpace;
             double w = w1 + w2 + o;
 

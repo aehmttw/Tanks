@@ -8,10 +8,8 @@ import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.network.Server;
 import tanks.network.ServerHandler;
-import tanks.network.SteamNetworkHandler;
 import tanks.network.SynchronizedList;
 import tanks.network.event.*;
-import tanks.obstacle.ObstacleTeleporter;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 import tanks.translation.Translation;
@@ -19,7 +17,6 @@ import tanks.translation.Translation;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.UUID;
 
 public class ScreenPartyHost extends Screen
@@ -363,7 +360,7 @@ public class ScreenPartyHost extends Screen
             title = Translation.translate("Party host");
 
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - ipY, title);
-        this.toggleIP.posX = this.centerX + Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
+        this.toggleIP.posX = this.centerX + Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
         this.toggleIP.posY = this.centerY - ipY;
 
         if (Game.showIP)

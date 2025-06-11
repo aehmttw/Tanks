@@ -220,11 +220,11 @@ public class ChatBox extends TextBox
 			String s = name + ": \u00a7000000000255" + this.inputText + "\u00a7127127127255_";
 
 			double limit = Drawing.drawing.interfaceSizeX - 80;
-			if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale > limit)
+			if (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale > limit)
 			{
 				for (int i = 0; i < s.length(); i++)
 				{
-					if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s.substring(i)) / Drawing.drawing.interfaceScale < limit)
+					if (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s.substring(i)) / Drawing.drawing.interfaceScale < limit)
 					{
 						s = s.substring(i);
 

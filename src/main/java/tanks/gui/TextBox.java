@@ -267,8 +267,8 @@ public class TextBox implements IDrawable, ITrigger
 	public void drawInput()
 	{
 		double size = this.sizeY * 0.6;
-		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale > this.sizeX - 80)
-			Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale));
+		if (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale > this.sizeX - 80)
+			Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale));
 
 		if (selected)
 			Drawing.drawing.drawInterfaceText(posX, posY, inputText + "\u00a7127127127255_");
@@ -621,7 +621,7 @@ public class TextBox implements IDrawable, ITrigger
 			}
 			else
 			{
-				if (allowAll && Game.game.window.fontRenderer.supportsChar(key))
+				if (allowAll && Game.game.window.fontRendererDefault.supportsChar(key))
 				{
 					inputText += key;
 					return;

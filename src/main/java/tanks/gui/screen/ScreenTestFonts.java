@@ -16,9 +16,9 @@ public class ScreenTestFonts extends Screen
         @Override
         public void run()
         {
-            Game.game.window.fontRenderer.drawBox = !Game.game.window.fontRenderer.drawBox;
+            Game.game.window.fontRendererDefault.drawBox = !Game.game.window.fontRendererDefault.drawBox;
 
-            if (Game.game.window.fontRenderer.drawBox)
+            if (Game.game.window.fontRendererDefault.drawBox)
                 box.setText(boxText, ScreenOptions.onText);
             else
                 box.setText(boxText, ScreenOptions.offText);
@@ -30,7 +30,7 @@ public class ScreenTestFonts extends Screen
         this.music = "menu_options.ogg";
         this.musicID = "menu";
 
-        if (Game.game.window.fontRenderer.drawBox)
+        if (Game.game.window.fontRendererDefault.drawBox)
             box.setText(boxText, ScreenOptions.onText);
         else
             box.setText(boxText, ScreenOptions.offText);

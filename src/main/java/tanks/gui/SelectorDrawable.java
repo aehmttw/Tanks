@@ -101,8 +101,8 @@ public class SelectorDrawable extends Button
         drawing.drawInterfaceText(posX, posY - sizeY * 13 / 16, translatedText);
 
         double size = this.sizeY * 0.6;
-        if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, optionText) / Drawing.drawing.interfaceScale > this.sizeX - 80)
-            Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, optionText) / Drawing.drawing.interfaceScale));
+        if (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, optionText) / Drawing.drawing.interfaceScale > this.sizeX - 80)
+            Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, optionText) / Drawing.drawing.interfaceScale));
 
         Drawing.drawing.drawInterfaceText(posX, posY, this.optionText);
 

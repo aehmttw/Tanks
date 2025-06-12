@@ -564,3 +564,6 @@ Back to party=回到派对界面
 # Singleplayer game menu (单人游戏暂停菜单)
 Resume=继续游戏
 Quit=退出关卡
+
+# End Menu (游戏结束菜单)
+Replay level=重新游玩关卡

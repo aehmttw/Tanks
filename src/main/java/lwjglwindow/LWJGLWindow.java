@@ -138,7 +138,7 @@ public class LWJGLWindow extends BaseWindow
 		this.fontRendererDefault = new FontRenderer(this, "/font.png");
 
 		// Load zh cn font
-		String chinese_chars = "一三坦克十字军东征游戏开始退出多人上下单不好友选择小反返回模式";
+		String chinese_chars = "一三坦克十字军东征游戏开始退出多人上下单不好友选择小反返回模式与且丛丢两个中为主丽久么义之乐也习了于些亡享什从他代以们";
 		int[] chinese_chars_sizes = new int[chinese_chars.length()];
 		Arrays.fill(chinese_chars_sizes, 8);
 		this.fontRendererDefault.addFont("/font_zh_cn.png", chinese_chars, chinese_chars_sizes);

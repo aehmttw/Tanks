@@ -1,8 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A big boss tank which spawns other tanks and takes 5 regular bullets to destroy
@@ -19,8 +18,9 @@ public class TankBoss extends TankAIControlled
 		this.cooldownBase = 100;
 		this.aimAccuracyOffset = 0;
 
-		this.setBullet(DefaultBullets.mega_bullet);
-		this.bullet.maxLiveBullets = 4;
+		this.setBullet(DefaultItems.mega_bullet);
+		this.getBullet().maxLiveBullets = 4;
+		this.getBullet().recoil = 0;
 
 		if (Game.tankTextures)
 		{

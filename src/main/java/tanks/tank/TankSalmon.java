@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A tank which fires homing rockets
@@ -14,7 +14,7 @@ public class TankSalmon extends TankAIControlled
 		this.cooldownBase = 150;
 		this.cooldownRandom = 50;
 		this.maxSpeed = 1.25;
-		this.setBullet(DefaultBullets.homing_rocket);
+		this.setBullet(DefaultItems.homing_rocket);
 		this.turretAimSpeed = 0.06;
 		this.enablePathfinding = true;
 		this.enablePredictiveFiring = false;

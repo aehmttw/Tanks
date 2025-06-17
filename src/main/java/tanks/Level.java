@@ -1,12 +1,10 @@
 package tanks;
 
-import tanks.bullet.DefaultBullets;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBeatBlock;

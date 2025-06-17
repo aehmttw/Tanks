@@ -153,6 +153,7 @@ public class Game
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;
 	public static boolean drawAutoZoom = false;
+	public static boolean drawFaces = false;
 	public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;
@@ -541,7 +542,7 @@ public class Game
 		steamNetworkHandler.load();
 
 		registerEvents();
-		DefaultBullets.initialize();
+		DefaultItems.initialize();
 
 		registerObstacle(ObstacleStackable.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
@@ -614,9 +615,6 @@ public class Game
 		registerMetadataSelector(SelectorLuminosity.selector_name, SelectorLuminosity.class);
 		registerMetadataSelector(SelectorColor.selector_name, SelectorColor.class);
 		registerMetadataSelector(SelectorColorAndNoise.selector_name, SelectorColorAndNoise.class);
-
-		TankPlayer.default_bullet = new Bullet();
-		TankPlayer.default_mine = new Mine();
 
 		homedir = System.getProperty("user.home");
 
@@ -845,6 +843,17 @@ public class Game
 			if (y > 0) Game.redrawGroundTiles.add(new GroundTile(x, y - 1));
 			if (y < Game.currentSizeY - 1) Game.redrawGroundTiles.add(new GroundTile(x, y + 1));
 		}
+
+		if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+		{
+			Game.game.solidGrid[x][y] = true;
+
+			if (!o.shouldShootThrough)
+				Game.game.unbreakableGrid[x][y] = true;
+		}
+
+		if (o.tankCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
+			Game.game.solidGrid[x][y] = true;
 	}
 
 	public static void recomputeHeightGrid()

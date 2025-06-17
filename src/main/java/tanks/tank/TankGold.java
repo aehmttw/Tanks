@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A tank which speeds up its allies and becomes explosive as a last stand
@@ -20,10 +20,10 @@ public class TankGold extends TankAIControlled
 		this.turretAimSpeed = 0.04;
 		this.enablePathfinding = true;
 		this.seekChance = 0.01;
-		this.setBullet(DefaultBullets.booster_bullet);
+		this.setBullet(DefaultItems.booster_bullet);
 		this.enableSuicide = true;
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.keep_distance;
-		this.mine.explosion.radius *= 1.5;
+		this.suicideExplosion.radius *= 1.5;
 
 		if (Game.tankTextures)
 		{

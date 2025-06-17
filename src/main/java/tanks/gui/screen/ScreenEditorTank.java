@@ -794,7 +794,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         if (p.id().equals("cooldown_base"))
         {
             double bc = t.bulletItem.item.cooldownBase;
-            if ((double) oldValue >= bc && (double) f.get() < bc)
+            if ((double) oldValue >= bc && (double) f.cast().get() < bc)
             {
                 Game.screen = new ScreenInfo(Game.screen, "Note!",
                         new String[]{"The base tank cooldown you picked is",
@@ -804,7 +804,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         }
         else if (p.id().equals("enable_predictive_firing"))
         {
-            if ((boolean) f.get())
+            if ((boolean) f.cast().get())
             {
                 if (t.shootAIType != TankAIControlled.ShootAI.straight && t.shootAIType != TankAIControlled.ShootAI.alternate)
                 {

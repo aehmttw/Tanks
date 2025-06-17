@@ -1611,9 +1611,15 @@ public class TankAIControlled extends Tank implements ITankField
 			this.lookAtTargetEnemy();
 
 		if (b instanceof BulletArc)
+		{
 			this.setAimAngleArc();
+			this.updateTurretStraight();
+		}
 		else if (b instanceof BulletAirStrike)
+		{
 			this.setAimAngleAirStrike();
+			this.updateTurretStraight();
+		}
 		else
 		{
 			if (this.shootAIType.equals(ShootAI.homing))
@@ -1826,9 +1832,6 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 		else
 			this.angle = this.aimAngle;
-
-		if (this.seesTargetEnemy && this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) < Game.tile_size * 6 && !chargeUp)
-			this.cooldown -= Panel.frameFrequency;
 	}
 
 	public void setAimAngleStraight()
@@ -1982,7 +1985,6 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			aim = true;
 			this.aimAngle = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
-			this.cooldown -= Panel.frameFrequency;
 		}
 
 		this.search();
@@ -3194,18 +3196,18 @@ public class TankAIControlled extends Tank implements ITankField
 						}
 						else if (f.getType().isEnum())
 							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));
-						else if (Bullet.class.isAssignableFrom(f.getType()))
+						else if (ItemBullet.ItemStackBullet.class.isAssignableFrom(f.getType()))
 						{
 							Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
 							i.stackSize = 0;
-							f.set(t, ((ItemBullet)i.item).bullet);
+							f.set(t, i);
 							s = s.substring(s.indexOf("]") + 1);
 						}
-						else if (Mine.class.isAssignableFrom(f.getType()))
+						else if (ItemMine.ItemStackMine.class.isAssignableFrom(f.getType()))
 						{
 							Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
 							i.stackSize = 0;
-							f.set(t, ((ItemMine)i.item).mine);
+							f.set(t, i);
 							s = s.substring(s.indexOf("]") + 1);
 						}
 						else if (Explosion.class.isAssignableFrom(f.getType()))

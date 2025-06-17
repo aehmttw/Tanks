@@ -366,7 +366,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         if (t.inputText.length() == 0)
                             t.inputText = f.get() + "";
                         else
+                        {
+                            int old = (int) f.get();
                             f.cast().set((int) Double.parseDouble(t.inputText));
+                            validateChangedProperty(f, p, old);
+                        }
 
                         t.inputText = f.get().toString();
                     }
@@ -405,7 +409,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         if (t.inputText.length() == 0)
                             t.inputText = f.get() + "";
                         else
+                        {
+                            double old = (double) f.get();
                             f.cast().set(Double.parseDouble(t.inputText));
+                            validateChangedProperty(f, p, old);
+                        }
 
                         t.inputText = f.get().toString();
                     }
@@ -452,7 +460,9 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 {
                     try
                     {
+                        Object old = f.get();
                         f.cast().set(emblems[t.selectedOption]);
+                        validateChangedProperty(f, p, old);
                     }
                     catch (Exception ex)
                     {
@@ -487,7 +497,9 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 {
                     try
                     {
+                        Object old = f.get();
                         f.cast().set(sounds.get(t.selectedOption));
+                        validateChangedProperty(f, p, old);
                     }
                     catch (Exception ex)
                     {
@@ -512,7 +524,12 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 t.drawImages = true;
                 t.selectedOption = icons.indexOf(f.get());
 
-                t.function = () -> f.cast().set(icons.get(t.selectedOption));
+                t.function = () ->
+                {
+                    Object old = f.get();
+                    f.cast().set(icons.get(t.selectedOption));
+                    validateChangedProperty(f, p, old);
+                };
 
                 return t;
             }
@@ -539,7 +556,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                             }
                         }
                         else
+                        {
+                            Object old = f.get();
                             f.cast().set(t.inputText);
+                            validateChangedProperty(f, p, old);
+                        }
                     }
                     catch (Exception e)
                     {
@@ -574,7 +595,9 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     try
                     {
                         Pointer<Boolean> b = f.cast();
+                        Object old = f.get();
                         b.set(!b.get());
+                        validateChangedProperty(f, p, old);
                         t.optionText = b.get() ? "Yes" : "No";
                     }
                     catch (Exception e)
@@ -607,7 +630,9 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 {
                     try
                     {
+                        Object old = f.get();
                         f.cast().set(values[t.selectedOption]);
+                        validateChangedProperty(f, p, old);
                     }
                     catch (Exception ex)
                     {
@@ -656,7 +681,9 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 {
                     try
                     {
+                        Object old = f.get();
                         ((Pointer<IModel>) f).set(finalModels[t.selectedOption]);
+                        validateChangedProperty(f, p, old);
                     }
                     catch (Exception ex)
                     {
@@ -710,7 +737,10 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     }
                 }, this);
 
+                boolean[] old = s.selectedOptions;
                 s.selectedOptions = selectedMusicsArray;
+                validateChangedProperty(f, p, old);
+
                 return s;
             }
             else if (p.miscType() == Property.MiscType.spawnedTanks)
@@ -775,6 +805,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         }
 
         return new Button(0, 0, 350, 40, p.name(), "This option is not available yet");
+    }
+
+    public void validateChangedProperty(Pointer<?> f, Property p, Object oldValue)
+    {
+
     }
 
     public SelectorDrawable getTanksONSelector(Pointer<ITanksONEditable> p, String name, String desc)

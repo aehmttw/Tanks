@@ -1,8 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A tank which spawns mini tanks and shoots 2-bounce rockets
@@ -18,8 +17,9 @@ public class TankPink extends TankAIControlled
 		this.cooldownBase = 120;
 		this.turretAimSpeed = 0.02;
 
-		this.setBullet(DefaultBullets.sniper_rocket);
-		this.bullet.maxLiveBullets = 2;
+		this.setBullet(DefaultItems.sniper_rocket);
+		this.getBullet().maxLiveBullets = 2;
+		this.getBullet().recoil = 0;
 
 		this.turretIdleTimerBase = 25;
 		this.turretIdleTimerRandom = 500;

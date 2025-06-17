@@ -1,8 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A tank which shoots huge bullets which bounce 3 times and can't be stopped
@@ -17,13 +16,12 @@ public class TankMaroon extends TankAIControlled
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 120;
 		this.cooldownBase = 480;
 		this.turretAimSpeed = 0.02;
 
-		this.setBullet(DefaultBullets.mega_bullet);
-		this.bullet.maxLiveBullets = 1;
+		this.setBullet(DefaultItems.mega_bullet);
+		this.getBullet().maxLiveBullets = 1;
 
 		this.enableLookingAtTargetEnemy = true;
 		this.turnChance = 0.001;

@@ -93,11 +93,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         this.managedMotion = false;
         this.player.tank = this;
 
-        this.abilities.add(new ItemBullet.ItemStackBullet(this.player, new ItemBullet(TankPlayer.default_bullet.clonePropertiesTo(new Bullet())), 0));
-        this.abilities.add(new ItemMine.ItemStackMine(this.player, new ItemMine(TankPlayer.default_mine.clonePropertiesTo(new Mine())), 0));
-        this.abilities.get(0).item.name = TankPlayer.default_bullet_name;
-        this.abilities.get(1).item.name = TankPlayer.default_mine_name;
-        this.abilities.get(1).item.cooldownBase = 50;
+        this.abilities.add(new ItemBullet.ItemStackBullet(this.player, DefaultItems.basic_bullet.getCopy(), 0));
+        this.abilities.add(new ItemMine.ItemStackMine(this.player, DefaultItems.basic_mine.getCopy(), 0));
 
         this.lastPosX = x;
         this.lastPosY = y;

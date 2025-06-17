@@ -310,7 +310,7 @@ public class SteamWorkshopHandler
                 Level l = new Level(s.toString());
                 l.preview = true;
 
-                if (l.sizeX * l.sizeY <= 100000 && l.tanks.length < 500)
+                if (!l.isLarge())
                     l.loadLevel(sc);
                 else
                     sc.queuedLevel = l;

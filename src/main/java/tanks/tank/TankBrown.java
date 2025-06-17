@@ -14,7 +14,8 @@ public class TankBrown extends TankAIControlled
 
 		this.enableMovement = false;
 		this.enableMineLaying = false;
-		this.bullet.maxLiveBullets = 1;
+		this.getBullet().maxLiveBullets = 1;
+		this.getBullet().recoil = 0;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
 		this.turretIdleSpeed = 0.01;

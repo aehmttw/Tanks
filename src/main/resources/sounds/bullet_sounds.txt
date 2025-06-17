@@ -15,6 +15,7 @@ break.ogg
 bullet_explode.ogg
 bump.ogg
 destroy.ogg
+ding.ogg
 explosion.ogg
 freeze.ogg
 hiss.ogg

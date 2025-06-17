@@ -1,9 +1,6 @@
 package tanks.bullet;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletBounce;
 import tanks.tank.Tank;
@@ -160,5 +157,13 @@ public class BulletAirStrike extends Bullet
             Game.effects.add(e2);
             posZ += this.size * 1.5;
         }
+    }
+
+    @Override
+    public Bullet rebound(Movable m)
+    {
+        Bullet b = super.rebound(m);
+        b.posZ = Game.tile_size / 2 + 1;
+        return b;
     }
 }

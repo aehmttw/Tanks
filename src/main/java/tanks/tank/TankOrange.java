@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A short-range tank which shoots fire
@@ -26,7 +26,7 @@ public class TankOrange extends TankAIControlled
 		this.cooldownBase = 0;
 		this.cooldownRandom = 0;
 
-		this.setBullet(DefaultBullets.flamethrower);
+		this.setBullet(DefaultItems.flamethrower);
 		this.bulletItem.item.cooldownBase = 0;
 
 		this.coinValue = 4;

@@ -5,9 +5,10 @@ import tanks.bullet.Bullet;
 import tanks.effect.AttributeModifier;
 import tanks.minigames.Minigame;
 import tanks.tank.Tank;
+import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 
-public class ItemBullet extends Item
+public class ItemBullet extends Item implements ICopyable<ItemBullet>
 {
 	public static final String item_class_name = "bullet";
 

@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A tank which blows strong air currents
@@ -24,7 +24,7 @@ public class TankLightBlue extends TankAIControlled
 		this.cooldownBase = 0;
 		this.cooldownRandom = 0;
 
-		this.setBullet(DefaultBullets.air);
+		this.setBullet(DefaultItems.air);
 		this.bulletItem.item.cooldownBase = 0;
 
 		this.coinValue = 8;

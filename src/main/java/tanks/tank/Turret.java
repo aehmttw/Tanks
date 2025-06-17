@@ -55,9 +55,9 @@ public class Turret extends Movable
 
 		Bullet b = null;
 		if (this.tank instanceof TankAIControlled)
-			b = ((TankAIControlled) this.tank).bullet;
+			b = ((TankAIControlled) this.tank).getBullet();
 		else if (this.tank instanceof TankRemote && !(((TankRemote) this.tank).tank instanceof TankPlayer))
-			b = ((TankAIControlled) ((TankRemote) this.tank).tank).bullet;
+			b = ((TankAIControlled) ((TankRemote) this.tank).tank).getBullet();
 
 		if (b != null && b.shotCount > 1 && this.tank.multipleTurrets)
 		{

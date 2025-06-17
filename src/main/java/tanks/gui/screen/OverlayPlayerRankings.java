@@ -51,7 +51,7 @@ public class OverlayPlayerRankings
         else if (ScreenPartyLobby.isClient)
             includedPlayers = ScreenPartyLobby.includedPlayers.size();
 
-        double spacing = Math.max(2, Math.min(10, 50.0 / (screen.eliminatedPlayers.size() - namesCount)));
+        double spacing = Math.max(2, Math.min(10, 50.0 / Math.max(1, screen.eliminatedPlayers.size() - namesCount)));
 
         if (screen.eliminatedPlayers.size() < namesCount)
             namesCount = screen.eliminatedPlayers.size();

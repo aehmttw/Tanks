@@ -4,6 +4,7 @@ import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
+import tanks.bullet.DefaultItems;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
@@ -24,12 +25,6 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public int selectedPrimaryAbility = 0;
     public int selectedSecondaryAbility = 1;
-
-    public static Bullet default_bullet;
-    public static Mine default_mine;
-
-    public static String default_bullet_name = "Basic bullet";
-    public static String default_mine_name = "Basic mine";
 
     public String buildName = "player";
 
@@ -52,12 +47,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public void addDefaultAbilities()
     {
-        this.abilities.add(new ItemBullet.ItemStackBullet(null, new ItemBullet(default_bullet.clonePropertiesTo(new Bullet())), 0));
-        this.abilities.add(new ItemMine.ItemStackMine(null, new ItemMine(default_mine.clonePropertiesTo(new Mine())), 0));
-
-        this.abilities.get(0).item.name = default_bullet_name;
-        this.abilities.get(1).item.name = default_mine_name;
-        this.abilities.get(1).item.cooldownBase = 50;
+        this.abilities.add(new ItemBullet.ItemStackBullet(null, DefaultItems.basic_bullet.getCopy(), 0));
+        this.abilities.add(new ItemMine.ItemStackMine(null, DefaultItems.basic_mine.getCopy(), 0));
 
         this.description = "The default player build: decent speed with basic bullets and basic mines";
     }

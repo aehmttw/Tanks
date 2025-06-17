@@ -640,7 +640,10 @@ public class Arcade extends Minigame
             }
         }
 
-        this.drawChainTimer();
+        if (Hotbar.circular)
+            this.drawChainTimerCircle();
+        else
+            this.drawChainTimer();
     }
 
     @Override
@@ -861,5 +864,56 @@ public class Arcade extends Minigame
         Drawing.drawing.drawInterfaceText(x + 2, y + 2 - 17, getRampageTitle());
         Drawing.drawing.setColor(Math.min(255, col[0]), Math.min(255, col[1]), Math.min(255, col[2]), (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
         Drawing.drawing.drawInterfaceText(x, y - 17, getRampageTitle());
+    }
+
+    public void drawChainTimerCircle()
+    {
+        if (Game.playerTank == null)
+            return;
+
+        double frac = Game.player.hotbar.circleVisibility / Game.player.hotbar.circleVisibilityMax;
+
+        double pulse = 5 * (1 - Math.min(1, (age - lastHit) / 25));
+        if (chain < 2)
+            pulse = 1;
+
+        if (Level.isDark())
+            Drawing.drawing.setColor(255, 255, 255, 128 * chainOpacity * frac, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0, 128 * chainOpacity * frac, 255);
+
+        double x = Game.playerTank.posX;
+        double y = Game.playerTank.posY;
+
+        double c = 0.5 - Math.min(max_power * 3, chain) / 30.0;
+        if (c < 0)
+            c += (int) (-c) + 1;
+
+        double[] col = Game.getRainbowColor(c);
+
+        double lh = lastHit;
+
+        if (frenzy)
+            lh = age;
+
+        if (this.age <= 0)
+            chainOpacity = 0;
+
+        double size = 145;
+        double thickness = 10;
+
+        Drawing.drawing.fillPartialRing(x, y, Game.playerTank.posZ + Game.tile_size / 2, size + pulse, thickness + pulse * 2, 0, 1);
+
+        if (chain > 0)
+        {
+            Drawing.drawing.setColor(col[0], col[1], col[2], chainOpacity * frac * 255, 255);
+            Drawing.drawing.fillPartialRing(x, y, Game.playerTank.posZ + Game.tile_size / 2, size + pulse, thickness + pulse * 2, 0.5 - Math.max(0, 1 - (this.age - lh) / rampage_duration), Math.max(0, 1 - (this.age - lh) / rampage_duration));
+
+            Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, chainOpacity * frac * 255, 255);
+            Drawing.drawing.fillOval(x - size / 2 + thickness / 4, y, Game.playerTank.posZ + Game.tile_size / 2, 18 + pulse, 18 + pulse, false, false);
+            Drawing.drawing.setFontSize(12 + pulse);
+            Drawing.drawing.setColor(255, 255, 255, chainOpacity * frac * 255, 255);
+            Drawing.drawing.drawText(x - size / 2 + thickness / 4, y, Game.playerTank.posZ + Game.tile_size / 2, chain + "", false);
+        }
     }
 }

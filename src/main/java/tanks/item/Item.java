@@ -4,7 +4,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 import tanks.tankson.*;
@@ -294,37 +294,37 @@ public abstract class Item extends GameObject
 				switch (kind)
 				{
 					case "normal":
-						bullet.bullet = DefaultBullets.basic_bullet.getCopy();
+						bullet.bullet = DefaultItems.basic_bullet.bullet.getCopy();
 						break;
 					case "flamethrower":
-						bullet.bullet = DefaultBullets.flamethrower.getCopy();
+						bullet.bullet = DefaultItems.flamethrower.bullet.getCopy();
 						break;
 					case "laser":
-						bullet.bullet = DefaultBullets.laser.getCopy();
+						bullet.bullet = DefaultItems.laser.bullet.getCopy();
 						break;
 					case "freezing":
-						bullet.bullet = DefaultBullets.freezing_bullet.getCopy();
+						bullet.bullet = DefaultItems.freezing_bullet.bullet.getCopy();
 						break;
 					case "electric":
-						bullet.bullet = DefaultBullets.zap.getCopy();
+						bullet.bullet = DefaultItems.zap.bullet.getCopy();
 						break;
 					case "healing":
-						bullet.bullet = DefaultBullets.healing_ray.getCopy();
+						bullet.bullet = DefaultItems.healing_ray.bullet.getCopy();
 						break;
 					case "arc":
-						bullet.bullet = DefaultBullets.artillery_shell.getCopy();
+						bullet.bullet = DefaultItems.artillery_shell.bullet.getCopy();
 						break;
 					case "explosive":
-						bullet.bullet = DefaultBullets.explosive_bullet.getCopy();
+						bullet.bullet = DefaultItems.explosive_bullet.bullet.getCopy();
 						break;
 					case "boost":
-						bullet.bullet = DefaultBullets.booster_bullet.getCopy();
+						bullet.bullet = DefaultItems.booster_bullet.bullet.getCopy();
 						break;
 					case "air":
-						bullet.bullet = DefaultBullets.air.getCopy();
+						bullet.bullet = DefaultItems.air.bullet.getCopy();
 						break;
 					case "homing":
-						bullet.bullet = DefaultBullets.homing_rocket.getCopy();
+						bullet.bullet = DefaultItems.homing_rocket.bullet.getCopy();
 						break;
 				}
 

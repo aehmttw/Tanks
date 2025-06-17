@@ -234,7 +234,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         this.cooldownBase = i.item.cooldownBase;
         this.cooldownRandom = 0;
         this.bulletItem = i;
-        this.bullet = i.item.bullet;
+        this.setBullet(i.item.bullet);
         i.player = this.player;
     }
 
@@ -242,7 +242,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
     {
         this.enableMineLaying = true;
         this.mineItem = i;
-        this.mine = i.item.mine;
+        this.setMine(i.item.mine);
         i.player = this.player;
     }
 }

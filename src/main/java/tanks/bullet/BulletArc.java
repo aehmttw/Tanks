@@ -86,10 +86,8 @@ public class BulletArc extends Bullet
             }
             else
             {
-//                double dif = (this.posZ - Game.tile_size / 2) / this.vZ;
-//                this.posX -= dif * this.vX;
-//                this.posY -= dif * this.vY;
                 double ht = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
+
                 this.posX += ht * this.vX;
                 this.posY += ht * this.vY;
                 this.posZ = Game.tile_size / 2;
@@ -118,7 +116,7 @@ public class BulletArc extends Bullet
     {
         this.bounces--;
 
-        double ht = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
+        double ht = (this.vZ + Math.sqrt(Math.max(0, this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2)))) / gravity;
         this.posX += this.vX * ht;
         this.posY += this.vY * ht;
         this.posZ = Game.tile_size / 2;
@@ -129,6 +127,10 @@ public class BulletArc extends Bullet
 
         this.justBounced = true;
         this.checkCollisionLocal();
+
+        this.collisionX = this.posX;
+        this.collisionY = this.posY;
+        this.addTrail();
 
         return ht;
     }

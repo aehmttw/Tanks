@@ -3239,6 +3239,21 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
 		long t4 = System.nanoTime();
+
+		if (Game.drawFaces)
+		{
+			drawing.setColor(255, 0, 0);
+			for (Face f : Game.verticalFaces)
+			{
+				Drawing.drawing.fillRect((f.startX + f.endX) / 2, (f.startY + f.endY) / 2, Math.max(5, f.endX - f.startX), Math.max(5, f.endY - f.startY));
+			}
+
+			drawing.setColor(255, 255, 0);
+			for (Face f : Game.horizontalFaces)
+			{
+				Drawing.drawing.fillRect((f.startX + f.endX) / 2, (f.startY + f.endY) / 2, Math.max(5, f.endX - f.startX), Math.max(5, f.endY - f.startY));
+			}
+		}
 	}
 
 	public void saveRemainingTanks()

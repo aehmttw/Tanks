@@ -4,6 +4,7 @@ import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
+import tanks.bullet.BulletArc;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -293,7 +294,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             this.preview.glowSize = tank.glowSize;
             this.preview.lightSize = tank.lightSize;
             this.preview.lightIntensity = tank.lightIntensity;
-            this.preview.setBullet(tank.bullet);
+            this.preview.setBullet(tank.getBullet());
             this.preview.multipleTurrets = tank.multipleTurrets;
 
             if (this.preview.size > Game.tile_size * 2)
@@ -784,6 +785,35 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             this.delete.draw();
 
         this.save.draw();
+    }
+
+    @Override
+    public void validateChangedProperty(Pointer<?> f, Property p, Object oldValue)
+    {
+        TankAIControlled t = target.get();
+        if (p.id().equals("cooldown_base"))
+        {
+            double bc = t.bulletItem.item.cooldownBase;
+            if ((double) oldValue >= bc && (double) f.get() < bc)
+            {
+                Game.screen = new ScreenInfo(Game.screen, "Note!",
+                        new String[]{"The base tank cooldown you picked is",
+                                "greater than the tank's bullet's cooldown.", "",
+                                "The greater cooldown value will be used."});
+            }
+        }
+        else if (p.id().equals("enable_predictive_firing"))
+        {
+            if ((boolean) f.get())
+            {
+                if (t.shootAIType != TankAIControlled.ShootAI.straight && t.shootAIType != TankAIControlled.ShootAI.alternate)
+                {
+                    Game.screen = new ScreenInfo(Game.screen, "Note!",
+                            new String[]{"Predictive firing is only effective",
+                                    "with straight or alternate aiming behavior."});
+                }
+            }
+        }
     }
 }
 

@@ -504,7 +504,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 						((IServerPlayerTank) this.tank).getPlayer().hotbar.coins += t.coinValue;
 
 					if (this.tank instanceof TankPlayerRemote)
-					Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
+						Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
 				}
 				else if ((!Game.currentLevel.shop.isEmpty() || !Game.currentLevel.startingItems.isEmpty()) && !(t instanceof TankPlayer || t instanceof TankPlayerRemote))
 				{

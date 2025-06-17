@@ -1,7 +1,7 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.AttributeModifier;
+import tanks.effect.AttributeModifier;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
@@ -86,7 +86,7 @@ public class EventTankAddAttributeModifier extends PersonalEvent
             if (this.effect.equals("multiply"))
                 o = AttributeModifier.Operation.multiply;
 
-            AttributeModifier m = new AttributeModifier(this.name, AttributeModifier.attributeModifierTypes.get(this.type), o, this.value);
+            AttributeModifier m = AttributeModifier.newInstance(this.name, AttributeModifier.attributeModifierTypes.get(this.type), o, this.value);
 
             m.duration = this.duration;
             m.deteriorationAge = this.deteriorationAge;
@@ -95,9 +95,9 @@ public class EventTankAddAttributeModifier extends PersonalEvent
             m.expired = this.expired;
 
             if (unduplicate)
-                t.addUnduplicateAttribute(m);
+                t.em().addUnduplicateAttribute(m);
             else
-                t.addAttribute(m);
+                t.em().addAttribute(m);
         }
     }
 

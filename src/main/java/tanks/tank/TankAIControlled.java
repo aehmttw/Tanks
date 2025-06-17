@@ -3,6 +3,8 @@ package tanks.tank;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
+import tanks.effect.AttributeModifier;
+import tanks.effect.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
@@ -11,7 +13,10 @@ import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
-import tanks.tankson.*;
+import tanks.tankson.ICopyable;
+import tanks.tankson.Property;
+import tanks.tankson.Serializer;
+import tanks.tankson.TanksONable;
 import tanks.translation.Translation;
 
 import java.lang.reflect.Field;
@@ -658,7 +663,7 @@ public class TankAIControlled extends Tank implements ITankField
 				this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
 		}
 
-		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+		double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 		this.bulletItem.updateCooldown(reload);
 		this.mineItem.updateCooldown(reload);
 		super.update();
@@ -690,7 +695,7 @@ public class TankAIControlled extends Tank implements ITankField
 				this.aim = false;
 				this.stoppedAiming = true;
 
-				double lifeRange = b.lifespan * b.speed * this.getAttributeValue(AttributeModifier.bullet_speed, 1);
+				double lifeRange = b.lifespan * b.speed * em().getAttributeValue(AttributeModifier.bullet_speed, 1);
 				double limitRange = b.getRangeMax();
 				double range = Math.min(limitRange, lifeRange);
 
@@ -761,7 +766,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void charge()
 	{
-		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+		double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
 		this.cooldown -= Panel.frameFrequency * reload;
 		this.justCharged = true;
@@ -871,7 +876,7 @@ public class TankAIControlled extends Tank implements ITankField
 			speed = Double.MIN_VALUE;
 
 		b.setPolarMotion(angle + offset + this.shotOffset, speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 		b.speed = Math.abs(speed);
 
 		if (b instanceof BulletArc || b instanceof BulletAirStrike)
@@ -1092,8 +1097,7 @@ public class TankAIControlled extends Tank implements ITankField
 		t.drawAge = this.drawAge;
 		t.possessor = this;
 		t.skipNextUpdate = true;
-		t.attributes = this.attributes;
-		t.statusEffects = this.statusEffects;
+		t.setEffectManager(this.em());
 		t.coinValue = this.coinValue;
 		t.currentlyVisible = true;
 		t.cooldown = Math.min(t.cooldownBase, this.cooldown);
@@ -1365,18 +1369,14 @@ public class TankAIControlled extends Tank implements ITankField
 	public void addIdleMotionOffset()
 	{
 		double offsetMotion = Math.sin(this.age * 0.02);
-		if (offsetMotion < 0)
-		{
-			double dist = this.distances[(int) (this.direction * 2 + 6) % 8];
-			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
-		}
+        double dist;
+        if (offsetMotion < 0)
+            dist = this.distances[(int) (this.direction * 2 + 6) % 8];
 		else
-		{
-			double dist = this.distances[(int) (this.direction * 2 + 2) % 8];
-			offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
-		}
+            dist = this.distances[(int) (this.direction * 2 + 2) % 8];
+        offsetMotion *= Math.min(1, (dist - 1) / 5.0) * this.acceleration;
 
-		this.addPolarAcceleration((this.direction + 1) / 2 * Math.PI, offsetMotion);
+        this.addPolarAcceleration((this.direction + 1) / 2 * Math.PI, offsetMotion);
 	}
 
 	public void checkForBulletThreats()
@@ -1640,7 +1640,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (!this.chargeUp)
 		{
-			double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+			double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 			this.cooldown -= Panel.frameFrequency * reload;
 		}
 
@@ -2388,9 +2388,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			this.readyForInitialSpawn = false;
 			for (int i = 0; i < this.spawnedInitialCount; i++)
-			{
-				spawnTank();
-			}
+                spawnTank();
 		}
 
 		if (this.random.nextDouble() < this.spawnChance * Panel.frameFrequency && this.spawnedTanks.size() < this.spawnedMaxCount && !this.destroy && !ScreenGame.finishedQuick)
@@ -2627,8 +2625,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.orientation = this.sightTransformTank.orientation;
 			this.pitch = this.sightTransformTank.pitch;
 			this.drawAge = this.sightTransformTank.drawAge;
-			this.attributes = this.sightTransformTank.attributes;
-			this.statusEffects = this.sightTransformTank.statusEffects;
+			this.setEffectManager(this.sightTransformTank.em());
 			this.possessingTank = null;
 			this.currentlyVisible = true;
 			this.targetEnemy = null;
@@ -2701,8 +2698,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.health = t.health;
 			this.orientation = t.orientation;
 			this.drawAge = t.drawAge;
-			this.attributes = t.attributes;
-			this.statusEffects = t.statusEffects;
+			this.setEffectManager(t.em());
 			this.targetEnemy = null;
 
 			if (t instanceof TankAIControlled)
@@ -2787,8 +2783,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.possessingTank = t;
 			t.possessor = this;
 			t.skipNextUpdate = true;
-			t.attributes = this.attributes;
-			t.statusEffects = this.statusEffects;
+			t.setEffectManager(this.em());
 			t.coinValue = this.coinValue;
 
 			t.baseModel = this.baseModel;

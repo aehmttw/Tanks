@@ -80,8 +80,8 @@ public class TankRemote extends Tank
 
 		if (t instanceof TankAIControlled)
 		{
-			((TankAIControlled) t).bulletItem.item.bullet = ((TankAIControlled) t).bullet;
-			((TankAIControlled) t).mineItem.item.mine = ((TankAIControlled) t).mine;
+			((TankAIControlled) t).bulletItem.item.bullet = ((TankAIControlled) t).getBullet();
+			((TankAIControlled) t).mineItem.item.mine = ((TankAIControlled) t).getMine();
 
 			((TankAIControlled) t).bulletItem.item.cooldownBase = Math.min(1, ((TankAIControlled) t).cooldownBase);
 			if (((TankAIControlled) t).cooldownRandom > 0)

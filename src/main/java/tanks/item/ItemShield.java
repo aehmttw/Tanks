@@ -3,9 +3,10 @@ package tanks.item;
 import tanks.*;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.tank.Tank;
+import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 
-public class ItemShield extends Item
+public class ItemShield extends Item implements ICopyable<ItemShield>
 {
     public static final String item_class_name = "shield";
 

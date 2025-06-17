@@ -246,6 +246,11 @@ public class EffectManager
         return value;
     }
 
+    /** Returns the attribute modifier object of the same type, or null if it doesn't exist.
+     * @apiNote The attribute modifier object returned is mutable. Create a copy using
+     * {@link AttributeModifier#copy copy} if you want to modify it, and make sure to
+     * {@link AttributeModifier#recycle recycle} it when you're done.
+     */
     public AttributeModifier getAttribute(AttributeModifier.Type type)
     {
         AttributeModifier best = null;
@@ -259,11 +264,7 @@ public class EffectManager
                 if (a.deteriorationAge - a.age > bestTime || a.deteriorationAge <= 0)
                 {
                     bestTime = a.deteriorationAge - a.age;
-                    best = AttributeModifier.newInstance(a.name, a.type, a.effect, a.value);
-                    best.warmupAge = a.warmupAge;
-                    best.deteriorationAge = a.deteriorationAge;
-                    best.age = a.age;
-                    best.duration = a.duration;
+                    best = a;
 
                     if (a.deteriorationAge <= 0)
                         bestTime = Double.MAX_VALUE;
@@ -286,12 +287,7 @@ public class EffectManager
                         if (i.deteriorationAge - i.age > bestTime || a.deteriorationAge <= 0)
                         {
                             bestTime = i.deteriorationAge - i.age;
-                            best = AttributeModifier.newInstance(a.type, a.effect, a.value);
-                            best.warmupAge = i.warmupAge;
-                            best.deteriorationAge = i.deteriorationAge;
-                            best.age = i.age;
-                            best.duration = i.duration;
-
+                            best = a;
                             if (a.deteriorationAge <= 0)
                                 bestTime = Double.MAX_VALUE;
                         }

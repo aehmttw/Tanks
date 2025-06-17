@@ -109,7 +109,7 @@ public class AttributeModifier
 	{
 		AttributeModifier modifier = recycleQueue.poll();
 		if (modifier != null)
-            return modifier.set(type, op, amount);
+			return modifier.set(type, op, amount);
 		return new AttributeModifier().set(type, op, amount);
 	}
 
@@ -124,12 +124,31 @@ public class AttributeModifier
 	}
 
 	/**
+	 * Creates a copy of an AttributeModifier instance
+	 * @apiNote Remember to {@link #recycle(AttributeModifier) recycle} the copy when you're done with it
+	 */
+	public static AttributeModifier copy(AttributeModifier a)
+	{
+		AttributeModifier copy = newInstance(a.name, a.type, a.effect, a.age);
+		copy.duration = a.duration;
+		copy.deteriorationAge = a.deteriorationAge;
+		copy.warmupAge = a.warmupAge;
+		copy.value = a.value;
+		copy.age = a.age;
+		copy.expired = a.expired;
+		return copy;
+	}
+
+	/**
 	 * Recycle this AttributeModifier instance for reuse
 	 */
 	public static void recycle(AttributeModifier modifier)
 	{
-		if (modifier != null && recycleQueue.size() < MAX_POOL_SIZE)
-            recycleQueue.offer(modifier);
+		if (modifier == null || !modifier.expired)
+			return;
+
+		if (recycleQueue.size() < MAX_POOL_SIZE)
+			recycleQueue.offer(modifier);
 	}
 
 	public void update()

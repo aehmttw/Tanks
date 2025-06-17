@@ -296,7 +296,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		AttributeModifier a = this.tank.em().getAttribute(AttributeModifier.bullet_boost);
 		if (a != null)
 			em().addStatusEffect(StatusEffect.boost_bullet, a.age, 0, a.deteriorationAge, a.duration);
-		AttributeModifier.recycle(a);
 
 		if (!this.tank.isRemote)
 		{

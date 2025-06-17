@@ -2,6 +2,7 @@ package tanks.obstacle;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.effect.StatusEffect;
 import tanks.gui.screen.*;
 import tanks.network.event.EventObstacleSnowMelt;
 import tanks.rendering.ShaderSnow;
@@ -66,8 +67,8 @@ public class ObstacleSnow extends Obstacle
     {
         if (!ScreenPartyLobby.isClient && (m instanceof Tank || m instanceof Bullet))
         {
-            m.addStatusEffect(StatusEffect.snow_velocity, 0, 20, 30);
-            m.addStatusEffect(StatusEffect.snow_friction, 0, 5, 10);
+            m.em().addStatusEffect(StatusEffect.snow_velocity, 0, 20, 30);
+            m.em().addStatusEffect(StatusEffect.snow_friction, 0, 5, 10);
 
             int amt = 5;
             int lastDepth = (int) Math.ceil(this.depth * amt);

@@ -3,6 +3,7 @@ package tanks.tank;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.DefaultItems;
+import tanks.effect.AttributeModifier;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
@@ -117,8 +118,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         double pvx = this.prevKnownVXFinal;
         double pvy = this.prevKnownVYFinal;
-        double cvx = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-        double cvy = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+        double cvx = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+        double cvy = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
         this.posX = TankRemote.cubicInterpolationVelocity(this.prevKnownPosX, pvx, this.currentKnownPosX, cvx, this.timeSinceRefresh, this.interpolationTime);
         this.posY = TankRemote.cubicInterpolationVelocity(this.prevKnownPosY, pvy, this.currentKnownPosY, cvy, this.timeSinceRefresh, this.interpolationTime);
@@ -159,7 +160,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         this.updateMovement();
 
         this.bufferCooldown -= Panel.frameFrequency;
-        double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+        double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
         for (Item.ItemStack<?> s: this.abilities)
         {
@@ -330,8 +331,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                     vY *= maxSpeed / speed;
                 }
 
-                double vX2 = this.getAttributeValue(AttributeModifier.velocity, vX * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
-                double vY2 = this.getAttributeValue(AttributeModifier.velocity, vY * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
+                double vX2 = em().getAttributeValue(AttributeModifier.velocity, vX * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
+                double vY2 = em().getAttributeValue(AttributeModifier.velocity, vY * ScreenGame.finishTimer / ScreenGame.finishTimerMax);
 
                 double maxDist = 1;
 
@@ -520,7 +521,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         double vX = this.vX;
         double vY = this.vY;
-        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
+        this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
         if (b.moveOut)
             b.moveOut(50 * this.size / Game.tile_size);

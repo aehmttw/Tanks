@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.effect.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.tankson.Property;
 
@@ -150,11 +151,13 @@ public class TankRemote extends Tank
 
 		double pvx = this.prevKnownVXFinal;
 		double pvy = this.prevKnownVYFinal;
-		double cvx = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-		double cvy = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+		double cvx = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+		double cvy = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
 		this.posX = cubicInterpolationVelocity(this.prevKnownPosX, pvx, this.currentKnownPosX, cvx, this.timeSinceRefresh, this.interpolationTime);
 		this.posY = cubicInterpolationVelocity(this.prevKnownPosY, pvy, this.currentKnownPosY, cvy, this.timeSinceRefresh, this.interpolationTime);
+//		this.posX = this.currentKnownPosX;
+//		this.posY = this.currentKnownPosY;
 		double frac = Math.min(1, this.timeSinceRefresh / this.interpolationTime);
 		this.vX = (1 - frac) * this.prevKnownVX + frac * this.currentKnownVX;
 		this.vY = (1 - frac) * this.prevKnownVY + frac * this.currentKnownVY;
@@ -233,6 +236,10 @@ public class TankRemote extends Tank
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}
+
+		/*Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.toInterfaceCoordsX(prevKnownPosX), Drawing.drawing.toInterfaceCoordsY(prevKnownPosY), String.format("%d, %d, %.2f", (int) posX / 50, (int) posY / 50, timeSinceRefresh));*/
 	}
 
 	public static double cubicInterpolationVelocity(double startPos, double startVel, double endPos, double endVel, double curTime, double totalTime)

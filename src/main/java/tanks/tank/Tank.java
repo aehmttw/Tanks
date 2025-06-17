@@ -3,6 +3,8 @@ package tanks.tank;
 import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.effect.AttributeModifier;
+import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -20,7 +22,10 @@ import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
 
 import static tanks.tank.TankPropertyCategory.*;
 
@@ -102,9 +107,8 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankBuildProperty @Property(category = movementGeneral, id = "friction", name = "Friction", minValue = 0.0, maxValue = 1.0)
 	public double friction = 0.05;
 
-	public double accelerationModifier = 1;
-	public double frictionModifier = 1;
-	public double maxSpeedModifier = 1;
+	public double accelerationModifier = 1, frictionModifier = 1, maxSpeedModifier = 1;
+	public double luminanceModifier, glowModifier;
 
 	@TankBuildProperty @Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0, desc = "1 tile = 50 units")
 	public double size;
@@ -232,6 +236,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public long lastFarthestInSightUpdate = 0;
 	public Tank lastFarthestInSight = null;
+
+	public boolean drawHealray = false;
 
 	public Tank(String name, double x, double y, double size, double r, double g, double b)
 	{
@@ -478,6 +484,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.updateVisibility();
 
+		this.drawHealray = em().getAttribute(AttributeModifier.healray) != null;
 		this.age += Panel.frameFrequency;
 		this.invulnerabilityTimer = Math.max(0, this.invulnerabilityTimer - Panel.frameFrequency);
 
@@ -492,9 +499,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		if (this.resistFreeze)
-		{
-			this.attributeImmunities.addAll(Arrays.asList("ice_slip", "ice_accel", "ice_max_speed", "freeze"));
-		}
+            this.em().addImmunities("ice_slip", "ice_accel", "ice_max_speed", "freeze");
 
 		this.damageFlashAnimation = Math.max(0, this.damageFlashAnimation - 0.05 * Panel.frameFrequency);
 		this.healFlashAnimation = Math.max(0, this.healFlashAnimation - 0.05 * Panel.frameFrequency);
@@ -550,30 +555,18 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.frictionModifier = 1;
 		this.maxSpeedModifier = 1;
 
-		double boost = 0;
-		for (int i = 0; i < this.attributes.size(); i++)
-		{
-			AttributeModifier a = this.attributes.get(i);
+		EffectManager em = getEffectManager();
+		if (health < baseHealth)
+			em.removeAttribute(AttributeModifier.healray);
 
-			if (a.name.equals("healray"))
-			{
-				if (this.health < this.baseHealth)
-				{
-					this.attributes.remove(a);
-					i--;
-				}
-			}
-		}
+		this.accelerationModifier = em.getAttributeValue(AttributeModifier.acceleration, this.accelerationModifier);
+		this.frictionModifier = em.getAttributeValue(AttributeModifier.friction, this.frictionModifier);
+		this.maxSpeedModifier = em.getAttributeValue(AttributeModifier.max_speed, this.maxSpeedModifier);
 
+		this.luminanceModifier = em.getAttributeValue(AttributeModifier.glow, this.luminance);
+		this.glowModifier = em.getAttributeValue(AttributeModifier.glow, 1);
 
-		this.accelerationModifier = this.getAttributeValue(AttributeModifier.acceleration, this.accelerationModifier);
-
-		if (!(this instanceof TankAIControlled))
-			this.frictionModifier = this.getAttributeValue(AttributeModifier.friction, this.frictionModifier);
-
-		this.maxSpeedModifier = this.getAttributeValue(AttributeModifier.max_speed, this.maxSpeedModifier);
-
-		boost = this.getAttributeValue(AttributeModifier.ember_effect, boost);
+		double boost = em.getAttributeValue(AttributeModifier.ember_effect, 0);
 
 		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled && !ScreenGame.finishedQuick)
 		{
@@ -642,9 +635,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		if (this.hasCollided)
-		{
-			this.recoilSpeed *= 0.5;
-		}
+            this.recoilSpeed *= 0.5;
 
 		if (this.possessor != null)
 			this.possessor.updatePossessing();
@@ -743,9 +734,6 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void drawTank(boolean forInterface, boolean in3d, boolean transparent)
 	{
-		double luminance = this.getAttributeValue(AttributeModifier.glow, this.luminance);
-		double glow = this.getAttributeValue(AttributeModifier.glow, 1);
-
 		double s = (this.size * (Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1);
 		double sizeMod = 1;
 
@@ -755,7 +743,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		Drawing drawing = Drawing.drawing;
 		double[] teamColor = Team.getObjectColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB, this);
 
-		Drawing.drawing.setColor(teamColor[0] * glow * this.glowIntensity, teamColor[1] * glow * this.glowIntensity, teamColor[2] * glow * this.glowIntensity, 255, 1);
+		Drawing.drawing.setColor(teamColor[0] * this.glowModifier * this.glowIntensity, teamColor[1] * this.glowModifier * this.glowIntensity, teamColor[2] * this.glowModifier * this.glowIntensity, 255, 1);
 
 		if (Game.glowEnabled && !transparent)
 		{
@@ -787,7 +775,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 				if (forInterface)
 					Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, size, size, false, true);
-				else if (!(forInterface && !in3d))
+				else
 					Drawing.drawing.fillLargeGlow(this.posX, this.posY, 0, size, size, false, false, false, true);
 
 				i--;
@@ -799,25 +787,21 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (!forInterface)
 		{
-			for (int i = 0; i < this.attributes.size(); i++)
+			if (this.drawHealray)
 			{
-				AttributeModifier a = this.attributes.get(i);
-				if (a.name.equals("healray"))
-				{
-					double mod = 1 + 0.4 * Math.min(1, this.health - this.baseHealth);
+				double mod = 1 + 0.4 * Math.min(1, this.health - this.baseHealth);
 
-					if (this.health > this.baseHealth)
+				if (this.health > this.baseHealth)
+				{
+					if (!in3d)
 					{
-						if (!in3d)
-						{
-							Drawing.drawing.setColor(0, 255, 0, 255, 1);
-							drawing.drawModel(this.baseModel, this.posX, this.posY, s * mod, s * mod, this.orientation);
-						}
-						else
-						{
-							Drawing.drawing.setColor(0, 255, 0, 127, 1);
-							drawing.drawModel(this.baseModel, this.posX, this.posY, this.posZ, s * mod, s * mod, s - 2, this.orientation);
-						}
+						Drawing.drawing.setColor(0, 255, 0, 255, 1);
+						drawing.drawModel(this.baseModel, this.posX, this.posY, s * mod, s * mod, this.orientation);
+					}
+					else
+					{
+						Drawing.drawing.setColor(0, 255, 0, 127, 1);
+						drawing.drawModel(this.baseModel, this.posX, this.posY, this.posZ, s * mod, s * mod, s - 2, this.orientation);
 					}
 				}
 			}
@@ -882,7 +866,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			}
 		}
 
-		this.drawTurret(forInterface, in3d || (!forInterface && in3d), transparent);
+		this.drawTurret(forInterface, in3d, transparent);
 
 		sizeMod = 0.5;
 
@@ -956,7 +940,19 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 	}
 
-	public void drawOutline() 
+	@Override
+	public void initEffectManager(EffectManager em)
+	{
+		em.addAttributeCallback = this::sendEvent;
+	}
+
+	public void sendEvent(AttributeModifier m, boolean unduplicate)
+	{
+		if (!this.isRemote)
+			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, unduplicate));
+	}
+
+	public void drawOutline()
 	{
 		drawAge = Game.tile_size;
 
@@ -986,24 +982,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.drawOutline();
 		this.posX = x1;
 		this.posY = y1;
-	}
-
-	@Override
-	public void addAttribute(AttributeModifier m)
-	{
-		super.addAttribute(m);
-
-		if (!this.isRemote)
-			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, false));
-	}
-
-	@Override
-	public void addUnduplicateAttribute(AttributeModifier m)
-	{
-		super.addUnduplicateAttribute(m);
-
-		if (!this.isRemote)
-			Game.eventsOut.add(new EventTankAddAttributeModifier(this, m, true));
 	}
 
 	public void onDestroy()
@@ -1066,16 +1044,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.health = Math.max(prev, Math.min(this.health, this.baseHealth + ((Bullet) source).maxExtraHealth));
 
 		if (this.health <= 1)
-		{
-			for (int i = 0; i < this.attributes.size(); i++)
-			{
-				if (this.attributes.get(i).type.name.equals("healray"))
-				{
-					this.attributes.remove(i);
-					i--;
-				}
-			}
-		}
+            em().removeAttribute(AttributeModifier.healray);
 
 		Game.eventsOut.add(new EventTankUpdateHealth(this));
 
@@ -1317,14 +1286,6 @@ public abstract class Tank extends Movable implements ISolidObject
 	public void setBufferCooldown(Item.ItemStack<?> stack, double value)
 	{
 
-	}
-
-	/** This is for backwards compatibility saving with the base game. */
-	public int saveOrder(int index)
-	{
-		if (index < 2)
-			return 1 - index;
-		return index;
 	}
 
 	public Tank getTopLevelPossessor()

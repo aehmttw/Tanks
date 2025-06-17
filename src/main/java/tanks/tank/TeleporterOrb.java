@@ -1,9 +1,9 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.bullet.Bullet;
 import tanks.bullet.Trail;
 import tanks.bullet.Trail3D;
+import tanks.effect.AttributeModifier;
 import tanks.network.event.EventTankTeleport;
 
 import java.util.ArrayList;
@@ -111,7 +111,7 @@ public class TeleporterOrb extends Movable
 		if (Game.game.window.touchscreen)
 			freq = 1;
 
-		this.age += Panel.frameFrequency * this.getAttributeValue(AttributeModifier.velocity, 1);
+		this.age += Panel.frameFrequency * em().getAttributeValue(AttributeModifier.velocity, 1);
 
 		this.tank.vX = 0;
 		this.tank.vY = 0;

@@ -2,11 +2,8 @@ package tanks.minigames;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.effect.StatusEffect;
-import tanks.gui.screen.IDarkScreen;
-import tanks.gui.screen.ScreenArcadeBonuses;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.bullet.DefaultItems;
+import tanks.gui.screen.*;
 import tanks.hotbar.Hotbar;
 import tanks.item.Item;
 import tanks.item.ItemShield;
@@ -111,10 +108,10 @@ public class Arcade extends Minigame
                 itemsMap.put(i.item.name, i);
             }
 
-            tankItemsMap.put("mint", "Fire bullet");
+            tankItemsMap.put("mint", "Rocket");
             tankItemsMap.put("yellow", "Mega mine");
             tankItemsMap.put("red", "Laser");
-            tankItemsMap.put("green", "Bouncy fire bullet");
+            tankItemsMap.put("green", "Sniper rocket");
             tankItemsMap.put("blue", "Zap");
             tankItemsMap.put("medic", "Shield");
             tankItemsMap.put("cyan", "Freezing bullet");
@@ -123,8 +120,8 @@ public class Arcade extends Minigame
             tankItemsMap.put("mustard", "Artillery shell");
             tankItemsMap.put("orangered", "Explosive bullet");
             tankItemsMap.put("darkgreen", "Mini bullet");
-            tankItemsMap.put("black", "Dark fire bullet");
-            tankItemsMap.put("salmon", "Homing bullet");
+            tankItemsMap.put("black", "Void rocket");
+            tankItemsMap.put("salmon", "Homing rocket");
             tankItemsMap.put("lightblue", "Air");
             tankItemsMap.put("lightpink", "Laser");
             tankItemsMap.put("gold", "Zap");

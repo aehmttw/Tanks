@@ -9,6 +9,7 @@ import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;
 import tanks.tank.TankPlayerController;
+import tanks.tank.Turret;
 import tanks.translation.Translation;
 
 public class Hotbar
@@ -34,6 +35,10 @@ public class Hotbar
 
 	public static Button toggle;
 
+	public double timeSinceCoinsChange = 0;
+	public double timeSinceEnemiesChange = 0;
+	public double timeSinceAlliesChange = 0;
+
 	public double timeSinceBulletChange = 0;
 	public double timeSinceMineChange = 0;
 	public double timeSinceHealthChange = 0;
@@ -46,6 +51,10 @@ public class Hotbar
 	public double lastHealth = 0;
 	public double lastCooldownFrac = 0;
 	public double lastCooldownFrac2 = 0;
+
+	public int lastCoins = 0;
+	public int lastAllies = 0;
+	public int lastEnemies = 0;
 
 	public double circleVisibility = 0;
 	public double circleVisibilityMax = 50;
@@ -119,6 +128,9 @@ public class Hotbar
 		timeSinceBulletChange += Panel.frameFrequency;
 		timeSinceMineChange += Panel.frameFrequency;
 		timeSinceHealthChange += Panel.frameFrequency;
+		timeSinceAlliesChange += Panel.frameFrequency;
+		timeSinceEnemiesChange += Panel.frameFrequency;
+		timeSinceCoinsChange += Panel.frameFrequency;
 
 		this.itemBar.update();
 	}
@@ -702,6 +714,143 @@ public class Hotbar
 			Drawing.drawing.setInterfaceFontSize(10);
 			Drawing.drawing.drawInterfaceText(mx + 17, my + 17, stackCount + "", true);
 		}
+
+		int enemyCount = 0;
+		int alliedCount = 0;
+		for (Movable m : Game.movables)
+		{
+			if (m instanceof Tank && !m.destroy && ((Tank)m).mandatoryKill)
+			{
+				if (!Team.isAllied(Game.playerTank, m))
+					enemyCount++;
+				else
+					alliedCount++;
+			}
+		}
+
+		boolean playing = Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing;
+
+		if (lastCoins != coins || !playing)
+			timeSinceCoinsChange = 0;
+
+		if ((lastAllies != alliedCount && !ScreenGame.finishedQuick) || (!playing && alliedCount > 1))
+			timeSinceAlliesChange = 0;
+
+		if (lastEnemies != enemyCount || !playing)
+			timeSinceEnemiesChange = 0;
+
+		lastCoins = coins;
+		lastAllies = alliedCount;
+		lastEnemies = enemyCount;
+
+		double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility);
+		double opacityCoins = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility + Math.max(0, 20 - timeSinceCoinsChange / 50));
+		double opacityAllies = circleVisibility / circleVisibilityMax * Math.min(1,((alliedCount > 1) ? this.circlePersistenceVisibility : 0) + Math.max(0, 20 - timeSinceAlliesChange / 50));
+		double opacityEnemies = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility + Math.max(0, 20 - timeSinceEnemiesChange / 50));
+
+		Drawing.drawing.setInterfaceFontSize(24);
+
+		double totalWidth = 0;
+
+		double enemiesWidth = 0;
+		double alliesWidth = 0;
+		double coinsWidth = 0;
+
+		double enemiesPos = 0;
+		double alliesPos = 0;
+		double coinsPos = 0;
+		double livesPos = 0;
+
+		double iconSize = 25;
+		double iconSpace = 30;
+		double space = 50;
+
+		if (this.enabledRemainingEnemies)
+		{
+			enemiesWidth = Drawing.drawing.getInterfaceTextWidth("" + enemyCount);
+			totalWidth += (space + enemiesWidth) * opacityEnemies;
+
+			alliesPos = totalWidth;
+			alliesWidth = Drawing.drawing.getInterfaceTextWidth("" + alliedCount);
+			totalWidth += (space + alliesWidth) * opacityAllies;
+		}
+
+		if (this.enabledCoins)
+		{
+			coinsPos = totalWidth;
+			coinsWidth = Drawing.drawing.getInterfaceTextWidth("" + coins);
+			totalWidth += (space + coinsWidth) * opacityCoins;
+		}
+
+//		livesPos = totalWidth;
+//		totalWidth += (30 + Drawing.drawing.getInterfaceTextWidth("" + Game.player.remainingLives)) * opacity1;
+
+		if (this.enabledCoins)
+		{
+			double x = coinsPos - totalWidth / 2 + Drawing.drawing.interfaceSizeX / 2;
+			double y = (Drawing.drawing.getInterfaceEdgeY(true) - 17.5 - verticalOffset);
+
+			Drawing.drawing.setColor(255, 255, 255, opacityCoins * 255);
+			Drawing.drawing.drawInterfaceImage("coin.png", x + (coinsWidth + iconSpace / 2) * opacityCoins, y, opacityCoins * iconSize, opacityCoins * iconSize);
+
+			Drawing.drawing.setInterfaceFontSize(24 * opacityCoins);
+			Drawing.drawing.setColor(255, 100, 0, opacityCoins * 255);
+			Drawing.drawing.drawInterfaceText(x + 1, y + 1, coins + "", false);
+			Drawing.drawing.setColor(255, 180, 0, opacityCoins * 255);
+			Drawing.drawing.drawInterfaceText(x - 1, y - 1, coins + "", false);
+		}
+
+		if (this.enabledRemainingEnemies)
+		{
+			double x = enemiesPos - totalWidth / 2 + Drawing.drawing.interfaceSizeX / 2;
+			double y = (Drawing.drawing.getInterfaceEdgeY(true) - 17.5 - verticalOffset);
+
+			drawTankIcon(x + (enemiesWidth + iconSpace / 2 + 3) * opacityEnemies, y, 255, 0, 0, opacityEnemies, 22 * opacityEnemies);
+
+			Drawing.drawing.setInterfaceFontSize(24 * opacityEnemies);
+			Drawing.drawing.setColor(Turret.calculateSecondaryColor(255), Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(0), opacityEnemies * 255);
+			Drawing.drawing.drawInterfaceText(x + 1, y + 1, enemyCount + "", false);
+			Drawing.drawing.setColor(255, 0, 0, opacityEnemies * 255);
+			Drawing.drawing.drawInterfaceText(x - 1, y - 1, "" + enemyCount, false);
+		}
+
+		if (this.enabledRemainingEnemies)
+		{
+			double x = alliesPos - totalWidth / 2 + Drawing.drawing.interfaceSizeX / 2;
+			double y = (Drawing.drawing.getInterfaceEdgeY(true) - 17.5 - verticalOffset);
+
+			drawTankIcon(x + (alliesWidth + iconSpace / 2 + 3) * opacityAllies, y, 0, 150, 255, opacityAllies, 22 * opacityAllies);
+
+			Drawing.drawing.setInterfaceFontSize(24 * opacityAllies);
+			Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255), opacityAllies * 255);
+			Drawing.drawing.drawInterfaceText(x + 1, y + 1, alliedCount + "", false);
+			Drawing.drawing.setColor(0, 150, 255, opacityAllies * 255);
+			Drawing.drawing.drawInterfaceText(x - 1, y - 1, "" + alliedCount, false);
+		}
+	}
+
+	public void drawTankIcon(double x, double y, double r, double g, double b, double opacity1, double size)
+	{
+		double r2 = Turret.calculateSecondaryColor(r);
+		double g2 = Turret.calculateSecondaryColor(g);
+		double b2 = Turret.calculateSecondaryColor(b);
+
+		double r3 = (r + r2) / 2;
+		double g3 = (g + g2) / 2;
+		double b3 = (b + b2) / 2;
+
+		Drawing.drawing.setColor(r2, g2, b2, opacity1 * 255);
+		Drawing.drawing.drawInterfaceModel(TankModels.tank.base, x, y, size, size, 0);
+
+		Drawing.drawing.setColor(r, g, b, opacity1 * 255);
+		Drawing.drawing.drawInterfaceModel(TankModels.tank.color, x, y, size, size, 0);
+
+		Drawing.drawing.setColor(r2, g2, b2, opacity1 * 255);
+
+		Drawing.drawing.drawInterfaceModel(TankModels.tank.turret, x, y, size, size, 0);
+
+		Drawing.drawing.setColor(r3, g3, b3, opacity1 * 255);
+		Drawing.drawing.drawInterfaceModel(TankModels.tank.turretBase, x, y, size, size, 0);
 	}
 
 	public void resetTimers()
@@ -709,7 +858,12 @@ public class Hotbar
 		this.timeSinceBulletChange = Double.MAX_VALUE;
 		this.timeSinceMineChange = Double.MAX_VALUE;
 		this.timeSinceHealthChange = Double.MAX_VALUE;
+		this.timeSinceCoinsChange = Double.MAX_VALUE;
+		this.timeSinceAlliesChange = Double.MAX_VALUE;
+		this.timeSinceEnemiesChange = Double.MAX_VALUE;
 		this.itemBar.timeSinceSwitch = Double.MAX_VALUE;
+		lastAllies = 1;
+		lastEnemies = 0;
 		this.ignoreInitialStats = true;
 	}
 }

@@ -202,7 +202,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         }
     }
 
-    /*@Override
+    @Override
     public void draw()
     {
         super.draw();
@@ -214,7 +214,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         Drawing.drawing.drawText(this.posX + 25, this.posY + 25, 50, this.bulletItem.stackSize + "");
 
         Drawing.drawing.drawText(this.posX - 25, this.posY + 25, 50, this.player.hotbar.coins + "");
-    }*/
+    }
 
     public void setBulletItem(ItemBullet.ItemStackBullet i)
     {
@@ -235,6 +235,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         this.cooldownRandom = 0;
         this.bulletItem = i;
         this.setBullet(i.item.bullet);
+        this.bulletItem.item.cooldownBase = this.cooldownBase;
         i.player = this.player;
     }
 
@@ -242,7 +243,9 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
     {
         this.enableMineLaying = true;
         this.mineItem = i;
+        double cooldown = i.item.cooldownBase;
         this.setMine(i.item.mine);
+        this.mineItem.item.cooldownBase = cooldown;
         i.player = this.player;
     }
 }

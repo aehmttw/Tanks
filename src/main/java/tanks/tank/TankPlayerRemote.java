@@ -2,6 +2,7 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.bullet.DefaultItems;
 import tanks.effect.AttributeModifier;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;

@@ -775,7 +775,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 				if (forInterface)
 					Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, size, size, false, true);
-				else if (!(forInterface && !in3d))
+				else
 					Drawing.drawing.fillLargeGlow(this.posX, this.posY, 0, size, size, false, false, false, true);
 
 				i--;

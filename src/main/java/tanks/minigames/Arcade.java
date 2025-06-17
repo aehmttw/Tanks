@@ -3,6 +3,7 @@ package tanks.minigames;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.DefaultItems;
+import tanks.effect.StatusEffect;
 import tanks.gui.screen.*;
 import tanks.hotbar.Hotbar;
 import tanks.item.Item;

@@ -367,7 +367,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                             t.inputText = f.get() + "";
                         else
                         {
-                            int old = (int) f.get();
+                            int old = (int) f.cast().get();
                             f.cast().set((int) Double.parseDouble(t.inputText));
                             validateChangedProperty(f, p, old);
                         }
@@ -410,7 +410,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                             t.inputText = f.get() + "";
                         else
                         {
-                            double old = (double) f.get();
+                            double old = (double) f.cast().get();
                             f.cast().set(Double.parseDouble(t.inputText));
                             validateChangedProperty(f, p, old);
                         }

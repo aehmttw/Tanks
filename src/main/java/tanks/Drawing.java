@@ -1085,6 +1085,16 @@ public class Drawing
 		Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY, lineWidth * interfaceScale, borderRadius * interfaceScale);
 	}
 
+	public double getInterfaceTextWidth(String s)
+	{
+		return Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+	}
+
+	public double getInterfaceTextHeight(String s)
+	{
+		return Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+	}
+
 	public void drawText(double x, double y, String text)
 	{
 		double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;

@@ -26,7 +26,7 @@ public class TankGold extends TankAIControlled
 		this.suicideExplosion.radius *= 1.5;
 
 		if (Game.tankTextures)
-            this.colorModel = TankModels.arrow.color;
+            this.colorSkin = TankModels.arrow;
 
 		this.coinValue = 4;
 

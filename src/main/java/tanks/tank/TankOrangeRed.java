@@ -32,7 +32,7 @@ public class TankOrangeRed extends TankAIControlled
 
         if (Game.tankTextures)
         {
-            this.baseModel = TankModels.diagonalStripes.base;
+            this.baseSkin = TankModels.diagonalStripes;
             this.emblem = "emblems/bang.png";
             this.emblemR = 159;
             this.emblemG = 67;

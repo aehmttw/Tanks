@@ -39,14 +39,19 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean fromRegistry = false;
 
-	@TankBuildProperty @Property(category = appearanceBody, id = "color_model", name = "Tank body model", miscType = Property.MiscType.colorModel)
-	public Model colorModel = TankModels.tank.color;
-	@TankBuildProperty @Property(category = appearanceTreads, id = "base_model", name = "Tank treads model", miscType = Property.MiscType.baseModel)
-	public Model baseModel = TankModels.tank.base;
-	@TankBuildProperty @Property(category = appearanceTurretBase, id = "turret_base_model", name = "Turret base model", miscType = Property.MiscType.turretBaseModel)
-	public Model turretBaseModel = TankModels.tank.turretBase;
-	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_model", name = "Turret barrel model", miscType = Property.MiscType.turretModel)
-	public Model turretModel = TankModels.tank.turret;
+	public Model colorModel = TankModels.skinnedTankModel.color;
+	public Model baseModel = TankModels.skinnedTankModel.base;
+	public Model turretBaseModel = TankModels.skinnedTankModel.turretBase;
+	public Model turretModel = TankModels.skinnedTankModel.turret;
+
+	@TankBuildProperty @Property(category = appearanceBody, id = "color_skin", name = "Tank body skin", miscType = Property.MiscType.colorModel)
+	public TankModels.TankSkin colorSkin = TankModels.tank;
+	@TankBuildProperty @Property(category = appearanceTreads, id = "base_skin", name = "Tank treads skin", miscType = Property.MiscType.baseModel)
+	public TankModels.TankSkin baseSkin = TankModels.tank;
+	@TankBuildProperty @Property(category = appearanceTurretBase, id = "turret_base_skin", name = "Turret base skin", miscType = Property.MiscType.turretBaseModel)
+	public TankModels.TankSkin turretBaseSkin = TankModels.tank;
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_skin", name = "Turret barrel skin", miscType = Property.MiscType.turretModel)
+	public TankModels.TankSkin turretSkin = TankModels.tank;
 
 	public double angle = 0;
 	public double pitch = 0;
@@ -107,8 +112,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	@TankBuildProperty @Property(category = movementGeneral, id = "friction", name = "Friction", minValue = 0.0, maxValue = 1.0)
 	public double friction = 0.05;
 
-	public double accelerationModifier = 1, frictionModifier = 1, maxSpeedModifier = 1;
-	public double luminanceModifier, glowModifier;
+	public double accelerationModifier = 1;
+	public double frictionModifier = 1;
+	public double maxSpeedModifier = 1;
+	public double luminanceModifier = 1;
+	public double glowModifier = 1;
 
 	@TankBuildProperty @Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0, desc = "1 tile = 50 units")
 	public double size;
@@ -736,6 +744,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		double s = (this.size * (Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1);
 		double sizeMod = 1;
+
+		this.baseModel.setSkin(this.baseSkin.base);
+		this.colorModel.setSkin(this.colorSkin.color);
+		this.turretBaseModel.setSkin(this.turretBaseSkin.turretBase);
+		this.turretModel.setSkin(this.turretSkin.turret);
 
 		if (forInterface && !in3d)
 			s = Math.min(this.size, Game.tile_size * 1.5);
@@ -1388,17 +1401,17 @@ public abstract class Tank extends Movable implements ISolidObject
 	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double r3, double g3, double b3, double size)
 	{
 		Drawing.drawing.setColor(r2, g2, b2);
-		Drawing.drawing.drawInterfaceModel(TankModels.tank.base, x, y, size, size, 0);
+		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.base, x, y, size, size, 0);
 
 		Drawing.drawing.setColor(r1, g1, b1);
-		Drawing.drawing.drawInterfaceModel(TankModels.tank.color, x, y, size, size, 0);
+		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.color, x, y, size, size, 0);
 
 		Drawing.drawing.setColor(r2, g2, b2);
 
-		Drawing.drawing.drawInterfaceModel(TankModels.tank.turret, x, y, size, size, 0);
+		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turret, x, y, size, size, 0);
 
 		Drawing.drawing.setColor(r3, g3, b3);
-		Drawing.drawing.drawInterfaceModel(TankModels.tank.turretBase, x, y, size, size, 0);
+		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turretBase, x, y, size, size, 0);
 	}
 
 	protected static class ClippedTile

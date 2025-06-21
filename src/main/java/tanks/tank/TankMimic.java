@@ -18,10 +18,10 @@ public class TankMimic extends TankAIControlled
         this.cooldownRandom = 400;
         this.enableMineLaying = true;
 
-        this.baseModel = TankModels.checkerboard.base;
-        this.colorModel = TankModels.checkerboard.color;
-        this.turretModel = TankModels.checkerboard.turret;
-        this.turretBaseModel = TankModels.checkerboard.turretBase;
+        this.baseSkin = TankModels.checkerboard;
+        this.colorSkin = TankModels.checkerboard;
+        this.turretSkin = TankModels.checkerboard;
+        this.turretBaseSkin = TankModels.checkerboard;
 
         this.avoidanceSeekOpenSpaces = false;
         this.bulletAvoidBehvavior = BulletAvoidBehavior.intersect;

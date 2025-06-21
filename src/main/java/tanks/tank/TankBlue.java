@@ -26,7 +26,7 @@ public class TankBlue extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.fixed.color;
+			this.colorSkin = TankModels.fixed;
 			this.emblem = "emblems/electric.png";
 			this.emblemG = 160;
 			this.emblemB = 255;

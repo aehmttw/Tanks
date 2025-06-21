@@ -24,7 +24,7 @@ public class TankBoss extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.fixed.color;
+			this.colorSkin = TankModels.fixed;
 			this.emblem = "emblems/star.png";
 			this.emblemR = this.secondaryColorR;
 			this.emblemG = this.secondaryColorG;

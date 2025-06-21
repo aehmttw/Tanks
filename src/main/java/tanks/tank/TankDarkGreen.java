@@ -22,10 +22,10 @@ public class TankDarkGreen extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.baseModel = TankModels.camo.base;
-			this.colorModel = TankModels.camo.color;
-			this.turretBaseModel = TankModels.camo.turretBase;
-			this.turretModel = TankModels.camo.turret;
+			this.baseSkin = TankModels.camo;
+			this.colorSkin = TankModels.camo;
+			this.turretBaseSkin = TankModels.camo;
+			this.turretSkin = TankModels.camo;
 		}
 
 		this.coinValue = 10;

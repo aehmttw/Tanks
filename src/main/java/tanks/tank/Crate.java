@@ -41,20 +41,15 @@ public class Crate extends Movable
             Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB);
             Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size, size, size);
 
-            TankModels.FullTankModel model = TankModels.fullTankModels.get(this.tank.baseModel.file);
-
-            if (model == TankModels.tank)
-                model = TankModels.fullTankModels.get(this.tank.colorModel.file);
-
             Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB);
             //Drawing.drawing.drawModel(m, this.posX, this.posY,  this.posZ - 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, 0, 0);
             Drawing.drawing.setColor(this.tank.colorR * 0.6, this.tank.colorG * 0.6, this.tank.colorB * 0.6);
             //Drawing.drawing.drawModel(m, this.posX, this.posY + size * 0.5 + 1,  this.posZ + size * 0.4 + 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, 0, Math.PI / 2);
             Drawing.drawing.setColor(this.tank.colorR * 0.8, this.tank.colorG * 0.8, this.tank.colorB * 0.8);
             //Drawing.drawing.drawModel(m, this.posX + size * 0.5 + 1, this.posY,  this.posZ + size * 0.4 + 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, Math.PI / 2, 0);
-            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size * 0.8, size * 0.8, size + 2, model.texture);
-            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size * 0.8, size + 2, size * 0.8, model.texture);
-            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size + 2, size * 0.8, size * 0.8, model.texture);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size * 0.8, size * 0.8, size + 2, this.tank.baseSkin.base);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size * 0.8, size + 2, size * 0.8, this.tank.baseSkin.base);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size + 2, size * 0.8, size * 0.8, this.tank.baseSkin.base);
 
             if (this.tank.emblem != null)
             {

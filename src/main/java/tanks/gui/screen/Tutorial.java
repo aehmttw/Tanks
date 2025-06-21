@@ -83,7 +83,7 @@ public class Tutorial extends Minigame
         this.gray = new TankGray("gray", 47.5 * Game.tile_size, 9.5 * Game.tile_size, Math.PI);
         this.gray.team = Game.enemyTeam;
 
-        arrow = Drawing.drawing.createModel();
+        arrow = Drawing.drawing.newModel();
         arrow.shapes = new ModelPart.Shape[2];
         arrow.shapes[0] = new ModelPart.Triangle(new ModelPart.Point(-1, 0, 0), new ModelPart.Point(-1.75, 0, 0), new ModelPart.Point(-2, 0.25, 0), 1);
         arrow.shapes[1] = new ModelPart.Triangle(new ModelPart.Point(-1, 0, 0), new ModelPart.Point(-1.75, 0, 0), new ModelPart.Point(-2, -0.25, 0), 1);

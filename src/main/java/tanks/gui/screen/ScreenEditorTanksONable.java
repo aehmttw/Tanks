@@ -533,57 +533,6 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
                 return t;
             }
-            else if (f.getType().equals(String.class))
-            {
-                TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, p.name(), () -> {}, f.get() + "", "");
-                t.function = () ->
-                {
-                    try
-                    {
-                        if (p.miscType() == Property.MiscType.name && this.prevScreen instanceof IRenamableScreen)
-                        {
-                            if (((IRenamableScreen) this.prevScreen).rename((String) f.get(), t.inputText))
-                            {
-                                f.cast().set(t.inputText);
-                                ArrayList<ITrigger> oldEls = new ArrayList<>(this.currentTab.uiElements);
-                                this.resetTabs();
-                                this.currentTab.uiElements = oldEls;
-                            }
-                            else
-                            {
-                                this.message = "That name is already in use, please pick another one";
-                                t.inputText = (String) f.get();
-                            }
-                        }
-                        else
-                        {
-                            Object old = f.get();
-                            f.cast().set(t.inputText);
-                            validateChangedProperty(f, p, old);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Game.exitToCrash(e);
-                    }
-                };
-
-                t.hoverText = formatDescription(p.desc());
-                t.enableHover = !p.desc().equals("");
-
-                if (p.miscType() == Property.MiscType.complexString)
-                {
-                    t.allowAll = true;
-                }
-                else
-                {
-                    t.lowerCase = true;
-                    t.allowSpaces = true;
-                    t.enableSpaces = false;
-                }
-
-                return t;
-            }
             else if (f.getType().equals(boolean.class))
             {
                 SelectorDrawable t = new SelectorDrawable(0, 0, this.objWidth, this.objHeight, p.name(), () ->
@@ -694,6 +643,145 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p.desc());
                 t.models = models;
+
+                return t;
+            }
+            else if (p.miscType().equals(Property.MiscType.baseModel) || p.miscType().equals(Property.MiscType.colorModel) || p.miscType().equals(Property.MiscType.turretBaseModel) || p.miscType().equals(Property.MiscType.turretModel))
+            {
+                ArrayList<TankModels.TankSkin> skins = null;
+                IModel m;
+
+                if (p.miscType().equals(Property.MiscType.baseModel))
+                {
+                    skins = Game.registryModelTank.getBaseSkins();
+                    m = TankModels.skinnedTankModel.base;
+                }
+                else if (p.miscType().equals(Property.MiscType.colorModel))
+                {
+                    skins = Game.registryModelTank.getColorSkins();
+                    m = TankModels.skinnedTankModel.color;
+                }
+                else if (p.miscType().equals(Property.MiscType.turretBaseModel))
+                {
+                    skins = Game.registryModelTank.getTurretBaseSkins();
+                    m = TankModels.skinnedTankModel.turretBase;
+                }
+                else
+                {
+                    skins = Game.registryModelTank.getTurretSkins();
+                    m = TankModels.skinnedTankModel.turret;
+                }
+
+                String selected = ((TankModels.TankSkin)(f.get())).name;
+                int selIndex = 0;
+                IModel[] previews = new IModel[skins.size()];
+                final TankModels.TankSkin[] finalSkins = new TankModels.TankSkin[skins.size()];
+                String[] skinNames = new String[finalSkins.length];
+
+                for (int i = 0; i < skins.size(); i++)
+                {
+                    skinNames[i] = skins.get(i).name;
+                    if (skins.get(i).name.equals(selected))
+                        selIndex = i;
+
+                    previews[i] = Drawing.drawing.createModel(m.toString());
+                    if (p.miscType().equals(Property.MiscType.baseModel))
+                    {
+                        skins = Game.registryModelTank.getBaseSkins();
+                        previews[i].setSkin(skins.get(i).base);
+                        finalSkins[i] = skins.get(i);
+                    }
+                    else if (p.miscType().equals(Property.MiscType.colorModel))
+                    {
+                        skins = Game.registryModelTank.getColorSkins();
+                        previews[i].setSkin(skins.get(i).color);
+                        finalSkins[i] = skins.get(i);
+                    }
+                    else if (p.miscType().equals(Property.MiscType.turretBaseModel))
+                    {
+                        skins = Game.registryModelTank.getTurretBaseSkins();
+                        previews[i].setSkin(skins.get(i).turretBase);
+                        finalSkins[i] = skins.get(i);
+                    }
+                    else
+                    {
+                        skins = Game.registryModelTank.getTurretSkins();
+                        previews[i].setSkin(skins.get(i).turret);
+                        finalSkins[i] = skins.get(i);
+                    }
+                }
+
+                SelectorImage t = new SelectorImage(0, 0, this.objWidth, this.objHeight, p.name(), skinNames, () -> {}, "");
+                t.selectedOption = selIndex;
+
+                t.function = () ->
+                {
+                    try
+                    {
+                        Object old = f.get();
+                        ((Pointer<TankModels.TankSkin>) f).set(finalSkins[t.selectedOption]);
+                        validateChangedProperty(f, p, old);
+                    }
+                    catch (Exception ex)
+                    {
+                        Game.exitToCrash(ex);
+                    }
+                };
+
+                t.enableHover = !p.desc().equals("");
+                t.hoverText = formatDescription(p.desc());
+                t.models = previews;
+
+                return t;
+            }
+            else if (f.getType().equals(String.class))
+            {
+                TextBox t = new TextBox(0, 0, this.objWidth, this.objHeight, p.name(), () -> {}, f.get() + "", "");
+                t.function = () ->
+                {
+                    try
+                    {
+                        if (p.miscType() == Property.MiscType.name && this.prevScreen instanceof IRenamableScreen)
+                        {
+                            if (((IRenamableScreen) this.prevScreen).rename((String) f.get(), t.inputText))
+                            {
+                                f.cast().set(t.inputText);
+                                ArrayList<ITrigger> oldEls = new ArrayList<>(this.currentTab.uiElements);
+                                this.resetTabs();
+                                this.currentTab.uiElements = oldEls;
+                            }
+                            else
+                            {
+                                this.message = "That name is already in use, please pick another one";
+                                t.inputText = (String) f.get();
+                            }
+                        }
+                        else
+                        {
+                            Object old = f.get();
+                            f.cast().set(t.inputText);
+                            validateChangedProperty(f, p, old);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Game.exitToCrash(e);
+                    }
+                };
+
+                t.hoverText = formatDescription(p.desc());
+                t.enableHover = !p.desc().equals("");
+
+                if (p.miscType() == Property.MiscType.complexString)
+                {
+                    t.allowAll = true;
+                }
+                else
+                {
+                    t.lowerCase = true;
+                    t.allowSpaces = true;
+                    t.enableSpaces = false;
+                }
 
                 return t;
             }

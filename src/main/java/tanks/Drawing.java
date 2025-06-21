@@ -1830,12 +1830,12 @@ public class Drawing
 		return lines;
 	}
 
-	public ModelPart createModel()
+	public ModelPart newModel()
 	{
 		return Game.game.window.createModelPart();
 	}
 
-	public Model createModel(String dir)
+	public Model getModel(String dir)
 	{
 		if (modelsByDir.get(dir) != null)
 			return modelsByDir.get(dir);
@@ -1844,5 +1844,10 @@ public class Drawing
 		modelsByDir.put(dir, m);
 
 		return m;
+	}
+
+	public Model createModel(String dir)
+	{
+		return new Model(Game.game.window, Game.game.fileManager, dir);
 	}
 }

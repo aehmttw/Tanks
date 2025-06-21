@@ -22,7 +22,7 @@ public class TankMagenta extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.baseModel = TankModels.cross.base;
+			this.baseSkin = TankModels.cross;
 		}
 
 		this.description = "A medium-speed smart tank";

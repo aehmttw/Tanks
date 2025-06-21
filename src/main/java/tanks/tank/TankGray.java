@@ -30,7 +30,7 @@ public class TankGray extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.horizontalStripes.color;
+			this.colorSkin = TankModels.horizontalStripes;
 		}
 
 		this.description = "A primitive mobile tank";

@@ -58,15 +58,19 @@ public class EventTankMimicTransform extends PersonalEvent
                 t1 = new TankDummy(t.name, t.posX, t.posY, t.angle);
             }
 
+            TankModels.TankSkin baseSkin = t.baseSkin;
+            TankModels.TankSkin turretBaseSkin = t.turretBaseSkin;
+            TankModels.TankSkin turretSkin = t.turretSkin;
+
             ((TankRemote) t).copyTank(t1);
             ((TankRemote) t).invisible = false;
             t.fromRegistry = false;
 
             if (!(this.target == this.tank))
             {
-                t.baseModel = TankModels.checkerboard.base;
-                t.turretBaseModel = TankModels.checkerboard.turretBase;
-                t.turretModel = TankModels.checkerboard.turret;
+                t.baseSkin = baseSkin;
+                t.turretBaseSkin = turretBaseSkin;
+                t.turretSkin = turretSkin;
 
                 if (Game.effectsEnabled)
                 {

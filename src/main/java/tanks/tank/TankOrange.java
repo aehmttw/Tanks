@@ -33,10 +33,10 @@ public class TankOrange extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.baseModel = TankModels.flames.base;
-			this.colorModel = TankModels.flames.color;
-			this.turretBaseModel = TankModels.flames.turretBase;
-			this.turretModel = TankModels.flames.turret;
+			this.baseSkin = TankModels.flames;
+			this.colorSkin = TankModels.flames;
+			this.turretBaseSkin = TankModels.flames;
+			this.turretSkin = TankModels.flames;
 		}
 
 		this.description = "A short-range tank which shoots fire";

@@ -505,14 +505,9 @@ public class Game
 		Game.registryModelTank.registerFullModel(dir);
 	}
 
-	public static void registerTankEmblems()
+	public static void registerTankSkin(TankModels.TankSkin s)
 	{
-		ArrayList<String> emblems = Game.game.fileManager.getInternalFileContents("/images/emblems/emblems.txt");
-
-		for (String s: emblems)
-		{
-			Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + s + ".png"));
-		}
+		Game.registryModelTank.registerSkin(s);
 	}
 
 	public static void registerMinigame(Class<? extends Minigame> minigame, String name, String desc)
@@ -774,7 +769,7 @@ public class Game
 	{
 		TankModels.initialize();
 
-		BulletBlock.block = Drawing.drawing.createModel("/models/cube/");
+		BulletBlock.block = Drawing.drawing.getModel("/models/cube/");
 	}
 
 	/**

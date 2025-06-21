@@ -33,7 +33,7 @@ public class TankMint extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.baseModel = TankModels.diagonalStripes.base;
+			this.baseSkin = TankModels.diagonalStripes;
 		}
 
 		this.coinValue = 2;

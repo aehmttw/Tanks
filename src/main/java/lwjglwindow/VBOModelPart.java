@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -21,6 +22,18 @@ public class VBOModelPart extends ModelPart
     protected int vertexVBO;
     protected int texVBO;
     protected int normalVBO;
+
+    @Override
+    public void setSkin(HashMap<String, String> skins)
+    {
+        this.parent.setSkin(skins);
+    }
+
+    @Override
+    public void setSkin(String tex)
+    {
+        this.parent.setSkin(tex);
+    }
 
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, AxisRotation[] axisRotations, boolean depthTest)
@@ -48,8 +61,7 @@ public class VBOModelPart extends ModelPart
 
         Scale.transform(window, sX, sY, sZ);
 
-        if (this.material.texture != null)
-            window.setTexture(this.material.texture, false);
+        setTexture();
 
         shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
         window.disableTexture();
@@ -83,8 +95,7 @@ public class VBOModelPart extends ModelPart
         Rotation.transform(window, -pitch, -roll, -yaw);
         Scale.transform(window, sX, sY, sZ);
 
-        if (this.material.texture != null)
-            window.setTexture(this.material.texture, false);
+        setTexture();
 
         shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
         window.disableTexture();
@@ -115,8 +126,7 @@ public class VBOModelPart extends ModelPart
         Rotation.transform(window, 0, 0, Math.PI / 4);
         Scale.transform(window, sX, sY, sZ);
 
-        if (this.material.texture != null)
-            window.setTexture(this.material.texture, false);
+        setTexture();
 
         shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
         window.disableTexture();
@@ -145,8 +155,7 @@ public class VBOModelPart extends ModelPart
         Rotation.transform(window, 0, 0, -angle);
         Scale.transform(window, sX, sY, 0);
 
-        if (this.material.texture != null)
-            window.setTexture(this.material.texture, false);
+        setTexture();
 
         shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
         window.disableTexture();
@@ -155,6 +164,18 @@ public class VBOModelPart extends ModelPart
 
         if (this.material.customLight)
             window.disableMaterialLights();
+    }
+
+    public void setTexture()
+    {
+        if (this.material.texture != null)
+        {
+            String s = this.parent.currentSkin.get(this.material.texture);
+            if (s == null)
+                window.setTexture(this.material.texture, false);
+            else
+                window.setTexture(s, false);
+        }
     }
 
     @Override

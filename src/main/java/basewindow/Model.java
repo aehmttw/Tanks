@@ -1,13 +1,11 @@
 package basewindow;
 
 import basewindow.transformation.AxisRotation;
-import tanks.Drawing;
-import tanks.tankson.Serializable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Model implements IModel, Serializable
+public class Model implements IModel
 {
     public static Material defaultMaterial = new Material("");
 
@@ -22,6 +20,8 @@ public class Model implements IModel, Serializable
     public BaseWindow window;
 
     public String file;
+
+    public HashMap<String, String> currentSkin = new HashMap<>();
 
     public double[] bonesMatrix = new double[]{1, 0, 0,  0, 1, 0,  0, 0, 1};
 
@@ -65,7 +65,13 @@ public class Model implements IModel, Serializable
             if (s.startsWith("map_Ka "))
             {
                 if (current != null)
-                    current.texture = dir + s.split(" ")[1];
+                {
+                    String tex = s.split(" ")[1];
+                    if (tex.startsWith("<") && tex.endsWith(">"))
+                        current.texture = tex;
+                    else
+                        current.texture = dir + tex;
+                }
             }
 
             if (s.startsWith("dm "))
@@ -391,6 +397,16 @@ public class Model implements IModel, Serializable
                 this.colors.get(v1[3]), this.colors.get(v2[3]), this.colors.get(v3[3])));
     }
 
+    public void setSkin(HashMap<String, String> skins)
+    {
+        this.currentSkin = skins;
+    }
+
+    public void setSkin(String texture)
+    {
+        this.currentSkin.put("<texture>", texture);
+    }
+
     public void draw(double posX, double posY, double sX, double sY, double yaw)
     {
         for (ModelPart m: this.models)
@@ -501,8 +517,8 @@ public class Model implements IModel, Serializable
         return this.file;
     }
 
-    public String serialize(){ return this.toString(); }
-    public Serializable deserialize(String s) {
-        return Drawing.drawing.createModel(s);
-    }
+//    public String serialize(){ return this.toString(); }
+//    public Serializable deserialize(String s) {
+//        return Drawing.drawing.createModel(s);
+//    }
 }

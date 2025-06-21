@@ -19,7 +19,7 @@ public class TankDummy extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.fixed.color;
+			this.colorSkin = TankModels.fixed;
 			this.emblem = "emblems/x.png";
 			this.emblemR = 50;
 			this.emblemG = 25;

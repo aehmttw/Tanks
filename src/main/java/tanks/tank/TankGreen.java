@@ -29,8 +29,8 @@ public class TankGreen extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.fixed.color;
-			this.baseModel = TankModels.diagonalStripes.base;
+			this.colorSkin = TankModels.fixed;
+			this.baseSkin = TankModels.diagonalStripes;
 		}
 
 		this.coinValue = 10;

@@ -536,37 +536,6 @@ public class Level
 			}
 		}
 
-		if (sc instanceof ScreenLevelEditor)
-		{
-			ScreenLevelEditor s = (ScreenLevelEditor) sc;
-			if (!enableTeams)
-			{
-				enableTeams = true;
-
-				Team player = new Team(Game.playerTeam.name);
-				Team enemy = new Team(Game.enemyTeam.name);
-
-				for (Movable m : Game.movables)
-				{
-					if (m.team == Game.playerTeam)
-						m.team = player;
-					else if (m.team == Game.enemyTeam)
-						m.team = enemy;
-				}
-
-				this.teamsList.add(enemy);
-				this.teamsList.add(player);
-			}
-
-			s.teams = this.teamsList;
-			if (s.teams.size() > 0)
-			{
-				s.currentMetadata.put(SelectorTeam.selector_name, s.teams.get(0));
-				s.currentMetadata.put(SelectorTeam.player_selector_name, s.teams.get(Math.min(s.teams.size() - 1, 1)));
-			}
-		}
-
-
 		this.availablePlayerSpawns.clear();
 
 		int playerCount = 1;
@@ -755,6 +724,38 @@ public class Level
 				INetworkEvent e = new EventTankRemove(t, false);
 				Game.removeMovables.add(t);
 				Game.eventsOut.add(e);
+			}
+		}
+
+		if (sc instanceof ScreenLevelEditor)
+		{
+			ScreenLevelEditor s = (ScreenLevelEditor) sc;
+			if (!enableTeams)
+			{
+				enableTeams = true;
+
+				Team player = new Team(Game.playerTeam.name);
+				Team enemy = new Team(Game.enemyTeam.name);
+
+				for (Movable m : Game.movables)
+				{
+					if (m.team == Game.playerTeam)
+						m.team = player;
+					else if (m.team == Game.enemyTeam)
+						m.team = enemy;
+				}
+
+				teamsMap.put("ally", player);
+				teamsMap.put("enemy", enemy);
+				this.teamsList.add(player);
+				this.teamsList.add(enemy);
+			}
+
+			s.teams = this.teamsList;
+			if (s.teams.size() > 0)
+			{
+				s.currentMetadata.put(SelectorTeam.player_selector_name, s.teams.get(0));
+				s.currentMetadata.put(SelectorTeam.selector_name, s.teams.get(Math.min(s.teams.size() - 1, 1)));
 			}
 		}
 

@@ -1,7 +1,11 @@
 package tanks;
 
-import basewindow.*;
+import basewindow.BaseFile;
+import basewindow.BaseFileManager;
+import basewindow.BaseWindow;
+import basewindow.ShaderGroup;
 import com.codedisaster.steamworks.SteamMatchmaking;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -21,7 +25,10 @@ import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.item.ItemShield;
-import tanks.minigames.*;
+import tanks.minigames.ArcadeBeatBlocks;
+import tanks.minigames.ArcadeClassic;
+import tanks.minigames.CastleRampage;
+import tanks.minigames.Minigame;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SteamNetworkHandler;
@@ -35,18 +42,23 @@ import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 
 public class Game
 {
-    public enum Framework {lwjgl, libgdx}
+	public enum Framework {lwjgl, libgdx}
 	public static Framework framework;
 
 	public static final double tile_size = 50;
 
 	public static final int[] dirX = {1, -1, 0, 0};
 	public static final int[] dirY = {0, 0, 1, -1};
+
+	public static Chunk.Tile[][] tiles = new Chunk.Tile[28][18];
 
 	public static UUID computerID;
 	public static final UUID clientID = UUID.randomUUID();
@@ -55,14 +67,6 @@ public class Game
 
 	public static ArrayList<Face> horizontalFaces = new ArrayList<>();
 	public static ArrayList<Face> verticalFaces = new ArrayList<>();
-
-	public boolean[][] solidGrid;
-	public boolean[][] unbreakableGrid;
-	public double[][] heightGrid;
-	public double[][] groundHeightGrid;
-	public double[][] groundEdgeHeightGrid;
-
-	public double[][] lastHeightGrid;
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
@@ -134,15 +138,6 @@ public class Game
 	public static int currentSizeX = 28;
 	public static int currentSizeY = 18;
 	public static double bgResMultiplier = 1;
-
-	public static double[][] tilesR = new double[28][18];
-	public static double[][] tilesG = new double[28][18];
-	public static double[][] tilesB = new double[28][18];
-	public static double[][] tilesFlash = new double[28][18];
-
-	public static Obstacle[][] tileDrawables = new Obstacle[28][18];
-
-	public static double[][] tilesDepth = new double[28][18];
 
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
 	//Versioning has moved to version.txt
@@ -262,7 +257,7 @@ public class Game
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
 	public static RegistryMetadataSelectors registryMetadataSelectors = new RegistryMetadataSelectors();
 
-	public final HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
+	public HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
 	public ShaderGroundIntro shaderIntro;
 	public ShaderGroundOutOfBounds shaderOutOfBounds;
 	public ShaderTracks shaderTracks;
@@ -826,75 +821,17 @@ public class Game
 
 	public static void addObstacle(Obstacle o)
 	{
-		o.removed = false;
-		Game.obstacles.add(o);
-		Game.redrawObstacles.add(o);
-
-		int x = (int) (o.posX / Game.tile_size);
-		int y = (int) (o.posY / Game.tile_size);
-
-		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
-			Game.redrawGroundTiles.add(new GroundTile(x, y));
-
-		if (Game.enable3d && (!Game.fancyTerrain || !Game.enable3dBg))
-		{
-			if (x > 0) Game.redrawGroundTiles.add(new GroundTile(x - 1, y));
-			if (x < Game.currentSizeX - 1)  Game.redrawGroundTiles.add(new GroundTile(x + 1, y));
-			if (y > 0) Game.redrawGroundTiles.add(new GroundTile(x, y - 1));
-			if (y < Game.currentSizeY - 1) Game.redrawGroundTiles.add(new GroundTile(x, y + 1));
-		}
-
-		if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
-			Game.game.solidGrid[x][y] = true;
-
-			if (!o.shouldShootThrough)
-				Game.game.unbreakableGrid[x][y] = true;
-		}
-
-		if (o.tankCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-			Game.game.solidGrid[x][y] = true;
+		addObstacle(o, true);
 	}
 
-	public static void recomputeHeightGrid()
+	public static void addObstacle(Obstacle o, boolean redraw)
 	{
-		for (int i = 0; i < Game.game.heightGrid.length; i++)
-		{
-			Arrays.fill(Game.game.heightGrid[i], -1000);
-			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
-			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
-			Arrays.fill(Game.tileDrawables[i], null);
-		}
+		o.removed = false;
+		Game.obstacles.add(o);
+		o.postOverride();
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-
-			if (o.replaceTiles)
-				o.postOverride();
-
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (!(!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-			{
-				Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
-				Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
-				Game.game.groundEdgeHeightGrid[x][y] = Math.max(o.getEdgeDrawDepth(), Game.game.groundEdgeHeightGrid[x][y]);
-			}
-		}
-
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				if (Game.game.groundHeightGrid[i][j] <= -1000)
-					Game.game.groundHeightGrid[i][j] = Game.tilesDepth[i][j];
-
-				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
-					Game.game.groundEdgeHeightGrid[i][j] = 0;
-			}
-		}
+		if (redraw)
+            redraw(o);
 	}
 
 	public static boolean usernameInvalid(String username)
@@ -1100,34 +1037,7 @@ public class Game
 	public static void resetTiles()
 	{
 		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
-
-		Game.tilesR = new double[28][18];
-		Game.tilesG = new double[28][18];
-		Game.tilesB = new double[28][18];
-		Game.tilesDepth = new double[28][18];
-		Game.tilesFlash = new double[28][18];
-		Game.game.heightGrid = new double[28][18];
-		Game.game.groundHeightGrid = new double[28][18];
-		Game.game.groundEdgeHeightGrid = new double[28][18];
-		Game.tileDrawables = new Obstacle[28][18];
-
-		double var = 0;
-
-		if (Game.fancyTerrain)
-			var = 20;
-
-		Random tilesRandom = new Random(0);
-		for (int i = 0; i < 28; i++)
-		{
-			for (int j = 0; j < 18; j++)
-			{
-				Game.tilesR[i][j] = (235 + tilesRandom.nextDouble() * var);
-				Game.tilesG[i][j] = (207 + tilesRandom.nextDouble() * var);
-				Game.tilesB[i][j] = (166 + tilesRandom.nextDouble() * var);
-				double rand = tilesRandom.nextDouble() * var / 2;
-				Game.tilesDepth[i][j] = Game.enable3dBg ? rand : 0;
-			}
-		}
+		Chunk.populateChunks();
 
 		Level.currentColorR = 235;
 		Level.currentColorG = 207;
@@ -1141,42 +1051,164 @@ public class Game
 		Level.currentShadowIntensity = 0.75;
 	}
 
-	// todo: chunk loading system
-//	public static Obstacle getObstacle(int posX, int posY)
-//	{
-////		return Objects.requireNonNullElse(Chunk.getTile(posX, posY), Chunk.emptyTile).obstacle;
-//		return null;
-//	}
-//
-//	public static Obstacle getSurfaceObstacle(int posX, int posY)
-//	{
-//		/*Chunk c = Chunk.getChunk(posX / Chunk.chunkSize, posY / Chunk.chunkSize);
-//		if (c != null)
-//			return Objects.requireNonNullElse(c.getChunkTile(posX, posY), Chunk.emptyTile).surfaceObstacle;*/
-//		return null;
-//	}
-//
-//	public static Obstacle getObstacle(double posX, double posY)
-//	{
-//		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-//	}
-//
-//	public static Obstacle getSurfaceObstacle(double posX, double posY)
-//	{
-//		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-//	}
+	public static Obstacle getObstacle(int tileX, int tileY)
+	{
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t != null ? t.fullObstacle : null;
+	}
+
+	public static Obstacle getSurfaceObstacle(int tileX, int tileY)
+	{
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t != null ? t.surfaceObstacle : null;
+	}
+
+	public static Obstacle getExtraObstacle(int tileX, int tileY)
+	{
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t != null ? t.extraObstacle : null;
+	}
+
+	public static Obstacle getObstacle(double posX, double posY)
+	{
+		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	public static Obstacle getSurfaceObstacle(double posX, double posY)
+	{
+		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	public static Obstacle getExtraObstacle(double posX, double posY)
+	{
+		return getExtraObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	/** Field to cache the movable array for reuse */
+	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
+	/** Field to cache the obstacle array for reuse */
+	private static final ObjectArrayList<Obstacle> obstacleOut = new ObjectArrayList<>();
+
+	/** Expects all pixel coordinates.
+	 * @return all the movables within the specified range */
+    public static ObjectArrayList<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
+	{
+		movableOut.clear();
+		for (Movable m : Game.movables)
+		{
+			if (Game.isOrdered(true, x1, m.posX, x2) && Game.isOrdered(true, x2, m.posY, y2))
+				movableOut.add(m);
+		}
+        return movableOut;
+	}
+
+	/** Expects all pixel coordinates.
+	 * @return all the movables within a certain radius of the position */
+	public static ObjectArrayList<Movable> getMovablesInRadius(double posX, double posY, double radius)
+	{
+		movableOut.clear();
+		for (Movable o : Game.movables)
+		{
+			if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+				movableOut.add(o);
+		}
+		return movableOut;
+	}
+
+	/** Expects all pixel coordinates.
+	 * @return all the obstacles within the specified range */
+	public static ObjectArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
+	{
+		obstacleOut.clear();
+		for (Obstacle o : Game.obstacles)
+		{
+			if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, x2, o.posY, y2))
+				obstacleOut.add(o);
+		}
+		return obstacleOut;
+	}
+
+	/** Expects all pixel coordinates.
+	 * @return all the obstacles within a certain radius of the position */
+	public static ObjectArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
+	{
+		obstacleOut.clear();
+		for (Obstacle o : Game.obstacles)
+		{
+			if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+				obstacleOut.add(o);
+		}
+		return obstacleOut;
+	}
+
+	public static void removeObstacle(Obstacle o)
+	{
+		Drawing.drawing.terrainRenderer.remove(o);
+		o.removed = true;
+		redraw(o);
+		Chunk.runIfTilePresent(o.posX, o.posY, t -> t.remove(o));
+		Game.obstacles.remove(o);
+    }
+
+	public static void redraw(Obstacle o)
+	{
+		int x = (int) (o.posX / Game.tile_size);
+		int y = (int) (o.posY / Game.tile_size);
+
+		Game.redrawObstacles.add(o);
+
+		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY)
+			Game.redrawGroundTiles.add(new GroundTile(x, y));
+	}
+
+	public static boolean isSolid(double posX, double posY)
+	{
+		return isSolid((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	public static boolean isSolid(int tileX, int tileY)
+	{
+		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::solid);
+	}
+
+	public static boolean isUnbreakable(double posX, double posY)
+	{
+		return isUnbreakable((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	public static boolean isUnbreakable(int tileX, int tileY)
+	{
+		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::unbreakable);
+	}
+
+	public static double getTileHeight(double posX, double posY)
+	{
+		return Chunk.getIfPresent(posX, posY, 0d, Chunk.Tile::edgeDepth);
+	}
+
+	public static void removeSurfaceObstacle(Obstacle o)
+	{
+		Game.obstacles.remove(o);
+	}
+
+	public static void setObstacle(double posX, double posY, Obstacle o)
+	{
+		Chunk.Tile t = Chunk.getTile(posX, posY);
+		if (t != null)
+			t.add(o);
+	}
 
 	public static double sampleGroundHeight(double px, double py)
 	{
-		int x = (int) (px / Game.tile_size);
-		int y = (int) (py / Game.tile_size);
+		return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::edgeDepth);
+    }
 
-		if (!Game.enable3dBg || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			return 0;
-		else
-			return Game.tilesDepth[x][y] + 0;
+	public static double sampleEdgeGroundDepth(int x, int y)
+	{
+		return Chunk.getIfPresent(x, y, 0d, Chunk.Tile::edgeDepth);
 	}
 
+	/** @return The depth that the tile renders with; not affected by obstacles */
 	public static double sampleTerrainGroundHeight(double px, double py)
 	{
 		int x = (int) (px / Game.tile_size);
@@ -1188,13 +1220,10 @@ public class Game
 		if (py < 0)
 			y--;
 
-		double r;
 		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			r = 0;
-		else
-			r = Game.game.groundHeightGrid[x][y];
+			return 0;
 
-		return r;
+		return Objects.requireNonNull(Chunk.getTile(x, y)).depth;
 	}
 
 	public static double sampleObstacleHeight(double px, double py)
@@ -1212,18 +1241,7 @@ public class Game
 		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
 			r = 0;
 		else
-			r = Game.game.heightGrid[x][y];
-
-		return r;
-	}
-
-	public static double sampleEdgeGroundDepth(int x, int y)
-	{
-		double r;
-		if (!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			r = 0;
-		else
-			r = Game.game.groundEdgeHeightGrid[x][y];
+			r = Game.getTileHeight(px, py);
 
 		return r;
 	}
@@ -1356,7 +1374,6 @@ public class Game
 		removeEffects.clear();
 		removeTracks.clear();
 		removeClouds.clear();
-		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
 
 		resetNetworkIDs();
 

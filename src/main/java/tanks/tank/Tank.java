@@ -108,7 +108,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double friction = 0.05;
 
 	public double accelerationModifier = 1, frictionModifier = 1, maxSpeedModifier = 1;
-	public double luminanceModifier, glowModifier;
+	public double luminanceModifier = 1, glowModifier = 1;
 
 	@TankBuildProperty @Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0, desc = "1 tile = 50 units")
 	public double size;

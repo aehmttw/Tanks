@@ -185,18 +185,10 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	public boolean hasNeighbor(int ox, int oy, boolean unbreakable)
 	{
-		int x = (int) (this.posX / Game.tile_size) + ox;
-		int y = (int) (this.posY / Game.tile_size) + oy;
-
-		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
-			if (unbreakable)
-				return Game.game.unbreakableGrid[x][y];
-			else
-				return Game.game.solidGrid[x][y];
-		}
-
-		return false;
+		if (unbreakable)
+			return Game.isUnbreakable(ox, oy);
+		else
+			return Game.isSolid(ox, oy);
 	}
 
 	public boolean hasLeftNeighbor()
@@ -236,14 +228,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	public void postOverride()
 	{
-		int x = (int)(this.posX / Game.tile_size);
-		int y = (int)(this.posY / Game.tile_size);
-
-		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
-		{
-			if (Game.tileDrawables[x][y] == null || Game.tileDrawables[x][y].type != ObstacleType.ground)
-				Game.tileDrawables[x][y] = this;
-		}
+		Game.setObstacle(posX, posY, this);
 	}
 
 	@Override

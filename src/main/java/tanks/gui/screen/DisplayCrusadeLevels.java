@@ -12,7 +12,6 @@ import tanks.tank.TankAIControlled;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
@@ -115,13 +114,6 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         TerrainRenderer r = Drawing.drawing.terrainRenderer;
         Drawing.drawing.terrainRenderer = l.renderer;
-
-        for (int i = 0; i < Game.game.heightGrid.length; i++)
-        {
-            Arrays.fill(Game.game.heightGrid[i], -1000);
-            Arrays.fill(Game.game.groundHeightGrid[i], -1000);
-            Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
-        }
 
         this.drawBgRect = false;
         this.stageOnly = true;

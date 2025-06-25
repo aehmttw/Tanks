@@ -4,7 +4,6 @@ import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
 import tanks.effect.AttributeModifier;
-import tanks.effect.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
@@ -13,10 +12,7 @@ import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
-import tanks.tankson.ICopyable;
-import tanks.tankson.Property;
-import tanks.tankson.Serializer;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 import tanks.translation.Translation;
 
 import java.lang.reflect.Field;
@@ -2786,9 +2782,9 @@ public class TankAIControlled extends Tank implements ITankField
 			t.setEffectManager(this.em());
 			t.coinValue = this.coinValue;
 
-			t.baseModel = this.baseModel;
-			t.turretModel = this.turretModel;
-			t.turretBaseModel = this.turretBaseModel;
+			t.baseSkin = this.baseSkin;
+			t.turretSkin = this.turretSkin;
+			t.turretBaseSkin = this.turretBaseSkin;
 
 			if (t instanceof TankAIControlled)
 				((TankAIControlled) t).cooldown = Math.min(((TankAIControlled) t).cooldownBase, this.cooldown);
@@ -3102,7 +3098,7 @@ public class TankAIControlled extends Tank implements ITankField
 					boolean found = true;
 
 					Property a = f.getAnnotation(Property.class);
-					if (a != null && (a.id().equals(propname) || (a.id().equals("spawned_tanks") && propname.equals("spawned_tank"))))
+					if (a != null && (a.id().equals(propname) || (a.id().equals("spawned_tanks") && propname.equals("spawned_tank") || (a.id().replace("_skin", "_model").equals(propname)))))
 					{
 						if (f.getType().equals(int.class))
 							f.set(t, Integer.parseInt(value));
@@ -3182,12 +3178,10 @@ public class TankAIControlled extends Tank implements ITankField
 
 							s = s.substring(1);
 						}
-						else if (IModel.class.isAssignableFrom(f.getType()))
+						else if (a.miscType().equals(Property.MiscType.baseModel) || a.miscType().equals(Property.MiscType.colorModel) || a.miscType().equals(Property.MiscType.turretBaseModel) || a.miscType().equals(Property.MiscType.turretModel))
 						{
-							if (value.equals("*"))
-								f.set(t, null);
-							else
-								f.set(t, Drawing.drawing.createModel(value));
+							TankModels.TankSkin sk = Compatibility.convertModelToSkin(value);
+							f.set(t, sk);
 						}
 						else if (f.getType().isEnum())
 							f.set(t, Enum.valueOf((Class<? extends Enum>) f.getType(), value));

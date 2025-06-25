@@ -399,7 +399,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (!heavy)
 		{
 			boolean pop = this.playPopSound;
-			this.playPopSound = false;
+			if (!(Team.isAllied(this, t) && this.team != null && !this.team.friendlyFire))
+				this.playPopSound = false;
 			this.pop();
 			this.playPopSound = pop;
 		}

@@ -28,7 +28,7 @@ public class TankSalmon extends TankAIControlled
 			this.emblemR = this.secondaryColorR;
 			this.emblemG = this.secondaryColorG;
 			this.emblemB = this.secondaryColorB;
-			this.baseModel = TankModels.diagonalStripes.base;
+			this.baseSkin = TankModels.diagonalStripes;
 		}
 
 		this.description = "A tank which shoots homing rockets";

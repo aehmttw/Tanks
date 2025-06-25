@@ -26,7 +26,7 @@ public class TankBrown extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.fixed.color;
+			this.colorSkin = TankModels.fixed;
 		}
 
 		this.coinValue = 1;

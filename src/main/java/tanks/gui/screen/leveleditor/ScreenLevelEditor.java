@@ -1257,7 +1257,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		public final ArrayList<Integer> xs = new ArrayList<>();
 		public final ArrayList<Integer> ys = new ArrayList<>();
 
-		private Shape() {}
+		protected Shape() {}
 
 		public int size()
 		{
@@ -1399,7 +1399,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		return handled;
 	}
 
-	private void handleBuild(boolean[] handled, boolean validRight, boolean batch, boolean paste)
+	protected void handleBuild(boolean[] handled, boolean validRight, boolean batch, boolean paste)
 	{
 		boolean skip = false;
 
@@ -1431,7 +1431,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			placeObstacle(batch, paste);
 	}
 
-	private boolean checkForObstacle(boolean validRight, double mx, double my)
+	protected boolean checkForObstacle(boolean validRight, double mx, double my)
 	{
 		for (int i = 0; i < Game.obstacles.size(); i++)
 		{
@@ -1453,7 +1453,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		return false;
 	}
 
-	private static boolean checkForMovable(double mx, double my)
+	protected static boolean checkForMovable(double mx, double my)
 	{
 		for (Movable m : Game.movables)
 		{
@@ -1463,7 +1463,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		return false;
 	}
 
-	private void placeObstacle(boolean batch, boolean paste)
+	protected void placeObstacle(boolean batch, boolean paste)
 	{
 		Obstacle o = !paste ? Game.registryObstacle.getEntry(obstacleNum)
 				.getObstacle(mousePlaceable.posX / Game.tile_size - 0.5, mousePlaceable.posY / Game.tile_size - 0.5)
@@ -1485,7 +1485,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			Drawing.drawing.playVibration("click");
 	}
 
-	private void placePlayerTank(boolean batch, boolean paste)
+	protected void placePlayerTank(boolean batch, boolean paste)
 	{
 		ArrayList<TankSpawnMarker> spawnsClone = (ArrayList<TankSpawnMarker>) spawns.clone();
 		if (this.movePlayer && !paste)
@@ -1519,7 +1519,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			t.drawAge = 50;
 	}
 
-	private void placeEnemyTank(boolean batch, boolean paste)
+	protected void placeEnemyTank(boolean batch, boolean paste)
 	{
 		Tank t;
 
@@ -1542,7 +1542,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			Drawing.drawing.playVibration("click");
 	}
 
-	private void handleErase(boolean[] handled, boolean validLeft, boolean validRight, boolean batch)
+	protected void handleErase(boolean[] handled, boolean validLeft, boolean validRight, boolean batch)
 	{
 		boolean skip = false;
 
@@ -1603,7 +1603,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		handled[1] = true;
 	}
 
-	private static void createEraseEffect(Movable m)
+	protected static void createEraseEffect(Movable m)
 	{
 		Drawing.drawing.playVibration("click");
 
@@ -1625,7 +1625,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		}
 	}
 
-	private boolean[] handlePaste(double originalX, double originalY, double originalOrientation)
+	protected boolean[] handlePaste(double originalX, double originalY, double originalOrientation)
 	{
 		paste();
 
@@ -1638,7 +1638,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		return new boolean[]{true, true};
 	}
 
-	private void handleSymmetry(ArrayList<Double> posX, ArrayList<Double> posY, ArrayList<Double> orientations)
+	protected void handleSymmetry(ArrayList<Double> posX, ArrayList<Double> posY, ArrayList<Double> orientations)
 	{
 		if (symmetryType == SymmetryType.flipHorizontal || symmetryType == SymmetryType.flipBoth || symmetryType == SymmetryType.flip8)
 		{

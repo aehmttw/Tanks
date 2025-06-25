@@ -38,7 +38,7 @@ public class TankLightPinkAngry extends TankAIControlled
         {
             this.emblem = "emblems/angry.png";
             this.emblemR = 200;
-            this.baseModel = TankModels.diagonalStripes.base;
+            this.baseSkin = TankModels.diagonalStripes;
         }
 
         HashSet<String> musics = Game.registryTank.tankMusics.get("lightpink_angry");

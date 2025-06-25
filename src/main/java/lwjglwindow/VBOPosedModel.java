@@ -51,6 +51,18 @@ public class VBOPosedModel extends PosedModel
     }
 
     @Override
+    public void setSkin(HashMap<String, String> skins)
+    {
+
+    }
+
+    @Override
+    public void setSkin(String tex)
+    {
+
+    }
+
+    @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, AxisRotation[] axisRotations, boolean depthTest)
     {
 

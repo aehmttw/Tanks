@@ -3,6 +3,7 @@ package tanks.tankson;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.item.Item;
+import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
 
 import java.lang.annotation.Annotation;
@@ -417,7 +418,8 @@ public final class Serializer
         {
             try
             {
-                o.getClass().getField(Compatibility.convert(k)).set(o, m.get(k));
+                Field f = o.getClass().getField(Compatibility.convert(k));
+                f.set(o, Compatibility.compatibility_table.get(k).apply(o, m.get(k)));
             }
             catch (ClassCastException e)
             {
@@ -434,6 +436,7 @@ public final class Serializer
             catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
             {
                 System.out.println("Unconvertable field found!");
+                e.printStackTrace();
             }
         }
 

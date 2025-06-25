@@ -60,7 +60,7 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
 //        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 //
 //        Drawing.drawing.setColor(255, 255, 255);
-//        Drawing.drawing.drawInterfaceImage("img.png", this.centerX, this.centerY, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
+//        Drawing.drawing.drawInterfaceImage("turret.png", this.centerX, this.centerY, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
 //
 //        Drawing.drawing.setColor(255, 255, 255, 127);
 //        Drawing.drawing.fillInterfaceRect(Math.min(t * 20 / 2, Drawing.drawing.interfaceSizeX / 2), this.centerY, Math.min(t * 20, Drawing.drawing.interfaceSizeX), 280);

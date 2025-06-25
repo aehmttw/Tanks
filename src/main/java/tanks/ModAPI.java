@@ -72,20 +72,20 @@ public class ModAPI
             System.err.println("Invalid item given to ModAPI.addObject()");
     }
 
-    public static void drawTank(double x, double y, double size, double angle, double r1, double g1, double b1, double r2, double g2, double b2)
-    {
-        Drawing.drawing.setColor(r2, g2, b2);
-        TankModels.tank.base.draw(x, y, size, size, angle);
-
-        Drawing.drawing.setColor(r1, g1, b1);
-        TankModels.tank.color.draw(x, y, size, size, angle);
-
-        Drawing.drawing.setColor(r2, g2, b2);
-        TankModels.tank.turret.draw(x, y, size, size, angle);
-
-        Drawing.drawing.setColor((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2);
-        TankModels.tank.turretBase.draw(x, y, size, size, angle);
-    }
+//    public static void drawTank(double x, double y, double size, double angle, double r1, double g1, double b1, double r2, double g2, double b2)
+//    {
+//        Drawing.drawing.setColor(r2, g2, b2);
+//        TankModels.tank.base.draw(x, y, size, size, angle);
+//
+//        Drawing.drawing.setColor(r1, g1, b1);
+//        TankModels.tank.color.draw(x, y, size, size, angle);
+//
+//        Drawing.drawing.setColor(r2, g2, b2);
+//        TankModels.tank.turret.draw(x, y, size, size, angle);
+//
+//        Drawing.drawing.setColor((r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2);
+//        TankModels.tank.turretBase.draw(x, y, size, size, angle);
+//    }
 
     public static void displayText(String location, String text) {
         displayText(location, text, false, 0, 0, 0, 0);

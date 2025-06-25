@@ -273,6 +273,10 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             this.preview.colorModel = tank.colorModel;
             this.preview.turretBaseModel = tank.turretBaseModel;
             this.preview.turretModel = tank.turretModel;
+            this.preview.baseSkin = tank.baseSkin;
+            this.preview.colorSkin = tank.colorSkin;
+            this.preview.turretBaseSkin = tank.turretBaseSkin;
+            this.preview.turretSkin = tank.turretSkin;
             this.preview.size = tank.size;
             this.preview.turretSize = tank.turretSize;
             this.preview.turretLength = tank.turretLength;
@@ -720,15 +724,19 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                 offmul = 0;
 
             Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 255, 0.5);
+            tank.turretBaseModel.setSkin(tank.turretBaseSkin.turretBase);
             Drawing.drawing.drawInterfaceModel2D(tank.turretBaseModel, margin, screen.centerY + 60 - space * 2 + 4 * offmul, 0, s, s, s);
 
             Drawing.drawing.setColor(tank.secondaryColorR, tank.secondaryColorG, tank.secondaryColorB, 255, 0.5);
+            tank.turretModel.setSkin(tank.turretSkin.turret);
             Drawing.drawing.drawInterfaceModel2D(tank.turretModel, margin, screen.centerY + 60 - space * 1, 0, s, s, s);
 
             Drawing.drawing.setColor(tank.colorR, tank.colorG, tank.colorB, 255, 0.5);
+            tank.colorModel.setSkin(tank.colorSkin.color);
             Drawing.drawing.drawInterfaceModel2D(tank.colorModel, margin, screen.centerY + 60 - space * 0 + 7 * offmul, 0, s, s, s);
 
             Drawing.drawing.setColor(tank.secondaryColorR, tank.secondaryColorG, tank.secondaryColorB, 255, 0.5);
+            tank.baseModel.setSkin(tank.baseSkin.base);
             Drawing.drawing.drawInterfaceModel2D(tank.baseModel, margin, screen.centerY + 60 + space * 1 + 7 * offmul, 0, s, s, s);
 
             Drawing.drawing.setColor(80, 80, 80);

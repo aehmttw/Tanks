@@ -1,6 +1,5 @@
 package tanks.effect;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.BiConsumer;
 import tanks.Game;
 import tanks.Movable;
@@ -12,21 +11,21 @@ import tanks.network.event.EventStatusEffectDeteriorate;
 import tanks.network.event.EventStatusEffectEnd;
 import tanks.tank.Tank;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-@SuppressWarnings("ForLoopReplaceableByForEach")
 public class EffectManager
 {
     // Parallel array for status effects
-    public ObjectArrayList<StatusEffectProperty> statusEffectProperties = new ObjectArrayList<>();
+    public ArrayList<StatusEffectProperty> statusEffectProperties = new ArrayList<>();
 
     public Movable movable;
 
     public BiConsumer<AttributeModifier, Boolean> addAttributeCallback = (a, b) -> {};
 
     public HashSet<String> attributeImmunities = new HashSet<>();
-    public ObjectArrayList<AttributeModifier> attributes = new ObjectArrayList<>();
+    public ArrayList<AttributeModifier> attributes = new ArrayList<>();
 
     /**
      * Linear search function to find status effect property by status effect reference
@@ -41,8 +40,8 @@ public class EffectManager
         }
         return null;
     }
-    public ObjectArrayList<StatusEffect> removeStatusEffects = new ObjectArrayList<>();
-    public ObjectArrayList<AttributeModifier> removeAttributes = new ObjectArrayList<>();
+    public ArrayList<StatusEffect> removeStatusEffects = new ArrayList<>();
+    public ArrayList<AttributeModifier> removeAttributes = new ArrayList<>();
 
     public EffectManager(Movable m)
     {
@@ -132,7 +131,7 @@ public class EffectManager
 
     public void updateAttributes()
     {
-        ObjectArrayList<AttributeModifier> attributeModifiers = this.attributes;
+        ArrayList<AttributeModifier> attributeModifiers = this.attributes;
         for (int i = 0, attributeModifiersSize = attributeModifiers.size(); i < attributeModifiersSize; i++)
         {
             AttributeModifier a = attributeModifiers.get(i);
@@ -145,7 +144,7 @@ public class EffectManager
         }
 
         // Remove expired attributes and recycle them
-        ObjectArrayList<AttributeModifier> modifiers = this.removeAttributes;
+        ArrayList<AttributeModifier> modifiers = this.removeAttributes;
         for (int i = 0, modifiersSize = modifiers.size(); i < modifiersSize; i++)
         {
             AttributeModifier a = modifiers.get(i);

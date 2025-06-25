@@ -30,10 +30,10 @@ public class TankRed extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.fixed.color;
+			this.colorSkin = TankModels.fixed;
 			this.emblem = "emblems/laser.png";
 			this.emblemR = 110;
-			this.turretModel = TankModels.cross.turret;
+			this.turretSkin = TankModels.cross;
 		}
 
 		this.description = "A stationary tank which shoots deadly lasers";

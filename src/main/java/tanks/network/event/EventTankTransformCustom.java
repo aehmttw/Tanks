@@ -132,10 +132,10 @@ public class EventTankTransformCustom extends PersonalEvent
             t.turretSize = turretSize;
             t.turretLength = turretLength;
 
-            t.baseModel = Drawing.drawing.createModel(baseModel);
-            t.colorModel = Drawing.drawing.createModel(colorModel);
-            t.turretBaseModel = Drawing.drawing.createModel(turretBaseModel);
-            t.turretModel = Drawing.drawing.createModel(turretModel);
+            t.baseModel = Drawing.drawing.getModel(baseModel);
+            t.colorModel = Drawing.drawing.getModel(colorModel);
+            t.turretBaseModel = Drawing.drawing.getModel(turretBaseModel);
+            t.turretModel = Drawing.drawing.getModel(turretModel);
 
             t.emblem = emblem;
             t.emblemR = emblemRed;

@@ -185,10 +185,13 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	public boolean hasNeighbor(int ox, int oy, boolean unbreakable)
 	{
+		int x = (int) (this.posX / Game.tile_size) + ox;
+		int y = (int) (this.posY / Game.tile_size) + oy;
+
 		if (unbreakable)
-			return Game.isUnbreakable(ox, oy);
+			return Game.isUnbreakable(x, y);
 		else
-			return Game.isSolid(ox, oy);
+			return Game.isSolid(x, y);
 	}
 
 	public boolean hasLeftNeighbor()

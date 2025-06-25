@@ -2476,6 +2476,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			o.postOverride();
 			o.removed = false;
+
+			if (o instanceof ObstacleBeatBlock)
+			{
+				Game.currentLevel.synchronizeMusic = true;
+				Game.currentLevel.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
+			}
 		}
 
 		Game.resetNetworkIDs();

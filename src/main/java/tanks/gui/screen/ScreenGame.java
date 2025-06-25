@@ -1139,6 +1139,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					else
 						this.music = "battle.ogg";
 
+					this.musicID = "battle";
+
                     if (Level.isDark())
 						this.musicID = "battle_night";
 				}
@@ -2199,6 +2201,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public void updateMusic(String prevMusic)
 	{
 		if (this.music == null && prevMusic != null)
+			Panel.forceRefreshMusic = true;
+
+		if (this.music != null && prevMusic == null)
 			Panel.forceRefreshMusic = true;
 
 		if (this.music != null && !this.music.equals(prevMusic))

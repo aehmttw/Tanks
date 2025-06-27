@@ -1,8 +1,12 @@
 package tanks.bullet;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
+import tanks.tankson.Property;
+import tanks.tankson.TanksONable;
 
+@TanksONable("trail")
 public class Trail implements IDrawable
 {
     public double backX;
@@ -14,33 +18,38 @@ public class Trail implements IDrawable
     public double currentLength;
     public double angle;
 
-    public double maxLength;
     public double age;
-    public double delay;
+    @Property(id = "start", name = "Start")
+    public double delay = 0;
+    @Property(id = "length", name = "Length")
+    public double maxLength = 15;
 
     public boolean spawning = true;
     public boolean expired = false;
 
-    public double backWidth;
-    public double frontWidth;
+    @Property(id = "front_width", name = "Front width")
+    public double frontWidth = 1;
+    @Property(id = "back_width", name = "Back width")
+    public double backWidth = 1;
 
-    public double frontR;
-    public double frontG;
-    public double frontB;
-    public double frontA;
+    @Property(id = "front_color", name = "Front color")
+    public Color frontColor = new Color(80, 80, 80, 100);
+    @Property(id = "back_color", name = "Back color")
+    public Color backColor = new Color(80, 80, 80, 0);
+
     protected double frontAngleOffset;
-
-    public double backR;
-    public double backG;
-    public double backB;
-    public double backA;
     protected double backAngleOffset;
 
-    public boolean glow;
-    public double luminosity;
+    @Property(id = "glow", name = "Glow")
+    public boolean glow = false;
+    @Property(id = "luminosity", name = "Luminance")
+    public double luminosity = 0.5;
 
-    public boolean frontCircle = true;
+    @Property(id = "back_circle", name = "Back cap")
     public boolean backCircle = true;
+    @Property(id = "front_circle", name = "Front cap")
+    public boolean frontCircle = true;
+
     public boolean showOutsides = true;
     public boolean showOutsideFront = true;
     public boolean showOutsideBack = true;
@@ -50,6 +59,19 @@ public class Trail implements IDrawable
     public double speed;
 
     public Movable movable;
+
+    public Trail()
+    {
+
+    }
+
+    public Trail(double delay, double backWidth, double frontWidth, double length,
+                 double frontR, double frontG, double frontB, double frontA,
+                 double backR, double backG, double backB, double backA,
+                 boolean glow, double luminosity, boolean frontCircle, boolean backCircle)
+    {
+        this(null, 0, 0, 0, delay, backWidth, frontWidth, length, 0, frontR, frontG, frontB, frontA, backR, backG, backB, backA, glow, luminosity, frontCircle, backCircle);
+    }
 
     public Trail(Movable m, double speed, double backX, double backY,
                  double delay, double backWidth, double frontWidth, double length, double angle,
@@ -70,15 +92,15 @@ public class Trail implements IDrawable
         this.maxLength = length;
         this.delay = delay;
 
-        this.frontR = frontR;
-        this.frontG = frontG;
-        this.frontB = frontB;
-        this.frontA = frontA;
+        this.frontColor.red = frontR;
+        this.frontColor.green = frontG;
+        this.frontColor.blue = frontB;
+        this.frontColor.alpha = frontA;
 
-        this.backR = backR;
-        this.backG = backG;
-        this.backB = backB;
-        this.backA = backA;
+        this.backColor.red = backR;
+        this.backColor.green = backG;
+        this.backColor.blue = backB;
+        this.backColor.alpha = backA;
         this.luminosity = luminosity;
 
         this.frontCircle = frontCircle;
@@ -121,6 +143,48 @@ public class Trail implements IDrawable
         this.backAngleOffset = offset;
     }
 
+    public void drawForInterface(double x, double x1, double y, double height, double dist)
+    {
+        drawForInterface(x, x1, y, height, dist, false);
+    }
+
+    public void drawForInterface(double x, double x1, double y, double height, double dist, boolean outline)
+    {
+        double frac1 = this.delay / dist;
+        double frac2 = (this.delay + this.maxLength) / dist;
+        double start = frac1 * x1 + (1 - frac1) * x;
+        double end = frac2 * x1 + (1 - frac2) * x;
+
+        if (outline)
+        {
+            if (frontCircle)
+                start -= this.frontWidth * height / 2;
+
+            if (backCircle)
+                end += this.backWidth * height / 2;
+
+            Drawing.drawing.setColor(0, 0, 0, 127);
+            Drawing.drawing.drawInterfaceRect((start + end) / 2 + 5, y + 5, end - start + 5, (Math.max(backWidth, frontWidth) + 1) * height, 5, 10);
+            return;
+        }
+
+        Drawing.drawing.setColor(this.frontColor);
+        if (this.frontCircle)
+            Drawing.drawing.fillPartialInterfaceOval(start, y, this.frontWidth * height, this.frontWidth * height, 0.25, 0.75);
+
+        Game.game.window.shapeRenderer.setBatchMode(true, true, false);
+        Drawing.drawing.addInterfaceVertex(start, y - this.frontWidth / 2 * height, 0);
+        Drawing.drawing.addInterfaceVertex(start, y + this.frontWidth / 2 * height, 0);
+
+        Drawing.drawing.setColor(this.backColor);
+        Drawing.drawing.addInterfaceVertex(end, y + this.backWidth / 2 * height, 0);
+        Drawing.drawing.addInterfaceVertex(end, y - this.backWidth / 2 * height, 0);
+        Game.game.window.shapeRenderer.setBatchMode(false, true, false);
+
+        if (this.backCircle)
+            Drawing.drawing.fillPartialInterfaceOval(end, y, this.backWidth * height, this.backWidth * height, 0.75, 1.25);
+    }
+
     @Override
     public void draw()
     {
@@ -154,10 +218,10 @@ public class Trail implements IDrawable
             {
                 frac3 = 0;
                 Drawing.drawing.setColor(
-                        this.frontR * (1 - frac1) + this.backR * frac1,
-                        this.frontG * (1 - frac1) + this.backG * frac1,
-                        this.frontB * (1 - frac1) + this.backB * frac1,
-                        (this.frontA * (1 - frac1) + this.backA * frac1) * opacity, this.luminosity);
+                        this.frontColor.red * (1 - frac1) + this.backColor.red * frac1,
+                        this.frontColor.green * (1 - frac1) + this.backColor.green * frac1,
+                        this.frontColor.blue * (1 - frac1) + this.backColor.blue * frac1,
+                        (this.frontColor.alpha * (1 - frac1) + this.backColor.alpha * frac1) * opacity, this.luminosity);
 
                 if (frontCircle || (showOutsides && showOutsideFront))
                 {
@@ -189,7 +253,7 @@ public class Trail implements IDrawable
             else
             {
                 frontWidth = this.frontWidth;
-                Drawing.drawing.setColor(this.frontR, this.frontG, this.frontB, this.frontA * opacity, this.luminosity);
+                Drawing.drawing.setColor(this.frontColor.red, this.frontColor.green, this.frontColor.blue, this.frontColor.alpha * opacity, this.luminosity);
 
                 if (frontCircle)
                 {
@@ -230,10 +294,10 @@ public class Trail implements IDrawable
             {
                 frac4 = 0;
                 Drawing.drawing.setColor(
-                        this.frontR * (1 - frac2) + this.backR * frac2,
-                        this.frontG * (1 - frac2) + this.backG * frac2,
-                        this.frontB * (1 - frac2) + this.backB * frac2,
-                        (this.frontA * (1 - frac2) + this.backA * frac2) * opacity, this.luminosity);
+                        this.frontColor.red * (1 - frac2) + this.backColor.red * frac2,
+                        this.frontColor.green * (1 - frac2) + this.backColor.green * frac2,
+                        this.frontColor.blue * (1 - frac2) + this.backColor.blue * frac2,
+                        (this.frontColor.alpha * (1 - frac2) + this.backColor.alpha * frac2) * opacity, this.luminosity);
 
                 if (!trail3d)
                 {
@@ -265,7 +329,7 @@ public class Trail implements IDrawable
             else
             {
                 backWidth = this.backWidth;
-                Drawing.drawing.setColor(this.backR, this.backG, this.backB, this.backA * opacity, this.luminosity);
+                Drawing.drawing.setColor(this.backColor.red, this.backColor.green, this.backColor.blue, this.backColor.alpha * opacity, this.luminosity);
 
                 if (!trail3d)
                 {

@@ -61,7 +61,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         this.destroyBullets = false;
         this.canMultiDamage = true;
         this.canBeCanceled = false;
-        this.effect = BulletEffect.none;
+        this.effect.trailEffects.clear();
         this.homingSilent = true;
     }
 
@@ -113,7 +113,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         if (this.lifespan > 0)
             frac = Math.max(0, 1 - this.age / this.lifespan);
 
-        Drawing.drawing.setColor(this.startR * frac + this.endR * (1 - frac), this.startG * frac + this.endG * (1 - frac), this.startB * frac + this.endB * (1 - frac), opacity, this.luminance);
+        Drawing.drawing.setColor(this.startR * frac + this.endR * (1 - frac), this.startG * frac + this.endG * (1 - frac), this.startB * frac + this.endB * (1 - frac), opacity, this.effect.luminance);
 
         if (Game.enable3d)
             Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -125,19 +125,22 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
     public void drawGlow()
     {
         double rawOpacity = (1.0 - (this.age) / lifespan);
-        rawOpacity *= rawOpacity * this.frameDamageMultipler * this.glowIntensity;
+        rawOpacity *= this.frameDamageMultipler * this.effect.glowIntensity;
         double opacity = Math.min(rawOpacity * 255 * this.opacity, 255) * (1 - this.destroyTimer / this.maxDestroyTimer);
 
         double frac = 0;
         if (this.lifespan > 0)
             frac = Math.max(0, 1 - this.age / this.lifespan);
 
-        Drawing.drawing.setColor(this.startR * frac + this.endR * (1 - frac), this.startG * frac + this.endG * (1 - frac), this.startB * frac + this.endB * (1 - frac), opacity, opacity / 255 * this.glowIntensity);
+        if (!this.effect.overrideGlowColor)
+            Drawing.drawing.setColor(this.startR * frac + this.endR * (1 - frac), this.startG * frac + this.endG * (1 - frac), this.startB * frac + this.endB * (1 - frac), opacity, opacity / 255 * this.effect.glowIntensity);
+        else
+            Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, opacity, opacity / 255 * this.effect.glowIntensity);
 
         if (Game.enable3d)
-            Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, size * this.glowSize, size * this.glowSize, true, false);
+            Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, size * this.effect.glowSize, size * this.effect.glowSize, true, false);
         else
-            Drawing.drawing.fillGlow(this.posX, this.posY, size * this.glowSize, size * this.glowSize);
+            Drawing.drawing.fillGlow(this.posX, this.posY, size * this.effect.glowSize, size * this.effect.glowSize);
     }
 
     @Override
@@ -187,7 +190,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
     @Override
     public boolean isGlowEnabled()
     {
-        return this.glowIntensity > 0 && this.glowSize > 0;
+        return this.effect.glowIntensity > 0 && this.effect.glowSize > 0;
     }
 
     @Override

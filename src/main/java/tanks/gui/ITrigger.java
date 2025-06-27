@@ -32,4 +32,12 @@ public interface ITrigger
                 doubleClick();
         }
     }
+
+    /**
+     * @return Size, in number of textboxes, this trigger takes up in a tanksonable editor
+     */
+    default int getSize()
+    {
+        return 1;
+    }
 }

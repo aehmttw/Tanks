@@ -24,12 +24,12 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public Tab col1;
     public Tab col2;
     public Tab col3;
-    public Tab glow;
+//    public Tab glow;
 
     public Button col1Button;
     public Button col2Button;
     public Button col3Button;
-    public Button glowButton;
+//    public Button glowButton;
 
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
     {
@@ -72,6 +72,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             }
         };
 
+//        bullet.get().initTrails();
         this.title = "Edit %s";
         this.objName = "bullet";
     }
@@ -158,15 +159,8 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                     ITrigger el = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
                     if (gas)
                     {
-                        if (p.id().equals("effect"))
-                            continue;
-                        else if (p.id().equals("size"))
+                        if (p.id().equals("size"))
                             ((TextBox) el).setText("Start size");
-                    }
-                    else
-                    {
-                        if (p.id().equals("effect"))
-                            ((Selector) el).images = new String[]{"bullet_large.png", "bullet_normal.png", "bullet_air.png", "bullet_fire.png", "bullet_dark_fire.png", "bullet_fire_trail.png", "bullet_freeze.png", "bullet_boost.png"};
                     }
 
                     this.uiElements.add(el);
@@ -197,9 +191,10 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                     continue;
 
                 Button b = new Button(0, 0, 350, 40, t.name, () -> screen.setTab(t));
-                if (t == glow)
-                    glowButton = b;
-                else if (t == col1)
+//                if (t == glow)
+//                    glowButton = b;
+//                else
+                    if (t == col1)
                     col1Button = b;
                 else if (t == col2)
                     col2Button = b;
@@ -249,15 +244,15 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             super.drawUIElements();
             Bullet bullet = screen.target.get();
 
-            double s = Game.tile_size * 0.8;
-            Drawing.drawing.setColor(80, 80, 80);
-            Drawing.drawing.fillInterfaceOval(margin, glowButton.posY, s * 1.5, s * 1.5);
-            if (bullet.overrideOutlineColor)
-                Drawing.drawing.setColor(bullet.outlineColorR * bullet.glowIntensity, bullet.outlineColorG * bullet.glowIntensity, bullet.outlineColorB * bullet.glowIntensity, 255, 1);
-            else
-                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * bullet.glowIntensity, Turret.calculateSecondaryColor(150) * bullet.glowIntensity, Turret.calculateSecondaryColor(255) * bullet.glowIntensity, 255, 1);
-
-            Drawing.drawing.fillInterfaceGlow(margin, glowButton.posY, s * 1.5 * bullet.glowSize / 4, s * 1.5 * bullet.glowSize / 4);
+//            double s = Game.tile_size * 0.8;
+//            Drawing.drawing.setColor(80, 80, 80);
+//            Drawing.drawing.fillInterfaceOval(margin, glowButton.posY, s * 1.5, s * 1.5);
+//            if (bullet.overrideOutlineColor)
+//                Drawing.drawing.setColor(bullet.outlineColorR * bullet.glowIntensity, bullet.outlineColorG * bullet.glowIntensity, bullet.outlineColorB * bullet.glowIntensity, 255, 1);
+//            else
+//                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * bullet.glowIntensity, Turret.calculateSecondaryColor(150) * bullet.glowIntensity, Turret.calculateSecondaryColor(255) * bullet.glowIntensity, 255, 1);
+//
+//            Drawing.drawing.fillInterfaceGlow(margin, glowButton.posY, s * 1.5 * bullet.glowSize / 4, s * 1.5 * bullet.glowSize / 4);
 
             Drawing.drawing.setInterfaceFontSize(24);
             if (bullet.overrideOutlineColor)
@@ -547,24 +542,24 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 colorBlue.function.run();
         }
     }
-
-    public class TabGlow extends Tab
-    {
-        public TabGlow(ScreenEditorBullet screen, ScreenEditorTanksONable<Bullet>.Tab parent, String name, String category)
-        {
-            super(screen, parent, name, category);
-        }
-
-        public TabGlow(ScreenEditorBullet screen, String name, String category)
-        {
-            super(screen, name, category);
-        }
-
-        public void set()
-        {
-            super.set();
-        }
-    }
+//
+//    public class TabGlow extends Tab
+//    {
+//        public TabGlow(ScreenEditorBullet screen, ScreenEditorTanksONable<Bullet>.Tab parent, String name, String category)
+//        {
+//            super(screen, parent, name, category);
+//        }
+//
+//        public TabGlow(ScreenEditorBullet screen, String name, String category)
+//        {
+//            super(screen, name, category);
+//        }
+//
+//        public void set()
+//        {
+//            super.set();
+//        }
+//    }
 
     @Override
     public void setupTabs()
@@ -578,7 +573,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         new TabFiring(this, "Firing", BulletPropertyCategory.firing);
         new TabTravel(this, "Movement", BulletPropertyCategory.travel);
         new Tab(this, "Impact", BulletPropertyCategory.impact);
-        glow = new TabGlow(this, appearance, "Glow", BulletPropertyCategory.appearanceGlow);
+//        glow = new TabGlow(this, appearance, "Glow", BulletPropertyCategory.appearanceGlow);
 
         this.iconPrefix = "bulleteditor";
         this.setTab(appearance);

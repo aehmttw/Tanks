@@ -1,9 +1,6 @@
 package tanks;
 
-import basewindow.IBatchRenderableObject;
-import basewindow.IModel;
-import basewindow.Model;
-import basewindow.ModelPart;
+import basewindow.*;
 import basewindow.transformation.AxisRotation;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
@@ -160,6 +157,17 @@ public class Drawing
 		this.currentGlow = glow;
 	}
 
+	public void setColor(Color c)
+	{
+		Game.game.window.setColor(c.red, c.green, c.blue, c.alpha);
+
+		this.currentColorR = c.red;
+		this.currentColorG = c.green;
+		this.currentColorB = c.blue;
+		this.currentColorA = c.alpha;
+		this.currentGlow = 0;
+	}
+
 	public void fillOval(double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = gameToAbsoluteX(x, sizeX);
@@ -286,6 +294,20 @@ public class Drawing
 			Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
 		else
 			Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
+	}
+
+	public void fillPartialInterfaceOval(double x, double y, double sizeX, double sizeY, double start, double end)
+	{
+		double drawX = gameToAbsoluteX(x, sizeX);
+		double drawY = gameToAbsoluteY(y, sizeY);
+
+		if (isOutOfBounds(drawX, drawY))
+			return;
+
+		double drawSizeX = (sizeX * scale);
+		double drawSizeY = (sizeY * scale);
+
+		Game.game.window.shapeRenderer.fillPartialOval(drawX, drawY, drawSizeX, drawSizeY, start, end);
 	}
 
 	public void fillGlow(double x, double y, double z, double sizeX, double sizeY)

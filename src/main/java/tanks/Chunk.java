@@ -121,14 +121,12 @@ public class Chunk
 
         public boolean solid()
         {
-            return (fullObstacle != null && fullObstacle.bulletCollision) ||
-                    (surfaceObstacle != null && surfaceObstacle.bulletCollision) ||
-                    (extraObstacle != null && extraObstacle.bulletCollision);
+            return obstacle() != null && obstacle().bulletCollision;
         }
 
         public boolean unbreakable()
         {
-            return obstacle() != null && !obstacle().shouldShootThrough;
+            return obstacle() != null && obstacle().bulletCollision;
         }
 
         public Obstacle obstacle()

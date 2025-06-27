@@ -31,6 +31,8 @@ public @interface Property
         bulletSound,
         itemIcon,
         name,
-        defaultBuildForbidden
+        defaultBuildForbidden,
+        trails,
+        alphaless
     }
 }

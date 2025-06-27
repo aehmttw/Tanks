@@ -2,6 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletEffect;
 
 /**
  * A small, primitive tank which shoots tiny, low damage bullets
@@ -22,7 +23,7 @@ public class TankMini extends TankAIControlled
 		Bullet b = this.getBullet();
 		b.maxLiveBullets = 1;
 		b.bounces = 0;
-		b.effect = Bullet.BulletEffect.trail;
+		b.effect = BulletEffect.trail.getCopy();
 		b.damage = 0.25;
 		b.size /= 2;
 		this.enableLookingAtTargetEnemy = true;

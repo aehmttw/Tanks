@@ -1,7 +1,9 @@
 package tanks.tankson;
 
+import tanks.BiConsumer;
 import tanks.Game;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletEffect;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.tank.Mine;
@@ -21,6 +23,8 @@ public class Compatibility
     public static final HashMap<String, BiFunction<Object, Object, Object>> compatibility_table = new HashMap<>();
 
     public static final HashMap<Class<?>, BiFunction<Field, Object, Object>> general_table = new HashMap<>();
+
+    public static final HashMap<String, BiConsumer<Object, Object>> unused_table = new HashMap<>();
 
     public static final HashMap<String, String> field_table = new HashMap<>();
 
@@ -75,6 +79,46 @@ public class Compatibility
 
         compatibility_table.put("turret_model", (owner, a) ->
                 convertModelToSkin((String) a));
+
+        compatibility_table.put("effect", (owner, a) ->
+        {
+            String s = (String) a;
+            switch (s)
+            {
+                case "fire":
+                    return BulletEffect.fire.getCopy();
+                case "trail":
+                    return BulletEffect.trail.getCopy();
+                case "dark_fire":
+                    return BulletEffect.dark_fire.getCopy();
+                case "fire_and_smoke":
+                    return BulletEffect.fire_trail.getCopy();
+                case "ice":
+                    return BulletEffect.ice.getCopy();
+                case "ember":
+                    return BulletEffect.ember.getCopy();
+                default:
+                    return new BulletEffect();
+            }
+        });
+
+        unused_table.put("luminance", (owner, value) ->
+        {
+            if (owner instanceof Bullet)
+                ((Bullet) owner).effect.luminance = (double) value;
+        });
+
+        unused_table.put("glow_intensity", (owner, value) ->
+        {
+            if (owner instanceof Bullet)
+                ((Bullet) owner).effect.glowIntensity = (double) value;
+        });
+
+        unused_table.put("glow_size", (owner, value) ->
+        {
+            if (owner instanceof Bullet)
+                ((Bullet) owner).effect.glowSize = (double) value;
+        });
     }
 
     public static <V> void addGeneralCase(Class<V> cls, BiFunction<Field, V, Object> func)

@@ -868,6 +868,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
         public void addFields()
         {
             this.deleteButtons.clear();
+            this.upButtons.clear();
+            this.downButtons.clear();
 
             TankPlayer t = target.get();
             for (int i = 0; i < t.abilities.size(); i++)
@@ -940,6 +942,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
                 upButtons.add(up);
                 downButtons.add(down);
+
             }
 
             if (t.abilities.size() < TankPlayer.max_abilities)
@@ -954,6 +957,9 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             {
                 Button b = this.deleteButtons.get(i);
                 b.update();
+
+                if (this.upButtons.size() <= i)
+                    break;
 
                 Button up = this.upButtons.get(i);
                 Button down = this.downButtons.get(i);

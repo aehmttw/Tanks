@@ -95,6 +95,8 @@ Cool TM<br>
 QazCetelic<br>
 Lancelot<br>
 Parth Iyer (ghostlypi)<br>
+brodiscool0902 on Discord<br>
+Blimpdxmk2<br>
 
 ### Supporters:
 SapphireDrew<br>

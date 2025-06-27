@@ -1,10 +1,13 @@
 package tanks.gui.screen;
 
+import basewindow.Color;
 import basewindow.IModel;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletEffect;
+import tanks.bullet.Trail;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
@@ -228,7 +231,12 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category) && p.miscType() != Property.MiscType.color)
                 {
-                    this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(target.get(), f), p));
+                    ITrigger t = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
+                    this.uiElements.add(t);
+                    for (int i = 1; i < t.getSize(); i++)
+                    {
+                        this.uiElements.add(new EmptySpace());
+                    }
                 }
             }
         }
@@ -342,6 +350,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             }
 
             this.drawUIElements();
+        }
+
+        public void drawOver()
+        {
+
         }
     }
 
@@ -592,6 +605,10 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 t.enableHover = !p.desc().equals("");
                 t.hoverText = formatDescription(p.desc());
                 return t;
+            }
+            else if (Color.class.isAssignableFrom(f.getType()))
+            {
+                return new SelectorColor(0, 0, this.objWidth, this.objHeight, p.name(), this.objYSpace * 1.5, (Color) f.get(), !p.miscType().equals(Property.MiscType.alphaless));
             }
             else if (ITanksONEditable.class.isAssignableFrom(f.getType()))
             {
@@ -916,6 +933,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 s = new ScreenEditorExplosion(p.cast(), Game.screen);
             else if (TankPlayer.class.isAssignableFrom(p.getType()))
                 s = new ScreenEditorPlayerTankBuild(p.cast(), Game.screen);
+            else if (BulletEffect.class.isAssignableFrom(p.getType()))
+                s = new ScreenEditorBulletEffect(p.cast(), Game.screen);
             else if (ITankField.class.isAssignableFrom(p.getType()))
             {
                 if (p.get() != null && TankAIControlled.class.isAssignableFrom(p.get().getClass()))
@@ -949,6 +968,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     b.tank = ((ITankField) p.get()).resolve();
                     b.optionText = o.getName();
                 }
+                else if (BulletEffect.class.isAssignableFrom(p.getType()))
+                {
+                    b.bulletEffect = (BulletEffect) p.get();
+                    b.optionText = "";
+                }
                 else
                 {
                     if (Item.ItemStack.class.isAssignableFrom(p.getType()))
@@ -971,6 +995,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         {
             b.tank = ((ITankField) p.get()).resolve();
             b.optionText = o.getName();
+        }
+        else if (BulletEffect.class.isAssignableFrom(p.getType()))
+        {
+            b.bulletEffect = (BulletEffect) p.get();
+            b.optionText = "";
         }
         else
         {
@@ -1034,10 +1063,19 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         if (topLevelMenus.size() >= 5)
             pos = 90;
 
+        double size = this.objWidth;
+        double space = this.objXSpace;
+
+        if (topLevelMenus.size() >= 4)
+        {
+            size = 280;
+            space = 300;
+        }
+
         this.topLevelButtons.clear();
         for (Tab t: topLevelMenus)
         {
-            Button b = new Button(300 * (i - 1.5) + this.centerX, pos + this.objYSpace * j, 280, 40, t.name, () -> setTab(t));
+            Button b = new Button(space * (i - Math.min(topLevelMenus.size() - 1, 3) / 2.0) + this.centerX, pos + this.objYSpace * j, size, 40, t.name, () -> setTab(t));
             b.image = this.iconPrefix + "/" + t.name.toLowerCase().replace(" ", "_") + ".png";
             b.drawImageShadow = true;
             b.imageSizeX = 50;
@@ -1188,12 +1226,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             Drawing.drawing.setInterfaceFontSize(this.titleSize);
             Drawing.drawing.setColor(255, 255, 255);
 
-            double pos = 60;
-            if ((topLevelButtons.size() <= 1 && !this.forceDisplayTabs) || this.target.get() == null)
-                pos = 100;
-            else if (topLevelButtons.size() >= 5)
-                pos = 30;
-            Drawing.drawing.displayInterfaceText(this.centerX, pos, this.title, this.objName);
+            this.drawTitle();
 
             if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255);
@@ -1212,7 +1245,23 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 this.delete.draw();
 
             this.drawOverlay();
+
+            if (this.target.get() != null)
+            {
+                if (this.currentTab != null)
+                    this.currentTab.drawOver();
+            }
         }
+    }
+
+    public void drawTitle()
+    {
+        double pos = 60;
+        if ((topLevelButtons.size() <= 1 && !this.forceDisplayTabs) || this.target.get() == null)
+            pos = 100;
+        else if (topLevelButtons.size() >= 5)
+            pos = 30;
+        Drawing.drawing.displayInterfaceText(this.centerX, pos, this.title, this.objName);
     }
 
     public void drawOverlay()

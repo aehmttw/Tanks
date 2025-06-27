@@ -1,5 +1,6 @@
 package tanks.bullet;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
@@ -32,8 +33,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public int networkID;
 
-	public enum BulletEffect {none, trail, long_trail, fire, dark_fire, fire_trail, ice, ember}
-
 	public static double bullet_size = 10;
 
 	public String typeName;
@@ -55,8 +54,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	public int bouncyBounces = 100;
 
 	public double ageFrac = 0;
-	public double quarterAgeFrac = 0;
-	public double halfAgeFrac = 0;
 
 	@Property(id = "override_color", name = "Custom primary color", desc = "If disabled, the bullet will use the color of the tank which fired it")
 	public boolean overrideBaseColor;
@@ -82,16 +79,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public double opacityMultiplier = 1;
 
-	@Property(id = "luminance", minValue = 0.0, maxValue = 1.0, name = "Luminance", category = BulletPropertyCategory.appearanceGlow, desc = "How bright the bullet will be in dark lighting. At 0, the bullet will be shaded like terrain by lighting. At 1, the bullet will always be fully bright.")
-	public double luminance = 0.5;
-
-	//@Property(id = "trails", name = "Trail", category = BulletPropertyCategory.appearance)
-	public ArrayList<Trail> trailEffects = new ArrayList<>();
-
-	@Property(id = "glow_intensity", minValue = 0.0, name = "Glow intensity", category = BulletPropertyCategory.appearanceGlow)
-	public double glowIntensity = 1;
-	@Property(id = "glow_size", minValue = 0.0, name = "Glow size", category = BulletPropertyCategory.appearanceGlow)
-	public double glowSize = 4;
+	@Property(id = "effect", name = "Effect", desc = "Defines the bullet's trail, glow, and particle effects", category = BulletPropertyCategory.appearance)
+	public BulletEffect effect = BulletEffect.trail.getCopy();
 
 	public double iPosZ;
 	public boolean autoZ = true;
@@ -170,9 +159,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	public boolean mineCollision = true;
 
 	public boolean destroyBullets = true;
-
-	@Property(id = "effect", name = "Effect", category = BulletPropertyCategory.appearance, desc = "Defines the bullet's trail, glow, and particle effects")
-	public BulletEffect effect = BulletEffect.trail;
 
 	public boolean useCustomWallCollision = false;
 	public double wallCollisionSize = 10;
@@ -1204,24 +1190,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public void initTrails()
 	{
-		double mul = this.effect == BulletEffect.long_trail ? 1.5 : 1;
-
-		if (this.effect == BulletEffect.trail || this.effect == BulletEffect.long_trail || this.effect == BulletEffect.fire || this.effect == BulletEffect.dark_fire)
-			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0,1, 1, 15 * mul, 0, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
-
-		if (this.effect == BulletEffect.fire_trail)
-		{
-			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 7,2, 2, 50, 0, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5, false, true));
-			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 3,2, 2, 4, 0, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5, true, false));
-		}
-
-		if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fire_trail)
-			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0, 5, 1, 5, 0, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
-
-		if (this.effect == BulletEffect.dark_fire)
-			this.trailEffects.add(new Trail(this, this.speed, 0, 0, 0, 5, 1, 5, 0,  64, 0, 128, 255, 0, 0, 0, 0, false, 1, true, true));
-
-		this.trails = (ArrayList<Trail>[])(new ArrayList[this.trailEffects.size()]);
+		this.trails = (ArrayList<Trail>[])(new ArrayList[this.effect.trailEffects.size()]);
 
 		for (int i = 0; i < this.trails.length; i++)
 			this.trails[i] = new ArrayList<>();
@@ -1404,96 +1373,38 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				this.posZ = this.iPosZ * frac + (Game.tile_size / 4) * (1 - frac);
 
 			this.ageFrac += frameFrequency * Game.effectMultiplier;
-			this.halfAgeFrac += frameFrequency * Game.effectMultiplier;
-			this.quarterAgeFrac += frameFrequency * Game.effectMultiplier;
 
 			if (Game.bulletTrails)
 			{
-				while (this.ageFrac >= 1 && Game.effectsEnabled)
+				while (this.ageFrac >= 1 && Game.effectsEnabled && this.effect.enableParticles)
 				{
 					this.ageFrac -= 1;
 
-					if (this.effect.equals(BulletEffect.ice) || this.effect.equals(BulletEffect.ember))
-					{
-						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-						double var = 50;
-						e.maxAge /= 2;
+					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+					double var = 50;
+					e.maxAge *= this.effect.particleLifespan;
 
-						double r1 = 128;
-						double g1 = 255;
-						double b1 = 255;
+					double r1 = this.effect.particleColor.red;
+					double g1 = this.effect.particleColor.green;
+					double b1 = this.effect.particleColor.blue;
 
-						if (this.effect.equals(BulletEffect.ember))
-						{
-							r1 = 255;
-							g1 = 180;
-							b1 = 0;
-						}
+					e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
+					e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
+					e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
 
-						e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
-
-						if (this.effect.equals(BulletEffect.ice))
-						{
-							e.glowR = 90;
-							e.glowG = 180;
-							e.glowB = 180;
-						}
-
-						if (Game.enable3d)
-							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
-						else
-							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
-
-
-						Game.effects.add(e);
-					}
-					else if (Game.fancyBulletTrails && this.effect.equals(BulletEffect.dark_fire))
-					{
-						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-						double var = 50;
-						e.maxAge /= 4;
-						e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
+					if (this.effect.particleGlow <= 0)
 						e.enableGlow = false;
 
-						if (Game.enable3d)
-							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 12);
-						else
-							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
+					e.glowR = e.colR * (1 - this.effect.particleGlow);
+					e.glowG = e.colG * (1 - this.effect.particleGlow);
+					e.glowB = e.colB * (1 - this.effect.particleGlow);
 
+					if (Game.enable3d)
+						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * this.effect.particleSpeed);
+					else
+						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * this.effect.particleSpeed);
 
-						Game.effects.add(e);
-					}
-					else if (Game.fancyBulletTrails && (this.effect.equals(BulletEffect.fire) || this.effect.equals(BulletEffect.fire_trail)))
-					{
-						Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-						double var = 50;
-						e.maxAge /= 4;
-						e.colR = 255;
-						e.colG = Math.min(255, Math.max(0, 180 + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, 64 + Math.random() * var - var / 2));
-
-						if (Game.enable3d)
-							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 12);
-						else
-							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * 4);
-
-
-						Game.effects.add(e);
-					}
-				}
-
-				while (this.quarterAgeFrac >= 0.25)
-				{
-					this.quarterAgeFrac -= 0.25;
-				}
-
-				while (this.halfAgeFrac >= 0.5)
-				{
-					this.halfAgeFrac -= 0.5;
+					Game.effects.add(e);
 				}
 			}
 		}
@@ -1528,7 +1439,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public void updateTrails()
 	{
-		if (this.effect != BulletEffect.none && !this.addedTrail && !this.destroy &&
+		if (!this.effect.trailEffects.isEmpty() && !this.addedTrail && !this.destroy &&
 				(Movable.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (this.trail3d && Movable.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
 		{
 			this.addTrail(true);
@@ -1547,7 +1458,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		this.addedTrail = true;
 
-		if (!Game.bulletTrails || this.effect == BulletEffect.none)
+		if (!Game.bulletTrails || this.effect.trailEffects.isEmpty())
 			return;
 
 		double speed = this.speed;
@@ -1567,16 +1478,16 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (this.trail3d)
 			this.lastTrailPitch = this.getPolarPitch();
 
-		for (int i = 0; i < this.trailEffects.size(); i++)
+		for (int i = 0; i < this.effect.trailEffects.size(); i++)
 		{
-			Trail t = this.trailEffects.get(i);
+			Trail t = this.effect.trailEffects.get(i);
 
 			if (!this.trail3d || !Game.enable3d)
 				this.addTrailObj(i, new Trail(this, this.speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle,
-					t.frontR, t.frontG, t.frontB, t.frontA, t.backR, t.backG, t.backB, t.backA, t.glow, t.luminosity, t.frontCircle, t.backCircle), redirect);
+					t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle, t.backCircle), redirect);
 			else
 				this.addTrailObj(i, new Trail3D(this, this.speed, x, y, z, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, this.lastTrailPitch,
-						t.frontR, t.frontG, t.frontB, t.frontA, t.backR, t.backG, t.backB, t.backA, t.glow, t.luminosity, t.frontCircle, t.backCircle), redirect);
+						t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle, t.backCircle), redirect);
 		}
 	}
 
@@ -1640,7 +1551,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (this.delay > 0)
 			return;
 
-		double glow = this.em().getAttributeValue(AttributeModifier.glow, 0.5);
+		double luminance = this.em().getAttributeValue(AttributeModifier.glow, this.effect.luminance);
+		double glow = this.em().getAttributeValue(AttributeModifier.glow, this.effect.glowIntensity);
 
 		if (this.freezing && Game.bulletTrails)
 		{
@@ -1668,31 +1580,22 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (Game.glowEnabled)
 		{
-			Drawing.drawing.setColor(this.outlineColorR * glow * 2, this.outlineColorG * glow * 2, this.outlineColorB * glow * 2, 255, 1);
+			if (!this.effect.overrideGlowColor)
+				Drawing.drawing.setColor(this.outlineColorR * glow, this.outlineColorG * glow, this.outlineColorB * glow, 255, 1);
+			else
+				Drawing.drawing.setColor(this.effect.glowColor.red * glow, this.effect.glowColor.green * glow, this.effect.glowColor.blue * glow, 255, 1);
 
-			double sizeMul = 1;
-			boolean shade = false;
-
-			if (this.effect == BulletEffect.fire || this.effect == BulletEffect.fire_trail)
-			{
-				Drawing.drawing.setColor(255, 180, 0, 200, 1);
-				sizeMul = 4;
-			}
-			else if (this.effect == BulletEffect.dark_fire)
-			{
-				Drawing.drawing.setColor(0, 0, 0, 127);
-				sizeMul = 1.5;
-				shade = true;
-			}
+			double sizeMul = this.effect.glowSize;
+			boolean shade = !this.effect.glowGlowy;
 
 			if (this.destroyTimer < 60.0)
 			{
 				sizeMul *= 1 - destroyTimer / 60.0;
 
 				if (Game.enable3d)
-					Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * 4 * sizeMul, this.size * 4 * sizeMul, true, true, shade);
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ, this.size * sizeMul, this.size * sizeMul, true, true, shade);
 				else
-					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4 * sizeMul, this.size * 4 * sizeMul, shade);
+					Drawing.drawing.fillGlow(this.posX, this.posY, this.size * sizeMul, this.size * sizeMul, shade);
 			}
 		}
 
@@ -1717,7 +1620,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				double opacityMod = 0.25 + 0.25 * Math.sin(this.age / 100.0 * Math.PI * 4) * opacityMultiplier;
 				double s = 2.5;
 
-				Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255.0 * opacityMod, glow);
+				Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255.0 * opacityMod, luminance);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillOval(posX, posY, posZ, s * size + sizeModifier, s * size + sizeModifier);
@@ -1728,7 +1631,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 			if (this.bulletHitKnockback != 0 || this.tankHitKnockback != 0)
 			{
-				Drawing.drawing.setColor(255, 0, 255, opacity * opacity * opacity * 255.0 * opacityMultiplier, glow);
+				Drawing.drawing.setColor(255, 0, 255, opacity * opacity * opacity * 255.0 * opacityMultiplier, luminance);
 				double bumper = (1 + Math.sin(this.age / 100.0 * Math.PI * 4)) * 0.25 + 1.2;
 				if (Game.enable3d)
 					Drawing.drawing.fillOval(posX, posY, posZ, bumper * size + sizeModifier, bumper * size + sizeModifier);
@@ -1736,7 +1639,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 					Drawing.drawing.fillOval(posX, posY, bumper * size + sizeModifier, bumper * size + sizeModifier);
 			}
 
-			Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255.0 * opacityMultiplier, glow);
+			Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255.0 * opacityMultiplier, luminance);
 
 			if (Game.enable3d)
 			{
@@ -1747,7 +1650,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			else
 				Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
 
-			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, opacity * opacity * opacity * 255.0 * opacityMultiplier, glow);
+			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, opacity * opacity * opacity * 255.0 * opacityMultiplier, luminance);
 
 			if (Game.enable3d)
 				Drawing.drawing.fillOval(posX, posY, posZ, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6, 1);

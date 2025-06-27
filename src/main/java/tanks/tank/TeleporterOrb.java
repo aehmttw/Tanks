@@ -252,23 +252,23 @@ public class TeleporterOrb extends Movable
 		if (Game.enable3d)
 			this.lastTrailPitch = this.getPolarPitch();
 
-		this.trailSet[0].frontR = this.tank.colorR;
-		this.trailSet[0].frontG = this.tank.colorG;
-		this.trailSet[0].frontB = this.tank.colorB;
+		this.trailSet[0].frontColor.red = this.tank.colorR;
+		this.trailSet[0].frontColor.green = this.tank.colorG;
+		this.trailSet[0].frontColor.blue = this.tank.colorB;
 
-		this.trailSet[1].frontR = this.tank.secondaryColorR;
-		this.trailSet[1].frontG = this.tank.secondaryColorG;
-		this.trailSet[1].frontB = this.tank.secondaryColorB;
+		this.trailSet[1].frontColor.red = this.tank.secondaryColorR;
+		this.trailSet[1].frontColor.green = this.tank.secondaryColorG;
+		this.trailSet[1].frontColor.blue = this.tank.secondaryColorB;
 
 		int i = 0;
 		for (Trail t : this.trailSet)
 		{
 			if (!Game.enable3d)
 				this.addTrailObj(new Trail(this, speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle,
-						t.frontR, t.frontG, t.frontB, t.frontA, t.backR, t.backG, t.backB, t.backA, t.glow, t.luminosity, t.frontCircle, t.backCircle), i);
+						t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle, t.backCircle), i);
 			else
 				this.addTrailObj(new Trail3D(this, speed, x, y, z, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, this.lastTrailPitch,
-						t.frontR, t.frontG, t.frontB, t.frontA, t.backR, t.backG, t.backB, t.backA, t.glow, t.luminosity, t.frontCircle, t.backCircle), i);
+						t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle, t.backCircle), i);
 			i++;
 		}
 	}

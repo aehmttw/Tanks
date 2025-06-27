@@ -3,6 +3,7 @@ package tanks.hotbar;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
+import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.obstacle.Obstacle;
@@ -708,7 +709,12 @@ public class Hotbar
 
 		this.ignoreInitialStats = false;
 
-		int stackCount = this.itemBar.getSelectedAction(false).stackSize;
+		Item.ItemStack<?> bullet = this.itemBar.getSelectedAction(false);
+		int stackCount = 0;
+
+		if (bullet != null)
+			stackCount = bullet.stackSize;
+
 		if (stackCount > 0 && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing && !((ScreenGame) Game.screen).paused && !Game.playerTank.destroy)
 		{
 			if (Level.isDark())

@@ -1,7 +1,10 @@
 package tanks.tankson;
 
+import basewindow.Color;
 import tanks.Game;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletEffect;
+import tanks.bullet.Trail;
 import tanks.item.Item;
 import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
@@ -112,7 +115,7 @@ public final class Serializer
             {
                 try
                 {
-                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
+                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion || o instanceof Trail) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
                     {
                         Object o2 = f.get(o);
                         if (o2 != null && isTanksONable(f))
@@ -328,11 +331,15 @@ public final class Serializer
                 o = new TankAIControlled.SpawnedTankEntry((ITankField) parseObject((Map) m.get("tank")), (Double) m.get("weight"));
                 break;
             case "tank_ref":
-            {
                 processed.add("tank");
                 o = new TankReference((String) m.get("tank"));
                 break;
-            }
+            case "trail":
+                o = new Trail();
+                break;
+            case "bullet_effect":
+                o = new BulletEffect();
+                break;
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
@@ -375,6 +382,11 @@ public final class Serializer
                         else
                             f.set(o, m.get(getid(f)));
                     }
+                    else if (o2 instanceof Color)
+                    {
+                        ArrayList<Double> objs = (ArrayList) m.get(getid(f));
+                        f.set(o, new Color(objs.get(0), objs.get(1), objs.get(2), (objs.size() >= 4) ? objs.get(3) : 255));
+                    }
                     else if (o2 instanceof HashSet)
                         f.set(o, new HashSet<>((ArrayList) m.get(getid(f))));
                     else if (o2 instanceof Enum)
@@ -390,7 +402,7 @@ public final class Serializer
                 }
                 catch (Exception e)
                 {
-                    System.out.println(getid(f));
+                    System.out.println(f + " " + getid(f));
                     throw new RuntimeException(e);
                 }
             }
@@ -416,6 +428,12 @@ public final class Serializer
         unused.removeAll(processed);
         for (String k : unused)
         {
+            if (Compatibility.unused_table.containsKey(k))
+            {
+                Compatibility.unused_table.get(k).accept(o, m.get(k));
+                continue;
+            }
+
             try
             {
                 Field f = o.getClass().getField(Compatibility.convert(k));
@@ -435,7 +453,7 @@ public final class Serializer
             }
             catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
             {
-                System.out.println("Unconvertable field found!");
+                System.out.println("Unconvertable field found! " + k);
                 e.printStackTrace();
             }
         }

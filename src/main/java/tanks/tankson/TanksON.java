@@ -1,5 +1,6 @@
 package tanks.tankson;
 
+import basewindow.Color;
 import basewindow.IModel;
 
 import java.lang.annotation.Annotation;
@@ -232,6 +233,13 @@ public class TanksON
 
             s.append("]");
             return s.toString();
+        }
+        else if (o instanceof Color)
+        {
+            if (((Color) o).alpha >= 255)
+                return "[" + ((Color) o).red + "," + ((Color) o).green + "," + ((Color) o).blue + "]";
+            else
+                return "[" + ((Color) o).red + "," + ((Color) o).green + "," + ((Color) o).blue + "," + ((Color) o).alpha + "]";
         }
         else if (o instanceof HashMap)
         {

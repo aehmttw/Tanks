@@ -63,7 +63,7 @@ public class DefaultItems
         rocket.bullet.speed *= 2;
         rocket.bullet.bounces = 0;
         rocket.bullet.maxLiveBullets = 3;
-        rocket.bullet.effect = Bullet.BulletEffect.fire;
+        rocket.bullet.effect = BulletEffect.fire.getCopy();
         rocket.name = Translation.translate("Rocket");
         rocket.icon = "bullet_fire.png";
 
@@ -71,7 +71,7 @@ public class DefaultItems
         sniper_rocket.bullet.speed *= 2;
         sniper_rocket.bullet.bounces = 2;
         sniper_rocket.bullet.maxLiveBullets = 4;
-        sniper_rocket.bullet.effect = Bullet.BulletEffect.fire_trail;
+        sniper_rocket.bullet.effect =  BulletEffect.fire_trail.getCopy();
         sniper_rocket.bullet.shotSound = "shoot_power.ogg";
         sniper_rocket.name = Translation.translate("Sniper rocket");
         sniper_rocket.icon = "bullet_fire.png";
@@ -80,7 +80,7 @@ public class DefaultItems
         void_rocket.bullet.speed *= 2;
         void_rocket.bullet.bounces = 0;
         void_rocket.bullet.maxLiveBullets = 5;
-        void_rocket.bullet.effect = Bullet.BulletEffect.dark_fire;
+        void_rocket.bullet.effect =  BulletEffect.dark_fire.getCopy();
         void_rocket.name = Translation.translate("Void rocket");
         void_rocket.icon = "bullet_dark_fire.png";
 
@@ -88,7 +88,7 @@ public class DefaultItems
         homing_rocket.bullet.speed *= 2;
         homing_rocket.bullet.bounces = 0;
         homing_rocket.bullet.maxLiveBullets = 3;
-        homing_rocket.bullet.effect = Bullet.BulletEffect.fire;
+        homing_rocket.bullet.effect =  BulletEffect.fire.getCopy();
         homing_rocket.bullet.homingSharpness = 1.0 / 5.5;
         homing_rocket.name = Translation.translate("Homing rocket");
         homing_rocket.icon = "bullet_homing.png";
@@ -96,7 +96,7 @@ public class DefaultItems
         freezing_bullet.bullet = new Bullet();
         freezing_bullet.bullet.maxLiveBullets = 2;
         freezing_bullet.bullet.bounces = 0;
-        freezing_bullet.bullet.effect = Bullet.BulletEffect.ice;
+        freezing_bullet.bullet.effect = BulletEffect.ice.getCopy();
         freezing_bullet.bullet.damage /= 4;
         freezing_bullet.bullet.freezing = true;
         freezing_bullet.bullet.overrideOutlineColor = true;
@@ -109,7 +109,7 @@ public class DefaultItems
         booster_bullet.bullet = new Bullet();
         booster_bullet.bullet.maxLiveBullets = 5;
         booster_bullet.bullet.bounces = 0;
-        booster_bullet.bullet.effect = Bullet.BulletEffect.ember;
+        booster_bullet.bullet.effect = BulletEffect.ember.getCopy();
         booster_bullet.bullet.damage = 0;
         booster_bullet.bullet.speed = 25 / 4.0;
         booster_bullet.bullet.boosting = true;
@@ -123,7 +123,7 @@ public class DefaultItems
         explosive_bullet.bullet = new Bullet();
         explosive_bullet.bullet.maxLiveBullets = 2;
         explosive_bullet.bullet.bounces = 0;
-        explosive_bullet.bullet.effect = Bullet.BulletEffect.trail;
+        explosive_bullet.bullet.effect = BulletEffect.trail.getCopy();
         explosive_bullet.bullet.size = 20;
         explosive_bullet.bullet.pitch /= 2;
         explosive_bullet.bullet.hitExplosion = new Explosion();
@@ -194,8 +194,8 @@ public class DefaultItems
         flamethrower.bullet.outlineColorR = 255;
         flamethrower.bullet.outlineColorG = 0;
         flamethrower.bullet.outlineColorB = 0;
-        flamethrower.bullet.glowIntensity = 1;
-        flamethrower.bullet.glowSize = 3;
+        f.effect.glowIntensity = 1;
+        f.effect.glowSize = 3;
         flamethrower.bullet.lowersBushes = false;
         flamethrower.bullet.burnsBushes = true;
         flamethrower.bullet.bulletCollision = false;
@@ -221,8 +221,8 @@ public class DefaultItems
         a.outlineColorR = 100;
         a.outlineColorG = 131;
         a.outlineColorB = 151;
-        a.glowIntensity = 0;
-        a.glowSize = 0;
+        a.effect.glowIntensity = 0;
+        a.effect.glowSize = 0;
         a.opacity = 1.0 / 6;
         a.mineCollision = false;
         a.bulletHitKnockback = 0.04;
@@ -234,7 +234,6 @@ public class DefaultItems
         a.speed *= 2;
         a.accuracySpread = 20;
         a.bounces = 0;
-        a.effect = Bullet.BulletEffect.none;
         a.damage = 0;
         a.heavy = true;
         air.name = Translation.translate("Air");
@@ -248,7 +247,7 @@ public class DefaultItems
         c.pitch /= 2.5;
         c.bounces = 0;
         c.maxRange = 1000;
-        c.effect = Bullet.BulletEffect.long_trail;
+        c.effect = BulletEffect.long_trail.getCopy();
         c.shotSound = "arc.ogg";
         artillery_shell.name = Translation.translate("Artillery shell");
         artillery_shell.icon = "bullet_arc.png";

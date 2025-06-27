@@ -1,10 +1,7 @@
 package tanks.item;
 
 import tanks.*;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletArc;
-import tanks.bullet.BulletGas;
-import tanks.bullet.DefaultItems;
+import tanks.bullet.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 import tanks.tankson.*;
@@ -331,25 +328,25 @@ public abstract class Item extends GameObject
 				switch (p[8])
 				{
 					case "none":
-						bullet.bullet.effect = Bullet.BulletEffect.none;
+						bullet.bullet.effect = new BulletEffect();
 						break;
 					case "fire":
-						bullet.bullet.effect = Bullet.BulletEffect.fire;
+						bullet.bullet.effect = BulletEffect.fire.getCopy();
 						break;
 					case "trail":
-						bullet.bullet.effect = Bullet.BulletEffect.trail;
+						bullet.bullet.effect = BulletEffect.trail.getCopy();
 						break;
 					case "dark_fire":
-						bullet.bullet.effect = Bullet.BulletEffect.dark_fire;
+						bullet.bullet.effect = BulletEffect.dark_fire.getCopy();
 						break;
 					case "fire_and_smoke":
-						bullet.bullet.effect = Bullet.BulletEffect.fire_trail;
+						bullet.bullet.effect = BulletEffect.fire_trail.getCopy();
 						break;
 					case "ice":
-						bullet.bullet.effect = Bullet.BulletEffect.ice;
+						bullet.bullet.effect = BulletEffect.ice.getCopy();
 						break;
 					case "ember":
-						bullet.bullet.effect = Bullet.BulletEffect.ember;
+						bullet.bullet.effect = BulletEffect.ember.getCopy();
 						break;
 				}
 
@@ -358,8 +355,8 @@ public abstract class Item extends GameObject
 				if (p[7].equals("arc"))
 				{
 					((BulletArc)bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
-					if (bullet.bullet.effect == Bullet.BulletEffect.none)
-						bullet.bullet.effect = Bullet.BulletEffect.long_trail;
+					if (bullet.bullet.effect.trailEffects.isEmpty() && !bullet.bullet.effect.enableParticles)
+						bullet.bullet.effect = BulletEffect.long_trail.getCopy();
 				}
 
 				if (p[7].equals("electric"))

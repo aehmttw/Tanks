@@ -14,4 +14,9 @@ public class Color
         this.blue = b;
         this.alpha = a;
     }
+
+    public String toString()
+    {
+        return red + "/" + green + "/" + blue + "/" + alpha;
+    }
 }

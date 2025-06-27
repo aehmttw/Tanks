@@ -41,7 +41,7 @@ public class BulletInstant extends Bullet
 		this.enableExternalCollisions = false;
 		this.playPopSound = false;
 		this.playBounceSound = false;
-		this.effect = BulletEffect.none;
+		this.effect.trailEffects.clear();
 		this.homingSilent = true;
 	}
 

@@ -179,7 +179,7 @@ public class DebugKeybinds
                             "O: " + (t1.fullObstacle != null ? t1.fullObstacle.name : "none") + " SO: " + (t1.surfaceObstacle != null ? t1.surfaceObstacle.name : "none")
                                     + " E: " + (t1.extraObstacle != null ? t1.extraObstacle.name : "none"));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 50, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            "H: " + (int) t1.height() + " GH+D: " + (int) (t1.groundHeight() + t1.depth) + " E: " + TerrainRenderer.getExtra(posX, posY));
+                            "H: " + (int) t1.height() + " GH+D: " + (int) (t1.groundHeight() + t1.drawDepth()) + " E: " + TerrainRenderer.getExtra(posX, posY));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 70, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
                             "S: " + t1.solid() + " U: " + t1.unbreakable());
                 }

@@ -451,8 +451,6 @@ public class Level
 					this.playerSpawnsAngle.add(angle);
 					this.playerSpawnsTeam.add(team);
 
-					Chunk.runIfTilePresent(x, y, tile -> tile.solidTank = true);
-
 					continue;
 				}
 
@@ -537,7 +535,7 @@ public class Level
 						t1 = new Tile(t.posX, t.posY + 1);
 
 					if (t1.posX >= 0 && t1.posX < Game.currentSizeX && t1.posY >= 0 && t1.posY < Game.currentSizeY &&
-							!Game.isSolid(t1.posX, t1.posY) && Chunk.getIfPresent(t1.posX, t1.posY, false, tile -> tile.solidTank) && !explored[t1.posX][t1.posY])
+							!Game.isSolid(t1.posX, t1.posY) && isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
 					{
 						explored[t1.posX][t1.posY] = true;
 
@@ -556,7 +554,7 @@ public class Level
 							playerSpawnsTeam.add(playerSpawnsTeam.get(i));
 							playerSpawnsAngle.add(playerSpawnsAngle.get(i));
 
-							Chunk.runIfTilePresent(t1.posX, t1.posY, tile -> tile.solidTank = true);
+							setSolidTank(t1.posX, t1.posY, true);
 
 							for (int x = Math.max(t1.posX - 1, 0); x <= Math.min(t1.posX + 1, Game.currentSizeX - 1); x++)
 							{
@@ -590,7 +588,7 @@ public class Level
 				int x = extraSpawnsX.remove(in);
 				int y = extraSpawnsY.remove(in);
 
-				if (!Chunk.getIfPresent(x, y, false, tile -> tile.solidTank))
+				if (!isSolidTank(x, y))
 				{
 					playerSpawnsX.add((x + 0.5) * Game.tile_size);
 					playerSpawnsY.add((y + 0.5) * Game.tile_size);
@@ -708,6 +706,16 @@ public class Level
 
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventEnterLevel());
+	}
+
+	public boolean isSolidTank(int x, int y)
+	{
+		return Chunk.getIfPresent(x, y, false, tile -> tile.solidTank);
+	}
+
+	public void setSolidTank(int x, int y, boolean solid)
+	{
+		Chunk.runIfTilePresent(x, y, tile -> tile.solidTank = solid);
 	}
 
 	public void reloadTiles()

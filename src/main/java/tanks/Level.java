@@ -42,7 +42,7 @@ public class Level
 	public int colorR = 235, colorG = 207, colorB = 166;
 	public int colorVarR = 20, colorVarG = 20, colorVarB = 20;
 
-	public int tilesRandomSeed = new Random().nextInt();
+	public int tilesRandomSeed = (int) (Math.random() * Integer.MAX_VALUE);
 
 	public double light = 1.0;
 	public double shadow = 0.5;
@@ -237,7 +237,7 @@ public class Level
 		if (Game.deterministicMode)
 			random = new Random(Game.seed);
 		else
-			random = new Random();
+			random = new Random(tilesRandomSeed);
 
 		if (ScreenPartyHost.isServer)
 			ScreenPartyHost.includedPlayers.clear();

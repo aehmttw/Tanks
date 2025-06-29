@@ -93,7 +93,6 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
         Game.cleanUp();
 
         l.level = new Level(l.levelString);
-        l.level.tilesRandomSeed = (int) (Math.random() * 1000);
         l.level.customTanks = l.tanks;
 
         if (!l.isTransition)
@@ -269,26 +268,9 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                         drawables[m.nameTag.drawLevel].add(m.nameTag);
                 }
 
-                if (Game.enable3d)
-                {
-                    for (int n = 0; n < drawables.length; n++)
-                    {
-                        for (Obstacle o : Game.obstacles)
-                        {
-                            if (o.drawLevel == n && !o.batchDraw)
-                            {
-                                drawables[n].add(o);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    for (Obstacle o : Game.obstacles)
-                    {
+                for (Obstacle o : Game.obstacles)
+                    if (!o.batchDraw)
                         drawables[o.drawLevel].add(o);
-                    }
-                }
 
                 translation.x = (Drawing.drawing.baseInterfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size) / Game.game.window.absoluteWidth * Drawing.drawing.interfaceScale;
                 translation.y = Game.tile_size * -(i - rem) / Game.game.window.absoluteHeight * Drawing.drawing.scale;

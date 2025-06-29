@@ -31,10 +31,10 @@ public class Chunk
 
     public static Tile getOrDefault(int tileX, int tileY)
     {
-        return getOrFallback(tileX, tileY, Tile.fallbackTile);
+        return getOrElse(tileX, tileY, Tile.fallbackTile);
     }
 
-    public static Tile getOrFallback(int tileX, int tileY, Tile fallback)
+    public static Tile getOrElse(int tileX, int tileY, Tile fallback)
     {
         return getIfPresent(tileX, tileY, fallback, Chunk::returnTile);
     }
@@ -74,15 +74,15 @@ public class Chunk
 
         int var = Game.fancyTerrain ? 1 : 0;
 
-        Random tilesRandom = new Random(0);
+        Random tilesRandom = new Random(l.tilesRandomSeed);
         for (int i = 0; i < l.sizeX; i++)
         {
             for (int j = 0; j < l.sizeY; j++)
             {
                 Tile t = new Tile();
-                t.colR = (l.colorR + tilesRandom.nextDouble() * l.colorVarR * var);
-                t.colG = (l.colorG + tilesRandom.nextDouble() * l.colorVarG * var);
-                t.colB = (l.colorB + tilesRandom.nextDouble() * l.colorVarB * var);
+                t.colR = l.colorR + var * tilesRandom.nextDouble() * l.colorVarR;
+                t.colG = l.colorG + var * tilesRandom.nextDouble() * l.colorVarG;
+                t.colB = l.colorB + var * tilesRandom.nextDouble() * l.colorVarB;
                 t.depth = Game.enable3dBg ? tilesRandom.nextDouble() * TILE_DEPTH_VARIATION * var : 0;
                 Game.tiles[i][j] = t;
             }
@@ -98,11 +98,6 @@ public class Chunk
 
         /** For use in level loading only */
         public boolean solidTank;
-
-        public double drawDepth()
-        {
-            return obstacle() == null ? depth : 0;
-        }
 
         public double height()
         {
@@ -146,6 +141,7 @@ public class Chunk
 
         public void add(Obstacle o)
         {
+            o.baseGroundHeight = depth;
             if (o.type == Obstacle.ObstacleType.full || o.type == Obstacle.ObstacleType.top)
                 fullObstacle = o;
             else if (o.type == Obstacle.ObstacleType.ground)

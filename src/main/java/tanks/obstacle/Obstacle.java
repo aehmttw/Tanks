@@ -86,8 +86,6 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		this.posX = (int) ((posX + 0.5) * Game.tile_size);
 		this.posY = (int) ((posY + 0.5) * Game.tile_size);
 		this.draggable = true;
-
-		this.baseGroundHeight = Game.sampleGroundHeight(this.posX, this.posY);
 	}
 
 	@Override

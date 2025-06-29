@@ -69,9 +69,8 @@ public class TerrainRenderer
     public static double getExtra(int x, int y)
     {
         double extra = 0;
-
         for (int dir = 0; dir < 4; dir++)
-            extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x, y));
+            extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Game.dirX[dir], y + Game.dirY[dir]));
         extra += Game.sampleEdgeGroundDepth(x, y);
 
         return extra;
@@ -700,7 +699,7 @@ public class TerrainRenderer
         double r = t.colR;
         double g = t.colG;
         double b = t.colB;
-        double depth = t.drawDepth();
+        double depth = t.depth;
 
         currentColor[0] = (float) (r / 255.0);
         currentColor[1] = (float) (g / 255.0);
@@ -713,8 +712,8 @@ public class TerrainRenderer
 
         if (Game.enable3d)
         {
-            Obstacle top = t.obstacle() != null ? t.obstacle() : t.surfaceObstacle;
-            if (top != null)
+            Obstacle top = t.obstacle();
+            if (top != null && top.batchDraw)
             {
                 this.rendererTiles[x][y].obstacleAbove = top;
                 top.drawTile(this.rendererTiles[x][y], r, g, b, depth, getExtra(x, y));
@@ -730,12 +729,13 @@ public class TerrainRenderer
                     if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_low_face;
                 }
 
+                double extra = getExtra(x, y);
                 this.rendererTiles[x][y].obstacleAbove = null;
                 this.addBox(this.rendererTiles[x][y],
                         x * Game.tile_size,
                         y * Game.tile_size,
-                        -Game.tile_size, Game.tile_size, Game.tile_size,
-                        Game.tile_size + depth, o, false);
+                        -extra, Game.tile_size, Game.tile_size,
+                        extra + depth, o, false);
             }
         }
         else
@@ -838,7 +838,7 @@ public class TerrainRenderer
         currentColor[0] = (float) (t.colR / 255.0);
         currentColor[1] = (float) (t.colG / 255.0);
         currentColor[2] = (float) (t.colB / 255.0);
-        currentDepth = t.drawDepth();
+        currentDepth = t.depth;
 
         if (o.batchDraw && !o.removed)
             o.draw();

@@ -2004,9 +2004,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		if (Panel.panel.continuation == null)
 		{
-			for (Obstacle o : Game.obstacles)
-                o.baseGroundHeight = Game.sampleGroundHeight(o.posX, o.posY);
-
 			Drawing.drawing.setColor(174, 92, 16);
 
 			double mul = 1;

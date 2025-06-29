@@ -16,24 +16,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
     protected final HashMap<Class<? extends ShaderGroup>, RegionRenderer> renderers = new HashMap<>();
     public RegionRenderer outOfBoundsRenderer;
 
-    public boolean staged = false;
     public boolean freed = false;
-
-    protected float[] currentColor = new float[3];
-    protected double currentDepth;
-
-    public double offX;
-    public double offY;
-
-    public boolean asPreview = false;
-    public int previewWidth = 0;
-
-    protected ShaderGroundOutOfBounds outsideShader;
-
-    public static int f(int i)
-    {
-        return 1664525 * i + 1013904223;
-    }
 
     public StaticTerrainRenderer()
     {
@@ -269,7 +252,6 @@ public class StaticTerrainRenderer extends TerrainRenderer
         this.freed = true;
     }
 
-    public static int count = 0;
     public void drawMap(RegionRenderer s, int xOffset, int yOffset)
     {
         double sX = asPreview ? previewWidth : Game.currentSizeX;

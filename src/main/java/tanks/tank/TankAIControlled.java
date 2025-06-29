@@ -710,7 +710,7 @@ public class TankAIControlled extends Tank implements ITankField
 						this.shootTimer = -this.shootRoundTime / 2;
 						this.shots = 0;
 						this.fanDirection = this.random.nextDouble() < 0.5 ? 1 : -1;
-						this.fanOffset = (this.random.nextDouble() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((Movable.distanceBetween(this, this.targetEnemy) / 1000.0), 2);
+						this.fanOffset = (this.random.nextDouble() * this.aimAccuracyOffset - (this.aimAccuracyOffset / 2)) / Math.max((GameObject.distanceBetween(this, this.targetEnemy) / 1000.0), 2);
 					}
 				}
 				else if (!arc)
@@ -722,7 +722,7 @@ public class TankAIControlled extends Tank implements ITankField
 					if (this.targetEnemy instanceof Tank)
 						extra += ((Tank) this.targetEnemy).size / 2;
 
-					boolean inRange = (range <= 0) || (Movable.distanceBetween(this, this.targetEnemy) <= range + extra);
+					boolean inRange = (range <= 0) || (GameObject.distanceBetween(this, this.targetEnemy) <= range + extra);
 					if (!inRange)
 						return;
 
@@ -921,7 +921,7 @@ public class TankAIControlled extends Tank implements ITankField
 				if (!lowPriority && lowP)
 					continue;
 
-				double dist = Movable.distanceBetween(this, m);
+				double dist = GameObject.distanceBetween(this, m);
 				if (dist < nearestDist || (lowPriority && !lowP))
 				{
 					this.hasTarget = true;
@@ -952,14 +952,14 @@ public class TankAIControlled extends Tank implements ITankField
 				Movable m = Game.movables.get(i);
 
 				if (m instanceof Tank && !(m instanceof TankAIControlled && ((TankAIControlled) m).transformMimic) && (((Tank) m).getTopLevelPossessor() == null || !(((Tank) m).getTopLevelPossessor().getClass().equals(this.getClass())))
-						&& ((Tank) m).currentlyTargetable && Movable.distanceBetween(m, this) < nearestDist && ((Tank) m).size == this.size && !m.destroy)
+						&& ((Tank) m).currentlyTargetable && GameObject.distanceBetween(m, this) < nearestDist && ((Tank) m).size == this.size && !m.destroy)
 				{
 					Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
 					r.moveOut(5);
 					if (r.getTarget() != m)
 						continue;
 
-					double distance = Movable.distanceBetween(this, m);
+					double distance = GameObject.distanceBetween(this, m);
 
 					if (distance < nearestDist)
 					{
@@ -1038,7 +1038,7 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 		else if (this.targetEnemySightBehavior == TargetEnemySightBehavior.keep_distance)
 		{
-			if (Movable.distanceBetween(this, this.targetEnemy) < this.targetSightDistance)
+			if (GameObject.distanceBetween(this, this.targetEnemy) < this.targetSightDistance)
 				this.setAccelerationAwayFromDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
 			else
 				this.setAccelerationInDirection(targetEnemy.posX, targetEnemy.posY, this.acceleration);
@@ -1390,7 +1390,7 @@ public class TankAIControlled extends Tank implements ITankField
 			if (Game.movables.get(i) instanceof Bullet && !Game.movables.get(i).destroy)
 			{
 				Bullet b = (Bullet) Game.movables.get(i);
-				double dist = Movable.distanceBetween(this, b);
+				double dist = GameObject.distanceBetween(this, b);
 
 				double distBox = this.enableMovement ? 10 : 20;
 				if (!(b.tank == this && b.age < 20) && !(this.team != null && Team.isAllied(b, this) && !this.team.friendlyFire)
@@ -1488,7 +1488,7 @@ public class TankAIControlled extends Tank implements ITankField
 				return;
 
 			double direction = nearest.getPolarDirection();
-			double distance = Movable.distanceBetween(this, nearest);
+			double distance = GameObject.distanceBetween(this, nearest);
 			double diff = Movable.angleBetween(direction, this.getAngleInDirection(nearest.posX, nearest.posY));
 
 			if (this.enableMovement)
@@ -1850,7 +1850,7 @@ public class TankAIControlled extends Tank implements ITankField
 				targetEnemyPredictedCollisionY = r.posY;
 			}
 
-			double distBtwn = Movable.distanceBetween(this, this.targetEnemy);
+			double distBtwn = GameObject.distanceBetween(this, this.targetEnemy);
 			double a = this.targetEnemy.getAngleInDirection(this.posX, this.posY);
 			double speed = this.targetEnemy.getLastMotionInDirection(a + Math.PI / 2);
 			double time = distBtwn / Math.sqrt(b.speed * b.speed - speed * speed);
@@ -1892,7 +1892,7 @@ public class TankAIControlled extends Tank implements ITankField
 			double a = this.targetEnemy.getAngleInDirection(this.posX, this.posY);
 			double speed = this.targetEnemy.getLastMotionInDirection(a + Math.PI / 2);
 
-			double distBtwn = Movable.distanceBetween(this, this.targetEnemy);
+			double distBtwn = GameObject.distanceBetween(this, this.targetEnemy);
 			double time = distBtwn / Math.sqrt(b.speed * b.speed - speed * speed);
 
 			double distSq = Math.pow(targetEnemy.lastFinalVX * time, 2) + Math.pow(targetEnemy.lastFinalVY * time, 2);
@@ -1905,8 +1905,8 @@ public class TankAIControlled extends Tank implements ITankField
 				double c = Math.cos(Movable.absoluteAngleBetween(targetEnemy.getLastPolarDirection(), this.getAngleInDirection(targetEnemy.posX, targetEnemy.posY)));
 
 				double a1 = Math.pow(b.speed, 2) - Math.pow(targetEnemy.getLastSpeed(), 2);
-				double b1 = -2 * targetEnemy.getLastSpeed() * Movable.distanceBetween(this, this.targetEnemy) * c;
-				double c1 = -Math.pow(Movable.distanceBetween(this, targetEnemy), 2);
+				double b1 = -2 * targetEnemy.getLastSpeed() * GameObject.distanceBetween(this, this.targetEnemy) * c;
+				double c1 = -Math.pow(GameObject.distanceBetween(this, targetEnemy), 2);
 				double t = (-b1 + Math.sqrt(b1 * b1 - 4 * a1 * c1)) / (2 * a1);
 
 				this.distance = Math.sqrt(Math.pow(targetEnemy.posX + t * targetEnemy.lastFinalVX - this.posX, 2) + Math.pow(targetEnemy.posY + t * targetEnemy.lastFinalVY - this.posY, 2));
@@ -1977,7 +1977,7 @@ public class TankAIControlled extends Tank implements ITankField
 	public void updateTurretReflect()
 	{
 		Bullet b = this.getBullet();
-		if (this.seesTargetEnemy && this.targetEnemy != null && Movable.distanceBetween(this, this.targetEnemy) <= Game.tile_size * 6 && !chargeUp)
+		if (this.seesTargetEnemy && this.targetEnemy != null && GameObject.distanceBetween(this, this.targetEnemy) <= Game.tile_size * 6 && !chargeUp)
 		{
 			aim = true;
 			this.aimAngle = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
@@ -2681,7 +2681,7 @@ public class TankAIControlled extends Tank implements ITankField
 					c = TankPlayerMimic.class;
 			}
 
-			if (this.targetEnemy == null || m != this.targetEnemy || this.targetEnemy.destroy || c != this.possessingTank.getClass() || Movable.distanceBetween(this, this.targetEnemy) > this.mimicRange)
+			if (this.targetEnemy == null || m != this.targetEnemy || this.targetEnemy.destroy || c != this.possessingTank.getClass() || GameObject.distanceBetween(this, this.targetEnemy) > this.mimicRange)
 				this.mimicRevertCounter -= timeSinceRaysUsed;
 			else
 				this.mimicRevertCounter = this.mimicRevertTime;
@@ -2714,7 +2714,7 @@ public class TankAIControlled extends Tank implements ITankField
 		if (this.targetEnemy != null && !this.targetEnemy.destroy && !t.destroy && this.canCurrentlyMimic && !this.positionLock)
 		{
 			this.laser = new Laser(t.posX, t.posY, t.size / 2, this.targetEnemy.posX, this.targetEnemy.posY, ((Tank)this.targetEnemy).size / 2,
-					(this.mimicRange - Movable.distanceBetween(t, this.targetEnemy)) / this.mimicRange * 10, this.targetEnemy.getAngleInDirection(t.posX, t.posY),
+					(this.mimicRange - GameObject.distanceBetween(t, this.targetEnemy)) / this.mimicRange * 10, this.targetEnemy.getAngleInDirection(t.posX, t.posY),
 					((Tank) this.targetEnemy).colorR, ((Tank) this.targetEnemy).colorG, ((Tank) this.targetEnemy).colorB);
 			Game.movables.add(this.laser);
 			Game.eventsOut.add(new EventTankMimicLaser(t, (Tank) this.targetEnemy, this.mimicRange));

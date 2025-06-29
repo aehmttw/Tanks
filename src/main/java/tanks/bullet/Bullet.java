@@ -638,7 +638,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		b.vX = vX2;
 		b.vY = vY2;
 
-		double dist = Movable.distanceBetween(this, b);
+		double dist = GameObject.distanceBetween(this, b);
 		double sizes = (this.size + b.size) / 2;
 		this.moveInAngle(toAngle, dist - sizes);
 		b.moveInAngle(toAngle + Math.PI, dist - sizes);
@@ -1046,7 +1046,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			if (m instanceof Tank && (Team.isAllied(this, m) != this.isHarmful()) && !m.destroy)
 			{
 				Tank t = (Tank) m;
-				double d = Movable.distanceBetween(this, m);
+				double d = GameObject.distanceBetween(this, m);
 
 				if (d < nearestDist)
 				{
@@ -1113,7 +1113,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 			if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finishedQuick && !this.homingSilent)
 			{
-				double d = Movable.distanceBetween(this, Game.playerTank);
+				double d = GameObject.distanceBetween(this, Game.playerTank);
 
 				if (d <= 500)
 				{
@@ -1249,7 +1249,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 				if (eligible)
 				{
-					double d = Movable.distanceBetween(this, m1);
+					double d = GameObject.distanceBetween(this, m1);
 					if (d < nearestDist)
 					{
 						nearest = m1;

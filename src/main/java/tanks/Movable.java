@@ -1,5 +1,6 @@
 package tanks;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
@@ -294,44 +295,39 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 		this.posY = y1;
 	}
 
-	public static double distanceBetween(double x1, double y1, double x2, double y2)
+	/** Field to cache the movable array for reuse */
+	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
+
+	/** Expects all pixel coordinates.
+	 * @return all the movables within the specified range */
+	public static ObjectArrayList<Movable> getInRange(double x1, double y1, double x2, double y2)
 	{
-		return Math.sqrt(sqDistBetw(x1, y1, x2, y2));
+		movableOut.clear();
+		for (Movable m : Game.movables)
+		{
+			if (Game.isOrdered(true, x1, m.posX, x2) && Game.isOrdered(true, y1, m.posY, y2))
+				movableOut.add(m);
+		}
+		return movableOut;
 	}
 
-	public static double sqDistBetw(double x1, double y1, double x2, double y2)
-	{
-		return (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
-	}
 
-	public static double sqDistBetw(final GameObject a, final GameObject b)
+	/** Expects all pixel coordinates.
+	 * @return all the movables within a certain radius of the position */
+	public static ObjectArrayList<Movable> getInRadius(double posX, double posY, double radius)
 	{
-		return sqDistBetw(a.posX, a.posY, b.posX, b.posY);
-	}
-
-	public static boolean withinRange(final GameObject a, final GameObject b, double range)
-	{
-		return sqDistBetw(a, b) < range * range;
-	}
-
-	public static double distanceBetween(final GameObject a, final GameObject b)
-	{
-		return distanceBetween(a.posX, a.posY, b.posX, b.posY);
+		movableOut.clear();
+		for (Movable o : Game.movables)
+		{
+			if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+				movableOut.add(o);
+		}
+		return movableOut;
 	}
 
 	public void drawForInterface(double x, double y)
-	{	
+	{
 		this.drawAt(x, y);
-	}
-
-	public static double angleBetween(double a, double b)
-	{
-		return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;
-	}
-
-	public static double absoluteAngleBetween(double a, double b)
-	{
-		return Math.abs((a - b + Math.PI * 3) % (Math.PI * 2) - Math.PI);
 	}
 
 	public void setEffectManager(EffectManager em)

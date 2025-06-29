@@ -186,7 +186,7 @@ public class DebugKeybinds
             }
             else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_2))
             {
-                ObjectArrayList<Movable> v = Game.getMovablesInRadius(mx, my, 50);
+                ObjectArrayList<Movable> v = Movable.getInRadius(mx, my, 50);
                 if (!v.isEmpty())
                     text = v.get(0).getMetadata();
             }

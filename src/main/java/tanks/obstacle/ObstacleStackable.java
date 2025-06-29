@@ -217,7 +217,7 @@ public class ObstacleStackable extends Obstacle
                         e.colG = this.colorG;
                         e.colB = this.colorB;
 
-                        double dist = Movable.distanceBetween(this, e);
+                        double dist = GameObject.distanceBetween(this, e);
                         double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
                         double rad = radius - Game.tile_size / 2;
                         e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);

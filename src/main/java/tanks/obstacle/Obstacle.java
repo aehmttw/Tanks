@@ -224,7 +224,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public void drawTile(IBatchRenderableObject tile, double r, double g, double b, double d, double extra)
 	{
 		Drawing.drawing.setColor(r, g, b);
-		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d);
+		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d, (byte) 4);
 	}
 
 	public void postOverride()

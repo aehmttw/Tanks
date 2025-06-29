@@ -177,12 +177,11 @@ public class DebugKeybinds
                     }
 
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 30, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            "O: " + (t1.fullObstacle != null ? t1.fullObstacle.name : "none") + " SO: " + (t1.surfaceObstacle != null ? t1.surfaceObstacle.name : "none")
-                                    + " E: " + (t1.extraObstacle != null ? t1.extraObstacle.name : "none"));
+                            String.format("O: %s SO: %s E: %s", t1.fullObstacle != null ? t1.fullObstacle.name : "none", t1.surfaceObstacle != null ? t1.surfaceObstacle.name : "none", t1.extraObstacle != null ? t1.extraObstacle.name : "none"));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 50, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            "H: " + (int) t1.height() + " GH+D: " + (int) (t1.groundHeight() + t1.depth) + " E: " + TerrainRenderer.getExtra(posX, posY));
+                            String.format("H: %.0f GH: %.0f E: %.0f", t1.height(), t1.groundHeight(), TerrainRenderer.getExtra(posX, posY)));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 70, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            "S: " + t1.solid() + " U: " + t1.unbreakable());
+                            String.format("D: %.1f S: %b U: %b", t1.depth, t1.solid(), t1.unbreakable()));
                 }
             }
             else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_2))

@@ -713,7 +713,7 @@ public class TerrainRenderer
         if (Game.enable3d)
         {
             Obstacle top = t.obstacle();
-            if (top != null && top.batchDraw)
+            if (top != null && top.replaceTiles)
             {
                 this.rendererTiles[x][y].obstacleAbove = top;
                 top.drawTile(this.rendererTiles[x][y], r, g, b, depth, getExtra(x, y));

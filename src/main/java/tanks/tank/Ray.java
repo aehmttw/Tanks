@@ -521,10 +521,7 @@ public class Ray
 
 	public static boolean isInsideObstacle(double x, double y)
 	{
-		int ox = (int) (x / Game.tile_size);
-		int oy = (int) (y / Game.tile_size);
-
-		return !(ox >= 0 && ox < Game.currentSizeX && oy >= 0 && oy < Game.currentSizeY) || Game.game.solidGrid[ox][oy];
+		return Game.isSolid(x, y);
 	}
 
 	public void moveOut(double amount)

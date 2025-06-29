@@ -99,8 +99,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 				Game.currentLevel.shadow = 0.75;
 				Game.currentSizeX = 28;
 				Game.currentSizeY = 18;
-				Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-				Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 
 				ScreenGame.finishedQuick = false;
 			}
@@ -213,11 +211,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		{
 			this.logo.hidden = false;
 			this.logo.invulnerable = false;
-		}
-
-		for (int i = 0; i < Game.game.groundHeightGrid.length; i++)
-		{
-			System.arraycopy(Game.tilesDepth[i], 0, Game.game.groundHeightGrid[i], 0, Game.game.groundHeightGrid[i].length);
 		}
 
 		Game.horizontalFaces.clear();
@@ -346,8 +339,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			for (int i = 0; i < (this.wave - 1) * 3 * (Math.random() * 0.5 + 0.5) + 3; i++)
 			{
 				Drawing.drawing.playGlobalSound("flame.ogg", 0.75f);
-				int x = (int) (Math.random() * Game.tilesDepth.length);
-				int y = (int) (Math.random() * Game.tilesDepth[0].length);
+				int x = (int) (Math.random() * Game.currentSizeX);
+				int y = (int) (Math.random() * Game.currentSizeY);
 				Tank t = Game.registryTank.getRandomTank().getTank((x + 0.5) * Game.tile_size, (y + 0.5) * Game.tile_size, (int) (Math.random() * 4));
 				t.team = Game.enemyTeam;
 				Game.movables.add(new Crate(t, Math.random() * 400 + 800));

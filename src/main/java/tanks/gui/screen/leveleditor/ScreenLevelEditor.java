@@ -994,26 +994,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.removeMovables.clear();
 
 		for (Obstacle o: Game.removeObstacles)
-		{
-			o.removed = true;
-			Drawing.drawing.terrainRenderer.remove(o);
-
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && Game.enable3d)
-			{
-				Game.redrawGroundTiles.add(new Game.GroundTile(x, y));
-
-				if (o.bulletCollision)
-				{
-					Game.game.solidGrid[x][y] = false;
-					Game.game.unbreakableGrid[x][y] = false;
-				}
-			}
-
-			Game.obstacles.remove(o);
-		}
+            Game.removeObstacle(o);
 
 		Game.removeObstacles.clear();
 	}
@@ -2023,12 +2004,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		if (Panel.panel.continuation == null)
 		{
-			for (Obstacle o : Game.obstacles)
-                o.baseGroundHeight = Game.sampleGroundHeight(o.posX, o.posY);
-
-			if (Game.enable3d)
-				Game.recomputeHeightGrid();
-
 			Drawing.drawing.setColor(174, 92, 16);
 
 			double mul = 1;
@@ -2490,35 +2465,20 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		this.replaceSpawns();
 
-		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-
 		Game.currentLevel = new Level(Game.currentLevelString);
 		Game.currentLevel.timed = level.timer > 0;
 		Game.currentLevel.timer = level.timer;
 
-		for (Obstacle o: Game.obstacles)
+		for (Obstacle o : Game.obstacles)
 		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-			{
-				Game.game.solidGrid[x][y] = true;
-
-				if (!o.shouldShootThrough)
-					Game.game.unbreakableGrid[x][y] = true;
-			}
+			o.postOverride();
+			o.removed = false;
 
 			if (o instanceof ObstacleBeatBlock)
 			{
 				Game.currentLevel.synchronizeMusic = true;
 				Game.currentLevel.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
 			}
-
-			o.removed = false;
-			if (o.replaceTiles)
-				o.postOverride();
 		}
 
 		Game.resetNetworkIDs();

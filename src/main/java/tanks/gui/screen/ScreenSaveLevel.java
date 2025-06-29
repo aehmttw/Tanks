@@ -270,9 +270,6 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             if (ScreenPartyHost.isServer && !fromInterlevel)
                 quickPlay.update();
         }
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     @Override

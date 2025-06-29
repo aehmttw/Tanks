@@ -86,8 +86,6 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		this.posX = (int) ((posX + 0.5) * Game.tile_size);
 		this.posY = (int) ((posY + 0.5) * Game.tile_size);
 		this.draggable = true;
-
-		this.baseGroundHeight = Game.sampleGroundHeight(this.posX, this.posY);
 	}
 
 	@Override
@@ -188,15 +186,10 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		int x = (int) (this.posX / Game.tile_size) + ox;
 		int y = (int) (this.posY / Game.tile_size) + oy;
 
-		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
-			if (unbreakable)
-				return Game.game.unbreakableGrid[x][y];
-			else
-				return Game.game.solidGrid[x][y];
-		}
-
-		return false;
+		if (unbreakable)
+			return Game.isUnbreakable(x, y);
+		else
+			return Game.isSolid(x, y);
 	}
 
 	public boolean hasLeftNeighbor()
@@ -231,19 +224,12 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public void drawTile(IBatchRenderableObject tile, double r, double g, double b, double d, double extra)
 	{
 		Drawing.drawing.setColor(r, g, b);
-		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d);
+		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d, (byte) 4);
 	}
 
 	public void postOverride()
 	{
-		int x = (int)(this.posX / Game.tile_size);
-		int y = (int)(this.posY / Game.tile_size);
-
-		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
-		{
-			if (Game.tileDrawables[x][y] == null || Game.tileDrawables[x][y].type != ObstacleType.ground)
-				Game.tileDrawables[x][y] = this;
-		}
+		Game.setObstacle(posX, posY, this);
 	}
 
 	@Override

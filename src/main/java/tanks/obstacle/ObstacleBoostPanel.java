@@ -155,11 +155,6 @@ public class ObstacleBoostPanel extends Obstacle
         return 0;
     }
 
-    public boolean colorChanged()
-    {
-        return !Drawing.drawing.isOutOfBounds(Drawing.drawing.gameToAbsoluteX(this.posX, Obstacle.draw_size), Drawing.drawing.gameToAbsoluteY(this.posY, Obstacle.draw_size));
-    }
-
     public double getGroundHeight()
     {
         return 10;

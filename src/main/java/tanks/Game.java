@@ -1049,34 +1049,12 @@ public class Game
 	public static Obstacle getObstacle(int tileX, int tileY)
 	{
 		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.fullObstacle : null;
-	}
-
-	public static Obstacle getSurfaceObstacle(int tileX, int tileY)
-	{
-		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.surfaceObstacle : null;
-	}
-
-	public static Obstacle getExtraObstacle(int tileX, int tileY)
-	{
-		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.extraObstacle : null;
+		return t != null ? t.obstacle() : null;
 	}
 
 	public static Obstacle getObstacle(double posX, double posY)
 	{
 		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-	}
-
-	public static Obstacle getSurfaceObstacle(double posX, double posY)
-	{
-		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-	}
-
-	public static Obstacle getExtraObstacle(double posX, double posY)
-	{
-		return getExtraObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
 
 	/** Field to cache the movable array for reuse */

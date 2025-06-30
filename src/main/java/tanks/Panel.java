@@ -852,7 +852,7 @@ public class Panel
 				notifs.pop();
 		}
 
-		if (currentMπessage != null)
+		if (currentMessage != null)
 			currentMessage.draw();
 
 		if (Drawing.drawing.tooltip != null)

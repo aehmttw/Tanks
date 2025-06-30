@@ -118,9 +118,6 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
             levelName.update();
             description.update();
         }
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     boolean mouseTarget;

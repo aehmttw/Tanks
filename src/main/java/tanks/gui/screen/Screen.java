@@ -96,18 +96,6 @@ public abstract class Screen implements IBatchRenderableObject
 		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				if (Game.game.heightGrid[i][j] <= -1000)
-					Game.game.heightGrid[i][j] = 0;
-
-				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
-					Game.game.groundEdgeHeightGrid[i][j] = 0;
-			}
-		}
-
 		double frac = 0;
 
 		if (this instanceof ScreenGame || this instanceof ILevelPreviewScreen || (this instanceof IOverlayScreen

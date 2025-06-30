@@ -83,9 +83,6 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
 
         if (!this.downloaded)
             this.levelName.update();
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     @Override

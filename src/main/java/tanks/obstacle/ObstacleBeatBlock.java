@@ -72,12 +72,6 @@ public class ObstacleBeatBlock extends ObstacleStackable
                 this.postOverride();
 
             this.firstUpdate = false;
-            int x = (int) (this.posX / Game.tile_size);
-            int y = (int) (this.posY / Game.tile_size);
-
-            if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-                Game.game.solidGrid[x][y] = this.tankCollision;
-
             this.verticalFaces = null;
             this.horizontalFaces = null;
             this.allowBounce = false;

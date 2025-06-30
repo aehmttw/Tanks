@@ -49,9 +49,9 @@ public class AreaEffectFreeze extends AreaEffect
 
 		if (!this.isRemote)
 		{
-			for (Movable m : Movable.getMovablesInRadius(this.posX, this.posY, this.size))
+			for (Movable m : Movable.getMovablesInRadius(this.posX, this.posY, this.size / 2))
 			{
-                if (!m.destroy)
+                if (m.destroy)
                     continue;
 
                 AttributeModifier a = AttributeModifier.newInstance("freeze", AttributeModifier.velocity, Operation.multiply, -1);
@@ -84,7 +84,7 @@ public class AreaEffectFreeze extends AreaEffect
 		if (ScreenGame.finishedQuick && this.age < 400)
 			this.age = 400;
 
-		for (Movable m : Movable.getMovablesInRadius(this.posX, this.posY, this.size))
+		for (Movable m : Movable.getMovablesInRadius(this.posX, this.posY, this.size / 2))
 		{
 			if (!m.destroy)
                 m.em().addStatusEffect(StatusEffect.ice, 0, 5, 10);

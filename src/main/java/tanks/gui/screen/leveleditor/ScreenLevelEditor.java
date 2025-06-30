@@ -1417,7 +1417,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	{
 		Obstacle m = Game.getObstacle(mx, my);
         if (!validRight)
-            return m.getClass() == mousePlaceable.getClass() || (mousePlaceable instanceof Obstacle && !Obstacle.canPlaceOn(((Obstacle) mousePlaceable).type, m.type));
+		{
+			if (m == null)
+				return false;
+			return m.getClass() == mousePlaceable.getClass() || (mousePlaceable instanceof Obstacle && !Obstacle.canPlaceOn(((Obstacle) mousePlaceable).type, m.type));
+		}
 
         this.undoActions.add(new EditorAction.ActionObstacle(m, false));
         Game.removeObstacles.add(m);

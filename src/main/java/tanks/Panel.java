@@ -852,6 +852,9 @@ public class Panel
 				notifs.pop();
 		}
 
+		if (currentMπessage != null)
+			currentMessage.draw();
+
 		if (Drawing.drawing.tooltip != null)
 			Drawing.drawing.drawTooltip(Drawing.drawing.tooltip, Drawing.drawing.getInterfaceMouseX(), Drawing.drawing.getInterfaceMouseY());
 
@@ -859,9 +862,6 @@ public class Panel
 
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
-
-		if (currentMessage != null)
-			currentMessage.draw();
 
 		DebugKeybinds.drawAndUpdate();
 

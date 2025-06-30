@@ -148,7 +148,7 @@ public class ItemDrop extends Movable
         }
         else
         {
-            for (Movable m: Movable.getInRadius(this.posX, this.posY, this.size))
+            for (Movable m: Movable.getMovablesInRadius(this.posX, this.posY, this.size))
             {
                 if (!(m instanceof IServerPlayerTank))
                     continue;

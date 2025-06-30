@@ -300,7 +300,7 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	/** Expects all pixel coordinates.
 	 * @return all the movables within the specified range */
-	public static ObjectArrayList<Movable> getInRange(double x1, double y1, double x2, double y2)
+	public static ObjectArrayList<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
 	{
 		movableOut.clear();
 		for (Movable m : Game.movables)
@@ -314,7 +314,7 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 
 	/** Expects all pixel coordinates.
 	 * @return all the movables within a certain radius of the position */
-	public static ObjectArrayList<Movable> getInRadius(double posX, double posY, double radius)
+	public static ObjectArrayList<Movable> getMovablesInRadius(double posX, double posY, double radius)
 	{
 		movableOut.clear();
 		for (Movable o : Game.movables)
@@ -323,6 +323,14 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 				movableOut.add(o);
 		}
 		return movableOut;
+	}
+
+	public static Movable findMovable(double x, double y)
+	{
+		ObjectArrayList<Movable> movables = Movable.getMovablesInRadius(x, y, 1);
+		if (!movables.isEmpty())
+			return movables.get(0);
+		return null;
 	}
 
 	public void drawForInterface(double x, double y)

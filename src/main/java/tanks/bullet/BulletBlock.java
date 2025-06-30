@@ -149,22 +149,13 @@ public class BulletBlock extends BulletArc
         if (ScreenGame.finishedQuick)
             return;
 
-        boolean found = x < 0 || y < 0 || x >= Game.currentSizeX || y >= Game.currentSizeY;
+        Obstacle o1 = Game.getObstacle(this.posX, this.posY);
+        boolean found = o1 != null && Obstacle.canPlaceOn(o.type, o1.type);
 
         if (!found)
         {
-            for (Obstacle o1 : Game.obstacles)
-            {
-                if (o1.posX == o.posX && o1.posY == o.posY && !Obstacle.canPlaceOn(o.type, o1.type))
-                {
-                    found = true;
-                    break;
-                }
-            }
-        }
-
-        if (!found)
             Game.addObstacle(o);
+        }
         else
         {
             Drawing.drawing.playGlobalSound("break.ogg");

@@ -1,9 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.tankson.MetadataProperty;
 

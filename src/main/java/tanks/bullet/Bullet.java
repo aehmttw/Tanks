@@ -1440,7 +1440,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	public void updateTrails()
 	{
 		if (!this.effect.trailEffects.isEmpty() && !this.addedTrail && !this.destroy &&
-				(Movable.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (this.trail3d && Movable.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
+				(GameObject.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (this.trail3d && GameObject.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
 		{
 			this.addTrail(true);
 		}
@@ -1526,13 +1526,13 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			if (redirect)
 			{
 				double angle = this.getPolarDirection();
-				double offset = Movable.angleBetween(angle, old.angle) / 2;
+				double offset = GameObject.angleBetween(angle, old.angle) / 2;
 
 				if (t instanceof Trail3D && old instanceof Trail3D)
 				{
 					Trail3D t1 = (Trail3D) t;
 					Trail3D old1 = (Trail3D) old;
-					double offset2 = Movable.angleBetween(t1.pitch, old1.pitch) / 2;
+					double offset2 = GameObject.angleBetween(t1.pitch, old1.pitch) / 2;
 					old1.setFrontAngleOffset(offset, offset2);
 					t1.setBackAngleOffset(-offset, -offset2);
 				}

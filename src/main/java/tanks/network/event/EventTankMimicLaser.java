@@ -2,10 +2,10 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
+import tanks.GameObject;
 import tanks.Movable;
 import tanks.bullet.Laser;
 import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
 
 public class EventTankMimicLaser extends PersonalEvent implements IStackableEvent
 {

@@ -6,52 +6,55 @@ import basewindow.ShaderGroup;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.lwjgl.BufferUtils;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 {
+    // Property class for parallel arrays
+    public static class AttributeProperty
+    {
+        public int vboId;
+        public FloatBuffer buffer;
+        public float[] floatArray;
+        public ShaderGroup.Attribute attribute;
+
+        public AttributeProperty(int vboId, FloatBuffer buffer, float[] floatArray, ShaderGroup.Attribute attribute)
+        {
+            this.vboId = vboId;
+            this.buffer = buffer;
+            this.floatArray = floatArray;
+            this.attribute = attribute;
+        }
+    }
+
     public LWJGLWindow window;
 
     public ShaderGroup shader;
-    public int vertVBO = -1;
-    public int colVBO = -1;
-    public int texVBO = -1;
-    public int normVBO = -1;
-    public HashMap<ShaderGroup.Attribute, Integer> attributeVBOs = new HashMap<>();
+    public int vertVBO, colVBO = -1, texVBO = -1, normVBO = -1;
+
+    // Parallel arrays with ID map
+    public Object2IntOpenHashMap<ShaderGroup.Attribute> attributeToId = new Object2IntOpenHashMap<>();
+    public ArrayList<AttributeProperty> attributeProperties = new ArrayList<>();
 
     protected int vertexCount;
-
-    protected FloatBuffer vertices;
-    protected FloatBuffer colors;
-    protected FloatBuffer texCoords;
-    protected FloatBuffer normals;
-    protected HashMap<ShaderGroup.Attribute, FloatBuffer> attributeBuffers = new HashMap<>();
+    protected FloatBuffer vertices, colors, texCoords, normals;
 
     public boolean staged = false;
 
     protected float colorGlow;
 
-    protected float currentR;
-    protected float currentG;
-    protected float currentB;
-    protected float currentA;
-    protected float currentTexU;
-    protected float currentTexV;
-    protected float currentNormalX;
-    protected float currentNormalY;
-    protected float currentNormalZ;
+    protected float currentR, currentG, currentB, currentA;
+    protected float currentTexU, currentTexV;
+    protected float currentNormalX, currentNormalY, currentNormalZ;
+    public boolean depth = false, glow = false, depthMask = false;
 
-    public boolean depth = false;
-    public boolean glow = false;
-    public boolean depthMask = false;
-
-    protected HashMap<ShaderGroup.Attribute, float[]> floatAttributes = new HashMap<>();
     public String texture;
 
     public VBOStaticBatchRenderer(LWJGLWindow window, ShaderGroup shader, boolean color, String texture, boolean normal, int vertices)
@@ -68,9 +71,12 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 
         for (ShaderGroup.Attribute a : shader.attributes)
         {
-            attributeVBOs.put(a, window.createVBO());
-            attributeBuffers.put(a, BufferUtils.createFloatBuffer(vertices * a.count));
-            this.floatAttributes.put(a, new float[a.count]);
+            int attributeId = this.attributeProperties.size();
+            this.attributeToId.put(a, attributeId);
+            int vboId = window.createVBO();
+            FloatBuffer buffer = BufferUtils.createFloatBuffer(vertices * a.count);
+            float[] floatArray = new float[a.count];
+            this.attributeProperties.add(new AttributeProperty(vboId, buffer, floatArray, a));
         }
 
         if (color)
@@ -156,14 +162,12 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
             this.normals.put(this.currentNormalZ);
         }
 
-        for (ShaderGroup.Attribute a : attributeBuffers.keySet())
+        for (int i = 0; i < attributeProperties.size(); i++)
         {
-            FloatBuffer b = this.attributeBuffers.get(a);
-            float[] vals = this.floatAttributes.get(a);
-
-            for (float f : vals)
+            AttributeProperty prop = attributeProperties.get(i);
+            for (float f : prop.floatArray)
             {
-                b.put(f);
+                prop.buffer.put(f);
             }
         }
     }
@@ -175,11 +179,12 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 
     public void setAttribute(ShaderGroup.Attribute a, float... floats)
     {
-        float[] attribute = this.floatAttributes.get(a);
+        int attributeId = this.attributeToId.getInt(a);
+        AttributeProperty prop = this.attributeProperties.get(attributeId);
         int index = 0;
         for (float f: floats)
         {
-            attribute[index] = f;
+            prop.floatArray[index] = f;
             index++;
         }
     }
@@ -221,12 +226,13 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
             this.window.vertexBufferData(this.normVBO, this.normals);
         }
 
-        for (ShaderGroup.Attribute a: this.shader.attributes)
+        for (int i = 0; i < attributeProperties.size(); i++)
         {
-            Buffer b = this.attributeBuffers.get(a);
+            AttributeProperty prop = attributeProperties.get(i);
+            Buffer b = prop.buffer;
             b.flip();
 
-            this.window.vertexBufferData(this.attributeVBOs.get(a), b);
+            this.window.vertexBufferData(prop.vboId, b);
         }
 
         this.staged = true;
@@ -243,7 +249,11 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         this.shader.setNormalBuffer(normVBO);
 
         for (ShaderGroup.Attribute a: this.shader.attributes)
-            this.shader.setCustomBuffer(a, this.attributeVBOs.get(a), a.count);
+        {
+            int attributeId = this.attributeToId.getInt(a);
+            AttributeProperty prop = this.attributeProperties.get(attributeId);
+            this.shader.setCustomBuffer(a, prop.vboId, a.count);
+        }
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -299,10 +309,13 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         if (this.texVBO >= 0)
             this.window.freeVBO(this.texVBO);
 
-        for (ShaderGroup.Attribute a: this.shader.attributes)
-            this.window.freeVBO(this.attributeVBOs.get(a));
+        for (int i = 0; i < attributeProperties.size(); i++)
+        {
+            AttributeProperty prop = attributeProperties.get(i);
+            this.window.freeVBO(prop.vboId);
+        }
 
-        this.attributeVBOs.clear();
+        this.attributeProperties.clear();
     }
 
     public void settings(boolean depth)

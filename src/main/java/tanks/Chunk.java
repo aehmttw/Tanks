@@ -154,16 +154,19 @@ public class Chunk
 
         public boolean canPlaceOn(GameObject o)
         {
+            boolean noFull = fullObstacle == null;
             if (!(o instanceof Obstacle))
-                return fullObstacle != null;
+                return noFull;
 
             Obstacle.ObstacleType t = ((Obstacle) o).type;
+            boolean canPlaceUnder = noFull || fullObstacle.type == Obstacle.ObstacleType.top;
+
             if (t == Obstacle.ObstacleType.full || t == Obstacle.ObstacleType.top)
-                return fullObstacle == null;
+                return noFull;
             if (t == Obstacle.ObstacleType.ground)
-                return surfaceObstacle == null;
+                return canPlaceUnder && surfaceObstacle == null;
             if (t == Obstacle.ObstacleType.extra)
-                return fullObstacle == null && extraObstacle == null;
+                return canPlaceUnder && extraObstacle == null;
 
             throw new RuntimeException("New obstacle type added! Make sure to add it to Chunk.Tile.canPlaceOn()");
         }

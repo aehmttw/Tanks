@@ -33,7 +33,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	 * Extra = can be placed anywhere without a full tile, can have tanks inside
 	 * */
 	public enum ObstacleType { full, ground, top, extra }
-	public ObstacleType type = ObstacleType.top;
+	public ObstacleType type = ObstacleType.full;
 
 	public int drawLevel = 5;
 
@@ -426,15 +426,5 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 				obstacleOut.add(o);
 		}
 		return obstacleOut;
-	}
-
-	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)
-	{
-		if (t1 == ObstacleType.full || t2 == ObstacleType.full)
-			return false;
-		else if (t1 == ObstacleType.extra || t2 == ObstacleType.extra)
-			return true;
-		else
-			return t1 != t2;
 	}
 }

@@ -51,7 +51,7 @@ dependencies {
     api(libs.org.l33tlabs.twl.pngdecoder)
     api(libs.org.apache.commons.commons.io)
     implementation("io.netty:netty-all:4.1.68.Final")
-    implementation("it.unimi.dsi:fastutil:8.3.1")
+    implementation("it.unimi.dsi:fastutil-core:8.5.15")
 
     //Steamworks
     api(files("libs/steamworks4j-1.10.0-SNAPSHOT.jar"))

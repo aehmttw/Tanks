@@ -17,25 +17,13 @@ public class Level
 {
 	public String levelString;
 
-	public String[] preset;
-	public String[] screen;
-	public String[] obstaclesPos;
-	public String[] tanks;
-	public String[] teams;
-
+	public String[] preset, screen, obstaclesPos, tanks, teams;
 	public Team[] tankTeams;
 	public boolean enableTeams = false;
 
-	public static double currentColorR = 235;
-	public static double currentColorG = 207;
-	public static double currentColorB = 166;
-
-	public static double currentColorVarR = 235;
-	public static double currentColorVarG = 207;
-	public static double currentColorVarB = 166;
-
-	public static double currentLightIntensity = 1;
-	public static double currentShadowIntensity = 0.5;
+	public static double currentColorR = 235, currentColorG = 207, currentColorB = 166;
+	public static double currentColorVarR = 235, currentColorVarG = 207, currentColorVarB = 166;
+	public static double currentLightIntensity = 1, currentShadowIntensity = 0.5;
 
 	public static int currentCloudCount = 0;
 
@@ -48,18 +36,13 @@ public class Level
 	public boolean timed = false;
 	public double timer;
 
-	public int sizeX;
-	public int sizeY;
+	public int startX, startY;
+	public int sizeX, sizeY;
 
-	public int colorR = 235;
-	public int colorG = 207;
-	public int colorB = 166;
+	public int colorR = 235, colorG = 207, colorB = 166;
+	public int colorVarR = 20, colorVarG = 20, colorVarB = 20;
 
-	public int colorVarR = 20;
-	public int colorVarG = 20;
-	public int colorVarB = 20;
-
-	public int tilesRandomSeed = 0;
+	public int tilesRandomSeed = (int) (Math.random() * Integer.MAX_VALUE);
 
 	public double light = 1.0;
 	public double shadow = 0.5;
@@ -100,10 +83,10 @@ public class Level
 	public HashMap<String, Tank> tankLookupTable = null;
 
 	/**
-	 * A level string is structured like this:
-	 * (parentheses signify required parameters, and square brackets signify optional parameters. 
-	 * Asterisks indicate that the parameter can be repeated, separated by commas
-	 * Do not include these in the level string.)
+	 * A level string is structured like this:<br>
+	 * (parentheses signify required parameters, and square brackets signify optional parameters.<br>
+	 * Asterisks indicate that the parameter can be repeated, separated by commas.
+	 * Do not include these in the level string.)<br>
 	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
 	 */
 	public Level(String level)
@@ -184,7 +167,7 @@ public class Level
 			}
 		}
 
-		if (playerBuilds.isEmpty())
+		if (TankModels.tank != null && playerBuilds.isEmpty())
 		{
 			TankPlayer.ShopTankBuild tp = new TankPlayer.ShopTankBuild();
 			playerBuilds.add(tp);
@@ -254,7 +237,7 @@ public class Level
 		if (Game.deterministicMode)
 			random = new Random(Game.seed);
 		else
-			random = new Random();
+			random = new Random(tilesRandomSeed);
 
 		if (ScreenPartyHost.isServer)
 			ScreenPartyHost.includedPlayers.clear();
@@ -265,6 +248,11 @@ public class Level
 			Obstacle.draw_size = 0;
 		else
 			Obstacle.draw_size = 50;
+
+		Chunk.Tile ft = Chunk.Tile.fallbackTile;
+		ft.colR = colorR;
+		ft.colG = colorG;
+		ft.colB = colorB;
 
 		this.remote = remote;
 
@@ -407,45 +395,8 @@ public class Level
 							this.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
 						}
 
-						Game.obstacles.add(o);
+						Game.addObstacle(o, false);
 					}
-				}
-			}
-		}
-
-		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-		boolean[][] solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-
-		for (Obstacle o : Game.obstacles)
-		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-			{
-				Game.game.solidGrid[x][y] = true;
-
-				if (!o.shouldShootThrough)
-					Game.game.unbreakableGrid[x][y] = true;
-			}
-
-			if (o.tankCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-				solidGrid[x][y] = true;
-		}
-
-		boolean[][] tankGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-
-		for (Movable m : Game.movables)
-		{
-			if (m instanceof Tank)
-			{
-				int x = (int) (m.posX / Game.tile_size);
-				int y = (int) (m.posY / Game.tile_size);
-
-				if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-				{
-					tankGrid[x][y] = true;
 				}
 			}
 		}
@@ -499,12 +450,6 @@ public class Level
 					this.playerSpawnsY.add(y);
 					this.playerSpawnsAngle.add(angle);
 					this.playerSpawnsTeam.add(team);
-
-					int x1 = (int) Double.parseDouble(tank[0]);
-					int y1 = (int) Double.parseDouble(tank[1]);
-
-					if (x1 >= 0 && y1 >= 0 && x1 < tankGrid.length && y1 < tankGrid[0].length)
-						tankGrid[x1][y1] = true;
 
 					continue;
 				}
@@ -590,7 +535,7 @@ public class Level
 						t1 = new Tile(t.posX, t.posY + 1);
 
 					if (t1.posX >= 0 && t1.posX < Game.currentSizeX && t1.posY >= 0 && t1.posY < Game.currentSizeY &&
-							!solidGrid[t1.posX][t1.posY] && !tankGrid[t1.posX][t1.posY] && !explored[t1.posX][t1.posY])
+							!Game.isSolid(t1.posX, t1.posY) && isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
 					{
 						explored[t1.posX][t1.posY] = true;
 
@@ -609,7 +554,7 @@ public class Level
 							playerSpawnsTeam.add(playerSpawnsTeam.get(i));
 							playerSpawnsAngle.add(playerSpawnsAngle.get(i));
 
-							tankGrid[t1.posX][t1.posY] = true;
+							setSolidTank(t1.posX, t1.posY, true);
 
 							for (int x = Math.max(t1.posX - 1, 0); x <= Math.min(t1.posX + 1, Game.currentSizeX - 1); x++)
 							{
@@ -643,7 +588,7 @@ public class Level
 				int x = extraSpawnsX.remove(in);
 				int y = extraSpawnsY.remove(in);
 
-				if (!tankGrid[x][y])
+				if (!isSolidTank(x, y))
 				{
 					playerSpawnsX.add((x + 0.5) * Game.tile_size);
 					playerSpawnsY.add((y + 0.5) * Game.tile_size);
@@ -763,6 +708,16 @@ public class Level
 			Game.eventsOut.add(new EventEnterLevel());
 	}
 
+	public boolean isSolidTank(int x, int y)
+	{
+		return Chunk.getIfPresent(x, y, false, tile -> tile.solidTank);
+	}
+
+	public void setSolidTank(int x, int y, boolean solid)
+	{
+		Chunk.runIfTilePresent(x, y, tile -> tile.solidTank = solid);
+	}
+
 	public void reloadTiles()
 	{
 		Game.currentSizeX = (int) (sizeX * Game.bgResMultiplier);
@@ -779,57 +734,14 @@ public class Level
 		currentLightIntensity = light;
 		currentShadowIntensity = shadow;
 
-		Game.tilesR = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tilesG = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tilesB = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tilesDepth = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tilesFlash = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
-
-		Random tilesRandom = new Random(this.tilesRandomSeed);
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				if (Game.fancyTerrain)
-				{
-					Game.tilesR[i][j] = (colorR + tilesRandom.nextDouble() * colorVarR);
-					Game.tilesG[i][j] = (colorG + tilesRandom.nextDouble() * colorVarG);
-					Game.tilesB[i][j] = (colorB + tilesRandom.nextDouble() * colorVarB);
-					double rand = tilesRandom.nextDouble() * 10;
-					Game.tilesDepth[i][j] = Game.enable3dBg ? rand : 0;
-				}
-				else
-				{
-					Game.tilesR[i][j] = colorR;
-					Game.tilesG[i][j] = colorG;
-					Game.tilesB[i][j] = colorB;
-					Game.tilesDepth[i][j] = 0;
-				}
-			}
-		}
-
-		Game.game.heightGrid = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.game.groundHeightGrid = new double[Game.currentSizeX][Game.currentSizeY];
-		Game.game.groundEdgeHeightGrid = new double[Game.currentSizeX][Game.currentSizeY];
 		Drawing.drawing.setScreenBounds(Game.tile_size * sizeX, Game.tile_size * sizeY);
-
-		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
+		Chunk.populateChunks(Game.currentLevel);
+		addLevelBorders();
 
 		for (Obstacle o: Game.obstacles)
 		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-			{
-				Game.game.solidGrid[x][y] = true;
-
-				if (!o.shouldShootThrough)
-					Game.game.unbreakableGrid[x][y] = true;
-			}
-		}
+            o.postOverride();
+        }
 
 		ScreenLevelEditor s = null;
 		
@@ -840,6 +752,12 @@ public class Level
 
 		if (s != null)
 			s.selectedTiles = new boolean[Game.currentSizeX][Game.currentSizeY];
+	}
+
+	/** to be implemented */
+	public void addLevelBorders()
+	{
+
 	}
 
 	public static class Tile

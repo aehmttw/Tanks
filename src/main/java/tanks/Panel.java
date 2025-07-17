@@ -3,6 +3,8 @@ package tanks;
 import basewindow.InputCodes;
 import tanks.extension.Extension;
 import tanks.gui.*;
+import tanks.gui.ScreenElement.CenterMessage;
+import tanks.gui.ScreenElement.Notification;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -13,20 +15,20 @@ import tanks.network.NetworkEventMap;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleTeleporter;
 import tanks.rendering.*;
 import tanks.tank.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.UUID;
+import java.util.LinkedList;
 
 public class Panel
 {
+    public static boolean onlinePaused;
+    public static LinkedList<Notification> notifs = new LinkedList<>();
+	public static long lastNotifTime = 0;
+	public static CenterMessage currentMessage;
 	public static String lastWindowTitle = "";
-
-	public static boolean onlinePaused;
 
 	public double zoomTimer = 0;
 	public static double zoomTarget = -1;
@@ -147,7 +149,7 @@ public class Panel
 		Game.resetTiles();
 
 		if (Game.game.fullscreen)
-			Game.game.window.setFullscreen(Game.game.fullscreen);
+			Game.game.window.setFullscreen(true);
 
 		Game.game.window.setIcon("/images/icon64.png");
 
@@ -355,17 +357,9 @@ public class Panel
 		}
 
 		for (INetworkEvent e: stackedEventsIn.values())
-		{
-			e.execute();
-		}
-		stackedEventsIn.clear();
+            e.execute();
 
-		for (int i = 0; i < Game.game.heightGrid.length; i++)
-		{
-			Arrays.fill(Game.game.heightGrid[i], -1000);
-			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
-			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
-		}
+		stackedEventsIn.clear();
 
 		if (ScreenPartyHost.isServer)
 		{
@@ -796,8 +790,8 @@ public class Panel
 
 				Drawing.drawing.setColor(174, 92, 16);
 				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
-				Drawing.drawing.setColor(255, 255, 255);
 
+				Drawing.drawing.setColor(255, 255, 255);
 				Drawing.drawing.setInterfaceFontSize(24);
 				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
@@ -839,6 +833,28 @@ public class Panel
 			this.drawBar();
 		}
 
+		if (!notifs.isEmpty())
+		{
+			double sy = 0;
+			for (int i = 0; i < notifs.size(); i++)
+			{
+				if (i == 1 && notifs.get(0).fadeStart)
+					sy -= Math.min(750, System.currentTimeMillis() - lastNotifTime) * (notifs.get(0).sY + 100) / 750;
+
+				Notification n = notifs.get(i);
+				if (i > 0)
+					n.age = Math.max(0, Math.min(n.age, notifs.get(i-1).age - 25));
+				n.draw(sy);
+				sy += n.sY + 15;
+			}
+
+			if (notifs.get(0).age > notifs.get(0).duration)
+				notifs.pop();
+		}
+
+		if (currentMessage != null)
+			currentMessage.draw();
+
 		if (Drawing.drawing.tooltip != null)
 			Drawing.drawing.drawTooltip(Drawing.drawing.tooltip, Drawing.drawing.getInterfaceMouseX(), Drawing.drawing.getInterfaceMouseY());
 
@@ -846,6 +862,8 @@ public class Panel
 
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
+
+		DebugKeybinds.drawAndUpdate();
 
 		Drawing.drawing.setColor(255, 255, 255);
         Game.screen.drawPostMouse();

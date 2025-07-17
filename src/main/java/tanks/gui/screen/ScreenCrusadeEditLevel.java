@@ -254,9 +254,6 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     @Override
     public void update()
     {
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
-
         if (removeMenu)
         {
             if (Game.game.input.editorPause.isValid())

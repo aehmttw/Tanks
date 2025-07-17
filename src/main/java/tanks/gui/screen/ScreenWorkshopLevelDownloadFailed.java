@@ -1,21 +1,11 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import com.codedisaster.steamworks.SteamFriends;
 import com.codedisaster.steamworks.SteamResult;
 import com.codedisaster.steamworks.SteamUGCDetails;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Level;
-import tanks.Movable;
 import tanks.gui.Button;
-import tanks.gui.TextBox;
-import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
-import tanks.tank.TankSpawnMarker;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class ScreenWorkshopLevelDownloadFailed extends Screen
 {
@@ -142,9 +132,6 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
                 more.update();
             }
         }
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
     }
 
     @Override

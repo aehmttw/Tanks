@@ -134,7 +134,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         this.lastFinalVX = (this.posX - super.lastPosX) / Panel.frameFrequency;
         this.lastFinalVY = (this.posY - super.lastPosY) / Panel.frameFrequency;
 
-        double angDiff = Movable.angleBetween(this.lastAngle, this.currentAngle);
+        double angDiff = GameObject.angleBetween(this.lastAngle, this.currentAngle);
         this.angle = this.lastAngle - frac * angDiff;
         this.pitch = (1 - frac) * this.lastPitch + frac * this.currentPitch;
 
@@ -147,10 +147,10 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             double dist = Math.sqrt(Math.pow(this.posX - super.lastPosX, 2) + Math.pow(this.posY - super.lastPosY, 2));
 
             double dir = Math.PI + this.getAngleInDirection(super.lastPosX, super.lastPosY);
-            if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-                this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
+            if (GameObject.absoluteAngleBetween(this.orientation, dir) <= GameObject.absoluteAngleBetween(this.orientation + Math.PI, dir))
+                this.orientation -= GameObject.angleBetween(this.orientation, dir) / 20 * dist;
             else
-                this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+                this.orientation -= GameObject.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
         }
     }
 

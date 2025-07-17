@@ -612,10 +612,10 @@ public abstract class Tank extends Movable implements ISolidObject
 				double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
 
 				double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
-				if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-					this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
+				if (GameObject.absoluteAngleBetween(this.orientation, dir) <= GameObject.absoluteAngleBetween(this.orientation + Math.PI, dir))
+					this.orientation -= GameObject.angleBetween(this.orientation, dir) / 20 * dist;
 				else
-					this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+					this.orientation -= GameObject.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
 			}
 		}
 
@@ -1381,6 +1381,12 @@ public abstract class Tank extends Movable implements ISolidObject
 			else
 				Drawing.drawing.fillOval(x + v, y + v1, s * dotSize, s * dotSize);
 		}
+	}
+
+	public static Tank findTank(double x, double y)
+	{
+		Movable m = Movable.findMovable(x, y);
+		return m instanceof Tank ? (Tank) m : null;
 	}
 
 	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2)

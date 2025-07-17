@@ -148,20 +148,20 @@ public class ItemDrop extends Movable
         }
         else
         {
-            for (Movable m: Game.movables)
+            for (Movable m: Movable.getMovablesInRadius(this.posX, this.posY, this.size))
             {
-                if (m instanceof IServerPlayerTank && Movable.distanceBetween(this, m) < this.size)
-                {
-                    boolean added = ((IServerPlayerTank) m).getPlayer().hotbar.itemBar.addItem(this.item);
+                if (!(m instanceof IServerPlayerTank))
+                    continue;
 
-                    if (added)
-                    {
-                        this.pickup = (Tank) m;
-                        this.destroy = true;
-                        Game.eventsOut.add(new EventItemPickup(this, this.pickup));
-                        this.unregisterNetworkID();
-                        Drawing.drawing.playSound("bullet_explode.ogg", 1.6f);
-                    }
+                boolean added = ((IServerPlayerTank) m).getPlayer().hotbar.itemBar.addItem(this.item);
+
+                if (added)
+                {
+                    this.pickup = (Tank) m;
+                    this.destroy = true;
+                    Game.eventsOut.add(new EventItemPickup(this, this.pickup));
+                    this.unregisterNetworkID();
+                    Drawing.drawing.playSound("bullet_explode.ogg", 1.6f);
                 }
             }
         }

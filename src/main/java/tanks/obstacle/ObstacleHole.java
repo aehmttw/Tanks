@@ -24,7 +24,6 @@ public class ObstacleHole extends Obstacle
 		this.colorA = 127;
 
 		this.description = "A hole which only bullets can pass over";
-		this.type = ObstacleType.ground;
 
 		this.tileRenderer = ShaderHole.class;
 	}

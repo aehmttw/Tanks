@@ -2402,35 +2402,33 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		if ((Game.playerTank == null || Game.playerTank.destroy) && !ScreenGame.finishedQuick && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale)
 		{
 			deadTime += Panel.frameFrequency;
-			for (Movable m: Game.movables)
+
+			for (Movable m: Movable.getMovablesInRadius(x, y, Game.tile_size * 4))
 			{
-				if (m instanceof Tank && !m.destroy && !((Tank) m).hidden && spectatingTank != m)
-				{
-					double dx = x - m.posX;
-					double dy = y - m.posY;
+                if (!(m instanceof Tank) || m.destroy || ((Tank) m).hidden || spectatingTank == m)
+                    continue;
 
-					double ix = Drawing.drawing.gameToInterfaceCoordsX(m.posX);
-					double iy = Drawing.drawing.gameToInterfaceCoordsY(m.posY);
+                double ix = Drawing.drawing.gameToInterfaceCoordsX(m.posX);
+                double iy = Drawing.drawing.gameToInterfaceCoordsY(m.posY);
 
-					if (dx * dx + dy * dy < Math.pow(((Tank) m).size + Game.tile_size / 2, 2))
-					{
-						Drawing.drawing.setColor(((Tank) m).colorR, ((Tank) m).colorG, ((Tank) m).colorB);
-						Mine.drawRange2D(m.posX, m.posY, ((Tank) m).size + Game.tile_size / 2);
-						Drawing.drawing.setColor(255, 255, 255, 255, 255);
-						Drawing.drawing.drawInterfaceImage("icons/shown.png", ix, iy, Game.tile_size, Game.tile_size);
+                if (Movable.distanceBetween(x, y, m.posX, m.posY) < ((Tank) m).size + Game.tile_size / 2)
+                {
+                    Drawing.drawing.setColor(((Tank) m).colorR, ((Tank) m).colorG, ((Tank) m).colorB);
+                    Mine.drawRange2D(m.posX, m.posY, ((Tank) m).size + Game.tile_size / 2);
+                    Drawing.drawing.setColor(255, 255, 255, 255, 255);
+                    Drawing.drawing.drawInterfaceImage("icons/shown.png", ix, iy, Game.tile_size, Game.tile_size);
 
-						if (Level.isDark())
-							Drawing.drawing.setColor(255, 255, 255, 255, 255);
-						else
-							Drawing.drawing.setColor(0, 0, 0);
+                    if (Level.isDark())
+                        Drawing.drawing.setColor(255, 255, 255, 255, 255);
+                    else
+                        Drawing.drawing.setColor(0, 0, 0);
 
-						Drawing.drawing.setInterfaceFontSize(12);
-						Drawing.drawing.drawInterfaceText(ix, iy - Game.tile_size, "Click to spectate tank");
+                    Drawing.drawing.setInterfaceFontSize(12);
+                    Drawing.drawing.drawInterfaceText(ix, iy - Game.tile_size, "Click to spectate tank");
 
-						break;
-					}
-				}
-			}
+                    break;
+                }
+            }
 
 
 			if (spectatingTank != null)

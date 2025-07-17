@@ -2,15 +2,11 @@ package tanks.bullet;
 
 import basewindow.Model;
 import basewindow.transformation.AxisRotation;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventAddObstacleBullet;
-import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tank.Crate;
 import tanks.tank.Tank;
@@ -149,22 +145,12 @@ public class BulletBlock extends BulletArc
         if (ScreenGame.finishedQuick)
             return;
 
-        boolean found = x < 0 || y < 0 || x >= Game.currentSizeX || y >= Game.currentSizeY;
+        boolean found = Chunk.getIfPresent(x, y, true, tile -> !tile.canPlaceOn(o));
 
         if (!found)
         {
-            for (Obstacle o1 : Game.obstacles)
-            {
-                if (o1.posX == o.posX && o1.posY == o.posY && !Obstacle.canPlaceOn(o.type, o1.type))
-                {
-                    found = true;
-                    break;
-                }
-            }
-        }
-
-        if (!found)
             Game.addObstacle(o);
+        }
         else
         {
             Drawing.drawing.playGlobalSound("break.ogg");

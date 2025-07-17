@@ -2,6 +2,7 @@ package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
@@ -32,7 +33,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	 * Extra = can be placed anywhere without a full tile, can have tanks inside
 	 * */
 	public enum ObstacleType { full, ground, top, extra }
-	public ObstacleType type = ObstacleType.top;
+	public ObstacleType type = ObstacleType.full;
 
 	public int drawLevel = 5;
 
@@ -354,7 +355,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 							e.colG = this.colorG;
 							e.colB = this.colorB;
 
-							double dist = Movable.distanceBetween(this, e);
+							double dist = GameObject.distanceBetween(this, e);
 							double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 							double rad = radius - Game.tile_size / 2;
 							double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
@@ -381,7 +382,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 						e.colG = this.colorG;
 						e.colB = this.colorB;
 
-						double dist = Movable.distanceBetween(this, e);
+						double dist = GameObject.distanceBetween(this, e);
 						double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 						double rad = radius - Game.tile_size / 2;
 						e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
@@ -398,13 +399,32 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		return null;
 	}
 
-	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)
+	/** Field to cache the obstacle array for reuse */
+	private static final ObjectArrayList<Obstacle> obstacleOut = new ObjectArrayList<>();
+
+	/** Expects all pixel coordinates.
+	 * @return all the obstacles within the specified range */
+	public static ObjectArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
 	{
-		if (t1 == ObstacleType.full || t2 == ObstacleType.full)
-			return false;
-		else if (t1 == ObstacleType.extra || t2 == ObstacleType.extra)
-			return true;
-		else
-			return t1 != t2;
+		obstacleOut.clear();
+		for (Obstacle o : Game.obstacles)
+		{
+			if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, x2, o.posY, y2))
+				obstacleOut.add(o);
+		}
+		return obstacleOut;
+	}
+
+	/** Expects all pixel coordinates.
+	 * @return all the obstacles within a certain radius of the position */
+	public static ObjectArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
+	{
+		obstacleOut.clear();
+		for (Obstacle o : Game.obstacles)
+		{
+			if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+				obstacleOut.add(o);
+		}
+		return obstacleOut;
 	}
 }

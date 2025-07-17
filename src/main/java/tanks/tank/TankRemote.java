@@ -165,7 +165,7 @@ public class TankRemote extends Tank
 		this.lastFinalVX = (this.posX - this.lastPosX) / Panel.frameFrequency;
 		this.lastFinalVY = (this.posY - this.lastPosY) / Panel.frameFrequency;
 
-		double angDiff = Movable.angleBetween(this.lastAngle, this.currentAngle);
+		double angDiff = GameObject.angleBetween(this.lastAngle, this.currentAngle);
 		this.angle = this.lastAngle - frac * angDiff;
 		this.pitch = (1 - frac) * this.lastPitch + frac * this.currentPitch;
 
@@ -191,10 +191,10 @@ public class TankRemote extends Tank
 			double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
 
 			double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
-			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-				this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
+			if (GameObject.absoluteAngleBetween(this.orientation, dir) <= GameObject.absoluteAngleBetween(this.orientation + Math.PI, dir))
+				this.orientation -= GameObject.angleBetween(this.orientation, dir) / 20 * dist;
 			else
-				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+				this.orientation -= GameObject.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
 		}
 	}
 

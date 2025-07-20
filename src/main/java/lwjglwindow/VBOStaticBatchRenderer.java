@@ -167,9 +167,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         {
             AttributeProperty prop = attributeProperties.get(i);
             for (float f : prop.floatArray)
-            {
                 prop.buffer.put(f);
-            }
         }
     }
 

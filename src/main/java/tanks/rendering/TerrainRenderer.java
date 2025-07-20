@@ -809,8 +809,6 @@ public class TerrainRenderer
             o.draw();
     }
 
-
-
     public static class RegionRenderer
     {
         public BaseShapeBatchRenderer renderer;

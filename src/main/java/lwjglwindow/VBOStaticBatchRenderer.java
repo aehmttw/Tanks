@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 {
     // Property class for parallel arrays

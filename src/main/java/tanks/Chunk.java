@@ -151,5 +151,24 @@ public class Chunk
             else
                 throw new RuntimeException("New obstacle type added! Make sure to add it to Chunk.Tile.add()");
         }
+
+        public boolean canPlaceOn(GameObject o)
+        {
+            boolean noFull = fullObstacle == null;
+            if (!(o instanceof Obstacle))
+                return noFull;
+
+            Obstacle.ObstacleType t = ((Obstacle) o).type;
+            boolean canPlaceUnder = noFull || fullObstacle.type == Obstacle.ObstacleType.top;
+
+            if (t == Obstacle.ObstacleType.full || t == Obstacle.ObstacleType.top)
+                return noFull;
+            if (t == Obstacle.ObstacleType.ground)
+                return canPlaceUnder && surfaceObstacle == null;
+            if (t == Obstacle.ObstacleType.extra)
+                return canPlaceUnder && extraObstacle == null;
+
+            throw new RuntimeException("New obstacle type added! Make sure to add it to Chunk.Tile.canPlaceOn()");
+        }
     }
 }

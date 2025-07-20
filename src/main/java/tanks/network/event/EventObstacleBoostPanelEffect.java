@@ -68,16 +68,11 @@ public class EventObstacleBoostPanelEffect extends PersonalEvent
         else
             m = Bullet.idMap.get(this.networkID);
 
-        if (m != null)
-        {
-            for (Obstacle o: Game.obstacles)
-            {
-                if (o.posX == this.posX && o.posY == this.posY && o instanceof ObstacleBoostPanel)
-                {
-                    ((ObstacleBoostPanel) o).addEntryEffect(m);
-                    return;
-                }
-            }
-        }
+        if (m == null)
+            return;
+
+        Obstacle o = Game.getObstacle(this.posX, this.posY);
+        if (o instanceof ObstacleBoostPanel)
+            ((ObstacleBoostPanel) o).addEntryEffect(m);
     }
 }

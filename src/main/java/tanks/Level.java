@@ -340,8 +340,6 @@ public class Level
 			Game.movables.remove(Game.playerTank);
 		}
 
-		this.reloadTiles();
-
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
 		{
 			for (String obstaclesPo : obstaclesPos)
@@ -400,6 +398,8 @@ public class Level
 				}
 			}
 		}
+
+		this.reloadTiles();
 
 		ArrayList<Tank> tanksToRemove = new ArrayList<>();
 
@@ -741,7 +741,16 @@ public class Level
 		for (Obstacle o: Game.obstacles)
 		{
             o.postOverride();
+
+			Chunk c = Chunk.getChunk(o.posX, o.posY);
+			if (c != null)
+				c.addObstacle(o, false);
         }
+
+		for (Movable m : Game.movables)
+			m.refreshFaces = true;
+		for (Obstacle o : Game.obstacles)
+			o.refreshHitboxes();
 
 		ScreenLevelEditor s = null;
 		
@@ -754,10 +763,12 @@ public class Level
 			s.selectedTiles = new boolean[Game.currentSizeX][Game.currentSizeY];
 	}
 
-	/** to be implemented */
 	public void addLevelBorders()
 	{
-
+		Chunk.getChunksInRange(0, 0, sizeX, 0).forEach(chunk -> chunk.addBorderFace(Direction.up, this));
+		Chunk.getChunksInRange(sizeX, 0, sizeX, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.right, this));
+		Chunk.getChunksInRange(0, sizeY, sizeX, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.down, this));
+		Chunk.getChunksInRange(0, 0, 0, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.left, this));
 	}
 
 	public static class Tile

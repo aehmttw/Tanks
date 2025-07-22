@@ -487,7 +487,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 								baseOff = Math.toRadians(b.multishotSpread) * ((j * 1.0 / (b.shotCount - 1)) - 0.5);
 						}
 
-						Ray r = new Ray(this.posX, this.posY, this.angle + baseOff + gasOff, 1, this);
+						Ray r = Ray.newRay(this.posX, this.posY, this.angle + baseOff + gasOff, 1, this);
 						r.bounces = b.bounces;
 						r.size = b.size;
 						if (k != 0)

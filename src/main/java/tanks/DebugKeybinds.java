@@ -46,6 +46,14 @@ public class DebugKeybinds
                     200));
         }
 
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_G))
+        {
+            Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_G);
+            Chunk.debug = !Chunk.debug;
+            notifs.add(new ScreenElement.Notification("Chunk borders: \u00a7255200000255"
+                    + (Chunk.debug ? "shown" : "hidden"), 200));
+        }
+
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_K))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_K);
@@ -160,7 +168,11 @@ public class DebugKeybinds
 
             if (Game.game.window.pressedKeys.contains(InputCodes.KEY_1))
             {
+                Chunk c = Chunk.getChunk(posX, posY);
                 Chunk.Tile t1 = Chunk.getTile(posX, posY);
+
+                if (c != null)
+                    text += " C: (" + c.chunkX + ", " + c.chunkY + ")";
 
                 if (t1 != null)
                 {

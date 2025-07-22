@@ -5,11 +5,9 @@ import tanks.gui.Button;
 import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Face;
-import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static basewindow.InputCodes.*;
@@ -129,12 +127,12 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		languages.imageSizeY = this.objHeight;
 
 		this.horizontalFaces = new Face[2];
-		this.horizontalFaces[0] = new Face(null, 0, 0, Game.currentSizeX * Game.tile_size, 0, true, false, true, true);
-		this.horizontalFaces[1] = new Face(null, 0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, true, true,true, true);
+		this.horizontalFaces[0] = new Face(null, 0, 0, Game.currentSizeX * Game.tile_size, 0, Direction.down, true, true);
+		this.horizontalFaces[1] = new Face(null, 0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, Direction.up, true, true);
 
 		this.verticalFaces = new Face[2];
-		this.verticalFaces[0] = new Face(null, 0, 0,0, Game.currentSizeY * Game.tile_size, false, false,true, true);
-		this.verticalFaces[1] = new Face(null, Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, false, true, true, true);
+		this.verticalFaces[0] = new Face(null, 0, 0,0, Game.currentSizeY * Game.tile_size, Direction.left, true, true);
+		this.verticalFaces[1] = new Face(null, Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, Direction.right, true, true);
 	}
 	
 	@Override
@@ -225,21 +223,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		this.verticalFaces[1].update(Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size);
 		Game.verticalFaces.add(this.verticalFaces[0]);
 		Game.verticalFaces.add(this.verticalFaces[1]);
-
-		for (Movable m : Game.movables)
-		{
-			if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
-			{
-				throw new RuntimeException("Movable with NaN position: " + m.toString() + " " + m.lastPosX + " " + m.lastPosY);
-			}
-
-			if (m instanceof ISolidObject && !(m instanceof Tank && !(((Tank) m).currentlyTargetable || ((Tank) m).invulnerabilityTimer > 0)))
-			{
-				Game.horizontalFaces.addAll(Arrays.asList(((ISolidObject) m).getHorizontalFaces()));
-
-				Game.verticalFaces.addAll(Arrays.asList(((ISolidObject) m).getVerticalFaces()));
-			}
-		}
 
 		for (Obstacle o : Game.obstacles)
 		{

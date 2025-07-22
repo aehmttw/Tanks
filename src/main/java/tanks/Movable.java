@@ -1,6 +1,7 @@
 package tanks;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
@@ -13,6 +14,7 @@ import java.lang.reflect.Field;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
 {
+	public ObjectArraySet<Chunk> prevChunks = new ObjectArraySet<>();
 	private EffectManager em;
 
 	public double lastPosX, lastPosY, lastPosZ = 0;
@@ -20,6 +22,9 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public double lastFinalVX, lastFinalVY, lastFinalVZ;
 	public double lastVX, lastVY, lastVZ;
 	public double lastOriginalVX, lastOriginalVY, lastOriginalVZ;
+
+	public double age = 0;
+	public boolean refreshFaces = true;
 
 	public boolean destroy = false;
 	public boolean dealsDamage = true;
@@ -49,6 +54,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void preUpdate()
 	{
+		updateChunks();
+
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 		this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
 		this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
@@ -61,6 +68,56 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		this.lastPosX = this.posX;
 		this.lastPosY = this.posY;
 		this.lastPosZ = this.posZ;
+
+		refreshFaces = false;
+	}
+
+	public static ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
+
+	public void updateChunks()
+	{
+		if (!refreshFaces && posX == lastPosX && posY == lastPosY)
+			return;
+
+		ObjectArrayList<Chunk> cache = getTouchingChunks();
+
+		for (Chunk c : cache)
+		{
+			if (prevChunks.add(c))
+				onEnterChunk(c);
+			c.faces.removeFaces(this);
+		}
+
+		leaveChunks.clear();
+		for (Chunk c : prevChunks)
+		{
+			if (!cache.contains(c))
+			{
+				onLeaveChunk(c);
+				leaveChunks.add(c);
+			}
+		}
+		prevChunks.removeAll(leaveChunks);
+
+		updateFaces();
+		for (Chunk c : cache)
+			c.faces.addFaces(this);
+	}
+
+	public void onEnterChunk(Chunk c)
+	{
+		c.addMovable(this, false);
+	}
+
+	public void onLeaveChunk(Chunk c)
+	{
+		c.removeMovable(this);
+	}
+
+	public ObjectArrayList<Chunk> getTouchingChunks()
+	{
+		double size = getSize();
+		return Chunk.getChunksInRange(posX - size / 2, posY - size / 2, posX + size / 2, posY + size / 2);
 	}
 
 	public void update()
@@ -96,12 +153,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public void initEffectManager(EffectManager em)
 	{
 
-	}
-
-	@Override
-	public double getSize()
-	{
-		return 0;
 	}
 
 	/** Alias for {@link #getEffectManager()} */
@@ -159,9 +210,9 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 		double angle = 0;
 		if (x > 0)
-			angle = fastAtan(y/x);
+			angle = fastAtan(y / x);
 		else if (x < 0)
-			angle = fastAtan(y/x) + Math.PI;
+			angle = fastAtan(y / x) + Math.PI;
 		else
 		{
 			if (y > 0)
@@ -169,7 +220,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 			else if (y < 0)
 				angle = Math.PI * 3 / 2;
 		}
-
 		return angle;
 	}
 
@@ -192,9 +242,9 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	{
 		double angle = 0;
 		if (x > 0)
-			angle = Math.atan(y/x);
+			angle = Math.atan(y / x);
 		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
+			angle = Math.atan(y / x) + Math.PI;
 		else
 		{
 			if (y > 0)
@@ -258,12 +308,12 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public double getSpeed()
 	{
-		return Math.sqrt(Math.pow(this.vX, 2) + Math.pow(this.vY, 2));
+		return Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 	}
 
 	public double getLastSpeed()
 	{
-		return Math.sqrt(Math.pow(this.lastVX, 2) + Math.pow(this.lastVY, 2));
+		return Math.sqrt(this.lastVX * this.lastVX + this.lastVY * this.lastVY);
 	}
 
 	public double getMotionInDirection(double angle)
@@ -285,13 +335,18 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public static double[] getLocationInDirection(double angle, double distance)
 	{
-		return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};	
+		return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};
 	}
 
 	public abstract void draw();
-	
+
+	public double getSize()
+	{
+		return 0;
+	}
+
 	public void drawAt(double x, double y)
-	{	
+	{
 		double x1 = this.posX;
 		double y1 = this.posY;
 		this.posX = x;
@@ -342,6 +397,41 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public void drawForInterface(double x, double y)
 	{
 		this.drawAt(x, y);
+	}
+
+	public static double distanceBetween(double x1, double y1, double x2, double y2)
+	{
+		return Math.sqrt(sqDistBetw(x1, y1, x2, y2));
+	}
+
+	public static double sqDistBetw(double x1, double y1, double x2, double y2)
+	{
+		return (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
+	}
+
+	public static double sqDistBetw(final GameObject a, final GameObject b)
+	{
+		return sqDistBetw(a.posX, a.posY, b.posX, b.posY);
+	}
+
+	public static boolean withinRange(final GameObject a, final GameObject b, double range)
+	{
+		return sqDistBetw(a, b) < range * range;
+	}
+
+	public static double distanceBetween(final GameObject a, final GameObject b)
+	{
+		return distanceBetween(a.posX, a.posY, b.posX, b.posY);
+	}
+
+	public static double angleBetween(double a, double b)
+	{
+		return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;
+	}
+
+	public static double absoluteAngleBetween(double a, double b)
+	{
+		return Math.abs((a - b + Math.PI * 3) % (Math.PI * 2) - Math.PI);
 	}
 
 	public void setEffectManager(EffectManager em)

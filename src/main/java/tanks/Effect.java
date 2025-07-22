@@ -16,30 +16,17 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     public enum State {live, removed, recycle}
 
     public EffectType type;
-    public double age = 0;
-    public double colR;
-    public double colG;
-    public double colB;
+    public double colR, colG, colB;
 
     public boolean force = false;
     public boolean enableGlow = true;
-    public double glowR;
-    public double glowG;
-    public double glowB;
+    public double glowR, glowG, glowB;
 
     public double maxAge = 100;
-    public double size;
-    public double radius;
-    public double angle;
-    public double distance;
+    public double size, radius, angle, distance;
 
-    public int prevGridX;
-    public int prevGridY;
-
-    public int initialGridX;
-    public int initialGridY;
-
-    public double[] lightInfo = new double[7];
+    public int prevGridX, prevGridY;
+    public int initialGridX, initialGridY;
 
     //Effects that have this set to true are removed faster when the level has ended
     public boolean fastRemoveOnExit = false;
@@ -48,9 +35,9 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
     public static Effect createNewEffect(double x, double y, double z, EffectType type)
     {
-        while (Game.recycleEffects.size() > 0)
+        while (!Game.recycleEffects.isEmpty())
         {
-            Effect e = Game.recycleEffects.remove();
+            Effect e = Game.recycleEffects.poll();
 
             if (e.state == State.recycle)
             {
@@ -62,6 +49,13 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
         Effect e = new Effect();
         e.initialize(x, y, z, type);
+        return e;
+    }
+
+    public static Effect createNewEffect(double x, double y, double z, EffectType type, double age)
+    {
+        Effect e = Effect.createNewEffect(x, y, z, type);
+        e.age = age;
         return e;
     }
 
@@ -113,7 +107,12 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             this.force = true;
         }
         else if (type == EffectType.laser)
+        {
             this.maxAge = 21;
+            this.colR = 255;
+            this.colG = 0;
+            this.colB = 0;
+        }
         else if (type == EffectType.piece)
             this.maxAge = Math.random() * 100 + 50;
         else if (type == EffectType.obstaclePiece)
@@ -319,7 +318,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         else if (this.type == EffectType.laser)
         {
             double size = Bullet.bullet_size - this.age / 2;
-            drawing.setColor(255, 0, 0);
+            drawing.setColor(colR, colG, colB);
 
             if (Game.enable3d)
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -642,6 +641,54 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         }
     }
 
+    public Effect setColor(double r, double g, double b)
+    {
+        this.colR = r;
+        this.colG = g;
+        this.colB = b;
+        return this;
+    }
+
+    public Effect setColor(double r, double g, double b, double noise)
+    {
+        this.colR = r + (Math.random() - 0.5) * noise;
+        this.colG = g + (Math.random() - 0.5) * noise;
+        this.colB = b + (Math.random() - 0.5) * noise;
+        return this;
+    }
+
+    public Effect setGlowColor(double r, double g, double b)
+    {
+        this.glowR = r;
+        this.glowG = g;
+        this.glowB = b;
+        return this;
+    }
+
+    public Effect setGlowEnabled(boolean enabled)
+    {
+        this.enableGlow = enabled;
+        return this;
+    }
+
+    public Effect setRadius(double radius)
+    {
+        this.radius = radius;
+        return this;
+    }
+
+    public Effect setSize(double size)
+    {
+        this.size = size;
+        return this;
+    }
+
+    @Override
+    public double getSize()
+    {
+        return size;
+    }
+
     public void drawGlow()
     {
         if (this.maxAge > 0 && this.maxAge < this.age)
@@ -796,11 +843,12 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             }
         }
 
+        int x = (int) (this.posX / Game.tile_size);
+        int y = (int) (this.posY / Game.tile_size);
+        Chunk.Tile t = Chunk.getTile(x, y), prevTile = Chunk.getTile(prevGridX, prevGridY);
+
         if (this.type == EffectType.obstaclePiece3d)
         {
-            int x = (int) (this.posX / Game.tile_size);
-            int y = (int) (this.posY / Game.tile_size);
-
             boolean collidedX = false;
             boolean collidedY = false;
             boolean collided;
@@ -821,9 +869,9 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
             if (!(collidedX || collidedY))
             {
-                collided = this.posZ <= Game.sampleObstacleHeight(posX, posY);
+                collided = this.posZ <= t.height();
 
-                if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY && Game.sampleObstacleHeight(posX, posY) != Game.sampleObstacleHeight(prevGridX, prevGridY))
+                if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY && t.height() != prevTile.height())
                 {
                     collidedX = this.prevGridX != x;
                     collidedY = this.prevGridY != y;
@@ -865,10 +913,10 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                     this.posY = this.posY - dist;
                 }
 
-                if (!collidedX && !collidedY && (x != this.initialGridX || y != initialGridY) && Math.abs(this.posZ - Game.sampleObstacleHeight(posX, posY)) < Game.tile_size / 2)
+                if (!collidedX && !collidedY && (x != this.initialGridX || y != initialGridY) && Math.abs(this.posZ - t.height()) < Game.tile_size / 2)
                 {
                     this.vZ = -0.6 * this.vZ;
-                    this.posZ = (2 * Game.sampleObstacleHeight(posX, posY) - this.posZ);
+                    this.posZ = (2 * t.height() - this.posZ);
                 }
             }
 
@@ -879,23 +927,23 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         {
             if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.1)
             {
+                Effect e;
                 if (Game.enable3d)
                 {
-                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, this.posZ, EffectType.piece);
+                    e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, this.posZ, EffectType.piece);
                     e.colR = 255;
                     e.colG = Math.random() * 255;
                     e.colB = 0;
                     e.vZ = Math.random() + 1;
-                    Game.addEffects.add(e);
                 }
                 else
                 {
-                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, EffectType.piece);
+                    e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, EffectType.piece);
                     e.colR = 255;
                     e.colG = Math.random() * 255;
                     e.colB = 0;
-                    Game.addEffects.add(e);
                 }
+                Game.addEffects.add(e);
             }
 
             if (Game.enable3d && Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.1 * (2 - this.posZ / Game.tile_size))

@@ -15,7 +15,7 @@ import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.network.event.EventTankUpdateVisibility;
-import tanks.obstacle.ISolidObject;
+import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
@@ -28,7 +28,7 @@ import java.util.Objects;
 
 import static tanks.tank.TankPropertyCategory.*;
 
-public abstract class Tank extends Movable implements ISolidObject
+public abstract class Tank extends Movable
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -230,6 +230,9 @@ public abstract class Tank extends Movable implements ISolidObject
 	public Turret turret;
 
 	public boolean standardUpdateEvent = true;
+
+	public Face[] horizontalFaces;
+	public Face[] verticalFaces;
 
 	public HashMap<String, Object> extraProperties = new HashMap<>();
 
@@ -1100,12 +1103,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 	}
 
-	@Override
-	public double getSize()
-	{
-		return size * hitboxSize;
-	}
-
 	public double getDamageMultiplier(GameObject source)
 	{
 		if ((this.invulnerable || this.invulnerabilityTimer > 0) || (source instanceof Bullet && this.resistBullets) || (source instanceof Explosion && this.resistExplosions))
@@ -1174,7 +1171,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 				if (dist > farthestInSight)
 				{
-					Ray r = new Ray(this.posX, this.posY, 0, 0, this);
+					Ray r = Ray.newRay(this.posX, this.posY, 0, 0, this);
 					r.vX = m.posX - this.posX;
 					r.vY = m.posY - this.posY;
 
@@ -1221,6 +1218,12 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 
 		return Math.max(nearest, farthestInSight);
+	}
+
+	@Override
+	public double getSize()
+	{
+		return size;
 	}
 
 	public double getAutoZoom()

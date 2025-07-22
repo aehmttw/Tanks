@@ -1,9 +1,8 @@
 package tanks.rendering;
 
 import basewindow.*;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import io.netty.util.collection.IntObjectHashMap;
 import tanks.Chunk;
-import tanks.Direction;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.ScreenIntro;
@@ -16,9 +15,9 @@ public class TerrainRenderer
 {
     public static final int section_size = 2000;
 
-    protected final HashMap<Class<? extends ShaderGroup>, Int2ObjectOpenHashMap<RegionRenderer>> renderers = new HashMap<>();
+    protected final HashMap<Class<? extends ShaderGroup>, IntObjectHashMap<RegionRenderer>> renderers = new HashMap<>();
     protected final HashMap<IBatchRenderableObject, RegionRenderer> renderersByObj = new HashMap<>();
-    protected final Int2ObjectOpenHashMap<RegionRenderer> outOfBoundsRenderers = new Int2ObjectOpenHashMap<>();
+    protected final IntObjectHashMap<RegionRenderer> outOfBoundsRenderers = new IntObjectHashMap<>();
 
     public boolean staged = false;
 
@@ -69,7 +68,7 @@ public class TerrainRenderer
     {
         double extra = 0;
         for (int dir = 0; dir < 4; dir++)
-            extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Direction.X[dir], y + Direction.Y[dir]));
+            extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Game.dirX[dir], y + Game.dirY[dir]));
         extra += Game.sampleEdgeGroundDepth(x, y);
 
         return extra;
@@ -95,15 +94,15 @@ public class TerrainRenderer
         }
     }
 
-    public Int2ObjectOpenHashMap<RegionRenderer> getRenderers(Class<? extends ShaderGroup> s)
+    public IntObjectHashMap<RegionRenderer> getRenderers(Class<? extends ShaderGroup> s)
     {
-        return renderers.computeIfAbsent(s, k -> new Int2ObjectOpenHashMap<>());
+        return renderers.computeIfAbsent(s, k -> new IntObjectHashMap<>());
     }
 
     public RegionRenderer getRenderer(IBatchRenderableObject o, double x, double y, boolean outOfBounds)
     {
         RegionRenderer s = null;
-        Int2ObjectOpenHashMap<RegionRenderer> renderers = this.outOfBoundsRenderers;
+        IntObjectHashMap<RegionRenderer> renderers = this.outOfBoundsRenderers;
 
         Class<? extends ShaderGroup> sg = ShaderGroup.class;
 
@@ -476,7 +475,7 @@ public class TerrainRenderer
 
     public void reset()
     {
-        for (Int2ObjectOpenHashMap<RegionRenderer> h : this.renderers.values())
+        for (IntObjectHashMap<RegionRenderer> h : this.renderers.values())
             for (RegionRenderer r : h.values())
                 r.renderer.free();
 
@@ -490,7 +489,7 @@ public class TerrainRenderer
         this.stagedCount = 0;
     }
 
-    public void drawMap(Int2ObjectOpenHashMap<RegionRenderer> renderers, int xOffset, int yOffset)
+    public void drawMap(IntObjectHashMap<RegionRenderer> renderers, int xOffset, int yOffset)
     {
         for (RegionRenderer s : renderers.values())
         {
@@ -809,6 +808,8 @@ public class TerrainRenderer
         if (o.batchDraw && !o.removed)
             o.draw();
     }
+
+
 
     public static class RegionRenderer
     {

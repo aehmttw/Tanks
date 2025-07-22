@@ -54,7 +54,8 @@ public class Game
 
 	public static final double tile_size = 50;
 
-	public static Chunk.Tile[][] tiles = new Chunk.Tile[28][18];
+	public static final int[] dirX = {1, -1, 0, 0};
+	public static final int[] dirY = {0, 0, 1, -1};
 
 	public static UUID computerID;
 	public static final UUID clientID = UUID.randomUUID();
@@ -175,6 +176,7 @@ public class Game
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
 	public static boolean xrayBullets = true;
+	public static boolean immutableFaces = false;
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
@@ -203,7 +205,6 @@ public class Game
 	public static int seed = 0;
 
 	public static boolean invulnerable = false;
-	public static boolean immutableFaces = false;
 
 	public static boolean warnBeforeClosing = true;
 
@@ -816,13 +817,17 @@ public class Game
 		addObstacle(o, true);
 	}
 
-	public static void addObstacle(Obstacle o, boolean redraw)
+	public static void addObstacle(Obstacle o, boolean refresh)
 	{
 		o.removed = false;
 		Game.obstacles.add(o);
 		o.postOverride();
 
-		if (redraw)
+		Chunk c = Chunk.getChunk(o.posX, o.posY);
+		if (c != null)
+			c.addObstacle(o, refresh);
+
+		if (refresh)
             redraw(o);
 	}
 
@@ -1029,7 +1034,7 @@ public class Game
 	public static void resetTiles()
 	{
 		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
-		Chunk.populateChunks();
+		Chunk.initialize();
 
 		Level.currentColorR = 235;
 		Level.currentColorG = 207;
@@ -1046,42 +1051,21 @@ public class Game
 	public static Obstacle getObstacle(int tileX, int tileY)
 	{
 		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.fullObstacle : null;
-	}
-
-	public static Obstacle getSurfaceObstacle(int tileX, int tileY)
-	{
-		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.surfaceObstacle : null;
-	}
-
-	public static Obstacle getExtraObstacle(int tileX, int tileY)
-	{
-		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.extraObstacle : null;
+		return t != null ? t.obstacle() : null;
 	}
 
 	public static Obstacle getObstacle(double posX, double posY)
 	{
 		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
-
-	public static Obstacle getSurfaceObstacle(double posX, double posY)
-	{
-		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-	}
-
-	public static Obstacle getExtraObstacle(double posX, double posY)
-	{
-		return getExtraObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-	}
-
 	public static void removeObstacle(Obstacle o)
 	{
 		Drawing.drawing.terrainRenderer.remove(o);
 		o.removed = true;
 		redraw(o);
-		Chunk.runIfTilePresent(o.posX, o.posY, t -> t.remove(o));
+		Chunk c = Chunk.getChunk(o.posX, o.posY);
+		if (c != null)
+			c.removeObstacle(o);
 		Game.obstacles.remove(o);
     }
 

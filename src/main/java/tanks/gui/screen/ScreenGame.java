@@ -2109,8 +2109,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			m.update();
 		}
 
-		for (Obstacle o : obstaclesToUpdate)
-            o.update();
+		for (Obstacle o : Game.obstacles)
+		{
+			if (o.update)
+				o.update();
+		}
 
 		for (Effect e : Game.tracks)
 			e.update();

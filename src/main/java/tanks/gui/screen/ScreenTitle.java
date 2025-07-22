@@ -4,11 +4,8 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
-import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
-
-import java.util.Collections;
 
 import static basewindow.InputCodes.*;
 
@@ -19,15 +16,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 	public int chain;
 
-	public double lCenterX;
-	public double lCenterY;
+	public double lCenterX, lCenterY;
+	public double rCenterX, rCenterY;
 
-	public double rCenterX;
-	public double rCenterY;
-
-	public Face[] horizontalFaces;
-	public Face[] verticalFaces;
-	
 	protected int[] inputs = new int[11];
 	protected int inputCount = 0;
 
@@ -48,7 +39,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		}
 	}
 	);
-	
+
 	Button options = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Options", () ->
 	{
 		Game.silentCleanUp();
@@ -69,7 +60,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		Game.screen = new ScreenAbout();
 	}
 	);
-	
+
 	Button play = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Play!", () ->
 	{
 		Game.silentCleanUp();
@@ -102,7 +93,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			}
 		}
 	}
-		);
+	);
 
 	Button languages = new Button(-1000, -1000, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
 	{
@@ -125,16 +116,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		languages.imageSizeX = this.objHeight;
 		languages.imageSizeY = this.objHeight;
-
-		this.horizontalFaces = new Face[2];
-		this.horizontalFaces[0] = new Face(null, 0, 0, Game.currentSizeX * Game.tile_size, 0, Direction.down, true, true);
-		this.horizontalFaces[1] = new Face(null, 0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, Direction.up, true, true);
-
-		this.verticalFaces = new Face[2];
-		this.verticalFaces[0] = new Face(null, 0, 0,0, Game.currentSizeY * Game.tile_size, Direction.left, true, true);
-		this.verticalFaces[1] = new Face(null, Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, Direction.right, true, true);
 	}
-	
+
 	@Override
 	public void update()
 	{
@@ -162,12 +145,12 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			about.update();
 
 			this.music = "menu_1.ogg";
-			
+
 			for (Integer i: Game.game.window.validPressedKeys)
 			{
 				this.inputs[inputCount] = i;
 				inputCount = (inputCount + 1) % inputs.length;
-				
+
 				if (i == KEY_ENTER)
 				{
 					int[] inputs = new int[]{KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, KEY_B, KEY_A, KEY_ENTER};
@@ -209,58 +192,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		{
 			this.logo.hidden = false;
 			this.logo.invulnerable = false;
-		}
-
-		Game.horizontalFaces.clear();
-		Game.verticalFaces.clear();
-
-		this.horizontalFaces[0].update(0, 0, Game.currentSizeX * Game.tile_size, 0);
-		this.horizontalFaces[1].update(0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size);
-		Game.horizontalFaces.add(this.horizontalFaces[0]);
-		Game.horizontalFaces.add(this.horizontalFaces[1]);
-
-		this.verticalFaces[0].update(0, 0, 0, Game.currentSizeY * Game.tile_size);
-		this.verticalFaces[1].update(Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size);
-		Game.verticalFaces.add(this.verticalFaces[0]);
-		Game.verticalFaces.add(this.verticalFaces[1]);
-
-		for (Obstacle o : Game.obstacles)
-		{
-			Face[] faces = o.getHorizontalFaces();
-			boolean[] valid = o.getValidHorizontalFaces(true);
-			for (int i = 0; i < faces.length; i++)
-			{
-				if (valid[i])
-					Game.horizontalFaces.add(faces[i]);
-			}
-
-			faces = o.getVerticalFaces();
-			valid = o.getValidVerticalFaces(true);
-			for (int i = 0; i < faces.length; i++)
-			{
-				if (valid[i])
-					Game.verticalFaces.add(faces[i]);
-			}
-		}
-
-		try
-		{
-			Collections.sort(Game.horizontalFaces);
-		}
-		catch (Exception e)
-		{
-			System.out.println(Game.horizontalFaces);
-			Game.exitToCrash(e);
-		}
-
-		try
-		{
-			Collections.sort(Game.verticalFaces);
-		}
-		catch (Exception e)
-		{
-			System.out.println(Game.verticalFaces);
-			Game.exitToCrash(e);
 		}
 
 		Obstacle.draw_size = Game.tile_size;
@@ -466,6 +397,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		if (Game.screen == this)
 			this.drawDefaultBackground();
 
+		if (Chunk.debug)
+			Chunk.drawDebugStuff();
+
 		this.drawWithoutBackground();
 	}
 
@@ -473,9 +407,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	public void drawPostMouse()
 	{
 		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT)) && Drawing.drawing.interfaceScaleZoom == 1)
-		{
 			this.logo.draw();
-		}
 	}
 
 	@Override

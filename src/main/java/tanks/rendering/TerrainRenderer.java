@@ -3,6 +3,7 @@ package tanks.rendering;
 import basewindow.*;
 import io.netty.util.collection.IntObjectHashMap;
 import tanks.Chunk;
+import tanks.Direction;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.ScreenIntro;
@@ -68,7 +69,7 @@ public class TerrainRenderer
     {
         double extra = 0;
         for (int dir = 0; dir < 4; dir++)
-            extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Game.dirX[dir], y + Game.dirY[dir]));
+            extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Direction.X[dir], y + Direction.Y[dir]));
         extra += Game.sampleEdgeGroundDepth(x, y);
 
         return extra;

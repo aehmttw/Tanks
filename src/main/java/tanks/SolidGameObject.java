@@ -39,10 +39,10 @@ public abstract class SolidGameObject extends GameObject implements ISolidObject
         {
             Face f = this.faces[i];
             f.update(
-                    this.posX + s * (Chunk.x1[i] - 0.5),
-                    this.posY + s * (Chunk.y1[i] - 0.5),
-                    this.posX + s * (Chunk.x2[i] - 0.5),
-                    this.posY + s * (Chunk.y2[i] - 0.5),
+                    this.posX + s * (Face.x1[i] - 0.5),
+                    this.posY + s * (Face.y1[i] - 0.5),
+                    this.posX + s * (Face.x2[i] - 0.5),
+                    this.posY + s * (Face.y2[i] - 0.5),
                     this.isFaceValid(f),
                     tankCollision(),
                     bulletCollision()

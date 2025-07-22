@@ -33,7 +33,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	 * Extra = can be placed anywhere without a full tile, can have tanks inside
 	 * */
 	public enum ObstacleType { full, ground, top, extra }
-	public ObstacleType type = ObstacleType.top;
+	public ObstacleType type = ObstacleType.full;
 
 	public int drawLevel = 5;
 
@@ -69,9 +69,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	public String name;
 	public String description;
-
-	public Face[] horizontalFaces;
-	public Face[] verticalFaces;
 
 	protected boolean[] validFaces = new boolean[2];
 
@@ -231,46 +228,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public void postOverride()
 	{
 		Game.setObstacle(posX, posY, this);
-	}
-
-	public Face[] getHorizontalFaces()
-	{
-		if (this.horizontalFaces == null)
-		{
-			this.horizontalFaces = new Face[2];
-			double s = Game.tile_size / 2;
-			this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, Direction.up, this.tankCollision, this.bulletCollision);
-			this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, Direction.down, this.tankCollision, this.bulletCollision);
-		}
-
-		return this.horizontalFaces;
-	}
-
-	public boolean[] getValidHorizontalFaces(boolean unbreakable)
-	{
-		this.validFaces[0] = false;
-		this.validFaces[1] = false;
-		return this.validFaces;
-	}
-
-	public Face[] getVerticalFaces()
-	{
-		if (this.verticalFaces == null)
-		{
-			this.verticalFaces = new Face[2];
-			double s = Game.tile_size / 2;
-			this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, Direction.left, this.tankCollision, this.bulletCollision);
-			this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, Direction.right, this.tankCollision, this.bulletCollision);
-		}
-
-		return this.verticalFaces;
-	}
-
-	public boolean[] getValidVerticalFaces(boolean unbreakable)
-	{
-		this.validFaces[0] = false;
-		this.validFaces[1] = false;
-		return this.validFaces;
 	}
 
 	/**
@@ -446,15 +403,5 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 				obstacleOut.add(o);
 		}
 		return obstacleOut;
-	}
-
-	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)
-	{
-		if (t1 == ObstacleType.full || t2 == ObstacleType.full)
-			return false;
-		else if (t1 == ObstacleType.extra || t2 == ObstacleType.extra)
-			return true;
-		else
-			return t1 != t2;
 	}
 }

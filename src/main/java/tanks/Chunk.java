@@ -99,8 +99,6 @@ public class Chunk implements Comparable<Chunk>
     }
 
 
-    public static int[] x1 = {0, 1, 0, 0}, x2 = {1, 1, 1, 0}, y1 = {0, 0, 1, 0}, y2 = {0, 1, 1, 1};
-
     /**
      * Adds a level border on the specified side of the chunk, where rays will collide off of.
      *
@@ -111,10 +109,10 @@ public class Chunk implements Comparable<Chunk>
     {
         int side = dir.index();
         Face f = new Face(null,
-                convert(chunkX + x1[side], l, true),
-                convert(chunkY + y1[side], l, false),
-                convert(chunkX + x2[side], l, true),
-                convert(chunkY + y2[side], l, false),
+                convert(chunkX + Face.x1[side], l, true),
+                convert(chunkY + Face.y1[side], l, false),
+                convert(chunkX + Face.x2[side], l, true),
+                convert(chunkY + Face.y2[side], l, false),
                 dir, true, true);
         borderFaces[side] = f;
         faces.getSide(dir.opposite().index()).add(f);
@@ -322,11 +320,8 @@ public class Chunk implements Comparable<Chunk>
     public void setObstacle(int x, int y, Obstacle o)
     {
         Tile t = tileGrid[x][y];
-        Obstacle o1 = t.obstacle();
-        if (!Obstacle.canPlaceOn(o.type, o1.type))
-            return;
-
-        t.add(o);
+        if (t.canPlaceOn(o))
+            t.add(o);
     }
 
     /** Expects tile coordinates. */
@@ -582,6 +577,35 @@ public class Chunk implements Comparable<Chunk>
                 extraObstacle = o;
             else
                 throw new RuntimeException("New obstacle type added! Make sure to add it to Chunk.Tile.add()");
+        }
+
+        public boolean canPlaceOn(GameObject o)
+        {
+            boolean noFull = fullObstacle == null;
+            if (!(o instanceof Obstacle))
+                return noFull;
+
+            Obstacle.ObstacleType t = ((Obstacle) o).type;
+            boolean canPlaceUnder = noFull || fullObstacle.type == Obstacle.ObstacleType.top;
+
+            if (t == Obstacle.ObstacleType.full || t == Obstacle.ObstacleType.top)
+                return noFull;
+            if (t == Obstacle.ObstacleType.ground)
+                return canPlaceUnder && surfaceObstacle == null;
+            if (t == Obstacle.ObstacleType.extra)
+                return canPlaceUnder && extraObstacle == null;
+
+            throw new RuntimeException("New obstacle type added! Make sure to add it to Chunk.Tile.canPlaceOn()");
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Tile(" +
+                    "fullObstacle=" + fullObstacle +
+                    ", surfaceObstacle=" + surfaceObstacle +
+                    ", extraObstacle=" + extraObstacle +
+                    ')';
         }
     }
 }

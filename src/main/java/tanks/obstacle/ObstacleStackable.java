@@ -152,22 +152,6 @@ public class ObstacleStackable extends Obstacle
     }
 
     @Override
-    public boolean[] getValidHorizontalFaces(boolean unbreakable)
-    {
-        this.validFaces[0] = (!this.hasNeighbor(0, -1, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-        this.validFaces[1] = (!this.hasNeighbor(0, 1, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-        return this.validFaces;
-    }
-
-    @Override
-    public boolean[] getValidVerticalFaces(boolean unbreakable)
-    {
-        this.validFaces[0] = (!this.hasNeighbor(-1, 0, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-        this.validFaces[1] = (!this.hasNeighbor(1, 0, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-        return this.validFaces;
-    }
-
-    @Override
     public double getTileHeight()
     {
         if (Obstacle.draw_size < Game.tile_size || this.startHeight > 1)

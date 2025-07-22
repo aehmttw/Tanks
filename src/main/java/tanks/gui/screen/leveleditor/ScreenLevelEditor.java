@@ -1415,27 +1415,27 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	protected boolean checkForObstacle(boolean validRight, double mx, double my)
 	{
-		Obstacle m = Game.getObstacle(mx, my);
-        if (!validRight)
-		{
-			if (m == null)
-				return false;
-			return m.getClass() == mousePlaceable.getClass() || (mousePlaceable instanceof Obstacle && !Obstacle.canPlaceOn(((Obstacle) mousePlaceable).type, m.type));
-		}
+		Chunk.Tile t = Chunk.getTile(mx, my);
+		if (t == null)
+			return false;
 
-        this.undoActions.add(new EditorAction.ActionObstacle(m, false));
-        Game.removeObstacles.add(m);
-        return false;
-	}
+		Obstacle o = t.obstacle();
+
+        if (validRight)
+        {
+            this.undoActions.add(new EditorAction.ActionObstacle(o, false));
+            Game.removeObstacles.add(o);
+            return false;
+        }
+        else
+        {
+            return !t.canPlaceOn(mousePlaceable);
+        }
+    }
 
 	protected static boolean checkForMovable(double mx, double my)
 	{
-		for (Movable m : Game.movables)
-		{
-			if (m.posX == mx && m.posY == my)
-				return true;
-		}
-		return false;
+		return Movable.findMovable(mx, my) != null;
 	}
 
 	protected void placeObstacle(boolean batch, boolean paste)

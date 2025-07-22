@@ -59,9 +59,6 @@ public class Game
 
 	public static final int absoluteDepthBase = 1000;
 
-	public static ArrayList<Face> horizontalFaces = new ArrayList<>();
-	public static ArrayList<Face> verticalFaces = new ArrayList<>();
-
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
 	public static ArrayList<IAvoidObject> avoidObjects = new ArrayList<>();

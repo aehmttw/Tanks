@@ -15,7 +15,6 @@ import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.network.event.EventTankUpdateVisibility;
-import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
@@ -230,11 +229,6 @@ public abstract class Tank extends Movable
 	public Turret turret;
 
 	public boolean standardUpdateEvent = true;
-
-	public Face[] horizontalFaces;
-	public Face[] verticalFaces;
-
-	public HashMap<String, Object> extraProperties = new HashMap<>();
 
 	public boolean isBoss = false;
 	public Tank possessor;

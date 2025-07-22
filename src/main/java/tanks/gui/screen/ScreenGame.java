@@ -83,9 +83,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public RotationAboutPoint slantRotation;
 	public Translation slantTranslation;
 
-	public Face[] horizontalFaces;
-	public Face[] verticalFaces;
-
 	public Tank spectatingTank = null;
 
 	public double readyPanelCounter = 0;
@@ -112,8 +109,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	public boolean zoomScrolled = false;
 
 	public boolean playedIntro = false;
-
-	public ArrayList<Obstacle> obstaclesToUpdate = new ArrayList<>();
 
 	protected static String[] ready_musics =
 			{"piano.ogg", "synth.ogg", "bass-guitar.ogg", "drum.ogg", "beep.ogg",
@@ -602,14 +597,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 		slantRotation = new RotationAboutPoint(Game.game.window, 0, 0, 0, 0, 0.5, -1);
 		slantTranslation = new Translation(Game.game.window, 0, 0, 0);
-
-		this.horizontalFaces = new Face[2];
-		this.horizontalFaces[0] = new Face(null, 0, 0, Game.currentSizeX * Game.tile_size, 0, Direction.down, true, true);
-		this.horizontalFaces[1] = new Face(null, 0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, Direction.up, true, true);
-
-		this.verticalFaces = new Face[2];
-		this.verticalFaces[0] = new Face(null, 0, 0,0, Game.currentSizeY * Game.tile_size, Direction.left, true, true);
-		this.verticalFaces[1] = new Face(null, Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, Direction.right, true, true);
 
 		if (!Crusade.crusadeMode)
 		{

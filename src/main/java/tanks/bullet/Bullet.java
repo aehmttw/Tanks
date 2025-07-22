@@ -1782,6 +1782,18 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		}
 	}
 
+	@Override
+	public boolean disableRayCollision()
+	{
+		return !bulletCollision();
+	}
+
+	@Override
+	public boolean bulletCollision()
+	{
+		return bulletCollision && externalBulletCollision && enableExternalCollisions;
+	}
+
 	public double getSize()
 	{
 		return size;

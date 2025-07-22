@@ -105,6 +105,33 @@ public abstract class GameObject
         return secondaryMetadataField.get(this.getClass());
     }
 
+    static double pi_over_4 = Math.PI / 4;
+    static double fastAtan(double a)
+    {
+        if (a < -1 || a > 1)
+            return Math.atan(a);
+
+        return pi_over_4 * a - a * (Math.abs(a) - 1) * (0.2447 + 0.0663 * Math.abs(a));
+    }
+
+    public static double getPolarDirection(double x, double y)
+    {
+        double angle = 0;
+        if (x > 0)
+            angle = Math.atan(y / x);
+        else if (x < 0)
+            angle = Math.atan(y / x) + Math.PI;
+        else
+        {
+            if (y > 0)
+                angle = Math.PI / 2;
+            else if (y < 0)
+                angle = Math.PI * 3 / 2;
+        }
+
+        return angle;
+    }
+
     public static double distanceBetween(double x1, double y1, double x2, double y2)
     {
         return Math.sqrt(sqDistBetw(x1, y1, x2, y2));

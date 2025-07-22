@@ -72,7 +72,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		refreshFaces = false;
 	}
 
-	public static ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
+	/** Cached list for checking chunks that the movable has just left */
+	private static final ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
 
 	public void updateChunks()
 	{
@@ -194,104 +195,50 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		this.vY = velocity * Math.sin(angle);
 	}
 
-	static double pi_over_4 = Math.PI / 4;
-	static double fastAtan(double a)
-	{
-		if (a < -1 || a > 1)
-			return Math.atan(a);
-
-		return pi_over_4 * a - a * (Math.abs(a) - 1) * (0.2447 + 0.0663 * Math.abs(a));
-	}
-
 	public double getAngleInDirection(double x, double y)
 	{
-		x -= this.posX;
-		y -= this.posY;
-
-		double angle = 0;
-		if (x > 0)
-			angle = fastAtan(y / x);
-		else if (x < 0)
-			angle = fastAtan(y / x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-		return angle;
+		return Movable.getPolarDirection(x - this.posX, y - this.posY);
 	}
 
 	public double getPolarDirection()
 	{
-		return Movable.getPolarDirection(this.vX, this.vY);
+		return getPolarDirection(this.vX, this.vY);
 	}
 
 	public double getPolarPitch()
 	{
-		return Math.atan(this.vZ / this.getSpeed());
+		return fastAtan(this.vZ / this.getSpeed());
 	}
 
 	public double getLastPolarDirection()
 	{
-		return Movable.getPolarDirection(this.lastVX, this.lastVY);
-	}
-
-	public static double getPolarDirection(double x, double y)
-	{
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y / x);
-		else if (x < 0)
-			angle = Math.atan(y / x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-
-		return angle;
+		return getPolarDirection(this.lastVX, this.lastVY);
 	}
 
 	public void setPolarMotion(double angle, double velocity)
 	{
-		double velX = velocity * Math.cos(angle);
-		double velY = velocity * Math.sin(angle);
-		this.vX = velX;
-		this.vY = velY;
+		this.vX = velocity * Math.cos(angle);
+		this.vY = velocity * Math.sin(angle);
 	}
 
 	public void set3dPolarMotion(double angle1, double angle2, double velocity)
 	{
-		double velX = velocity * Math.cos(angle1) * Math.cos(angle2);
-		double velY = velocity * Math.sin(angle1) * Math.cos(angle2);
-		double velZ = velocity * Math.sin(angle2);
-
-		this.vX = velX;
-		this.vY = velY;
-		this.vZ = velZ;
+		this.vX = velocity * Math.cos(angle1) * Math.cos(angle2);
+		this.vY = velocity * Math.sin(angle1) * Math.cos(angle2);
+		this.vZ = velocity * Math.sin(angle2);
 	}
 
 	public void addPolarMotion(double angle, double velocity)
 	{
-		double velX = velocity * Math.cos(angle);
-		double velY = velocity * Math.sin(angle);
-		this.vX += velX;
-		this.vY += velY;
+		this.vX += velocity * Math.cos(angle);
+		this.vY += velocity * Math.sin(angle);
 	}
 
 	public void add3dPolarMotion(double angle1, double angle2, double velocity)
 	{
-		double velX = velocity * Math.cos(angle1) * Math.cos(angle2);
-		double velY = velocity * Math.sin(angle1) * Math.cos(angle2);
-		double velZ = velocity * Math.sin(angle2);
-
-		this.vX += velX;
-		this.vY += velY;
-		this.vZ += velZ;
+		this.vX += velocity * Math.cos(angle1) * Math.cos(angle2);
+		this.vY += velocity * Math.sin(angle1) * Math.cos(angle2);
+		this.vZ += velocity * Math.sin(angle2);
 	}
 
 	public void moveInDirection(double x, double y, double amount)
@@ -397,41 +344,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public void drawForInterface(double x, double y)
 	{
 		this.drawAt(x, y);
-	}
-
-	public static double distanceBetween(double x1, double y1, double x2, double y2)
-	{
-		return Math.sqrt(sqDistBetw(x1, y1, x2, y2));
-	}
-
-	public static double sqDistBetw(double x1, double y1, double x2, double y2)
-	{
-		return (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
-	}
-
-	public static double sqDistBetw(final GameObject a, final GameObject b)
-	{
-		return sqDistBetw(a.posX, a.posY, b.posX, b.posY);
-	}
-
-	public static boolean withinRange(final GameObject a, final GameObject b, double range)
-	{
-		return sqDistBetw(a, b) < range * range;
-	}
-
-	public static double distanceBetween(final GameObject a, final GameObject b)
-	{
-		return distanceBetween(a.posX, a.posY, b.posX, b.posY);
-	}
-
-	public static double angleBetween(double a, double b)
-	{
-		return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;
-	}
-
-	public static double absoluteAngleBetween(double a, double b)
-	{
-		return Math.abs((a - b + Math.PI * 3) % (Math.PI * 2) - Math.PI);
 	}
 
 	public void setEffectManager(EffectManager em)

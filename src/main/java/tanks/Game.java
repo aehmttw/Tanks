@@ -54,9 +54,6 @@ public class Game
 
 	public static final double tile_size = 50;
 
-	public static final int[] dirX = {1, -1, 0, 0};
-	public static final int[] dirY = {0, 0, 1, -1};
-
 	public static Chunk.Tile[][] tiles = new Chunk.Tile[28][18];
 
 	public static UUID computerID;
@@ -206,6 +203,7 @@ public class Game
 	public static int seed = 0;
 
 	public static boolean invulnerable = false;
+	public static boolean immutableFaces = false;
 
 	public static boolean warnBeforeClosing = true;
 

@@ -15,7 +15,6 @@ import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.network.event.EventTankUpdateVisibility;
-import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
@@ -231,9 +230,6 @@ public abstract class Tank extends Movable implements ISolidObject
 	public Turret turret;
 
 	public boolean standardUpdateEvent = true;
-
-	public Face[] horizontalFaces;
-	public Face[] verticalFaces;
 
 	public HashMap<String, Object> extraProperties = new HashMap<>();
 
@@ -1007,46 +1003,6 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 	}
 
-	@Override
-	public Face[] getHorizontalFaces()
-	{
-		double s = this.size * this.hitboxSize / 2;
-
-		if (this.horizontalFaces == null)
-		{
-			this.horizontalFaces = new Face[2];
-			this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, true, true, true, true);
-			this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, true, false,true, true);
-		}
-		else
-		{
-			this.horizontalFaces[0].update(this.posX - s, this.posY - s, this.posX + s, this.posY - s);
-			this.horizontalFaces[1].update(this.posX - s, this.posY + s, this.posX + s, this.posY + s);
-		}
-
-		return this.horizontalFaces;
-	}
-
-	@Override
-	public Face[] getVerticalFaces()
-	{
-		double s = this.size * this.hitboxSize / 2;
-
-		if (this.verticalFaces == null)
-		{
-			this.verticalFaces = new Face[2];
-			this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, false, true, true, true);
-			this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, false, false, true, true);
-		}
-		else
-		{
-			this.verticalFaces[0].update(this.posX - s, this.posY - s, this.posX - s, this.posY + s);
-			this.verticalFaces[1].update(this.posX + s, this.posY - s, this.posX + s, this.posY + s);
-		}
-
-		return this.verticalFaces;
-	}
-
 	public boolean damage(double amount, GameObject source)
 	{
 		double prev = this.health;
@@ -1142,6 +1098,12 @@ public abstract class Tank extends Movable implements ISolidObject
 				}
 			}
 		}
+	}
+
+	@Override
+	public double getSize()
+	{
+		return size * hitboxSize;
 	}
 
 	public double getDamageMultiplier(GameObject source)

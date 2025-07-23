@@ -364,11 +364,48 @@ public class Chunk implements Comparable<Chunk>
         Drawing.drawing.setColor(255, 255, 0, 128);
 
         for (Chunk c : chunkList)
-            Drawing.drawing.drawRect(addCoords(c.chunkX, chunkSize / 2.) * Game.tile_size, addCoords(c.chunkY, chunkSize / 2.) * Game.tile_size,
-                    chunkSize * Game.tile_size, chunkSize * Game.tile_size, 1);
+        {
+            int i = 0;
+            for (Face f : c.borderFaces)
+            {
+                if (f != null)
+                {
+                    Drawing.drawing.setColor(50, 50, 255);
+                    drawClampedRect(
+                            Game.currentLevel,
+                            f.startX, f.startY,
+                            f.endX, f.endY
+                    );
+                }
+                else
+                {
+                    double x = c.chunkX * chunkSize * Game.tile_size;
+                    double y = c.chunkY * chunkSize * Game.tile_size;
+                    double sX = chunkSize * Game.tile_size;
+                    double sY = chunkSize * Game.tile_size;
+
+                    Drawing.drawing.setColor(255, 255, 0);
+                    drawClampedRect(
+                            Game.currentLevel,
+                            x + sX * Face.x1[i],
+                            y + sY * Face.y1[i],
+                            x + sX * (Face.x2[i] - Face.x1[i]),
+                            y + sY * (Face.y2[i] - Face.y1[i])
+                    );
+                }
+                i += 1;
+            }
+        }
     }
 
-
+    /** Given a rectangle's bounding box, clamps it to the level borders and draws it.
+     * Also ensures a line width of 2. */
+    private static void drawClampedRect(Level l, double x1, double y1, double x2, double y2)
+    {
+        double sX = Math.max(2, Math.min(l.sizeX * Game.tile_size - x1, x2 - x1));
+        double sY = Math.max(2, Math.min(l.sizeY * Game.tile_size - y1, y2 - y1));
+        Drawing.drawing.fillRect(x1 + sX / 2, y1 + sY / 2, sX, sY);
+    }
 
     public static void initialize()
     {

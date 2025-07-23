@@ -41,9 +41,10 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_V);
             if (Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
-            notifs.add(new ScreenElement.Notification(Game.currentLevel != null ? "Reloaded tiles" : "Reload tiles failed: " +
-                    "Game.\u00a7200125255255currentLevel\u00a7255255255255 = \u00a7255128128255null",
-                    200));
+            else
+                Chunk.populateChunks(Chunk.defaultLevel);
+            notifs.add(new ScreenElement.Notification(Game.currentLevel != null ? "Reloaded tiles with current level" :
+                    "Reloaded tiles with default level", 200));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_G))

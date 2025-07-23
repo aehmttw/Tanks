@@ -156,12 +156,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	}
 
-	@Override
-	public double getSize()
-	{
-		return 0;
-	}
-
 	/** Alias for {@link #getEffectManager()} */
 	public EffectManager em()
 	{

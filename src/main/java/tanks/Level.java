@@ -214,15 +214,21 @@ public class Level
 		int last = 0;
 		ArrayList<String> out = new ArrayList<>();
 		for (int i = 0; i < s.length(); i++) {
-			if (s.charAt(i) == '{')
+			if (s.charAt(i) == '{') {
+				if (depth == 0 && !s.substring(last, i).trim().isEmpty()) {
+					out.add(s.substring(last, i));
+					last = i;
+				}
 				depth++;
-			else if (s.charAt(i) == '}')
-				depth--;
-
-			if (depth == 0 && i > last) {
-				out.add(s.substring(last, i+1));
-				last = i+1;
 			}
+			else if (s.charAt(i) == '}') {
+				depth--;
+				if (depth == 0 && !s.substring(last, i + 1).trim().isEmpty()) {
+					out.add(s.substring(last, i + 1));
+					last = i + 1;
+				}
+			}
+
 		}
 		return out;
 	}
@@ -848,5 +854,100 @@ public class Level
 	public boolean isLarge()
 	{
 		return !(this.sizeX * this.sizeY <= 100000 && this.tanks.length < 500);
+	}
+
+	public String stripFormatting()
+	{
+		String jsoncString = this.levelString;
+		if (jsoncString == null || jsoncString.isEmpty())
+		{
+			return jsoncString;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		boolean inString = false;
+		boolean inSingleLineComment = false;
+		boolean inMultiLineComment = false;
+
+		for (int i = 0; i < jsoncString.length(); i++)
+		{
+			char c = jsoncString.charAt(i);
+
+			if (inString)
+			{
+				sb.append(c);
+				if (c == '"')
+				{
+					// A quote is unescaped if it's not preceded by an odd number of backslashes.
+					int backslashes = 0;
+					for (int j = i - 1; j >= 0; j--)
+					{
+						if (jsoncString.charAt(j) == '\\')
+							backslashes++;
+						else
+							break;
+					}
+
+					if (backslashes % 2 == 0)
+						inString = false;
+				}
+			}
+			else if (inSingleLineComment)
+			{
+				if (c == '\n')
+					inSingleLineComment = false;
+			}
+			else if (inMultiLineComment)
+			{
+				// Check for end of multi-line comment: */
+				if (c == '*' && i + 1 < jsoncString.length() && jsoncString.charAt(i + 1) == '/')
+				{
+					inMultiLineComment = false;
+					i++; // Also skip the '/'
+				}
+			}
+			else
+			{
+				// Not in any special state, check for transitions or valid characters
+				if (c == '"')
+				{
+					inString = true;
+					sb.append(c);
+				}
+				else if (c == '/' && i + 1 < jsoncString.length())
+				{
+					char next = jsoncString.charAt(i + 1);
+					if (next == '/')
+					{
+						inSingleLineComment = true;
+						i++; // Also skip the second '/'
+					}
+					else if (next == '*')
+					{
+						inMultiLineComment = true;
+						i++; // Also skip the '*'
+					}
+					else
+					{
+						// It's a valid character (e.g. in a URL), not a comment start.
+						sb.append(c);
+					}
+				}
+				else if (!Character.isWhitespace(c))
+				{
+					sb.append(c);
+				}
+				// else, it's insignificant whitespace, so we ignore it
+			}
+		}
+
+		String ir = sb.toString();
+		ArrayList<String> objects = getJsonObjects(ir);
+		String out = "";
+		for (String o : objects) {
+			out += "\n" + o;
+		}
+
+		return out.substring(1);
 	}
 }

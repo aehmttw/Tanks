@@ -104,12 +104,16 @@ public class Level
 			if (s.startsWith("items\n"))
 			{
 				s = s.substring("items\n".length());
-				this.startingItems.add(Item.ItemStack.fromString(null, s));
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects)
+					this.startingItems.add(Item.ItemStack.fromString(null, o));
 			}
 			else if (s.startsWith("shop\n"))
 			{
 				s = s.substring("shop\n".length());
-				this.shop.add(Item.ShopItem.fromString(s));
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects)
+					this.shop.add(Item.ShopItem.fromString(o));
 			}
 			else if (s.startsWith("coins\n"))
 			{
@@ -119,15 +123,21 @@ public class Level
 			else if (s.startsWith("tanks\n"))
 			{
 				s = s.substring("tanks\n".length());
-				TankAIControlled t = TankAIControlled.fromString(s);
-				if (t != null)
-					this.customTanks.add(t);
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects) {
+					TankAIControlled t = TankAIControlled.fromString(o);
+					if (t != null)
+						this.customTanks.add(t);
+				}
 			} else if (s.startsWith("builds\n"))
 			{
 				s = s.substring("builds\n".length());
-				TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(s);
-				t.enableTertiaryColor = true;
-				this.playerBuilds.add(t);
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects) {
+					TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(o);
+					t.enableTertiaryColor = true;
+					this.playerBuilds.add(t);
+				}
 			} else {
 				if (s.startsWith("level\n")) {
 					s = s.substring("level\n".length());
@@ -197,6 +207,24 @@ public class Level
 			this.startingItems = new ArrayList<>();
 			this.shop = new ArrayList<>();
 		}
+	}
+
+	private static ArrayList<String> getJsonObjects(String s) {
+		int depth = 0;
+		int last = 0;
+		ArrayList<String> out = new ArrayList<>();
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) == '{')
+				depth++;
+			else if (s.charAt(i) == '}')
+				depth--;
+
+			if (depth == 0 && i > last) {
+				out.add(s.substring(last, i+1));
+				last = i+1;
+			}
+		}
+		return out;
 	}
 
 	public void loadLevel()

@@ -99,8 +99,6 @@ public class Level
 		//Look Ahead Split (keeping the delimiter with the associated block)
 		String[] blocks = this.levelString.split("(?=(level|items|shop|coins|tanks|builds)\n)");
 
-		System.out.println(Arrays.toString(blocks));
-
 		for (String s: blocks)
 		{
 			if (s.startsWith("items\n"))

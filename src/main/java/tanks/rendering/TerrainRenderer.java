@@ -751,14 +751,17 @@ public class TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
+        if (stagedCount == 0)
+            totalObjectsCount = Game.currentSizeX * Game.currentSizeY + Game.obstacles.size();
+
         for (Obstacle o : Game.obstacles)
             o.postOverride();
 
         drawBorders();
 
         long start = System.currentTimeMillis();
-        int x;
-        for (x = stagedCount / Game.currentSizeY; x < Game.currentSizeX && (!allowPartialLoading || System.currentTimeMillis() - start < 50); x++)
+        int x = stagedCount / Game.currentSizeY;
+        for (; x < Game.currentSizeX && (!allowPartialLoading || System.currentTimeMillis() - start < 50); x++)
         {
             for (int y = 0; y < Game.currentSizeY; y++)
                 drawTile(x, y);

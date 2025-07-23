@@ -97,7 +97,7 @@ public class Ray
 		this.ignoreBullets = true;
 		this.asBullet = true;
 		this.ignoreDestructible = false;
-		this.ignoreShootThrough = true;
+		this.ignoreShootThrough = false;
 
 		this.age = 0;
 		this.range = 0;

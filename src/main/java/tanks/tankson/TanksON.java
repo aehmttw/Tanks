@@ -42,10 +42,30 @@ public class TanksON
         {
             while (true)
             {
-                if (" \t\n\r".startsWith(this.nextChar() + ""))
+                if (index >= s.length()) {
+                    return; // Reached end of string
+                }
+                char c = this.nextChar();
+                if (Character.isWhitespace(c)) {
                     index++;
-                else
+                } else if (s.startsWith("//", index)) {
+                    // Skip single-line comment
+                    while (index < s.length() && s.charAt(index) != '\n' && s.charAt(index) != '\r') {
+                        index++;
+                    }
+                } else if (s.startsWith("/*", index)) {
+                    // Skip multi-line comment
+                    index += 2; // Skip "/*"
+                    int commentEnd = s.indexOf("*/", index);
+                    if (commentEnd != -1) {
+                        index = commentEnd + 2; // Skip "*/"
+                    } else {
+                        // Malformed comment, treat rest of string as part of comment
+                        index = s.length();
+                    }
+                } else {
                     return;
+                }
             }
         }
     }

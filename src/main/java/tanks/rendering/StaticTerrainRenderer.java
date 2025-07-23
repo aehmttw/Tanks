@@ -3,6 +3,7 @@ package tanks.rendering;
 import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
+import tanks.Chunk;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ILevelPreviewScreen;
@@ -60,8 +61,8 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
         if (o instanceof Obstacle)
             sg = ((Obstacle) o).renderer;
-        else if (o instanceof RendererTile && ((RendererTile) o).obstacleAbove != null)
-            sg = ((RendererTile) o).obstacleAbove.tileRenderer;
+        else if (o instanceof Chunk.Tile && ((Chunk.Tile) o).obstacle() != null)
+            sg = ((Chunk.Tile) o).obstacle().tileRenderer;
 
         if (!outOfBounds)
         {
@@ -224,18 +225,6 @@ public class StaticTerrainRenderer extends TerrainRenderer
         }
     }
 
-    public void populateTiles()
-    {
-        this.rendererTiles = new RendererTile[Game.currentSizeX][Game.currentSizeY];
-        for (int i = 0; i < Game.currentSizeX; i++)
-        {
-            for (int j = 0; j < Game.currentSizeY; j++)
-            {
-                this.rendererTiles[i][j] = new RendererTile();
-            }
-        }
-    }
-
     public void reset()
     {
         for (RegionRenderer r : this.renderers.values())
@@ -244,8 +233,6 @@ public class StaticTerrainRenderer extends TerrainRenderer
         }
 
         this.outOfBoundsRenderer.renderer.free();
-
-        this.rendererTiles = null;
         this.renderers.clear();
         this.staged = false;
 
@@ -377,15 +364,12 @@ public class StaticTerrainRenderer extends TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        this.populateTiles();
+        for (Obstacle o : Game.obstacles)
+            o.postOverride();
 
-        for (int i = 0; i < this.rendererTiles.length; i++)
-        {
-            for (int j = 0; j < this.rendererTiles[i].length; j++)
-            {
+        for (int i = 0; i < Game.currentSizeX; i++)
+            for (int j = 0; j < Game.currentSizeY; j++)
                 this.drawTile(i, j);
-            }
-        }
 
         Obstacle.draw_size = s;
     }

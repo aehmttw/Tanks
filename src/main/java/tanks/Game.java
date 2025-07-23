@@ -175,6 +175,7 @@ public class Game
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
 	public static boolean xrayBullets = true;
+	public static boolean immutableFaces = false;
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
@@ -203,7 +204,6 @@ public class Game
 	public static int seed = 0;
 
 	public static boolean invulnerable = false;
-	public static boolean immutableFaces = false;
 
 	public static boolean warnBeforeClosing = true;
 
@@ -1029,7 +1029,7 @@ public class Game
 	public static void resetTiles()
 	{
 		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
-		Chunk.populateChunks();
+		Chunk.initialize();
 
 		Level.currentColorR = 235;
 		Level.currentColorG = 207;
@@ -1131,6 +1131,9 @@ public class Game
 		Chunk.Tile t = Chunk.getTile(posX, posY);
 		if (t != null)
 			t.add(o);
+		Chunk.Tile t1 = Chunk.getTile2(posX, posY);
+		if (t1 != null)
+			t1.add(o);
 	}
 
 	public static double sampleGroundHeight(double px, double py)

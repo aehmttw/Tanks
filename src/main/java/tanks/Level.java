@@ -739,9 +739,7 @@ public class Level
 		addLevelBorders();
 
 		for (Obstacle o: Game.obstacles)
-		{
             o.postOverride();
-        }
 
 		ScreenLevelEditor s = null;
 		
@@ -754,10 +752,12 @@ public class Level
 			s.selectedTiles = new boolean[Game.currentSizeX][Game.currentSizeY];
 	}
 
-	/** to be implemented */
 	public void addLevelBorders()
 	{
-
+		Chunk.getChunksInRange(0, 0, sizeX, 0).forEach(chunk -> chunk.addBorderFace(Direction.up, this));
+		Chunk.getChunksInRange(sizeX, 0, sizeX, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.right, this));
+		Chunk.getChunksInRange(0, sizeY, sizeX, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.down, this));
+		Chunk.getChunksInRange(0, 0, 0, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.left, this));
 	}
 
 	public static class Tile

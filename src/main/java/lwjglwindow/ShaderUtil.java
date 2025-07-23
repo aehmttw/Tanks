@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -291,10 +290,10 @@ public class ShaderUtil extends BaseShaderUtil
         GL11.glDisableClientState(GL_VERTEX_ARRAY);
         GL11.glDisableClientState(GL_COLOR_ARRAY);
 
-        for (int i: this.enabledAttributes)
-        {
-            GL20.glDisableVertexAttribArray(i);
-        }
+        ArrayList<Integer> attributes = this.enabledAttributes;
+        //noinspection ForLoopReplaceableByForEach
+        for (int i = 0, attributesSize = attributes.size(); i < attributesSize; i++)
+            glDisableVertexAttribArray(attributes.get(i));
 
         this.enabledAttributes.clear();
     }

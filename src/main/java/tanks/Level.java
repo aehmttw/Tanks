@@ -96,74 +96,60 @@ public class Level
 
 		this.levelString = level.replaceAll("\u0000", "");
 
-		int parsing = 0;
+		//Look Ahead Split (keeping the delimiter with the associated block)
+		String[] blocks = this.levelString.split("(?=(level|items|shop|coins|tanks|builds)\n)");
 
-		String[] lines = this.levelString.split("\n");
+		System.out.println(Arrays.toString(blocks));
 
-		for (String s: lines)
+		for (String s: blocks)
 		{
-			switch (s.toLowerCase())
+			if (s.startsWith("items\n"))
 			{
-				case "level":
-					parsing = 0;
-					break;
-				case "items":
-					parsing = 1;
-					break;
-				case "shop":
-					parsing = 2;
-					break;
-				case "coins":
-					parsing = 3;
-					break;
-				case "tanks":
-					parsing = 4;
-					break;
-				case "builds":
-					parsing = 5;
-					break;
-				default:
-					if (parsing == 0)
-					{
-						preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
-						screen = preset[0].split(",");
-						obstaclesPos = preset[1].split(",");
-						tanks = preset[2].split(",");
+				s = s.substring("items\n".length());
+				this.startingItems.add(Item.ItemStack.fromString(null, s));
+			}
+			else if (s.startsWith("shop\n"))
+			{
+				s = s.substring("shop\n".length());
+				this.shop.add(Item.ShopItem.fromString(s));
+			}
+			else if (s.startsWith("coins\n"))
+			{
+				s = s.substring("coins\n".length());
+				this.startingCoins = Integer.parseInt(s);
+			}
+			else if (s.startsWith("tanks\n"))
+			{
+				s = s.substring("tanks\n".length());
+				TankAIControlled t = TankAIControlled.fromString(s);
+				if (t != null)
+					this.customTanks.add(t);
+			} else if (s.startsWith("builds\n"))
+			{
+				s = s.substring("builds\n".length());
+				TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(s);
+				t.enableTertiaryColor = true;
+				this.playerBuilds.add(t);
+			} else {
+				if (s.startsWith("level\n")) {
+					s = s.substring("level\n".length());
+				}
+				preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
+				screen = preset[0].split(",");
+				obstaclesPos = preset[1].split(",");
+				tanks = preset[2].split(",");
 
-						if (preset.length >= 4)
-						{
-							teams = preset[3].split(",");
-							enableTeams = true;
-						}
+				if (preset.length >= 4)
+				{
+					teams = preset[3].split(",");
+					enableTeams = true;
+				}
 
-						if (screen[0].startsWith("*"))
-						{
-							editable = false;
-							screen[0] = screen[0].substring(1);
-						}
-					}
-					else if (parsing == 4)
-					{
-						TankAIControlled t = TankAIControlled.fromString(s);
-						if (t != null)
-							this.customTanks.add(t);
-					}
-					else if (parsing == 5)
-					{
-						TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(s);
-						t.enableTertiaryColor = true;
-						this.playerBuilds.add(t);
-					}
-					else
-					{
-						if (parsing == 1)
-							this.startingItems.add(Item.ItemStack.fromString(null, s));
-						else if (parsing == 2)
-							this.shop.add(Item.ShopItem.fromString(s));
-						else
-							this.startingCoins = Integer.parseInt(s);
-					}
-					break;
+				if (screen[0].startsWith("*"))
+				{
+					editable = false;
+					screen[0] = screen[0].substring(1);
+				}
 			}
 		}
 

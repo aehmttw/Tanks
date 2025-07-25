@@ -627,7 +627,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		b.vX = vX2;
 		b.vY = vY2;
 
-		double dist = Movable.distanceBetween(this, b);
+		double dist = GameObject.distanceBetween(this, b);
 		double sizes = (this.size + b.size) / 2;
 		this.moveInAngle(toAngle, dist - sizes);
 		b.moveInAngle(toAngle + Math.PI, dist - sizes);
@@ -1035,7 +1035,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			if (m instanceof Tank && (Team.isAllied(this, m) != this.isHarmful()) && !m.destroy)
 			{
 				Tank t = (Tank) m;
-				double d = Movable.distanceBetween(this, m);
+				double d = GameObject.distanceBetween(this, m);
 
 				if (d < nearestDist)
 				{
@@ -1102,7 +1102,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 			if (Game.playerTank != null && !Game.playerTank.destroy && !ScreenGame.finishedQuick && !this.homingSilent)
 			{
-				double d = Movable.distanceBetween(this, Game.playerTank);
+				double d = GameObject.distanceBetween(this, Game.playerTank);
 
 				if (d <= 500)
 				{
@@ -1236,7 +1236,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 				if (eligible)
 				{
-					double d = Movable.distanceBetween(this, m1);
+					double d = GameObject.distanceBetween(this, m1);
 					if (d < nearestDist)
 					{
 						nearest = m1;
@@ -1425,7 +1425,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	public void updateTrails()
 	{
 		if (!this.effect.trailEffects.isEmpty() && !this.addedTrail && !this.destroy &&
-				(Movable.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (this.trail3d && Movable.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
+				(GameObject.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (this.trail3d && GameObject.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
 		{
 			this.addTrail(true);
 		}
@@ -1511,13 +1511,13 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			if (redirect)
 			{
 				double angle = this.getPolarDirection();
-				double offset = Movable.angleBetween(angle, old.angle) / 2;
+				double offset = GameObject.angleBetween(angle, old.angle) / 2;
 
 				if (t instanceof Trail3D && old instanceof Trail3D)
 				{
 					Trail3D t1 = (Trail3D) t;
 					Trail3D old1 = (Trail3D) old;
-					double offset2 = Movable.angleBetween(t1.pitch, old1.pitch) / 2;
+					double offset2 = GameObject.angleBetween(t1.pitch, old1.pitch) / 2;
 					old1.setFrontAngleOffset(offset, offset2);
 					t1.setBackAngleOffset(-offset, -offset2);
 				}

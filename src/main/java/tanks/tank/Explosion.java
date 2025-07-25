@@ -5,9 +5,10 @@ import tanks.bullet.Bullet;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
-import tanks.gui.screen.*;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.Item;
-import tanks.item.ItemMine;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
@@ -290,14 +291,14 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
 
         if (this.destroysObstacles && !ScreenPartyLobby.isClient)
         {
-            for (Obstacle o: Game.obstacles)
+            for (Obstacle o: Obstacle.getObstaclesInRadius(this.posX, this.posY, radius + Game.tile_size / 2))
             {
-                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius + Game.tile_size / 2, 2) && o.destructible && !Game.removeObstacles.contains(o))
-                {
-                    o.onDestroy(this);
-                    o.playDestroyAnimation(this.posX, this.posY, this.radius);
-                    Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, this.posX, this.posY, this.radius + Game.tile_size / 2));
-                }
+                if (!o.destructible || Game.removeObstacles.contains(o))
+                    continue;
+
+                o.onDestroy(this);
+                o.playDestroyAnimation(this.posX, this.posY, this.radius);
+                Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, this.posX, this.posY, this.radius + Game.tile_size / 2));
             }
         }
 

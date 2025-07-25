@@ -1,7 +1,6 @@
 package tanks;
 
 import tanks.gui.screen.leveleditor.selector.MetadataSelector;
-import tanks.obstacle.Obstacle;
 import tanks.tankson.MetadataProperty;
 
 import java.lang.reflect.Field;
@@ -106,9 +105,38 @@ public abstract class GameObject
         return secondaryMetadataField.get(this.getClass());
     }
 
-    public static double distanceBetween(final GameObject a, final GameObject b)
+    public static double distanceBetween(double x1, double y1, double x2, double y2)
     {
-        return Math.sqrt((a.posX-b.posX)*(a.posX-b.posX) + (a.posY-b.posY)*(a.posY-b.posY));
+        return Math.sqrt(sqDistBetw(x1, y1, x2, y2));
     }
 
+    public static double sqDistBetw(double x1, double y1, double x2, double y2)
+    {
+        return (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
+    }
+
+    public static double sqDistBetw(final GameObject a, final GameObject b)
+    {
+        return sqDistBetw(a.posX, a.posY, b.posX, b.posY);
+    }
+
+    public static boolean withinRange(final GameObject a, final GameObject b, double range)
+    {
+        return sqDistBetw(a, b) < range * range;
+    }
+
+    public static double distanceBetween(final GameObject a, final GameObject b)
+    {
+        return distanceBetween(a.posX, a.posY, b.posX, b.posY);
+    }
+
+    public static double angleBetween(double a, double b)
+    {
+        return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;
+    }
+
+    public static double absoluteAngleBetween(double a, double b)
+    {
+        return Math.abs((a - b + Math.PI * 3) % (Math.PI * 2) - Math.PI);
+    }
 }

@@ -101,7 +101,7 @@ public class BulletInstant extends Bullet
 			if (ScreenGame.finished)
 				this.destroy = true;
 
-			if (Movable.absoluteAngleBetween(this.getPolarDirection(), angle) >= 0.1)
+			if (GameObject.absoluteAngleBetween(this.getPolarDirection(), angle) >= 0.1)
 			{
 				redirects++;
 				this.collisionX = this.posX;

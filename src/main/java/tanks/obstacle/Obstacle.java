@@ -2,6 +2,7 @@ package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
@@ -32,7 +33,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	 * Extra = can be placed anywhere without a full tile, can have tanks inside
 	 * */
 	public enum ObstacleType { full, ground, top, extra }
-	public ObstacleType type = ObstacleType.top;
+	public ObstacleType type = ObstacleType.full;
 
 	public int drawLevel = 5;
 
@@ -86,8 +87,6 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		this.posX = (int) ((posX + 0.5) * Game.tile_size);
 		this.posY = (int) ((posY + 0.5) * Game.tile_size);
 		this.draggable = true;
-
-		this.baseGroundHeight = Game.sampleGroundHeight(this.posX, this.posY);
 	}
 
 	@Override
@@ -188,15 +187,10 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		int x = (int) (this.posX / Game.tile_size) + ox;
 		int y = (int) (this.posY / Game.tile_size) + oy;
 
-		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
-			if (unbreakable)
-				return Game.game.unbreakableGrid[x][y];
-			else
-				return Game.game.solidGrid[x][y];
-		}
-
-		return false;
+		if (unbreakable)
+			return Game.isUnbreakable(x, y);
+		else
+			return Game.isSolid(x, y);
 	}
 
 	public boolean hasLeftNeighbor()
@@ -231,19 +225,12 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public void drawTile(IBatchRenderableObject tile, double r, double g, double b, double d, double extra)
 	{
 		Drawing.drawing.setColor(r, g, b);
-		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d);
+		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d, (byte) 4);
 	}
 
 	public void postOverride()
 	{
-		int x = (int)(this.posX / Game.tile_size);
-		int y = (int)(this.posY / Game.tile_size);
-
-		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
-		{
-			if (Game.tileDrawables[x][y] == null || Game.tileDrawables[x][y].type != ObstacleType.ground)
-				Game.tileDrawables[x][y] = this;
-		}
+		Game.setObstacle(posX, posY, this);
 	}
 
 	@Override
@@ -368,7 +355,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 							e.colG = this.colorG;
 							e.colB = this.colorB;
 
-							double dist = Movable.distanceBetween(this, e);
+							double dist = GameObject.distanceBetween(this, e);
 							double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 							double rad = radius - Game.tile_size / 2;
 							double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
@@ -395,7 +382,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 						e.colG = this.colorG;
 						e.colB = this.colorB;
 
-						double dist = Movable.distanceBetween(this, e);
+						double dist = GameObject.distanceBetween(this, e);
 						double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 						double rad = radius - Game.tile_size / 2;
 						e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
@@ -412,13 +399,32 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		return null;
 	}
 
-	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)
+	/** Field to cache the obstacle array for reuse */
+	private static final ObjectArrayList<Obstacle> obstacleOut = new ObjectArrayList<>();
+
+	/** Expects all pixel coordinates.
+	 * @return all the obstacles within the specified range */
+	public static ObjectArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
 	{
-		if (t1 == ObstacleType.full || t2 == ObstacleType.full)
-			return false;
-		else if (t1 == ObstacleType.extra || t2 == ObstacleType.extra)
-			return true;
-		else
-			return t1 != t2;
+		obstacleOut.clear();
+		for (Obstacle o : Game.obstacles)
+		{
+			if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, x2, o.posY, y2))
+				obstacleOut.add(o);
+		}
+		return obstacleOut;
+	}
+
+	/** Expects all pixel coordinates.
+	 * @return all the obstacles within a certain radius of the position */
+	public static ObjectArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
+	{
+		obstacleOut.clear();
+		for (Obstacle o : Game.obstacles)
+		{
+			if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+				obstacleOut.add(o);
+		}
+		return obstacleOut;
 	}
 }

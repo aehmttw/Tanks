@@ -1,9 +1,9 @@
 package tanks.rendering;
 
 import basewindow.BaseShapeBatchRenderer;
-import basewindow.BaseWindow;
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
+import tanks.Chunk;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ILevelPreviewScreen;
@@ -17,24 +17,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
     protected final HashMap<Class<? extends ShaderGroup>, RegionRenderer> renderers = new HashMap<>();
     public RegionRenderer outOfBoundsRenderer;
 
-    public boolean staged = false;
     public boolean freed = false;
-
-    protected float[] currentColor = new float[3];
-    protected double currentDepth;
-
-    public double offX;
-    public double offY;
-
-    public boolean asPreview = false;
-    public int previewWidth = 0;
-
-    protected ShaderGroundOutOfBounds outsideShader;
-
-    public static int f(int i)
-    {
-        return 1664525 * i + 1013904223;
-    }
 
     public StaticTerrainRenderer()
     {
@@ -49,28 +32,6 @@ public class StaticTerrainRenderer extends TerrainRenderer
         {
             e.printStackTrace();
             Game.exitToCrash(e);
-        }
-    }
-
-    public ShaderGroup getShader(Class<? extends ShaderGroup> shaderClass)
-    {
-        ShaderGroup s = Game.game.shaderInstances.get(shaderClass);
-        if (s != null)
-            return s;
-        else
-        {
-            try
-            {
-                s = shaderClass.getConstructor(BaseWindow.class).newInstance(Game.game.window);
-                s.initialize();
-                Game.game.shaderInstances.put(shaderClass, s);
-                return s;
-            }
-            catch (Exception e)
-            {
-                Game.exitToCrash(e);
-                return null;
-            }
         }
     }
 
@@ -100,8 +61,8 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
         if (o instanceof Obstacle)
             sg = ((Obstacle) o).renderer;
-        else if (o instanceof Tile && ((Tile) o).obstacleAbove != null)
-            sg = ((Tile) o).obstacleAbove.tileRenderer;
+        else if (o instanceof Chunk.Tile && ((Chunk.Tile) o).obstacle() != null)
+            sg = ((Chunk.Tile) o).obstacle().tileRenderer;
 
         if (!outOfBounds)
         {
@@ -115,12 +76,6 @@ public class StaticTerrainRenderer extends TerrainRenderer
         }
 
         return s;
-    }
-
-    public void addVertexCoord(BaseShapeBatchRenderer s, ShaderGroup shader, float f)
-    {
-        if (shader instanceof IObstacleVertexCoordShader)
-            s.setAttribute(((IObstacleVertexCoordShader) shader).getVertexCoord(), f);
     }
 
     public void addBox(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean out)
@@ -270,18 +225,6 @@ public class StaticTerrainRenderer extends TerrainRenderer
         }
     }
 
-    public void populateTiles()
-    {
-        this.tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
-        for (int i = 0; i < Game.currentSizeX; i++)
-        {
-            for (int j = 0; j < Game.currentSizeY; j++)
-            {
-                this.tiles[i][j] = new Tile();
-            }
-        }
-    }
-
     public void reset()
     {
         for (RegionRenderer r : this.renderers.values())
@@ -290,15 +233,12 @@ public class StaticTerrainRenderer extends TerrainRenderer
         }
 
         this.outOfBoundsRenderer.renderer.free();
-
-        this.tiles = null;
         this.renderers.clear();
         this.staged = false;
 
         this.freed = true;
     }
 
-    public static int count = 0;
     public void drawMap(RegionRenderer s, int xOffset, int yOffset)
     {
         double sX = asPreview ? previewWidth : Game.currentSizeX;
@@ -419,43 +359,17 @@ public class StaticTerrainRenderer extends TerrainRenderer
         Game.game.window.shaderDefault.set();
     }
 
-    public float getShrubHeight()
-    {
-        float shrubMod = 0.25f;
-        if (Game.screen instanceof ScreenGame)
-            shrubMod = (float) ((ScreenGame) Game.screen).shrubberyScale;
-
-        return shrubMod;
-    }
-
     public void stageBackground()
     {
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        this.populateTiles();
+        for (Obstacle o : Game.obstacles)
+            o.postOverride();
 
-        for (int i = 0; i < Game.obstacles.size(); i++)
-        {
-            Obstacle o = Game.obstacles.get(i);
-
-            if (o.replaceTiles)
-                o.postOverride();
-
-            int x = (int) (o.posX / Game.tile_size);
-            int y = (int) (o.posY / Game.tile_size);
-
-            if (!(!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-                Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
-        }
-
-        for (int i = 0; i < this.tiles.length; i++)
-        {
-            for (int j = 0; j < this.tiles[i].length; j++)
-            {
+        for (int i = 0; i < Game.currentSizeX; i++)
+            for (int j = 0; j < Game.currentSizeY; j++)
                 this.drawTile(i, j);
-            }
-        }
 
         Obstacle.draw_size = s;
     }
@@ -468,20 +382,8 @@ public class StaticTerrainRenderer extends TerrainRenderer
         double d = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
         for (Obstacle o: Game.obstacles)
-        {
-            int i = Math.max(0, Math.min(Game.currentSizeX - 1, (int) (o.posX / Game.tile_size)));
-            int j = Math.max(0, Math.min(Game.currentSizeY - 1, (int) (o.posY / Game.tile_size)));
-            double r = Game.tilesR[i][j];
-            double g = Game.tilesG[i][j];
-            double b = Game.tilesB[i][j];
-            this.currentDepth = Game.tilesDepth[i][j];
-            currentColor[0] = (float) (r / 255.0);
-            currentColor[1] = (float) (g / 255.0);
-            currentColor[2] = (float) (b / 255.0);
+            drawObstacle(o);
 
-            if (o.batchDraw)
-                o.draw();
-        }
         Obstacle.draw_size = d;
     }
 }

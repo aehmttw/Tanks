@@ -597,10 +597,10 @@ public abstract class Tank extends Movable implements ISolidObject
 				double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
 
 				double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
-				if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-					this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
+				if (GameObject.absoluteAngleBetween(this.orientation, dir) <= GameObject.absoluteAngleBetween(this.orientation + Math.PI, dir))
+					this.orientation -= GameObject.angleBetween(this.orientation, dir) / 20 * dist;
 				else
-					this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+					this.orientation -= GameObject.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
 			}
 		}
 
@@ -1368,15 +1368,11 @@ public abstract class Tank extends Movable implements ISolidObject
 		}
 	}
 
-//	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2)
-//	{
-//		drawTank(x, y, r1, g1, b1, r2, g2, b2, (r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2, Game.tile_size / 2);
-//	}
-//
-//	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double size)
-//	{
-//		drawTank(x, y, r1, g1, b1, r2, g2, b2, (r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2, size);
-//	}
+	public static Tank findTank(double x, double y)
+	{
+		Movable m = Movable.findMovable(x, y);
+		return m instanceof Tank ? (Tank) m : null;
+	}
 
 	public static void drawTank(double x, double y, Color c1, Color c2, Color c3)
 	{

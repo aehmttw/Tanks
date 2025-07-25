@@ -459,15 +459,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 	{
 		Game.game.input.editorPickBlock.invalidate();
 
-		Tank t = null;
-		for (Movable m: Game.movables)
-		{
-			if (m.posX == mousePlaceable.posX && m.posY == mousePlaceable.posY && m instanceof Tank)
-			{
-				t = (Tank) m;
-				break;
-			}
-		}
+		Tank t = Tank.findTank(mousePlaceable.posX, mousePlaceable.posY);
 
 		if (t != null)
 		{
@@ -509,35 +501,25 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-		Obstacle o = null;
-		for (Obstacle o1: Game.obstacles)
-		{
-			if (o1.posX == mousePlaceable.posX && o1.posY == mousePlaceable.posY)
-			{
-				o = o1;
-				break;
-			}
-		}
+		Obstacle o = Game.getObstacle(mousePlaceable.posX, mousePlaceable.posY);
 
-		if (o != null)
-		{
-			int i = 0;
-			for (RegistryObstacle.ObstacleEntry entry : Game.registryObstacle.obstacleEntries)
-			{
-				if (entry.obstacle.equals(o.getClass()))
-					break;
-				i++;
-			}
+        if (o == null)
+            return false;
 
-			this.currentPlaceable = Placeable.obstacle;
-			obstacleNum = i;
-			this.setMousePlaceable();
-			setMousePlaceableMetadata(o.getMetadata());
-			return true;
-		}
+        int i = 0;
+        for (RegistryObstacle.ObstacleEntry entry : Game.registryObstacle.obstacleEntries)
+        {
+            if (entry.obstacle.equals(o.getClass()))
+                break;
+            i++;
+        }
 
-		return false;
-	}
+        this.currentPlaceable = Placeable.obstacle;
+        obstacleNum = i;
+        this.setMousePlaceable();
+        setMousePlaceableMetadata(o.getMetadata());
+        return true;
+    }
 
 	public void setMousePlaceableMetadata(String meta)
 	{
@@ -994,26 +976,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.removeMovables.clear();
 
 		for (Obstacle o: Game.removeObstacles)
-		{
-			o.removed = true;
-			Drawing.drawing.terrainRenderer.remove(o);
-
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY && Game.enable3d)
-			{
-				Game.redrawGroundTiles.add(new Game.GroundTile(x, y));
-
-				if (o.bulletCollision)
-				{
-					Game.game.solidGrid[x][y] = false;
-					Game.game.unbreakableGrid[x][y] = false;
-				}
-			}
-
-			Game.obstacles.remove(o);
-		}
+            Game.removeObstacle(o);
 
 		Game.removeObstacles.clear();
 	}
@@ -1452,34 +1415,27 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	protected boolean checkForObstacle(boolean validRight, double mx, double my)
 	{
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle m = Game.obstacles.get(i);
-			if (m.posX == mx && m.posY == my)
-			{
-				if (!validRight)
-				{
-					if (m.getClass() == mousePlaceable.getClass() || (mousePlaceable instanceof Obstacle && !Obstacle.canPlaceOn(((Obstacle) mousePlaceable).type, m.type)))
-						return true;
-				}
-				else
-				{
-					this.undoActions.add(new EditorAction.ActionObstacle(m, false));
-					Game.removeObstacles.add(m);
-				}
-			}
-		}
-		return false;
-	}
+		Chunk.Tile t = Chunk.getTile(mx, my);
+		if (t == null)
+			return false;
+
+		Obstacle o = t.obstacle();
+
+        if (validRight)
+        {
+            this.undoActions.add(new EditorAction.ActionObstacle(o, false));
+            Game.removeObstacles.add(o);
+            return false;
+        }
+        else
+        {
+            return !t.canPlaceOn(mousePlaceable);
+        }
+    }
 
 	protected static boolean checkForMovable(double mx, double my)
 	{
-		for (Movable m : Game.movables)
-		{
-			if (m.posX == mx && m.posY == my)
-				return true;
-		}
-		return false;
+		return Movable.findMovable(mx, my) != null;
 	}
 
 	protected void placeObstacle(boolean batch, boolean paste)
@@ -2023,12 +1979,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		if (Panel.panel.continuation == null)
 		{
-			for (Obstacle o : Game.obstacles)
-                o.baseGroundHeight = Game.sampleGroundHeight(o.posX, o.posY);
-
-			if (Game.enable3d)
-				Game.recomputeHeightGrid();
-
 			Drawing.drawing.setColor(174, 92, 16);
 
 			double mul = 1;
@@ -2339,15 +2289,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public void magicSelect(int x, int y, boolean contiguous)
 	{
-		String obstacleName = null;
-		for (Obstacle o : Game.obstacles)
-		{
-			if ((int) (o.posX / Game.tile_size) == x && (int) (o.posY / Game.tile_size) == y)
-			{
-				obstacleName = o.name;
-				break;
-			}
-		}
+		Obstacle selected = Game.getObstacle(x, y);
+		String obstacleName = selected != null ? selected.name : null;
 
 		boolean[][] obstacleGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
 		ArrayList<Integer> xPos = new ArrayList<>();
@@ -2490,35 +2433,20 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 		this.replaceSpawns();
 
-		Game.game.solidGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-		Game.game.unbreakableGrid = new boolean[Game.currentSizeX][Game.currentSizeY];
-
 		Game.currentLevel = new Level(Game.currentLevelString);
 		Game.currentLevel.timed = level.timer > 0;
 		Game.currentLevel.timer = level.timer;
 
-		for (Obstacle o: Game.obstacles)
+		for (Obstacle o : Game.obstacles)
 		{
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (o.bulletCollision && x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-			{
-				Game.game.solidGrid[x][y] = true;
-
-				if (!o.shouldShootThrough)
-					Game.game.unbreakableGrid[x][y] = true;
-			}
+			o.postOverride();
+			o.removed = false;
 
 			if (o instanceof ObstacleBeatBlock)
 			{
 				Game.currentLevel.synchronizeMusic = true;
 				Game.currentLevel.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
 			}
-
-			o.removed = false;
-			if (o.replaceTiles)
-				o.postOverride();
 		}
 
 		Game.resetNetworkIDs();

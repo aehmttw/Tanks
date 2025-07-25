@@ -1,8 +1,10 @@
 package tanks.gui.screen;
 
-import tanks.*;
+import tanks.Crusade;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
 import tanks.gui.Button;
-import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
@@ -100,9 +102,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
     public void update()
     {
         this.back.update();
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
 
         if (Game.game.input.editorPause.isValid())
         {

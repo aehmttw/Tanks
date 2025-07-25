@@ -396,14 +396,18 @@ public class Chunk implements Comparable<Chunk>
                 i += 1;
             }
         }
+
+        Drawing.drawing.setColor(255, 255, 255);
+        for (Movable m : Game.movables)
+            Drawing.drawing.drawText(m.posX, m.posY, m.getTouchingChunks().size() + "");
     }
 
     /** Given a rectangle's bounding box, clamps it to the level borders and draws it.
      * Also ensures a line width of 2. */
     private static void drawClampedRect(Level l, double x1, double y1, double x2, double y2)
     {
-        double sX = Math.max(2, Math.min(l.sizeX * Game.tile_size - x1, x2 - x1));
-        double sY = Math.max(2, Math.min(l.sizeY * Game.tile_size - y1, y2 - y1));
+        double sX = Math.max(1, Math.min(l.sizeX * Game.tile_size - x1, x2 - x1));
+        double sY = Math.max(1, Math.min(l.sizeY * Game.tile_size - y1, y2 - y1));
         Drawing.drawing.fillRect(x1 + sX / 2, y1 + sY / 2, sX, sY);
     }
 

@@ -1217,7 +1217,7 @@ public abstract class Tank extends Movable
 	@Override
 	public double getSize()
 	{
-		return size;
+		return size * hitboxSize;
 	}
 
 	public double getAutoZoom()

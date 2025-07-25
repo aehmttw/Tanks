@@ -198,6 +198,12 @@ public class ScreenOverlayChat
 
     public static void addChat(String chat)
     {
-        getChat().add(new ChatMessage(chat));
+        getChat().add(0, new ChatMessage(chat));
+    }
+
+    public static void notify(String chat)
+    {
+        ScreenOverlayChat.addChat("\u00A7000200000255" + chat.replace(" \n ", " \n \u00A7000200000255"));
+        Drawing.drawing.playSound("join.ogg", 2f);
     }
 }

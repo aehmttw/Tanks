@@ -83,14 +83,14 @@ public class TeleporterOrb extends Movable
 		}
 
 		//Drawing.drawing.setColor(255, 255, 255);
-		Drawing.drawing.setColor(this.tank.colorR * (1 - frac) + 255 * frac, this.tank.colorG * (1 - frac) + 255 * frac, this.tank.colorB * (1 - frac) + 255 * frac);
+		Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac);
 
 		if (Game.enable3d)
 			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2, (this.size - this.tank.size) / 2, true, true);
 
 		for (int i = 0; i < this.size - this.tank.size; i++)
 		{
-			Drawing.drawing.setColor(this.tank.colorR * (1 - frac) + 255 * frac, this.tank.colorG * (1 - frac) + 255 * frac, this.tank.colorB * (1 - frac) + 255 * frac, 20);
+			Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac, 20);
 			//Drawing.drawing.setColor(255, 255, 255, 20);
 
 			if (Game.enable3d)
@@ -252,13 +252,8 @@ public class TeleporterOrb extends Movable
 		if (Game.enable3d)
 			this.lastTrailPitch = this.getPolarPitch();
 
-		this.trailSet[0].frontColor.red = this.tank.colorR;
-		this.trailSet[0].frontColor.green = this.tank.colorG;
-		this.trailSet[0].frontColor.blue = this.tank.colorB;
-
-		this.trailSet[1].frontColor.red = this.tank.secondaryColorR;
-		this.trailSet[1].frontColor.green = this.tank.secondaryColorG;
-		this.trailSet[1].frontColor.blue = this.tank.secondaryColorB;
+		this.trailSet[0].frontColor.set(tank.color);
+		this.trailSet[1].frontColor.set(tank.secondaryColor);
 
 		int i = 0;
 		for (Trail t : this.trailSet)
@@ -315,9 +310,9 @@ public class TeleporterOrb extends Movable
 		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.teleporterPiece);
 		double var = 50;
 		
-		e.colR = Math.min(this.tank.colorR, Math.max(0, 255 + Math.random() * var - var / 2));
-		e.colG = Math.min(this.tank.colorG, Math.max(0, 255 + Math.random() * var - var / 2));
-		e.colB = Math.min(this.tank.colorB, Math.max(0, 255 + Math.random() * var - var / 2));
+		e.colR = Math.min(this.tank.color.red, Math.max(0, 255 + Math.random() * var - var / 2));
+		e.colG = Math.min(this.tank.color.green, Math.max(0, 255 + Math.random() * var - var / 2));
+		e.colB = Math.min(this.tank.color.blue, Math.max(0, 255 + Math.random() * var - var / 2));
 		e.drawLevel = 9;
 
 		if (Game.enable3d)

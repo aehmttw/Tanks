@@ -13,6 +13,7 @@ public class TankPurple extends TankAIControlled
 		this.enableDefensiveFiring = true;
 		this.cooldownBase = 20;
 		this.cooldownRandom = 40;
+		this.defensiveFiringUrgency = 0.5;
 		this.enablePathfinding = true;
 
 		this.turretAimSpeed = 0.03;

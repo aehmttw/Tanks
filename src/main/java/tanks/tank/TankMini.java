@@ -37,9 +37,7 @@ public class TankMini extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/square.png";
-			this.emblemR = this.secondaryColorR;
-			this.emblemG = this.secondaryColorG;
-			this.emblemB = this.secondaryColorB;
+			this.emblemColor.set(this.secondaryColor);
 		}
 
 		this.description = "A small, primitive tank which shoots tiny, low damage bullets";

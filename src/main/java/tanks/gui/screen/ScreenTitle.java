@@ -447,21 +447,21 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		Drawing.drawing.setInterfaceFontSize(24);
 
 		if (Game.player.enableTertiaryColor)
-			Drawing.drawing.setColor(Game.player.colorR3, Game.player.colorG3, Game.player.colorB3);
+			Drawing.drawing.setColor(Game.player.color3);
 		else
-			Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.colorR), Turret.calculateSecondaryColor(Game.player.colorG), Turret.calculateSecondaryColor(Game.player.colorB));
+			Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color.red), Turret.calculateSecondaryColor(Game.player.color.green), Turret.calculateSecondaryColor(Game.player.color.blue));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
 		Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
 
-		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.colorR2), Turret.calculateSecondaryColor(Game.player.colorG2), Turret.calculateSecondaryColor(Game.player.colorB2));
+		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color2.red), Turret.calculateSecondaryColor(Game.player.color2.green), Turret.calculateSecondaryColor(Game.player.color2.blue));
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
-		Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
+		Drawing.drawing.setColor(Game.player.color);
 		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
 
-		Drawing.drawing.setColor(Game.player.colorR2, Game.player.colorG2, Game.player.colorB2);
+		Drawing.drawing.setColor(Game.player.color2);
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 

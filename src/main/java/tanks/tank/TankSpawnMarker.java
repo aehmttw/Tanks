@@ -12,8 +12,8 @@ public class TankSpawnMarker extends Tank
         this.angle = angle;
         this.orientation = angle;
         this.emblem = this.defaultTexture;
-        this.emblemG = 200;
-        this.emblemB = 255;
+        this.emblemColor.green = 200;
+        this.emblemColor.blue = 255;
     }
 
     @Override

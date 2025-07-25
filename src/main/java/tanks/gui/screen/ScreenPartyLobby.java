@@ -158,7 +158,7 @@ public class ScreenPartyLobby extends Screen
 						Drawing.drawing.setColor(0, 0, 0);
 						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, y, n);
 
-						Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, y, c.colorR, c.colorG, c.colorB, c.colorR2, c.colorG2, c.colorB2, c.colorR3, c.colorG3, c.colorB3);
+						Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, y, c.color, c.color2, c.color3);
 					}
 				}
 			}

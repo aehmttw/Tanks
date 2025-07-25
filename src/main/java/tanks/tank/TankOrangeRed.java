@@ -34,9 +34,9 @@ public class TankOrangeRed extends TankAIControlled
         {
             this.baseSkin = TankModels.diagonalStripes;
             this.emblem = "emblems/bang.png";
-            this.emblemR = 159;
-            this.emblemG = 67;
-            this.emblemB = 32;
+            this.emblemColor.red = 159;
+            this.emblemColor.green = 67;
+            this.emblemColor.blue = 32;
         }
 
         this.coinValue = 4;

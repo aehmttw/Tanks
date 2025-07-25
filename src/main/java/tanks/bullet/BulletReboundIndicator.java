@@ -1,5 +1,6 @@
 package tanks.bullet;
 
+import basewindow.Color;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Movable;
@@ -9,12 +10,8 @@ import tanks.network.event.EventBulletReboundIndicator;
 public class BulletReboundIndicator extends Movable
 {
     public double size;
-    public double colorR;
-    public double colorG;
-    public double colorB;
-    public double colorR2;
-    public double colorG2;
-    public double colorB2;
+    public Color color = new Color();
+    public Color color2 = new Color();
     public double maxAge;
     public double age;
 
@@ -24,12 +21,8 @@ public class BulletReboundIndicator extends Movable
         this.posZ = b.posZ;
 
         this.size = b.size;
-        this.colorR = b.baseColorR;
-        this.colorG = b.baseColorG;
-        this.colorB = b.baseColorB;
-        this.colorR2 = b.outlineColorR;
-        this.colorG2 = b.outlineColorG;
-        this.colorB2 = b.outlineColorB;
+        this.color.set(b.baseColor);
+        this.color2.set(b.outlineColor);
 
         this.maxAge = b.delay;
 
@@ -37,17 +30,13 @@ public class BulletReboundIndicator extends Movable
             Game.eventsOut.add(new EventBulletReboundIndicator(this));
     }
 
-    public BulletReboundIndicator(double posX, double posY, double posZ, double size, double maxAge, double colorR, double colorG, double colorB, double colorR2, double colorG2, double colorB2)
+    public BulletReboundIndicator(double posX, double posY, double posZ, double size, double maxAge, double r1, double g1, double b1, double r2, double g2, double b2)
     {
         super(posX, posY);
         this.posZ = posZ;
         this.size = size;
-        this.colorR = colorR;
-        this.colorG = colorG;
-        this.colorB = colorB;
-        this.colorR2 = colorR2;
-        this.colorG2 = colorG2;
-        this.colorB2 = colorB2;
+        this.color.set(r1, g1, b1);
+        this.color2.set(r2, g2, b2);
         this.maxAge = maxAge;
     }
 
@@ -64,12 +53,12 @@ public class BulletReboundIndicator extends Movable
             Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
             double var = 50;
             e.maxAge /= 2;
-            e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-            e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-            e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
-            e.glowR = e.colR - this.colorR2;
-            e.glowG = e.colG - this.colorG2;
-            e.glowB = e.colB - this.colorB2;
+            e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
+            e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
+            e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
+            e.glowR = e.colR - this.color2.red;
+            e.glowG = e.colG - this.color2.green;
+            e.glowB = e.colB - this.color2.blue;
 
             if (Game.enable3d)
                 e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);

@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.Color;
 import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
@@ -234,6 +235,10 @@ public class TankAIControlled extends Tank implements ITankField
 	/** When set to true, will shoot at bullets aiming towards the tank*/
 	@Property(category = firingBehavior, id = "enable_defensive_firing", name = "Deflect bullets", desc = "When enabled, will shoot at incoming bullet threats to deflect them \n \n Does not work with wander or sprinkler aiming behavior!")
 	public boolean enableDefensiveFiring = false;
+	@Property(category = firingBehavior, id = "defensive_fire_urgency", name = "Deflection urgency", desc = "The random cooldown between firing bullets will be reduced by this fraction when the tank is deflecting incoming bullets. \n \n " +
+			"For example, if a tank has a bullet base cooldown of 100, random cooldown of 50, and defensive firing urgency of 0.8, it will normally shoot every 100-150 time units, but when it is trying to deflect an incoming bullet, " +
+			"it will shoot every 100-110 time units, since the random cooldown is reduced by the urgency factor of 0.8, from 50 to 10. \n \n 1 time unit = 0.01 seconds")
+	public double defensiveFiringUrgency = 1;
 	/** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets*/
 	@Property(category = firingBehavior, id = "aim_ignore_destructible", name = "Through walls", desc = "When enabled, will shoot at destructible blocks if the target is hiding behind them. This is useful for tanks with explosive bullets.")
 	public boolean aimIgnoreDestructible = false;
@@ -486,9 +491,7 @@ public class TankAIControlled extends Tank implements ITankField
 	/** True if able to mimic other tanks*/
 	protected boolean canCurrentlyMimic = true;
 
-	protected double baseColorR;
-	protected double baseColorG;
-	protected double baseColorB;
+	protected Color baseColor = new Color();
 	protected double baseMaxSpeed;
 
 	/** Set if tank transformed in the last frame */
@@ -545,9 +548,7 @@ public class TankAIControlled extends Tank implements ITankField
 	{
 		this.baseMaxSpeed = this.maxSpeed;
 		this.dealsDamage = !this.isSupportTank();
-		this.baseColorR = this.colorR;
-		this.baseColorG = this.colorG;
-		this.baseColorB = this.colorB;
+		this.baseColor.set(this.color);
 		this.idleTimer = (this.random.nextDouble() * turretIdleTimerRandom) + turretIdleTimerBase;
 
 		if (this.targetEnemySightBehavior == TargetEnemySightBehavior.sidewind)
@@ -570,14 +571,8 @@ public class TankAIControlled extends Tank implements ITankField
 
 	}
 
-	@Override
-	public void update()
+	public void updateRayStatus()
 	{
-		if (this.age <= 0)
-			this.initialize();
-
-		this.updateStart();
-
 		if (useRaysThisFrame)
 			timeSinceRaysUsed = 0;
 
@@ -585,6 +580,16 @@ public class TankAIControlled extends Tank implements ITankField
 		timeSinceRaysUsed += Panel.frameFrequency;
 		if (timeSinceRaysUsed > rayFrequency)
 			useRaysThisFrame = true;
+	}
+
+	@Override
+	public void update()
+	{
+		if (this.age <= 0)
+			this.initialize();
+
+		this.updateStart();
+		this.updateRayStatus();
 
 		this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
 
@@ -768,9 +773,9 @@ public class TankAIControlled extends Tank implements ITankField
 		this.justCharged = true;
 
 		double frac = this.cooldown / this.lastCooldown;
-		this.colorR = ((this.baseColorR + 255) / 2) * (1 - frac) + frac * this.baseColorR;
-		this.colorG = ((this.baseColorG + 255) / 2) * (1 - frac) + frac * this.baseColorG;
-		this.colorB = ((this.baseColorB + 255) / 2) * (1 - frac) + frac * this.baseColorB;
+		this.color.red = ((this.baseColor.red + 255) / 2) * (1 - frac) + frac * this.baseColor.red;
+		this.color.green = ((this.baseColor.green + 255) / 2) * (1 - frac) + frac * this.baseColor.green;
+		this.color.blue = ((this.baseColor.blue + 255) / 2) * (1 - frac) + frac * this.baseColor.blue;
 		Game.eventsOut.add(new EventTankUpdateColor(this));
 		Game.eventsOut.add(new EventTankCharge(this.networkID, frac));
 
@@ -779,9 +784,9 @@ public class TankAIControlled extends Tank implements ITankField
 			Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.charge);
 
 			double var = 50;
-			e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-			e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-			e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+			e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
+			e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
+			e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
 
 			Game.effects.add(e);
 		}
@@ -794,9 +799,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.cooldown = Math.pow(1 - this.cooldownSpeedup, this.cooldownStacks) * (this.random.nextDouble() * this.cooldownRandom + this.cooldownBase);
 			this.lastCooldown = this.cooldown;
 
-			this.colorR = this.baseColorR;
-			this.colorG = this.baseColorG;
-			this.colorB = this.baseColorB;
+			this.color.set(this.baseColor);
 			Game.eventsOut.add(new EventTankUpdateColor(this));
 		}
 
@@ -884,7 +887,7 @@ public class TankAIControlled extends Tank implements ITankField
 		Game.movables.add(b);
 		Game.eventsOut.add(new EventShootBullet(b));
 
-		int r = (this.enableDefensiveFiring && this.avoidTimer > 0 && this.disableOffset && this.bulletThreatCount > 1) ? 0 : 1;
+		double r = (this.enableDefensiveFiring && this.avoidTimer > 0 && this.disableOffset && this.bulletThreatCount > 1) ? (1 - this.defensiveFiringUrgency) : 1;
 
 		this.cooldown = Math.pow(1 - this.cooldownSpeedup, this.cooldownStacks) * (r * this.random.nextDouble() * this.cooldownRandom + this.cooldownBase);
 		this.lastCooldown = this.cooldown;
@@ -1056,12 +1059,12 @@ public class TankAIControlled extends Tank implements ITankField
 		Drawing.drawing.playGlobalSound("timer.ogg", 1.25f);
 		Effect e1 = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.sightTransformTank.size * 0.75, Effect.EffectType.exclamation);
 		e1.size = this.sightTransformTank.size;
-		e1.colR = this.colorR;
-		e1.colG = this.colorG;
-		e1.colB = this.colorB;
-		e1.glowR = this.sightTransformTank.colorR;
-		e1.glowG = this.sightTransformTank.colorG;
-		e1.glowB = this.sightTransformTank.colorB;
+		e1.colR = this.color.red;
+		e1.colG = this.color.green;
+		e1.colB = this.color.blue;
+		e1.glowR = this.sightTransformTank.color.red;
+		e1.glowG = this.sightTransformTank.color.green;
+		e1.glowB = this.sightTransformTank.color.blue;
 		Game.effects.add(e1);
 		Game.eventsOut.add(new EventTankTransformPreset(this, true, false));
 	}
@@ -2534,15 +2537,11 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (this.timeUntilDeath < this.suicideTimerBase)
 		{
-			this.colorR = frac * this.baseColorR + (1 - frac) * 255;
-			this.colorG = frac * this.baseColorG;
-			this.colorB = frac * this.baseColorB;
+			this.color.set(frac * this.baseColor.red + (1 - frac) * 255, frac * this.baseColor.green, frac * this.baseColor.blue);
 
 			if (this.timeUntilDeath < 150 && ((int) this.timeUntilDeath % 16) / 8 == 1)
 			{
-				this.colorR = 255;
-				this.colorG = 255;
-				this.colorB = 0;
+				this.color.set(255, 255, 0);
 			}
 
 			Game.eventsOut.add(new EventTankUpdateColor(this));
@@ -2570,6 +2569,7 @@ public class TankAIControlled extends Tank implements ITankField
 		this.bulletItem.updateCooldown(1);
 		this.mineItem.updateCooldown(1);
 		this.cooldownIdleTime += Panel.frameFrequency;
+		this.updateRayStatus();
 
 		if (this.transformMimic)
 			this.updatePossessingMimic();
@@ -2715,7 +2715,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			this.laser = new Laser(t.posX, t.posY, t.size / 2, this.targetEnemy.posX, this.targetEnemy.posY, ((Tank)this.targetEnemy).size / 2,
 					(this.mimicRange - Movable.distanceBetween(t, this.targetEnemy)) / this.mimicRange * 10, this.targetEnemy.getAngleInDirection(t.posX, t.posY),
-					((Tank) this.targetEnemy).colorR, ((Tank) this.targetEnemy).colorG, ((Tank) this.targetEnemy).colorB);
+					((Tank) this.targetEnemy).color);
 			Game.movables.add(this.laser);
 			Game.eventsOut.add(new EventTankMimicLaser(t, (Tank) this.targetEnemy, this.mimicRange));
 		}
@@ -2757,7 +2757,7 @@ public class TankAIControlled extends Tank implements ITankField
 			Tank t;
 			if (c.equals(TankAIControlled.class))
 			{
-				t = new TankAIControlled(this.name, this.posX, this.posY, this.size, this.colorR, this.colorG, this.colorB, this.angle, ((TankAIControlled) ct).shootAIType);
+				t = new TankAIControlled(this.name, this.posX, this.posY, this.size, this.color.red, this.color.green, this.color.blue, this.angle, ((TankAIControlled) ct).shootAIType);
 				((TankAIControlled) ct).cloneProperties((TankAIControlled) t);
 			}
 			else
@@ -2804,17 +2804,9 @@ public class TankAIControlled extends Tank implements ITankField
 
 			if (player)
 			{
-				this.possessingTank.colorR = ((Tank) this.targetEnemy).colorR;
-				this.possessingTank.colorG = ((Tank) this.targetEnemy).colorG;
-				this.possessingTank.colorB = ((Tank) this.targetEnemy).colorB;
-
-				this.possessingTank.secondaryColorR = ((Tank) this.targetEnemy).secondaryColorR;
-				this.possessingTank.secondaryColorG = ((Tank) this.targetEnemy).secondaryColorG;
-				this.possessingTank.secondaryColorB = ((Tank) this.targetEnemy).secondaryColorB;
-
-				this.possessingTank.tertiaryColorR = ((Tank) this.targetEnemy).tertiaryColorR;
-				this.possessingTank.tertiaryColorG = ((Tank) this.targetEnemy).tertiaryColorG;
-				this.possessingTank.tertiaryColorB = ((Tank) this.targetEnemy).tertiaryColorB;
+				this.possessingTank.color.set(((Tank) this.targetEnemy).color);
+				this.possessingTank.secondaryColor.set(((Tank) this.targetEnemy).secondaryColor);
+				this.possessingTank.tertiaryColor.set(((Tank) this.targetEnemy).tertiaryColor);
 				this.possessingTank.enableTertiaryColor = true;
 			}
 
@@ -2834,9 +2826,9 @@ public class TankAIControlled extends Tank implements ITankField
 				{
 					Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
 					double var = 50;
-					e.colR = Math.min(255, Math.max(0, this.possessingTank.colorR + Math.random() * var - var / 2));
-					e.colG = Math.min(255, Math.max(0, this.possessingTank.colorG + Math.random() * var - var / 2));
-					e.colB = Math.min(255, Math.max(0, this.possessingTank.colorB + Math.random() * var - var / 2));
+					e.colR = Math.min(255, Math.max(0, this.possessingTank.color.red + Math.random() * var - var / 2));
+					e.colG = Math.min(255, Math.max(0, this.possessingTank.color.green + Math.random() * var - var / 2));
+					e.colB = Math.min(255, Math.max(0, this.possessingTank.color.blue + Math.random() * var - var / 2));
 
 					if (Game.enable3d)
 						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, 1 + Math.random() * this.size / 50.0);
@@ -3266,7 +3258,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public TankAIControlled instantiate(String name, double x, double y, double angle)
 	{
-		TankAIControlled t = new TankAIControlled(name, x, y, this.size, this.colorR, this.colorG, this.colorB, angle, this.shootAIType);
+		TankAIControlled t = new TankAIControlled(name, x, y, this.size, this.color.red, this.color.green, this.color.blue, angle, this.shootAIType);
 		this.cloneProperties(t);
 		return t;
 	}

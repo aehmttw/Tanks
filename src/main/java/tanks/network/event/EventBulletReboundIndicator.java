@@ -3,6 +3,7 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.bullet.BulletReboundIndicator;
+import tanks.network.NetworkUtils;
 
 public class EventBulletReboundIndicator extends PersonalEvent
 {
@@ -26,12 +27,8 @@ public class EventBulletReboundIndicator extends PersonalEvent
         b.writeDouble(indicator.posZ);
         b.writeDouble(indicator.size);
         b.writeDouble(indicator.maxAge);
-        b.writeDouble(indicator.colorR);
-        b.writeDouble(indicator.colorG);
-        b.writeDouble(indicator.colorB);
-        b.writeDouble(indicator.colorR2);
-        b.writeDouble(indicator.colorG2);
-        b.writeDouble(indicator.colorB2);
+        NetworkUtils.writeColor(b, indicator.color);
+        NetworkUtils.writeColor(b, indicator.color2);
     }
 
     @Override

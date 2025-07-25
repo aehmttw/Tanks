@@ -2448,7 +2448,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					if (dx * dx + dy * dy < Math.pow(((Tank) m).size + Game.tile_size / 2, 2))
 					{
-						Drawing.drawing.setColor(((Tank) m).colorR, ((Tank) m).colorG, ((Tank) m).colorB);
+						Drawing.drawing.setColor(((Tank) m).color);
 						Mine.drawRange2D(m.posX, m.posY, ((Tank) m).size + Game.tile_size / 2);
 						Drawing.drawing.setColor(255, 255, 255, 255, 255);
 						Drawing.drawing.drawInterfaceImage("icons/shown.png", ix, iy, Game.tile_size, Game.tile_size);
@@ -2472,7 +2472,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				double ix = Drawing.drawing.gameToInterfaceCoordsX(spectatingTank.posX);
 				double iy = Drawing.drawing.gameToInterfaceCoordsY(spectatingTank.posY);
 
-				Drawing.drawing.setColor(spectatingTank.colorR, spectatingTank.colorG, spectatingTank.colorB, 127);
+				Drawing.drawing.setColor(spectatingTank.color, 127);
 				Drawing.drawing.drawInterfaceImage("cursor.png", ix, iy, Game.tile_size * 3, Game.tile_size * 3);
 			}
 
@@ -2969,9 +2969,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 									name = cp.username;
 
 								Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, name);
-								Drawing.drawing.setColor(cp.teamColorR, cp.teamColorG, cp.teamColorB, opacity);
+								Drawing.drawing.setColor(cp.teamColor, opacity);
 								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, name);
-								Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.colorR, cp.colorG, cp.colorB, cp.colorR2, cp.colorG2, cp.colorB2, cp.colorR3, cp.colorG3, cp.colorB3, opacity / 255 * 25);
+								Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.color, cp.color2, cp.color3, opacity / 255 * 25);
 							}
 						}
 					}

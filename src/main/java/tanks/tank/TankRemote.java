@@ -66,7 +66,7 @@ public class TankRemote extends Tank
 	
 	public TankRemote(Tank t)
 	{
-		super(t.name, t.posX, t.posY, t.size, t.colorR, t.colorG, t.colorB);
+		super(t.name, t.posX, t.posY, t.size, t.color.red, t.color.green, t.color.blue);
 		this.angle = t.angle;
 		this.orientation = t.orientation;
 		this.team = t.team;
@@ -216,9 +216,9 @@ public class TankRemote extends Tank
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 						double var = 50;
-						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+						e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
 
 						if (Game.enable3d)
 							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
@@ -232,7 +232,7 @@ public class TankRemote extends Tank
 
 			for (int i = 0; i < Game.tile_size * 2 - this.localAge; i++)
 			{
-				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, (this.size * 2 - i - this.localAge) * 2.55);
+				Drawing.drawing.setColor(this.color, (this.size * 2 - i - this.localAge) * 2.55);
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}

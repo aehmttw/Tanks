@@ -1507,9 +1507,9 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             Drawing.drawing.setInterfaceFontSize(24);
             this.tank.drawForInterface(this.getXOffset() + Game.screen.centerX + tanks_1, this.yPos, 0.5 * age / maxAge);
-            double r = processColor(this.tank.colorR);
-            double g = processColor(this.tank.colorG);
-            double b = processColor(this.tank.colorB);
+            double r = processColor(this.tank.color.red);
+            double g = processColor(this.tank.color.green);
+            double b = processColor(this.tank.color.blue);
             double a = 255 * age / maxAge;
             drawStatistic(this.getXOffset() + Game.screen.centerX + tanks_2, this.yPos, this.kills + "", 1 - killRank, r, g, b, a, -24);
             drawStatistic(this.getXOffset() + Game.screen.centerX + tanks_2a, this.yPos, "x", 0, r, g, b, a, 24);

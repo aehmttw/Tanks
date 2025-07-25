@@ -77,7 +77,7 @@ public class OverlayPlayerRankings
                 {
                     j++;
                     ConnectedPlayer cp = screen.eliminatedPlayers.get(i);
-                    Drawing.drawing.setColor(cp.teamColorR, cp.teamColorG, cp.teamColorB, opacity);
+                    Drawing.drawing.setColor(cp.teamColor, opacity);
 
                     String name;
                     if (Game.enableChatFilter)
@@ -91,7 +91,7 @@ public class OverlayPlayerRankings
 
                     Drawing.drawing.setBoundedInterfaceFontSize(this.screen.textSize, 250, name);
                     Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 180, 40 * j + 100, n + ". " + name);
-                    Tank.drawTank(Drawing.drawing.interfaceSizeX - 220 - Drawing.drawing.getStringWidth(n + ". " + name) / 2, 40 * j + 100, cp.colorR, cp.colorG, cp.colorB, cp.colorR2, cp.colorG2, cp.colorB2, cp.colorR3, cp.colorG3, cp.colorB3, opacity / 255 * 25);
+                    Tank.drawTank(Drawing.drawing.interfaceSizeX - 220 - Drawing.drawing.getStringWidth(n + ". " + name) / 2, 40 * j + 100, cp.color, cp.color2, cp.color3, opacity / 255 * 25);
                 }
             }
 

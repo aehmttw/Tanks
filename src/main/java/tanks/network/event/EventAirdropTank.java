@@ -1,20 +1,18 @@
 package tanks.network.event;
 
+import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Team;
+import tanks.network.NetworkUtils;
 import tanks.tank.Crate;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
 
 public class EventAirdropTank extends EventTankCreate
 {
-    public double colorR;
-    public double colorG;
-    public double colorB;
-    public double colorR2;
-    public double colorG2;
-    public double colorB2;
+    public Color color = new Color();
+    public Color color2 = new Color();
     public double height;
 
     public EventAirdropTank()
@@ -26,12 +24,8 @@ public class EventAirdropTank extends EventTankCreate
     {
         super(t);
 
-        this.colorR = t.colorR;
-        this.colorG = t.colorG;
-        this.colorB = t.colorB;
-        this.colorR2 = t.secondaryColorR;
-        this.colorG2 = t.secondaryColorG;
-        this.colorB2 = t.secondaryColorB;
+        this.color.set(t.color);
+        this.color2.set(t.secondaryColor);
         this.height = height;
     }
 
@@ -48,12 +42,8 @@ public class EventAirdropTank extends EventTankCreate
             }
 
             t.team = tm;
-            t.colorR = colorR;
-            t.colorG = colorG;
-            t.colorB = colorB;
-            t.secondaryColorR = colorR2;
-            t.secondaryColorG = colorG2;
-            t.secondaryColorB = colorB2;
+            t.color.set(this.color);
+            t.secondaryColor.set(this.color);
             Game.movables.add(new Crate(new TankRemote(t), height));
         }
     }
@@ -62,12 +52,8 @@ public class EventAirdropTank extends EventTankCreate
     public void read(ByteBuf b)
     {
         super.read(b);
-        this.colorR = b.readDouble();
-        this.colorG = b.readDouble();
-        this.colorB = b.readDouble();
-        this.colorR2 = b.readDouble();
-        this.colorG2 = b.readDouble();
-        this.colorB2 = b.readDouble();
+        NetworkUtils.readColor(b, this.color);
+        NetworkUtils.readColor(b, this.color2);
         this.height = b.readDouble();
     }
 
@@ -75,12 +61,8 @@ public class EventAirdropTank extends EventTankCreate
     public void write(ByteBuf b)
     {
         super.write(b);
-        b.writeDouble(this.colorR);
-        b.writeDouble(this.colorG);
-        b.writeDouble(this.colorB);
-        b.writeDouble(this.colorR2);
-        b.writeDouble(this.colorG2);
-        b.writeDouble(this.colorB2);
+        NetworkUtils.writeColor(b, this.color);
+        NetworkUtils.writeColor(b, this.color2);
         b.writeDouble(this.height);
     }
 }

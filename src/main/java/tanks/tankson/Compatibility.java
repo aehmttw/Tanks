@@ -1,5 +1,6 @@
 package tanks.tankson;
 
+import basewindow.Color;
 import tanks.BiConsumer;
 import tanks.Game;
 import tanks.bullet.Bullet;
@@ -119,6 +120,37 @@ public class Compatibility
             if (owner instanceof Bullet)
                 ((Bullet) owner).effect.glowSize = (double) value;
         });
+
+        for (String s: new String[]{"color_*", "color_*2", "color_*3", "emblem_*"})
+        {
+            for (String c: new String[]{"r", "g", "b"})
+            {
+                String name = s.replace("*", c);
+                unused_table.put(name, (owner, value) ->
+                {
+                    if (owner instanceof TankAIControlled)
+                    {
+                        TankAIControlled t = (TankAIControlled) owner;
+                        Color col = null;
+                        if (s.equals("color_*"))
+                            col = t.color;
+                        else if (s.equals("color_*2"))
+                            col = t.secondaryColor;
+                        else if (s.equals("color_*3"))
+                            col = t.tertiaryColor;
+                        else if (s.equals("emblem_*"))
+                            col = t.emblemColor;
+
+                        if (c.equals("r"))
+                            col.red = (double) value;
+                        else if (c.equals("g"))
+                            col.green = (double) value;
+                        else if (c.equals("b"))
+                            col.blue = (double) value;
+                    }
+                });
+            }
+        }
     }
 
     public static <V> void addGeneralCase(Class<V> cls, BiFunction<Field, V, Object> func)

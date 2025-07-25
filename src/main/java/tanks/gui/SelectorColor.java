@@ -20,7 +20,7 @@ public class SelectorColor implements IDrawable, ITrigger
         this.spacing = space;
         this.enableAlpha = alpha;
 
-        colorRed = new TextBoxSlider(x, y, sizeX, sizeY, name + " red", () ->
+        colorRed = new TextBoxSlider(x, y, sizeX, sizeY, name.isEmpty() ? "Red" : (name + " red"), () ->
         {
             if (colorRed.inputText.length() <= 0)
                 colorRed.inputText = colorRed.previousInputText;
@@ -36,7 +36,7 @@ public class SelectorColor implements IDrawable, ITrigger
         colorRed.checkMaxValue = true;
         colorRed.integer = true;
 
-        colorGreen = new TextBoxSlider(x, y + space, sizeX, sizeY, name + " green", () ->
+        colorGreen = new TextBoxSlider(x, y + space, sizeX, sizeY, name.isEmpty() ? "Green" : (name + " green"), () ->
         {
             if (colorGreen.inputText.length() <= 0)
                 colorGreen.inputText = colorGreen.previousInputText;
@@ -52,7 +52,7 @@ public class SelectorColor implements IDrawable, ITrigger
         colorGreen.checkMaxValue = true;
         colorGreen.integer = true;
 
-        colorBlue = new TextBoxSlider(x, y + space * 2, sizeX, sizeY, name + " blue", () ->
+        colorBlue = new TextBoxSlider(x, y + space * 2, sizeX, sizeY, name.isEmpty() ? "Blue" : (name + " blue"), () ->
         {
             if (colorBlue.inputText.length() <= 0)
                 colorBlue.inputText = colorBlue.previousInputText;
@@ -68,7 +68,7 @@ public class SelectorColor implements IDrawable, ITrigger
         colorBlue.checkMaxValue = true;
         colorBlue.integer = true;
 
-        colorAlpha = new TextBoxSlider(x, y + space * 3, sizeX, sizeY, name + " opacity", () ->
+        colorAlpha = new TextBoxSlider(x, y + space * 3, sizeX, sizeY, name.isEmpty() ? "Opacity" : (name + " opacity"), () ->
         {
             if (colorAlpha.inputText.length() <= 0)
                 colorAlpha.inputText = colorAlpha.previousInputText;
@@ -90,8 +90,15 @@ public class SelectorColor implements IDrawable, ITrigger
         this.colorRed.update();
         this.colorGreen.update();
         this.colorBlue.update();
+        this.color.red = this.colorRed.value;
+        this.color.green = this.colorGreen.value;
+        this.color.blue = this.colorBlue.value;
+
         if (enableAlpha)
+        {
             this.colorAlpha.update();
+            this.color.alpha = this.colorAlpha.value;
+        }
     }
 
     public void draw()
@@ -144,8 +151,33 @@ public class SelectorColor implements IDrawable, ITrigger
     }
 
     @Override
+    public double getPositionX()
+    {
+        return this.colorRed.posX;
+    }
+
+    @Override
+    public double getPositionY()
+    {
+        return this.colorRed.posY;
+    }
+
+    @Override
     public int getSize()
     {
         return this.enableAlpha ? 4 : 3;
+    }
+
+    public void updateColors()
+    {
+        this.colorRed.value = (int) this.color.red;
+        this.colorGreen.value = (int) this.color.green;
+        this.colorBlue.value = (int) this.color.blue;
+        this.colorAlpha.value = (int) this.color.alpha;
+
+        this.colorRed.inputText = "" + (int) this.colorRed.value;
+        this.colorGreen.inputText = "" + (int) this.colorGreen.value;
+        this.colorBlue.inputText = "" + (int) this.colorBlue.value;
+        this.colorAlpha.inputText = "" + (int) this.colorAlpha.value;
     }
 }

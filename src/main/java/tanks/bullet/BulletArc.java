@@ -188,7 +188,7 @@ public class BulletArc extends Bullet
 
     public void drawShadow()
     {
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 0.5);
+        Drawing.drawing.setColor(this.outlineColor, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 0.5);
         Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 2, this.size * 2, true);
         Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
     }
@@ -197,12 +197,12 @@ public class BulletArc extends Bullet
     {
         double s = (1.5 - frac) * this.size * 4;
         double d = Math.max(1 - (this.destroyTimer / this.maxDestroyTimer) * 2, 0);
-        Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);
+        Drawing.drawing.setColor(this.baseColor, frac * 255 * d, 1);
         Drawing.drawing.drawImage(frac * Math.PI / 2, "cursor.png", x, y, s, s);
 
         if (Game.glowEnabled)
         {
-            Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * 255 * d, 1);
+            Drawing.drawing.setColor(this.outlineColor, frac * 255 * d, 1);
             Drawing.drawing.fillGlow(x, y, this.size * 4, this.size * 4);
         }
     }

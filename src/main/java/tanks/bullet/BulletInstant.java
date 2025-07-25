@@ -64,9 +64,9 @@ public class BulletInstant extends Bullet
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 				double var = 50;
 				e.maxAge /= 2;
-				e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
-				e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
-				e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
+				e.colR = Math.min(255, Math.max(0, this.baseColor.red + Math.random() * var - var / 2));
+				e.colG = Math.min(255, Math.max(0, this.baseColor.green + Math.random() * var - var / 2));
+				e.colB = Math.min(255, Math.max(0, this.baseColor.blue + Math.random() * var - var / 2));
 
 				if (Game.enable3d)
 					e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
@@ -152,7 +152,7 @@ public class BulletInstant extends Bullet
 		if (this.hitStun > 0)
 			this.addElectricEffect();
 
-		this.segments.add(new Laser(this.lastX, this.lastY, this.lastZ, this.collisionX, this.collisionY, this.posZ, this.size / 2, this.getAngleInDirection(this.lastX, this.lastY), this.baseColorR, this.baseColorG, this.baseColorB));
+		this.segments.add(new Laser(this.lastX, this.lastY, this.lastZ, this.collisionX, this.collisionY, this.posZ, this.size / 2, this.getAngleInDirection(this.lastX, this.lastY), this.baseColor));
 		this.lastX = this.collisionX;
 		this.lastY = this.collisionY;
 		this.lastZ = this.posZ;
@@ -187,14 +187,14 @@ public class BulletInstant extends Bullet
 					double nX = (1 - frac) * this.lastX + frac * this.collisionX + (Math.random() - 0.5) * 50;
 					double nY = (1 - frac) * this.lastY + frac * this.collisionY + (Math.random() - 0.5) * 50;
 					double nZ = (1 - frac) * this.lastZ + frac * this.posZ + (Math.random() - 0.5) * 30;
-					Laser l = new Laser(lX, lY, lZ, nX, nY, nZ, this.size * size, this.getAngleInDirection(this.lastX, this.lastY), this.outlineColorR, this.outlineColorG, this.outlineColorB);
+					Laser l = new Laser(lX, lY, lZ, nX, nY, nZ, this.size * size, this.getAngleInDirection(this.lastX, this.lastY), this.outlineColor);
 					l.glows = glows;
 					this.segments.add(l);
 					lX = nX;
 					lY = nY;
 					lZ = nZ;
 				}
-				Laser l = new Laser(lX, lY, lZ, this.collisionX, this.collisionY, this.posZ, this.size * size, this.getAngleInDirection(this.lastX, this.lastY), this.outlineColorR, this.outlineColorG, this.outlineColorB);
+				Laser l = new Laser(lX, lY, lZ, this.collisionX, this.collisionY, this.posZ, this.size * size, this.getAngleInDirection(this.lastX, this.lastY), this.outlineColor);
 				l.glows = glows;
 				this.segments.add(l);
 			}
@@ -234,7 +234,7 @@ public class BulletInstant extends Bullet
 			if (i == 0)
 				z = this.iPosZ;
 
-			this.segments.add(new Laser(iX, iY, z, iX + dX, iY + dY, Game.tile_size / 4, this.size / 2, this.getAngleInDirection(iX, iY), this.baseColorR, this.baseColorG, this.baseColorB));
+			this.segments.add(new Laser(iX, iY, z, iX + dX, iY + dY, Game.tile_size / 4, this.size / 2, this.getAngleInDirection(iX, iY), this.baseColor));
 			this.expired = true;
 
 			if (this.hitStun > 0)

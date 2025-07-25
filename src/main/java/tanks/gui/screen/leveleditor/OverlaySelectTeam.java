@@ -74,7 +74,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
             Team t = (Team) this.selector.choices.get(i);
             if (t.enableColor)
             {
-                Drawing.drawing.setColor(t.teamColorR, t.teamColorG, t.teamColorB);
+                Drawing.drawing.setColor(t.teamColor);
                 Drawing.drawing.fillInterfaceOval(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY, b.sizeY * 0.8, b.sizeY * 0.8);
             }
 

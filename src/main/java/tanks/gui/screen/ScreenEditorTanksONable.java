@@ -7,7 +7,6 @@ import tanks.Game;
 import tanks.Level;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
-import tanks.bullet.Trail;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
@@ -229,7 +228,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
-                if (p != null && p.category().equals(this.category) && p.miscType() != Property.MiscType.color)
+                if (p != null && p.category().equals(this.category))
                 {
                     ITrigger t = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
                     this.uiElements.add(t);
@@ -608,7 +607,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             }
             else if (Color.class.isAssignableFrom(f.getType()))
             {
-                return new SelectorColor(0, 0, this.objWidth, this.objHeight, p.name(), this.objYSpace * 1.5, (Color) f.get(), !p.miscType().equals(Property.MiscType.alphaless));
+                return new SelectorColor(0, 0, this.objWidth, this.objHeight, p.name(), this.objYSpace * 1.5, (Color) f.get(), !p.miscType().equals(Property.MiscType.colorRGB));
             }
             else if (ITanksONEditable.class.isAssignableFrom(f.getType()))
             {
@@ -1080,7 +1079,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             b.drawImageShadow = true;
             b.imageSizeX = 50;
             b.imageSizeY = 50;
-            b.imageXOffset = -105;
+            b.imageXOffset = -size / 2 + 35;
 
             this.addTabButton(t, b);
             t.sortUIElements();

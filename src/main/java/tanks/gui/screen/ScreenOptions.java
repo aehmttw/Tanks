@@ -9,6 +9,7 @@ import tanks.gui.Button;
 import tanks.hotbar.Hotbar;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
+import tanks.tank.Turret;
 import tanks.translation.Translation;
 
 import java.io.FileNotFoundException;
@@ -141,7 +142,7 @@ public class ScreenOptions extends Screen
 		if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale > personalize.sizeX - 240)
 			Drawing.drawing.setInterfaceFontSize(this.titleSize * (personalize.sizeX - 240) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale));
 
-		if (Game.player.colorR + Game.player.colorG + Game.player.colorB >= 380 && Game.player.username.length() >= 1)
+		if (Game.player.color.red + Game.player.color.green + Game.player.color.blue >= 380 && Game.player.username.length() >= 1)
 		{
 			Drawing.drawing.setColor(127, 127, 127);
 			double s = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale;
@@ -153,11 +154,11 @@ public class ScreenOptions extends Screen
 
 		preview.drawForInterface(personalize.posX - personalize.sizeX / 2 + personalize.sizeY * 0.7, personalize.posY, objHeight / 40);
 
-		Drawing.drawing.setColor(Game.player.colorR2, Game.player.colorG2, Game.player.colorB2);
+		Drawing.drawing.setColor(Game.player.color2);
 		Drawing.drawing.drawInterfaceText(personalize.posX + 2, personalize.posY + personalize.sizeY * 0.1 + 2, Game.player.username);
-		Drawing.drawing.setColor(Game.player.colorR3, Game.player.colorG3, Game.player.colorB3);
+		Drawing.drawing.setColor(Game.player.color3);
 		Drawing.drawing.drawInterfaceText(personalize.posX + 1, personalize.posY + personalize.sizeY * 0.1 + 1, Game.player.username);
-		Drawing.drawing.setColor(Game.player.colorR, Game.player.colorG, Game.player.colorB);
+		Drawing.drawing.setColor(Game.player.color);
 		Drawing.drawing.drawInterfaceText(personalize.posX, personalize.posY + personalize.sizeY * 0.1, Game.player.username);
 
 		if (Game.player.username.length() < 1)
@@ -257,15 +258,15 @@ public class ScreenOptions extends Screen
 			f.println("party_bots=" + Game.botPlayerCount);
 			f.println("tank_secondary_color=" + Game.player.enableSecondaryColor);
 			f.println("tank_tertiary_color=" + Game.player.enableTertiaryColor);
-			f.println("tank_red=" + Game.player.colorR);
-			f.println("tank_green=" + Game.player.colorG);
-			f.println("tank_blue=" + Game.player.colorB);
-			f.println("tank_red_2=" + Game.player.colorR2);
-			f.println("tank_green_2=" + Game.player.colorG2);
-			f.println("tank_blue_2=" + Game.player.colorB2);
-			f.println("tank_red_3=" + Game.player.colorR3);
-			f.println("tank_green_3=" + Game.player.colorG3);
-			f.println("tank_blue_3=" + Game.player.colorB3);
+			f.println("tank_red=" + Game.player.color.red);
+			f.println("tank_green=" + Game.player.color.green);
+			f.println("tank_blue=" + Game.player.color.blue);
+			f.println("tank_red_2=" + Game.player.color2.red);
+			f.println("tank_green_2=" + Game.player.color2.green);
+			f.println("tank_blue_2=" + Game.player.color2.blue);
+			f.println("tank_red_3=" + Game.player.color3.red);
+			f.println("tank_green_3=" + Game.player.color3.green);
+			f.println("tank_blue_3=" + Game.player.color3.blue);
 			f.println("translation=" + (Translation.currentTranslation == null ? "null" : Translation.currentTranslation.fileName));
 			f.println("agreed_steam_workshop=" + Game.agreedToWorkshopAgreement);
 			f.println("last_version=" + Game.lastVersion);
@@ -497,31 +498,31 @@ public class ScreenOptions extends Screen
 						Game.player.enableTertiaryColor = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "tank_red":
-						Game.player.colorR = Integer.parseInt(optionLine[1]);
+						Game.player.color.red = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_green":
-						Game.player.colorG = Integer.parseInt(optionLine[1]);
+						Game.player.color.green = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_blue":
-						Game.player.colorB = Integer.parseInt(optionLine[1]);
+						Game.player.color.blue = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_red_2":
-						Game.player.colorR2 = Integer.parseInt(optionLine[1]);
+						Game.player.color2.red = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_green_2":
-						Game.player.colorG2 = Integer.parseInt(optionLine[1]);
+						Game.player.color2.green = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_blue_2":
-						Game.player.colorB2 = Integer.parseInt(optionLine[1]);
+						Game.player.color2.blue = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_red_3":
-						Game.player.colorR3 = Integer.parseInt(optionLine[1]);
+						Game.player.color3.red = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_green_3":
-						Game.player.colorG3 = Integer.parseInt(optionLine[1]);
+						Game.player.color3.green = Double.parseDouble(optionLine[1]);
 						break;
 					case "tank_blue_3":
-						Game.player.colorB3 = Integer.parseInt(optionLine[1]);
+						Game.player.color3.blue = Double.parseDouble(optionLine[1]);
 						break;
 					case "translation":
 						Translation.setCurrentTranslation(optionLine[1]);
@@ -565,15 +566,15 @@ public class ScreenOptions extends Screen
 
 			if (!Game.player.enableTertiaryColor)
 			{
-				Game.player.colorR3 = (Game.player.colorR + Game.player.colorR2) / 2;
-				Game.player.colorG3 = (Game.player.colorG + Game.player.colorG2) / 2;
-				Game.player.colorB3 = (Game.player.colorB + Game.player.colorB2) / 2;
+				Turret.setTertiary(Game.player.color, Game.player.color2, Game.player.color3);
 			}
 		}
 		catch (Exception e)
 		{
-			Game.logger.println (new Date().toString() + " (syswarn) options file is nonexistent or broken, using default:");
+			Game.logger.println (new Date().toString() + " Options file is nonexistent or broken, using default:");
 			e.printStackTrace(Game.logger);
+			System.err.println("Failed to load options!");
+			e.printStackTrace();
 		}
 	}
 }

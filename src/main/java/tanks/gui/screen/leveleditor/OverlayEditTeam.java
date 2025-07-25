@@ -134,7 +134,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
 
         if (team.enableColor)
         {
-            Drawing.drawing.setColor(team.teamColorR, team.teamColorG, team.teamColorB);
+            Drawing.drawing.setColor(team.teamColor);
             Drawing.drawing.fillInterfaceOval(teamColor.posX - teamColor.sizeX / 2 + teamColor.sizeY / 2, teamColor.posY, teamColor.sizeY * 0.8, teamColor.sizeY * 0.8);
         }
 
@@ -143,7 +143,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, "Edit team");
 
         if (team.enableColor)
-            Drawing.drawing.setColor(team.teamColorR, team.teamColorG, team.teamColorB);
+            Drawing.drawing.setColor(team.teamColor);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, this.team.name);
     }
 }

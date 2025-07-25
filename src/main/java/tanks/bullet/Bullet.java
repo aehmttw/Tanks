@@ -1,6 +1,5 @@
 package tanks.bullet;
 
-import basewindow.Color;
 import tanks.*;
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
@@ -17,7 +16,10 @@ import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
-import tanks.tankson.*;
+import tanks.tankson.ICopyable;
+import tanks.tankson.ITanksONEditable;
+import tanks.tankson.Property;
+import tanks.tankson.TanksONable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1763,6 +1765,18 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 			Game.effects.add(e);
 		}
+	}
+
+	@Override
+	public boolean disableRayCollision()
+	{
+		return !bulletCollision();
+	}
+
+	@Override
+	public boolean bulletCollision()
+	{
+		return bulletCollision && externalBulletCollision && enableExternalCollisions;
 	}
 
 	public double getSize()

@@ -291,6 +291,12 @@ public class BulletInstant extends Bullet
 		}
 	}
 
+	@Override
+	public boolean disableRayCollision()
+	{
+		return true;
+	}
+
 	public void superUpdate()
 	{
 		super.update();

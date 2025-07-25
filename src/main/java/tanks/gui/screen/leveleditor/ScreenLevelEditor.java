@@ -21,6 +21,8 @@ import tanks.tank.*;
 import tanks.tankson.Serializer;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 @SuppressWarnings("unused")
@@ -1654,8 +1656,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.save(this.name);
 	}
 
-	public void save(String levelName)
-	{
+	public void save(String levelName) {
 		StringBuilder level = new StringBuilder("{");
 
 		if (!this.level.editable)
@@ -1867,6 +1868,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (!this.level.editable)
 			{
 				return;
+			} else {
+				try {
+					Level oldLevel = new Level(new String(Files.readAllBytes(Paths.get(file.path))));
+					if (oldLevel.stripFormatting().equals(Game.currentLevelString)) {
+						return;
+					}
+				} catch (IOException e) {
+					Game.exitToCrash(e);
+				}
 			}
 
 			file.delete();

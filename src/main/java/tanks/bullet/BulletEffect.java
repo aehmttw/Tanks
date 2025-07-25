@@ -21,7 +21,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
 
     @Property(id = "particles", name = "Enable particles", category = BulletEffectPropertyCategory.particle)
     public boolean enableParticles = false;
-    @Property(id = "particle_color", name = "Particle color", category = BulletEffectPropertyCategory.particle, miscType = Property.MiscType.alphaless)
+    @Property(id = "particle_color", name = "Particle color", category = BulletEffectPropertyCategory.particle, miscType = Property.MiscType.colorRGB)
     public Color particleColor = new Color(0, 0, 0, 0);
     @Property(id = "particle_glow", name = "Particle glow", category = BulletEffectPropertyCategory.particle, minValue = 0, maxValue = 1)
     public double particleGlow = 1;
@@ -40,7 +40,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
     public boolean glowGlowy = true;
     @Property(id = "glow_color_override", name = "Custom aura color", category = BulletEffectPropertyCategory.glow)
     public boolean overrideGlowColor = false;
-    @Property(id = "glow_color", name = "Aura color", category = BulletEffectPropertyCategory.glow, miscType = Property.MiscType.alphaless)
+    @Property(id = "glow_color", name = "Aura color", category = BulletEffectPropertyCategory.glow, miscType = Property.MiscType.colorRGB)
     public Color glowColor = new Color(0, 0, 0, 0);
 
     public static BulletEffect trail = new BulletEffect();
@@ -123,7 +123,12 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         dark_fire.glowSize = 6;
     }
 
-    public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects)
+    public double drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects)
+    {
+        return drawForInterface(x, width, y, size, effects, 1, true);
+    }
+
+    public double drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, double stretch, boolean bullet)
     {
         double max = 0;
         for (Trail t: this.trailEffects)
@@ -131,7 +136,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
             max = Math.max(max, t.maxLength + t.delay);
         }
 
-        double l = Math.min(width, max * size);
+        double l = Math.min(width, max * size * stretch);
         double start = x - l / 2;
         double end = x + l / 2;
 
@@ -140,17 +145,20 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
             t.drawForInterface(start, end, y, size, max);
         }
 
-        if (!this.overrideGlowColor)
+        if (bullet)
+        {
+            if (!this.overrideGlowColor)
+                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity, Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
+            else
+                Drawing.drawing.setColor(this.glowColor.red * this.glowIntensity, this.glowColor.green * this.glowIntensity, this.glowColor.blue * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
+
+            Drawing.drawing.fillInterfaceGlow(start, y, size * this.glowSize, size * this.glowSize, !this.glowGlowy);
+
             Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity, Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
-        else
-            Drawing.drawing.setColor(this.glowColor.red * this.glowIntensity, this.glowColor.green * this.glowIntensity, this.glowColor.blue * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
-
-        Drawing.drawing.fillInterfaceGlow(start, y, size * this.glowSize, size * this.glowSize,  !this.glowGlowy);
-
-        Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity, Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
-        Drawing.drawing.fillInterfaceOval(start, y, size, size);
-        Drawing.drawing.setColor(0, 150, 255, 255, this.luminance);
-        Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
+            Drawing.drawing.fillInterfaceOval(start, y, size, size);
+            Drawing.drawing.setColor(0, 150, 255, 255, this.luminance);
+            Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
+        }
 
         if (this.enableParticles && Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled)
         {
@@ -177,6 +185,8 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
             e.vX += 3.125;
             effects.add(e);
         }
+
+        return l;
     }
 
     @Override

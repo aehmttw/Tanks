@@ -29,9 +29,7 @@ public class TankLightPink extends TankAIControlled
         if (Game.tankTextures)
         {
             this.emblem = "emblems/angry.png";
-            this.emblemR = this.secondaryColorR;
-            this.emblemG = this.secondaryColorG;
-            this.emblemB = this.secondaryColorB;
+            this.emblemColor.set(this.secondaryColor);
         }
 
         this.sightTransformTankField = new TankLightPinkAngry(this.name, x, y, angle);

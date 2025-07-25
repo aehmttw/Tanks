@@ -14,6 +14,10 @@ public interface ITrigger
 
     void setPosition(double x, double y);
 
+    double getPositionX();
+
+    double getPositionY();
+
     default InputBindingGroup getKeybind() { return null; }
 
     default void updateKeybind()

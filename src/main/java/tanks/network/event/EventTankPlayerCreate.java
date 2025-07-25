@@ -1,5 +1,6 @@
 package tanks.network.event;
 
+import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 import tanks.Crusade;
 import tanks.Game;
@@ -27,17 +28,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 	public double angle;
 	public String team;
 
-	public int colorR;
-	public int colorG;
-	public int colorB;
-
-	public int colorR2;
-	public int colorG2;
-	public int colorB2;
-
-	public int colorR3;
-	public int colorG3;
-	public int colorB3;
+	public Color color = new Color();
+	public Color color2 = new Color();
+	public Color color3 = new Color();
 
 	public int networkID;
 
@@ -69,17 +62,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 
 		this.username = p.username;
 
-		this.colorR = p.colorR;
-		this.colorG = p.colorG;
-		this.colorB = p.colorB;
-
-		this.colorR2 = p.colorR2;
-		this.colorG2 = p.colorG2;
-		this.colorB2 = p.colorB2;
-
-		this.colorR3 = p.colorR3;
-		this.colorG3 = p.colorG3;
-		this.colorB3 = p.colorB3;
+		this.color.set(p.color);
+		this.color2.set(p.color2);
+		this.color3.set(p.color3);
 	}
 	
 	@Override
@@ -161,17 +146,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 				if (c.clientId.equals(clientIdTarget))
 				{
 					if (t.team != null && t.team.enableColor)
-					{
-						c.teamColorR = t.team.teamColorR;
-						c.teamColorG = t.team.teamColorG;
-						c.teamColorB = t.team.teamColorB;
-					}
+						c.teamColor.set(t.team.teamColor);
 					else
-					{
-						c.teamColorR = 255;
-						c.teamColorG = 255;
-						c.teamColorB = 255;
-					}
+						c.teamColor.set(255, 255, 255);
 				}
 			}
 		}
@@ -188,22 +165,10 @@ public class EventTankPlayerCreate extends PersonalEvent
 
 	public void setColor(Tank t)
 	{
-		t.colorR = this.colorR;
-		t.colorG = this.colorG;
-		t.colorB = this.colorB;
-
-		t.secondaryColorR = this.colorR2;
-		t.secondaryColorG = this.colorG2;
-		t.secondaryColorB = this.colorB2;
-
-		t.enableTertiaryColor = true;
-		t.tertiaryColorR = this.colorR3;
-		t.tertiaryColorG = this.colorG3;
-		t.tertiaryColorB = this.colorB3;
-
-		t.emblemR = this.colorR2;
-		t.emblemG = this.colorG2;
-		t.emblemB = this.colorB2;
+		t.color.set(this.color);
+		t.secondaryColor.set(this.color2);
+		t.tertiaryColor.set(this.color3);
+		t.emblemColor.set(this.color2);
 
 		if (t instanceof TankPlayable)
 			((TankPlayable) t).saveColors();
@@ -220,15 +185,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 		NetworkUtils.writeString(b, this.team);
 		b.writeInt(this.networkID);
 
-		b.writeInt(this.colorR);
-		b.writeInt(this.colorG);
-		b.writeInt(this.colorB);
-		b.writeInt(this.colorR2);
-		b.writeInt(this.colorG2);
-		b.writeInt(this.colorB2);
-		b.writeInt(this.colorR3);
-		b.writeInt(this.colorG3);
-		b.writeInt(this.colorB3);
+		NetworkUtils.writeColor(b, this.color);
+		NetworkUtils.writeColor(b, this.color2);
+		NetworkUtils.writeColor(b, this.color3);
 
 		b.writeDouble(this.drawAge);
 	}
@@ -244,15 +203,9 @@ public class EventTankPlayerCreate extends PersonalEvent
 		this.team = NetworkUtils.readString(b);
 		this.networkID = b.readInt();
 
-		this.colorR = b.readInt();
-		this.colorG = b.readInt();
-		this.colorB = b.readInt();
-		this.colorR2 = b.readInt();
-		this.colorG2 = b.readInt();
-		this.colorB2 = b.readInt();
-		this.colorR3 = b.readInt();
-		this.colorG3 = b.readInt();
-		this.colorB3 = b.readInt();
+		NetworkUtils.readColor(b, this.color);
+		NetworkUtils.readColor(b, this.color2);
+		NetworkUtils.readColor(b, this.color3);
 
 		this.drawAge = b.readDouble();
 	}

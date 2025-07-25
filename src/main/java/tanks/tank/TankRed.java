@@ -32,7 +32,7 @@ public class TankRed extends TankAIControlled
 		{
 			this.colorSkin = TankModels.fixed;
 			this.emblem = "emblems/laser.png";
-			this.emblemR = 110;
+			this.emblemColor.red = 110;
 			this.turretSkin = TankModels.cross;
 		}
 

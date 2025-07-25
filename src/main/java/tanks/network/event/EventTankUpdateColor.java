@@ -1,24 +1,18 @@
 package tanks.network.event;
 
+import basewindow.Color;
 import io.netty.buffer.ByteBuf;
+import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
 public class EventTankUpdateColor extends PersonalEvent implements IStackableEvent
 {
     public int tank;
 
-    public double red;
-    public double green;
-    public double blue;
-
-    public double red2;
-    public double green2;
-    public double blue2;
-
+    public Color color1 = new Color();
+    public Color color2 = new Color();
+    public Color color3 = new Color();
     public boolean tertiaryColor;
-    public double red3;
-    public double green3;
-    public double blue3;
 
     public EventTankUpdateColor()
     {
@@ -29,18 +23,11 @@ public class EventTankUpdateColor extends PersonalEvent implements IStackableEve
     {
         tank = t.networkID;
 
-        red = t.colorR;
-        green = t.colorG;
-        blue = t.colorB;
-
-        red2 = t.secondaryColorR;
-        green2 = t.secondaryColorG;
-        blue2 = t.secondaryColorB;
+        color1.set(t.color);
+        color2.set(t.secondaryColor);
+        color3.set(t.tertiaryColor);
 
         tertiaryColor = t.enableTertiaryColor;
-        red3 = t.tertiaryColorR;
-        green3 = t.tertiaryColorG;
-        blue3 = t.tertiaryColorB;
     }
 
     @Override
@@ -51,50 +38,31 @@ public class EventTankUpdateColor extends PersonalEvent implements IStackableEve
         if (t == null || this.clientID != null)
             return;
 
-        t.colorR = red;
-        t.colorG = green;
-        t.colorB = blue;
-
-        t.secondaryColorR = red2;
-        t.secondaryColorG = green2;
-        t.secondaryColorB = blue2;
+        t.color.set(this.color1);
+        t.secondaryColor.set(this.color2);
+        t.tertiaryColor.set(this.color3);
 
         t.enableTertiaryColor = tertiaryColor;
-        t.tertiaryColorR = red3;
-        t.tertiaryColorG = green3;
-        t.tertiaryColorB = blue3;
     }
 
     @Override
     public void write(ByteBuf b)
     {
         b.writeInt(this.tank);
-        b.writeDouble(this.red);
-        b.writeDouble(this.green);
-        b.writeDouble(this.blue);
-        b.writeDouble(this.red2);
-        b.writeDouble(this.green2);
-        b.writeDouble(this.blue2);
+        NetworkUtils.writeColor(b, this.color1);
+        NetworkUtils.writeColor(b, this.color2);
+        NetworkUtils.writeColor(b, this.color3);
         b.writeBoolean(this.tertiaryColor);
-        b.writeDouble(this.red3);
-        b.writeDouble(this.green3);
-        b.writeDouble(this.blue3);
     }
 
     @Override
     public void read(ByteBuf b)
     {
         this.tank = b.readInt();
-        this.red = b.readDouble();
-        this.green = b.readDouble();
-        this.blue = b.readDouble();
-        this.red2 = b.readDouble();
-        this.green2 = b.readDouble();
-        this.blue2 = b.readDouble();
+        NetworkUtils.readColor(b, this.color1);
+        NetworkUtils.readColor(b, this.color2);
+        NetworkUtils.readColor(b, this.color3);
         this.tertiaryColor = b.readBoolean();
-        this.red3 = b.readDouble();
-        this.green3 = b.readDouble();
-        this.blue3 = b.readDouble();
     }
 
     @Override

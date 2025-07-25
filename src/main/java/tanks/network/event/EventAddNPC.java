@@ -39,7 +39,7 @@ public class EventAddNPC extends EventTankCustomCreate
         if (this.clientID != null)
             return;
 
-        TankNPC npc = new TankNPC(name, posX, posY, angle, messages, tag, red, green, blue);
+        TankNPC npc = new TankNPC(name, posX, posY, angle, messages, tag, color.red, color.green, color.blue);
         npc.setNetworkID(id);
         npc.team = null;
         npc.shopItems = this.shop;

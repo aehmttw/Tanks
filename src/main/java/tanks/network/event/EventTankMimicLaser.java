@@ -46,7 +46,7 @@ public class EventTankMimicLaser extends PersonalEvent implements IStackableEven
         {
             Laser laser = new Laser(t.posX, t.posY, t.size / 2, t2.posX, t2.posY, t2.size / 2,
                     (this.range - GameObject.distanceBetween(t, t2)) / this.range * 10, t2.getAngleInDirection(t.posX, t.posY),
-                    t2.colorR, t2.colorG, t2.colorB);
+                    t2.color);
             laser.tank1 = t;
             laser.tank2 = t2;
             Game.movables.add(laser);

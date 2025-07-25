@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.Color;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
@@ -28,16 +29,16 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public String buildName = "player";
 
-    @Property(category = appearanceBody, id = "override_color1", name = "Override color", miscType = Property.MiscType.color)
+    @Property(category = appearanceBody, id = "override_color1", name = "Override color", miscType = Property.MiscType.colorRGB)
     public boolean overridePrimaryColor = false;
-    @Property(category = appearanceTurretBarrel, id = "override_color2", name = "Override color", miscType = Property.MiscType.color)
+    @Property(category = appearanceTurretBarrel, id = "override_color2", name = "Override color", miscType = Property.MiscType.colorRGB)
     public boolean overrideSecondaryColor = false;
-    @Property(category = appearanceTurretBase, id = "override_color3", name = "Override color", miscType = Property.MiscType.color)
+    @Property(category = appearanceTurretBase, id = "override_color3", name = "Override color", miscType = Property.MiscType.colorRGB)
     public boolean overrideTertiaryColor = false;
-    @Property(category = appearanceEmblem, id = "override_color_emblem", name = "Override color", miscType = Property.MiscType.color)
+    @Property(category = appearanceEmblem, id = "override_color_emblem", name = "Override color", miscType = Property.MiscType.colorRGB)
     public boolean overrideEmblemColor = false;
 
-    public double[] savedColors = new double[12];
+    public Color[] savedColors = new Color[]{new Color(0, 0, 0, 255), new Color(0, 0, 0, 255), new Color(0, 0, 0, 255), new Color(0, 0, 0, 255)};
 
     public TankPlayable(double x, double y)
     {
@@ -157,7 +158,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             for (Field f : m.getClass().getFields())
             {
                 Property p = f.getAnnotation(Property.class);
-                if (p != null && p.miscType() != Property.MiscType.color)
+                if (p != null && p.miscType() != Property.MiscType.colorRGBA && p.miscType() != Property.MiscType.colorRGB)
                 {
                     try
                     {
@@ -179,33 +180,18 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
             m.restoreColors();
             m.enableTertiaryColor = true;
+
             if (this.overridePrimaryColor)
-            {
-                m.colorR = this.colorR;
-                m.colorG = this.colorG;
-                m.colorB = this.colorB;
-            }
+                m.color.set(this.color);
 
             if (this.overrideSecondaryColor)
-            {
-                m.secondaryColorR = this.secondaryColorR;
-                m.secondaryColorG = this.secondaryColorG;
-                m.secondaryColorB = this.secondaryColorB;
-            }
+                m.secondaryColor.set(this.secondaryColor);
 
             if (this.overrideTertiaryColor)
-            {
-                m.tertiaryColorR = this.tertiaryColorR;
-                m.tertiaryColorG = this.tertiaryColorG;
-                m.tertiaryColorB = this.tertiaryColorB;
-            }
+                m.tertiaryColor.set(this.tertiaryColor);
 
             if (this.overrideEmblemColor)
-            {
-                m.emblemR = this.emblemR;
-                m.emblemG = this.emblemG;
-                m.emblemB = this.emblemB;
-            }
+                m.emblemColor.set(this.emblemColor);
 
             m.buildName = this.name;
         }
@@ -229,7 +215,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             for (Field f : m.getClass().getFields())
             {
                 Property p = f.getAnnotation(Property.class);
-                if (p != null && p.miscType() != Property.MiscType.color)
+                if (p != null && p.miscType() != Property.MiscType.colorRGBA && p.miscType() != Property.MiscType.colorRGB)
                 {
                     try
                     {
@@ -247,33 +233,18 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                 m.enableMovement = false;
 
             m.enableTertiaryColor = true;
+
             if (this.overridePrimaryColor)
-            {
-                m.colorR = this.colorR;
-                m.colorG = this.colorG;
-                m.colorB = this.colorB;
-            }
+                m.color.set(this.color);
 
             if (this.overrideSecondaryColor)
-            {
-                m.secondaryColorR = this.secondaryColorR;
-                m.secondaryColorG = this.secondaryColorG;
-                m.secondaryColorB = this.secondaryColorB;
-            }
+                m.secondaryColor.set(this.secondaryColor);
 
             if (this.overrideTertiaryColor)
-            {
-                m.tertiaryColorR = this.tertiaryColorR;
-                m.tertiaryColorG = this.tertiaryColorG;
-                m.tertiaryColorB = this.tertiaryColorB;
-            }
+                m.tertiaryColor.set(this.tertiaryColor);
 
             if (this.overrideEmblemColor)
-            {
-                m.emblemR = this.emblemR;
-                m.emblemG = this.emblemG;
-                m.emblemB = this.emblemB;
-            }
+                m.emblemColor.set(this.emblemColor);
 
             m.shootAIType = TankAIControlled.ShootAI.none;
             m.enableMineLaying = false;
@@ -361,39 +332,17 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public void saveColors()
     {
-        this.savedColors[0] = this.colorR;
-        this.savedColors[1] = this.colorG;
-        this.savedColors[2] = this.colorB;
-
-        this.savedColors[3] = this.secondaryColorR;
-        this.savedColors[4] = this.secondaryColorG;
-        this.savedColors[5] = this.secondaryColorB;
-
-        this.savedColors[6] = this.tertiaryColorR;
-        this.savedColors[7] = this.tertiaryColorG;
-        this.savedColors[8] = this.tertiaryColorB;
-
-        this.savedColors[9] = this.emblemR;
-        this.savedColors[10] = this.emblemG;
-        this.savedColors[11] = this.emblemB;
+        this.savedColors[0].set(this.color);
+        this.savedColors[1].set(this.secondaryColor);
+        this.savedColors[2].set(this.tertiaryColor);
+        this.savedColors[3].set(this.emblemColor);
     }
 
     public void restoreColors()
     {
-        this.colorR = this.savedColors[0];
-        this.colorG = this.savedColors[1];
-        this.colorB = this.savedColors[2];
-
-        this.secondaryColorR = this.savedColors[3];
-        this.secondaryColorG = this.savedColors[4];
-        this.secondaryColorB = this.savedColors[5];
-
-        this.tertiaryColorR = this.savedColors[6];
-        this.tertiaryColorG = this.savedColors[7];
-        this.tertiaryColorB = this.savedColors[8];
-
-        this.emblemR = this.savedColors[9];
-        this.emblemG = this.savedColors[10];
-        this.emblemB = this.savedColors[11];
+        this.color.set(savedColors[0]);
+        this.secondaryColor.set(savedColors[1]);
+        this.tertiaryColor.set(savedColors[2]);
+        this.emblemColor.set(savedColors[3]);
     }
 }

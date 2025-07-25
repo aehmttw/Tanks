@@ -161,28 +161,28 @@ public abstract class Minigame extends Level
 
         if (killed.team != null && killed.team.enableColor)
         {
-            killedR = String.format("%03d", (int) killed.team.teamColorR);
-            killedG = String.format("%03d", (int) killed.team.teamColorG);
-            killedB = String.format("%03d", (int) killed.team.teamColorB);
+            killedR = String.format("%03d", (int) killed.team.teamColor.red);
+            killedG = String.format("%03d", (int) killed.team.teamColor.green);
+            killedB = String.format("%03d", (int) killed.team.teamColor.blue);
         }
         else
         {
-            killedR = String.format("%03d", (int) killed.colorR);
-            killedG = String.format("%03d", (int) killed.colorG);
-            killedB = String.format("%03d", (int) killed.colorB);
+            killedR = String.format("%03d", (int) killed.color.red);
+            killedG = String.format("%03d", (int) killed.color.green);
+            killedB = String.format("%03d", (int) killed.color.blue);
         }
 
         if (killer.team != null && killer.team.enableColor)
         {
-            killR = String.format("%03d", (int) killer.team.teamColorR);
-            killB = String.format("%03d", (int) killer.team.teamColorG);
-            killG = String.format("%03d", (int) killer.team.teamColorB);
+            killR = String.format("%03d", (int) killer.team.teamColor.red);
+            killB = String.format("%03d", (int) killer.team.teamColor.green);
+            killG = String.format("%03d", (int) killer.team.teamColor.blue);
         }
         else
         {
-            killR = String.format("%03d", (int) killer.colorR);
-            killG = String.format("%03d", (int) killer.colorG);
-            killB = String.format("%03d", (int) killer.colorB);
+            killR = String.format("%03d", (int) killer.color.red);
+            killG = String.format("%03d", (int) killer.color.green);
+            killB = String.format("%03d", (int) killer.color.blue);
         }
 
         message.append("\u00a7").append(killedR).append(killedG).append(killedB).append("255");
@@ -249,15 +249,15 @@ public abstract class Minigame extends Level
 
         if (killed.team != null && killed.team.enableColor)
         {
-            killedR = String.format("%03d", (int) killed.team.teamColorR);
-            killedG = String.format("%03d", (int) killed.team.teamColorG);
-            killedB = String.format("%03d", (int) killed.team.teamColorB);
+            killedR = String.format("%03d", (int) killed.team.teamColor.red);
+            killedG = String.format("%03d", (int) killed.team.teamColor.green);
+            killedB = String.format("%03d", (int) killed.team.teamColor.blue);
         }
         else
         {
-            killedR = String.format("%03d", (int) killed.colorR);
-            killedG = String.format("%03d", (int) killed.colorG);
-            killedB = String.format("%03d", (int) killed.colorB);
+            killedR = String.format("%03d", (int) killed.color.red);
+            killedG = String.format("%03d", (int) killed.color.green);
+            killedB = String.format("%03d", (int) killed.color.blue);
         }
 
         message.append("\u00a7").append(killedR).append(killedG).append(killedB).append("255");

@@ -1,5 +1,6 @@
 package tanks.tankson;
 
+import basewindow.Color;
 import tanks.Game;
 
 import java.lang.reflect.Field;
@@ -53,6 +54,8 @@ public interface ICopyable<T>
             Object v = f.get(this);
             if (v instanceof ICopyable)
                 f.set(m, ((ICopyable<?>) v).getCopy());
+            else if (v instanceof Color)
+                ((Color)f.get(m)).set((Color) v);
             else if (v instanceof ArrayList)
             {
                 f.set(m, new ArrayList<>());

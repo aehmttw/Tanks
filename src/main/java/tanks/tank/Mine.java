@@ -78,7 +78,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
         }
 
         this.team = t.team;
-        double[] outlineCol = Team.getObjectColor(t.colorR, t.colorG, t.colorB, t);
+        double[] outlineCol = Team.getObjectColor(t.color.red, t.color.green, t.color.blue, t);
         this.outlineColorR = outlineCol[0];
         this.outlineColorG = outlineCol[1];
         this.outlineColorB = outlineCol[2];

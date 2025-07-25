@@ -393,6 +393,18 @@ public class Selector implements IDrawable, ITrigger
         this.posY = y;
     }
 
+    @Override
+    public double getPositionX()
+    {
+        return this.posX;
+    }
+
+    @Override
+    public double getPositionY()
+    {
+        return this.posY;
+    }
+
     public void setText(String text)
     {
         this.rawText = text;

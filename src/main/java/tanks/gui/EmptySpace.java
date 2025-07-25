@@ -21,4 +21,16 @@ public class EmptySpace implements IDrawable, ITrigger
     {
 
     }
+
+    @Override
+    public double getPositionX()
+    {
+        return 0;
+    }
+
+    @Override
+    public double getPositionY()
+    {
+        return 0;
+    }
 }

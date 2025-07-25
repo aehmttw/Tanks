@@ -1586,9 +1586,9 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		{
 			Effect e = Effect.createNewEffect(m.posX, m.posY, ((Tank) m).size / 2, Effect.EffectType.piece);
 			double var = 50;
-			e.colR = Math.min(255, Math.max(0, ((Tank) m).colorR + Math.random() * var - var / 2));
-			e.colG = Math.min(255, Math.max(0, ((Tank) m).colorG + Math.random() * var - var / 2));
-			e.colB = Math.min(255, Math.max(0, ((Tank) m).colorB + Math.random() * var - var / 2));
+			e.colR = Math.min(255, Math.max(0, ((Tank) m).color.red + Math.random() * var - var / 2));
+			e.colG = Math.min(255, Math.max(0, ((Tank) m).color.green + Math.random() * var - var / 2));
+			e.colB = Math.min(255, Math.max(0, ((Tank) m).color.blue + Math.random() * var - var / 2));
 
 			if (Game.enable3d)
 				e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * 2);
@@ -1815,7 +1815,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         {
             level.append(t.name).append("-").append(t.friendlyFire);
             if (t.enableColor)
-                level.append("-").append(t.teamColorR).append("-").append(t.teamColorG).append("-").append(t.teamColorB);
+                level.append("-").append(t.teamColor.red).append("-").append(t.teamColor.green).append("-").append(t.teamColor.blue);
 
             level.append(",");
         }
@@ -1933,7 +1933,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 				if (t.getClass().equals(TankAIControlled.class))
 				{
-					n = new TankAIControlled(t.name, t.posX + mx, t.posY + my, t.size, t.colorR, t.colorG, t.colorB, t.angle, ((TankAIControlled) t).shootAIType);
+					n = new TankAIControlled(t.name, t.posX + mx, t.posY + my, t.size, t.color.red, t.color.green, t.color.blue, t.angle, ((TankAIControlled) t).shootAIType);
 					((TankAIControlled) t).cloneProperties((TankAIControlled) n);
 				}
 				else
@@ -2640,7 +2640,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 					if (t.getClass().equals(TankAIControlled.class))
 					{
-						n = new TankAIControlled(((TankAIControlled) t).name, t.posX, t.posY, ((TankAIControlled) t).size, ((TankAIControlled) t).colorR, ((TankAIControlled) t).colorG, ((TankAIControlled) t).colorB, ((TankAIControlled) t).angle, ((TankAIControlled) t).shootAIType);
+						n = new TankAIControlled(((TankAIControlled) t).name, t.posX, t.posY, ((TankAIControlled) t).size, ((TankAIControlled) t).color.red, ((TankAIControlled) t).color.green, ((TankAIControlled) t).color.blue, ((TankAIControlled) t).angle, ((TankAIControlled) t).shootAIType);
 						((TankAIControlled) t).cloneProperties((TankAIControlled) n);
 					}
 					else

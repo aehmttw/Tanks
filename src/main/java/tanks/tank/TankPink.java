@@ -30,9 +30,7 @@ public class TankPink extends TankAIControlled
 			this.colorSkin = TankModels.fixed;
 			this.baseSkin = TankModels.diagonalStripes;
 			this.emblem = "emblems/squares.png";
-			this.emblemR = this.secondaryColorR;
-			this.emblemG = this.secondaryColorG;
-			this.emblemB = this.secondaryColorB;
+			this.emblemColor.set(this.secondaryColor);
 		}
 
 		this.spawnedTankEntries.add(new SpawnedTankEntry(new TankReference("mini"), 1));

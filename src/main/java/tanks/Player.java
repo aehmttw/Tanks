@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.BaseFile;
+import basewindow.Color;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
@@ -24,17 +25,13 @@ public class Player
     public String buildName = "player";
     public HashSet<String> ownedBuilds = new HashSet<>();
 
-    public int colorR = 0;
-    public int colorG = 150;
-    public int colorB = 255;
+    public static final Color default_primary = new Color(0, 150, 255, 255);
+    public static final Color default_secondary = new Color(Turret.calculateSecondaryColor(default_primary.red), Turret.calculateSecondaryColor(default_primary.green), Turret.calculateSecondaryColor(default_primary.blue), 255);
+    public static final Color default_tertiary = new Color((default_primary.red + default_secondary.red) / 2, (default_primary.green + default_secondary.green) / 2, (default_primary.blue + default_secondary.blue) / 2, 255);
 
-    public int colorR2 = (int) Turret.calculateSecondaryColor(colorR);
-    public int colorG2 = (int) Turret.calculateSecondaryColor(colorG);
-    public int colorB2 = (int) Turret.calculateSecondaryColor(colorB);
-
-    public int colorR3 = (this.colorR + this.colorR2) / 2;
-    public int colorG3 = (this.colorG + this.colorG2) / 2;
-    public int colorB3 = (this.colorB + this.colorB2) / 2;
+    public Color color = new Color().set(default_primary);
+    public Color color2 = new Color().set(default_secondary);
+    public Color color3 = new Color().set(default_tertiary);
 
     public boolean enableSecondaryColor = false;
     public boolean enableTertiaryColor = false;
@@ -228,28 +225,14 @@ public class Player
         if (this == Game.player)
             this.connectedPlayer = new ConnectedPlayer(Game.player.clientID, Game.player.username);
 
-        this.connectedPlayer.colorR = this.colorR;
-        this.connectedPlayer.colorG = this.colorG;
-        this.connectedPlayer.colorB = this.colorB;
-        this.connectedPlayer.colorR2 = this.colorR2;
-        this.connectedPlayer.colorG2 = this.colorG2;
-        this.connectedPlayer.colorB2 = this.colorB2;
-        this.connectedPlayer.colorR3 = this.colorR3;
-        this.connectedPlayer.colorG3 = this.colorG3;
-        this.connectedPlayer.colorB3 = this.colorB3;
+        this.connectedPlayer.color.set(this.color);
+        this.connectedPlayer.color2.set(this.color2);
+        this.connectedPlayer.color3.set(this.color3);
 
         if (this.tank != null && this.tank.team != null && this.tank.team.enableColor)
-        {
-            this.connectedPlayer.teamColorR = this.tank.team.teamColorR;
-            this.connectedPlayer.teamColorG = this.tank.team.teamColorG;
-            this.connectedPlayer.teamColorB = this.tank.team.teamColorB;
-        }
+            this.connectedPlayer.teamColor.set(this.tank.team.teamColor);
         else
-        {
-            this.connectedPlayer.teamColorR = 255;
-            this.connectedPlayer.teamColorG = 255;
-            this.connectedPlayer.teamColorB = 255;
-        }
+            this.connectedPlayer.teamColor.set(255, 255, 255);
 
         return this.connectedPlayer;
     }

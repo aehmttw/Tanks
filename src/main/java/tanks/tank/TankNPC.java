@@ -79,22 +79,14 @@ public class TankNPC extends TankDummy
         this.showName = tagName.length() > 0;
         this.nameTag = new NameTag(this, 0, this.size / 7 * 5, this.size / 2, tagName);
 
-        this.colorR = r;
-        this.colorG = g;
-        this.colorB = b;
-        this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
-        this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
-        this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
+        this.color.set(r, g, b);
+        Turret.setSecondary(this.color, this.secondaryColor);
 
         this.invulnerable = true;
         this.mandatoryKill = false;
 
-        icon.colorR = r;
-        icon.colorG = g;
-        icon.colorB = b;
-        icon.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
-        icon.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
-        icon.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
+        icon.color.set(this.color);
+        icon.secondaryColor.set(this.secondaryColor);
     }
 
     public void initShop(ArrayList<Item.ShopItem> shop)

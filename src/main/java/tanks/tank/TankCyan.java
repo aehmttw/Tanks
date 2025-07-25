@@ -32,9 +32,7 @@ public class TankCyan extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/snowflake.png";
-			this.emblemR = 160;
-			this.emblemG = 255;
-			this.emblemB = 255;
+			this.emblemColor.set(160, 255, 255);
 		}
 
 		this.description = "A support tank which shoots freezing bullets that deal low damage";

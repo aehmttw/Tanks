@@ -11,9 +11,9 @@ public class TankLightPinkAngry extends TankAIControlled
     {
         super(name, x, y, Game.tile_size, 255, 150, 255, angle, ShootAI.straight);
 
-        this.secondaryColorR = Turret.calculateSecondaryColor(255);
-        this.secondaryColorG = Turret.calculateSecondaryColor(211);
-        this.secondaryColorB = Turret.calculateSecondaryColor(255);
+        this.secondaryColor.red = Turret.calculateSecondaryColor(255);
+        this.secondaryColor.green = Turret.calculateSecondaryColor(211);
+        this.secondaryColor.blue = Turret.calculateSecondaryColor(255);
 
         this.turretAimSpeed = 0.06;
         this.seekChance = 1;
@@ -37,7 +37,7 @@ public class TankLightPinkAngry extends TankAIControlled
         if (Game.tankTextures)
         {
             this.emblem = "emblems/angry.png";
-            this.emblemR = 200;
+            this.emblemColor.red = 200;
             this.baseSkin = TankModels.diagonalStripes;
         }
 

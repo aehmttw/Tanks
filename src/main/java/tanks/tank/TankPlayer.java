@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.Color;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
@@ -70,9 +71,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	public double mouseX;
 	public double mouseY;
 
-	public static int[] default_primary_color = new int[]{0, 150, 255};
-	public static int[] default_secondary_color = new int[]{(int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150), (int) Turret.calculateSecondaryColor(255)};
-	public static int[] default_tertiary_color = new int[]{(default_primary_color[0] + default_secondary_color[0]) / 2, (default_primary_color[1] + default_secondary_color[1]) / 2, (default_primary_color[2] + default_secondary_color[2]) / 2};
+	public static Color default_primary_color = new Color(0, 150, 255, 255);
+	public static Color default_secondary_color = new Color((int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150), (int) Turret.calculateSecondaryColor(255), 255);
+	public static Color default_tertiary_color = new Color((default_primary_color.red + default_secondary_color.red) / 2, (default_primary_color.green + default_secondary_color.green) / 2, (default_primary_color.blue + default_secondary_color.blue) / 2, 255);
 
 	public static final int max_abilities = 5;
 
@@ -123,19 +124,11 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 	public TankPlayer setPlayerColor()
 	{
-		this.colorR = Game.player.colorR;
-		this.colorG = Game.player.colorG;
-		this.colorB = Game.player.colorB;
-		this.secondaryColorR = Game.player.colorR2;
-		this.secondaryColorG = Game.player.colorG2;
-		this.secondaryColorB = Game.player.colorB2;
+		this.color.set(Game.player.color);
+		this.secondaryColor.set(Game.player.color2);
 		this.enableTertiaryColor = Game.player.enableTertiaryColor;
-		this.tertiaryColorR = Game.player.colorR3;
-		this.tertiaryColorG = Game.player.colorG3;
-		this.tertiaryColorB = Game.player.colorB3;
-		this.emblemR = this.secondaryColorR;
-		this.emblemG = this.secondaryColorG;
-		this.emblemB = this.secondaryColorB;
+		this.tertiaryColor.set(Game.player.color3);
+		this.emblemColor.set(Game.player.color2);
 		this.saveColors();
 		return this;
 	}

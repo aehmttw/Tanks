@@ -1785,7 +1785,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	@Override
 	public boolean disableRayCollision()
 	{
-		return !bulletCollision();
+		return /*!bulletCollision()*/ true;		// temporary fix to avoid rays hitting a tank's own bullets
 	}
 
 	@Override

@@ -1223,6 +1223,12 @@ public abstract class Tank extends Movable implements ISolidObject
 		return Math.max(nearest, farthestInSight);
 	}
 
+	@Override
+	public boolean disableRayCollision()
+	{
+		return !currentlyTargetable;
+	}
+
 	public double getAutoZoom()
 	{
 		double dist = Math.min(4, Math.max(1, getAutoZoomRaw()));

@@ -76,6 +76,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
             this.shouldClip = true;
 
             this.lastOn = this.tankCollision;
+            refreshHitboxes();
         }
         else
         {

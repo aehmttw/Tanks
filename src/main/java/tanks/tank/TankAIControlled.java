@@ -875,7 +875,19 @@ public class TankAIControlled extends Tank implements ITankField
 			speed = Double.MIN_VALUE;
 
 		b.setPolarMotion(angle + offset + this.shotOffset, speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
+		double v = 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler;
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, v);
+
+		if (b.recoil != 0)
+		{
+			this.recoilSpeed = this.getSpeed();
+			if (this.recoilSpeed > this.maxSpeed * 1.01)
+			{
+				this.tookRecoil = true;
+				this.inControlOfMotion = false;
+			}
+		}
+
 		b.speed = Math.abs(speed);
 
 		if (b instanceof BulletArc || b instanceof BulletAirStrike)
@@ -3388,7 +3400,6 @@ public class TankAIControlled extends Tank implements ITankField
 			if (this.shootAIType != ShootAI.none)
 			{
 				ItemBullet.ItemStackBullet b = (ItemBullet.ItemStackBullet) this.bulletItem.getCopy();
-				b.item.name = Translation.translate("Bullet");
 				b.item.cooldownBase = this.cooldownBase;
 				t.abilities.add(b);
 			}
@@ -3396,7 +3407,6 @@ public class TankAIControlled extends Tank implements ITankField
 			if (this.enableMineLaying)
 			{
 				ItemMine.ItemStackMine m = this.mineItem;
-				m.item.name = Translation.translate("Mine");
 				m.item.cooldownBase = this.mineTimerBase;
 				t.abilities.add(m);
 			}

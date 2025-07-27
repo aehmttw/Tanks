@@ -155,7 +155,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double turretSize = 8;
 	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length", minValue = 0.0)
 	public double turretLength = Game.tile_size;
-	@Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count")
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count. \n For player tank builds with multiple bullets, the first one will be used.")
 	public boolean multipleTurrets = true;
 
 	/** Important: tertiary color values will not be used unless this option is set to true! */

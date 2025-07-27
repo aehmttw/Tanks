@@ -161,6 +161,7 @@ public class DefaultItems
         healing_ray.bullet.overrideOutlineColor = true;
         healing_ray.bullet.outlineColor.set(200, 255, 200);
         healing_ray.bullet.soundVolume = 0;
+        healing_ray.bullet.recoil = 0;
         healing_ray.name = Translation.translate("Healing ray");
         healing_ray.icon = "bullet_healing.png";
         healing_ray.cooldownBase = 0;
@@ -174,6 +175,7 @@ public class DefaultItems
         flamethrower.bullet.overrideOutlineColor = true;
         flamethrower.bullet.baseColor.set(255, 255, 0);
         flamethrower.bullet.outlineColor.set(255, 0, 0);
+        flamethrower.bullet.recoil = 0;
         f.effect.glowIntensity = 1;
         f.effect.glowSize = 3;
         flamethrower.bullet.lowersBushes = false;
@@ -212,6 +214,7 @@ public class DefaultItems
         a.bounces = 0;
         a.damage = 0;
         a.heavy = true;
+        a.recoil = 0;
         air.name = Translation.translate("Air");
         air.icon = "bullet_air.png";
         air.cooldownBase = 0;

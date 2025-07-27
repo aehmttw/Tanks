@@ -42,7 +42,6 @@ public class BulletAirStrike extends Bullet
         this.enableCollision = false;
         this.posZ = Game.tile_size / 2;
         this.maxDestroyTimer = 100;
-        this.obstacleCollision = false;
         this.canBeCanceled = false;
         this.moveOut = false;
         this.vZ = 0.1;

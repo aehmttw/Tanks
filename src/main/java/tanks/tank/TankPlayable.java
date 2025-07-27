@@ -2,6 +2,8 @@ package tanks.tank;
 
 import basewindow.Color;
 import tanks.Game;
+import tanks.GameObject;
+import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
@@ -312,6 +314,17 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             return this.abilities.get(index);
         else
             return null;
+    }
+
+    public ItemBullet.ItemStackBullet getFirstBullet()
+    {
+        for (Item.ItemStack<?> ability : this.abilities)
+        {
+            if (ability instanceof ItemBullet.ItemStackBullet)
+                return (ItemBullet.ItemStackBullet) ability;
+        }
+
+        return null;
     }
 
     public Item.ItemStack<?> getPrimaryAbility()

@@ -172,6 +172,19 @@ public class Level
 						teamsList.add(tankTeams[i]);
 					}
 				}
+				else
+				{
+					if (disableFriendlyFire)
+					{
+						teamsMap.put("ally", Game.playerTeamNoFF);
+						teamsMap.put("enemy", Game.enemyTeamNoFF);
+					}
+					else
+					{
+						teamsMap.put("ally", Game.playerTeam);
+						teamsMap.put("enemy", Game.enemyTeam);
+					}
+				}
 
 				if (screen[0].startsWith("*"))
 				{
@@ -327,24 +340,6 @@ public class Level
 
 		ScreenGame.finished = false;
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
-
-		if (enableTeams)
-		{
-
-		}
-		else
-		{
-			if (disableFriendlyFire)
-			{
-				teamsMap.put("ally", Game.playerTeamNoFF);
-				teamsMap.put("enemy", Game.enemyTeamNoFF);
-			}
-			else
-			{
-				teamsMap.put("ally", Game.playerTeam);
-				teamsMap.put("enemy", Game.enemyTeam);
-			}
-		}
 
 		currentCloudCount = (int) (Math.random() * (double) this.sizeX / 10.0D + Math.random() * (double) this.sizeY / 10.0D);
 

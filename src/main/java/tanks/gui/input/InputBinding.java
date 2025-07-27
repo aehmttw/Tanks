@@ -45,6 +45,19 @@ public class InputBinding
         return false;
     }
 
+    public void unpress()
+    {
+        if (Panel.selectedTextBox != null)
+            return;
+
+        this.invalidate();
+
+        if (inputType == InputType.keyboard)
+            Game.game.window.pressedKeys.remove(input);
+        if (inputType == InputType.mouse)
+            Game.game.window.pressedButtons.remove(input);
+    }
+
     public boolean isValid()
     {
         if (Panel.selectedTextBox != null)

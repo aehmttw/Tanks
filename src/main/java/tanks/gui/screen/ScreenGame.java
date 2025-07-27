@@ -2577,7 +2577,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			if (i == 5 && Game.enable3d)
 			{
 				double frac = Obstacle.draw_size / Game.tile_size;
-				Drawing.drawing.setColor(174 * frac + Level.currentColorR * (1 - frac), 92 * frac + Level.currentColorG * (1 - frac), 16 * frac + Level.currentColorB * (1 - frac));
+				Drawing.drawing.setColor(174 * frac + Level.currentColor.red * (1 - frac), 92 * frac + Level.currentColor.green * (1 - frac), 16 * frac + Level.currentColor.blue * (1 - frac));
 				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
 				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
 				Drawing.drawing.fillForcedBox(-Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);

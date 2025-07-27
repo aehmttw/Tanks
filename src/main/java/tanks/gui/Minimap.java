@@ -40,7 +40,7 @@ public class Minimap implements IFixedMenu
 
         //int brightness = darkMode ? 0 : 255;
         //Drawing.drawing.setColor(brightness, brightness, brightness, 200);
-        Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 180);
+        Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue, 180);
         Drawing.drawing.fillInterfaceRect(posX, posY, sizeX, sizeY);
 
         //brightness = darkMode ? 255 : 0;

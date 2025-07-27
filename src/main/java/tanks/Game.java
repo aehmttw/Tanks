@@ -1297,7 +1297,7 @@ public class Game
 	public static void cleanUp()
 	{
 		resetTiles();
-
+		Game.currentLevel = null;
 		silentCleanUp();
 	}
 
@@ -1312,6 +1312,11 @@ public class Game
 		removeEffects.clear();
 		removeTracks.clear();
 		removeClouds.clear();
+
+		if (Game.currentLevel != null)
+			Chunk.populateChunks(Game.currentLevel);
+		else
+			Chunk.initialize();
 
 		resetNetworkIDs();
 

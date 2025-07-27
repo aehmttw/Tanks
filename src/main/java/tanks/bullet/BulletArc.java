@@ -52,7 +52,6 @@ public class BulletArc extends Bullet
         this.enableCollision = false;
         this.posZ = Game.tile_size / 2;
         this.maxDestroyTimer = 100;
-        this.obstacleCollision = false;
         this.canBeCanceled = false;
         this.moveOut = false;
         this.trail3d = true;
@@ -270,7 +269,7 @@ public class BulletArc extends Bullet
         return this.maxRange;
     }
 
-    public void drawTrace(double ix, double iy, double fx, double fy, double angle)
+    public void drawTrace(double ix, double iy, double fx, double fy)
     {
         double ox = this.posX;
         double oy = this.posY;
@@ -286,7 +285,6 @@ public class BulletArc extends Bullet
         this.posZ = Game.tile_size / 2;
         this.accuracySpreadCircle = 0;
         this.setTargetLocation(fx, fy);
-        //this.setPolarMotion(angle, this.getSpeed());
         this.accuracySpreadCircle = ots;
 
         double speed = (Math.sqrt(Math.pow(this.vX, 2) + Math.pow(this.vY, 2)));

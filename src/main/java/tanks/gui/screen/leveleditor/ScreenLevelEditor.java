@@ -833,10 +833,13 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			double my = Drawing.drawing.getMouseY();
 
 			boolean[] handled = checkMouse(mx, my,
-					Game.game.input.editorUse.isPressed(),
+					Game.game.input.editorUse.isPressed() && !Game.game.input.editorAction.isPressed(),
 					Game.game.input.editorAction.isPressed(),
-					Game.game.input.editorUse.isValid(),
+					Game.game.input.editorUse.isValid() && !Game.game.input.editorAction.isPressed(),
 					Game.game.input.editorAction.isValid());
+
+			if (Game.game.input.editorUse.isPressed() && Game.game.input.editorAction.isPressed())
+				Game.game.input.editorAction.unpress();
 
 			if (handled[0])
 				Game.game.input.editorUse.invalidate();
@@ -1450,7 +1453,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (o instanceof ObstacleStackable)
 		{
 			boolean evenTile = ((int) (o.posX / Game.tile_size) + (int) (o.posY / Game.tile_size)) % 2 == 0;
-			if (this.stagger && evenTile == !oddStagger)
+			if (this.stagger && evenTile == !oddStagger && !paste)
                 ((ObstacleStackable) o).stackHeight -= 0.5;
 			o.refreshMetadata();
 		}

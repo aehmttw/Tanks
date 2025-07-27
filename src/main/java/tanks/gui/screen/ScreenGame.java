@@ -2200,6 +2200,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public void updateMusic(String prevMusic)
 	{
+		if (!Game.game.window.soundsEnabled)
+			return;
+		
 		Panel.forceRefreshMusic = !Objects.equals(this.music, prevMusic);
 
 		if (this.musicID != null && this.musicID.equals("ready"))

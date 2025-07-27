@@ -1,5 +1,6 @@
 package tanks.bullet;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;

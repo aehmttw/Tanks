@@ -17,7 +17,7 @@ public abstract class SolidGameObject extends GameObject implements ISolidObject
         return this.faces;
     }
 
-    public boolean isFaceValid(Face f)
+    public boolean isFaceValid(Face ignored)
     {
         return !Double.isNaN(posX) && !Double.isNaN(posY) && (tankCollision() || bulletCollision());
     }

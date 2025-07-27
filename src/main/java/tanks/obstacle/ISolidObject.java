@@ -7,4 +7,8 @@ public interface ISolidObject
 	Face[] getHorizontalFaces();
 
 	Face[] getVerticalFaces();
+
+	Face[] getFaces();
+
+	void updateFaces();
 }

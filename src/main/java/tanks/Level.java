@@ -490,7 +490,10 @@ public class Level
 				if (remote)
 					Game.movables.add(new TankRemote(t));
 				else
+				{
 					Game.movables.add(t);
+					setSolidTank((int) Double.parseDouble(tank[0]), (int) Double.parseDouble(tank[1]), true);
+				}
 			}
 		}
 
@@ -513,6 +516,8 @@ public class Level
 			if (playerCount % playerSpawnsX.size() != 0)
 				extraSpawns++;
 		}
+
+		System.out.println(extraSpawns);
 
 		int spawns = playerSpawnsX.size();
 
@@ -547,8 +552,9 @@ public class Level
 					else
 						t1 = new Tile(t.posX, t.posY + 1);
 
+
 					if (t1.posX >= 0 && t1.posX < Game.currentSizeX && t1.posY >= 0 && t1.posY < Game.currentSizeY &&
-							!Game.isSolid(t1.posX, t1.posY) && isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
+							!Game.isSolid(t1.posX, t1.posY) && !isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
 					{
 						explored[t1.posX][t1.posY] = true;
 

@@ -52,7 +52,7 @@ public class ScreenExit extends Screen
             double frac = ((lastTime - startTime) / outroAnimationTime);
             double frac2 = Math.min(1, frac);
 
-            Drawing.drawing.setColor(Level.currentColorR * (1 - frac2), Level.currentColorG * (1 - frac2), Level.currentColorB * (1 - frac2));
+            Drawing.drawing.setColor(Level.currentColor.red * (1 - frac2), Level.currentColor.green * (1 - frac2), Level.currentColor.blue * (1 - frac2));
             Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth * 1.2 / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight * 1.2 / Drawing.drawing.interfaceScale);
             Obstacle.draw_size = Game.tile_size * (1 - frac2);
 

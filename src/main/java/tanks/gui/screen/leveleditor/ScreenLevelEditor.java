@@ -1662,7 +1662,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		if (!this.level.editable)
 			level.append("*");
 
-		level.append(this.level.sizeX).append(",").append(this.level.sizeY).append(",").append(this.level.colorR).append(",").append(this.level.colorG).append(",").append(this.level.colorB).append(",").append(this.level.colorVarR).append(",").append(this.level.colorVarG).append(",").append(this.level.colorVarB)
+		level.append(this.level.sizeX).append(",").append(this.level.sizeY).append(",").append(this.level.color.red).append(",").append(this.level.color.green).append(",").append(this.level.color.blue).append(",").append(this.level.colorVar.red).append(",").append(this.level.colorVar.green).append(",").append(this.level.colorVar.blue)
 				.append(",").append((int) (this.level.timer / 100)).append(",").append((int) Math.round(this.level.light * 100)).append(",").append((int) Math.round(this.level.shadow * 100)).append("|");
 
 		ArrayList<Obstacle> unmarked = (ArrayList<Obstacle>) Game.obstacles.clone();

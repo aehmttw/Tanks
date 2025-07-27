@@ -204,6 +204,27 @@ public class Level
 			shadow = Integer.parseInt(screen[10]) / 100.0;
 		}
 
+		tankTeams = new Team[teams.length];
+
+		for (int i = 0; i < teams.length; i++)
+		{
+			String[] t = teams[i].split("-");
+
+			if (t.length >= 5)
+				tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
+			else if (t.length >= 2)
+				tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
+			else
+				tankTeams[i] = new Team(t[0]);
+
+			if (disableFriendlyFire)
+				tankTeams[i].friendlyFire = false;
+
+			teamsMap.put(t[0], tankTeams[i]);
+
+			teamsList.add(tankTeams[i]);
+		}
+
 		for (int i = 0; i < this.shop.size(); i++)
 		{
 			this.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
@@ -311,26 +332,7 @@ public class Level
 
 		if (enableTeams)
 		{
-			tankTeams = new Team[teams.length];
 
-			for (int i = 0; i < teams.length; i++)
-			{
-				String[] t = teams[i].split("-");
-
-				if (t.length >= 5)
-					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
-				else if (t.length >= 2)
-					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
-				else
-					tankTeams[i] = new Team(t[0]);
-
-				if (disableFriendlyFire)
-					tankTeams[i].friendlyFire = false;
-
-				teamsMap.put(t[0], tankTeams[i]);
-
-				teamsList.add(tankTeams[i]);
-			}
 		}
 		else
 		{

@@ -23,9 +23,7 @@ public class TankYellow extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/circle_double.png";
-			this.emblemR = this.secondaryColorR;
-			this.emblemG = this.secondaryColorG;
-			this.emblemB = this.secondaryColorB;
+			this.emblemColor.set(this.secondaryColor);
 		}
 
 		this.coinValue = 2;

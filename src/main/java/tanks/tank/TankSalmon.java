@@ -25,9 +25,7 @@ public class TankSalmon extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/curve.png";
-			this.emblemR = this.secondaryColorR;
-			this.emblemG = this.secondaryColorG;
-			this.emblemB = this.secondaryColorB;
+			this.emblemColor.set(this.secondaryColor);
 			this.baseSkin = TankModels.diagonalStripes;
 		}
 

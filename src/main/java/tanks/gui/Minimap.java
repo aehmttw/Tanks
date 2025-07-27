@@ -113,9 +113,9 @@ public class Minimap implements IFixedMenu
                 if ((posX < x && x < posX + sizeX) && (posY + 30 < y && y < posY + (sizeY - 30)))
                 {
                     if (m.team != null && m.team.enableColor)
-                        Drawing.drawing.setColor(m.team.teamColorR, m.team.teamColorG, m.team.teamColorB);
+                        Drawing.drawing.setColor(m.team.teamColor);
                     else
-                        Drawing.drawing.setColor(((Tank) m).colorR, ((Tank) m).colorG, ((Tank) m).colorB);
+                        Drawing.drawing.setColor(((Tank) m).color);
 
                     if (m.equals(Game.playerTank))
                     {
@@ -144,15 +144,15 @@ public class Minimap implements IFixedMenu
 
                 else if (m instanceof Bullet && !m.destroy)
                 {
-                    Drawing.drawing.setColor(((Bullet) m).baseColorR, ((Bullet) m).baseColorG, ((Bullet) m).baseColorB);
+                    Drawing.drawing.setColor(((Bullet) m).baseColor);
                     Drawing.drawing.fillInterfaceOval(x, y, 5, 5);
-                    Drawing.drawing.setColor(((Bullet) m).outlineColorR, ((Bullet) m).outlineColorG, ((Bullet) m).outlineColorB);
+                    Drawing.drawing.setColor(((Bullet) m).outlineColor);
                     Drawing.drawing.fillInterfaceOval(x, y, 5, 5);
                 }
             }
         }
 
-        Drawing.drawing.setColor(Game.playerTank.colorR, Game.playerTank.colorG, Game.playerTank.colorB);
+        Drawing.drawing.setColor(Game.playerTank.color);
         if (centered && !Game.playerTank.destroy)
             Drawing.drawing.drawInterfaceImage(Game.playerTank.angle - Math.PI, "/images/icons/vertical_arrow_white.png", posX, posY, 12, 10);
     }

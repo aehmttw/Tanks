@@ -221,6 +221,12 @@ public class Panel
 
 	public void update()
 	{
+		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F12) && Game.game.window.validPressedKeys.contains(InputCodes.KEY_LEFT_ALT) && Game.debug)
+		{
+			Game.game.window.validPressedKeys.clear();
+			Game.exitToCrash(new Exception("Manually initiated crash"));
+		}
+
 		if (saveScreenshotDir != null)
 		{
 			try
@@ -237,16 +243,21 @@ public class Panel
 		if (Game.game.input.screenshot.isValid())
 		{
 			Game.game.input.screenshot.invalidate();
-			try
+
+			if (Game.game.window.shift)
+				Game.game.fileManager.openFileManager(Game.homedir + Game.screenshotsPath);
+			else
 			{
-				String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
-				Game.game.window.screenshot(dir);
-				ScreenOverlayChat.addChat("\u00A7000200000255Screenshot saved to " + dir);
-				Drawing.drawing.playSound("join.ogg", 2f);
-			}
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
+				try
+				{
+					String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
+					Game.game.window.screenshot(dir);
+					ScreenOverlayChat.notify("Screenshot saved to " + dir + "! \n Press Shift + " + Game.game.input.screenshot.getInputs() + " to open the screenshots directory.");
+				}
+				catch (Exception e)
+				{
+					Game.exitToCrash(e);
+				}
 			}
 		}
 
@@ -656,12 +667,6 @@ public class Panel
 
 		forceRefreshMusic = false;
 
-		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F12) && Game.game.window.validPressedKeys.contains(InputCodes.KEY_LEFT_ALT) && Game.debug)
-		{
-			Game.game.window.validPressedKeys.clear();
-			Game.exitToCrash(new Exception("Manually initiated crash"));
-		}
-
 		if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 			Game.eventsOut.clear();
 	}
@@ -865,7 +870,8 @@ public class Panel
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 
-		DebugKeybinds.drawAndUpdate();
+		if (Game.debug)
+			DebugKeybinds.drawAndUpdate();
 
 		Drawing.drawing.setColor(255, 255, 255);
         Game.screen.drawPostMouse();

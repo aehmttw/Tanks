@@ -9,11 +9,17 @@ import tanks.bullet.BulletEffect;
 import tanks.bullet.BulletEffectPropertyCategory;
 import tanks.bullet.Trail;
 import tanks.gui.Button;
+import tanks.gui.EmptySpace;
+import tanks.gui.ITrigger;
+import tanks.gui.SelectorColor;
 import tanks.tank.Turret;
 import tanks.tankson.ArrayListIndexPointer;
+import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
+import tanks.tankson.Property;
 import tanks.translation.Translation;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffect>
@@ -38,8 +44,143 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     {
         setTrailLength();
         this.currentTab = new TabTrail(this, "Trail", BulletEffectPropertyCategory.trail);
-        new Tab(this, "Particles", BulletEffectPropertyCategory.particle);
-        new Tab(this, "Glow", BulletEffectPropertyCategory.glow);
+        new TabParticles(this, "Particles", BulletEffectPropertyCategory.particle);
+        new TabGlow(this, "Glow", BulletEffectPropertyCategory.glow);
+
+        this.iconPrefix = "bulleteffecteditor";
+    }
+
+    public class TabGlow extends ScreenEditorTanksONable<BulletEffect>.Tab
+    {
+        public SelectorColor colorPicker;
+
+        public TabGlow(ScreenEditorTanksONable<BulletEffect> screen, String name, String category)
+        {
+            super(screen, name, category);
+        }
+
+        @Override
+        public void addFields()
+        {
+            this.uiElements.clear();
+            for (Field f: this.screen.fields)
+            {
+                Property p = f.getAnnotation(Property.class);
+
+                if (p != null && p.category().equals(this.category))
+                {
+                    ITrigger t = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
+
+                    if (p.miscType() != Property.MiscType.colorRGB)
+                    {
+                        this.uiElements.add(t);
+                        for (int i = 1; i < t.getSize(); i++)
+                        {
+                            this.uiElements.add(new EmptySpace());
+                        }
+                    }
+                    else if (t instanceof SelectorColor)
+                        this.colorPicker = (SelectorColor) t;
+                }
+            }
+        }
+
+        @Override
+        public void sortUIElements()
+        {
+            this.uiElements.add(this.colorPicker);
+            super.sortUIElements();
+            this.uiElements.remove(this.colorPicker);
+        }
+
+        @Override
+        public void updateUIElements()
+        {
+            BulletEffect e = screen.target.get();
+            super.updateUIElements();
+
+            if (e.overrideGlowColor)
+                this.colorPicker.update();
+        }
+
+        @Override
+        public void drawUIElements()
+        {
+            BulletEffect e = screen.target.get();
+            super.drawUIElements();
+
+            if (e.overrideGlowColor)
+                this.colorPicker.draw();
+        }
+    }
+
+    public class TabParticles extends ScreenEditorTanksONable<BulletEffect>.Tab
+    {
+        public ITrigger toggle;
+
+        public TabParticles(ScreenEditorTanksONable<BulletEffect> screen, String name, String category)
+        {
+            super(screen, name, category);
+        }
+
+        @Override
+        public void addFields()
+        {
+            this.uiElements.clear();
+            for (Field f: this.screen.fields)
+            {
+                Property p = f.getAnnotation(Property.class);
+
+                if (p != null && p.category().equals(this.category))
+                {
+                    ITrigger t = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
+
+                    if (!p.id().equals("particles"))
+                    {
+                        this.uiElements.add(t);
+                        for (int i = 1; i < t.getSize(); i++)
+                        {
+                            this.uiElements.add(new EmptySpace());
+                        }
+                    }
+                    else
+                        this.toggle = t;
+                }
+            }
+        }
+
+        @Override
+        public void sortUIElements()
+        {
+            this.rows = 3;
+            super.sortUIElements();
+            for (ITrigger t: this.uiElements)
+            {
+                t.setPosition(t.getPositionX(), t.getPositionY() + 90);
+            }
+
+            this.toggle.setPosition(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 120);
+        }
+
+        @Override
+        public void updateUIElements()
+        {
+            BulletEffect e = screen.target.get();
+            this.toggle.update();
+
+            if (e.enableParticles)
+                super.updateUIElements();
+        }
+
+        @Override
+        public void drawUIElements()
+        {
+            BulletEffect e = screen.target.get();
+            this.toggle.draw();
+
+            if (e.enableParticles)
+                super.drawUIElements();
+        }
     }
 
     public void setTrailLength()

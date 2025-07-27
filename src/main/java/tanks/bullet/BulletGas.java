@@ -1,14 +1,15 @@
 package tanks.bullet;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawableWithGlow;
-import tanks.Movable;
+import basewindow.Color;
+import tanks.*;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventTankControllerAddVelocity;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 import tanks.tankson.Property;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 public class BulletGas extends Bullet implements IDrawableWithGlow
 {
@@ -19,19 +20,11 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
     @Property(id = "end_size", name = "End size", category = BulletPropertyCategory.appearance)
     public double endSize;
 
-    public double startR;
-    public double startG;
-    public double startB;
-    public double endR;
-    public double endG;
-    public double endB;
+    public Color startColor = new Color();
+    public Color endColor = new Color();
 
-    @Property(id = "color_noise_r", name = "Noise red")
-    public double noiseR;
-    @Property(id = "color_noise_g", name = "Noise green")
-    public double noiseG;
-    @Property(id = "color_noise_b", name = "Noise blue")
-    public double noiseB;
+    @Property(id = "color_noise", name = "Noise", category = BulletPropertyCategory.appearanceNoiseColor, miscType = Property.MiscType.colorRGB)
+    public Color noise = new Color();
 
     public double baseDamage;
     public double baseBulletKB;
@@ -72,12 +65,12 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         {
             this.startSize = this.size;
             double colorRandom = Math.random();
-            this.startR = this.baseColorR + colorRandom * this.noiseR;
-            this.startG = this.baseColorG + colorRandom * this.noiseG;
-            this.startB = this.baseColorB + colorRandom * this.noiseB;
-            this.endR = this.outlineColorR + colorRandom * this.noiseR;
-            this.endG = this.outlineColorG + colorRandom * this.noiseG;
-            this.endB = this.outlineColorB + colorRandom * this.noiseB;
+            this.startColor.red = this.baseColor.red + colorRandom * this.noise.red;
+            this.startColor.green = this.baseColor.green + colorRandom * this.noise.green;
+            this.startColor.blue = this.baseColor.blue + colorRandom * this.noise.blue;
+            this.endColor.red = this.outlineColor.red + colorRandom * this.noise.red;
+            this.endColor.green = this.outlineColor.green + colorRandom * this.noise.green;
+            this.endColor.blue = this.outlineColor.blue + colorRandom * this.noise.blue;
             this.baseDamage = this.damage;
             this.baseBulletKB = this.bulletHitKnockback;
             this.baseTankKB = this.tankHitKnockback;
@@ -113,7 +106,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         if (this.lifespan > 0)
             frac = Math.max(0, 1 - this.age / this.lifespan);
 
-        Drawing.drawing.setColor(this.startR * frac + this.endR * (1 - frac), this.startG * frac + this.endG * (1 - frac), this.startB * frac + this.endB * (1 - frac), opacity, this.effect.luminance);
+        Drawing.drawing.setColor(this.startColor.red * frac + this.endColor.red * (1 - frac), this.startColor.green * frac + this.endColor.green * (1 - frac), this.startColor.blue * frac + this.endColor.blue * (1 - frac), opacity, this.effect.luminance);
 
         if (Game.enable3d)
             Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -133,7 +126,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
             frac = Math.max(0, 1 - this.age / this.lifespan);
 
         if (!this.effect.overrideGlowColor)
-            Drawing.drawing.setColor(this.startR * frac + this.endR * (1 - frac), this.startG * frac + this.endG * (1 - frac), this.startB * frac + this.endB * (1 - frac), opacity, opacity / 255 * this.effect.glowIntensity);
+            Drawing.drawing.setColor(this.startColor.red * frac + this.endColor.red * (1 - frac), this.startColor.green * frac + this.endColor.green * (1 - frac), this.startColor.blue * frac + this.endColor.blue * (1 - frac), opacity, opacity / 255 * this.effect.glowIntensity);
         else
             Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, opacity, opacity / 255 * this.effect.glowIntensity);
 
@@ -197,5 +190,74 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
     public void addDestroyEffect()
     {
 
+    }
+
+    @Override
+    public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, Random r, Color base, Color turret)
+    {
+        double speed = this.speed;
+        double life = Math.min(this.lifespan, 200);
+        if (this.lifespan > life)
+            speed *= this.lifespan / life;
+
+        double l = Math.min(Drawing.drawing.interfaceSizeX * 0.6, this.lifespan * this.speed);
+        double start = x - l / 2;
+
+        r.setSeed(0);
+
+        double[] randoms = new double[(int) life * 2];
+        for (int i = 0; i < randoms.length; i++)
+        {
+            randoms[i] = r.nextDouble();
+        }
+
+        double spread = Math.min(this.accuracySpread, 30);
+
+        Color c1 = this.overrideBaseColor ? this.baseColor : base;
+        Color c2 = this.overrideOutlineColor ? this.outlineColor : turret;
+
+        double startSize = this.size;
+        double endSize = this.endSize;
+        double max = Math.max(startSize, endSize);
+        double limit = Math.min(max, 500);
+        startSize *= limit / max;
+        endSize *= limit / max;
+
+        for (int i = 0; i < life; i++)
+        {
+            double rawOpacity = (1.0 - i / life);
+            double opacity = Math.min(rawOpacity * rawOpacity * 255 * this.opacity, 254);
+
+            double frac = 0;
+            if (life > 0)
+                frac = Math.max(0, 1 - i / life);
+
+            Drawing.drawing.setColor(c1.red * frac + c2.red * (1 - frac) + randoms[i] * this.noise.red,
+                    c1.green * frac + c2.green * (1 - frac) + randoms[i] * this.noise.green,
+                    c1.blue * frac + c2.blue * (1 - frac) + randoms[i] * this.noise.blue,
+                    opacity, this.effect.luminance);
+            Drawing.drawing.fillInterfaceOval(start + l * (1 - frac), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed, (frac * startSize + (1 - frac) * endSize), (frac * startSize + (1 - frac) * endSize));
+        }
+
+        for (int i = 0; i < life; i++)
+        {
+            double rawOpacity = (1.0 - i / life);
+            double opacity = Math.min(rawOpacity * 255 * this.opacity, 254);
+
+            double frac = 0;
+            if (life > 0)
+                frac = Math.max(0, 1 - i / life);
+
+            if (!this.effect.overrideGlowColor)
+                Drawing.drawing.setColor(c1.red * frac + c2.red * (1 - frac) + randoms[i] * this.noise.red,
+                        c1.green * frac + c2.green * (1 - frac) + randoms[i] * this.noise.green,
+                        c1.blue * frac + c2.blue * (1 - frac) + randoms[i] * this.noise.blue,
+                        opacity, opacity / 255 * this.effect.glowIntensity);
+            else
+                Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, opacity, opacity / 255 * this.effect.glowIntensity);
+
+            Drawing.drawing.fillInterfaceGlow(start + l * (1 - frac), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed, this.effect.glowSize * (frac * startSize + (1 - frac) * endSize), this.effect.glowSize * (frac * startSize + (1 - frac) * endSize));
+
+        }
     }
 }

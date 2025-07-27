@@ -23,6 +23,7 @@ import tanks.tankson.TanksONable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 @TanksONable("bullet")
 public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
@@ -57,27 +58,17 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public double ageFrac = 0;
 
-	@Property(id = "override_color", name = "Custom primary color", desc = "If disabled, the bullet will use the color of the tank which fired it")
+	@Property(id = "override_color", name = "Custom primary color", desc = "If disabled, the bullet will use the color of the tank which fired it", miscType = Property.MiscType.colorRGB)
 	public boolean overrideBaseColor;
-	@Property(id = "color_r", name = "Primary red")
-	public double baseColorR;
-	@Property(id = "color_g", name = "Primary green")
-	public double baseColorG;
-	@Property(id = "color_b", name = "Primary blue")
-	public double baseColorB;
+	@Property(id = "color", name = "Primary", category = BulletPropertyCategory.appearanceBaseColor, miscType = Property.MiscType.colorRGB)
+	public Color baseColor = new Color();
 
-	@Property(id = "override_color2", name = "Custom secondary color", desc = "If disabled, the bullet will use the color of the tank which fired it")
+	@Property(id = "override_color2", name = "Custom secondary color", desc = "If disabled, the bullet will use the color of the tank which fired it", miscType = Property.MiscType.colorRGB)
 	public boolean overrideOutlineColor;
-	@Property(id = "color_r2", name = "Secondary red")
-	public double outlineColorR;
-	@Property(id = "color_g2", name = "Secondary green")
-	public double outlineColorG;
-	@Property(id = "color_b2", name = "Secondary blue")
-	public double outlineColorB;
+	@Property(id = "color2", name = "Secondary", category = BulletPropertyCategory.appearanceOutlineColor, miscType = Property.MiscType.colorRGB)
+	public Color outlineColor = new Color();
 
-	public double originalOutlineColorR;
-	public double originalOutlineColorG;
-	public double originalOutlineColorB;
+	public Color originalOutlineColor = new Color();
 
 	public double opacityMultiplier = 1;
 
@@ -310,17 +301,15 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	{
 		if (!this.overrideBaseColor)
 		{
-			this.baseColorR = this.tank.colorR;
-			this.baseColorG = this.tank.colorG;
-			this.baseColorB = this.tank.colorB;
+			this.baseColor.set(this.tank.color);
 		}
 
 		if (!this.overrideOutlineColor)
 		{
-			double[] oc = Team.getObjectColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, this.tank);
-			this.outlineColorR = oc[0];
-			this.outlineColorG = oc[1];
-			this.outlineColorB = oc[2];
+			double[] oc = Team.getObjectColor(this.tank.secondaryColor.red, this.tank.secondaryColor.green, this.tank.secondaryColor.blue, this.tank);
+			this.outlineColor.red = oc[0];
+			this.outlineColor.green = oc[1];
+			this.outlineColor.blue = oc[2];
 		}
 	}
 
@@ -1219,9 +1208,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (this.age <= 0)
 		{
-			this.originalOutlineColorR = this.outlineColorR;
-			this.originalOutlineColorG = this.outlineColorG;
-			this.originalOutlineColorB = this.outlineColorB;
+			this.originalOutlineColor.set(this.outlineColor);
 		}
 
 		if (!this.previousRebounds.isEmpty() && !this.beganRebound)
@@ -1286,9 +1273,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (this.hitExplosion != null)
 		{
 			this.playPopSound = false;
-			this.outlineColorR = 255;
-			this.outlineColorG = (((int) this.age % 80) / 40 == 1) ? 255 : 0;
-			this.outlineColorB = 0;
+			this.outlineColor.set(255, (((int) this.age % 80) / 40 == 1) ? 255 : 0, 0);
 		}
 
 		if (this.freezing || this.boosting)
@@ -1571,7 +1556,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (this.boosting && Game.glowEnabled)
 		{
-			double frac = Math.min(1, this.destroyTimer / 60);
+			double frac = 1 - Math.min(1, this.destroyTimer / 60);
 			Drawing.drawing.setColor(255, 180, 0, 180 * frac, 1);
 
 			if (Game.enable3d)
@@ -1583,7 +1568,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (Game.glowEnabled)
 		{
 			if (!this.effect.overrideGlowColor)
-				Drawing.drawing.setColor(this.outlineColorR * glow, this.outlineColorG * glow, this.outlineColorB * glow, 255, 1);
+				Drawing.drawing.setColor(this.outlineColor.red * glow, this.outlineColor.green * glow, this.outlineColor.blue * glow, 255, 1);
 			else
 				Drawing.drawing.setColor(this.effect.glowColor.red * glow, this.effect.glowColor.green * glow, this.effect.glowColor.blue * glow, 255, 1);
 
@@ -1622,7 +1607,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				double opacityMod = 0.25 + 0.25 * Math.sin(this.age / 100.0 * Math.PI * 4) * opacityMultiplier;
 				double s = 2.5;
 
-				Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255.0 * opacityMod, luminance);
+				Drawing.drawing.setColor(this.outlineColor.red, this.outlineColor.green, this.outlineColor.blue, opacity * opacity * opacity * 255.0 * opacityMod, luminance);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillOval(posX, posY, posZ, s * size + sizeModifier, s * size + sizeModifier);
@@ -1641,7 +1626,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 					Drawing.drawing.fillOval(posX, posY, bumper * size + sizeModifier, bumper * size + sizeModifier);
 			}
 
-			Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255.0 * opacityMultiplier, luminance);
+			Drawing.drawing.setColor(this.outlineColor.red, this.outlineColor.green, this.outlineColor.blue, opacity * opacity * opacity * 255.0 * opacityMultiplier, luminance);
 
 			if (Game.enable3d)
 			{
@@ -1652,7 +1637,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			else
 				Drawing.drawing.fillOval(posX, posY, size + sizeModifier, size + sizeModifier);
 
-			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, opacity * opacity * opacity * 255.0 * opacityMultiplier, luminance);
+			Drawing.drawing.setColor(this.baseColor.red, this.baseColor.green, this.baseColor.blue, opacity * opacity * opacity * 255.0 * opacityMultiplier, luminance);
 
 			if (Game.enable3d)
 				Drawing.drawing.fillOval(posX, posY, posZ, (size + sizeModifier) * 0.6, (size + sizeModifier) * 0.6, 1);
@@ -1677,16 +1662,16 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			double s = (2 - frac) * 80;
 			double d = Math.min((1 - this.destroyTimer / this.maxDestroyTimer) * 2, 1);
 
-			Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);
+			Drawing.drawing.setColor(this.baseColor.red, this.baseColor.green, this.baseColor.blue, frac * 255 * d, 1);
 			Drawing.drawing.drawImage(frac * Math.PI / 2 + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY), "cursor.png", this.homingTarget.posX, this.homingTarget.posY, s, s);
 
 			if (Game.glowEnabled)
 			{
-				Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * 255 * d, 1);
+				Drawing.drawing.setColor(this.outlineColor.red, this.outlineColor.green, this.outlineColor.blue, frac * 255 * d, 1);
 				Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 16, this.size * 16);
 			}
 		}
-		Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, 255, 1);
+		Drawing.drawing.setColor(this.baseColor.red, this.baseColor.green, this.baseColor.blue, 255, 1);
 	}
 
 	@Override
@@ -1742,9 +1727,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 					Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
 					double var = 50;
 
-					e.colR = Math.min(255, Math.max(0, this.outlineColorR + Math.random() * var - var / 2));
-					e.colG = Math.min(255, Math.max(0, this.outlineColorG + Math.random() * var - var / 2));
-					e.colB = Math.min(255, Math.max(0, this.outlineColorB + Math.random() * var - var / 2));
+					e.colR = Math.min(255, Math.max(0, this.outlineColor.red + Math.random() * var - var / 2));
+					e.colG = Math.min(255, Math.max(0, this.outlineColor.green + Math.random() * var - var / 2));
+					e.colB = Math.min(255, Math.max(0, this.outlineColor.blue + Math.random() * var - var / 2));
 
 					if (Game.enable3d)
 						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() + 0.5);
@@ -1766,12 +1751,12 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 			double var = 50;
 			e.maxAge /= 2;
-			e.colR = Math.min(255, Math.max(0, this.baseColorR + Math.random() * var - var / 2));
-			e.colG = Math.min(255, Math.max(0, this.baseColorG + Math.random() * var - var / 2));
-			e.colB = Math.min(255, Math.max(0, this.baseColorB + Math.random() * var - var / 2));
-			e.glowR = e.colR - this.outlineColorR;
-			e.glowG = e.colG - this.outlineColorG;
-			e.glowB = e.colB - this.outlineColorB;
+			e.colR = Math.min(255, Math.max(0, this.baseColor.red + Math.random() * var - var / 2));
+			e.colG = Math.min(255, Math.max(0, this.baseColor.green + Math.random() * var - var / 2));
+			e.colB = Math.min(255, Math.max(0, this.baseColor.blue + Math.random() * var - var / 2));
+			e.glowR = e.colR - this.outlineColor.red;
+			e.glowG = e.colG - this.outlineColor.green;
+			e.glowB = e.colB - this.outlineColor.blue;
 
 			if (Game.enable3d)
 				e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
@@ -1813,5 +1798,38 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	public String getName()
 	{
 		return Game.formatString(this.typeName);
+	}
+
+	public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, Random r, Color base, Color turret)
+	{
+		double l = this.effect.drawForInterface(x, width, y, size, effects, this.speed / 3.125, false);
+		double start = x - l / 2;
+
+		if (!this.effect.overrideGlowColor)
+		{
+			if (this.overrideOutlineColor)
+				Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+			else
+				Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+		}
+		else
+			Drawing.drawing.setColor(this.effect.glowColor.red * this.effect.glowIntensity, this.effect.glowColor.green * this.effect.glowIntensity, this.effect.glowColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+
+		Drawing.drawing.fillInterfaceGlow(start, y, size * this.effect.glowSize, size * this.effect.glowSize, !this.effect.glowGlowy);
+
+		if (this.overrideOutlineColor)
+			Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+		else
+			Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+
+		Drawing.drawing.fillInterfaceOval(start, y, size, size);
+
+		if (this.overrideBaseColor)
+			Drawing.drawing.setColor(this.baseColor.red, this.baseColor.green, this.baseColor.blue, 255, this.effect.luminance);
+		else
+			Drawing.drawing.setColor(base.red, base.green, base.blue, 255, this.effect.luminance);
+
+		Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
+
 	}
 }

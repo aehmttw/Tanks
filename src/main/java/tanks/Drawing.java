@@ -168,6 +168,28 @@ public class Drawing
 		this.currentGlow = 0;
 	}
 
+	public void setColor(Color c, double a)
+	{
+		Game.game.window.setColor(c.red, c.green, c.blue, a);
+
+		this.currentColorR = c.red;
+		this.currentColorG = c.green;
+		this.currentColorB = c.blue;
+		this.currentColorA = a;
+		this.currentGlow = 0;
+	}
+
+	public void setColor(Color c, double a, double glow)
+	{
+		Game.game.window.setColor(c.red, c.green, c.blue, a, glow);
+
+		this.currentColorR = c.red;
+		this.currentColorG = c.green;
+		this.currentColorB = c.blue;
+		this.currentColorA = a;
+		this.currentGlow = glow;
+	}
+
 	public void fillOval(double x, double y, double sizeX, double sizeY)
 	{
 		double drawX = gameToAbsoluteX(x, sizeX);

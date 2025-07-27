@@ -1,5 +1,6 @@
 package tanks.bullet;
 
+import basewindow.Color;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawableWithGlow;
@@ -25,9 +26,7 @@ public class Laser extends Movable implements IDrawableWithGlow
     public double width;
     public double angle;
 
-    public double colorR;
-    public double colorG;
-    public double colorB;
+    public Color color;
 
     public boolean frontCircle = true;
     public boolean backCircle = true;
@@ -38,7 +37,7 @@ public class Laser extends Movable implements IDrawableWithGlow
     public Tank tank1;
     public Tank tank2;
 
-    public Laser(double backX, double backY, double backZ, double frontX, double frontY, double frontZ, double width, double angle, double colR, double colG, double colB)
+    public Laser(double backX, double backY, double backZ, double frontX, double frontY, double frontZ, double width, double angle, Color col)
     {
         super(backX, backY);
 
@@ -51,9 +50,7 @@ public class Laser extends Movable implements IDrawableWithGlow
         this.frontZ = frontZ;
         this.width = width;
 
-        this.colorR = colR;
-        this.colorG = colG;
-        this.colorB = colB;
+        this.color = col;
 
         this.drawLevel = 2;
     }
@@ -76,7 +73,7 @@ public class Laser extends Movable implements IDrawableWithGlow
 
         if (!expired)
         {
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+            Drawing.drawing.setColor(this.color, 255, 1);
 
             if (frontCircle || showOutsides)
             {
@@ -136,7 +133,7 @@ public class Laser extends Movable implements IDrawableWithGlow
 
         if (!expired)
         {
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+            Drawing.drawing.setColor(this.color, 255, 1);
 
             if (frontCircle || showOutsides)
             {
@@ -147,7 +144,7 @@ public class Laser extends Movable implements IDrawableWithGlow
                     Drawing.drawing.setColor(0, 0, 0, 255, 1);
                     Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
                     Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                    Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+                    Drawing.drawing.setColor(this.color, 255, 1);
                     Drawing.drawing.addVertex(this.frontX, this.frontY, this.frontZ);
                 }
 
@@ -156,20 +153,20 @@ public class Laser extends Movable implements IDrawableWithGlow
 
             Game.game.window.shapeRenderer.setBatchMode(true, true, depth, true);
 
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+            Drawing.drawing.setColor(this.color, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, 0, 0, 0);
             Drawing.drawing.setColor(0, 0, 0, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * -ox * width * (1 - frac), mul * -oy * width * (1 - frac), 0);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * -ox * width * (1 - frac), mul * -oy * width * (1 - frac), 0);
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+            Drawing.drawing.setColor(this.color, 255, 1);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, 0, 0, 0);
 
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+            Drawing.drawing.setColor(this.color, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, 0, 0, 0);
             Drawing.drawing.setColor(0, 0, 0, 255, 1);
             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * ox * width * (1 - frac), mul * oy * width * (1 - frac), 0);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * ox * width * (1 - frac), mul * oy * width * (1 - frac), 0);
-            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+            Drawing.drawing.setColor(this.color, 255, 1);
             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, 0, 0, 0);
 
             Game.game.window.shapeRenderer.setBatchMode(false, true, depth, true);
@@ -183,7 +180,7 @@ public class Laser extends Movable implements IDrawableWithGlow
                     Drawing.drawing.setColor(0, 0, 0, 255, 1);
                     Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
                     Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                    Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+                    Drawing.drawing.setColor(this.color, 255, 1);
                     Drawing.drawing.addVertex(this.backX, this.backY, this.backZ);
                 }
 

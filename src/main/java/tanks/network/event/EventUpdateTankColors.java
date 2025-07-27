@@ -1,5 +1,6 @@
 package tanks.network.event;
 
+import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -12,17 +13,9 @@ public class EventUpdateTankColors extends PersonalEvent
 {
     public UUID player;
 
-    public int colorR;
-    public int colorG;
-    public int colorB;
-
-    public int colorR2;
-    public int colorG2;
-    public int colorB2;
-
-    public int colorR3;
-    public int colorG3;
-    public int colorB3;
+    public Color color1 = new Color();
+    public Color color2 = new Color();
+    public Color color3 = new Color();
 
     public EventUpdateTankColors()
     {
@@ -33,47 +26,27 @@ public class EventUpdateTankColors extends PersonalEvent
     {
         this.player = p.clientID;
 
-        this.colorR = p.colorR;
-        this.colorG = p.colorG;
-        this.colorB = p.colorB;
-
-        this.colorR2 = p.colorR2;
-        this.colorG2 = p.colorG2;
-        this.colorB2 = p.colorB2;
-
-        this.colorR3 = p.colorR3;
-        this.colorG3 = p.colorG3;
-        this.colorB3 = p.colorB3;
+        this.color1.set(p.color);
+        this.color2.set(p.color2);
+        this.color3.set(p.color3);
     }
 
     @Override
     public void write(ByteBuf b)
     {
         NetworkUtils.writeString(b, this.player.toString());
-        b.writeInt(this.colorR);
-        b.writeInt(this.colorG);
-        b.writeInt(this.colorB);
-        b.writeInt(this.colorR2);
-        b.writeInt(this.colorG2);
-        b.writeInt(this.colorB2);
-        b.writeInt(this.colorR3);
-        b.writeInt(this.colorG3);
-        b.writeInt(this.colorB3);
+        NetworkUtils.writeColor(b, this.color1);
+        NetworkUtils.writeColor(b, this.color2);
+        NetworkUtils.writeColor(b, this.color3);
     }
 
     @Override
     public void read(ByteBuf b)
     {
         this.player = UUID.fromString(NetworkUtils.readString(b));
-        this.colorR = b.readInt();
-        this.colorG = b.readInt();
-        this.colorB = b.readInt();
-        this.colorR2 = b.readInt();
-        this.colorG2 = b.readInt();
-        this.colorB2 = b.readInt();
-        this.colorR3 = b.readInt();
-        this.colorG3 = b.readInt();
-        this.colorB3 = b.readInt();
+        NetworkUtils.readColor(b, this.color1);
+        NetworkUtils.readColor(b, this.color2);
+        NetworkUtils.readColor(b, this.color3);
     }
 
     @Override
@@ -87,15 +60,9 @@ public class EventUpdateTankColors extends PersonalEvent
                 {
                     if (p.clientId.equals(this.player))
                     {
-                        p.colorR = this.colorR;
-                        p.colorG = this.colorG;
-                        p.colorB = this.colorB;
-                        p.colorR2 = this.colorR2;
-                        p.colorG2 = this.colorG2;
-                        p.colorB2 = this.colorB2;
-                        p.colorR3 = this.colorR3;
-                        p.colorG3 = this.colorG3;
-                        p.colorB3 = this.colorB3;
+                        p.color.set(this.color1);
+                        p.color2.set(this.color2);
+                        p.color3.set(this.color3);
                     }
                 }
             }

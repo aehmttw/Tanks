@@ -60,9 +60,7 @@ public class EventTankTransformPreset extends PersonalEvent
             t.multipleTurrets = target.multipleTurrets;
 
             t.emblem = target.emblem;
-            t.emblemR = target.emblemR;
-            t.emblemG = target.emblemG;
-            t.emblemB = target.emblemB;
+            t.emblemColor.set(target.emblemColor);
 
             t.luminance = target.luminance;
             t.glowIntensity = target.glowIntensity;
@@ -91,27 +89,20 @@ public class EventTankTransformPreset extends PersonalEvent
             {
                 Effect e1 = Effect.createNewEffect(t.posX, t.posY, t.posZ + target.size * 0.75, Effect.EffectType.exclamation);
                 e1.size = target.size;
-                e1.colR = t.colorR;
-                e1.colG = t.colorG;
-                e1.colB = t.colorB;
-                e1.glowR = target.colorR;
-                e1.glowG = target.colorG;
-                e1.glowB = target.colorB;
+                e1.colR = t.color.red;
+                e1.colG = t.color.green;
+                e1.colB = t.color.blue;
+                e1.glowR = target.color.red;
+                e1.glowG = target.color.green;
+                e1.glowB = target.color.blue;
                 Game.effects.add(e1);
             }
 
-            t.colorR = target.colorR;
-            t.colorG = target.colorG;
-            t.colorB = target.colorB;
-
-            t.secondaryColorR = target.secondaryColorR;
-            t.secondaryColorG = target.secondaryColorG;
-            t.secondaryColorB = target.secondaryColorB;
+            t.color.set(target.color);
+            t.secondaryColor.set(target.secondaryColor);
 
             t.enableTertiaryColor = target.enableTertiaryColor;
-            t.tertiaryColorR = target.tertiaryColorR;
-            t.tertiaryColorG = target.tertiaryColorG;
-            t.tertiaryColorB = target.tertiaryColorB;
+            t.tertiaryColor.set(target.tertiaryColor);
         }
     }
 

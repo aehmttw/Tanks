@@ -28,8 +28,8 @@ public class TankBlue extends TankAIControlled
 		{
 			this.colorSkin = TankModels.fixed;
 			this.emblem = "emblems/electric.png";
-			this.emblemG = 160;
-			this.emblemB = 255;
+			this.emblemColor.green = 160;
+			this.emblemColor.blue = 255;
 		}
 
 		this.coinValue = 4;

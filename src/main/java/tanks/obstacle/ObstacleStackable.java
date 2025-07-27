@@ -138,7 +138,10 @@ public class ObstacleStackable extends Obstacle
     public void setMetadata(String s)
     {
         if (s.isEmpty())
+        {
+            this.stackHeight = 1;
             return;
+        }
 
         String[] metadata = s.split("-");
 

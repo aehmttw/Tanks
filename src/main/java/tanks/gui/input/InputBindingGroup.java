@@ -48,6 +48,12 @@ public class InputBindingGroup
         input2.invalidate();
     }
 
+    public void unpress()
+    {
+        input1.unpress();
+        input2.unpress();
+    }
+
     @Override
     public String toString()
     {

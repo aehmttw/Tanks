@@ -272,6 +272,10 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             this.preview.colorModel = tank.colorModel;
             this.preview.turretBaseModel = tank.turretBaseModel;
             this.preview.turretModel = tank.turretModel;
+            this.preview.baseSkin = tank.baseSkin;
+            this.preview.colorSkin = tank.colorSkin;
+            this.preview.turretBaseSkin = tank.turretBaseSkin;
+            this.preview.turretSkin = tank.turretSkin;
             this.preview.size = tank.size;
             this.preview.turretSize = tank.turretSize;
             this.preview.turretLength = tank.turretLength;

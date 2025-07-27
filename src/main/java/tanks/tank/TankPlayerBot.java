@@ -205,13 +205,13 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
     {
         super.draw();
 
-        Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawImage(this.bulletItem.item.icon, this.posX, this.posY, 50, 50, 50);
-
-        Drawing.drawing.setFontSize(16);
-        Drawing.drawing.drawText(this.posX + 25, this.posY + 25, 50, this.bulletItem.stackSize + "");
-
-        Drawing.drawing.drawText(this.posX - 25, this.posY + 25, 50, this.player.hotbar.coins + "");
+//        Drawing.drawing.setColor(255, 255, 255);
+//        Drawing.drawing.drawImage(this.bulletItem.item.icon, this.posX, this.posY, 50, 50, 50);
+//
+//        Drawing.drawing.setFontSize(16);
+//        Drawing.drawing.drawText(this.posX + 25, this.posY + 25, 50, this.bulletItem.stackSize + "");
+//
+//        Drawing.drawing.drawText(this.posX - 25, this.posY + 25, 50, this.player.hotbar.coins + "");
     }
 
     public void setBulletItem(ItemBullet.ItemStackBullet i)

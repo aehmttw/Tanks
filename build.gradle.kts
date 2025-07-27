@@ -93,7 +93,7 @@ tasks.register<JavaExec>("run") {
     // Replace "com.aehmttw.tanks.Main" with your actual main class
     mainClass.set("main.Tanks")
 
-    // If your application needs working directory to be set
+    // If your application needs a working directory to be set
     workingDir = project.projectDir
     args("debug")
 }

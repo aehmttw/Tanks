@@ -1,5 +1,6 @@
 package tanks;
 
+import basewindow.Color;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -13,7 +14,7 @@ import tanks.tank.*;
 
 import java.util.*;
 
-public class Level 
+public class Level
 {
 	public String levelString;
 
@@ -21,8 +22,8 @@ public class Level
 	public Team[] tankTeams;
 	public boolean enableTeams = false;
 
-	public static double currentColorR = 235, currentColorG = 207, currentColorB = 166;
-	public static double currentColorVarR = 235, currentColorVarG = 207, currentColorVarB = 166;
+	public static Color currentColor = new Color(235,207,166);
+	public static Color currentColorVar = new Color(235, 207, 166);
 	public static double currentLightIntensity = 1, currentShadowIntensity = 0.5;
 
 	public static int currentCloudCount = 0;
@@ -39,8 +40,8 @@ public class Level
 	public int startX, startY;
 	public int sizeX, sizeY;
 
-	public int colorR = 235, colorG = 207, colorB = 166;
-	public int colorVarR = 20, colorVarG = 20, colorVarB = 20;
+	public Color color = new Color(235, 207, 166);
+	public Color colorVar = new Color(20, 20, 20);
 
 	public int tilesRandomSeed = (int) (Math.random() * Integer.MAX_VALUE);
 
@@ -150,7 +151,39 @@ public class Level
 				if (preset.length >= 4)
 				{
 					teams = preset[3].split(",");
-					enableTeams = true;
+					tankTeams = new Team[teams.length];
+
+					for (int i = 0; i < teams.length; i++)
+					{
+						String[] t = teams[i].split("-");
+
+						if (t.length >= 5)
+							tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
+						else if (t.length >= 2)
+							tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
+						else
+							tankTeams[i] = new Team(t[0]);
+
+						if (disableFriendlyFire)
+							tankTeams[i].friendlyFire = false;
+
+						teamsMap.put(t[0], tankTeams[i]);
+
+						teamsList.add(tankTeams[i]);
+					}
+				}
+				else
+				{
+					if (disableFriendlyFire)
+					{
+						teamsMap.put("ally", Game.playerTeamNoFF);
+						teamsMap.put("enemy", Game.enemyTeamNoFF);
+					}
+					else
+					{
+						teamsMap.put("ally", Game.playerTeam);
+						teamsMap.put("enemy", Game.enemyTeam);
+					}
 				}
 
 				if (screen[0].startsWith("*"))
@@ -175,16 +208,32 @@ public class Level
 
 		if (screen.length >= 5)
 		{
-			colorR = Integer.parseInt(screen[2]);
-			colorG = Integer.parseInt(screen[3]);
-			colorB = Integer.parseInt(screen[4]);
+			color.set(Integer.parseInt(screen[2]), Integer.parseInt(screen[3]), Integer.parseInt(screen[4]));
 
 			if (screen.length >= 8)
 			{
-				colorVarR = Math.min(255 - colorR, Integer.parseInt(screen[5]));
-				colorVarG = Math.min(255 - colorG, Integer.parseInt(screen[6]));
-				colorVarB = Math.min(255 - colorB, Integer.parseInt(screen[7]));
+				int colorVarR = Math.min(255 - (int) color.red, Integer.parseInt(screen[5]));
+				int colorVarG = Math.min(255 - (int) color.green, Integer.parseInt(screen[6]));
+				int colorVarB = Math.min(255 - (int) color.blue, Integer.parseInt(screen[7]));
+				colorVar.set(colorVarR, colorVarG, colorVarB);
 			}
+		}
+
+		if (screen.length >= 9)
+		{
+			int length = Integer.parseInt(screen[8]) * 100;
+
+			if (length > 0)
+			{
+				this.timed = true;
+				this.timer = length;
+			}
+		}
+
+		if (screen.length >= 11)
+		{
+			light = Integer.parseInt(screen[9]) / 100.0;
+			shadow = Integer.parseInt(screen[10]) / 100.0;
 		}
 
 		for (int i = 0; i < this.shop.size(); i++)
@@ -268,9 +317,9 @@ public class Level
 			Obstacle.draw_size = 50;
 
 		Chunk.Tile ft = Chunk.Tile.fallbackTile;
-		ft.colR = colorR;
-		ft.colG = colorG;
-		ft.colB = colorB;
+		ft.colR = color.red;
+		ft.colG = color.green;
+		ft.colB = color.blue;
 
 		this.remote = remote;
 
@@ -292,61 +341,7 @@ public class Level
 		ScreenGame.finished = false;
 		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
 
-		if (enableTeams)
-		{
-			tankTeams = new Team[teams.length];
-
-			for (int i = 0; i < teams.length; i++)
-			{
-				String[] t = teams[i].split("-");
-
-				if (t.length >= 5)
-					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
-				else if (t.length >= 2)
-					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
-				else
-					tankTeams[i] = new Team(t[0]);
-
-				if (disableFriendlyFire)
-					tankTeams[i].friendlyFire = false;
-
-				teamsMap.put(t[0], tankTeams[i]);
-
-				teamsList.add(tankTeams[i]);
-			}
-		}
-		else
-		{
-			if (disableFriendlyFire)
-			{
-				teamsMap.put("ally", Game.playerTeamNoFF);
-				teamsMap.put("enemy", Game.enemyTeamNoFF);
-			}
-			else
-			{
-				teamsMap.put("ally", Game.playerTeam);
-				teamsMap.put("enemy", Game.enemyTeam);
-			}
-		}
-
 		currentCloudCount = (int) (Math.random() * (double) this.sizeX / 10.0D + Math.random() * (double) this.sizeY / 10.0D);
-
-		if (screen.length >= 9)
-		{
-			int length = Integer.parseInt(screen[8]) * 100;
-
-			if (length > 0)
-			{
-				this.timed = true;
-				this.timer = length;
-			}
-		}
-
-		if (screen.length >= 11)
-		{
-			light = Integer.parseInt(screen[9]) / 100.0;
-			shadow = Integer.parseInt(screen[10]) / 100.0;
-		}
 
 		if (sc instanceof ScreenLevelEditor)
 		{
@@ -741,13 +736,9 @@ public class Level
 		Game.currentSizeX = (int) (sizeX * Game.bgResMultiplier);
 		Game.currentSizeY = (int) (sizeY * Game.bgResMultiplier);
 
-		currentColorR = colorR;
-		currentColorG = colorG;
-		currentColorB = colorB;
+		currentColor = color;
 
-		currentColorVarR = colorVarR;
-		currentColorVarG = colorVarG;
-		currentColorVarB = colorVarB;
+		currentColorVar = colorVar;
 
 		currentLightIntensity = light;
 		currentShadowIntensity = shadow;
@@ -762,7 +753,7 @@ public class Level
         }
 
 		ScreenLevelEditor s = null;
-		
+
 		if (Game.screen instanceof ScreenLevelEditor)
 			s = (ScreenLevelEditor) Game.screen;
 		else if (Game.screen instanceof ScreenLevelEditorOverlay)
@@ -809,7 +800,7 @@ public class Level
 
 	public static boolean isDark()
 	{
-		return Level.currentColorR * 0.2126 + Level.currentColorG * 0.7152 + Level.currentColorB * 0.0722 <= 127 || currentLightIntensity <= 0.5;
+		return Level.currentColor.red * 0.2126 + Level.currentColor.green * 0.7152 + Level.currentColor.blue * 0.0722 <= 127 || currentLightIntensity <= 0.5;
 	}
 
 	public Tank lookupTank(String name)

@@ -119,7 +119,7 @@ public class Level
 			else if (s.startsWith("coins\n"))
 			{
 				s = s.substring("coins\n".length());
-				this.startingCoins = Integer.parseInt(s);
+				this.startingCoins = (int) Double.parseDouble(s.trim());
 			}
 			else if (s.startsWith("tanks\n"))
 			{
@@ -203,25 +203,25 @@ public class Level
 		if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
 			this.disableFriendlyFire = true;
 
-		sizeX = Integer.parseInt(screen[0]);
-		sizeY = Integer.parseInt(screen[1]);
+		sizeX = (int) Double.parseDouble(screen[0]);
+		sizeY = (int) Double.parseDouble(screen[1]);
 
 		if (screen.length >= 5)
 		{
-			color.set(Integer.parseInt(screen[2]), Integer.parseInt(screen[3]), Integer.parseInt(screen[4]));
+			color.set((int) Double.parseDouble(screen[2]), (int) Double.parseDouble(screen[3]), (int) Double.parseDouble(screen[4]));
 
 			if (screen.length >= 8)
 			{
-				int colorVarR = Math.min(255 - (int) color.red, Integer.parseInt(screen[5]));
-				int colorVarG = Math.min(255 - (int) color.green, Integer.parseInt(screen[6]));
-				int colorVarB = Math.min(255 - (int) color.blue, Integer.parseInt(screen[7]));
+				int colorVarR = Math.min(255 - (int) color.red, (int) Double.parseDouble(screen[5]));
+				int colorVarG = Math.min(255 - (int) color.green, (int) Double.parseDouble(screen[6]));
+				int colorVarB = Math.min(255 - (int) color.blue, (int) Double.parseDouble(screen[7]));
 				colorVar.set(colorVarR, colorVarG, colorVarB);
 			}
 		}
 
 		if (screen.length >= 9)
 		{
-			int length = Integer.parseInt(screen[8]) * 100;
+			int length = (int) Double.parseDouble(screen[8]) * 100;
 
 			if (length > 0)
 			{
@@ -232,8 +232,8 @@ public class Level
 
 		if (screen.length >= 11)
 		{
-			light = Integer.parseInt(screen[9]) / 100.0;
-			shadow = Integer.parseInt(screen[10]) / 100.0;
+			light = (int) Double.parseDouble(screen[9]) / 100.0;
+			shadow = (int) Double.parseDouble(screen[10]) / 100.0;
 		}
 
 		for (int i = 0; i < this.shop.size(); i++)

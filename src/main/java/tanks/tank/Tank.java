@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.Color;
 import basewindow.Model;
 import tanks.*;
 import tanks.bullet.Bullet;
@@ -15,6 +16,7 @@ import tanks.network.event.EventTankAddAttributeModifier;
 import tanks.network.event.EventTankUpdate;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.network.event.EventTankUpdateVisibility;
+import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
@@ -27,7 +29,7 @@ import java.util.Objects;
 
 import static tanks.tank.TankPropertyCategory.*;
 
-public abstract class Tank extends Movable
+public abstract class Tank extends Movable implements ISolidObject
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -129,12 +131,8 @@ public abstract class Tank extends Movable
 	/** Time this tank has been invisible for*/
 	public double timeInvisible = 0;
 
-	@TankBuildProperty @Property(category = appearanceBody, id = "color_r", name = "Red", miscType = Property.MiscType.color)
-	public double colorR;
-	@TankBuildProperty @Property(category = appearanceBody, id = "color_g", name = "Green", miscType = Property.MiscType.color)
-	public double colorG;
-	@TankBuildProperty @Property(category = appearanceBody, id = "color_b", name = "Blue", miscType = Property.MiscType.color)
-	public double colorB;
+	@TankBuildProperty @Property(category = appearanceBody, id = "color", name = "", miscType = Property.MiscType.colorRGB)
+	public Color color = new Color();
 
 	@TankBuildProperty @Property(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity", minValue = 0.0)
 	public double glowIntensity = 1;
@@ -148,14 +146,10 @@ public abstract class Tank extends Movable
 	public double luminance = 0.5;
 
 	/** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
-	@Property(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = Property.MiscType.color)
+	@Property(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = Property.MiscType.colorRGB)
 	public boolean enableSecondaryColor = false;
-	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color_r2", name = "Red", miscType = Property.MiscType.color)
-	public double secondaryColorR;
-	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color_g2", name = "Green", miscType = Property.MiscType.color)
-	public double secondaryColorG;
-	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color_b2", name = "Blue", miscType = Property.MiscType.color)
-	public double secondaryColorB;
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color2", name = "", miscType = Property.MiscType.colorRGB)
+	public Color secondaryColor = new Color();
 	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness", minValue = 0.0)
 	public double turretSize = 8;
 	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length", minValue = 0.0)
@@ -164,14 +158,10 @@ public abstract class Tank extends Movable
 	public boolean multipleTurrets = true;
 
 	/** Important: tertiary color values will not be used unless this option is set to true! */
-	@Property(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = Property.MiscType.color)
+	@Property(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = Property.MiscType.colorRGB)
 	public boolean enableTertiaryColor = false;
-	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color_r3", name = "Red", miscType = Property.MiscType.color)
-	public double tertiaryColorR;
-	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color_g3", name = "Green", miscType = Property.MiscType.color)
-	public double tertiaryColorG;
-	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color_b3", name = "Blue", miscType = Property.MiscType.color)
-	public double tertiaryColorB;
+	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color3", name = "", miscType = Property.MiscType.colorRGB)
+	public Color tertiaryColor = new Color();
 
 	@TankBuildProperty @Property(category = appearanceTracks, id = "enable_tracks", name = "Lays tracks")
 	public boolean enableTracks = true;
@@ -193,12 +183,8 @@ public abstract class Tank extends Movable
 
 	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem", name = "Tank emblem", miscType = Property.MiscType.emblem)
 	public String emblem = null;
-	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_r", name = "Red", miscType = Property.MiscType.color)
-	public double emblemR;
-	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_g", name = "Green", miscType = Property.MiscType.color)
-	public double emblemG;
-	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_b", name = "Blue", miscType = Property.MiscType.color)
-	public double emblemB;
+	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_color", name = "", miscType = Property.MiscType.colorRGB)
+	public Color emblemColor = new Color();
 
 	@MetadataProperty(id = "rotation", name = "Rotation", selector = SelectorRotation.selector_name, image = "rotate_tank.png", keybind = "editor.rotate")
 	public double orientation = 0;
@@ -230,6 +216,8 @@ public abstract class Tank extends Movable
 
 	public boolean standardUpdateEvent = true;
 
+	public HashMap<String, Object> extraProperties = new HashMap<>();
+
 	public boolean isBoss = false;
 	public Tank possessor;
 	public Tank possessingTank = null;
@@ -244,9 +232,9 @@ public abstract class Tank extends Movable
 	{
 		super(x, y);
 		this.size = size;
-		this.colorR = r;
-		this.colorG = g;
-		this.colorB = b;
+		this.color.red = r;
+		this.color.green = g;
+		this.color.blue = b;
 		turret = new Turret(this);
 		this.name = name;
 		this.nameTag = new NameTag(this, 0, this.size / 7 * 5, this.size / 2, this.name);
@@ -526,9 +514,9 @@ public abstract class Tank extends Movable
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
 						double var = 50;
 
-						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+						e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
 
 						if (Game.enable3d)
 							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.atan(Math.random()), Math.random() * this.size / 50.0);
@@ -659,9 +647,9 @@ public abstract class Tank extends Movable
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
 						double var = 50;
-						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+						e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
 
 						if (Game.enable3d)
 							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
@@ -747,7 +735,7 @@ public abstract class Tank extends Movable
 			s = Math.min(this.size, Game.tile_size * 1.5);
 
 		Drawing drawing = Drawing.drawing;
-		double[] teamColor = Team.getObjectColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB, this);
+		double[] teamColor = Team.getObjectColor(this.secondaryColor.red, this.secondaryColor.green, this.secondaryColor.blue, this);
 
 		Drawing.drawing.setColor(teamColor[0] * this.glowModifier * this.glowIntensity, teamColor[1] * this.glowModifier * this.glowIntensity, teamColor[2] * this.glowModifier * this.glowIntensity, 255, 1);
 
@@ -835,7 +823,7 @@ public abstract class Tank extends Movable
 		double dmgFlash = Math.min(1, this.damageFlashAnimation);
 		double healFlash = Math.min(1, this.healFlashAnimation);
 
-		Drawing.drawing.setColor(this.colorR * (1 - Math.max(dmgFlash, healFlash)) + 255 * dmgFlash, this.colorG * (1 - Math.max(dmgFlash, healFlash)) + 255 * healFlash, this.colorB * (1 - Math.max(dmgFlash, healFlash)), transparent ? 127 : 255, luminance);
+		Drawing.drawing.setColor(this.color.red * (1 - Math.max(dmgFlash, healFlash)) + 255 * dmgFlash, this.color.green * (1 - Math.max(dmgFlash, healFlash)) + 255 * healFlash, this.color.blue * (1 - Math.max(dmgFlash, healFlash)), transparent ? 127 : 255, luminance);
 
 		if (forInterface)
 		{
@@ -876,7 +864,7 @@ public abstract class Tank extends Movable
 
 		sizeMod = 0.5;
 
-		Drawing.drawing.setColor(this.emblemR, this.emblemG, this.emblemB, transparent ? 127 : 255, luminance);
+		Drawing.drawing.setColor(this.emblemColor.red, this.emblemColor.green, this.emblemColor.blue, transparent ? 127 : 255, luminance);
 		if (this.emblem != null)
 		{
 			if (forInterface)
@@ -903,7 +891,7 @@ public abstract class Tank extends Movable
 		}
 
 		// For team color
-		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
+		Drawing.drawing.setColor(this.secondaryColor.red, this.secondaryColor.green, this.secondaryColor.blue);
 	}
 
 	public void drawTurret(boolean forInterface, boolean in3d, boolean transparent)
@@ -936,7 +924,7 @@ public abstract class Tank extends Movable
 		{
 			if (this.size * 4 > this.timeInvisible * 2)
 			{
-				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 255, 1);
+				Drawing.drawing.setColor(this.color.red, this.color.green, this.color.blue, 255, 1);
 
 				if (Game.enable3d)
 					Drawing.drawing.fillGlow(this.posX, this.posY, this.size / 4, this.size * 4 - this.age * 2, this.size * 4 - this.age * 2, true, false);
@@ -965,7 +953,7 @@ public abstract class Tank extends Movable
 		this.drawTank(false, Game.enable3d, true);
 		this.drawTurret(false, Game.enable3d, true);
 
-		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
+		Drawing.drawing.setColor(this.secondaryColor.red, this.secondaryColor.green, this.secondaryColor.blue);
 	}
 
 	public void drawAt(double x, double y)
@@ -1097,6 +1085,12 @@ public abstract class Tank extends Movable
 		}
 	}
 
+	@Override
+	public double getSize()
+	{
+		return size * hitboxSize;
+	}
+
 	public double getDamageMultiplier(GameObject source)
 	{
 		if ((this.invulnerable || this.invulnerabilityTimer > 0) || (source instanceof Bullet && this.resistBullets) || (source instanceof Explosion && this.resistExplosions))
@@ -1165,7 +1159,7 @@ public abstract class Tank extends Movable
 
 				if (dist > farthestInSight)
 				{
-					Ray r = Ray.newRay(this.posX, this.posY, 0, 0, this);
+					Ray r = new Ray(this.posX, this.posY, 0, 0, this);
 					r.vX = m.posX - this.posX;
 					r.vY = m.posY - this.posY;
 
@@ -1215,9 +1209,9 @@ public abstract class Tank extends Movable
 	}
 
 	@Override
-	public double getSize()
+	public boolean disableRayCollision()
 	{
-		return size * hitboxSize;
+		return !currentlyTargetable;
 	}
 
 	public double getAutoZoom()
@@ -1297,7 +1291,7 @@ public abstract class Tank extends Movable
 
 		double frac = (System.currentTimeMillis() % 2000) / 2000.0;
 		double size = Math.max(800 * (0.5 - frac), 0) * fade * mul;
-		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
+		Drawing.drawing.setColor(this.color.red, this.color.green, this.color.blue, 64 * Math.sin(Math.min(frac * Math.PI, Math.PI / 2)) * fade);
 
 		if (Game.enable3d)
 			Drawing.drawing.fillOval(this.posX, this.posY, this.size / 2, size, size, false, false);
@@ -1307,16 +1301,16 @@ public abstract class Tank extends Movable
 		double frac2 = ((250 + System.currentTimeMillis()) % 2000) / 2000.0;
 		double size2 = Math.max(800 * (0.5 - frac2), 0) * fade * mul;
 
-		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
+		Drawing.drawing.setColor(this.secondaryColor.red, this.secondaryColor.green, this.secondaryColor.blue, 64 * Math.sin(Math.min(frac2 * Math.PI, Math.PI / 2)) * fade);
 
 		if (Game.enable3d)
 			Drawing.drawing.fillOval(this.posX, this.posY, this.size / 2, size2, size2, false, false);
 		else
 			Drawing.drawing.fillOval(this.posX, this.posY, size2, size2);
 
-		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+		Drawing.drawing.setColor(this.color.red, this.color.green, this.color.blue);
 		this.drawSpinny(this.posX, this.posY, this.size / 2, 200, 4, 0.3, 75 * fade * mul, 0.5 * fade * mul, false);
-		Drawing.drawing.setColor(this.secondaryColorR, this.secondaryColorG, this.secondaryColorB);
+		Drawing.drawing.setColor(this.secondaryColor.red, this.secondaryColor.green, this.secondaryColor.blue);
 		this.drawSpinny(this.posX, this.posY, this.size / 2, 198, 3, 0.5, 60 * fade * mul, 0.375 * fade * mul, false);
 	}
 
@@ -1348,34 +1342,24 @@ public abstract class Tank extends Movable
 		return m instanceof Tank ? (Tank) m : null;
 	}
 
-	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2)
+	public static void drawTank(double x, double y, Color c1, Color c2, Color c3)
 	{
-		drawTank(x, y, r1, g1, b1, r2, g2, b2, (r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2, Game.tile_size / 2);
+		drawTank(x, y, c1, c2, c3, Game.tile_size / 2);
 	}
 
-	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double size)
+	public static void drawTank(double x, double y, Color c1, Color c2, Color c3, double size)
 	{
-		drawTank(x, y, r1, g1, b1, r2, g2, b2, (r1 + r2) / 2, (g1 + g2) / 2, (b1 + b2) / 2, size);
-	}
-
-	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double r3, double g3, double b3)
-	{
-		drawTank(x, y, r1, g1, b1, r2, g2, b2, r3, g3, b3, Game.tile_size / 2);
-	}
-
-	public static void drawTank(double x, double y, double r1, double g1, double b1, double r2, double g2, double b2, double r3, double g3, double b3, double size)
-	{
-		Drawing.drawing.setColor(r2, g2, b2);
+		Drawing.drawing.setColor(c2);
 		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.base, x, y, size, size, 0);
 
-		Drawing.drawing.setColor(r1, g1, b1);
+		Drawing.drawing.setColor(c1);
 		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.color, x, y, size, size, 0);
 
-		Drawing.drawing.setColor(r2, g2, b2);
+		Drawing.drawing.setColor(c2);
 
 		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turret, x, y, size, size, 0);
 
-		Drawing.drawing.setColor(r3, g3, b3);
+		Drawing.drawing.setColor(c3);
 		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turretBase, x, y, size, size, 0);
 	}
 
@@ -1429,18 +1413,10 @@ public abstract class Tank extends Movable
 
 	public Tank setDefaultPlayerColor()
 	{
-		this.colorR = 0;
-		this.colorG = 150;
-		this.colorB = 255;
-		this.secondaryColorR = Turret.calculateSecondaryColor(this.colorR);
-		this.secondaryColorG = Turret.calculateSecondaryColor(this.colorG);
-		this.secondaryColorB = Turret.calculateSecondaryColor(this.colorB);
-		this.tertiaryColorR = (this.colorR + this.secondaryColorR) / 2;
-		this.tertiaryColorG = (this.colorG + this.secondaryColorG) / 2;
-		this.tertiaryColorB = (this.colorB + this.secondaryColorB) / 2;
-		this.emblemR = this.secondaryColorR;
-		this.emblemG = this.secondaryColorG;
-		this.emblemB = this.secondaryColorB;
+		this.color.set(0, 150, 255);
+		Turret.setSecondary(this.color, this.secondaryColor);
+		Turret.setTertiary(this.color, this.secondaryColor, this.tertiaryColor);
+		this.emblemColor.set(this.secondaryColor);
 		return this;
 	}
 }

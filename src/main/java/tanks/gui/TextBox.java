@@ -727,6 +727,18 @@ public class TextBox implements IDrawable, ITrigger
 		this.posY = y;
 	}
 
+	@Override
+	public double getPositionX()
+	{
+		return this.posX;
+	}
+
+	@Override
+	public double getPositionY()
+	{
+		return this.posY;
+	}
+
 	public static void drawTallGlow(double posX, double posY, double sizeX, double sizeY, double extra, double size, double r, double g, double b, double a, boolean glow)
 	{
 		Game.game.window.shapeRenderer.setBatchMode(true, true, false, glow);

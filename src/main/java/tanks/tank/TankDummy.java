@@ -4,7 +4,6 @@ import tanks.Game;
 
 /**
  * A dummy tank used to practice your aim
- * @see TankDummyLoadingScreen
  */
 public class TankDummy extends TankAIControlled
 {
@@ -21,8 +20,8 @@ public class TankDummy extends TankAIControlled
 		{
 			this.colorSkin = TankModels.fixed;
 			this.emblem = "emblems/x.png";
-			this.emblemR = 50;
-			this.emblemG = 25;
+			this.emblemColor.red = 50;
+			this.emblemColor.green = 25;
 			this.coinValue = 0;
 		}
 

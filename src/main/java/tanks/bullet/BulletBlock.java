@@ -127,15 +127,15 @@ public class BulletBlock extends BulletArc
         int y = (int) (this.posY / Game.tile_size);
 
         ObstacleStackable o = new ObstacleStackable("normal", x, y);
-        o.colorR = this.originalOutlineColorR;
-        o.colorG = this.originalOutlineColorG;
-        o.colorB = this.originalOutlineColorB;
+        o.colorR = this.originalOutlineColor.red;
+        o.colorG = this.originalOutlineColor.green;
+        o.colorB = this.originalOutlineColor.blue;
 
         for (int i = 0; i < o.stackColorR.length; i++)
         {
-            o.stackColorR[i] = this.originalOutlineColorR;
-            o.stackColorG[i] = this.originalOutlineColorG;
-            o.stackColorB[i] = this.originalOutlineColorB;
+            o.stackColorR[i] = this.originalOutlineColor.red;
+            o.stackColorG[i] = this.originalOutlineColor.green;
+            o.stackColorB[i] = this.originalOutlineColor.blue;
         }
 
         o.update = true;
@@ -164,7 +164,7 @@ public class BulletBlock extends BulletArc
     public void drawCursor(double frac, double x, double y)
     {
         double f2 = Math.max(0, (this.maxDestroyTimer - this.destroyTimer) / this.maxDestroyTimer);
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * f2 * 255);
+        Drawing.drawing.setColor(this.outlineColor, frac * f2 * 255);
         Crate.fillOutlineRect(x, y, Game.tile_size * (2 - frac) * f2);
         Crate.fillOutlineRect(x, y, Game.tile_size * (frac) * f2);
     }
@@ -264,7 +264,7 @@ public class BulletBlock extends BulletArc
             size = Game.tile_size * Math.max((this.maxDestroyTimer - this.destroyTimer) / this.maxDestroyTimer, 0);
         }
 
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
+        Drawing.drawing.setColor(this.outlineColor);
 
         // todo 2d
         if (Game.enable3d)
@@ -297,7 +297,7 @@ public class BulletBlock extends BulletArc
         {
             double opacity = 1.0 - Math.min(this.posZ / 1000, 0.8);
             double sizeModifier = (1.0 - opacity) * 60 * (size / Bullet.bullet_size);
-            Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255);
+            Drawing.drawing.setColor(this.outlineColor, opacity * opacity * opacity * 255);
             Drawing.drawing.fillRect(this.posX, this.posY, size + sizeModifier, size + sizeModifier);
         }
         //Drawing.drawing.fillBox(this.posX, this.posY, this.posZ - size / 2, size, size, size);
@@ -340,7 +340,7 @@ public class BulletBlock extends BulletArc
                 Drawing.drawing.playGlobalSound("break.ogg");
 
                 if (Game.enable3d)
-                    ObstacleStackable.destroyAnimation3d(this.posX, this.posY, this.posZ - Game.tile_size / 2, this.posX - this.vX, this.posY - this.vY, Game.tile_size, Effect.EffectType.obstaclePiece3d, Game.tile_size, Game.effectMultiplier, this.originalOutlineColorR, this.originalOutlineColorG, this.originalOutlineColorB);
+                    ObstacleStackable.destroyAnimation3d(this.posX, this.posY, this.posZ - Game.tile_size / 2, this.posX - this.vX, this.posY - this.vY, Game.tile_size, Effect.EffectType.obstaclePiece3d, Game.tile_size, Game.effectMultiplier, this.originalOutlineColor.red, this.originalOutlineColor.green, this.originalOutlineColor.blue);
 
                 this.outOfBounds = true;
             }

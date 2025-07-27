@@ -508,12 +508,8 @@ public class Arcade extends Minigame
         TankPlayer t = new TankPlayer(this.playerSpawnsX.get(r), this.playerSpawnsY.get(r), this.playerSpawnsAngle.get(r));
         t.team = Game.playerTeamNoFF;
         t.player = p;
-        t.colorR = p.colorR;
-        t.colorG = p.colorG;
-        t.colorB = p.colorB;
-        t.secondaryColorR = p.colorR2;
-        t.secondaryColorG = p.colorG2;
-        t.secondaryColorB = p.colorB2;
+        t.color.set(p.color);
+        t.secondaryColor.set(p.color2);
         double h = this.random.nextDouble() * 400 + 800;
         Game.movables.add(new Crate(t, h));
         Game.eventsOut.add(new EventAirdropTank(t, h));

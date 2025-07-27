@@ -1,5 +1,6 @@
 package tanks.network;
 
+import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.Charset;
@@ -35,5 +36,19 @@ public class NetworkUtils
 		
 		b.writeInt(s.length() + extra);
 		b.writeCharSequence(s, charset);
+	}
+
+	public static void readColor(ByteBuf b, Color c)
+	{
+		c.red = b.readDouble();
+		c.green = b.readDouble();
+		c.blue = b.readDouble();
+	}
+
+	public static void writeColor(ByteBuf b, Color c)
+	{
+		b.writeDouble(c.red);
+		b.writeDouble(c.green);
+		b.writeDouble(c.blue);
 	}
 }

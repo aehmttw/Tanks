@@ -295,6 +295,18 @@ public class Button implements IDrawable, ITrigger
 	}
 
 	@Override
+	public double getPositionX()
+	{
+		return this.posX;
+	}
+
+	@Override
+	public double getPositionY()
+	{
+		return this.posY;
+	}
+
+	@Override
 	public InputBindingGroup getKeybind()
 	{
 		return keybind;

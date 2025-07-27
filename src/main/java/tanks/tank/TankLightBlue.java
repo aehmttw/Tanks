@@ -32,9 +32,7 @@ public class TankLightBlue extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/pinwheel.png";
-			this.emblemR = this.secondaryColorR;
-			this.emblemG = this.secondaryColorG;
-			this.emblemB = this.secondaryColorB;
+			this.emblemColor.set(this.secondaryColor);
 		}
 
 		this.description = "A tank which blows strong gusts of air";

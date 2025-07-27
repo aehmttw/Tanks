@@ -303,7 +303,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.setInterfaceFontSize(24);
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "This level is not automatically drawn because");
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "it is large (size: %dx%d, tanks: %d) and may lag the game.", this.queuedLevel.sizeX, this.queuedLevel.sizeY, this.queuedLevel.tanks.length);
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "it is large (size: %dx%d, tanks: %d) and may lag the game.", this.queuedLevel.sizeX, this.queuedLevel.sizeY, this.queuedLevel.tanks.size());
                 this.reveal.draw();
             }
 

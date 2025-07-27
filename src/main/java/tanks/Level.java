@@ -96,74 +96,68 @@ public class Level
 
 		this.levelString = level.replaceAll("\u0000", "");
 
-		int parsing = 0;
+		//Look Ahead Split (keeping the delimiter with the associated block)
+		String[] blocks = this.levelString.split("(?=(level|items|shop|coins|tanks|builds)\n)");
 
-		String[] lines = this.levelString.split("\n");
-
-		for (String s: lines)
+		for (String s: blocks)
 		{
-			switch (s.toLowerCase())
+			if (s.startsWith("items\n"))
 			{
-				case "level":
-					parsing = 0;
-					break;
-				case "items":
-					parsing = 1;
-					break;
-				case "shop":
-					parsing = 2;
-					break;
-				case "coins":
-					parsing = 3;
-					break;
-				case "tanks":
-					parsing = 4;
-					break;
-				case "builds":
-					parsing = 5;
-					break;
-				default:
-					if (parsing == 0)
-					{
-						preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
-						screen = preset[0].split(",");
-						obstaclesPos = preset[1].split(",");
-						tanks = preset[2].split(",");
+				s = s.substring("items\n".length());
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects)
+					this.startingItems.add(Item.ItemStack.fromString(null, o));
+			}
+			else if (s.startsWith("shop\n"))
+			{
+				s = s.substring("shop\n".length());
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects)
+					this.shop.add(Item.ShopItem.fromString(o));
+			}
+			else if (s.startsWith("coins\n"))
+			{
+				s = s.substring("coins\n".length());
+				this.startingCoins = Integer.parseInt(s);
+			}
+			else if (s.startsWith("tanks\n"))
+			{
+				s = s.substring("tanks\n".length());
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects) {
+					TankAIControlled t = TankAIControlled.fromString(o);
+					if (t != null)
+						this.customTanks.add(t);
+				}
+			} else if (s.startsWith("builds\n"))
+			{
+				s = s.substring("builds\n".length());
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects) {
+					TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(o);
+					t.enableTertiaryColor = true;
+					this.playerBuilds.add(t);
+				}
+			} else {
+				if (s.startsWith("level\n")) {
+					s = s.substring("level\n".length());
+				}
+				preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
+				screen = preset[0].split(",");
+				obstaclesPos = preset[1].split(",");
+				tanks = preset[2].split(",");
 
-						if (preset.length >= 4)
-						{
-							teams = preset[3].split(",");
-							enableTeams = true;
-						}
+				if (preset.length >= 4)
+				{
+					teams = preset[3].split(",");
+					enableTeams = true;
+				}
 
-						if (screen[0].startsWith("*"))
-						{
-							editable = false;
-							screen[0] = screen[0].substring(1);
-						}
-					}
-					else if (parsing == 4)
-					{
-						TankAIControlled t = TankAIControlled.fromString(s);
-						if (t != null)
-							this.customTanks.add(t);
-					}
-					else if (parsing == 5)
-					{
-						TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(s);
-						t.enableTertiaryColor = true;
-						this.playerBuilds.add(t);
-					}
-					else
-					{
-						if (parsing == 1)
-							this.startingItems.add(Item.ItemStack.fromString(null, s));
-						else if (parsing == 2)
-							this.shop.add(Item.ShopItem.fromString(s));
-						else
-							this.startingCoins = Integer.parseInt(s);
-					}
-					break;
+				if (screen[0].startsWith("*"))
+				{
+					editable = false;
+					screen[0] = screen[0].substring(1);
+				}
 			}
 		}
 
@@ -213,6 +207,30 @@ public class Level
 			this.startingItems = new ArrayList<>();
 			this.shop = new ArrayList<>();
 		}
+	}
+
+	private static ArrayList<String> getJsonObjects(String s) {
+		int depth = 0;
+		int last = 0;
+		ArrayList<String> out = new ArrayList<>();
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) == '{') {
+				if (depth == 0 && !s.substring(last, i).trim().isEmpty()) {
+					out.add(s.substring(last, i));
+					last = i;
+				}
+				depth++;
+			}
+			else if (s.charAt(i) == '}') {
+				depth--;
+				if (depth == 0 && !s.substring(last, i + 1).trim().isEmpty()) {
+					out.add(s.substring(last, i + 1));
+					last = i + 1;
+				}
+			}
+
+		}
+		return out;
 	}
 
 	public void loadLevel()
@@ -836,5 +854,100 @@ public class Level
 	public boolean isLarge()
 	{
 		return !(this.sizeX * this.sizeY <= 100000 && this.tanks.length < 500);
+	}
+
+	public String stripFormatting()
+	{
+		String jsoncString = this.levelString;
+		if (jsoncString == null || jsoncString.isEmpty())
+		{
+			return jsoncString;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		boolean inString = false;
+		boolean inSingleLineComment = false;
+		boolean inMultiLineComment = false;
+
+		for (int i = 0; i < jsoncString.length(); i++)
+		{
+			char c = jsoncString.charAt(i);
+
+			if (inString)
+			{
+				sb.append(c);
+				if (c == '"')
+				{
+					// A quote is unescaped if it's not preceded by an odd number of backslashes.
+					int backslashes = 0;
+					for (int j = i - 1; j >= 0; j--)
+					{
+						if (jsoncString.charAt(j) == '\\')
+							backslashes++;
+						else
+							break;
+					}
+
+					if (backslashes % 2 == 0)
+						inString = false;
+				}
+			}
+			else if (inSingleLineComment)
+			{
+				if (c == '\n')
+					inSingleLineComment = false;
+			}
+			else if (inMultiLineComment)
+			{
+				// Check for end of multi-line comment: */
+				if (c == '*' && i + 1 < jsoncString.length() && jsoncString.charAt(i + 1) == '/')
+				{
+					inMultiLineComment = false;
+					i++; // Also skip the '/'
+				}
+			}
+			else
+			{
+				// Not in any special state, check for transitions or valid characters
+				if (c == '"')
+				{
+					inString = true;
+					sb.append(c);
+				}
+				else if (c == '/' && i + 1 < jsoncString.length())
+				{
+					char next = jsoncString.charAt(i + 1);
+					if (next == '/')
+					{
+						inSingleLineComment = true;
+						i++; // Also skip the second '/'
+					}
+					else if (next == '*')
+					{
+						inMultiLineComment = true;
+						i++; // Also skip the '*'
+					}
+					else
+					{
+						// It's a valid character (e.g. in a URL), not a comment start.
+						sb.append(c);
+					}
+				}
+				else if (!Character.isWhitespace(c))
+				{
+					sb.append(c);
+				}
+				// else, it's insignificant whitespace, so we ignore it
+			}
+		}
+
+		String ir = sb.toString();
+		ArrayList<String> objects = getJsonObjects(ir);
+		String out = "";
+		for (String o : objects) {
+			out += "\n" + o;
+		}
+
+		return out.substring(1);
 	}
 }

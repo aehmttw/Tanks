@@ -187,6 +187,23 @@ public class Level
 			}
 		}
 
+		if (screen.length >= 9)
+		{
+			int length = Integer.parseInt(screen[8]) * 100;
+
+			if (length > 0)
+			{
+				this.timed = true;
+				this.timer = length;
+			}
+		}
+
+		if (screen.length >= 11)
+		{
+			light = Integer.parseInt(screen[9]) / 100.0;
+			shadow = Integer.parseInt(screen[10]) / 100.0;
+		}
+
 		for (int i = 0; i < this.shop.size(); i++)
 		{
 			this.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
@@ -330,23 +347,6 @@ public class Level
 		}
 
 		currentCloudCount = (int) (Math.random() * (double) this.sizeX / 10.0D + Math.random() * (double) this.sizeY / 10.0D);
-
-		if (screen.length >= 9)
-		{
-			int length = Integer.parseInt(screen[8]) * 100;
-
-			if (length > 0)
-			{
-				this.timed = true;
-				this.timer = length;
-			}
-		}
-
-		if (screen.length >= 11)
-		{
-			light = Integer.parseInt(screen[9]) / 100.0;
-			shadow = Integer.parseInt(screen[10]) / 100.0;
-		}
 
 		if (sc instanceof ScreenLevelEditor)
 		{

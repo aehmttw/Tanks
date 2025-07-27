@@ -80,9 +80,9 @@ public class Chunk
             for (int j = 0; j < l.sizeY; j++)
             {
                 Tile t = new Tile();
-                t.colR = l.colorR + var * tilesRandom.nextDouble() * l.colorVarR;
-                t.colG = l.colorG + var * tilesRandom.nextDouble() * l.colorVarG;
-                t.colB = l.colorB + var * tilesRandom.nextDouble() * l.colorVarB;
+                t.colR = l.color.red + var * tilesRandom.nextDouble() * l.colorVar.red;
+                t.colG = l.color.green + var * tilesRandom.nextDouble() * l.colorVar.green;
+                t.colB = l.color.blue + var * tilesRandom.nextDouble() * l.colorVar.blue;
                 t.depth = Game.enable3dBg ? tilesRandom.nextDouble() * TILE_DEPTH_VARIATION * var : 0;
                 Game.tiles[i][j] = t;
             }

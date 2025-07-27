@@ -2114,11 +2114,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				System.err.println("A movable's position became NaN! " + m);
 				Game.movables.add(new MovableNaN(m.lastPosX, m.lastPosY));
 			}
-			else if (m instanceof ISolidObject && !(m instanceof Tank && !((Tank) m).currentlyTargetable))
+			else if (!m.disableRayCollision())
 			{
-				Game.horizontalFaces.addAll(Arrays.asList(((ISolidObject) m).getHorizontalFaces()));
+				Game.horizontalFaces.addAll(Arrays.asList(m.getHorizontalFaces()));
 
-				Game.verticalFaces.addAll(Arrays.asList(((ISolidObject) m).getVerticalFaces()));
+				Game.verticalFaces.addAll(Arrays.asList(m.getVerticalFaces()));
 			}
 		}
 

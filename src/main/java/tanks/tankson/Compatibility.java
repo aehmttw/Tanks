@@ -5,9 +5,11 @@ import tanks.BiConsumer;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
+import tanks.bullet.BulletGas;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.tank.Mine;
+import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankModels;
 
@@ -121,17 +123,18 @@ public class Compatibility
                 ((Bullet) owner).effect.glowSize = (double) value;
         });
 
-        for (String s: new String[]{"color_*", "color_*2", "color_*3", "emblem_*"})
+        for (String s: new String[]{"color_*", "color_*2", "color_*3", "emblem_*", "color_noise_*"})
         {
             for (String c: new String[]{"r", "g", "b"})
             {
                 String name = s.replace("*", c);
                 unused_table.put(name, (owner, value) ->
                 {
-                    if (owner instanceof TankAIControlled)
+                    Color col = null;
+
+                    if (owner instanceof Tank)
                     {
-                        TankAIControlled t = (TankAIControlled) owner;
-                        Color col = null;
+                        Tank t = (Tank) owner;
                         if (s.equals("color_*"))
                             col = t.color;
                         else if (s.equals("color_*2"))
@@ -140,7 +143,22 @@ public class Compatibility
                             col = t.tertiaryColor;
                         else if (s.equals("emblem_*"))
                             col = t.emblemColor;
+                    }
+                    else if (owner instanceof Bullet)
+                    {
+                        Bullet b = (Bullet) owner;
+                        if (s.equals("color_*"))
+                            col = b.baseColor;
+                        else if (s.equals("color_*2"))
+                            col = b.outlineColor;
+                        else if (s.equals("color_noise_*") && b instanceof BulletGas)
+                            col = ((BulletGas) b).noise;
+                    }
+                    else
+                        throw new RuntimeException("Uh oh, could not convert " + owner + "'s field " + name);
 
+                    if (col != null)
+                    {
                         if (c.equals("r"))
                             col.red = (double) value;
                         else if (c.equals("g"))

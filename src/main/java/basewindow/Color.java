@@ -12,6 +12,14 @@ public class Color
         this.alpha = 255;
     }
 
+    public Color(double r, double g, double b)
+    {
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.alpha = 255;
+    }
+
     public Color(double r, double g, double b, double a)
     {
         this.red = r;

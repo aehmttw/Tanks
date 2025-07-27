@@ -11,7 +11,7 @@ import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
 
-public abstract class Movable extends GameObject implements IDrawableForInterface
+public abstract class Movable extends SolidGameObject implements IDrawableForInterface
 {
 	private EffectManager em;
 
@@ -96,6 +96,12 @@ public abstract class Movable extends GameObject implements IDrawableForInterfac
 	public void initEffectManager(EffectManager em)
 	{
 
+	}
+
+	@Override
+	public double getSize()
+	{
+		return 0;
 	}
 
 	/** Alias for {@link #getEffectManager()} */

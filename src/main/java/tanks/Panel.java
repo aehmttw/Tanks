@@ -830,6 +830,8 @@ public class Panel
 				((TankNPC) m).drawMessage();
 		}
 
+		Chunk.drawDebugStuff();
+
 		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 
 		if (!(Game.screen instanceof ScreenExit || Game.screen instanceof ScreenIntro))

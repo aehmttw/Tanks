@@ -69,21 +69,21 @@ public class EventChangeBackgroundColor extends PersonalEvent
         else
             l = new Level("{28,18||0-0-player}");
 
-        l.colorR = this.colorR;
-        l.colorG = this.colorG;
-        l.colorB = this.colorB;
+        l.color.red = this.colorR;
+        l.color.green = this.colorG;
+        l.color.blue = this.colorB;
 
         if (this.noiseR >= 0 && this.noiseG >= 0 && this.noiseB >= 0)
         {
-            l.colorVarR = this.noiseR;
-            l.colorVarG = this.noiseG;
-            l.colorVarB = this.noiseB;
+            l.colorVar.red = this.noiseR;
+            l.colorVar.green = this.noiseG;
+            l.colorVar.blue = this.noiseB;
         }
         else
         {
-            l.colorVarR = Math.min(20, 255 - l.colorR);
-            l.colorVarG = Math.min(20, 255 - l.colorG);
-            l.colorVarB = Math.max(20, 255 - l.colorB);
+            l.colorVar.red = Math.min(20, 255 - l.color.red);
+            l.colorVar.green = Math.min(20, 255 - l.color.green);
+            l.colorVar.blue = Math.max(20, 255 - l.color.blue);
         }
 
         l.reloadTiles();

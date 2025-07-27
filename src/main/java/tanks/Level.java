@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.Color;
+import main.Tanks;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -18,8 +19,10 @@ public class Level
 {
 	public String levelString;
 
-	public String[] preset, screen, obstaclesPos, tanks, teams;
+	public ArrayList<Tank> tanks;
+	ArrayList<Tank> tanksToRemove;
 	public Team[] tankTeams;
+	public ArrayList<Obstacle> obstacles;
 	public boolean enableTeams = false;
 
 	public static Color currentColor = new Color(235,207,166);
@@ -92,6 +95,8 @@ public class Level
 	 */
 	public Level(String level)
 	{
+		String[] preset = new String[0], screen = new String[0], obstaclesPos = new String[0], tanks = new String[0], teams;
+
 		if (ScreenPartyHost.isServer)
 			this.startTime = Game.partyStartTime;
 
@@ -99,6 +104,8 @@ public class Level
 
 		//Look Ahead Split (keeping the delimiter with the associated block)
 		String[] blocks = this.levelString.split("(?=(level|items|shop|coins|tanks|builds)\n)");
+		obstacles = new ArrayList<Obstacle>();
+		this.tanks = new ArrayList<Tank>();
 
 		for (String s: blocks)
 		{
@@ -236,125 +243,6 @@ public class Level
 			shadow = (int) Double.parseDouble(screen[10]) / 100.0;
 		}
 
-		for (int i = 0; i < this.shop.size(); i++)
-		{
-			this.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
-		}
-
-		for (int i = 0; i < this.startingItems.size(); i++)
-		{
-			this.itemNumbers.put(this.startingItems.get(i).item.name, this.shop.size() + i + 1);
-		}
-
-		if (ScreenPartyLobby.isClient)
-		{
-			this.clientStartingCoins = this.startingCoins;
-			this.clientStartingItems = this.startingItems;
-			this.clientShop = this.shop;
-
-			this.startingCoins = 0;
-			this.startingItems = new ArrayList<>();
-			this.shop = new ArrayList<>();
-		}
-	}
-
-	private static ArrayList<String> getJsonObjects(String s) {
-		int depth = 0;
-		int last = 0;
-		ArrayList<String> out = new ArrayList<>();
-		for (int i = 0; i < s.length(); i++) {
-			if (s.charAt(i) == '{') {
-				if (depth == 0 && !s.substring(last, i).trim().isEmpty()) {
-					out.add(s.substring(last, i));
-					last = i;
-				}
-				depth++;
-			}
-			else if (s.charAt(i) == '}') {
-				depth--;
-				if (depth == 0 && !s.substring(last, i + 1).trim().isEmpty()) {
-					out.add(s.substring(last, i + 1));
-					last = i + 1;
-				}
-			}
-
-		}
-		return out;
-	}
-
-	public void loadLevel()
-	{
-		loadLevel(null);
-	}
-
-	public void loadLevel(boolean remote)
-	{
-		loadLevel(null, remote);
-	}
-
-	public void loadLevel(ILevelPreviewScreen s)
-	{
-		loadLevel(s, false);
-	}
-
-	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
-	{
-		int currentCrusadeID = 0;
-
-		if (Game.deterministicMode)
-			random = new Random(Game.seed);
-		else
-			random = new Random(tilesRandomSeed);
-
-		if (ScreenPartyHost.isServer)
-			ScreenPartyHost.includedPlayers.clear();
-		else if (ScreenPartyLobby.isClient)
-			ScreenPartyLobby.includedPlayers.clear();
-
-		if (sc == null)
-			Obstacle.draw_size = 0;
-		else
-			Obstacle.draw_size = 50;
-
-		Chunk.Tile ft = Chunk.Tile.fallbackTile;
-		ft.colR = color.red;
-		ft.colG = color.green;
-		ft.colB = color.blue;
-
-		this.remote = remote;
-
-		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
-			Game.eventsOut.add(new EventLoadLevel(this));
-
-		LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
-		for (TankAIControlled t : this.customTanks)
-			customTanksMap.put(t.name, t);
-
-		Tank.currentID = 0;
-		Tank.freeIDs.clear();
-
-		Game.currentLevel = this;
-		Game.currentLevelString = this.levelString;
-
-		ScreenGame.finishedQuick = false;
-
-		ScreenGame.finished = false;
-		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
-
-		currentCloudCount = (int) (Math.random() * (double) this.sizeX / 10.0D + Math.random() * (double) this.sizeY / 10.0D);
-
-		if (sc instanceof ScreenLevelEditor)
-		{
-			ScreenLevelEditor s = (ScreenLevelEditor) sc;
-
-			s.level = this;
-
-			s.selectedTiles = new boolean[sizeX][sizeY];
-			Game.movables.remove(Game.playerTank);
-		}
-
-		this.reloadTiles();
-
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
 		{
 			for (String obstaclesPo : obstaclesPos)
@@ -408,13 +296,20 @@ public class Level
 							this.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
 						}
 
-						Game.addObstacle(o, false);
+						obstacles.add(o);
 					}
 				}
 			}
 		}
 
-		ArrayList<Tank> tanksToRemove = new ArrayList<>();
+		int currentCrusadeID = 0;
+		LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
+		for (TankAIControlled t : this.customTanks)
+			customTanksMap.put(t.name, t);
+
+		tanksToRemove = new ArrayList<>();
+		Game.currentLevel = this;
+		Game.currentLevelString = this.levelString;
 
 		if (!preset[2].isEmpty())
 		{
@@ -484,17 +379,134 @@ public class Level
 				t.networkID = Tank.nextFreeNetworkID();
 				Tank.idMap.put(t.networkID, t);
 
-				if (sc != null)
-					t.drawAge = 50;
-
 				if (remote)
-					Game.movables.add(new TankRemote(t));
+					this.tanks.add(new TankRemote(t));
 				else
 				{
-					Game.movables.add(t);
+					this.tanks.add(t);
 					setSolidTank((int) Double.parseDouble(tank[0]), (int) Double.parseDouble(tank[1]), true);
 				}
 			}
+		}
+
+		for (int i = 0; i < this.shop.size(); i++)
+		{
+			this.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
+		}
+
+		for (int i = 0; i < this.startingItems.size(); i++)
+		{
+			this.itemNumbers.put(this.startingItems.get(i).item.name, this.shop.size() + i + 1);
+		}
+
+		if (ScreenPartyLobby.isClient)
+		{
+			this.clientStartingCoins = this.startingCoins;
+			this.clientStartingItems = this.startingItems;
+			this.clientShop = this.shop;
+
+			this.startingCoins = 0;
+			this.startingItems = new ArrayList<>();
+			this.shop = new ArrayList<>();
+		}
+	}
+
+	private static ArrayList<String> getJsonObjects(String s) {
+		int depth = 0;
+		int last = 0;
+		ArrayList<String> out = new ArrayList<>();
+		for (int i = 0; i < s.length(); i++) {
+			if (s.charAt(i) == '{') {
+				if (depth == 0 && !s.substring(last, i).trim().isEmpty()) {
+					out.add(s.substring(last, i));
+					last = i;
+				}
+				depth++;
+			}
+			else if (s.charAt(i) == '}') {
+				depth--;
+				if (depth == 0 && !s.substring(last, i + 1).trim().isEmpty()) {
+					out.add(s.substring(last, i + 1));
+					last = i + 1;
+				}
+			}
+
+		}
+		return out;
+	}
+
+	public void loadLevel()
+	{
+		loadLevel(null);
+	}
+
+	public void loadLevel(boolean remote)
+	{
+		loadLevel(null, remote);
+	}
+
+	public void loadLevel(ILevelPreviewScreen s)
+	{
+		loadLevel(s, false);
+	}
+
+	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
+	{
+		if (Game.deterministicMode)
+			random = new Random(Game.seed);
+		else
+			random = new Random(tilesRandomSeed);
+
+		if (ScreenPartyHost.isServer)
+			ScreenPartyHost.includedPlayers.clear();
+		else if (ScreenPartyLobby.isClient)
+			ScreenPartyLobby.includedPlayers.clear();
+
+		if (sc == null)
+			Obstacle.draw_size = 0;
+		else
+			Obstacle.draw_size = 50;
+
+		Chunk.Tile ft = Chunk.Tile.fallbackTile;
+		ft.colR = color.red;
+		ft.colG = color.green;
+		ft.colB = color.blue;
+
+		this.remote = remote;
+
+		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
+			Game.eventsOut.add(new EventLoadLevel(this));
+
+		Tank.currentID = 0;
+		Tank.freeIDs.clear();
+
+		ScreenGame.finishedQuick = false;
+
+		ScreenGame.finished = false;
+		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
+
+		currentCloudCount = (int) (Math.random() * (double) this.sizeX / 10.0D + Math.random() * (double) this.sizeY / 10.0D);
+
+		if (sc instanceof ScreenLevelEditor)
+		{
+			ScreenLevelEditor s = (ScreenLevelEditor) sc;
+
+			s.level = this;
+
+			s.selectedTiles = new boolean[sizeX][sizeY];
+			Game.movables.remove(Game.playerTank);
+		}
+
+		this.reloadTiles();
+
+		for (Obstacle o : obstacles) {
+			Game.addObstacle(o, false);
+		}
+
+		for (Tank t : tanks) {
+			if (sc != null)
+				t.drawAge = 50;
+			Game.movables.add(t);
 		}
 
 		this.availablePlayerSpawns.clear();
@@ -516,8 +528,6 @@ public class Level
 			if (playerCount % playerSpawnsX.size() != 0)
 				extraSpawns++;
 		}
-
-		System.out.println(extraSpawns);
 
 		int spawns = playerSpawnsX.size();
 
@@ -850,7 +860,7 @@ public class Level
 
 	public boolean isLarge()
 	{
-		return !(this.sizeX * this.sizeY <= 100000 && this.tanks.length < 500);
+		return !(this.sizeX * this.sizeY <= 100000 && this.tanks.size() < 500);
 	}
 
 	public String stripFormatting()

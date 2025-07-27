@@ -281,7 +281,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	);
 
 	Button restartLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart level", () ->
-            restart.function.run()
+			restart.function.run()
 	);
 
 	Button restartTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart tutorial", () ->
@@ -1128,7 +1128,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 					this.musicID = "battle";
 
-                    if (Level.isDark())
+					if (Level.isDark())
 						this.musicID = "battle_night";
 				}
 			}
@@ -2038,7 +2038,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		ModAPI.menuGroup.removeAll(ModAPI.removeMenus);
 
 		for (Obstacle o: Game.removeObstacles)
-            Game.removeObstacle(o);
+			Game.removeObstacle(o);
 
 		for (Effect e: Game.removeEffects)
 		{
@@ -2315,30 +2315,30 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			for (Movable m: Movable.getMovablesInRadius(x, y, Game.tile_size * 4))
 			{
-                if (!(m instanceof Tank) || m.destroy || ((Tank) m).hidden || spectatingTank == m)
-                    continue;
+				if (!(m instanceof Tank) || m.destroy || ((Tank) m).hidden || spectatingTank == m)
+					continue;
 
-                double ix = Drawing.drawing.gameToInterfaceCoordsX(m.posX);
-                double iy = Drawing.drawing.gameToInterfaceCoordsY(m.posY);
+				double ix = Drawing.drawing.gameToInterfaceCoordsX(m.posX);
+				double iy = Drawing.drawing.gameToInterfaceCoordsY(m.posY);
 
-                if (Movable.distanceBetween(x, y, m.posX, m.posY) < ((Tank) m).size + Game.tile_size / 2)
-                {
-                    Drawing.drawing.setColor(((Tank) m).colorR, ((Tank) m).colorG, ((Tank) m).colorB);
-                    Mine.drawRange2D(m.posX, m.posY, ((Tank) m).size + Game.tile_size / 2);
-                    Drawing.drawing.setColor(255, 255, 255, 255, 255);
-                    Drawing.drawing.drawInterfaceImage("icons/shown.png", ix, iy, Game.tile_size, Game.tile_size);
+				if (Movable.distanceBetween(x, y, m.posX, m.posY) < ((Tank) m).size + Game.tile_size / 2)
+				{
+					Drawing.drawing.setColor(((Tank) m).color);
+					Mine.drawRange2D(m.posX, m.posY, ((Tank) m).size + Game.tile_size / 2);
+					Drawing.drawing.setColor(255, 255, 255, 255, 255);
+					Drawing.drawing.drawInterfaceImage("icons/shown.png", ix, iy, Game.tile_size, Game.tile_size);
 
-                    if (Level.isDark())
-                        Drawing.drawing.setColor(255, 255, 255, 255, 255);
-                    else
-                        Drawing.drawing.setColor(0, 0, 0);
+					if (Level.isDark())
+						Drawing.drawing.setColor(255, 255, 255, 255, 255);
+					else
+						Drawing.drawing.setColor(0, 0, 0);
 
-                    Drawing.drawing.setInterfaceFontSize(12);
-                    Drawing.drawing.drawInterfaceText(ix, iy - Game.tile_size, "Click to spectate tank");
+					Drawing.drawing.setInterfaceFontSize(12);
+					Drawing.drawing.drawInterfaceText(ix, iy - Game.tile_size, "Click to spectate tank");
 
-                    break;
-                }
-            }
+					break;
+				}
+			}
 
 
 			if (spectatingTank != null)
@@ -2346,7 +2346,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				double ix = Drawing.drawing.gameToInterfaceCoordsX(spectatingTank.posX);
 				double iy = Drawing.drawing.gameToInterfaceCoordsY(spectatingTank.posY);
 
-				Drawing.drawing.setColor(spectatingTank.colorR, spectatingTank.colorG, spectatingTank.colorB, 127);
+				Drawing.drawing.setColor(spectatingTank.color, 127);
 				Drawing.drawing.drawInterfaceImage("cursor.png", ix, iy, Game.tile_size * 3, Game.tile_size * 3);
 			}
 
@@ -2440,7 +2440,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	@Override
 	public void draw()
 	{
-        this.showDefaultMouse = !(((!this.paused && !this.npcShopScreen) && this.playing && Game.angledView || Game.firstPerson));
+		this.showDefaultMouse = !(((!this.paused && !this.npcShopScreen) && this.playing && Game.angledView || Game.firstPerson));
 
 
 		this.setPerspective();
@@ -2473,10 +2473,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				drawables[o.drawLevel].add(o);
 
 		for (Effect e: Game.effects)
-            drawables[e.drawLevel].add(e);
+			drawables[e.drawLevel].add(e);
 
 		for (Cloud c: Game.clouds)
-            drawables[c.drawLevel].add(c);
+			drawables[c.drawLevel].add(c);
 
 		for (int i = 0; i < this.drawables.length; i++)
 		{
@@ -2592,7 +2592,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			}
 		}
 
-        if (Panel.darkness > 0)
+		if (Panel.darkness > 0)
 		{
 			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
 			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
@@ -2824,9 +2824,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 									name = cp.username;
 
 								Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, name);
-								Drawing.drawing.setColor(cp.teamColorR, cp.teamColorG, cp.teamColorB, opacity);
+								Drawing.drawing.setColor(cp.teamColor, opacity);
 								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, name);
-								Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.colorR, cp.colorG, cp.colorB, cp.colorR2, cp.colorG2, cp.colorB2, cp.colorR3, cp.colorG3, cp.colorB3, opacity / 255 * 25);
+								Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.color, cp.color2, cp.color3, opacity / 255 * 25);
 							}
 						}
 					}

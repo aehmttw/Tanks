@@ -1159,7 +1159,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 				if (dist > farthestInSight)
 				{
-					Ray r = new Ray(this.posX, this.posY, 0, 0, this);
+					Ray r = Ray.newRay(this.posX, this.posY, 0, 0, this);
 					r.vX = m.posX - this.posX;
 					r.vY = m.posY - this.posY;
 

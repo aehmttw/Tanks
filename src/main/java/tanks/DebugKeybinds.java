@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.gui.ChatMessage;
 import tanks.gui.ScreenElement;
 import tanks.gui.screen.ScreenCrusadeDetails;
-import tanks.gui.screen.ScreenOverlayChat;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
@@ -26,34 +25,15 @@ public class DebugKeybinds
 {
     public static void drawAndUpdate()
     {
-        if (Game.game.window.drawingShadow || !Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_ALT))
+        if (Game.game.window.drawingShadow || !Game.game.window.pressedKeys.contains(InputCodes.KEY_F3))
             return;
-
-        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_Q))
-        {
-            Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_Q);
-            ScreenOverlayChat.notify("Debug keybinds, press Left Alt with: \n " +
-                    "Q -> show help \n " +
-                    "B -> draw collision boxes \n " +
-                    "V -> reload tiles \n " +
-                    "K -> log pressed keys to console \n " +
-                    "D -> clear the chat \n " +
-                    "A -> reload terrain renderer \n " +
-                    "T -> reload shader \n " +
-                    "Hold -> show tile coordinates \n " +
-                    "Hold + S -> show mouse coordinates \n " +
-                    "Hold + Shift + S -> show offset mouse coordinates and scales \n " +
-                    "Hold + 1 -> show tile details \n " +
-                    "Hold + 2 -> show movable metadata \n " +
-                    "Hold + 3 -> show obstacle metadata \n " +
-                    "F12 -> Crash the game");
-        }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_B))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_B);
             Game.drawFaces = !Game.drawFaces;
-            ScreenOverlayChat.notify("Collision boxes: \u00a7255200000255" + (Game.drawFaces ? "shown" : "hidden"));
+            notifs.add(new ScreenElement.Notification("Collision boxes: \u00a7255200000255"
+                    + (Game.drawFaces ? "shown" : "hidden"), 200));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_V))
@@ -61,8 +41,18 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_V);
             if (Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
-            ScreenOverlayChat.notify(Game.currentLevel != null ? "Reloaded tiles" : "Reload tiles failed: " +
-                    "Game.\u00a7200125255255currentLevel\u00a7255255255255 = \u00a7255128128255null");
+            else
+                Chunk.populateChunks(Chunk.defaultLevel);
+            notifs.add(new ScreenElement.Notification(Game.currentLevel != null ? "Reloaded tiles with current level" :
+                    "Reloaded tiles with default level", 200));
+        }
+
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_G))
+        {
+            Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_G);
+            Chunk.debug = !Chunk.debug;
+            notifs.add(new ScreenElement.Notification("Chunk borders: \u00a7255200000255"
+                    + (Chunk.debug ? "shown" : "hidden"), 200));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_K))
@@ -73,7 +63,7 @@ public class DebugKeybinds
             System.out.println("pressedKeys: " + func.apply(Game.game.window.pressedKeys));
             System.out.println("validPressedKeys: " + func.apply(Game.game.window.validPressedKeys));
             System.out.println("textPressedKeys: " + func.apply(Game.game.window.textPressedKeys));
-            ScreenOverlayChat.notify("Pressed keys have been logged to the console");
+            notifs.add(new ScreenElement.Notification("Pressed keys have been logged to the console", 300));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_D))
@@ -103,14 +93,14 @@ public class DebugKeybinds
             if (!(Game.screen instanceof ScreenCrusadeDetails))
             {
                 Drawing.drawing.terrainRenderer.reset();
-                ScreenOverlayChat.notify("Terrain reloaded!");
+                notifs.add(new ScreenElement.Notification("Terrain reloaded!"));
             }
             else
-                ScreenOverlayChat.notify("Can't do that here!");
+                notifs.add(new ScreenElement.Notification("F3+A doesn't work here!"));
 
         }
 
-        // How to use: Run in debug mode -> Edit shader -> Rebuild (Ctrl/Cmd + F9) -> ALT+T
+        // How to use: Run in debug mode -> Edit shader -> Rebuild (Ctrl/Cmd + F9) -> F3+T
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_T))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_T);
@@ -143,7 +133,7 @@ public class DebugKeybinds
 
             Game.game.shaderInstances = newShaders;
             Drawing.drawing.terrainRenderer.reset();
-            ScreenOverlayChat.notify("Shaders reloaded! (Remember to rebuild)");
+            notifs.add(new ScreenElement.Notification("Shaders reloaded! (Remember to rebuild)"));
         }
 
         int brightness;
@@ -179,7 +169,7 @@ public class DebugKeybinds
 
             if (Game.game.window.pressedKeys.contains(InputCodes.KEY_1))
             {
-                Chunk.Tile t1 = Chunk.getTile(posX, posY);
+                Chunk.Tile t1 = Chunk.getTile2(posX, posY);
 
                 if (t1 != null)
                 {

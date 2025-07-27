@@ -2,7 +2,6 @@ package basewindow;
 
 import basewindow.transformation.*;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -287,7 +286,7 @@ public abstract class BaseWindow
 
     public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
 
-    public abstract BufferedImage screenshot(String dir) throws IOException;
+    public abstract void screenshot(String dir) throws IOException;
 
     public abstract void setForceModelGlow(boolean glow);
 

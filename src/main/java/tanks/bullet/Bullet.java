@@ -17,10 +17,7 @@ import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
-import tanks.tankson.ICopyable;
-import tanks.tankson.ITanksONEditable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1024,7 +1021,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public Ray getRay()
 	{
-		Ray r = new Ray(posX, posY, this.getAngleInDirection(this.posX + this.vX, this.posY + this.vY), this.bounces, tank);
+		Ray r = Ray.newRay(posX, posY, this.getAngleInDirection(this.posX + this.vX, this.posY + this.vY), this.bounces, tank);
 		r.size = this.size;
 		return r;
 	}
@@ -1058,7 +1055,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			if (nearest != null && !this.destroy)
 			{
 				double a = this.getAngleInDirection(nearest.posX, nearest.posY);
-				Ray r = new Ray(this.posX, this.posY, a, 0, this.tank);
+				Ray r = Ray.newRay(this.posX, this.posY, a, 0, this.tank);
 
 				if (this instanceof BulletArc || this instanceof BulletAirStrike)
 				{
@@ -1775,7 +1772,13 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	@Override
 	public boolean disableRayCollision()
 	{
-		return /*!bulletCollision()*/ true;		// temporary fix to avoid rays hitting a tank's own bullets
+		return !bulletCollision();
+	}
+
+	@Override
+	public boolean tankCollision()
+	{
+		return enableCollision && enableExternalCollisions;
 	}
 
 	@Override

@@ -736,7 +736,7 @@ public class TankAIControlled extends Tank implements ITankField
 					if (this.targetEnemy != null && !(b instanceof BulletInstant) && this.enablePredictiveFiring && (this.shootAIType == ShootAI.straight || straightShoot))
 						an = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
-					Ray a2 = new Ray(this.posX, this.posY, an, b.bounces, this);
+					Ray a2 = Ray.newRay(this.posX, this.posY, an, b.bounces, this);
 					a2.size = b.size;
 					a2.getTarget();
 					a2.ignoreDestructible = this.aimIgnoreDestructible;
@@ -808,7 +808,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void finalCheckAndShoot(double offset)
 	{
-		Ray a = new Ray(this.posX, this.posY, this.angle + offset, this.getBullet().bounces, this, 2.5);
+		Ray a = Ray.newRay(this.posX, this.posY, this.angle + offset, this.getBullet().bounces, this, 2.5);
 		a.size = this.getBullet().size;
 		a.moveOut(this.size / 2.5);
 
@@ -828,7 +828,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			double offset2 = (i - ((this.shotRoundCount - 1) / 2.0)) / this.shotRoundCount * (this.shotRoundSpread * Math.PI / 180);
 
-			Ray a = new Ray(this.posX, this.posY, this.angle + offset + offset2, this.getBullet().bounces, this, 2.5);
+			Ray a = Ray.newRay(this.posX, this.posY, this.angle + offset + offset2, this.getBullet().bounces, this, 2.5);
 			a.size = this.getBullet().size;
 			a.moveOut(this.size / 2.5);
 
@@ -969,7 +969,7 @@ public class TankAIControlled extends Tank implements ITankField
 				if (m instanceof Tank && !(m instanceof TankAIControlled && ((TankAIControlled) m).transformMimic) && (((Tank) m).getTopLevelPossessor() == null || !(((Tank) m).getTopLevelPossessor().getClass().equals(this.getClass())))
 						&& ((Tank) m).currentlyTargetable && GameObject.distanceBetween(m, this) < nearestDist && ((Tank) m).size == this.size && !m.destroy)
 				{
-					Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
+					Ray r = Ray.newRay(this.posX, this.posY, this.getAngleInDirection(m.posX, m.posY), 0, this);
 					r.moveOut(5);
 					if (r.getTarget() != m)
 						continue;
@@ -1143,7 +1143,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 			if (!this.overrideDirection && this.gentleTurnCooldown <= 0)
 			{
-				Ray d = new Ray(this.posX, this.posY, this.getPolarDirection(), 0, this, Game.tile_size);
+				Ray d = Ray.newRay(this.posX, this.posY, this.getPolarDirection(), 0, this, Game.tile_size);
 				d.size = Game.tile_size * this.hitboxSize - 1;
 
 				lastDistanceToWall = d.getDist();
@@ -1175,7 +1175,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 			for (double dir = 0; dir < 4; dir += 0.5)
 			{
-				Ray r = new Ray(this.posX, this.posY, dir * Math.PI / 2, 0, this, Game.tile_size);
+				Ray r = Ray.newRay(this.posX, this.posY, dir * Math.PI / 2, 0, this, Game.tile_size);
 				r.size = Game.tile_size * this.hitboxSize - 1;
 				double dist = r.getDist() / Game.tile_size;
 
@@ -1516,7 +1516,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 					for (int dir = 0; dir < count; dir++)
 					{
-						Ray r = new Ray(this.posX, this.posY, direction + fleeDirections[dir], 0, this, Game.tile_size);
+						Ray r = Ray.newRay(this.posX, this.posY, direction + fleeDirections[dir], 0, this, Game.tile_size);
 						r.size = Game.tile_size * this.hitboxSize - 1;
 
 						boolean b = this.targetEnemy != null && this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge && GameObject.absoluteAngleBetween(fleeDirections[dir] + direction, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY)) > Math.PI * 0.5;
@@ -1573,7 +1573,7 @@ public class TankAIControlled extends Tank implements ITankField
 					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off_dodge)
 					{
 						double a = nearest.getAngleInDirection(this.posX, this.posY);
-						Ray r = new Ray(this.posX, this.posY, a, 0, this, Game.tile_size);
+						Ray r = Ray.newRay(this.posX, this.posY, a, 0, this, Game.tile_size);
 						r.size = Game.tile_size * this.hitboxSize - 1;
 						double d = r.getDist();
 
@@ -1593,7 +1593,7 @@ public class TankAIControlled extends Tank implements ITankField
 						if (Math.abs(diff) < Math.PI / 4)
 							this.avoidDirection = direction + Math.signum(diff) * Math.PI / 4;
 
-						Ray r = new Ray(this.posX, this.posY, this.avoidDirection, 0, this, Game.tile_size);
+						Ray r = Ray.newRay(this.posX, this.posY, this.avoidDirection, 0, this, Game.tile_size);
 						r.size = Game.tile_size * this.hitboxSize - 1;
 						double d = r.getDist();
 
@@ -1726,7 +1726,7 @@ public class TankAIControlled extends Tank implements ITankField
 		Bullet b = this.getBullet();
 		if (useRaysThisFrame)
 		{
-			Ray a = new Ray(this.posX, this.posY, this.angle, b.bounces, this);
+			Ray a = Ray.newRay(this.posX, this.posY, this.angle, b.bounces, this);
 			a.moveOut(this.size / 10);
 			a.size = b.size;
 			a.ignoreDestructible = this.aimIgnoreDestructible;
@@ -1852,7 +1852,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			if (useRaysThisFrame)
 			{
-				Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getLastPolarDirection(), 0, (Tank) targetEnemy);
+				Ray r = Ray.newRay(targetEnemy.posX, targetEnemy.posY, targetEnemy.getLastPolarDirection(), 0, (Tank) targetEnemy);
 				r.ignoreDestructible = this.aimIgnoreDestructible;
 				r.ignoreShootThrough = true;
 				r.size = Game.tile_size * this.hitboxSize - 1;
@@ -1895,7 +1895,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			if (useRaysThisFrame)
 			{
-				Ray r = new Ray(targetEnemy.posX, targetEnemy.posY, targetEnemy.getLastPolarDirection(), 0, (Tank) targetEnemy);
+				Ray r = Ray.newRay(targetEnemy.posX, targetEnemy.posY, targetEnemy.getLastPolarDirection(), 0, (Tank) targetEnemy);
 				r.size = Game.tile_size * this.hitboxSize - 1;
 				r.enableBounciness = false;
 				this.disableOffset = false;
@@ -1976,7 +1976,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (this.targetEnemy != null && !arc)
 		{
-			Ray r = new Ray(this.posX, this.posY, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
+			Ray r = Ray.newRay(this.posX, this.posY, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
 			r.moveOut(this.size / 10);
 			r.size = b.size;
 			r.ignoreDestructible = this.aimIgnoreDestructible;
@@ -2087,7 +2087,7 @@ public class TankAIControlled extends Tank implements ITankField
 	public void testSearch(double searchAngle)
 	{
 		Bullet b = this.getBullet();
-		Ray ray = new Ray(this.posX, this.posY, searchAngle, b.bounces, this);
+		Ray ray = Ray.newRay(this.posX, this.posY, searchAngle, b.bounces, this);
 		ray.moveOut(this.size / 10);
 		ray.size = b.size;
 		ray.ignoreDestructible = this.aimIgnoreDestructible;
@@ -2100,7 +2100,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (target == null && this.shootAIType == ShootAI.homing && this.targetEnemy != null && inRange)
 		{
-			Ray ray2 = new Ray(ray.posX, ray.posY, ray.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
+			Ray ray2 = Ray.newRay(ray.posX, ray.posY, ray.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
 			ray2.moveOut(this.size / 50);
 			ray2.size = b.size;
 			ray2.ignoreDestructible = this.aimIgnoreDestructible;
@@ -2130,7 +2130,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		a = this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY);
 
-		Ray rayToTarget = new Ray(this.posX, this.posY, a, 0, this);
+		Ray rayToTarget = Ray.newRay(this.posX, this.posY, a, 0, this);
 		rayToTarget.size = this.getBullet().size;
 		rayToTarget.moveOut(this.size / 10);
 		rayToTarget.ignoreDestructible = this.aimIgnoreDestructible;
@@ -2362,7 +2362,7 @@ public class TankAIControlled extends Tank implements ITankField
 		int k = 0;
 		for (double dir = 0; dir < 4; dir += 4.0 / count)
 		{
-			Ray r = new Ray(this.posX, this.posY, dir * Math.PI / 2, 0, this, Game.tile_size);
+			Ray r = Ray.newRay(this.posX, this.posY, dir * Math.PI / 2, 0, this, Game.tile_size);
 			r.size = Game.tile_size * this.hitboxSize - 1;
 
 			double dist = r.getDist();
@@ -2612,7 +2612,7 @@ public class TankAIControlled extends Tank implements ITankField
 			if (this.transformTank.targetEnemy != null)
 			{
 				this.targetEnemy = this.transformTank.targetEnemy;
-				Ray r = new Ray(this.transformTank.posX, this.transformTank.posY, this.transformTank.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
+				Ray r = Ray.newRay(this.transformTank.posX, this.transformTank.posY, this.transformTank.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY), 0, this);
 
 				r.moveOut(5);
 
@@ -2672,7 +2672,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			if (this.targetEnemy != null)
 			{
-				Ray r = new Ray(this.possessingTank.posX, this.possessingTank.posY, 0, 0, this);
+				Ray r = Ray.newRay(this.possessingTank.posX, this.possessingTank.posY, 0, 0, this);
 				r.vX = this.targetEnemy.posX - this.possessingTank.posX;
 				r.vY = this.targetEnemy.posY - this.possessingTank.posY;
 

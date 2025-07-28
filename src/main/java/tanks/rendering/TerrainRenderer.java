@@ -752,11 +752,11 @@ public class TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        if (stagedCount == 0)
-            totalObjectsCount = Game.currentSizeX * Game.currentSizeY + Game.obstacles.size();
-
         for (Obstacle o : Game.obstacles)
             o.postOverride();
+
+        if (stagedCount == 0)
+            totalObjectsCount = Game.currentSizeX * Game.currentSizeY + Game.obstacles.size();
 
         drawBorders();
 
@@ -812,6 +812,8 @@ public class TerrainRenderer
         if (o.batchDraw && !o.removed)
             o.draw();
     }
+
+
 
     public static class RegionRenderer
     {

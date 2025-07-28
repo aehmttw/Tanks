@@ -2,11 +2,7 @@ package tanks.obstacle;
 
 public interface ISolidObject
 {
-	default boolean disableRayCollision() {return false;}
-
-	Face[] getHorizontalFaces();
-
-	Face[] getVerticalFaces();
+	default boolean disableRayCollision() { return false; }
 
 	Face[] getFaces();
 

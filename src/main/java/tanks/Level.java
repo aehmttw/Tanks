@@ -1,19 +1,27 @@
 package tanks;
 
 import basewindow.Color;
-import main.Tanks;
-import tanks.gui.screen.*;
+import tanks.gui.screen.ILevelPreviewScreen;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.Item;
-import tanks.network.event.*;
+import tanks.network.event.EventEnterLevel;
+import tanks.network.event.EventLoadLevel;
+import tanks.network.event.EventTankRemove;
+import tanks.network.event.INetworkEvent;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBeatBlock;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Random;
 
 public class Level
 {
@@ -514,17 +522,17 @@ public class Level
 			Game.movables.remove(Game.playerTank);
 		}
 
-		this.reloadTiles();
+		for (Obstacle o : obstacles)
+            Game.addObstacle(o, false);
 
-		for (Obstacle o : obstacles) {
-			Game.addObstacle(o, false);
-		}
-
-		for (Tank t : tanks) {
+		for (Tank t : tanks)
+        {
 			if (sc != null)
 				t.drawAge = 50;
 			Game.movables.add(t);
 		}
+
+		this.reloadTiles();
 
 		this.availablePlayerSpawns.clear();
 
@@ -780,8 +788,22 @@ public class Level
 		Chunk.populateChunks(Game.currentLevel);
 		addLevelBorders();
 
-		for (Obstacle o: Game.obstacles)
+		for (Obstacle o : Game.obstacles)
+		{
             o.postOverride();
+
+			Chunk c = Chunk.getChunk(o.posX, o.posY);
+			if (c != null)
+				c.addObstacle(o, false);
+
+			if (o.update)
+				Game.obstaclesToUpdate.add(o);
+		}
+
+		for (Movable m : Game.movables)
+            m.refreshFaces = true;
+		for (Obstacle o : Game.obstacles)
+			o.refreshHitboxes();
 
 		ScreenLevelEditor s = null;
 

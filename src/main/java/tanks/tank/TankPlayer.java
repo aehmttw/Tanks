@@ -526,7 +526,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 				showTrace = false;
 		}
 
-		Item.ItemStack<?> ib = this.getPrimaryAbility();
+		Item.ItemStack<?> ib = this.player.hotbar.itemBar.getSelectedAction(false);
 		Bullet b = null;
 		if (ib instanceof ItemBullet.ItemStackBullet)
 			b = ((ItemBullet.ItemStackBullet) ib).item.bullet;

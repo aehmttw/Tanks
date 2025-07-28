@@ -121,7 +121,9 @@ public class Level
 				s = s.substring("shop\n".length());
 				ArrayList<String> objects = getJsonObjects(s);
 				for (String o : objects)
+				{
 					this.shop.add(Item.ShopItem.fromString(o));
+				}
 			}
 			else if (s.startsWith("coins\n"))
 			{
@@ -132,22 +134,28 @@ public class Level
 			{
 				s = s.substring("tanks\n".length());
 				ArrayList<String> objects = getJsonObjects(s);
-				for (String o : objects) {
+				for (String o : objects)
+				{
 					TankAIControlled t = TankAIControlled.fromString(o);
 					if (t != null)
 						this.customTanks.add(t);
 				}
-			} else if (s.startsWith("builds\n"))
+			}
+			else if (s.startsWith("builds\n"))
 			{
 				s = s.substring("builds\n".length());
 				ArrayList<String> objects = getJsonObjects(s);
-				for (String o : objects) {
+				for (String o : objects)
+				{
 					TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(o);
 					t.enableTertiaryColor = true;
 					this.playerBuilds.add(t);
 				}
-			} else {
-				if (s.startsWith("level\n")) {
+			}
+			else
+			{
+				if (s.startsWith("level\n"))
+				{
 					s = s.substring("level\n".length());
 				}
 				preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
@@ -157,6 +165,7 @@ public class Level
 
 				if (preset.length >= 4)
 				{
+					enableTeams = true;
 					teams = preset[3].split(",");
 					tankTeams = new Team[teams.length];
 
@@ -308,8 +317,6 @@ public class Level
 			customTanksMap.put(t.name, t);
 
 		tanksToRemove = new ArrayList<>();
-		Game.currentLevel = this;
-		Game.currentLevelString = this.levelString;
 
 		if (!preset[2].isEmpty())
 		{
@@ -370,10 +377,13 @@ public class Level
 				t.crusadeID = currentCrusadeID;
 				currentCrusadeID++;
 
+				Level l = Game.currentLevel;
+				Game.currentLevel = this;
 				if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks && Crusade.currentCrusade.retry && !Crusade.currentCrusade.livingTankIDs.contains(t.crusadeID))
 					tanksToRemove.add(t);
 				else
 					t.setMetadata(metadata.toString());
+				Game.currentLevel = l;
 
 				// Don't do this in your code! We only want to dynamically generate tank IDs on level load!
 				t.networkID = Tank.nextFreeNetworkID();
@@ -411,21 +421,25 @@ public class Level
 		}
 	}
 
-	private static ArrayList<String> getJsonObjects(String s) {
+	protected static ArrayList<String> getJsonObjects(String s)
+	{
 		int depth = 0;
 		int last = 0;
 		ArrayList<String> out = new ArrayList<>();
-		for (int i = 0; i < s.length(); i++) {
-			if (s.charAt(i) == '{') {
-				if (depth == 0 && !s.substring(last, i).trim().isEmpty()) {
-					out.add(s.substring(last, i));
+		for (int i = 0; i < s.length(); i++)
+		{
+			if (s.charAt(i) == '{')
+			{
+				if (depth == 0 )
 					last = i;
-				}
+
 				depth++;
 			}
-			else if (s.charAt(i) == '}') {
+			else if (s.charAt(i) == '}')
+			{
 				depth--;
-				if (depth == 0 && !s.substring(last, i + 1).trim().isEmpty()) {
+				if (depth == 0 && !s.substring(last, i + 1).trim().isEmpty())
+				{
 					out.add(s.substring(last, i + 1));
 					last = i + 1;
 				}
@@ -452,6 +466,9 @@ public class Level
 
 	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
 	{
+		Game.currentLevel = this;
+		Game.currentLevelString = this.levelString;
+
 		if (Game.deterministicMode)
 			random = new Random(Game.seed);
 		else

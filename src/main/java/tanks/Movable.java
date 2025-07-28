@@ -6,6 +6,7 @@ import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
+import tanks.tank.IAvoidObject;
 import tanks.tank.NameTag;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
@@ -79,6 +80,9 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	{
 		if (!refreshFaces && posX == lastPosX && posY == lastPosY)
 			return;
+
+		if (refreshFaces && this instanceof IAvoidObject)
+			Game.avoidObjects.add((IAvoidObject) this);
 
 		ObjectArrayList<Chunk> cache = getTouchingChunks();
 

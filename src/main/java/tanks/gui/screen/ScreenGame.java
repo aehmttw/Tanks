@@ -2029,6 +2029,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			for (Chunk chunk : m.getTouchingChunks())
 				chunk.removeMovable(m);
+			if (m instanceof IAvoidObject)
+				Game.avoidObjects.remove(m);
 		}
 
 		Game.movables.removeAll(Game.removeMovables);
@@ -2094,11 +2096,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			m.update();
 		}
 
-		for (Obstacle o : Game.obstacles)
-		{
-			if (o.update)
-				o.update();
-		}
+		for (Obstacle o : Game.obstaclesToUpdate)
+			o.update();
 
 		for (Effect e : Game.tracks)
 			e.update();

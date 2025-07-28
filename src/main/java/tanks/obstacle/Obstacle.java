@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
+import tanks.tank.IAvoidObject;
 
 public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
 {
@@ -228,6 +229,9 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public void postOverride()
 	{
 		Game.setObstacle(posX, posY, this);
+
+		if (this instanceof IAvoidObject)
+			Game.avoidObjects.add((IAvoidObject) this);
 	}
 
 	/**

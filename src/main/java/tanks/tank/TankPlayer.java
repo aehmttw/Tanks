@@ -661,6 +661,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		}
 
 		Game.eventsOut.add(new EventLayMine(m));
+		Game.avoidObjects.add(m);
 		Game.movables.add(m);
 	}
 

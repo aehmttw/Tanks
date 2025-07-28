@@ -1,0 +1,17 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+
+indent_style = space
+indent_size = 4
+tab_width = 4
+max_line_length = 120
+
+[*.java]
+ij_java_block_brace_style = next_line
+ij_java_method_brace_style = next_line
+ij_java_class_brace_style = next_line
+ij_java_lambda_brace_style = next_line

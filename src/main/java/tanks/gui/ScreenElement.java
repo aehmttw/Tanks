@@ -85,7 +85,7 @@ public abstract class ScreenElement
         {
             message = String.format(message, objects);
             int brightness = Level.isDark() ? 255 : 0;
-            this.styling = new TextWithStyling(message, brightness, brightness, brightness, 70 - Math.max(8, message.length()));
+            this.styling = new TextWithStyling(message, brightness, brightness, brightness, 80 - Math.max(8, message.length() * 2));
             this.styling.colorA = 128;
             this.duration = duration;
             this.previous = Panel.currentMessage != null;

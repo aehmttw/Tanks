@@ -72,12 +72,11 @@ public class ObstacleBeatBlock extends ObstacleStackable
                 this.postOverride();
 
             this.firstUpdate = false;
-            this.verticalFaces = null;
-            this.horizontalFaces = null;
             this.allowBounce = false;
             this.shouldClip = true;
 
             this.lastOn = this.tankCollision;
+            refreshHitboxes();
         }
         else
         {

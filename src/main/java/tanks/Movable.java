@@ -1,10 +1,12 @@
 package tanks;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
+import tanks.tank.IAvoidObject;
 import tanks.tank.NameTag;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
@@ -13,6 +15,7 @@ import java.lang.reflect.Field;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
 {
+	public ObjectArraySet<Chunk> prevChunks = new ObjectArraySet<>();
 	private EffectManager em;
 
 	public double lastPosX, lastPosY, lastPosZ = 0;
@@ -20,6 +23,9 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public double lastFinalVX, lastFinalVY, lastFinalVZ;
 	public double lastVX, lastVY, lastVZ;
 	public double lastOriginalVX, lastOriginalVY, lastOriginalVZ;
+
+	public double age = 0;
+	public boolean refreshFaces = true;
 
 	public boolean destroy = false;
 	public boolean dealsDamage = true;
@@ -49,6 +55,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void preUpdate()
 	{
+		updateChunks();
+
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 		this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
 		this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
@@ -61,6 +69,60 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		this.lastPosX = this.posX;
 		this.lastPosY = this.posY;
 		this.lastPosZ = this.posZ;
+
+		refreshFaces = false;
+	}
+
+	/** Cached list for checking chunks that the movable has just left */
+	private static final ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
+
+	public void updateChunks()
+	{
+		if (!refreshFaces && posX == lastPosX && posY == lastPosY)
+			return;
+
+		if (refreshFaces && this instanceof IAvoidObject)
+			Game.avoidObjects.add((IAvoidObject) this);
+
+		ObjectArrayList<Chunk> cache = getTouchingChunks();
+
+		for (Chunk c : cache)
+		{
+			if (prevChunks.add(c))
+				onEnterChunk(c);
+			c.faces.removeFaces(this);
+		}
+
+		leaveChunks.clear();
+		for (Chunk c : prevChunks)
+		{
+			if (!cache.contains(c))
+			{
+				onLeaveChunk(c);
+				leaveChunks.add(c);
+			}
+		}
+		prevChunks.removeAll(leaveChunks);
+
+		updateFaces();
+		for (Chunk c : cache)
+			c.faces.addFaces(this);
+	}
+
+	public void onEnterChunk(Chunk c)
+	{
+		c.addMovable(this, false);
+	}
+
+	public void onLeaveChunk(Chunk c)
+	{
+		c.removeMovable(this);
+	}
+
+	public ObjectArrayList<Chunk> getTouchingChunks()
+	{
+		double size = getSize();
+		return Chunk.getChunksInRange(posX - size / 2, posY - size / 2, posX + size / 2, posY + size / 2);
 	}
 
 	public void update()
@@ -96,12 +158,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public void initEffectManager(EffectManager em)
 	{
 
-	}
-
-	@Override
-	public double getSize()
-	{
-		return 0;
 	}
 
 	/** Alias for {@link #getEffectManager()} */
@@ -143,105 +199,50 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		this.vY = velocity * Math.sin(angle);
 	}
 
-	static double pi_over_4 = Math.PI / 4;
-	static double fastAtan(double a)
-	{
-		if (a < -1 || a > 1)
-			return Math.atan(a);
-
-		return pi_over_4 * a - a * (Math.abs(a) - 1) * (0.2447 + 0.0663 * Math.abs(a));
-	}
-
 	public double getAngleInDirection(double x, double y)
 	{
-		x -= this.posX;
-		y -= this.posY;
-
-		double angle = 0;
-		if (x > 0)
-			angle = fastAtan(y/x);
-		else if (x < 0)
-			angle = fastAtan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-
-		return angle;
+		return Movable.getPolarDirection(x - this.posX, y - this.posY);
 	}
 
 	public double getPolarDirection()
 	{
-		return Movable.getPolarDirection(this.vX, this.vY);
+		return getPolarDirection(this.vX, this.vY);
 	}
 
 	public double getPolarPitch()
 	{
-		return Math.atan(this.vZ / this.getSpeed());
+		return fastAtan(this.vZ / this.getSpeed());
 	}
 
 	public double getLastPolarDirection()
 	{
-		return Movable.getPolarDirection(this.lastVX, this.lastVY);
-	}
-
-	public static double getPolarDirection(double x, double y)
-	{
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y/x);
-		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-
-		return angle;
+		return getPolarDirection(this.lastVX, this.lastVY);
 	}
 
 	public void setPolarMotion(double angle, double velocity)
 	{
-		double velX = velocity * Math.cos(angle);
-		double velY = velocity * Math.sin(angle);
-		this.vX = velX;
-		this.vY = velY;
+		this.vX = velocity * Math.cos(angle);
+		this.vY = velocity * Math.sin(angle);
 	}
 
 	public void set3dPolarMotion(double angle1, double angle2, double velocity)
 	{
-		double velX = velocity * Math.cos(angle1) * Math.cos(angle2);
-		double velY = velocity * Math.sin(angle1) * Math.cos(angle2);
-		double velZ = velocity * Math.sin(angle2);
-
-		this.vX = velX;
-		this.vY = velY;
-		this.vZ = velZ;
+		this.vX = velocity * Math.cos(angle1) * Math.cos(angle2);
+		this.vY = velocity * Math.sin(angle1) * Math.cos(angle2);
+		this.vZ = velocity * Math.sin(angle2);
 	}
 
 	public void addPolarMotion(double angle, double velocity)
 	{
-		double velX = velocity * Math.cos(angle);
-		double velY = velocity * Math.sin(angle);
-		this.vX += velX;
-		this.vY += velY;
+		this.vX += velocity * Math.cos(angle);
+		this.vY += velocity * Math.sin(angle);
 	}
 
 	public void add3dPolarMotion(double angle1, double angle2, double velocity)
 	{
-		double velX = velocity * Math.cos(angle1) * Math.cos(angle2);
-		double velY = velocity * Math.sin(angle1) * Math.cos(angle2);
-		double velZ = velocity * Math.sin(angle2);
-
-		this.vX += velX;
-		this.vY += velY;
-		this.vZ += velZ;
+		this.vX += velocity * Math.cos(angle1) * Math.cos(angle2);
+		this.vY += velocity * Math.sin(angle1) * Math.cos(angle2);
+		this.vZ += velocity * Math.sin(angle2);
 	}
 
 	public void moveInDirection(double x, double y, double amount)
@@ -258,12 +259,12 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public double getSpeed()
 	{
-		return Math.sqrt(Math.pow(this.vX, 2) + Math.pow(this.vY, 2));
+		return Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 	}
 
 	public double getLastSpeed()
 	{
-		return Math.sqrt(Math.pow(this.lastVX, 2) + Math.pow(this.lastVY, 2));
+		return Math.sqrt(this.lastVX * this.lastVX + this.lastVY * this.lastVY);
 	}
 
 	public double getMotionInDirection(double angle)
@@ -285,13 +286,18 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public static double[] getLocationInDirection(double angle, double distance)
 	{
-		return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};	
+		return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};
 	}
 
 	public abstract void draw();
-	
+
+	public double getSize()
+	{
+		return 0;
+	}
+
 	public void drawAt(double x, double y)
-	{	
+	{
 		double x1 = this.posX;
 		double y1 = this.posY;
 		this.posX = x;

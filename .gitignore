@@ -1,11 +1,7 @@
 /target/
 /build/
 /.gradle
-/.idea/vcs.xml
-/.idea/compiler.xml
-/.idea/gradle.xml
-/.idea/misc.xml
-/.idea/workspace.xml
+.idea
 .project
 .classpath
 .settings

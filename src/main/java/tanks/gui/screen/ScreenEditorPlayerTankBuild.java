@@ -272,6 +272,10 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             this.preview.colorModel = tank.colorModel;
             this.preview.turretBaseModel = tank.turretBaseModel;
             this.preview.turretModel = tank.turretModel;
+            this.preview.baseSkin = tank.baseSkin;
+            this.preview.colorSkin = tank.colorSkin;
+            this.preview.turretBaseSkin = tank.turretBaseSkin;
+            this.preview.turretSkin = tank.turretSkin;
             this.preview.size = tank.size;
             this.preview.turretSize = tank.turretSize;
             this.preview.turretLength = tank.turretLength;
@@ -426,6 +430,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
     public class TabPartPicker extends TabWithPreview
     {
         public int colorIndex;
+        public SelectorColor colorPicker;
 
         String enableColorText = "Override color: ";
         Button enableColor = new Button(0, 0, this.screen.objWidth, this.screen.objHeight, "", new Runnable()
@@ -520,6 +525,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 this.setColorText(tank.overrideTertiaryColor);
             else if (colorIndex == 4)
                 this.setColorText(tank.overrideEmblemColor);
+
+            this.colorPicker.updateColors();
         }
 
         @Override
@@ -529,13 +536,15 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 this.uiElements.add(new EmptySpace());
 
             this.uiElements.add(enableColor);
+            this.uiElements.add(colorPicker);
 
             super.sortUIElements();
 
             this.uiElements.remove(enableColor);
-//
-//            autoColor.posX = colorBlue.posX - this.screen.objXSpace;
-//            autoColor.posY = colorBlue.posY;
+            this.uiElements.remove(colorPicker);
+
+            autoColor.posX = colorPicker.colorBlue.posX - this.screen.objXSpace;
+            autoColor.posY = colorPicker.colorBlue.posY;
         }
 
         @Override
@@ -558,6 +567,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
             if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||  (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
             {
+                this.colorPicker.update();
+
                 if ((this.colorIndex == 2 && tank.overridePrimaryColor) ||
                         (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
                         (this.colorIndex == 4 && (tank.overrideSecondaryColor || tank.overridePrimaryColor)))
@@ -592,15 +603,54 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
             if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||  (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
             {
-//                this.colorRed.draw();
-//                this.colorGreen.draw();
-//                this.colorBlue.draw();
+                this.colorPicker.draw();
 
                 if ((this.colorIndex == 2 && tank.overridePrimaryColor) ||
                         (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
                         (this.colorIndex == 4 && (tank.overrideSecondaryColor || tank.overridePrimaryColor)))
                     autoColor.draw();
             }
+        }
+
+        @Override
+        public void addFields()
+        {
+            this.uiElements.clear();
+            for (Field f : this.screen.fields)
+            {
+                Property p = f.getAnnotation(Property.class);
+                if (p != null && p.category().equals(this.category))
+                {
+                    ITrigger t = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
+
+                    if (p.miscType() != Property.MiscType.colorRGB)
+                    {
+                        this.uiElements.add(t);
+                        for (int i = 1; i < t.getSize(); i++)
+                        {
+                            this.uiElements.add(new EmptySpace());
+                        }
+                    }
+                    else if (t instanceof SelectorColor)
+                        this.colorPicker = (SelectorColor) t;
+                }
+            }
+
+            try
+            {
+                if (this.colorIndex == 2 && this.colorPicker == null)
+                {
+                    Field f = Tank.class.getField("secondaryColor");
+                    this.colorPicker = (SelectorColor) screen.getUIElementForField(new FieldPointer<>(target.get(), f), f.getAnnotation(Property.class));
+                }
+            }
+            catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
+
+            if (this.colorPicker == null)
+                throw new RuntimeException("lmao no color picker " + this.name);
         }
     }
 

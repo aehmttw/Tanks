@@ -6,6 +6,7 @@ import tanks.Game;
 import tanks.Movable;
 import tanks.bullet.Bullet;
 import tanks.effect.AttributeModifier;
+import tanks.item.ItemBullet;
 
 public class Turret extends Movable
 {
@@ -49,8 +50,19 @@ public class Turret extends Movable
 		Bullet b = null;
 		if (this.tank instanceof TankAIControlled)
 			b = ((TankAIControlled) this.tank).getBullet();
-		else if (this.tank instanceof TankRemote && !(((TankRemote) this.tank).tank instanceof TankPlayer))
+		else if (this.tank instanceof TankRemote && !(((TankRemote) this.tank).tank instanceof TankPlayable))
 			b = ((TankAIControlled) ((TankRemote) this.tank).tank).getBullet();
+		else
+		{
+			ItemBullet.ItemStackBullet ib = null;
+			if (this.tank instanceof TankPlayable)
+				ib = ((TankPlayable) this.tank).getFirstBullet();
+			else if  (this.tank instanceof TankRemote)
+				ib = ((TankPlayable) ((TankRemote) this.tank).tank).getFirstBullet();
+
+			if (ib != null)
+				b = ib.item.bullet;
+		}
 
 		if (b != null && b.shotCount > 1 && this.tank.multipleTurrets)
 		{

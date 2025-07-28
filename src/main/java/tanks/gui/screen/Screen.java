@@ -107,7 +107,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 		if (drawBgRect && (!(this instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d))))
 		{
-			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColorR, 92 * frac + (1 - frac) * Level.currentColorG, 16 * frac + (1 - frac) * Level.currentColorB);
+			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColor.red, 92 * frac + (1 - frac) * Level.currentColor.green, 16 * frac + (1 - frac) * Level.currentColor.blue);
 
 			double mul = 1;
 			if (Game.angledView)
@@ -116,11 +116,11 @@ public abstract class Screen implements IBatchRenderableObject
 			Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
 					mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
-			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 255.0 * size);
+			Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue, 255.0 * size);
 			Drawing.drawing.fillBackgroundRect(this, Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
 		}
 
-		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
+		Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
 
 		if (stageOnly && Drawing.drawing.terrainRenderer instanceof StaticTerrainRenderer)
 			((StaticTerrainRenderer) Drawing.drawing.terrainRenderer).stage();

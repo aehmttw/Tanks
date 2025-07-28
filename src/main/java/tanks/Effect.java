@@ -27,6 +27,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
     public int prevGridX, prevGridY;
     public int initialGridX, initialGridY;
+    public Movable linkedMovable;
 
     //Effects that have this set to true are removed faster when the level has ended
     public boolean fastRemoveOnExit = false;
@@ -208,6 +209,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         this.state = State.live;
         this.force = false;
         this.fastRemoveOnExit = false;
+        this.linkedMovable = null;
     }
 
     @Override
@@ -399,6 +401,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) / 30), Math.min(1, this.age / 30)));
             double angle = this.angle + this.age / 20;
             double distance = 1 + (this.distance * Math.min(Math.min(1, (this.maxAge - this.age) / 30), Math.min(1, this.age / 30)));
+            if (this.linkedMovable != null && this.linkedMovable.destroy)
+                this.maxAge = Math.min(this.age + 60, this.maxAge);
 
             drawing.setColor(this.colR, this.colG, this.colB, 255, 0.5);
             double[] o = Movable.getLocationInDirection(angle, distance);

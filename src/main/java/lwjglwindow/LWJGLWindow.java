@@ -102,6 +102,7 @@ public class LWJGLWindow extends BaseWindow
 		{
 			this.soundsEnabled = false;
 			System.out.println("Failed to enable sounds");
+			this.soundPlayer = new NoSoundPlayer(this);
 			e.printStackTrace();
 		}
 
@@ -348,18 +349,14 @@ public class LWJGLWindow extends BaseWindow
 		String audio = ALC11.alcGetString(NULL, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
 
 		if (!(audio == null && this.audioDevice == null || (this.audioDevice != null && this.audioDevice.equals(audio))))
-		{
 			this.soundPlayer = new SoundPlayer(this);
-		}
 
 		this.audioDevice = audio;
 
-		SoundPlayer soundPlayer = (SoundPlayer) this.soundPlayer;
+		BaseSoundPlayer soundPlayer = this.soundPlayer;
 
 		if (soundPlayer != null)
-		{
 			soundPlayer.update();
-		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

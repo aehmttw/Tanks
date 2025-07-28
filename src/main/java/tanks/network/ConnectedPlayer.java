@@ -49,6 +49,8 @@ public class ConnectedPlayer
 
 		if (p.tank != null && p.tank.team != null && p.tank.team.enableColor)
 			this.teamColor.set(p.tank.team.teamColor);
+		else
+			this.teamColor.set(255, 255, 255);
 	}
 
 	public void setColors(Color c, Color c2, Color c3)

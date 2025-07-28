@@ -3,12 +3,11 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Effect;
 import tanks.Game;
+import tanks.tank.Tank;
 
 public class EventBulletStunEffect extends PersonalEvent
 {
-    public double posX;
-    public double posY;
-    public double posZ;
+    int tank;
     public double length;
 
     public EventBulletStunEffect()
@@ -16,11 +15,9 @@ public class EventBulletStunEffect extends PersonalEvent
 
     }
 
-    public EventBulletStunEffect(double x, double y, double z, double length)
+    public EventBulletStunEffect(Tank t, double length)
     {
-        this.posX = x;
-        this.posY = y;
-        this.posZ = z;
+        this.tank = t.networkID;
         this.length = length;
     }
 
@@ -29,9 +26,14 @@ public class EventBulletStunEffect extends PersonalEvent
     {
         if (Game.effectsEnabled && this.clientID == null)
         {
+            Tank t = Tank.idMap.get(tank);
+            if (t == null)
+                return;
+
             for (int i = 0; i < 25 * Game.effectMultiplier; i++)
             {
-                Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.stun);
+                Effect e = Effect.createNewEffect(t.posX, t.posY, Game.tile_size / 4, Effect.EffectType.stun);
+                e.linkedMovable = t;
                 double var = 50;
                 e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
                 e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
@@ -48,18 +50,14 @@ public class EventBulletStunEffect extends PersonalEvent
     @Override
     public void write(ByteBuf b)
     {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeDouble(this.posZ);
+        b.writeInt(this.tank);
         b.writeDouble(this.length);
     }
 
     @Override
     public void read(ByteBuf b)
     {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.posZ = b.readDouble();
+        this.tank = b.readInt();
         this.length = b.readDouble();
     }
 }

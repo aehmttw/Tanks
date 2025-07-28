@@ -1,5 +1,7 @@
 package tanks;
 
+import basewindow.Color;
+import main.Tanks;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -13,16 +15,18 @@ import tanks.tank.*;
 
 import java.util.*;
 
-public class Level 
+public class Level
 {
 	public String levelString;
 
-	public String[] preset, screen, obstaclesPos, tanks, teams;
+	public ArrayList<Tank> tanks;
+	ArrayList<Tank> tanksToRemove;
 	public Team[] tankTeams;
+	public ArrayList<Obstacle> obstacles;
 	public boolean enableTeams = false;
 
-	public static double currentColorR = 235, currentColorG = 207, currentColorB = 166;
-	public static double currentColorVarR = 235, currentColorVarG = 207, currentColorVarB = 166;
+	public static Color currentColor = new Color(235,207,166);
+	public static Color currentColorVar = new Color(235, 207, 166);
 	public static double currentLightIntensity = 1, currentShadowIntensity = 0.5;
 
 	public static int currentCloudCount = 0;
@@ -39,8 +43,8 @@ public class Level
 	public int startX, startY;
 	public int sizeX, sizeY;
 
-	public int colorR = 235, colorG = 207, colorB = 166;
-	public int colorVarR = 20, colorVarG = 20, colorVarB = 20;
+	public Color color = new Color(235, 207, 166);
+	public Color colorVar = new Color(20, 20, 20);
 
 	public int tilesRandomSeed = (int) (Math.random() * Integer.MAX_VALUE);
 
@@ -91,79 +95,118 @@ public class Level
 	 */
 	public Level(String level)
 	{
+		String[] preset = new String[0], screen = new String[0], obstaclesPos = new String[0], tanks = new String[0], teams;
+
 		if (ScreenPartyHost.isServer)
 			this.startTime = Game.partyStartTime;
 
 		this.levelString = level.replaceAll("\u0000", "");
 
-		int parsing = 0;
+		//Look Ahead Split (keeping the delimiter with the associated block)
+		String[] blocks = this.levelString.split("(?=(level|items|shop|coins|tanks|builds)\n)");
+		obstacles = new ArrayList<Obstacle>();
+		this.tanks = new ArrayList<Tank>();
 
-		String[] lines = this.levelString.split("\n");
-
-		for (String s: lines)
+		for (String s: blocks)
 		{
-			switch (s.toLowerCase())
+			if (s.startsWith("items\n"))
 			{
-				case "level":
-					parsing = 0;
-					break;
-				case "items":
-					parsing = 1;
-					break;
-				case "shop":
-					parsing = 2;
-					break;
-				case "coins":
-					parsing = 3;
-					break;
-				case "tanks":
-					parsing = 4;
-					break;
-				case "builds":
-					parsing = 5;
-					break;
-				default:
-					if (parsing == 0)
-					{
-						preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
-						screen = preset[0].split(",");
-						obstaclesPos = preset[1].split(",");
-						tanks = preset[2].split(",");
+				s = s.substring("items\n".length());
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects)
+					this.startingItems.add(Item.ItemStack.fromString(null, o));
+			}
+			else if (s.startsWith("shop\n"))
+			{
+				s = s.substring("shop\n".length());
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects)
+				{
+					this.shop.add(Item.ShopItem.fromString(o));
+				}
+			}
+			else if (s.startsWith("coins\n"))
+			{
+				s = s.substring("coins\n".length());
+				this.startingCoins = (int) Double.parseDouble(s.trim());
+			}
+			else if (s.startsWith("tanks\n"))
+			{
+				s = s.substring("tanks\n".length());
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects)
+				{
+					TankAIControlled t = TankAIControlled.fromString(o);
+					if (t != null)
+						this.customTanks.add(t);
+				}
+			}
+			else if (s.startsWith("builds\n"))
+			{
+				s = s.substring("builds\n".length());
+				ArrayList<String> objects = getJsonObjects(s);
+				for (String o : objects)
+				{
+					TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(o);
+					t.enableTertiaryColor = true;
+					this.playerBuilds.add(t);
+				}
+			}
+			else
+			{
+				if (s.startsWith("level\n"))
+				{
+					s = s.substring("level\n".length());
+				}
+				preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
+				screen = preset[0].split(",");
+				obstaclesPos = preset[1].split(",");
+				tanks = preset[2].split(",");
 
-						if (preset.length >= 4)
-						{
-							teams = preset[3].split(",");
-							enableTeams = true;
-						}
+				if (preset.length >= 4)
+				{
+					enableTeams = true;
+					teams = preset[3].split(",");
+					tankTeams = new Team[teams.length];
 
-						if (screen[0].startsWith("*"))
-						{
-							editable = false;
-							screen[0] = screen[0].substring(1);
-						}
-					}
-					else if (parsing == 4)
+					for (int i = 0; i < teams.length; i++)
 					{
-						TankAIControlled t = TankAIControlled.fromString(s);
-						if (t != null)
-							this.customTanks.add(t);
+						String[] t = teams[i].split("-");
+
+						if (t.length >= 5)
+							tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
+						else if (t.length >= 2)
+							tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
+						else
+							tankTeams[i] = new Team(t[0]);
+
+						if (disableFriendlyFire)
+							tankTeams[i].friendlyFire = false;
+
+						teamsMap.put(t[0], tankTeams[i]);
+
+						teamsList.add(tankTeams[i]);
 					}
-					else if (parsing == 5)
+				}
+				else
+				{
+					if (disableFriendlyFire)
 					{
-						TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(s);
-						t.enableTertiaryColor = true;
-						this.playerBuilds.add(t);
+						teamsMap.put("ally", Game.playerTeamNoFF);
+						teamsMap.put("enemy", Game.enemyTeamNoFF);
 					}
 					else
 					{
-						if (parsing == 1)
-							this.startingItems.add(Item.ItemStack.fromString(null, s));
-						else if (parsing == 2)
-							this.shop.add(Item.ShopItem.fromString(s));
-						else
-							this.startingCoins = Integer.parseInt(s);
+						teamsMap.put("ally", Game.playerTeam);
+						teamsMap.put("enemy", Game.enemyTeam);
 					}
-					break;
+				}
+
+				if (screen[0].startsWith("*"))
+				{
+					editable = false;
+					screen[0] = screen[0].substring(1);
+				}
 			}
 		}
 
@@ -176,146 +219,25 @@ public class Level
 		if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
 			this.disableFriendlyFire = true;
 
-		sizeX = Integer.parseInt(screen[0]);
-		sizeY = Integer.parseInt(screen[1]);
+		sizeX = (int) Double.parseDouble(screen[0]);
+		sizeY = (int) Double.parseDouble(screen[1]);
 
 		if (screen.length >= 5)
 		{
-			colorR = Integer.parseInt(screen[2]);
-			colorG = Integer.parseInt(screen[3]);
-			colorB = Integer.parseInt(screen[4]);
+			color.set((int) Double.parseDouble(screen[2]), (int) Double.parseDouble(screen[3]), (int) Double.parseDouble(screen[4]));
 
 			if (screen.length >= 8)
 			{
-				colorVarR = Math.min(255 - colorR, Integer.parseInt(screen[5]));
-				colorVarG = Math.min(255 - colorG, Integer.parseInt(screen[6]));
-				colorVarB = Math.min(255 - colorB, Integer.parseInt(screen[7]));
+				int colorVarR = Math.min(255 - (int) color.red, (int) Double.parseDouble(screen[5]));
+				int colorVarG = Math.min(255 - (int) color.green, (int) Double.parseDouble(screen[6]));
+				int colorVarB = Math.min(255 - (int) color.blue, (int) Double.parseDouble(screen[7]));
+				colorVar.set(colorVarR, colorVarG, colorVarB);
 			}
 		}
-
-		for (int i = 0; i < this.shop.size(); i++)
-		{
-			this.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
-		}
-
-		for (int i = 0; i < this.startingItems.size(); i++)
-		{
-			this.itemNumbers.put(this.startingItems.get(i).item.name, this.shop.size() + i + 1);
-		}
-
-		if (ScreenPartyLobby.isClient)
-		{
-			this.clientStartingCoins = this.startingCoins;
-			this.clientStartingItems = this.startingItems;
-			this.clientShop = this.shop;
-
-			this.startingCoins = 0;
-			this.startingItems = new ArrayList<>();
-			this.shop = new ArrayList<>();
-		}
-	}
-
-	public void loadLevel()
-	{
-		loadLevel(null);
-	}
-
-	public void loadLevel(boolean remote)
-	{
-		loadLevel(null, remote);
-	}
-
-	public void loadLevel(ILevelPreviewScreen s)
-	{
-		loadLevel(s, false);
-	}
-
-	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
-	{
-		int currentCrusadeID = 0;
-
-		if (Game.deterministicMode)
-			random = new Random(Game.seed);
-		else
-			random = new Random(tilesRandomSeed);
-
-		if (ScreenPartyHost.isServer)
-			ScreenPartyHost.includedPlayers.clear();
-		else if (ScreenPartyLobby.isClient)
-			ScreenPartyLobby.includedPlayers.clear();
-
-		if (sc == null)
-			Obstacle.draw_size = 0;
-		else
-			Obstacle.draw_size = 50;
-
-		Chunk.Tile ft = Chunk.Tile.fallbackTile;
-		ft.colR = colorR;
-		ft.colG = colorG;
-		ft.colB = colorB;
-
-		this.remote = remote;
-
-		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
-			Game.eventsOut.add(new EventLoadLevel(this));
-
-		LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
-		for (TankAIControlled t : this.customTanks)
-			customTanksMap.put(t.name, t);
-
-		Tank.currentID = 0;
-		Tank.freeIDs.clear();
-
-		Game.currentLevel = this;
-		Game.currentLevelString = this.levelString;
-
-		ScreenGame.finishedQuick = false;
-
-		ScreenGame.finished = false;
-		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
-
-		if (enableTeams)
-		{
-			tankTeams = new Team[teams.length];
-
-			for (int i = 0; i < teams.length; i++)
-			{
-				String[] t = teams[i].split("-");
-
-				if (t.length >= 5)
-					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
-				else if (t.length >= 2)
-					tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
-				else
-					tankTeams[i] = new Team(t[0]);
-
-				if (disableFriendlyFire)
-					tankTeams[i].friendlyFire = false;
-
-				teamsMap.put(t[0], tankTeams[i]);
-
-				teamsList.add(tankTeams[i]);
-			}
-		}
-		else
-		{
-			if (disableFriendlyFire)
-			{
-				teamsMap.put("ally", Game.playerTeamNoFF);
-				teamsMap.put("enemy", Game.enemyTeamNoFF);
-			}
-			else
-			{
-				teamsMap.put("ally", Game.playerTeam);
-				teamsMap.put("enemy", Game.enemyTeam);
-			}
-		}
-
-		currentCloudCount = (int) (Math.random() * (double) this.sizeX / 10.0D + Math.random() * (double) this.sizeY / 10.0D);
 
 		if (screen.length >= 9)
 		{
-			int length = Integer.parseInt(screen[8]) * 100;
+			int length = (int) Double.parseDouble(screen[8]) * 100;
 
 			if (length > 0)
 			{
@@ -326,18 +248,8 @@ public class Level
 
 		if (screen.length >= 11)
 		{
-			light = Integer.parseInt(screen[9]) / 100.0;
-			shadow = Integer.parseInt(screen[10]) / 100.0;
-		}
-
-		if (sc instanceof ScreenLevelEditor)
-		{
-			ScreenLevelEditor s = (ScreenLevelEditor) sc;
-
-			s.level = this;
-
-			s.selectedTiles = new boolean[sizeX][sizeY];
-			Game.movables.remove(Game.playerTank);
+			light = (int) Double.parseDouble(screen[9]) / 100.0;
+			shadow = (int) Double.parseDouble(screen[10]) / 100.0;
 		}
 
 		if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
@@ -393,15 +305,18 @@ public class Level
 							this.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
 						}
 
-						Game.addObstacle(o, false);
+						obstacles.add(o);
 					}
 				}
 			}
 		}
 
-		this.reloadTiles();
+		int currentCrusadeID = 0;
+		LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
+		for (TankAIControlled t : this.customTanks)
+			customTanksMap.put(t.name, t);
 
-		ArrayList<Tank> tanksToRemove = new ArrayList<>();
+		tanksToRemove = new ArrayList<>();
 
 		if (!preset[2].isEmpty())
 		{
@@ -462,23 +377,153 @@ public class Level
 				t.crusadeID = currentCrusadeID;
 				currentCrusadeID++;
 
+				Level l = Game.currentLevel;
+				Game.currentLevel = this;
 				if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks && Crusade.currentCrusade.retry && !Crusade.currentCrusade.livingTankIDs.contains(t.crusadeID))
 					tanksToRemove.add(t);
 				else
 					t.setMetadata(metadata.toString());
+				Game.currentLevel = l;
 
 				// Don't do this in your code! We only want to dynamically generate tank IDs on level load!
 				t.networkID = Tank.nextFreeNetworkID();
 				Tank.idMap.put(t.networkID, t);
 
-				if (sc != null)
-					t.drawAge = 50;
-
 				if (remote)
-					Game.movables.add(new TankRemote(t));
+					this.tanks.add(new TankRemote(t));
 				else
-					Game.movables.add(t);
+				{
+					this.tanks.add(t);
+					setSolidTank((int) Double.parseDouble(tank[0]), (int) Double.parseDouble(tank[1]), true);
+				}
 			}
+		}
+
+		for (int i = 0; i < this.shop.size(); i++)
+		{
+			this.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
+		}
+
+		for (int i = 0; i < this.startingItems.size(); i++)
+		{
+			this.itemNumbers.put(this.startingItems.get(i).item.name, this.shop.size() + i + 1);
+		}
+
+		if (ScreenPartyLobby.isClient)
+		{
+			this.clientStartingCoins = this.startingCoins;
+			this.clientStartingItems = this.startingItems;
+			this.clientShop = this.shop;
+
+			this.startingCoins = 0;
+			this.startingItems = new ArrayList<>();
+			this.shop = new ArrayList<>();
+		}
+	}
+
+	protected static ArrayList<String> getJsonObjects(String s)
+	{
+		int depth = 0;
+		int last = 0;
+		ArrayList<String> out = new ArrayList<>();
+		for (int i = 0; i < s.length(); i++)
+		{
+			if (s.charAt(i) == '{')
+			{
+				if (depth == 0 )
+					last = i;
+
+				depth++;
+			}
+			else if (s.charAt(i) == '}')
+			{
+				depth--;
+				if (depth == 0 && !s.substring(last, i + 1).trim().isEmpty())
+				{
+					out.add(s.substring(last, i + 1));
+					last = i + 1;
+				}
+			}
+
+		}
+		return out;
+	}
+
+	public void loadLevel()
+	{
+		loadLevel(null);
+	}
+
+	public void loadLevel(boolean remote)
+	{
+		loadLevel(null, remote);
+	}
+
+	public void loadLevel(ILevelPreviewScreen s)
+	{
+		loadLevel(s, false);
+	}
+
+	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
+	{
+		Game.currentLevel = this;
+		Game.currentLevelString = this.levelString;
+
+		if (Game.deterministicMode)
+			random = new Random(Game.seed);
+		else
+			random = new Random(tilesRandomSeed);
+
+		if (ScreenPartyHost.isServer)
+			ScreenPartyHost.includedPlayers.clear();
+		else if (ScreenPartyLobby.isClient)
+			ScreenPartyLobby.includedPlayers.clear();
+
+		if (sc == null)
+			Obstacle.draw_size = 0;
+		else
+			Obstacle.draw_size = 50;
+
+		Chunk.Tile ft = Chunk.Tile.fallbackTile;
+		ft.colR = color.red;
+		ft.colG = color.green;
+		ft.colB = color.blue;
+
+		this.remote = remote;
+
+		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
+			Game.eventsOut.add(new EventLoadLevel(this));
+
+		Tank.currentID = 0;
+		Tank.freeIDs.clear();
+
+		ScreenGame.finishedQuick = false;
+
+		ScreenGame.finished = false;
+		ScreenGame.finishTimer = ScreenGame.finishTimerMax;
+
+		currentCloudCount = (int) (Math.random() * (double) this.sizeX / 10.0D + Math.random() * (double) this.sizeY / 10.0D);
+
+		if (sc instanceof ScreenLevelEditor)
+		{
+			ScreenLevelEditor s = (ScreenLevelEditor) sc;
+
+			s.level = this;
+
+			s.selectedTiles = new boolean[sizeX][sizeY];
+			Game.movables.remove(Game.playerTank);
+		}
+
+		this.reloadTiles();
+
+		for (Obstacle o : obstacles) {
+			Game.addObstacle(o, false);
+		}
+
+		for (Tank t : tanks) {
+			if (sc != null)
+				t.drawAge = 50;
+			Game.movables.add(t);
 		}
 
 		this.availablePlayerSpawns.clear();
@@ -534,8 +579,9 @@ public class Level
 					else
 						t1 = new Tile(t.posX, t.posY + 1);
 
+
 					if (t1.posX >= 0 && t1.posX < Game.currentSizeX && t1.posY >= 0 && t1.posY < Game.currentSizeY &&
-							!Game.isSolid(t1.posX, t1.posY) && isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
+							!Game.isSolid(t1.posX, t1.posY) && !isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
 					{
 						explored[t1.posX][t1.posY] = true;
 
@@ -723,13 +769,9 @@ public class Level
 		Game.currentSizeX = (int) (sizeX * Game.bgResMultiplier);
 		Game.currentSizeY = (int) (sizeY * Game.bgResMultiplier);
 
-		currentColorR = colorR;
-		currentColorG = colorG;
-		currentColorB = colorB;
+		currentColor = color;
 
-		currentColorVarR = colorVarR;
-		currentColorVarG = colorVarG;
-		currentColorVarB = colorVarB;
+		currentColorVar = colorVar;
 
 		currentLightIntensity = light;
 		currentShadowIntensity = shadow;
@@ -739,21 +781,10 @@ public class Level
 		addLevelBorders();
 
 		for (Obstacle o: Game.obstacles)
-		{
             o.postOverride();
 
-			Chunk c = Chunk.getChunk(o.posX, o.posY);
-			if (c != null)
-				c.addObstacle(o, false);
-        }
-
-		for (Movable m : Game.movables)
-			m.refreshFaces = true;
-		for (Obstacle o : Game.obstacles)
-			o.refreshHitboxes();
-
 		ScreenLevelEditor s = null;
-		
+
 		if (Game.screen instanceof ScreenLevelEditor)
 			s = (ScreenLevelEditor) Game.screen;
 		else if (Game.screen instanceof ScreenLevelEditorOverlay)
@@ -802,7 +833,7 @@ public class Level
 
 	public static boolean isDark()
 	{
-		return Level.currentColorR * 0.2126 + Level.currentColorG * 0.7152 + Level.currentColorB * 0.0722 <= 127 || currentLightIntensity <= 0.5;
+		return Level.currentColor.red * 0.2126 + Level.currentColor.green * 0.7152 + Level.currentColor.blue * 0.0722 <= 127 || currentLightIntensity <= 0.5;
 	}
 
 	public Tank lookupTank(String name)
@@ -846,6 +877,101 @@ public class Level
 
 	public boolean isLarge()
 	{
-		return !(this.sizeX * this.sizeY <= 100000 && this.tanks.length < 500);
+		return !(this.sizeX * this.sizeY <= 100000 && this.tanks.size() < 500);
+	}
+
+	public String stripFormatting()
+	{
+		String jsoncString = this.levelString;
+		if (jsoncString == null || jsoncString.isEmpty())
+		{
+			return jsoncString;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		boolean inString = false;
+		boolean inSingleLineComment = false;
+		boolean inMultiLineComment = false;
+
+		for (int i = 0; i < jsoncString.length(); i++)
+		{
+			char c = jsoncString.charAt(i);
+
+			if (inString)
+			{
+				sb.append(c);
+				if (c == '"')
+				{
+					// A quote is unescaped if it's not preceded by an odd number of backslashes.
+					int backslashes = 0;
+					for (int j = i - 1; j >= 0; j--)
+					{
+						if (jsoncString.charAt(j) == '\\')
+							backslashes++;
+						else
+							break;
+					}
+
+					if (backslashes % 2 == 0)
+						inString = false;
+				}
+			}
+			else if (inSingleLineComment)
+			{
+				if (c == '\n')
+					inSingleLineComment = false;
+			}
+			else if (inMultiLineComment)
+			{
+				// Check for end of multi-line comment: */
+				if (c == '*' && i + 1 < jsoncString.length() && jsoncString.charAt(i + 1) == '/')
+				{
+					inMultiLineComment = false;
+					i++; // Also skip the '/'
+				}
+			}
+			else
+			{
+				// Not in any special state, check for transitions or valid characters
+				if (c == '"')
+				{
+					inString = true;
+					sb.append(c);
+				}
+				else if (c == '/' && i + 1 < jsoncString.length())
+				{
+					char next = jsoncString.charAt(i + 1);
+					if (next == '/')
+					{
+						inSingleLineComment = true;
+						i++; // Also skip the second '/'
+					}
+					else if (next == '*')
+					{
+						inMultiLineComment = true;
+						i++; // Also skip the '*'
+					}
+					else
+					{
+						// It's a valid character (e.g. in a URL), not a comment start.
+						sb.append(c);
+					}
+				}
+				else if (!Character.isWhitespace(c))
+				{
+					sb.append(c);
+				}
+				// else, it's insignificant whitespace, so we ignore it
+			}
+		}
+
+		String ir = sb.toString();
+		ArrayList<String> objects = getJsonObjects(ir);
+		String out = "";
+		for (String o : objects) {
+			out += "\n" + o;
+		}
+
+		return out.substring(1);
 	}
 }

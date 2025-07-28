@@ -1030,13 +1030,13 @@ public class Game
 		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
 		Chunk.initialize();
 
-		Level.currentColorR = 235;
-		Level.currentColorG = 207;
-		Level.currentColorB = 166;
+		Level.currentColor.red = 235;
+		Level.currentColor.green = 207;
+		Level.currentColor.blue = 166;
 
-		Level.currentColorVarR = 20;
-		Level.currentColorVarG = 20;
-		Level.currentColorVarB = 20;
+		Level.currentColorVar.red = 20;
+		Level.currentColorVar.green = 20;
+		Level.currentColorVar.blue = 20;
 
 		Level.currentLightIntensity = 1.0;
 		Level.currentShadowIntensity = 0.75;

@@ -1163,6 +1163,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				for (int i = 0; i < 25 * Game.effectMultiplier; i++)
 				{
 					Effect e = Effect.createNewEffect(movable.posX, movable.posY, this.posZ, Effect.EffectType.stun);
+					e.linkedMovable = movable;
 					e.maxAge *= this.hitStun / 100.0;
 					double var = 50;
 					e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
@@ -1763,24 +1764,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 			Game.effects.add(e);
 		}
-	}
-
-	@Override
-	public boolean disableRayCollision()
-	{
-		return /*!bulletCollision()*/ true;		// temporary fix to avoid rays hitting a tank's own bullets
-	}
-
-	@Override
-	public boolean tankCollision()
-	{
-		return enableCollision && enableExternalCollisions;
-	}
-
-	@Override
-	public boolean bulletCollision()
-	{
-		return bulletCollision && externalBulletCollision && enableExternalCollisions;
 	}
 
 	public double getSize()

@@ -466,11 +466,11 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 					for (int k = -gasSpread; k <= gasSpread; k++)
 					{
-						double gasOff = 0;
+						double spreadOff = 0;
 						if (b instanceof BulletGas)
-							gasOff = Math.atan(((BulletGas) b).endSize / lifespan) / 2 * k;
+							spreadOff = Math.atan(((BulletGas) b).endSize / lifespan) / 2 * k;
 
-						gasOff += Math.toRadians(b.accuracySpread / 2) * k;
+						spreadOff += Math.toRadians(b.accuracySpread / 2) * k;
 
 						if (b.shotCount > 1)
 						{
@@ -480,7 +480,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 								baseOff = Math.toRadians(b.multishotSpread) * ((j * 1.0 / (b.shotCount - 1)) - 0.5);
 						}
 
-						Ray r = Ray.newRay(this.posX, this.posY, this.angle + baseOff + gasOff, 1, this);
+						Ray r = new Ray(this.posX, this.posY, this.angle + baseOff + spreadOff, 1, this);
 						r.bounces = b.bounces;
 						r.size = b.size;
 						if (k != 0)
@@ -488,11 +488,19 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 						r.range = lifespan - this.turretLength;
 
+						double mx = this.mouseX - this.posX;
+						double my = this.mouseY - this.posY;
+
+						double offset = baseOff + spreadOff;
+						double tx = Math.cos(offset) * mx + Math.sin(offset) * my;
+						double ty = -Math.sin(offset) * mx + Math.cos(offset) * my;
+						b.setTargetLocation(this.posX + tx, this.posY + ty);
+
 						if (b instanceof BulletArc)
-							((BulletArc) b).drawTrace(this.posX, this.posY, this.mouseX, this.mouseY, this.angle + baseOff + gasOff);
+							((BulletArc) b).drawTrace(this.posX, this.posY, this.posX + tx, this.posY + ty);
 
 						if (b instanceof BulletAirStrike)
-							((BulletAirStrike) b).drawTrace(this.posX, this.posY, this.mouseX, this.mouseY);
+							((BulletAirStrike) b).drawTrace(this.posX, this.posY, this.posX + ty, this.posY + tx);
 
 						r.vX /= 2;
 						r.vY /= 2;
@@ -516,6 +524,25 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			}
 			else
 				showTrace = false;
+		}
+
+		Item.ItemStack<?> ib = this.player.hotbar.itemBar.getSelectedAction(false);
+		Bullet b = null;
+		if (ib instanceof ItemBullet.ItemStackBullet)
+			b = ((ItemBullet.ItemStackBullet) ib).item.bullet;
+
+		if (!(b instanceof BulletArc || b instanceof BulletAirStrike))
+			this.pitch -= GameObject.angleBetween(this.pitch, 0) / 10 * Panel.frameFrequency;
+
+		if (b instanceof BulletArc)
+		{
+			double pitch = Math.atan(GameObject.distanceBetween(this.posX, this.posY, this.mouseX, this.mouseY) / b.speed * 0.5 * BulletArc.gravity / b.speed);
+			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
+		}
+		else if (b instanceof BulletAirStrike)
+		{
+			double pitch = Math.PI / 2;
+			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
 		}
 
 		super.update();

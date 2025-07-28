@@ -1,7 +1,7 @@
 /target/
 /build/
 /.gradle
-/.idea
+.idea
 .project
 .classpath
 .settings

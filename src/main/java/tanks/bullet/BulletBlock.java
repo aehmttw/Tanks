@@ -186,6 +186,10 @@ public class BulletBlock extends BulletArc
             this.minRange = 0;
             this.minAirTime = 0;
 
+            // Floating point precision errors...
+            x = Math.round(x * 100000) / 100000;
+            y = Math.round(y * 100000) / 100000;
+
             if (x >= Game.tile_size / 2 && x <= (Game.currentSizeX - 0.5) * Game.tile_size &&
                     y >= Game.tile_size / 2 && y <= (Game.currentSizeY - 0.5) * Game.tile_size)
                 this.setTargetLocation(x, y);
@@ -363,6 +367,8 @@ public class BulletBlock extends BulletArc
         double time = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
         double x = this.posX + this.vX * time;
         double y = this.posY + this.vY * time;
+        x = Math.round(x * 100000) / 100000;
+        y = Math.round(y * 100000) / 100000;
 
         double max = this.maxRange;
         double min = this.minRange;

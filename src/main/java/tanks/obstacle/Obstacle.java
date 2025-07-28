@@ -253,8 +253,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	public byte getOptionsByte(double h)
 	{
-		/* TODO: maybe re-implement pruning hidden obstacle faces, especially if adding obstacle grid
-
 		byte o = 0;
 
 		if (Obstacle.draw_size < Game.tile_size)
@@ -272,9 +270,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h)
 			o += 32;
 
-		return o;*/
-
-		return 0;
+		return o;
 	}
 
 	public void refreshHitboxes()
@@ -386,7 +382,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		obstacleOut.clear();
 		for (Obstacle o : Game.obstacles)
 		{
-			if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, x2, o.posY, y2))
+			if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))
 				obstacleOut.add(o);
 		}
 		return obstacleOut;

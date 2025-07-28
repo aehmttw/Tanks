@@ -796,6 +796,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 							continue;
 					}
 
+					if (this instanceof BulletArc || this instanceof BulletAirStrike)
+						continue;
+
 					boolean left = o.hasLeftNeighbor();
 					boolean right = o.hasRightNeighbor();
 					boolean up = o.hasUpperNeighbor();
@@ -1154,9 +1157,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		AttributeModifier a = AttributeModifier.newInstance(AttributeModifier.velocity, AttributeModifier.Operation.multiply, -1);
 		a.duration = this.hitStun;
 		movable.em().addAttribute(a);
-		if (!this.tank.isRemote)
+		if (!this.tank.isRemote && movable instanceof Tank)
 		{
-			Game.eventsOut.add(new EventBulletStunEffect(movable.posX, movable.posY, this.posZ, this.hitStun / 100.0));
+			Game.eventsOut.add(new EventBulletStunEffect((Tank) movable, this.hitStun / 100.0));
 
 			if (Game.effectsEnabled)
 			{

@@ -282,9 +282,9 @@ public class Chunk implements Comparable<Chunk>
 
     public static Tile setTileColor(Level l, Random r, Tile t)
     {
-        t.colR = l.colorR + (Game.fancyTerrain ? r.nextDouble() * l.colorVarR : 0);
-        t.colG = l.colorG + (Game.fancyTerrain ? r.nextDouble() * l.colorVarG : 0);
-        t.colB = l.colorB + (Game.fancyTerrain ? r.nextDouble() * l.colorVarB : 0);
+        t.colR = l.color.red + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.red : 0);
+        t.colG = l.color.green + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.green : 0);
+        t.colB = l.color.blue + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.blue : 0);
         t.depth = Game.fancyTerrain && Game.enable3dBg ? r.nextDouble() * 10 : 0;
         return t;
     }
@@ -525,10 +525,7 @@ public class Chunk implements Comparable<Chunk>
 
             Face[] faces = s.getFaces();
             for (int i = 0; i < 4; i++)
-            {
-                if (faces[i].lastValid)
-                    getSide(i).remove(faces[i]);
-            }
+                getSide(i).remove(faces[i]);
         }
 
         public ObjectAVLTreeSet<Face> getSide(int side)

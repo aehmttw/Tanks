@@ -1,15 +1,12 @@
 package tanks;
 
 import basewindow.Color;
-import main.Tanks;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.gui.screen.leveleditor.*;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.Item;
 import tanks.network.event.*;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleBeatBlock;
+import tanks.obstacle.*;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
@@ -516,11 +513,11 @@ public class Level
 
 		this.reloadTiles();
 
-		for (Obstacle o : obstacles) {
-			Game.addObstacle(o, false);
-		}
+		for (Obstacle o : obstacles)
+            Game.addObstacle(o, false);
 
-		for (Tank t : tanks) {
+		for (Tank t : tanks)
+        {
 			if (sc != null)
 				t.drawAge = 50;
 			Game.movables.add(t);

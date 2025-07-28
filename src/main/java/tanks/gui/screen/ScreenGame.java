@@ -1126,8 +1126,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					else
 						this.music = "battle.ogg";
 
-					this.musicID = "battle";
-
 					if (Level.isDark())
 						this.musicID = "battle_night";
 				}
@@ -2110,6 +2108,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public void updateMusic(String prevMusic)
 	{
+		if (!Game.game.window.soundsEnabled)
+			return;
+
 		Panel.forceRefreshMusic = !Objects.equals(this.music, prevMusic);
 
 		if (this.musicID != null && this.musicID.equals("ready"))
@@ -2315,30 +2316,30 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 			for (Movable m: Movable.getMovablesInRadius(x, y, Game.tile_size * 4))
 			{
-				if (!(m instanceof Tank) || m.destroy || ((Tank) m).hidden || spectatingTank == m)
-					continue;
+                if (!(m instanceof Tank) || m.destroy || ((Tank) m).hidden || spectatingTank == m)
+                    continue;
 
-				double ix = Drawing.drawing.gameToInterfaceCoordsX(m.posX);
-				double iy = Drawing.drawing.gameToInterfaceCoordsY(m.posY);
+                double ix = Drawing.drawing.gameToInterfaceCoordsX(m.posX);
+                double iy = Drawing.drawing.gameToInterfaceCoordsY(m.posY);
 
-				if (Movable.distanceBetween(x, y, m.posX, m.posY) < ((Tank) m).size + Game.tile_size / 2)
-				{
-					Drawing.drawing.setColor(((Tank) m).color);
-					Mine.drawRange2D(m.posX, m.posY, ((Tank) m).size + Game.tile_size / 2);
-					Drawing.drawing.setColor(255, 255, 255, 255, 255);
-					Drawing.drawing.drawInterfaceImage("icons/shown.png", ix, iy, Game.tile_size, Game.tile_size);
+                if (Movable.distanceBetween(x, y, m.posX, m.posY) < ((Tank) m).size + Game.tile_size / 2)
+                {
+                    Drawing.drawing.setColor(((Tank) m).color);
+                    Mine.drawRange2D(m.posX, m.posY, ((Tank) m).size + Game.tile_size / 2);
+                    Drawing.drawing.setColor(255, 255, 255, 255, 255);
+                    Drawing.drawing.drawInterfaceImage("icons/shown.png", ix, iy, Game.tile_size, Game.tile_size);
 
-					if (Level.isDark())
-						Drawing.drawing.setColor(255, 255, 255, 255, 255);
-					else
-						Drawing.drawing.setColor(0, 0, 0);
+                    if (Level.isDark())
+                        Drawing.drawing.setColor(255, 255, 255, 255, 255);
+                    else
+                        Drawing.drawing.setColor(0, 0, 0);
 
-					Drawing.drawing.setInterfaceFontSize(12);
-					Drawing.drawing.drawInterfaceText(ix, iy - Game.tile_size, "Click to spectate tank");
+                    Drawing.drawing.setInterfaceFontSize(12);
+                    Drawing.drawing.drawInterfaceText(ix, iy - Game.tile_size, "Click to spectate tank");
 
-					break;
-				}
-			}
+                    break;
+                }
+            }
 
 
 			if (spectatingTank != null)
@@ -2483,7 +2484,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			if (i == 5 && Game.enable3d)
 			{
 				double frac = Obstacle.draw_size / Game.tile_size;
-				Drawing.drawing.setColor(174 * frac + Level.currentColorR * (1 - frac), 92 * frac + Level.currentColorG * (1 - frac), 16 * frac + Level.currentColorB * (1 - frac));
+				Drawing.drawing.setColor(174 * frac + Level.currentColor.red * (1 - frac), 92 * frac + Level.currentColor.green * (1 - frac), 16 * frac + Level.currentColor.blue * (1 - frac));
 				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
 				Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
 				Drawing.drawing.fillForcedBox(-Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
@@ -2510,7 +2511,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			if (i == 9 && (Game.playerTank instanceof ILocalPlayerTank && Game.playerTank.showTouchCircle()))
+			if (i == 9 && (Game.playerTank != null && Game.playerTank.showTouchCircle()))
 			{
 				Drawing.drawing.setColor(255, 127, 0, 63);
 				Drawing.drawing.fillInterfaceOval(Drawing.drawing.gameToInterfaceCoordsX(Game.playerTank.posX),
@@ -2518,7 +2519,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						Game.playerTank.getTouchCircleSize(), Game.playerTank.getTouchCircleSize());
 			}
 
-			if (i == 9 && Game.playerTank instanceof ILocalPlayerTank && !Game.game.window.drawingShadow)
+			if (i == 9 && Game.playerTank != null && !Game.game.window.drawingShadow)
 			{
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 50);

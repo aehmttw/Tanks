@@ -2,6 +2,8 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletAirStrike;
+import tanks.bullet.BulletArc;
 import tanks.bullet.DefaultItems;
 import tanks.effect.AttributeModifier;
 import tanks.gui.IFixedMenu;
@@ -399,6 +401,26 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.lastAngle = this.angle;
             this.lastPitch = this.pitch;
             this.currentAngle = angle;
+
+            Item.ItemStack<?> ib = this.player.hotbar.itemBar.getSelectedAction(false);
+            Bullet b = null;
+            if (ib instanceof ItemBullet.ItemStackBullet)
+                b = ((ItemBullet.ItemStackBullet) ib).item.bullet;
+
+            if (!(b instanceof BulletArc || b instanceof BulletAirStrike))
+                this.pitch -= GameObject.angleBetween(this.pitch, 0) / 10 * Panel.frameFrequency;
+
+            if (b instanceof BulletArc)
+            {
+                double pitch = Math.atan(GameObject.distanceBetween(this.posX, this.posY, this.mouseX, this.mouseY) / b.speed * 0.5 * BulletArc.gravity / b.speed);
+                this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
+            }
+            else if (b instanceof BulletAirStrike)
+            {
+                double pitch = Math.PI / 2;
+                this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
+            }
+
             this.currentPitch = this.pitch;
 
             this.posX = x;

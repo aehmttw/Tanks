@@ -412,8 +412,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         if (Game.screen != this)
             return;
 
-        if (editor.tankNum >= Game.registryTank.tankEntries.size() + Game.currentLevel.customTanks.size())
-            editor.tankNum = Game.registryTank.tankEntries.size() + Game.currentLevel.customTanks.size() - 1;
+        if (editor.tankNum >= Game.registryTank.tankEntries.size() + this.editor.level.customTanks.size())
+            editor.tankNum = Game.registryTank.tankEntries.size() + this.editor.level.customTanks.size() - 1;
 
         Drawing.drawing.setColor(0, 0, 0, 128);
         Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 600);

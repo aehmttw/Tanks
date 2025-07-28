@@ -5,6 +5,7 @@ import basewindow.BaseFileManager;
 import basewindow.BaseWindow;
 import basewindow.ShaderGroup;
 import com.codedisaster.steamworks.SteamMatchmaking;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -54,19 +55,15 @@ public class Game
 
 	public static final double tile_size = 50;
 
-	public static Chunk.Tile[][] tiles = new Chunk.Tile[28][18];
-
 	public static UUID computerID;
 	public static final UUID clientID = UUID.randomUUID();
 
 	public static final int absoluteDepthBase = 1000;
 
-	public static ArrayList<Face> horizontalFaces = new ArrayList<>();
-	public static ArrayList<Face> verticalFaces = new ArrayList<>();
-
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
-	public static ArrayList<IAvoidObject> avoidObjects = new ArrayList<>();
+	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
+	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
 	public static ArrayList<Effect> tracks = new ArrayList<>();
 	public static ArrayList<Cloud> clouds = new ArrayList<>();
@@ -106,15 +103,15 @@ public class Game
 		}
 	}
 
-	public static HashSet<GroundTile> redrawGroundTiles = new HashSet<>();
+	public static ObjectArraySet<GroundTile> redrawGroundTiles = new ObjectArraySet<>();
 
 	public static Player player;
 
-	public static HashSet<Movable> removeMovables = new HashSet<>();
-	public static HashSet<Obstacle> removeObstacles = new HashSet<>();
-	public static HashSet<Effect> removeEffects = new HashSet<>();
-	public static HashSet<Effect> removeTracks = new HashSet<>();
-	public static HashSet<Cloud> removeClouds = new HashSet<>();
+	public static ObjectArraySet<Movable> removeMovables = new ObjectArraySet<>();
+	public static ObjectArraySet<Obstacle> removeObstacles = new ObjectArraySet<>();
+	public static ObjectArraySet<Effect> removeEffects = new ObjectArraySet<>();
+	public static ObjectArraySet<Effect> removeTracks = new ObjectArraySet<>();
+	public static ObjectArraySet<Cloud> removeClouds = new ObjectArraySet<>();
 
 	public static ArrayList<Effect> addEffects = new ArrayList<>();
 	public static Queue<Effect> recycleEffects = new LinkedList<>();
@@ -816,13 +813,17 @@ public class Game
 		addObstacle(o, true);
 	}
 
-	public static void addObstacle(Obstacle o, boolean redraw)
+	public static void addObstacle(Obstacle o, boolean refresh)
 	{
 		o.removed = false;
 		Game.obstacles.add(o);
 		o.postOverride();
 
-		if (redraw)
+		Chunk c = Chunk.getChunk(o.posX, o.posY);
+		if (c != null)
+			c.addObstacle(o, refresh);
+
+		if (refresh)
             redraw(o);
 	}
 
@@ -1046,42 +1047,23 @@ public class Game
 	public static Obstacle getObstacle(int tileX, int tileY)
 	{
 		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.fullObstacle : null;
-	}
-
-	public static Obstacle getSurfaceObstacle(int tileX, int tileY)
-	{
-		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.surfaceObstacle : null;
-	}
-
-	public static Obstacle getExtraObstacle(int tileX, int tileY)
-	{
-		Chunk.Tile t = Chunk.getTile(tileX, tileY);
-		return t != null ? t.extraObstacle : null;
+		return t != null ? t.obstacle() : null;
 	}
 
 	public static Obstacle getObstacle(double posX, double posY)
 	{
 		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
-
-	public static Obstacle getSurfaceObstacle(double posX, double posY)
-	{
-		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-	}
-
-	public static Obstacle getExtraObstacle(double posX, double posY)
-	{
-		return getExtraObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-	}
-
 	public static void removeObstacle(Obstacle o)
 	{
 		Drawing.drawing.terrainRenderer.remove(o);
 		o.removed = true;
 		redraw(o);
-		Chunk.runIfTilePresent(o.posX, o.posY, t -> t.remove(o));
+		Chunk c = Chunk.getChunk(o.posX, o.posY);
+		if (c != null)
+			c.removeObstacle(o);
+		if (o instanceof IAvoidObject)
+			Game.avoidObjects.remove(o);
 		Game.obstacles.remove(o);
     }
 
@@ -1131,9 +1113,6 @@ public class Game
 		Chunk.Tile t = Chunk.getTile(posX, posY);
 		if (t != null)
 			t.add(o);
-		Chunk.Tile t1 = Chunk.getTile2(posX, posY);
-		if (t1 != null)
-			t1.add(o);
 	}
 
 	public static double sampleGroundHeight(double px, double py)
@@ -1308,6 +1287,11 @@ public class Game
 		movables.clear();
 		effects.clear();
 		clouds.clear();
+		avoidObjects.clear();
+		obstaclesToUpdate.clear();
+
+		removeMovables.clear();
+		removeObstacles.clear();
 		recycleEffects.clear();
 		removeEffects.clear();
 		removeTracks.clear();

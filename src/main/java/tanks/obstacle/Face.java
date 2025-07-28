@@ -1,16 +1,11 @@
 package tanks.obstacle;
 
 import tanks.Direction;
+import tanks.tank.Tank;
 
 public class Face implements Comparable<Face>
 {
-    public double startX;
-    public double startY;
-    public double endX;
-    public double endY;
-
-    public boolean horizontal;
-    public boolean positiveCollision;
+    public double startX, startY, endX, endY;
 
     /**
      * The <code>startX</code> of a length 1 face, where index <code>i</code> of the array corresponds to
@@ -39,32 +34,6 @@ public class Face implements Comparable<Face>
     public final Direction direction;
     public boolean solidTank, solidBullet;
     public boolean valid = true;
-    public boolean lastValid;
-
-    @Deprecated
-    public Face(ISolidObject o, double x1, double y1, double x2, double y2, boolean horizontal, boolean positiveCollision, boolean tank, boolean bullet)
-    {
-        this.owner = o;
-        this.startX = x1;
-        this.startY = y1;
-        this.endX = x2;
-        this.endY = y2;
-        this.horizontal = horizontal;
-        this.positiveCollision = positiveCollision;
-
-        this.solidTank = tank;
-        this.solidBullet = bullet;
-        if (horizontal)
-            this.direction = positiveCollision ? Direction.up : Direction.down;
-        else
-            this.direction = positiveCollision ? Direction.right : Direction.left;
-    }
-
-    public Face(ISolidObject o, double x1, double y1, double x2, double y2, Direction direction, boolean tank, boolean bullet)
-    {
-        this(o, direction, tank, bullet);
-        update(x1, y1, x2, y2, true, tank, bullet);
-    }
 
     public Face(ISolidObject o, Direction direction, boolean tank, boolean bullet)
     {
@@ -72,6 +41,12 @@ public class Face implements Comparable<Face>
         this.direction = direction;
         this.solidTank = tank;
         this.solidBullet = bullet;
+    }
+
+    public Face(ISolidObject o, double x1, double y1, double x2, double y2, Direction direction, boolean tank, boolean bullet)
+    {
+        this(o, direction, tank, bullet);
+        update(x1, y1, x2, y2, true, tank, bullet);
     }
 
     public int compareTo(Face f)
@@ -95,7 +70,6 @@ public class Face implements Comparable<Face>
         this.startY = y1;
         this.endX = x2;
         this.endY = y2;
-        this.lastValid = this.valid;
         this.valid = valid;
         this.solidTank = tank;
         this.solidBullet = bullet;
@@ -126,9 +100,10 @@ public class Face implements Comparable<Face>
 
     public String toString()
     {
-        if (this.horizontal)
-            return this.startX + "-" + this.endX + " " + this.startY;
+        String ownerName = this.owner instanceof Obstacle ? ((Obstacle) this.owner).name : this.owner instanceof Tank ? ((Tank) this.owner).name : this.owner != null ? this.owner.getClass().getSimpleName() : "null";
+        if (this.direction.isNonZeroY())
+            return String.format("%.1f-%.1f %.1f  %s", this.startX, this.endX, this.startY, ownerName);
         else
-            return this.startX + " " + this.startY + "-" + this.endY;
+            return String.format("%.1f %.1f-%.1f  %s", this.startX, this.startY, this.endY, ownerName);
     }
 }

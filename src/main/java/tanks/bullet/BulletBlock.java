@@ -145,9 +145,9 @@ public class BulletBlock extends BulletArc
         if (ScreenGame.finishedQuick)
             return;
 
-        boolean found = Chunk.getIfPresent(x, y, true, tile -> !tile.canPlaceOn(o));
+        boolean canPlace = Chunk.getIfPresent(x, y, false, tile -> tile.canPlaceOn(o));
 
-        if (!found)
+        if (canPlace)
         {
             Game.addObstacle(o);
         }
@@ -157,7 +157,7 @@ public class BulletBlock extends BulletArc
             o.playDestroyAnimation(this.posX, this.posY, Game.tile_size);
         }
 
-        Game.eventsOut.add(new EventAddObstacleBullet(o, !found));
+        Game.eventsOut.add(new EventAddObstacleBullet(o, canPlace));
     }
 
     @Override

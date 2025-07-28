@@ -4,6 +4,7 @@ import basewindow.InputPoint;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.IDrawable;
+import tanks.Movable;
 import tanks.gui.screen.ScreenGame;
 import tanks.minigames.Arcade;
 import tanks.minigames.Minigame;
@@ -92,19 +93,7 @@ public class Joystick implements IDrawable
 
                     double dx = px - this.posX;
                     double dy = py - this.posY;
-
-                    double angle = 0;
-                    if (dx > 0)
-                        angle = Math.atan(dy / dx);
-                    else if (dx < 0)
-                        angle = Math.atan(dy / dx) + Math.PI;
-                    else
-                    {
-                        if (dy > 0)
-                            angle = Math.PI / 2;
-                        else if (dy < 0)
-                            angle = Math.PI * 3 / 2;
-                    }
+                    double angle = Movable.getPolarDirection(dx, dy);
 
                     this.inputAngle = (Math.PI * 2 + angle) % (Math.PI * 2);
 

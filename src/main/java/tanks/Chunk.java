@@ -324,20 +324,8 @@ public class Chunk implements Comparable<Chunk>
             t.add(o);
     }
 
-    public static Tile getTile(double x, double y)
-    {
-        return getTile((int) (x / Game.tile_size), (int) (y / Game.tile_size));
-    }
-
-    public static Tile getTile(int x, int y)
-    {
-        if (x < 0 || y < 0 || x >= Game.currentSizeX || y >= Game.currentSizeY)
-            return null;
-        return Game.tiles[x][y];
-    }
-
     /** Expects tile coordinates. */
-    public static Tile getTile2(int tileX, int tileY)
+    public static Tile getTile(int tileX, int tileY)
     {
         Chunk c = getChunk(tileX, tileY);
         if (c == null)
@@ -346,7 +334,7 @@ public class Chunk implements Comparable<Chunk>
     }
 
     /** Expects pixel coordinates. */
-    public static Tile getTile2(double posX, double posY)
+    public static Tile getTile(double posX, double posY)
     {
         Chunk c = getChunk(posX, posY);
         if (c == null)
@@ -408,14 +396,18 @@ public class Chunk implements Comparable<Chunk>
                 i += 1;
             }
         }
+
+        Drawing.drawing.setColor(255, 255, 255);
+        for (Movable m : Game.movables)
+            Drawing.drawing.drawText(m.posX, m.posY, m.getTouchingChunks().size() + "");
     }
 
     /** Given a rectangle's bounding box, clamps it to the level borders and draws it.
      * Also ensures a line width of 2. */
     private static void drawClampedRect(Level l, double x1, double y1, double x2, double y2)
     {
-        double sX = Math.max(2, Math.min(l.sizeX * Game.tile_size - x1, x2 - x1));
-        double sY = Math.max(2, Math.min(l.sizeY * Game.tile_size - y1, y2 - y1));
+        double sX = Math.max(1, Math.min(l.sizeX * Game.tile_size - x1, x2 - x1));
+        double sY = Math.max(1, Math.min(l.sizeY * Game.tile_size - y1, y2 - y1));
         Drawing.drawing.fillRect(x1 + sX / 2, y1 + sY / 2, sX, sY);
     }
 
@@ -431,24 +423,6 @@ public class Chunk implements Comparable<Chunk>
 
     public static void populateChunks(Level l, boolean clear)
     {
-        Game.tiles = new Tile[l.sizeX][l.sizeY];
-
-        int var = Game.fancyTerrain ? 1 : 0;
-
-        Random tilesRandom = new Random(l.tilesRandomSeed);
-        for (int i = 0; i < l.sizeX; i++)
-        {
-            for (int j = 0; j < l.sizeY; j++)
-            {
-                Tile t = new Tile();
-                t.colR = l.color.red + var * tilesRandom.nextDouble() * l.colorVar.red;
-                t.colG = l.color.green + var * tilesRandom.nextDouble() * l.colorVar.green;
-                t.colB = l.color.blue + var * tilesRandom.nextDouble() * l.colorVar.blue;
-                t.depth = Game.enable3dBg ? tilesRandom.nextDouble() * TILE_DEPTH_VARIATION * var : 0;
-                Game.tiles[i][j] = t;
-            }
-        }
-
         if (clear)
         {
             chunks.clear();
@@ -551,10 +525,7 @@ public class Chunk implements Comparable<Chunk>
 
             Face[] faces = s.getFaces();
             for (int i = 0; i < 4; i++)
-            {
-                if (faces[i].lastValid)
-                    getSide(i).remove(faces[i]);
-            }
+                getSide(i).remove(faces[i]);
         }
 
         public ObjectAVLTreeSet<Face> getSide(int side)

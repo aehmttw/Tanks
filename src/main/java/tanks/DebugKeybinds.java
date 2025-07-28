@@ -169,7 +169,11 @@ public class DebugKeybinds
 
             if (Game.game.window.pressedKeys.contains(InputCodes.KEY_1))
             {
-                Chunk.Tile t1 = Chunk.getTile2(posX, posY);
+                Chunk c = Chunk.getChunk(posX, posY);
+                Chunk.Tile t1 = Chunk.getTile(posX, posY);
+
+                if (c != null)
+                    text += " C: (" + c.chunkX + ", " + c.chunkY + ")";
 
                 if (t1 != null)
                 {

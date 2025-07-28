@@ -1659,7 +1659,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		this.save(this.name);
 	}
 
-	public void save(String levelName) {
+	public void save(String levelName)
+	{
 		StringBuilder level = new StringBuilder("{");
 
 		if (!this.level.editable)
@@ -1685,8 +1686,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 					unmarked.remove(o);
 				}
-
-				//level += x + "-" + y + ",";
 			}
 
 			//compression
@@ -1765,23 +1764,23 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			}
 		}
 
-        for (Obstacle obstacle : unmarked)
-        {
-            level.append((int) (obstacle.posX / Game.tile_size)).append("-").append((int) (obstacle.posY / Game.tile_size));
-            level.append("-").append(obstacle.name);
+		for (Obstacle obstacle : unmarked)
+		{
+			level.append((int) (obstacle.posX / Game.tile_size)).append("-").append((int) (obstacle.posY / Game.tile_size));
+			level.append("-").append(obstacle.name);
 
-            if (obstacle instanceof ObstacleUnknown && ((ObstacleUnknown) obstacle).metadata != null)
-                level.append("-").append(((ObstacleUnknown) obstacle).metadata);
-            else
-            {
-                String meta = obstacle.getMetadata();
-                if (!meta.isEmpty())
-                    level.append("-").append(meta);
-            }
+			if (obstacle instanceof ObstacleUnknown && ((ObstacleUnknown) obstacle).metadata != null)
+				level.append("-").append(((ObstacleUnknown) obstacle).metadata);
+			else
+			{
+				String meta = obstacle.getMetadata();
+				if (!meta.isEmpty())
+					level.append("-").append(meta);
+			}
 
 
-            level.append(",");
-        }
+			level.append(",");
+		}
 
 		if (level.charAt(level.length() - 1) == ',')
 		{
@@ -1809,20 +1808,20 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		}
 
 		if (Game.movables.isEmpty())
-            level.append("|");
+			level.append("|");
 
 		level = new StringBuilder(level.substring(0, level.length() - 1));
 
 		level.append("|");
 
-        for (Team t : teams)
-        {
-            level.append(t.name).append("-").append(t.friendlyFire);
-            if (t.enableColor)
-                level.append("-").append(t.teamColor.red).append("-").append(t.teamColor.green).append("-").append(t.teamColor.blue);
+		for (Team t : teams)
+		{
+			level.append(t.name).append("-").append(t.friendlyFire);
+			if (t.enableColor)
+				level.append("-").append(t.teamColor.red).append("-").append(t.teamColor.green).append("-").append(t.teamColor.blue);
 
-            level.append(",");
-        }
+			level.append(",");
+		}
 
 		level = new StringBuilder(level.substring(0, level.length() - 1));
 
@@ -1871,13 +1870,17 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 			if (!this.level.editable)
 			{
 				return;
-			} else {
-				try {
+			}
+			else
+			{
+				try
+				{
 					Level oldLevel = new Level(new String(Files.readAllBytes(Paths.get(file.path))));
-					if (oldLevel.stripFormatting().equals(Game.currentLevelString)) {
+					if (oldLevel.stripFormatting().equals(Game.currentLevelString))
 						return;
-					}
-				} catch (IOException e) {
+				}
+				catch (IOException e)
+				{
 					Game.exitToCrash(e);
 				}
 			}
@@ -2441,8 +2444,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
 	public void play()
 	{
-//		if (this.modified)
-			this.save();
+		this.save();
 
 		this.replaceSpawns();
 

@@ -92,6 +92,8 @@ public class Compatibility
                     return BulletEffect.fire.getCopy();
                 case "trail":
                     return BulletEffect.trail.getCopy();
+                case "long_trail":
+                    return BulletEffect.long_trail.getCopy();
                 case "dark_fire":
                     return BulletEffect.dark_fire.getCopy();
                 case "fire_and_smoke":

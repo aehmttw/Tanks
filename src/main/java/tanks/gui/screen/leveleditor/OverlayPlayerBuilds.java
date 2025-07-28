@@ -94,7 +94,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     public void refreshButtons()
     {
         this.tankButtons.buttons.clear();
-        int count = Game.currentLevel.playerBuilds.size();
+        int count = this.editor.level.playerBuilds.size();
         for (int i = 0; i <= count; i++)
         {
             int index = i % (rows * cols);
@@ -107,7 +107,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
             if (i < count)
             {
-                t = Game.currentLevel.playerBuilds.get(i);
+                t = this.editor.level.playerBuilds.get(i);
             }
             else
             {
@@ -209,7 +209,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
         if (from.equals(to))
             return true;
 
-        for (TankPlayable t: Game.currentLevel.playerBuilds)
+        for (TankPlayable t: this.editor.level.playerBuilds)
         {
             if (to.equals(t.name))
                 return false;

@@ -7,11 +7,9 @@ import tanks.effect.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.*;
 import tanks.network.event.*;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleTeleporter;
+import tanks.obstacle.*;
 import tanks.registry.RegistryTank;
 import tanks.tankson.*;
-import tanks.translation.Translation;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -1323,14 +1321,24 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 	}
 
+    private double[] col = null;
+
 	public void followPath()
 	{
 		this.seekTimer -= Panel.frameFrequency;
 
-		/*for (Tile t: this.path)
+		if (Game.showPathfinding)
 		{
-			Game.effects.add(Effect.createNewEffect(t.posX, t.posY, 25, Effect.EffectType.laser));
-		}*/
+            if (col == null)
+                col = Game.getRainbowColor((networkID % 10) * 0.1);
+
+			for (Tile t : this.path)
+			{
+				Effect e = Effect.createNewEffect(t.posX, t.posY, 25, Effect.EffectType.laser);
+				e.maxAge = 1;
+				Game.effects.add(e.setColor(col[0], col[1], col[2]));
+			}
+		}
 
 		if (this.path.isEmpty())
 		{

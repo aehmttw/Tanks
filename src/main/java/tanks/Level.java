@@ -82,7 +82,7 @@ public class Level
 	public ArrayList<Item.ShopItem> clientShop = new ArrayList<>();
 	public ArrayList<Item.ItemStack<?>> clientStartingItems = new ArrayList<>();
 
-	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
+	public ArrayList<TankAIControlled> customTanks;
 
 	public HashMap<String, Integer> itemNumbers = new HashMap<>();
 
@@ -94,6 +94,11 @@ public class Level
 
 	public HashMap<String, Tank> tankLookupTable = null;
 
+    public Level(String level)
+    {
+        this(level, new ArrayList<>());
+    }
+
 	/**
 	 * A level string is structured like this:<br>
 	 * (parentheses signify required parameters, and square brackets signify optional parameters.<br>
@@ -101,8 +106,9 @@ public class Level
 	 * Do not include these in the level string.)<br>
 	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
 	 */
-	public Level(String level)
+	public Level(String level, ArrayList<TankAIControlled> customTanks)
 	{
+        this.customTanks = customTanks;
 		String[] preset = new String[0], screen = new String[0], obstaclesPos = new String[0], tanks = new String[0], teams;
 
 		if (ScreenPartyHost.isServer)
@@ -436,14 +442,14 @@ public class Level
 		ArrayList<String> out = new ArrayList<>();
 		for (int i = 0; i < s.length(); i++)
 		{
-			if (s.charAt(i) == '{')
+			if (s.charAt(i) == '{' || s.charAt(i) == '[')
 			{
 				if (depth == 0 )
 					last = i;
 
 				depth++;
 			}
-			else if (s.charAt(i) == '}')
+			else if (s.charAt(i) == '}' || s.charAt(i) == ']')
 			{
 				depth--;
 				if (depth == 0 && !s.substring(last, i + 1).trim().isEmpty())

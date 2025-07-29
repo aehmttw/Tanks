@@ -168,7 +168,7 @@ public class TeleporterOrb extends Movable
 			this.posX = this.iX * frac + this.dX * (1 - frac);
 			this.posY = this.iY * frac + this.dY * (1 - frac);
 		}
-		
+
 		this.tank.posX = this.posX;
 		this.tank.posY = this.posY;
 		this.tank.posZ = this.posZ;
@@ -220,9 +220,9 @@ public class TeleporterOrb extends Movable
 			}
 		}
 
-		this.vX = this.posX - prevX;
-		this.vY = this.posY - prevY;
-		this.vZ = this.posZ - prevZ;
+//		this.vX = this.posX - prevX;
+//		this.vY = this.posY - prevY;
+//		this.vZ = this.posZ - prevZ;
 
 		this.prevX = this.posX;
 		this.prevY = this.posY;

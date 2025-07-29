@@ -443,4 +443,9 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
                     obstacleOut.add(o);
 		return obstacleOut;
 	}
+
+    public Effect getCompanionEffect()
+    {
+        return null;
+    }
 }

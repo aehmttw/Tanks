@@ -84,8 +84,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             Crusade.CrusadeLevel level = previous2.crusade.levels.remove(insertionIndex + 1);
 
             ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, insertionIndex + 2, previous2);
-            Level l = new Level(level.levelString);
-            l.customTanks = level.tanks;
+            Level l = new Level(level.levelString, level.tanks);
             l.loadLevel(s);
             Game.screen = s;
         }
@@ -102,8 +101,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             Crusade.CrusadeLevel level = previous2.crusade.levels.remove(insertionIndex - 1);
 
             ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, insertionIndex, previous2);
-            Level l = new Level(level.levelString);
-            l.customTanks = level.tanks;
+            Level l = new Level(level.levelString, level.tanks);
             l.loadLevel(s);
             Game.screen = s;
         }

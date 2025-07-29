@@ -24,10 +24,18 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
 
     public Button itemTabButton;
 
+    public boolean defaultUnlimitedItems = false;
+
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
     {
         Game.screen = new ScreenAddSavedItem(this, (b) ->
         {
+            if (defaultUnlimitedItems)
+            {
+                b.stackSize = 0;
+                b.maxStackSize = 0;
+            }
+
             this.setTarget(b);
             Game.screen = this;
         }, "My", Item.class);
@@ -131,12 +139,12 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             else if (is instanceof ItemMine.ItemStackMine)
             {
                 this.objectEditorScreen = new ScreenEditorMine(new FieldPointer<>(item, item.getClass().getField("mine"), false), this.prevScreen);
-                this.objectEditorScreen.forceDisplayTabs = true;
-                Button b = this.objectEditorScreen.topLevelButtons.get(0);
-                b.posX = this.itemTabButton.posX;
-                b.posY = this.itemTabButton.posY - 60;
-                b.sizeX = this.itemTabButton.sizeX;
-                b.imageXOffset = this.itemTabButton.imageXOffset;
+//                this.objectEditorScreen.forceDisplayTabs = true;
+//                Button b = this.objectEditorScreen.topLevelButtons.get(0);
+//                b.posX = this.itemTabButton.posX;
+//                b.posY = this.itemTabButton.posY - 60;
+//                b.sizeX = this.itemTabButton.sizeX;
+//                b.imageXOffset = this.itemTabButton.imageXOffset;
             }
             else
                 this.objectEditorScreen = null;

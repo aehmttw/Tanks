@@ -140,7 +140,7 @@ public class Game
     public static final int network_protocol = 58;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
-	public static boolean showTankIDs = false;
+	public static boolean showNetworkIDs = false;
 	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
 	public static final boolean cinematic = false;
@@ -295,7 +295,8 @@ public class Game
 	public static final String crusadeDir = directoryPath + "/crusades";
 	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String itemDir = directoryPath + "/items";
-	public static final String tankDir = directoryPath + "/tanks";
+    public static final String bulletEffectsDir = directoryPath + "/bullet_effects";
+    public static final String tankDir = directoryPath + "/tanks";
 	public static final String buildDir = directoryPath + "/builds";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
@@ -653,6 +654,12 @@ public class Game
 		{
 			itemsFile.mkdirs();
 		}
+
+        BaseFile effectsFile = game.fileManager.getFile(homedir + bulletEffectsDir);
+        if (!effectsFile.exists())
+        {
+            effectsFile.mkdirs();
+        }
 
 		BaseFile tanksFile = game.fileManager.getFile(homedir + tankDir);
 		if (!tanksFile.exists())

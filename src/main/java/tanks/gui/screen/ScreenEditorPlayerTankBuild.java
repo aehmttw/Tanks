@@ -669,6 +669,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             {
                 Consumer<Item.ItemStack<?>> addItem = (Item.ItemStack<?> i) ->
                 {
+                    i.maxStackSize = 0;
+                    i.stackSize = 0;
                     target.get().abilities.add(i);
 
                     ScreenEditorItem s = new ScreenEditorItem(new ArrayListIndexPointer<>(target.get().abilities, target.get().abilities.size() - 1), screen);

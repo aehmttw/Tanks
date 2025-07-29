@@ -685,9 +685,7 @@ public class TerrainRenderer
         {
             Obstacle top = t.obstacle();
             if (top != null && top.replaceTiles && !top.removed)
-            {
                 top.drawTile(t, r, g, b, depth, getExtra(x, y));
-            }
             else
             {
                 byte o = BaseShapeRenderer.hide_behind_face;

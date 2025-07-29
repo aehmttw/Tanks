@@ -282,8 +282,7 @@ public class Crusade
 
 	public void loadLevel()
 	{
-		Level l = new Level(this.levels.get(this.currentLevel).levelString);
-		l.customTanks = this.customTanks;
+		Level l = new Level(this.levels.get(this.currentLevel).levelString, this.customTanks);
 
 		Game.player.hotbar.enabledCoins = true;
 		Game.player.hotbar.itemBar.showItems = true;

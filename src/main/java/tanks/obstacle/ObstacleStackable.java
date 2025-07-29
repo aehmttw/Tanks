@@ -120,7 +120,7 @@ public class ObstacleStackable extends Obstacle
 
         Drawing.drawing.setColor(r, g, b, a, 0.5);
         Drawing.drawing.fillBox(this.posX, this.posY, this.startHeight * Game.tile_size,
-                Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, this.getOptionsByte(this.getTileHeight()));
+                Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, (byte) 0);
     }
 
     @Override

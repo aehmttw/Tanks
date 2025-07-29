@@ -163,4 +163,19 @@ public class ObstacleBoostPanel extends Obstacle
         return 10;
     }
 
+    @Override
+    public Effect getCompanionEffect()
+    {
+        if (Game.glowEnabled && brightness > 0)
+        {
+            glow.posX = this.posX;
+            glow.posY = this.posY;
+            glow.size = this.brightness;
+
+            return glow;
+        }
+
+        return null;
+    }
+
 }

@@ -249,6 +249,9 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                         removeEffects.add(e);
                 }
 
+                effects.removeAll(removeEffects);
+                removeEffects.clear();
+
                 for (Effect f : this.effects)
                 {
                     f.draw();
@@ -441,6 +444,9 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
             if (this.colorIndex == 1 || (this.colorIndex == 4 && tank.emblem != null) || (this.colorIndex == 2 && tank.enableSecondaryColor) ||  (this.colorIndex == 3 && tank.enableTertiaryColor))
                 this.colorPicker.update();
+
+            if (!tank.enableSecondaryColor)
+                Turret.setSecondary(tank.color, tank.secondaryColor);
         }
 
         @Override

@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
@@ -18,10 +19,10 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public static double mine_size = 30;
     public static double mine_radius = Game.tile_size * 2.25;
 
-    @Property(id = "explosion", name = "Explosion")
+    @Property(id = "explosion", name = "Explosion", category = MinePropertyCategory.mine)
     public Explosion explosion = new Explosion();
 
-    @Property(id = "timer", name = "Fuse length", desc = "The mine will explode this much time after it is placed \n \n 1 time unit = 0.01 seconds")
+    @Property(id = "timer", name = "Fuse length", desc = "The mine will explode this much time after it is placed \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
     public double timer = 1000;
 
     @Property(id = "size", name = "Size")
@@ -32,15 +33,21 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public double outlineColorB;
     public double height = 0;
 
-    @Property(id = "triggered_timer", name = "Triggered fuse length", desc = "If an enemy tank is within this mine's radius, its fuse will be shortened to this length \n \n 1 time unit = 0.01 seconds")
+    @Property(id = "triggered_timer", name = "Triggered fuse length", desc = "If an enemy tank is within this mine's radius, its fuse will be shortened to this length \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
     public double triggeredTimer = 50;
 
     public Tank tank;
     public ItemMine.ItemStackMine item;
     public int lastBeep = Integer.MAX_VALUE;
 
-    @Property(id = "max_live_mines", name = "Max live mines", desc = "The maximum number of this mine placed by one tank that can be onscreen at a time")
+    @Property(id = "max_live_mines", name = "Max live mines", desc = "The maximum number of this mine placed by one tank that can be onscreen at a time", category = MinePropertyCategory.mine)
     public int maxLiveMines = 2;
+
+    @Property(id = "color", name = "Initial color", miscType = Property.MiscType.colorRGB, category = MinePropertyCategory.colors)
+    public Color initialColor = new Color(255, 255, 0);
+
+    @Property(id = "color2", name = "Final color", miscType = Property.MiscType.colorRGB, category = MinePropertyCategory.colors)
+    public Color finalColor = new Color(255, 0, 0);
 
     public int networkID = -1;
 
@@ -152,10 +159,13 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
                 Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 4, this.size * 4);
         }
 
-        Drawing.drawing.setColor(255, Math.min(1000, this.timer) / 1000.0 * 255, 0, 255, 0.5);
+        double frac = Math.min(1000, this.timer) / 1000.0;
+        Drawing.drawing.setColor(this.initialColor.red * frac + this.finalColor.red * (1 - frac),
+            this.initialColor.green * frac + this.finalColor.green * (1 - frac),
+            this.initialColor.blue * frac + this.finalColor.blue * (1 - frac), 255, 0.5);
 
         if (timer < 150 && ((int) timer % 20) / 10 == 1)
-            Drawing.drawing.setColor(255, 255, 0, 255, 0.5);
+            Drawing.drawing.setColor(this.initialColor, 255, 0.5);
 
         if (Game.enable3d)
             Drawing.drawing.fillOval(this.posX, this.posY, this.posZ + height + 7.5, this.size * 0.8, this.size * 0.8, true, false);

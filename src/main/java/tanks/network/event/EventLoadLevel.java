@@ -83,11 +83,11 @@ public class EventLoadLevel extends PersonalEvent
 			if (level.startsWith("minigame="))
 				Game.currentLevel = Game.registryMinigame.minigames.get(level.substring(level.indexOf("=") + 1)).getConstructor().newInstance();
 			else
-				Game.currentLevel = new Level(level);
+				Game.currentLevel = new Level(level, true);
 
 			Game.currentLevel.startTime = startTime;
 			Game.currentLevel.disableFriendlyFire = disableFriendlyFire;
-			Game.currentLevel.loadLevel(true);
+			Game.currentLevel.loadLevel();
 		}
 		catch (Exception e)
 		{

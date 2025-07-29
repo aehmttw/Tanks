@@ -96,7 +96,17 @@ public class Level
 
     public Level(String level)
     {
-        this(level, new ArrayList<>());
+        this(level, false);
+    }
+
+    public Level(String level, boolean remote)
+    {
+        this(level, new ArrayList<>(), remote);
+    }
+
+    public Level(String level, ArrayList<TankAIControlled> customTanks)
+    {
+        this(level, customTanks, false);
     }
 
 	/**
@@ -106,8 +116,10 @@ public class Level
 	 * Do not include these in the level string.)<br>
 	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
 	 */
-	public Level(String level, ArrayList<TankAIControlled> customTanks)
+	public Level(String level, ArrayList<TankAIControlled> customTanks, boolean remote)
 	{
+        this.remote = remote;
+
         this.customTanks = customTanks;
 		String[] preset = new String[0], screen = new String[0], obstaclesPos = new String[0], tanks = new String[0], teams;
 
@@ -399,10 +411,6 @@ public class Level
 					t.setMetadata(metadata.toString());
 				Game.currentLevel = l;
 
-				// Don't do this in your code! We only want to dynamically generate tank IDs on level load!
-				t.networkID = Tank.nextFreeNetworkID();
-				Tank.idMap.put(t.networkID, t);
-
 				if (remote)
 					this.tanks.add(new TankRemote(t));
 				else
@@ -468,18 +476,8 @@ public class Level
 		loadLevel(null);
 	}
 
-	public void loadLevel(boolean remote)
-	{
-		loadLevel(null, remote);
-	}
-
-	public void loadLevel(ILevelPreviewScreen s)
-	{
-		loadLevel(s, false);
-	}
-
-	public void loadLevel(ILevelPreviewScreen sc, boolean remote)
-	{
+	public void loadLevel(ILevelPreviewScreen sc)
+    {
 		Game.currentLevel = this;
 		Game.currentLevelString = this.levelString;
 
@@ -502,8 +500,6 @@ public class Level
 		ft.colR = color.red;
 		ft.colG = color.green;
 		ft.colB = color.blue;
-
-		this.remote = remote;
 
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventLoadLevel(this));
@@ -658,6 +654,17 @@ public class Level
 				}
 			}
 		}
+
+        for (Movable m: Game.movables)
+        {
+            if (m instanceof Tank)
+            {
+                Tank t = (Tank) m;
+                // Don't do this in your code! We only want to dynamically generate tank IDs on level load!
+                t.networkID = Tank.nextFreeNetworkID();
+                Tank.idMap.put(t.networkID, t);
+            }
+        }
 
 		playerCount = Math.min(playerCount, this.includedPlayers.size());
 

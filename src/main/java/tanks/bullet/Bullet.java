@@ -1650,6 +1650,13 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (this.homingSharpness != 0 && !this.homingSilent)
 			this.drawHoming();
+
+        if (Game.showNetworkIDs)
+        {
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setFontSize(30);
+            Drawing.drawing.drawText(this.posX, this.posY, 50, this.networkID + "");
+        }
 	}
 
 	public void drawHoming()

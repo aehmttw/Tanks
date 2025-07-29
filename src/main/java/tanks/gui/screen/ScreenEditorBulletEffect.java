@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -12,6 +13,7 @@ import tanks.gui.Button;
 import tanks.gui.EmptySpace;
 import tanks.gui.ITrigger;
 import tanks.gui.SelectorColor;
+import tanks.item.Item;
 import tanks.tank.Turret;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.FieldPointer;
@@ -19,6 +21,7 @@ import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 import tanks.translation.Translation;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -28,8 +31,55 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     public double start;
     public double end;
 
+    public TabTrail trailTab;
+
     public ArrayList<Effect> particles = new ArrayList<>();
     public ArrayList<Effect> removeParticles = new ArrayList<>();
+
+    public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
+            Game.screen = new ScreenAddSavedBulletEffect(this, (b) ->
+            {
+                this.setTarget(b);
+                trailTab.setupTrails();
+                Game.screen = this;
+            })
+    );
+
+    public boolean save(BulletEffect e, boolean overwrite)
+    {
+        BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.bulletEffectsDir + "/" + System.currentTimeMillis() + ".tanks");
+
+        if (!f.exists() || overwrite)
+        {
+            try
+            {
+                if (!f.exists())
+                    f.create();
+
+                f.startWriting();
+                f.println(e.toString());
+                f.stopWriting();
+
+                return true;
+            }
+            catch (IOException ex)
+            {
+                Game.exitToCrash(ex);
+            }
+        }
+
+        return false;
+    }
+
+    public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
+    {
+        BulletEffect e = target.get();
+        if (this.save(e, false))
+            this.message = "Bullet effect saved to templates!";
+        else
+            this.message = "Failed to save bullet effect!";
+    }
+    );
 
     public ScreenEditorBulletEffect(Pointer<BulletEffect> t, Screen screen)
     {
@@ -43,7 +93,8 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     public void setupTabs()
     {
         setTrailLength();
-        this.currentTab = new TabTrail(this, "Trail", BulletEffectPropertyCategory.trail);
+        this.trailTab = new TabTrail(this, "Trail", BulletEffectPropertyCategory.trail);
+        this.currentTab = trailTab;
         new TabParticles(this, "Particles", BulletEffectPropertyCategory.particle);
         new TabGlow(this, "Glow", BulletEffectPropertyCategory.glow);
 
@@ -201,6 +252,12 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     {
         super.update();
 
+        if (this.message != null)
+            return;
+
+        load.update();
+        save.update();
+
         for (Effect e: this.particles)
         {
             e.update();
@@ -247,6 +304,12 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
 
         super.draw();
 
+        if (this.message != null)
+            return;
+
+        load.draw();
+        save.draw();
+
         double y = 175;
         BulletEffect e = this.target.get();
 
@@ -280,11 +343,67 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
 
     public class TabTrail extends Tab
     {
+        public ArrayList<Trail> trails;
+
+        public int page = 0;
+        public static final int trails_per_page = 5;
+        public static final int buttons_start = 300;
+        public static final int buttons_spacing = 80;
+
+        public Button[] upButtons = new Button[trails_per_page];
+        public Button[] downButtons = new Button[trails_per_page];
+
+        public double padding = 80;
+
+        Button next = new Button(screen.centerX + screen.objXSpace / 2, screen.centerY + screen.objYSpace * 4.75, screen.objWidth, screen.objHeight, "Next page", () -> page++);
+
+        Button prev = new Button(screen.centerX - screen.objXSpace / 2, screen.centerY + screen.objYSpace * 4.75, screen.objWidth, screen.objHeight, "Previous page", () -> page--);
+
+        Button first = new Button(screen.centerX - screen.objXSpace - screen.objHeight * 2, screen.centerY + screen.objYSpace * 4.75, screen.objHeight, screen.objHeight, "", () -> page = 0);
+
+        Button last = new Button(screen.centerX + screen.objXSpace + screen.objHeight * 2, screen.centerY + screen.objYSpace * 4.75, screen.objHeight, screen.objHeight, "", new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                page = (buttons.size() - 1) / trails_per_page;
+            }
+        }
+        );
+
+        public ArrayList<Button> buttons = new ArrayList<>();
+
         public TabTrail(ScreenEditorTanksONable<BulletEffect> screen, String name, String category)
         {
             super(screen, name, category);
 
             this.trails = screen.target.get().trailEffects;
+
+            for (int i = 0; i < trails_per_page; i++)
+            {
+                int j = i;
+                upButtons[i] = new Button(Drawing.drawing.interfaceSizeX * 0.8 + padding / 2 + 50, buttons_start + buttons_spacing * i, 60, 60, "", () ->
+                {
+                    int p = j + page * trails_per_page;
+                    this.trails.add(p - 1, this.trails.remove(p));
+                    this.setupTrails();
+                });
+
+                downButtons[i] = new Button(Drawing.drawing.interfaceSizeX * 0.8 + padding / 2 + 130, buttons_start + buttons_spacing * i, 60, 60, "", () ->
+                {
+                    int p = j + page * trails_per_page;
+                    this.trails.add(p + 1, this.trails.remove(p));
+                    this.setupTrails();
+                });
+
+                upButtons[i].imageSizeX = 30;
+                upButtons[i].imageSizeY = 30;
+                upButtons[i].image = "icons/arrow_up.png";
+
+                downButtons[i].imageSizeX = 30;
+                downButtons[i].imageSizeY = 30;
+                downButtons[i].image = "icons/arrow_down.png";
+            }
 
             this.setupTrails();
 
@@ -318,35 +437,9 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
             this.prev.enabled = false;
         }
 
-        public ArrayList<Trail> trails;
-
-        public int page = 0;
-        public static final int trails_per_page = 5;
-        public static final int buttons_start = 300;
-        public static final int buttons_spacing = 80;
-
-        public double padding = 80;
-
-        Button next = new Button(screen.centerX + screen.objXSpace / 2, screen.centerY + screen.objYSpace * 4.75, screen.objWidth, screen.objHeight, "Next page", () -> page++);
-
-        Button prev = new Button(screen.centerX - screen.objXSpace / 2, screen.centerY + screen.objYSpace * 4.75, screen.objWidth, screen.objHeight, "Previous page", () -> page--);
-
-        Button first = new Button(screen.centerX - screen.objXSpace - screen.objHeight * 2, screen.centerY + screen.objYSpace * 4.75, screen.objHeight, screen.objHeight, "", () -> page = 0);
-
-        Button last = new Button(screen.centerX + screen.objXSpace + screen.objHeight * 2, screen.centerY + screen.objYSpace * 4.75, screen.objHeight, screen.objHeight, "", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                page = (buttons.size() - 1) / trails_per_page;
-            }
-        }
-        );
-
-        public ArrayList<Button> buttons = new ArrayList<>();
-
         public void setupTrails()
         {
+            this.trails = screen.target.get().trailEffects;
             this.buttons.clear();
             for (int i = 0; i < this.trails.size(); i++)
             {
@@ -364,6 +457,15 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                     s.onComplete = this::setupTrails;
                     Game.screen = s;
                 }));
+                if (this.trails.get(i).glow)
+                {
+                    this.buttons.get(i).bgColR = 140;
+                    this.buttons.get(i).bgColG = 140;
+                    this.buttons.get(i).bgColB = 140;
+                    this.buttons.get(i).selectedColR -= 115;
+                    this.buttons.get(i).selectedColG -= 115;
+                    this.buttons.get(i).selectedColB -= 115;
+                }
             }
 
             this.buttons.add(new Button(Drawing.drawing.interfaceSizeX / 2, buttons_start + buttons_spacing * (this.trails.size() % trails_per_page), 60, 60, "+", () ->
@@ -378,10 +480,18 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         @Override
         public void update()
         {
+            int n = 0;
             for (int i = trails_per_page * page; i < trails_per_page * (page + 1); i++)
             {
                 if (i < this.buttons.size())
                     buttons.get(i).update();
+
+                upButtons[n].enabled = i != 0;
+                downButtons[n].enabled = i < trails.size() - 1;
+
+                upButtons[n].update();
+                downButtons[n].update();
+                n++;
             }
 
             if (trails.size() >= trails_per_page)
@@ -424,15 +534,24 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                 max = Math.max(max, t.maxLength + t.delay);
             }
 
+            int n = 0;
             for (int i = trails_per_page * page; i < trails_per_page * (page + 1); i++)
             {
                 if (i < this.trails.size())
                 {
                     buttons.get(i).draw();
                     this.trails.get(i).drawForInterface(start, end, buttons_start + buttons_spacing * (i % trails_per_page), Bullet.bullet_size, max);
+
+                    upButtons[n].enabled = i != 0;
+                    downButtons[n].enabled = i < trails.size() - 1;
+
+                    upButtons[n].draw();
+                    downButtons[n].draw();
                 }
                 else if (i == this.trails.size())
                     this.buttons.get(i).draw();
+
+                n++;
             }
 
             if (trails.size() >= trails_per_page)

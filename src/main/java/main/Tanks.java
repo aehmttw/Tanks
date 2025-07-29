@@ -92,7 +92,10 @@ public class Tanks
                     Game.game.window.antialiasingEnabled = Game.antialiasing;
 
                     if (!path.endsWith(".jar"))
+                    {
                         Game.game.window.buildDate = "Running from source";
+                        Game.game.window.runningFromSource = true;
+                    }
                     else if (f.exists())
                     {
                         String hash = Game.readHashFromFile();

@@ -12,6 +12,7 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Button implements IDrawable, ITrigger
 {
@@ -86,6 +87,7 @@ public class Button implements IDrawable, ITrigger
 
 	public String image = null;
 	public IModel model = null;
+    public HashMap<String, Object> miscData = new HashMap<>();
 	public double imageSizeX = 0;
 	public double imageSizeY = 0;
 

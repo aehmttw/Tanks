@@ -6,10 +6,7 @@ import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.tank.Turret;
-import tanks.tankson.ICopyable;
-import tanks.tankson.ITanksONEditable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 import java.util.ArrayList;
 
@@ -43,6 +40,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
     @Property(id = "glow_color", name = "Aura color", category = BulletEffectPropertyCategory.glow, miscType = Property.MiscType.colorRGB)
     public Color glowColor = new Color(0, 0, 0, 0);
 
+    public static BulletEffect none = new BulletEffect();
     public static BulletEffect trail = new BulletEffect();
     public static BulletEffect long_trail = new BulletEffect();
     public static BulletEffect fire = new BulletEffect();
@@ -131,12 +129,17 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
     public double drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, double stretch, boolean bullet)
     {
         double max = 0;
+
+        if (this.enableParticles)
+            max = this.particleLifespan * 31.25;
+
         for (Trail t: this.trailEffects)
         {
             max = Math.max(max, t.maxLength + t.delay);
         }
 
-        double l = Math.min(width, max * size * stretch);
+        double fullLength = max * size * stretch;
+        double l = Math.min(width, fullLength);
         double start = x - l / 2;
         double end = x + l / 2;
 
@@ -182,7 +185,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
             e.glowB = e.colB * (1 - this.particleGlow);
 
             e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Bullet.bullet_size / 50.0 * this.particleSpeed);
-            e.vX += 3.125;
+            e.vX += 3.125 * l / fullLength;
             effects.add(e);
         }
 
@@ -194,4 +197,16 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
     {
         return "bullet_effect";
     }
+
+    @Override
+    public String toString()
+    {
+        return Serializer.toTanksON(this);
+    }
+
+    public static BulletEffect fromString(String s)
+    {
+        return (BulletEffect) Serializer.fromTanksON(s);
+    }
+
 }

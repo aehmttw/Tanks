@@ -1121,6 +1121,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                     if (Level.isDark())
 						this.musicID = "battle_night";
+                    else
+                        this.musicID = "battle";
 				}
 			}
 

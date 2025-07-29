@@ -95,12 +95,6 @@ public class ObstacleBeatBlock extends ObstacleStackable
     }
 
     @Override
-    public double getTileHeight()
-    {
-        return 0;
-    }
-
-    @Override
     public void draw()
     {
         if (this.stackHeight <= 0)

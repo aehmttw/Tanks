@@ -404,4 +404,9 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		}
 		return obstacleOut;
 	}
+
+    public Effect getCompanionEffect()
+    {
+        return null;
+    }
 }

@@ -3,12 +3,10 @@ package tanks.gui;
 import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import tanks.*;
 import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenInfo;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -158,6 +156,55 @@ public class Button implements IDrawable, ITrigger
 		{
 			this.enableHover = true;
 			this.setHoverText(hoverText, hoverTextOptions);
+		}
+	}
+
+	public static class Toggle extends Button
+	{
+		private static final Runnable emptyFunction = () -> {};
+
+		public Boolean2ObjectFunction<String> getText = b -> b ? ScreenOptions.onText : ScreenOptions.offText;
+		public Consumer<Boolean> setter;
+		public Producer<Boolean> getter;
+
+		public Toggle(double x, double y, double sX, double sY, String text, Consumer<Boolean> setter, Producer<Boolean> getter)
+		{
+			this(x, y, sX, sY, text, emptyFunction, setter, getter, null);
+		}
+
+		public Toggle(double x, double y, double sX, double sY, String text, Consumer<Boolean> setter, Producer<Boolean> getter, String hoverText, Object... hoverTextOptions)
+		{
+			this(x, y, sX, sY, text, emptyFunction, setter, getter, hoverText, hoverTextOptions);
+		}
+
+		public Toggle(double x, double y, double sX, double sY, String text, Runnable f, Consumer<Boolean> setter, Producer<Boolean> getter)
+		{
+			this(x, y, sX, sY, text, f, setter, getter, null);
+		}
+
+		public Toggle(double x, double y, double sX, double sY, String text, Runnable f, Consumer<Boolean> setter, Producer<Boolean> getter, String hoverText, Object... hoverTextOptions)
+		{
+			super(x, y, sX, sY, text, f, hoverText, hoverTextOptions);
+			this.updateText();
+			this.setter = setter;
+			this.getter = getter;
+			this.function = () ->
+			{
+				setter.accept(!getter.produce());
+				this.updateText();
+				f.run();
+			};
+		}
+
+		public void updateText()
+		{
+			setText(text, getter.produce() ? ScreenOptions.onText : ScreenOptions.offText);
+		}
+
+		public Toggle setCustomText(Boolean2ObjectFunction<String> getText)
+		{
+			this.getText = getText;
+			return this;
 		}
 	}
 

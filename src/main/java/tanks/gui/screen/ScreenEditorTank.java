@@ -90,23 +90,6 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
     public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
 
     @Override
-    public void setupLayoutParameters()
-    {
-        this.interfaceScaleZoomOverride = 1;
-        centerX = Drawing.drawing.baseInterfaceSizeX / 2;
-        centerY = Drawing.drawing.baseInterfaceSizeY / 2;
-        Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX;
-        Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY;
-    }
-
-    public void resetLayout()
-    {
-        Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
-        Drawing.drawing.interfaceSizeX = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceScaleZoom;
-        Drawing.drawing.interfaceSizeY = Drawing.drawing.interfaceSizeY / Drawing.drawing.interfaceScaleZoom;
-    }
-
-    @Override
     public void setupTabs()
     {
         Tab general = new TabGeneral(this, "General", TankPropertyCategory.general);

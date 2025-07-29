@@ -589,7 +589,7 @@ public class Level
 
 
 					if (t1.posX >= 0 && t1.posX < Game.currentSizeX && t1.posY >= 0 && t1.posY < Game.currentSizeY &&
-							!Game.isSolid(t1.posX, t1.posY) && !isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
+							!Game.isTankSolid(t1.posX, t1.posY) && !isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
 					{
 						explored[t1.posX][t1.posY] = true;
 
@@ -795,9 +795,6 @@ public class Level
 			Chunk c = Chunk.getChunk(o.posX, o.posY);
 			if (c != null)
 				c.addObstacle(o, false);
-
-			if (o.update)
-				Game.obstaclesToUpdate.add(o);
 		}
 
 		for (Movable m : Game.movables)

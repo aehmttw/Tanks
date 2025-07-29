@@ -285,7 +285,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			for (Item.ItemStack<?> i: h.itemBar.slots)
 			{
 				if (i != null && !i.isEmpty)
-                    i.updateCooldown(reload);
+					i.updateCooldown(reload);
 			}
 		}
 

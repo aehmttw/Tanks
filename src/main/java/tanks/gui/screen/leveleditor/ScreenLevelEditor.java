@@ -2452,10 +2452,16 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 		Game.currentLevel.timed = level.timer > 0;
 		Game.currentLevel.timer = level.timer;
 
+		Game.obstaclesToUpdate.clear();
+		Game.checkObstaclesToUpdate.clear();
+
 		for (Obstacle o : Game.obstacles)
 		{
 			o.postOverride();
 			o.removed = false;
+
+			if (o.shouldUpdate())
+				Game.obstaclesToUpdate.add(o);
 
 			if (o instanceof ObstacleBeatBlock)
 			{

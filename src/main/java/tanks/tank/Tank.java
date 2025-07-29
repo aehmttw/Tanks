@@ -6,26 +6,16 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.Item;
 import tanks.item.ItemDummyTankExplosion;
-import tanks.network.event.EventTankAddAttributeModifier;
-import tanks.network.event.EventTankUpdate;
-import tanks.network.event.EventTankUpdateHealth;
-import tanks.network.event.EventTankUpdateVisibility;
-import tanks.obstacle.ISolidObject;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleStackable;
+import tanks.network.event.*;
+import tanks.obstacle.*;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 import static tanks.tank.TankPropertyCategory.*;
 
@@ -154,7 +144,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	public double turretSize = 8;
 	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length", minValue = 0.0)
 	public double turretLength = Game.tile_size;
-	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count. \n For player tank builds with multiple bullets, the first one will be used.")
+	@Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count")
 	public boolean multipleTurrets = true;
 
 	/** Important: tertiary color values will not be used unless this option is set to true! */
@@ -380,9 +370,10 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.clippedTiles.addAll(this.stillClippedTiles);
 		this.stillClippedTiles.clear();
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
+		double bound = size / 2 + Game.tile_size / 2;
+
+		for (Obstacle o : Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
 		{
-			Obstacle o = Game.obstacles.get(i);
 			boolean bouncy = o.bouncy;
 
 			if (!o.tankCollision && !o.checkForObjects || (o instanceof ObstacleStackable && ((ObstacleStackable) o).startHeight > 1))
@@ -393,8 +384,6 @@ public abstract class Tank extends Movable implements ISolidObject
 
 			double dx = this.posX - o.posX;
 			double dy = this.posY - o.posY;
-
-			double bound = this.size / 2 + Game.tile_size / 2;
 
 			if (horizontalDist < bound && verticalDist < bound)
 			{

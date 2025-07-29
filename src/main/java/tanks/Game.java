@@ -62,7 +62,8 @@ public class Game
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
-	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
+	public static ArrayList<IAvoidObject> avoidObjects = new ArrayList<>();
+	public static ArrayList<Obstacle> checkObstaclesToUpdate = new ArrayList<>();
 	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
 	public static ArrayList<Effect> tracks = new ArrayList<>();
@@ -103,15 +104,15 @@ public class Game
 		}
 	}
 
-	public static ObjectArraySet<GroundTile> redrawGroundTiles = new ObjectArraySet<>();
+	public static HashSet<GroundTile> redrawGroundTiles = new HashSet<>();
 
 	public static Player player;
 
-	public static ObjectArraySet<Movable> removeMovables = new ObjectArraySet<>();
-	public static ObjectArraySet<Obstacle> removeObstacles = new ObjectArraySet<>();
-	public static ObjectArraySet<Effect> removeEffects = new ObjectArraySet<>();
-	public static ObjectArraySet<Effect> removeTracks = new ObjectArraySet<>();
-	public static ObjectArraySet<Cloud> removeClouds = new ObjectArraySet<>();
+	public static HashSet<Movable> removeMovables = new HashSet<>();
+	public static HashSet<Obstacle> removeObstacles = new HashSet<>();
+	public static HashSet<Effect> removeEffects = new HashSet<>();
+	public static HashSet<Effect> removeTracks = new HashSet<>();
+	public static HashSet<Cloud> removeClouds = new HashSet<>();
 
 	public static ArrayList<Effect> addEffects = new ArrayList<>();
 	public static Queue<Effect> recycleEffects = new LinkedList<>();
@@ -172,6 +173,8 @@ public class Game
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
 	public static boolean xrayBullets = true;
+	public static boolean showPathfinding = false;
+	public static boolean showUpdatingObstacles = false;
 	public static boolean immutableFaces = false;
 
 	public static boolean followingCam = false;
@@ -823,8 +826,16 @@ public class Game
 		if (c != null)
 			c.addObstacle(o, refresh);
 
+		if (o instanceof IAvoidObject)
+			Game.avoidObjects.add((IAvoidObject) o);
+
 		if (refresh)
             redraw(o);
+
+		o.afterAdd();
+
+		for (Obstacle o1 : o.getNeighbors())
+			o1.onNeighborUpdate();
 	}
 
 	public static boolean usernameInvalid(String username)
@@ -1062,8 +1073,16 @@ public class Game
 		Chunk c = Chunk.getChunk(o.posX, o.posY);
 		if (c != null)
 			c.removeObstacle(o);
+
+		if (o.shouldUpdate())
+			Game.obstaclesToUpdate.remove(o);
+
 		if (o instanceof IAvoidObject)
 			Game.avoidObjects.remove(o);
+
+		for (Obstacle o1: o.getNeighbors())
+			o1.onNeighborUpdate();
+
 		Game.obstacles.remove(o);
     }
 
@@ -1078,24 +1097,24 @@ public class Game
 			Game.redrawGroundTiles.add(new GroundTile(x, y));
 	}
 
-	public static boolean isSolid(double posX, double posY)
+	public static boolean isTankSolid(double posX, double posY)
 	{
-		return isSolid((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+		return isTankSolid((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
 
-	public static boolean isSolid(int tileX, int tileY)
+	public static boolean isTankSolid(int tileX, int tileY)
 	{
-		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::solid);
+		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::tankSolid);
 	}
 
-	public static boolean isUnbreakable(double posX, double posY)
+	public static boolean isBulletSolid(double posX, double posY)
 	{
-		return isUnbreakable((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+		return isBulletSolid((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
 
-	public static boolean isUnbreakable(int tileX, int tileY)
+	public static boolean isBulletSolid(int tileX, int tileY)
 	{
-		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::unbreakable);
+		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::bulletSolid);
 	}
 
 	public static double getTileHeight(double posX, double posY)
@@ -1110,6 +1129,10 @@ public class Game
 
 	public static void setObstacle(double posX, double posY, Obstacle o)
 	{
+		Chunk c = Chunk.getChunk(posX, posY);
+		if (c != null && !c.obstacles.contains(o))
+			c.obstacles.add(o);
+
 		Chunk.Tile t = Chunk.getTile(posX, posY);
 		if (t != null)
 			t.add(o);
@@ -1287,11 +1310,9 @@ public class Game
 		movables.clear();
 		effects.clear();
 		clouds.clear();
-		avoidObjects.clear();
 		obstaclesToUpdate.clear();
-
-		removeMovables.clear();
-		removeObstacles.clear();
+		checkObstaclesToUpdate.clear();
+		avoidObjects.clear();
 		recycleEffects.clear();
 		removeEffects.clear();
 		removeTracks.clear();

@@ -1,14 +1,14 @@
 package tanks.tank;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.gui.TextWithStyling;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.Face;
-import tanks.obstacle.ISolidObject;
-import tanks.obstacle.Obstacle;
+import tanks.obstacle.*;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class Ray
 {
@@ -52,6 +52,13 @@ public class Ray
 
 	public double targetX, targetY;
 	public boolean acquiredTarget = false;
+
+    /** Set this and use {@linkplain #chunkComparator} to sort the chunks by manhattan distance from this chunk */
+    private static Chunk startingChunk = Chunk.zeroChunk;
+    /** Method references don't allocate new objects; however lambdas do (they create temp classes) */
+    private static int keyExtractor(Chunk c) { return c.manhattanDist(startingChunk); }
+    /** Comparator that sorts the chunks by manhattan distance from {@linkplain #startingChunk} */
+    private static final Comparator<Chunk> chunkComparator = Comparator.comparingInt(Ray::keyExtractor);
 
 	/** Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}  */
 	public static Ray newRay(double x, double y, double angle, int bounces, Tank tank)
@@ -290,12 +297,20 @@ public class Ray
 
 			if (Chunk.debug && trace)
 			{
-				Game.effects.add(Effect.createNewEffect(posX, posY, 50, Effect.EffectType.piece)
-						.setColor(0, 150, 0).setGlowEnabled(false));
-				Game.effects.add(Effect.createNewEffect(result.collisionFace.startX, result.collisionFace.startY, 50, Effect.EffectType.piece)
-						.setColor(255, 128, 0).setGlowEnabled(false));
-				Game.effects.add(Effect.createNewEffect(result.collisionFace.endX, result.collisionFace.endY, 50, Effect.EffectType.piece)
-						.setColor(255, 128, 0).setGlowEnabled(false));
+                debugTexts.add(new DebugText(
+                    "@", bounces, bouncyBounces, 16,
+                    posX, posY
+                ));
+
+                String symbol = result.collisionFace.direction.isNonZeroY() ? "|" : "-";
+                debugTexts.add(new DebugText(
+                    symbol, bounces, bouncyBounces, 16,
+                    result.collisionFace.startX, result.collisionFace.startY
+                ));
+                debugTexts.add(new DebugText(
+                    symbol, bounces, bouncyBounces, 16,
+                    result.collisionFace.endX, result.collisionFace.endY
+                ));
 			}
 
 			ISolidObject obj = result.collisionFace.owner;
@@ -355,23 +370,25 @@ public class Ray
 
 			chunksAdded = 0;
 
+            startingChunk = current;
+
 			// move forward one chunk in the ray's direction
 			Chunk mid = chunksChecked > 0 ? Chunk.getChunk(posX + moveX, posY + moveY) : null;
-			// add current chunk and chunk in front
-			addChunk(current, mid);
+			// add chunk in front (use current chunk for distance comparison)
+			addChunk(mid);
 
-			// if the ray moved diagonally, add the chunks on the sides
+			// if the ray moved diagonally, add the chunks on the sides (use current chunk for distance comparison)
 			if (mid == null || current.manhattanDist(mid) > 1)
 			{
-				addChunk(current, Chunk.getChunk(posX + moveXPrev, posY + moveY));
-				addChunk(current, Chunk.getChunk(posX + moveX, posY + moveYPrev));
+				addChunk(Chunk.getChunk(posX + moveXPrev, posY + moveY));
+				addChunk(Chunk.getChunk(posX + moveX, posY + moveYPrev));
 			}
 
 			if (chunksAdded == 0)
 				break;
 
-			// sort the chunks by distance from the ray
-			Arrays.sort(chunkCache, 0, chunksAdded);
+			// sort the chunks by distance from the current chunk
+			Arrays.sort(chunkCache, 0, chunksAdded, chunkComparator);
 
 			for (int i = 0; i < chunksAdded; i++)
 			{
@@ -383,19 +400,28 @@ public class Ray
 
 				if (Chunk.debug && trace)
 				{
-					// displays the order of chunks checked and locations that the ray checked
-					Game.effects.add(Effect.createNewEffect(
-							(chunk.chunkX + 0.5) * Chunk.chunkSize * Game.tile_size + (totalChunksChecked * 15),
-							(chunk.chunkY + 0.5) * Chunk.chunkSize * Game.tile_size,
-							150, Effect.EffectType.chain, 90
-					).setRadius(totalChunksChecked));
+                    // displays the order of chunks checked and locations that the ray checked
+                    debugTexts.add(new DebugText(
+                        "" + totalChunksChecked, bounces, bouncyBounces, 48,
+                        (chunk.chunkX + 0.5) * Chunk.chunkSize * Game.tile_size + (totalChunksChecked * 15),
+                        (chunk.chunkY + 0.5) * Chunk.chunkSize * Game.tile_size
+                    ));
 
-					Game.effects.add(Effect.createNewEffect(posX + moveX, posY + moveY, 20, Effect.EffectType.laser));
+					debugTexts.add(new DebugText(
+                        (vX > 0 ? "+x" : "-x") + (vY > 0 ? "+y" : "-y"), bounces, bouncyBounces, 16,
+                        posX + moveX, posY + moveY
+                    ));
 
 					if (mid == null || current.manhattanDist(mid) > 1)
 					{
-						Game.effects.add(Effect.createNewEffect(posX, posY + moveY, 20, Effect.EffectType.obstaclePiece));
-						Game.effects.add(Effect.createNewEffect(posX + moveX, posY, 20, Effect.EffectType.piece));
+                        debugTexts.add(new DebugText(
+                            vY > 0 ? "+x" : "-x", bounces, bouncyBounces, 16,
+                            posX + moveX, posY
+                        ));
+                        debugTexts.add(new DebugText(
+                            vX > 0 ? "+y" : "-y", bounces, bouncyBounces, 16,
+                            posX, posY + moveY
+                        ));
 					}
 				}
 
@@ -550,6 +576,33 @@ public class Ray
 		return (ignoreTanks && f.owner instanceof Tank) || (ignoreBullets && f.owner instanceof Bullet);
 	}
 
+    private static final ObjectArrayList<DebugText> debugTexts = new ObjectArrayList<>();
+    private static class DebugText
+    {
+        public TextWithStyling text;
+        public double posX, posY;
+
+        public DebugText(String text, int bounces, int bouncyBounces, int fontSize, double posX, double posY)
+        {
+            double[] col = Game.getRainbowColor((5 - bounces + 100 - bouncyBounces) * 0.2);
+            this.text = new TextWithStyling(text, col[0], col[1], col[2], fontSize);
+            this.posX = posX;
+            this.posY = posY;
+        }
+
+        public void draw()
+        {
+            text.drawText(posX, posY);
+        }
+    }
+
+    public static void drawDebug()
+    {
+        for (DebugText t : debugTexts)
+            t.draw();
+        debugTexts.clear();
+    }
+
 	public static final class Result
 	{
 		private double t, collisionX, collisionY;
@@ -605,12 +658,11 @@ public class Ray
 		return dist;
 	}
 
-	private void addChunk(Chunk compare, Chunk c)
+	private void addChunk(Chunk c)
 	{
 		if (c == null || (chunksAdded > 0 && c == chunkCache[chunksAdded - 1]))
 			return;
 
-		c.compareTo = compare;
 		chunkCache[chunksAdded++] = c;
 	}
 

@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.Random;
 
 @SuppressWarnings("UnusedReturnValue")
-public class Chunk implements Comparable<Chunk>
+public class Chunk
 {
     private static final int TILE_DEPTH_VARIATION = 10;
     public static Level defaultLevel = new Level("{28,18|,|,}");
@@ -35,8 +35,6 @@ public class Chunk implements Comparable<Chunk>
     /** Stores faces of Movables, which are updated every frame */
     public final FaceList faces = new FaceList();
     public final Tile[][] tileGrid = new Tile[chunkSize][chunkSize];
-
-    public Chunk compareTo;
 
     /** The variable that caches the previous call to {@link Chunk#getChunk} */
     private static Chunk prevChunk;
@@ -285,7 +283,7 @@ public class Chunk implements Comparable<Chunk>
         t.colR = l.color.red + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.red : 0);
         t.colG = l.color.green + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.green : 0);
         t.colB = l.color.blue + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.blue : 0);
-        t.depth = Game.fancyTerrain && Game.enable3dBg ? r.nextDouble() * 10 : 0;
+        t.depth = Game.fancyTerrain && Game.enable3dBg ? r.nextDouble() * TILE_DEPTH_VARIATION : 0;
         return t;
     }
 
@@ -479,13 +477,6 @@ public class Chunk implements Comparable<Chunk>
         return f(f(chunkX) + chunkY);
     }
 
-    @Override
-    public int compareTo(Chunk o)
-    {
-        Chunk chunkToCompare = compareTo != null ? compareTo : zeroChunk;
-        return Integer.compare(this.manhattanDist(chunkToCompare), o.manhattanDist(chunkToCompare)) | this.manhattanDist(o);
-    }
-
     public static class FaceList
     {
         /**
@@ -579,12 +570,12 @@ public class Chunk implements Comparable<Chunk>
             return obstacle() != null ? obstacle().getGroundHeight() : 0;
         }
 
-        public boolean solid()
+        public boolean tankSolid()
         {
-            return obstacle() != null && obstacle().bulletCollision;
+            return obstacle() != null && obstacle().tankCollision;
         }
 
-        public boolean unbreakable()
+        public boolean bulletSolid()
         {
             return obstacle() != null && obstacle().bulletCollision;
         }

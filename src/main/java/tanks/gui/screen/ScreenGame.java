@@ -16,7 +16,8 @@ import tanks.minigames.Minigame;
 import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
 import tanks.network.event.*;
-import tanks.obstacle.*;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
 
 import java.util.*;
@@ -281,7 +282,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	);
 
 	Button restartLowerPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart level", () ->
-			restart.function.run()
+            restart.function.run()
 	);
 
 	Button restartTutorial = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart tutorial", () ->
@@ -808,30 +809,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			TankPlayer.ShopTankBuild t = builds.get(i);
 			TankPlayable display = t.clonePropertiesTo(new TankPlayer().setPlayerColor());
-			int j = i;
-			ButtonObject b = new ButtonObject(display, 0, 0, 75, 75, () ->
-			{
-				if (ScreenPartyLobby.isClient)
-					Game.eventsOut.add(new EventPlayerSetBuild(j));
-				else
-				{
-					boolean success = false;
-					if (Game.player.ownedBuilds.contains(t.name))
-						success = true;
-					else if (Game.player.hotbar.coins >= t.price)
-					{
-						Game.player.ownedBuilds.add(t.name);
-						Game.player.hotbar.coins -= t.price;
-						success = true;
-					}
-
-					if (success)
-					{
-						t.clonePropertiesTo(Game.playerTank);
-						Game.player.buildName = t.name;
-					}
-				}
-			}, t.description);
+			ButtonObject b = getButtonObject(i, display, t);
 			this.playerBuildButtons.add(b);
 		}
 
@@ -847,6 +825,33 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		this.playerBuildsList.controlsYOffset = 40;
 
 		this.playerBuildsList.sortButtons();
+	}
+
+	private static ButtonObject getButtonObject(int i, TankPlayable display, TankPlayer.ShopTankBuild t)
+	{
+        return new ButtonObject(display, 0, 0, 75, 75, () ->
+		{
+			if (ScreenPartyLobby.isClient)
+				Game.eventsOut.add(new EventPlayerSetBuild(i));
+			else
+			{
+				boolean success = false;
+				if (Game.player.ownedBuilds.contains(t.name))
+					success = true;
+				else if (Game.player.hotbar.coins >= t.price)
+				{
+					Game.player.ownedBuilds.add(t.name);
+					Game.player.hotbar.coins -= t.price;
+					success = true;
+				}
+
+				if (success)
+				{
+					t.clonePropertiesTo(Game.playerTank);
+					Game.player.buildName = t.name;
+				}
+			}
+		}, t.description);
 	}
 
 	public void initializeShopList()
@@ -897,18 +902,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				Panel.panel.lights.add(l);
 			}
 		}
-
-//		for (Effect o: Game.effects)
-//		{
-//			if (o != null && ((IDrawableLightSource) o).lit())
-//			{
-//				double[] l = ((IDrawableLightSource) o).getLightInfo();
-//				l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
-//				l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
-//				l[2] = (o.posZ) * Drawing.drawing.scale;
-//				Panel.panel.lights.add(l);
-//			}
-//		}
 	}
 
 	@Override
@@ -1126,7 +1119,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 					else
 						this.music = "battle.ogg";
 
-					if (Level.isDark())
+                    if (Level.isDark())
 						this.musicID = "battle_night";
 				}
 			}
@@ -1661,13 +1654,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			for (Effect e : Game.effects)
 				e.update();
 
-			/*for (Cloud c : Game.clouds)
-				c.update();
-
-			for (int i = 0; i < Level.currentCloudCount - Game.clouds.size(); i++)
-				Game.clouds.add(new Cloud(Math.random() * (Game.currentSizeX * 50), Math.random() * (Game.currentSizeY * 50)));*/
-
-			updateGameField();
+            updateGameField();
 
 			for (Movable m: Game.movables)
 			{
@@ -2029,8 +2016,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		{
 			for (Chunk chunk : m.getTouchingChunks())
 				chunk.removeMovable(m);
-			if (m instanceof IAvoidObject)
-				Game.avoidObjects.remove(m);
 		}
 
 		Game.movables.removeAll(Game.removeMovables);
@@ -2038,7 +2023,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 		ModAPI.menuGroup.removeAll(ModAPI.removeMenus);
 
 		for (Obstacle o: Game.removeObstacles)
-			Game.removeObstacle(o);
+            Game.removeObstacle(o);
 
 		for (Effect e: Game.removeEffects)
 		{
@@ -2096,8 +2081,20 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			m.update();
 		}
 
+		for (Obstacle o : Game.checkObstaclesToUpdate)
+		{
+			if (o == null)
+				continue;
+
+			if (o.shouldUpdate())
+				Game.obstaclesToUpdate.add(o);
+			else
+				Game.obstaclesToUpdate.remove(o);
+		}
+		Game.checkObstaclesToUpdate.clear();
+
 		for (Obstacle o : Game.obstaclesToUpdate)
-			o.update();
+            o.update();
 
 		for (Effect e : Game.tracks)
 			e.update();
@@ -2107,9 +2104,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
 	public void updateMusic(String prevMusic)
 	{
-		if (!Game.game.window.soundsEnabled)
-			return;
-
 		Panel.forceRefreshMusic = !Objects.equals(this.music, prevMusic);
 
 		if (this.musicID != null && this.musicID.equals("ready"))
@@ -2175,18 +2169,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 				else
 				{
-//					if (!addingMusic)
-//						toAdd /= 2;
-
-//					if (addingMusic)
-//					{
-//						if (added > 0)
-//							toRemove = 0;
-//						else
-//							addingMusic = false;
-//					}
-
-					int added = 0;
+                    int added = 0;
 					for (int i = 0; i < toAdd; i++)
 					{
 						int m = (int) (Math.random() * ready_musics.length);
@@ -2211,9 +2194,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						Drawing.drawing.removeSyncedMusic("ready/" + ready_musics[playingReadyMusics.get(m)], fadeTime);
 						playingReadyMusics.remove(m);
 					}
-
-//					if (playingReadyMusics.size() < Math.random() * 8 + 2)
-//						addingMusic = true;
 				}
 			}
 
@@ -2323,7 +2303,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                 if (Movable.distanceBetween(x, y, m.posX, m.posY) < ((Tank) m).size + Game.tile_size / 2)
                 {
-                    Drawing.drawing.setColor(((Tank) m).color);
+					Drawing.drawing.setColor(((Tank) m).color);
                     Mine.drawRange2D(m.posX, m.posY, ((Tank) m).size + Game.tile_size / 2);
                     Drawing.drawing.setColor(255, 255, 255, 255, 255);
                     Drawing.drawing.drawInterfaceImage("icons/shown.png", ix, iy, Game.tile_size, Game.tile_size);
@@ -2440,8 +2420,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 	@Override
 	public void draw()
 	{
-		this.showDefaultMouse = !(((!this.paused && !this.npcShopScreen) && this.playing && Game.angledView || Game.firstPerson));
-
+        this.showDefaultMouse = !(((!this.paused && !this.npcShopScreen) && this.playing && Game.angledView || Game.firstPerson));
 
 		this.setPerspective();
 
@@ -2473,10 +2452,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				drawables[o.drawLevel].add(o);
 
 		for (Effect e: Game.effects)
-			drawables[e.drawLevel].add(e);
+            drawables[e.drawLevel].add(e);
 
 		for (Cloud c: Game.clouds)
-			drawables[c.drawLevel].add(c);
+            drawables[c.drawLevel].add(c);
 
 		for (int i = 0; i < this.drawables.length; i++)
 		{
@@ -2510,7 +2489,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 				}
 			}
 
-			if (i == 9 && (Game.playerTank != null && Game.playerTank.showTouchCircle()))
+			if (i == 9 && Game.playerTank.showTouchCircle())
 			{
 				Drawing.drawing.setColor(255, 127, 0, 63);
 				Drawing.drawing.fillInterfaceOval(Drawing.drawing.gameToInterfaceCoordsX(Game.playerTank.posX),
@@ -2518,7 +2497,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 						Game.playerTank.getTouchCircleSize(), Game.playerTank.getTouchCircleSize());
 			}
 
-			if (i == 9 && Game.playerTank != null && !Game.game.window.drawingShadow)
+			if (i == 9 && !Game.game.window.drawingShadow)
 			{
 				if (Level.isDark())
 					Drawing.drawing.setColor(255, 255, 255, 50);
@@ -2557,42 +2536,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			drawables[i].clear();
 		}
 
-
-		if (Game.drawFaces)
+		if (Game.showUpdatingObstacles)
 		{
-			for (Chunk c : Chunk.chunkList)
-			{
-				for (Face f : c.faces.topFaces)
-				{
-					if (shouldHide(f)) continue;
-					drawing.setColor(150, 50, 50);
-					drawing.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
-				}
-
-				for (Face f : c.faces.bottomFaces)
-				{
-					if (shouldHide(f)) continue;
-					drawing.setColor(255, 50, 50);
-					drawing.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
-				}
-
-				for (Face f : c.faces.leftFaces)
-				{
-					if (shouldHide(f)) continue;
-					drawing.setColor(50, 50, 150);
-					drawing.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
-				}
-
-				for (Face f : c.faces.rightFaces)
-				{
-					if (shouldHide(f)) continue;
-					drawing.setColor(50, 50, 255);
-					drawing.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
-				}
-			}
+			for (Obstacle o : Game.obstaclesToUpdate)
+				o.draw3dOutline(255, 255, 0);
 		}
 
-		if (Panel.darkness > 0)
+        if (Panel.darkness > 0)
 		{
 			Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
 			Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
@@ -2824,7 +2774,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 									name = cp.username;
 
 								Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, name);
-								Drawing.drawing.setColor(cp.teamColor, opacity);
+								Drawing.drawing.setColor(cp.color, opacity);
 								Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, name);
 								Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.color, cp.color2, cp.color3, opacity / 255 * 25);
 							}
@@ -3093,11 +3043,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 			this.overlay.draw();
 
 		Drawing.drawing.setInterfaceFontSize(this.textSize);
-	}
-
-	public static boolean shouldHide(Face f)
-	{
-		return (f.owner instanceof Tank && (((Tank) f.owner).canHide && ((Tank) f.owner).hidden)) || (f.owner instanceof TankAIControlled && ((TankAIControlled) f.owner).invisible);
 	}
 
 	public static boolean isUpdatingGame()

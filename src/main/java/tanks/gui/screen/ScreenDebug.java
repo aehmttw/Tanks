@@ -10,7 +10,7 @@ public class ScreenDebug extends Screen
     public String traceText = "Trace rays: ";
     public String firstPersonText = "First person: ";
     public String followingCamText = "Immersive camera: ";
-    public String tankIDsText = "Show tank IDs: ";
+    public String tankIDsText = "Show network IDs: ";
     public String invulnerableText = "Invulnerable: ";
     public String fancyLightsText = "Fancy lighting: ";
     public String destroyCheatText = "Destroy cheat: ";
@@ -36,7 +36,7 @@ public class ScreenDebug extends Screen
         else
             followingCam.setText(followingCamText, ScreenOptions.offText);
 
-        if (Game.showTankIDs)
+        if (Game.showNetworkIDs)
             tankIDs.setText(tankIDsText, ScreenOptions.onText);
         else
             tankIDs.setText(tankIDsText, ScreenOptions.offText);
@@ -113,9 +113,9 @@ public class ScreenDebug extends Screen
         @Override
         public void run()
         {
-            Game.showTankIDs = !Game.showTankIDs;
+            Game.showNetworkIDs = !Game.showNetworkIDs;
 
-            if (Game.showTankIDs)
+            if (Game.showNetworkIDs)
                 tankIDs.setText(tankIDsText, ScreenOptions.onText);
             else
                 tankIDs.setText(tankIDsText, ScreenOptions.offText);

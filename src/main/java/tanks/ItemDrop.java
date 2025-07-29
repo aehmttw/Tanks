@@ -126,7 +126,7 @@ public class ItemDrop extends Movable
             Drawing.drawing.drawImage(this.item.item.icon, px, py, s / 2, s / 2);
         }
 
-        if (Game.showTankIDs)
+        if (Game.showNetworkIDs)
         {
             Drawing.drawing.setColor(0, 0, 0);
             Drawing.drawing.setFontSize(30);

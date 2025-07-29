@@ -266,6 +266,9 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                         removeEffects.add(e);
                 }
 
+                effects.removeAll(removeEffects);
+                removeEffects.clear();
+
                 for (Effect f : this.effects)
                 {
                     f.draw();

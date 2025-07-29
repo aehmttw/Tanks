@@ -165,24 +165,34 @@ public class Trail implements IDrawable
 
             Drawing.drawing.setColor(0, 0, 0, 127);
             Drawing.drawing.drawInterfaceRect((start + end) / 2 + 5, y + 5, end - start + 5, (Math.max(backWidth, frontWidth) + 1) * height, 5, 10);
+
             return;
         }
 
         Drawing.drawing.setColor(this.frontColor);
+        Game.game.window.shapeRenderer.setBatchMode(true, false, false, this.glow);
+
         if (this.frontCircle)
             Drawing.drawing.fillPartialInterfaceOval(start, y, this.frontWidth * height, this.frontWidth * height, 0.25, 0.75);
 
-        Game.game.window.shapeRenderer.setBatchMode(true, true, false);
+        Game.game.window.shapeRenderer.setBatchMode(false, false, false, this.glow);
+
+
+        Game.game.window.shapeRenderer.setBatchMode(true, true, false, this.glow);
         Drawing.drawing.addInterfaceVertex(start, y - this.frontWidth / 2 * height, 0);
         Drawing.drawing.addInterfaceVertex(start, y + this.frontWidth / 2 * height, 0);
 
         Drawing.drawing.setColor(this.backColor);
         Drawing.drawing.addInterfaceVertex(end, y + this.backWidth / 2 * height, 0);
         Drawing.drawing.addInterfaceVertex(end, y - this.backWidth / 2 * height, 0);
-        Game.game.window.shapeRenderer.setBatchMode(false, true, false);
+        Game.game.window.shapeRenderer.setBatchMode(false, true, false, this.glow);
+
+        Game.game.window.shapeRenderer.setBatchMode(true, false, false, this.glow);
 
         if (this.backCircle)
             Drawing.drawing.fillPartialInterfaceOval(end, y, this.backWidth * height, this.backWidth * height, 0.75, 1.25);
+
+        Game.game.window.shapeRenderer.setBatchMode(false, false, false, this.glow);
     }
 
     @Override

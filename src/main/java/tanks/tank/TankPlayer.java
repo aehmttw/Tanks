@@ -500,7 +500,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 							((BulletArc) b).drawTrace(this.posX, this.posY, this.posX + tx, this.posY + ty);
 
 						if (b instanceof BulletAirStrike)
-							((BulletAirStrike) b).drawTrace(this.posX, this.posY, this.posX + ty, this.posY + tx);
+							((BulletAirStrike) b).drawTrace(this.posX, this.posY, this.posX + tx, this.posY + ty);
 
 						r.vX /= 2;
 						r.vY /= 2;

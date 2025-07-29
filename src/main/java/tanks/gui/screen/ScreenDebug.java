@@ -38,7 +38,7 @@ public class ScreenDebug extends Screen
 
     Button tankIDs = new Button.Toggle(
             0, 0, this.objWidth, this.objHeight,
-            "Tank IDs: ", b -> Game.showTankIDs = b, () -> Game.showTankIDs
+            "Tank IDs: ", b -> Game.showNetworkIDs = b, () -> Game.showNetworkIDs
     );
 
     Button invulnerable = new Button.Toggle(

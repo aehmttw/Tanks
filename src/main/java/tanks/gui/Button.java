@@ -167,6 +167,8 @@ public class Button implements IDrawable, ITrigger
 		public Consumer<Boolean> setter;
 		public Producer<Boolean> getter;
 
+        public String originalText;
+
 		public Toggle(double x, double y, double sX, double sY, String text, Consumer<Boolean> setter, Producer<Boolean> getter)
 		{
 			this(x, y, sX, sY, text, emptyFunction, setter, getter, null);
@@ -185,20 +187,21 @@ public class Button implements IDrawable, ITrigger
 		public Toggle(double x, double y, double sX, double sY, String text, Runnable f, Consumer<Boolean> setter, Producer<Boolean> getter, String hoverText, Object... hoverTextOptions)
 		{
 			super(x, y, sX, sY, text, f, hoverText, hoverTextOptions);
-			this.updateText();
 			this.setter = setter;
 			this.getter = getter;
+            this.originalText = text;
 			this.function = () ->
 			{
 				setter.accept(!getter.produce());
 				this.updateText();
 				f.run();
 			};
+            this.updateText();
 		}
 
 		public void updateText()
 		{
-			setText(text, getter.produce() ? ScreenOptions.onText : ScreenOptions.offText);
+			setText(originalText, getter.produce() ? ScreenOptions.onText : ScreenOptions.offText);
 		}
 
 		public Toggle setCustomText(Boolean2ObjectFunction<String> getText)

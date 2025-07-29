@@ -147,7 +147,7 @@ public abstract class GameObject
         return sqDistBetw(a.posX, a.posY, b.posX, b.posY);
     }
 
-    public static boolean withinRange(final GameObject a, final GameObject b, double range)
+    public static boolean withinRadius(final GameObject a, final GameObject b, double range)
     {
         return sqDistBetw(a, b) < range * range;
     }

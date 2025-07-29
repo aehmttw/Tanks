@@ -261,14 +261,14 @@ public class Chunk
     /** Expects all pixel coordinates. */
     public static ObjectArrayList<Chunk> getChunksInRadius(double x1, double y1, double radius)
     {
-        return getChunksInRadius((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), (int) (radius / Game.tile_size));
+        return getChunksInRadius((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), radius / Game.tile_size);
     }
 
     /** Expects all tile coordinates. */
-    public static ObjectArrayList<Chunk> getChunksInRadius(int tx1, int ty1, int radius)
+    public static ObjectArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
     {
         chunkCache.clear();
-        double x1 = (double) tx1 / chunkSize, y1 = (double) ty1 / chunkSize, cRad = Math.ceil((double) radius / chunkSize) + 1;
+        double x1 = (double) tx1 / chunkSize, y1 = (double) ty1 / chunkSize, cRad = Math.ceil(radius / chunkSize) + 1;
         for (Chunk chunk : chunkList)
         {
             if ((chunk.chunkX - x1) * (chunk.chunkX - x1) +
@@ -370,7 +370,7 @@ public class Chunk
                 {
                     Drawing.drawing.setColor(50, 50, 255);
                     drawClampedRect(
-                            Game.currentLevel,
+                            Game.currentLevel != null ? Game.currentLevel : defaultLevel,
                             f.startX, f.startY,
                             f.endX, f.endY
                     );
@@ -384,7 +384,7 @@ public class Chunk
 
                     Drawing.drawing.setColor(255, 255, 0);
                     drawClampedRect(
-                            Game.currentLevel,
+                            Game.currentLevel != null ? Game.currentLevel : defaultLevel,
                             x + sX * Face.x1[i],
                             y + sY * Face.y1[i],
                             x + sX * (Face.x2[i] - Face.x1[i]),

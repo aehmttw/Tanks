@@ -9,6 +9,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Ray
 {
@@ -313,6 +314,9 @@ public class Ray
                 ));
 			}
 
+            if (Panel.panel.ageFrames % 50 == 0)
+                detectAndFixErrors();
+
 			ISolidObject obj = result.collisionFace.owner;
 			if (obj instanceof Movable)
 			{
@@ -353,7 +357,56 @@ public class Ray
 		return null;
 	}
 
-	public void checkFaceList(Chunk current, boolean firstBounce)
+    private static final ObjectArrayList<Chunk> errorChunkCache = new ObjectArrayList<>();
+
+    /** Shouldn't be triggered 99% of the time */
+    protected void detectAndFixErrors()
+    {
+        if (Ray.result.collisionFace == null)
+            return;
+
+        boolean error = false;
+        ISolidObject so = Ray.result.collisionFace.owner;
+        if (!(so instanceof GameObject))
+            return;
+
+        double posX = ((GameObject) so).posX;
+        double posY = ((GameObject) so).posY;
+        String name = null;
+        errorChunkCache.clear();
+
+        if (so instanceof Obstacle)
+        {
+            Chunk current = Chunk.getChunk(posX, posY);
+            error = !current.obstacles.contains(so);
+            if (error)
+            {
+                errorChunkCache.add(current);
+                name = ((Obstacle) so).name;
+            }
+        }
+        else if (so instanceof Movable)
+        {
+            ObjectArrayList<Chunk> chunks = ((Movable) so).getTouchingChunks();
+            error = chunks.stream().anyMatch(c -> !c.movables.contains(so));
+            if (error)
+            {
+                errorChunkCache.addAll(chunks);
+                name = so instanceof Tank ? ((Tank) so).name : so.toString();
+            }
+        }
+
+        if (error)
+        {
+            System.err.println("Ray collision face owner " + name + " not in chunk " +
+                errorChunkCache.stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
+                    .collect(Collectors.joining(", ")));
+            if (Game.currentLevel != null)
+                Game.currentLevel.reloadTiles();
+        }
+    }
+
+    public void checkFaceList(Chunk current, boolean firstBounce)
 	{
 		if (current == null)
 			return;

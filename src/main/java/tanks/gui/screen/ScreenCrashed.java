@@ -116,7 +116,10 @@ public class ScreenCrashed extends Screen
 			drawing.drawInterfaceText(100, 100, sadFace);
 
 		drawing.setInterfaceFontSize(48);
-		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, ohNoes + " Tanks ran into a problem!");
+		if (!Game.game.window.runningFromSource)
+			drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, ohNoes + " Tanks ran into a problem!");
+		else
+			drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, ohNoes + " You did it again! You silly coder...");
 
 		drawing.setInterfaceFontSize(24);
 

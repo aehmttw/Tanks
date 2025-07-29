@@ -3,7 +3,7 @@ tank_checkerboard
 tank_arrow,false
 tank_cross,false
 tank_half
-tank_vertical_stripes
+tank_vertical_stripes,false
 tank_horizontal_stripes
 tank_diagonal_stripes
 tank_diamond,false
@@ -20,7 +20,7 @@ tank_flames_2,false
 tank_gilded,false
 tank_greeble,false
 tank_cloud,true
-tank_orbits
+tank_orbits,false
 tank_rails
 tank_sparkles
 tank_squares_dots

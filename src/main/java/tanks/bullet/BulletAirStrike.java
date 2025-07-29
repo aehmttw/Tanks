@@ -16,6 +16,8 @@ public class BulletAirStrike extends Bullet
     public ArrayList<Double> pastPosZ = new ArrayList<>();
     public ArrayList<Double> pastTime = new ArrayList<>();
 
+    public double initialX;
+    public double initialY;
     public double finalX;
     public double finalY;
 
@@ -45,6 +47,7 @@ public class BulletAirStrike extends Bullet
         this.canBeCanceled = false;
         this.moveOut = false;
         this.vZ = 0.1;
+        this.edgeCollision = false;
         this.autoZ = false;
         this.showDefaultTrace = false;
         this.revertSpeed = false;
@@ -57,6 +60,8 @@ public class BulletAirStrike extends Bullet
         {
             this.vX = 0;
             this.vY = 0;
+            this.initialX = this.posX;
+            this.initialY = this.posY;
         }
 
         super.update();
@@ -65,14 +70,41 @@ public class BulletAirStrike extends Bullet
         {
             this.vX = 0;
             this.vY = 0;
-            this.vZ = 0;
 
             if (!this.tank.isRemote)
                 this.checkCollision();
 
             this.checkCollisionLocal();
-            this.destroy = true;
-            Drawing.drawing.playSound("bullet_explode.ogg", (float) (Bullet.bullet_size / this.size));
+
+            this.bounces--;
+
+            if (this.bounces < 0 || this.posX >= Game.currentSizeX * Game.tile_size || this.posX < 0 || this.posY >= Game.currentSizeY * Game.tile_size || this.posY < 0 )
+            {
+                this.destroy = true;
+                Drawing.drawing.playSound("bullet_explode.ogg", (float) (Bullet.bullet_size / this.size));
+                this.vZ = 0;
+            }
+            else
+            {
+                this.stopTrails();
+                this.posZ = Game.tile_size / 2 + 1;
+                this.vZ = 0.1;
+
+                this.finalX += this.finalX - this.initialX;
+                this.finalY += this.finalY - this.initialY;
+                this.initialX = this.posX;
+                this.initialY = this.posY;
+
+                if (!this.isRemote)
+                {
+                    this.collisionX = this.initialX;
+                    this.collisionY = this.initialY;
+                }
+
+                this.addTrail(true);
+                Drawing.drawing.playSound("bounce.ogg", (float) (Bullet.bullet_size / this.size));
+                Game.eventsOut.add(new EventBulletBounce(this));
+            }
         }
 
         if (this.posZ > 1100)
@@ -146,14 +178,18 @@ public class BulletAirStrike extends Bullet
     {
         double posZ = 25;
 
+        double dx = fx - ix;
+        double dy = fy - iy;
+
         while (posZ < 1100)
         {
-            Effect e1 = Effect.createNewEffect(ix, iy, posZ, Effect.EffectType.ray);
-            Effect e2 = Effect.createNewEffect(fx, fy, posZ, Effect.EffectType.ray);
-            e1.size = this.size;
-            e2.size = this.size;
-            Game.effects.add(e1);
-            Game.effects.add(e2);
+            for (int i = 0; i <= this.bounces; i++)
+            {
+                Effect e1 = Effect.createNewEffect(ix + dx * i, iy + dy * i, posZ, Effect.EffectType.ray);
+                e1.size = this.size;
+                Game.effects.add(e1);
+            }
+
             posZ += this.size * 1.5;
         }
     }

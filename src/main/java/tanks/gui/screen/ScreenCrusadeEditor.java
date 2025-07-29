@@ -166,8 +166,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
                 {
                     Crusade.CrusadeLevel level = c.levels.remove(li);
                     ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, li + 1, (ScreenCrusadeEditor) Game.screen);
-                    Level l = new Level(level.levelString);
-                    l.customTanks = level.tanks;
+                    Level l = new Level(level.levelString, level.tanks);
                     l.loadLevel(s);
                     Game.screen = s;
                 }
@@ -176,8 +175,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
                     String level = c.levels.get(li).levelString;
 
                     ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(c, level, li, Game.screen);
-                    Level l = new Level(level);
-                    l.customTanks = c.customTanks;
+                    Level l = new Level(level, c.customTanks);
                     l.loadLevel(s);
                     Game.screen = s;
                 }

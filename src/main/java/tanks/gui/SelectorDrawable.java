@@ -177,6 +177,9 @@ public class SelectorDrawable extends Button
                         removeEffects.add(e);
                 }
 
+                effects.removeAll(removeEffects);
+                removeEffects.clear();
+
                 for (Effect f : this.effects)
                 {
                     f.draw();

@@ -256,6 +256,9 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                         removeEffects.add(e);
                 }
 
+                effects.removeAll(removeEffects);
+                removeEffects.clear();
+
                 for (Effect f : this.effects)
                 {
                     f.draw();
@@ -411,6 +414,9 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                     if (e.age > e.maxAge)
                         removeEffects.add(e);
                 }
+
+                effects.removeAll(removeEffects);
+                removeEffects.clear();
 
                 for (Effect f : this.effects)
                 {

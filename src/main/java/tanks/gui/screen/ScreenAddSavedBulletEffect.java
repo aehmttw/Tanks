@@ -177,6 +177,9 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
                 removeParticles.add(e);
         }
 
+        particles.removeAll(removeParticles);
+        removeParticles.clear();
+
         if (deleting)
         {
             for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows * effects.columns; i--)

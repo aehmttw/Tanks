@@ -34,7 +34,7 @@ public class EventShootBullet extends PersonalEvent
 	public EventShootBullet(Bullet b)
 	{
 		this.id = b.networkID;
-		this.tank = b.tank.networkID;
+        this.tank = b.tank.networkID;
 		this.posX = b.posX;
 		this.posY = b.posY;
 		this.posZ = b.posZ;

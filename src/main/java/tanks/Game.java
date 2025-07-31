@@ -139,7 +139,7 @@ public class Game
     public static final int network_protocol = 59;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
-	public static boolean showTankIDs = false;
+	public static boolean showNetworkIDs = false;
 	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
 	public static final boolean cinematic = false;

@@ -136,7 +136,7 @@ public class Game
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
 
-    public static final int network_protocol = 58;
+    public static final int network_protocol = 59;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showTankIDs = false;

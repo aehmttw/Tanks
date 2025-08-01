@@ -1,20 +1,15 @@
 package tanks.tank;
 
 import basewindow.Color;
-import basewindow.IModel;
 import tanks.*;
 import tanks.bullet.*;
 import tanks.effect.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
+import tanks.item.*;
 import tanks.network.event.*;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleTeleporter;
+import tanks.obstacle.*;
 import tanks.registry.RegistryTank;
 import tanks.tankson.*;
-import tanks.translation.Translation;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -853,11 +848,11 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public boolean isTargetSafe(double posX, double posY)
 	{
-		if (this.getBullet().hitExplosion != null)
+		if (this.getBullet().hitExplosion != null && this.team != null && this.team.friendlyFire)
 		{
-			for (Movable m2 : Game.movables)
+			for (Movable m: Explosion.getMovablesInExplosion(posX, posY, this.getBullet().hitExplosion.radius))
 			{
-				if (Team.isAllied(m2, this) && m2 instanceof Tank && !((Tank) m2).resistExplosions && (this.team == null || this.team.friendlyFire) && Math.pow(m2.posX - posX, 2) + Math.pow(m2.posY - posY, 2) <= Math.pow(Mine.mine_size, 2))
+				if (m instanceof Tank && Team.isAllied(m, this))
 					return false;
 			}
 		}
@@ -1326,14 +1321,24 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 	}
 
+    private double[] col = null;
+
 	public void followPath()
 	{
 		this.seekTimer -= Panel.frameFrequency;
 
-		/*for (Tile t: this.path)
+		if (Game.showPathfinding)
 		{
-			Game.effects.add(Effect.createNewEffect(t.posX, t.posY, 25, Effect.EffectType.laser));
-		}*/
+            if (col == null)
+                col = Game.getRainbowColor((networkID % 10) * 0.1);
+
+			for (Tile t : this.path)
+			{
+				Effect e = Effect.createNewEffect(t.posX, t.posY, 25, Effect.EffectType.laser);
+				e.maxAge = 1;
+				Game.effects.add(e.setColor(col[0], col[1], col[2]));
+			}
+		}
 
 		if (this.path.isEmpty())
 		{

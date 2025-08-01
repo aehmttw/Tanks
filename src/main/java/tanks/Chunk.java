@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.Random;
 
 @SuppressWarnings("UnusedReturnValue")
-public class Chunk implements Comparable<Chunk>
+public class Chunk
 {
     private static final int TILE_DEPTH_VARIATION = 10;
     public static Level defaultLevel = new Level("{28,18|,|,}");
@@ -35,8 +35,6 @@ public class Chunk implements Comparable<Chunk>
     /** Stores faces of Movables, which are updated every frame */
     public final FaceList faces = new FaceList();
     public final Tile[][] tileGrid = new Tile[chunkSize][chunkSize];
-
-    public Chunk compareTo;
 
     /** The variable that caches the previous call to {@link Chunk#getChunk} */
     private static Chunk prevChunk;
@@ -263,14 +261,14 @@ public class Chunk implements Comparable<Chunk>
     /** Expects all pixel coordinates. */
     public static ObjectArrayList<Chunk> getChunksInRadius(double x1, double y1, double radius)
     {
-        return getChunksInRadius((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), (int) (radius / Game.tile_size));
+        return getChunksInRadius((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), radius / Game.tile_size);
     }
 
     /** Expects all tile coordinates. */
-    public static ObjectArrayList<Chunk> getChunksInRadius(int tx1, int ty1, int radius)
+    public static ObjectArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
     {
         chunkCache.clear();
-        double x1 = (double) tx1 / chunkSize, y1 = (double) ty1 / chunkSize, cRad = Math.ceil((double) radius / chunkSize) + 1;
+        double x1 = (double) tx1 / chunkSize, y1 = (double) ty1 / chunkSize, cRad = Math.ceil(radius / chunkSize) + 1;
         for (Chunk chunk : chunkList)
         {
             if ((chunk.chunkX - x1) * (chunk.chunkX - x1) +
@@ -285,7 +283,7 @@ public class Chunk implements Comparable<Chunk>
         t.colR = l.color.red + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.red : 0);
         t.colG = l.color.green + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.green : 0);
         t.colB = l.color.blue + (Game.fancyTerrain ? r.nextDouble() * l.colorVar.blue : 0);
-        t.depth = Game.fancyTerrain && Game.enable3dBg ? r.nextDouble() * 10 : 0;
+        t.depth = Game.fancyTerrain && Game.enable3dBg ? r.nextDouble() * TILE_DEPTH_VARIATION : 0;
         return t;
     }
 
@@ -372,7 +370,7 @@ public class Chunk implements Comparable<Chunk>
                 {
                     Drawing.drawing.setColor(50, 50, 255);
                     drawClampedRect(
-                            Game.currentLevel,
+                            Game.currentLevel != null ? Game.currentLevel : defaultLevel,
                             f.startX, f.startY,
                             f.endX, f.endY
                     );
@@ -386,7 +384,7 @@ public class Chunk implements Comparable<Chunk>
 
                     Drawing.drawing.setColor(255, 255, 0);
                     drawClampedRect(
-                            Game.currentLevel,
+                            Game.currentLevel != null ? Game.currentLevel : defaultLevel,
                             x + sX * Face.x1[i],
                             y + sY * Face.y1[i],
                             x + sX * (Face.x2[i] - Face.x1[i]),
@@ -406,8 +404,8 @@ public class Chunk implements Comparable<Chunk>
      * Also ensures a line width of 2. */
     private static void drawClampedRect(Level l, double x1, double y1, double x2, double y2)
     {
-        double sX = Math.max(1, Math.min(l.sizeX * Game.tile_size - x1, x2 - x1));
-        double sY = Math.max(1, Math.min(l.sizeY * Game.tile_size - y1, y2 - y1));
+        double sX = Math.max(1 / Drawing.drawing.scale, Math.min(l.sizeX * Game.tile_size - x1, x2 - x1));
+        double sY = Math.max(1 / Drawing.drawing.scale, Math.min(l.sizeY * Game.tile_size - y1, y2 - y1));
         Drawing.drawing.fillRect(x1 + sX / 2, y1 + sY / 2, sX, sY);
     }
 
@@ -477,13 +475,6 @@ public class Chunk implements Comparable<Chunk>
     public static int encodeChunkCoords(int chunkX, int chunkY)
     {
         return f(f(chunkX) + chunkY);
-    }
-
-    @Override
-    public int compareTo(Chunk o)
-    {
-        Chunk chunkToCompare = compareTo != null ? compareTo : zeroChunk;
-        return Integer.compare(this.manhattanDist(chunkToCompare), o.manhattanDist(chunkToCompare)) | this.manhattanDist(o);
     }
 
     public static class FaceList
@@ -579,12 +570,12 @@ public class Chunk implements Comparable<Chunk>
             return obstacle() != null ? obstacle().getGroundHeight() : 0;
         }
 
-        public boolean solid()
+        public boolean tankSolid()
         {
-            return obstacle() != null && obstacle().bulletCollision;
+            return obstacle() != null && obstacle().tankCollision;
         }
 
-        public boolean unbreakable()
+        public boolean bulletSolid()
         {
             return obstacle() != null && obstacle().bulletCollision;
         }
@@ -619,15 +610,15 @@ public class Chunk implements Comparable<Chunk>
 
         public boolean canPlaceOn(GameObject o)
         {
-            boolean noFull = fullObstacle == null;
+            boolean empty = obstacle() == null;
             if (!(o instanceof Obstacle))
-                return noFull;
+                return empty;
 
             Obstacle.ObstacleType t = ((Obstacle) o).type;
-            boolean canPlaceUnder = noFull || fullObstacle.type == Obstacle.ObstacleType.top;
+            boolean canPlaceUnder = empty || obstacle().type == Obstacle.ObstacleType.top || obstacle().type == Obstacle.ObstacleType.extra;
 
             if (t == Obstacle.ObstacleType.full || t == Obstacle.ObstacleType.top)
-                return noFull;
+                return empty;
             if (t == Obstacle.ObstacleType.ground)
                 return canPlaceUnder && surfaceObstacle == null;
             if (t == Obstacle.ObstacleType.extra)

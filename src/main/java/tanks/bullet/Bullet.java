@@ -755,10 +755,11 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (this.obstacleCollision)
 		{
-			for (int i = 0; i < Game.obstacles.size(); i++)
-			{
-				Obstacle o = Game.obstacles.get(i);
+            double s = this.useCustomWallCollision ? this.wallCollisionSize : this.size;
+            double bound = s / 2 + Game.tile_size / 2;
 
+			for (Obstacle o : Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
+			{
 				if ((!o.bulletCollision && !o.checkForObjects) || (o instanceof ObstacleStackable && ((ObstacleStackable) o).startHeight > 1))
 					continue;
 
@@ -767,13 +768,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 				double horizontalDist = Math.abs(dx);
 				double verticalDist = Math.abs(dy);
-
-				double s = this.size;
-
-				if (useCustomWallCollision)
-					s = this.wallCollisionSize;
-
-				double bound = s / 2 + Game.tile_size / 2;
 
 				if (horizontalDist < bound && verticalDist < bound)
 				{
@@ -932,65 +926,49 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		this.inside.clear();
 
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			Movable o = Game.movables.get(i);
+		for (Movable m : getSquareCollision(this, this.posX, this.posY))
+        {
+            if (!(m instanceof Tank) || m.destroy)
+                continue;
 
-			if (o instanceof Tank && !o.destroy)
-			{
-				double horizontalDist = Math.abs(this.posX - o.posX);
-				double verticalDist = Math.abs(this.posY - o.posY);
+            Tank t = (Tank) m;
+            this.collisionX = this.posX;
+            this.collisionY = this.posY;
 
-				Tank t = ((Tank) o);
+            if (!this.insideOld.contains(t))
+            {
+                this.collided();
+                this.collidedWithTank(t);
 
-				double bound = this.size / 2 + t.size * t.hitboxSize / 2;
+                if (this.rebounds > 0)
+                    this.rebound(t);
+            }
 
-				if (horizontalDist < bound && verticalDist < bound && t.size > 0)
-				{
-					this.collisionX = this.posX;
-					this.collisionY = this.posY;
+            this.inside.add(t);
+        }
+        for (Movable m : getCircleCollision(this, this.posX, this.posY))
+        {
+            if (!(m instanceof Bullet || m instanceof Mine))
+                continue;
 
-					if (!this.insideOld.contains(t))
-					{
-						this.collided();
-						this.collidedWithTank(t);
+            if (m instanceof Bullet)
+            {
+                Bullet b = (Bullet) m;
+                if (!b.enableCollision || b.delay > 0 || !b.bulletCollision || !b.externalBulletCollision || !this.bulletCollision)
+                    continue;
+            }
 
-						if (this.rebounds > 0)
-							this.rebound(t);
-					}
+            this.collisionX = this.posX;
+            this.collisionY = this.posY;
 
-					this.inside.add(t);
-				}
-			}
-			else if (((o instanceof Bullet && ((Bullet) o).enableCollision && ((Bullet) o).delay <= 0 && (((Bullet) o).bulletCollision && ((Bullet) o).externalBulletCollision && this.bulletCollision))
-					|| o instanceof Mine) && o != this && !o.destroy)
-			{
-				double distSq = Math.pow(this.posX - o.posX, 2) + Math.pow(this.posY - o.posY, 2);
+            if (!this.insideOld.contains(m))
+            {
+                this.collided();
+                this.collidedWithObject(m);
+            }
 
-				double s;
-
-				if (o instanceof Mine)
-					s = ((Mine) o).size;
-				else
-					s = ((Bullet) o).size;
-
-				double bound = this.size / 2 + s / 2;
-
-				if (distSq <= bound * bound)
-				{
-					this.collisionX = this.posX;
-					this.collisionY = this.posY;
-
-					if (!this.insideOld.contains(o))
-					{
-						this.collided();
-						this.collidedWithObject(o);
-					}
-
-					this.inside.add(o);
-				}
-			}
-		}
+            this.inside.add(m);
+        }
 
 		if (collided)
 		{

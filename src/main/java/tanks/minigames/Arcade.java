@@ -676,7 +676,7 @@ public class Arcade extends Minigame
             else if (other)
                 y += Game.currentSizeY - 4;
 
-            if (!Game.isSolid(x, y))
+            if (!Game.isTankSolid(x, y))
             {
                 found = true;
 

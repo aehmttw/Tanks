@@ -26,7 +26,7 @@ public class ObstacleGroundPaint extends Obstacle
         this.checkForObjects = true;
 
         this.type = ObstacleType.ground;
-        this.update = true;
+        this.setUpdate(true);
 
         this.replaceTiles = true;
         this.tileRenderer = ShaderGroundColor.class;

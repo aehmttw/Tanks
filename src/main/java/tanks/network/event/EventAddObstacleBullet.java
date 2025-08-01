@@ -69,7 +69,7 @@ public class EventAddObstacleBullet extends PersonalEvent
             o.stackColorB[i] = this.colorB;
         }
 
-        o.update = true;
+        o.setUpdate(true);
         o.shouldClip = true;
         o.clipFrames = 2;
 

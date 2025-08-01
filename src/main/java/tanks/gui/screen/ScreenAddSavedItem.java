@@ -265,12 +265,6 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
     }
 
     @Override
-    public void setupLayoutParameters()
-    {
-
-    }
-
-    @Override
     public void onAttemptClose()
     {
         this.previousScreen.onAttemptClose();

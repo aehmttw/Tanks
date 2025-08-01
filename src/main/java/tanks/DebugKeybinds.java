@@ -1,31 +1,24 @@
 package tanks;
 
-import basewindow.BaseWindow;
-import basewindow.InputCodes;
-import basewindow.ShaderGroup;
+import basewindow.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import tanks.gui.ChatMessage;
-import tanks.gui.ScreenElement;
-import tanks.gui.screen.ScreenCrusadeDetails;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.*;
+import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.obstacle.Obstacle;
+import tanks.obstacle.*;
 import tanks.rendering.TerrainRenderer;
+import tanks.tank.Ray;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static tanks.Panel.notifs;
 
 public class DebugKeybinds
 {
-    public static void drawAndUpdate()
+    public static void handleDebugKeybinds()
     {
-        if (Game.game.window.drawingShadow || !Game.game.window.pressedKeys.contains(InputCodes.KEY_F3))
+        if (!Game.game.window.pressedKeys.contains(InputCodes.KEY_F3))
             return;
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_B))
@@ -192,16 +185,21 @@ public class DebugKeybinds
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 30, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
                             String.format("O: %s SO: %s E: %s", t1.fullObstacle != null ? t1.fullObstacle.name : "none", t1.surfaceObstacle != null ? t1.surfaceObstacle.name : "none", t1.extraObstacle != null ? t1.extraObstacle.name : "none"));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 50, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            String.format("H: %.0f GH: %.0f E: %.0f", t1.height(), t1.groundHeight(), TerrainRenderer.getExtra(posX, posY)));
+                            String.format("H: %.0f GH: %.0f E: %.0f, D: %.1f", t1.height(), t1.groundHeight(), TerrainRenderer.getExtra(posX, posY), t1.depth));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 70, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            String.format("D: %.1f S: %b U: %b", t1.depth, t1.solid(), t1.unbreakable()));
+                            String.format("TS: %b BS: %b U: %b", t1.tankSolid(), t1.bulletSolid(), Game.obstaclesToUpdate.contains(t1.obstacle())));
+                    if (c != null && t1.obstacle() != null && !c.obstacles.contains(t1.obstacle()))
+                    {
+                        Drawing.drawing.setColor(255, 0, 0);
+                        Game.game.window.fontRenderer.drawString(mx + 10, my + 90, Drawing.drawing.fontSize, Drawing.drawing.fontSize, "IN: false");
+                    }
                 }
             }
             else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_2))
             {
                 ObjectArrayList<Movable> v = Movable.getMovablesInRadius(mx, my, 50);
                 if (!v.isEmpty())
-                    text = v.get(0).getMetadata();
+                    text += " M: " + v.get(0).getMetadata();
             }
             else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_3))
             {
@@ -220,5 +218,16 @@ public class DebugKeybinds
         }
 
         Game.game.window.fontRenderer.drawString(mx + 10, my + 10, Drawing.drawing.fontSize, Drawing.drawing.fontSize, text);
+    }
+
+    public static void renderDebugging()
+    {
+        if (Game.game.window.drawingShadow)
+            return;
+
+        handleDebugKeybinds();
+        Face.drawDebug();
+        Chunk.drawDebugStuff();
+        Ray.drawDebug();
     }
 }

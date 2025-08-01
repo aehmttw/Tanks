@@ -34,7 +34,7 @@ public class ObstacleTeleporter extends Obstacle
 		this.bulletCollision = false;
 		this.checkForObjects = true;
 		this.drawLevel = 0;
-		this.update = true;
+		this.setUpdate(true);
 		this.colorR = 0;
 		this.colorG = 255;
 		this.colorB = 255;

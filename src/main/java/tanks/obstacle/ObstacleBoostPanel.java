@@ -28,7 +28,6 @@ public class ObstacleBoostPanel extends Obstacle
         this.checkForObjects = true;
 
         this.type = ObstacleType.ground;
-        this.update = true;
 
         this.colorR = 255;
         this.colorG = 180;
@@ -65,6 +64,8 @@ public class ObstacleBoostPanel extends Obstacle
     {
         if (ScreenGame.finishedQuick)
             return;
+
+        setUpdate(true);
 
         this.onObjectEntryLocal(m);
 
@@ -131,6 +132,8 @@ public class ObstacleBoostPanel extends Obstacle
 
         if (prevBrightness != brightness)
             Game.redrawObstacles.add(this);
+        else
+            setUpdate(false);
     }
 
     public void addEffect(double x, double y, double extra)

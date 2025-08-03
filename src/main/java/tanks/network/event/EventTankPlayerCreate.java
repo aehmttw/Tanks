@@ -116,6 +116,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 			}
 
 			t.showName = true;
+            t.hasName = true;
 			t.nameTag.name = this.username;
 
 			if (Game.enableChatFilter)

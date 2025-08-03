@@ -11,7 +11,7 @@ public enum Direction
 
     public static final int[] X = {0, 1, 0, -1, 0, 1, -1, 0, 1, -1}, Y = {-1, 0, 1, 0, 1, 0, 0, -1, 1, -1};
 
-    private static final Direction[] values = Direction.values();
+    protected static final Direction[] values = Direction.values();
 
     /** Returns true if {@linkplain #x()} is nonzero. */
     public boolean isNonZeroX()

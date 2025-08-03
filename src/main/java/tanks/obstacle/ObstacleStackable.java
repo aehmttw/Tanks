@@ -164,6 +164,22 @@ public class ObstacleStackable extends Obstacle
     }
 
     @Override
+    public boolean[] getValidHorizontalFaces(boolean unbreakable)
+    {
+        this.validFaces[0] = (!this.hasNeighbor(0, -1) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
+        this.validFaces[1] = (!this.hasNeighbor(0, 1) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
+        return this.validFaces;
+    }
+
+    @Override
+    public boolean[] getValidVerticalFaces(boolean unbreakable)
+    {
+        this.validFaces[0] = (!this.hasNeighbor(-1, 0) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
+        this.validFaces[1] = (!this.hasNeighbor(1, 0) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
+        return this.validFaces;
+    }
+
+    @Override
     public void playDestroyAnimation(double posX, double posY, double radius)
     {
         if (Game.effectsEnabled)

@@ -8,7 +8,7 @@ import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
 import tanks.tank.IAvoidObject;
 
-public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
+public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject, ISolidObject
 {
 	public Effect.EffectType destroyEffect = Effect.EffectType.obstaclePiece;
 	public double destroyEffectAmount = 1;
@@ -27,7 +27,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	 */
 	public int unfavorability = -1;
 
-	/**
+    /**
 	 * Full = a full block, nothing can be placed underneath
 	 * Ground = replaces the ground tile, can have blocks/tanks on top
 	 * Top = can be placed on top of a ground tile, can have tanks inside
@@ -40,7 +40,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public int drawLevel = 5;
 
 	public boolean checkForObjects = false;
-	private boolean update = false;
+	protected boolean update = false;
 	public boolean bouncy = false;
 	public boolean allowBounce = true;
 	public boolean replaceTiles = true;
@@ -300,7 +300,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	}
 
 	@Override
-	public boolean isFaceValid(Face f)
+	public boolean isFaceValid(Face2 f)
 	{
 		Obstacle o = Game.getObstacle(this.posX + f.direction.x() * Game.tile_size, this.posY + f.direction.y() * Game.tile_size);
 		return super.isFaceValid(f) && (o == null || o.tankCollision != tankCollision || o.bulletCollision != bulletCollision);
@@ -332,7 +332,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		Game.removeObstacles.add(this);
 	}
 
-	private static final ObjectArrayList<Obstacle> obstaclesCache = new ObjectArrayList<>();
+	protected static final ObjectArrayList<Obstacle> obstaclesCache = new ObjectArrayList<>();
 
 	public ObjectArrayList<Obstacle> getNeighbors()
 	{
@@ -416,8 +416,61 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		}
 	}
 
-	/** Field to cache the obstacle array for reuse */
-	private static final ObjectArrayList<Obstacle> obstacleOut = new ObjectArrayList<>();
+    protected boolean[] validFaces = new boolean[2];
+    public Face[] horizontalFaces;
+    public Face[] verticalFaces;
+
+    @Override
+    public boolean disableRayCollision()
+    {
+        return super.disableRayCollision();
+    }
+
+    @Override
+    public Face[] getHorizontalFaces()
+    {
+        if (this.horizontalFaces == null)
+        {
+            this.horizontalFaces = new Face[2];
+            double s = Game.tile_size / 2;
+            this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, true, true, this.tankCollision, this.bulletCollision);
+            this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, true, false, this.tankCollision, this.bulletCollision);
+        }
+
+        return this.horizontalFaces;
+    }
+
+    public boolean[] getValidHorizontalFaces(boolean unbreakable)
+    {
+        this.validFaces[0] = false;
+        this.validFaces[1] = false;
+        return this.validFaces;
+    }
+
+    @Override
+    public Face[] getVerticalFaces()
+    {
+        if (this.verticalFaces == null)
+        {
+            this.verticalFaces = new Face[2];
+            double s = Game.tile_size / 2;
+            this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, false, true, this.tankCollision, this.bulletCollision);
+            this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, false, false, this.tankCollision, this.bulletCollision);
+        }
+
+        return this.verticalFaces;
+    }
+
+    public boolean[] getValidVerticalFaces(boolean unbreakable)
+    {
+        this.validFaces[0] = false;
+        this.validFaces[1] = false;
+        return this.validFaces;
+    }
+
+
+    /** Field to cache the obstacle array for reuse */
+	protected static final ObjectArrayList<Obstacle> obstacleOut = new ObjectArrayList<>();
 
 	/** Expects all pixel coordinates.
 	 * @return all the obstacles within the specified range */

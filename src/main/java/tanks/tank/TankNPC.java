@@ -34,13 +34,13 @@ public class TankNPC extends TankDummy
     public boolean draw = false;
     public ButtonList npcShopList;
     public ArrayList<Item.ShopItem> shopItems;
-    private double counter = 0;
-    private String currentLine = "";
-    private boolean isChatting = false;
-    private boolean closeEnough = false;
-    private int messageNum = 0;
-    private boolean setScreen = false;
-    private final TankDummy icon = new TankDummy("icon", 200, 60, 0);
+    protected double counter = 0;
+    protected String currentLine = "";
+    protected boolean isChatting = false;
+    protected boolean closeEnough = false;
+    protected int messageNum = 0;
+    protected boolean setScreen = false;
+    protected final TankDummy icon = new TankDummy("icon", 200, 60, 0);
 
     public TankNPC(String name, double x, double y, double angle, String messages, double r, double g, double b)
     {

@@ -109,7 +109,7 @@ public class Panel
 		initialized = true;
 	}
 
-	private Panel()
+	protected Panel()
 	{
 
 	}

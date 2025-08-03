@@ -132,7 +132,7 @@ public class TankAIControlled extends Tank implements ITankField
 	@Property(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank upon entering line of sight with its target", nullable = true)
 	public ITankField sightTransformTankField = null;
 	/** Don't set this. It's automatically set by resolving "sightTransformTankField" which may be a reference! */
-	private TankAIControlled sightTransformTank = null;
+	protected TankAIControlled sightTransformTank = null;
 	/** Time for tank to revert after losing line of sight */
 	@Property(category = transformationOnSight, id = "sight_transformation_revert_time", minValue = 0.0, name = "Sight revert time", desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
 	public double sightTransformRevertTime = 500;
@@ -141,7 +141,7 @@ public class TankAIControlled extends Tank implements ITankField
 	@Property(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank", desc = "When set, the tank will transform into this tank when its health is at or below the health threshold", nullable = true)
 	public ITankField healthTransformTankField = null;
 	/** Don't set this. It's automatically set by resolving "healthTransformTankField" which may be a reference! */
-	private TankAIControlled healthTransformTank = null;
+	protected TankAIControlled healthTransformTank = null;
 	/** Health threshold to transform */
 	@Property(category = transformationOnHealth, id = "transform_health_threshold", minValue = 0.0, name = "Hitpoint threshold", desc = "Amount of health this tank must have equal to or less than to transform")
 	public double transformHealthThreshold = 0;
@@ -1321,7 +1321,7 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 	}
 
-    private double[] col = null;
+    protected double[] col = null;
 
 	public void followPath()
 	{

@@ -52,7 +52,7 @@ public class ScreenPartyHost extends Screen
 
     public String visibilityText = "Steam visibility: ";
     public static final String publicText = "\u00A7000200000255public";
-    public static final String privateText = "\u00A7200000000255private";
+    public static final String protectedText = "\u00A7200000000255protected";
 
     public static ArrayList<String> botNames;
 
@@ -440,7 +440,7 @@ public class ScreenPartyHost extends Screen
         if (Game.steamVisibility == SteamMatchmaking.LobbyType.Public)
             visibility.setText(visibilityText, publicText);
         else
-            visibility.setText(visibilityText, privateText);
+            visibility.setText(visibilityText, protectedText);
     }
 
     public static class SharedLevel

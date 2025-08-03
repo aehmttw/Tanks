@@ -163,7 +163,7 @@ public class Button implements IDrawable, ITrigger
 
 	public static class Toggle extends Button
 	{
-		private static final Runnable emptyFunction = () -> {};
+		protected static final Runnable emptyFunction = () -> {};
 
 		public Boolean2ObjectFunction<String> getText = b -> b ? ScreenOptions.onText : ScreenOptions.offText;
 		public Consumer<Boolean> setter;

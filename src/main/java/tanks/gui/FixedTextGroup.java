@@ -18,9 +18,9 @@ public class FixedTextGroup implements IFixedMenu
     public double colorG;
     public double colorB;
     public double colorA = 255;
-    private long defineTime = 0;
-    private int textNo = 0;
-    private int actionBarLocation = 100;
+    protected long defineTime = 0;
+    protected int textNo = 0;
+    protected int actionBarLocation = 100;
 
     public FixedTextGroup(double x, double y, String[] texts, boolean afterGameStarted, Integer[] durationsInMs, double fontSize, double r, double g, double b)
     {

@@ -141,7 +141,7 @@ public class Game
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;
-	public static boolean drawAutoZoom = true;
+	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
 	public static final boolean cinematic = false;
 
@@ -157,7 +157,10 @@ public class Game
 	public static boolean enableIPConnections = true;
 	public static SteamMatchmaking.LobbyType steamVisibility = SteamMatchmaking.LobbyType.Private;
 
-	public static boolean agreedToWorkshopAgreement = false;
+    public static ArrayList<Face> verticalFaces = new ArrayList<>();
+    public static ArrayList<Face> horizontalFaces = new ArrayList<>();
+
+    public static boolean agreedToWorkshopAgreement = false;
 
 	public static double levelSize = 1;
 
@@ -325,7 +328,7 @@ public class Game
 	// Value is set before Game.game.window is initialized
 	public boolean fullscreen = false;
 
-	private Game()
+	protected Game()
 	{
 		Game.game = this;
 		input = new InputBindings();

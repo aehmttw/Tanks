@@ -19,8 +19,8 @@ public class RemoteScoreboard implements IFixedMenu
     public ArrayList<String> names = new ArrayList<>();
     public HashMap<String, Double> scores = new HashMap<>();
     public String objectiveType;
-    private double sizeX = 200;
-    private double sizeY = 300;
+    protected double sizeX = 200;
+    protected double sizeY = 300;
 
     public RemoteScoreboard(String objectiveName, String objectiveType, ArrayList<String> names)
     {

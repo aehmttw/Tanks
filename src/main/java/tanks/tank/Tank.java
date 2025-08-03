@@ -689,7 +689,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.posY = y;
 		this.drawTank(true, false);
 		this.posX = x1;
-		this.posY = y1;	
+		this.posY = y1;
 	}
 
 	public void drawTank(boolean forInterface, boolean in3d)
@@ -937,14 +937,14 @@ public abstract class Tank extends Movable implements ISolidObject
 	}
 
 	public void drawAt(double x, double y)
-	{	
+	{
 		double x1 = this.posX;
 		double y1 = this.posY;
 		this.posX = x;
 		this.posY = y;
 		this.drawTank(false, false);
 		this.posX = x1;
-		this.posY = y1;	
+		this.posY = y1;
 	}
 
 	public void drawOutlineAt(double x, double y)
@@ -1142,10 +1142,10 @@ public abstract class Tank extends Movable implements ISolidObject
 					Ray r = Ray.newRay(this.posX, this.posY, 0, 0, this);
 					r.vX = m.posX - this.posX;
 					r.vY = m.posY - this.posY;
-					double s = Movable.getSpeed(r.vX, r.vY);
-					r.vX /= s;
-					r.vY /= s;
-					r.trace = true;
+//					double s = Movable.getSpeed(r.vX, r.vY);
+//					r.vX /= s;
+//					r.vY /= s;
+//					r.trace = true;
 
 					boolean isInSight = r.getTarget() == m;
 					if ((m == this.lastFarthestInSight && System.currentTimeMillis() - this.lastFarthestInSightUpdate <= 1000) || isInSight)
@@ -1403,4 +1403,48 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.emblemColor.set(this.secondaryColor);
 		return this;
 	}
+
+
+    public Face[] horizontalFaces;
+    public Face[] verticalFaces;
+
+    @Override
+    public Face[] getHorizontalFaces()
+    {
+        double s = this.size * this.hitboxSize / 2;
+
+        if (this.horizontalFaces == null)
+        {
+            this.horizontalFaces = new Face[2];
+            this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, true, true, true, true);
+            this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, true, false,true, true);
+        }
+        else
+        {
+            this.horizontalFaces[0].update(this.posX - s, this.posY - s, this.posX + s, this.posY - s);
+            this.horizontalFaces[1].update(this.posX - s, this.posY + s, this.posX + s, this.posY + s);
+        }
+
+        return this.horizontalFaces;
+    }
+
+    @Override
+    public Face[] getVerticalFaces()
+    {
+        double s = this.size * this.hitboxSize / 2;
+
+        if (this.verticalFaces == null)
+        {
+            this.verticalFaces = new Face[2];
+            this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, false, true, true, true);
+            this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, false, false, true, true);
+        }
+        else
+        {
+            this.verticalFaces[0].update(this.posX - s, this.posY - s, this.posX - s, this.posY + s);
+            this.verticalFaces[1].update(this.posX + s, this.posY - s, this.posX + s, this.posY + s);
+        }
+
+        return this.verticalFaces;
+    }
 }

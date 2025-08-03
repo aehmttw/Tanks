@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
 {
 	public ObjectArraySet<Chunk> prevChunks = new ObjectArraySet<>();
-	private EffectManager em;
+	protected EffectManager em;
 
 	public double lastPosX, lastPosY, lastPosZ = 0;
 	public double vX, vY, vZ = 0;
@@ -24,7 +24,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public double lastVX, lastVY, lastVZ;
 	public double lastOriginalVX, lastOriginalVY, lastOriginalVZ;
 
-    private double lastSize = Integer.MAX_VALUE;
+    protected double lastSize = Integer.MAX_VALUE;
 
 	public double age = 0;
 	public boolean refreshFaces = true;
@@ -76,7 +76,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	}
 
 	/** Cached list for checking chunks that the movable has just left */
-	private static final ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
+	protected static final ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
 
 	public void updateChunks()
 	{
@@ -322,7 +322,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	}
 
 	/** Field to cache the movable array for reuse */
-	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
+	protected static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
 
     public static ObjectArrayList<Movable> getCircleCollision(Movable self, double posX, double posY)
     {

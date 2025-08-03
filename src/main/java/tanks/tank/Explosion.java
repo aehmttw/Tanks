@@ -19,7 +19,7 @@ import tanks.tankson.TanksONable;
 @TanksONable("explosion")
 public class Explosion extends Movable implements ICopyable<Explosion>, ITanksONEditable
 {
-    private static final ObjectArrayList<Movable> movablesCache = new ObjectArrayList<>();
+    protected static final ObjectArrayList<Movable> movablesCache = new ObjectArrayList<>();
 
     @Property(id = "damage", name = "Damage", desc = "The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double damage = 2;

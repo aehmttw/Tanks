@@ -192,7 +192,7 @@ public class Compatibility
         return field_table.get(f);
     }
 
-    private static Object applyBoolean(Field f, Boolean b)
+    protected static Object applyBoolean(Field f, Boolean b)
     {
         try
         {

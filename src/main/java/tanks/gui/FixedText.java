@@ -22,7 +22,7 @@ public class FixedText implements IFixedMenu
     public double colorB;
     public double colorA = 255;
 
-    private long defineTime = 0;
+    protected long defineTime = 0;
 
     public FixedText(double x, double y, String text) {
         this(x, y, text, false, 0, 24, 0, 0, 0);

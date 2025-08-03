@@ -12,8 +12,8 @@ public class AttributeModifier
 	public enum Operation {add, multiply}
 
 	// Object recycling system
-	private static final Queue<AttributeModifier> recycleQueue = new ConcurrentLinkedQueue<>();
-	private static final int MAX_POOL_SIZE = 2000; // Prevent memory leaks from excessive pooling
+	protected static final Queue<AttributeModifier> recycleQueue = new ConcurrentLinkedQueue<>();
+	protected static final int MAX_POOL_SIZE = 2000; // Prevent memory leaks from excessive pooling
 
 	/**An unique name for the modifier, to prevent double effects*/
 	public String name = UUID.randomUUID().toString();
@@ -80,7 +80,7 @@ public class AttributeModifier
 		}
 	}
 
-	private AttributeModifier() {}
+	protected AttributeModifier() {}
 
 	public AttributeModifier set(Type type, Operation op, double amount)
 	{

@@ -29,10 +29,10 @@ public class Scoreboard implements IFixedMenu
     public enum objectiveTypes {custom, kills, deaths, items_used, shots_fired, mines_placed, shots_fired_no_multiple_fire} // deaths and itemsUsed are coming soon!
     public objectiveTypes objectiveType;
 
-    private double sizeX = 200;
-    private double sizeY = 300;
+    protected double sizeX = 200;
+    protected double sizeY = 300;
 
-    private final RemoteScoreboard remoteScoreboard;
+    protected final RemoteScoreboard remoteScoreboard;
 
     public Scoreboard(String objectiveName, objectiveTypes objectiveType)
     {

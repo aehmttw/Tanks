@@ -1142,6 +1142,10 @@ public abstract class Tank extends Movable implements ISolidObject
 					Ray r = Ray.newRay(this.posX, this.posY, 0, 0, this);
 					r.vX = m.posX - this.posX;
 					r.vY = m.posY - this.posY;
+					double s = Movable.getSpeed(r.vX, r.vY);
+					r.vX /= s;
+					r.vY /= s;
+					r.trace = true;
 
 					boolean isInSight = r.getTarget() == m;
 					if ((m == this.lastFarthestInSight && System.currentTimeMillis() - this.lastFarthestInSightUpdate <= 1000) || isInSight)

@@ -261,6 +261,16 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		this.posY += amount * Math.sin(a);
 	}
 
+	public static double getSpeed(double vX, double vY)
+	{
+		return Math.sqrt(vX * vX + vY * vY);
+	}
+
+	public static double getPolarPitch(double vX, double vY, double vZ)
+	{
+		return fastAtan(vZ / getSpeed(vX, vY));
+	}
+
 	public double getSpeed()
 	{
 		return Math.sqrt(this.vX * this.vX + this.vY * this.vY);

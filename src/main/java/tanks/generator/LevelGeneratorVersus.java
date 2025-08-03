@@ -154,10 +154,10 @@ public class LevelGeneratorVersus extends LevelGenerator
 
 			switch (i.item.name)
 			{
-				case "Fire bullet":
+				case "Rocket":
 					price = 5;
 					break;
-				case "Bouncy fire bullet":
+				case "Sniper rocket":
 					price = 10;
 					break;
 				case "Mega mine":
@@ -193,10 +193,10 @@ public class LevelGeneratorVersus extends LevelGenerator
 				case "Mini bullet":
 					price = 5;
 					break;
-				case "Dark fire bullet":
+				case "Void rocket":
 					price = 10;
 					break;
-				case "Homing bullet":
+				case "Homing rocket":
 					price = 25;
 					break;
 				case "Air":

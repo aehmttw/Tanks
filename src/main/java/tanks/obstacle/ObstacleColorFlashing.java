@@ -29,7 +29,7 @@ public class ObstacleColorFlashing extends Obstacle
         this.checkForObjects = true;
 
         this.type = ObstacleType.ground;
-        this.update = true;
+        this.setUpdate(true);
 
         this.colorR = r;
         this.colorG = g;

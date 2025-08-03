@@ -24,6 +24,8 @@ public class ObstacleBeatBlock extends ObstacleStackable
     protected boolean lastOn = false;
     protected boolean firstUpdate = true;
 
+    private boolean refreshHitboxes;
+
     public ObstacleBeatBlock(String name, double posX, double posY)
     {
         super(name, posX, posY);
@@ -66,29 +68,30 @@ public class ObstacleBeatBlock extends ObstacleStackable
         this.bulletCollision = on;
         this.tankCollision = on;
 
+        if (this.refreshHitboxes)
+        {
+            this.refreshHitboxes = false;
+            refreshHitboxes();
+        }
+
         if (this.tankCollision != lastOn || firstUpdate)
         {
             if (firstUpdate)
                 this.postOverride();
 
             this.firstUpdate = false;
+            this.refreshHitboxes = true;
+
             this.allowBounce = false;
             this.shouldClip = true;
 
             this.lastOn = this.tankCollision;
-            refreshHitboxes();
         }
         else
         {
             this.allowBounce = true;
             this.shouldClip = false;
         }
-    }
-
-    @Override
-    public double getTileHeight()
-    {
-        return 0;
     }
 
     @Override
@@ -176,8 +179,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
     {
         float cx = (float) this.posX;
         float cy = (float) this.posY;
-        float h = (float) (Game.sampleGroundHeight(this.posX, this.posY));
-        float cz = (float) (h);
+        float cz = (float) Game.sampleTerrainGroundHeight(this.posX, this.posY);
 
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92, o, false, cx, cy, cz);
 
@@ -209,7 +211,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
         this.colorG = col[1] * 0.75 + 255 * 0.25;
         this.colorB = col[2] * 0.75 + 255 * 0.25;
 
-        this.update = true;
+        this.setUpdate(true);
         this.tankCollision = false;
         this.bulletCollision = false;
 

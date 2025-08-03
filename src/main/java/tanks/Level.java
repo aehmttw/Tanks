@@ -242,9 +242,6 @@ public class Level
 			playerBuilds.add(tp);
 		}
 
-		if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
-			this.disableFriendlyFire = true;
-
 		sizeX = (int) Double.parseDouble(screen[0]);
 		sizeY = (int) Double.parseDouble(screen[1]);
 
@@ -441,6 +438,9 @@ public class Level
 			this.startingItems = new ArrayList<>();
 			this.shop = new ArrayList<>();
 		}
+
+        if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
+            this.disableFriendlyFire = true;
 	}
 
 	protected static ArrayList<String> getJsonObjects(String s)

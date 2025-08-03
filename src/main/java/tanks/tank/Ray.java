@@ -28,7 +28,7 @@ public class Ray
 	public double posX, posY, vX, vY, angle;
 	public double startX, startY;
 
-	public int maxChunkCheck = 100;
+	public int maxChunkCheck = Integer.MAX_VALUE;
 
 	public boolean enableBounciness = true;
 	public boolean asBullet = true;
@@ -96,7 +96,7 @@ public class Ray
 		this.posY = this.startY = y;
 		this.bounces = bounces;
 		this.bouncyBounces = 100;
-		setSize(10).setMaxChunks(12);
+		setSize(10).setMaxChunks(Integer.MAX_VALUE);
 
 		this.trace = Game.traceAllRays;
 		this.dotted = false;

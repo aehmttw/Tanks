@@ -16,12 +16,12 @@ public class TanksON
     {
         public String s;
         public int index = 0;
-        
+
         protected ParserState(String s)
         {
             this.s = s;
         }
-        
+
         protected char nextChar()
         {
             return s.charAt(index);
@@ -42,28 +42,40 @@ public class TanksON
         {
             while (true)
             {
-                if (index >= s.length()) {
+                if (index >= s.length())
+                {
                     return; // Reached end of string
                 }
                 char c = this.nextChar();
-                if (Character.isWhitespace(c)) {
+                if (Character.isWhitespace(c))
+                {
                     index++;
-                } else if (s.startsWith("//", index)) {
+                }
+                else if (s.startsWith("//", index))
+                {
                     // Skip single-line comment
-                    while (index < s.length() && s.charAt(index) != '\n' && s.charAt(index) != '\r') {
+                    while (index < s.length() && s.charAt(index) != '\n' && s.charAt(index) != '\r')
+                    {
                         index++;
                     }
-                } else if (s.startsWith("/*", index)) {
+                }
+                else if (s.startsWith("/*", index))
+                {
                     // Skip multi-line comment
                     index += 2; // Skip "/*"
                     int commentEnd = s.indexOf("*/", index);
-                    if (commentEnd != -1) {
+                    if (commentEnd != -1)
+                    {
                         index = commentEnd + 2; // Skip "*/"
-                    } else {
+                    }
+                    else
+                    {
                         // Malformed comment, treat rest of string as part of comment
                         index = s.length();
                     }
-                } else {
+                }
+                else
+                {
                     return;
                 }
             }
@@ -187,9 +199,9 @@ public class TanksON
     public static String convertString(String s)
     {
         return s.replace("\\", "\\\\")
-                .replace("\n", "\\n")
-                .replace("\u00A7", "\\&")
-                .replace("\"", "\\\"");
+            .replace("\n", "\\n")
+            .replace("\u00A7", "\\&")
+            .replace("\"", "\\\"");
     }
 
     public static String parseString(ParserState s)
@@ -202,7 +214,7 @@ public class TanksON
         s.skipWhitespace();
         int start = unquotedKey ? s.index - 1 : s.s.indexOf('"', s.index);
         StringBuilder b = new StringBuilder();
-        for (s.index = start + 1;; s.index++)
+        for (s.index = start + 1; ; s.index++)
         {
             if (s.nextChar() == '\\')
             {
@@ -224,7 +236,7 @@ public class TanksON
             else
             {
                 if (s.nextChar() == '"')
-                   s.index++;
+                    s.index++;
                 return b.toString();
             }
         }
@@ -243,7 +255,7 @@ public class TanksON
         else if (o instanceof AbstractCollection)
         {
             StringBuilder s = new StringBuilder("[");
-            for (Object el: (AbstractCollection<?>) o)
+            for (Object el : (AbstractCollection<?>) o)
             {
                 s.append(toString(el)).append(",");
             }
@@ -273,7 +285,7 @@ public class TanksON
             if (keys.remove("obj_type"))
                 keys.add(0, "obj_type");
 
-            for (String el: keys)
+            for (String el : keys)
             {
                 s.append("\"").append(convertString(el)).append("\":").append(toString(h.get(el))).append(",");
             }
@@ -316,3 +328,5 @@ public class TanksON
             return a != null && a.equals(b);
     }
 }
+
+

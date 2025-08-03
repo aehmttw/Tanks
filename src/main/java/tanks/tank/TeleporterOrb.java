@@ -220,9 +220,9 @@ public class TeleporterOrb extends Movable
 			}
 		}
 
-//		this.vX = this.posX - prevX;
-//		this.vY = this.posY - prevY;
-//		this.vZ = this.posZ - prevZ;
+		this.vX = this.posX - prevX;
+		this.vY = this.posY - prevY;
+		this.vZ = this.posZ - prevZ;
 
 		this.prevX = this.posX;
 		this.prevY = this.posY;
@@ -233,6 +233,10 @@ public class TeleporterOrb extends Movable
 		{
 			this.addTrail();
 		}
+
+        this.vX = 0;
+        this.vY = 0;
+        this.vZ = 0;
 
 		this.addedTrail = false;
 	}

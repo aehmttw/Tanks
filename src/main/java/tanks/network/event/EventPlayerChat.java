@@ -19,9 +19,9 @@ public class EventPlayerChat extends PersonalEvent
 	public EventPlayerChat(Player p, String m)
 	{
 		this.message = m;
-		this.username = "\u00A7" + p.color.red + "," + p.color.green + "," + p.color.blue + "," +
-				p.color2.red + "," + p.color.green + "," + p.color.blue + "," +
-				p.color3.red + "," + p.color3.green + "," + p.color3.blue + "|" + p.username;
+		this.username = "\u00A7" + (int) p.color.red + "," + (int) p.color.green + "," + (int) p.color.blue + "," +
+            (int) p.color2.red + "," + (int) p.color2.green + "," + (int) p.color2.blue + "," +
+            (int) p.color3.red + "," + (int) p.color3.green + "," + (int) p.color3.blue + "|" + p.username;
 	}
 
 	@Override

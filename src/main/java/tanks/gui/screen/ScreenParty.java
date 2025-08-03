@@ -28,8 +28,7 @@ public class ScreenParty extends Screen
 		this.musicID = "menu";
 	}
 	
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
-	);
+	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay());
 	
 	Button create = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Create a party", () ->
 	{

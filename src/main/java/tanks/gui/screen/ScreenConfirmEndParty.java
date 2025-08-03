@@ -7,8 +7,7 @@ import tanks.gui.Button;
 
 public class ScreenConfirmEndParty extends Screen
 {
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", () -> Game.screen = ScreenPartyHost.activeScreen
-    );
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", () -> Game.screen = ScreenPartyHost.activeScreen);
 
     public Button confirm = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "End party", () ->
     {

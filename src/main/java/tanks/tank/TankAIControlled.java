@@ -2542,8 +2542,7 @@ public class TankAIControlled extends Tank implements ITankField
 			return;
 		}
 
-		double frac = Math.min(this.timeUntilDeath / this.suicideTimerBase, 1);
-
+		double frac = Math.min(this.timeUntilDeath / Math.max(1, this.suicideTimerBase), 1);
 		if (!this.disabled)
 		{
 			this.timeUntilDeath -= Panel.frameFrequency;
@@ -3339,6 +3338,13 @@ public class TankAIControlled extends Tank implements ITankField
 						else
 							f.set(t, new HashSet<>());
 					}
+                    else if (Color.class.isAssignableFrom(f.getType()))
+                    {
+                        Color c = new Color();
+                        Color o = (Color) f.get(this);
+                        c.set(o);
+                        f.set(t, c);
+                    }
 					else
 						f.set(t, f.get(this));
 				}

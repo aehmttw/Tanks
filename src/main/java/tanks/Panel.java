@@ -3,24 +3,18 @@ package tanks;
 import basewindow.InputCodes;
 import tanks.extension.Extension;
 import tanks.gui.*;
-import tanks.gui.ScreenElement.CenterMessage;
-import tanks.gui.ScreenElement.Notification;
+import tanks.gui.ScreenElement.*;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.gui.screen.leveleditor.*;
 import tanks.item.Item;
-import tanks.network.Client;
-import tanks.network.MessageReader;
-import tanks.network.NetworkEventMap;
+import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Panel
 {
@@ -830,8 +824,6 @@ public class Panel
 				((TankNPC) m).drawMessage();
 		}
 
-		Chunk.drawDebugStuff();
-
 		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 
 		if (!(Game.screen instanceof ScreenExit || Game.screen instanceof ScreenIntro))
@@ -871,7 +863,7 @@ public class Panel
 			this.drawMouseTarget();
 
 		if (Game.debug)
-			DebugKeybinds.drawAndUpdate();
+			DebugKeybinds.renderDebugging();
 
 		Drawing.drawing.setColor(255, 255, 255);
         Game.screen.drawPostMouse();

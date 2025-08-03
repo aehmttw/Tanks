@@ -1,7 +1,7 @@
 package tanks.obstacle;
 
-import tanks.Direction;
-import tanks.tank.Tank;
+import tanks.*;
+import tanks.tank.*;
 
 public class Face implements Comparable<Face>
 {
@@ -47,6 +47,49 @@ public class Face implements Comparable<Face>
     {
         this(o, direction, tank, bullet);
         update(x1, y1, x2, y2, true, tank, bullet);
+    }
+
+    public static void drawDebug()
+    {
+        if (!Game.drawFaces)
+            return;
+
+        Drawing d = Drawing.drawing;
+        for (Chunk c : Chunk.chunkList)
+        {
+            for (Face f : c.faces.topFaces)
+            {
+                if (shouldHide(f)) continue;
+                d.setColor(150, 50, 50);
+                d.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
+            }
+
+            for (Face f : c.faces.bottomFaces)
+            {
+                if (shouldHide(f)) continue;
+                d.setColor(255, 50, 50);
+                d.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
+            }
+
+            for (Face f : c.faces.leftFaces)
+            {
+                if (shouldHide(f)) continue;
+                d.setColor(50, 50, 150);
+                d.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
+            }
+
+            for (Face f : c.faces.rightFaces)
+            {
+                if (shouldHide(f)) continue;
+                d.setColor(50, 50, 255);
+                d.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
+            }
+        }
+    }
+
+    public static boolean shouldHide(Face f)
+    {
+        return (f.owner instanceof Tank && (((Tank) f.owner).canHide && ((Tank) f.owner).hidden)) || (f.owner instanceof TankAIControlled && ((TankAIControlled) f.owner).invisible);
     }
 
     public int compareTo(Face f)

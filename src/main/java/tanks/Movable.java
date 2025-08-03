@@ -24,6 +24,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public double lastVX, lastVY, lastVZ;
 	public double lastOriginalVX, lastOriginalVY, lastOriginalVZ;
 
+    private double lastSize = Integer.MAX_VALUE;
+
 	public double age = 0;
 	public boolean refreshFaces = true;
 
@@ -78,8 +80,10 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void updateChunks()
 	{
-		if (!refreshFaces && posX == lastPosX && posY == lastPosY)
+		if (!refreshFaces && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
 			return;
+
+        lastSize = getSize();
 
 		if (refreshFaces && this instanceof IAvoidObject)
 			Game.avoidObjects.add((IAvoidObject) this);
@@ -309,6 +313,30 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	/** Field to cache the movable array for reuse */
 	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
+
+    public static ObjectArrayList<Movable> getCircleCollision(Movable self, double posX, double posY)
+    {
+        movableOut.clear();
+        for (Chunk c : Chunk.getChunksInRadius(posX, posY, self.getSize()))
+            for (Movable m : c.movables)
+                if (m != self && !m.skipNextUpdate && !m.destroy &&
+                    GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
+                    movableOut.add(m);
+        return movableOut;
+    }
+
+    public static ObjectArrayList<Movable> getSquareCollision(Movable self, double posX, double posY)
+    {
+        movableOut.clear();
+        double bound = self.getSize() / 2 + Game.tile_size / 2;
+        for (Chunk c : Chunk.getChunksInRange(posX - bound, posY - bound, posX + bound, posY + bound))
+            for (Movable m : c.movables)
+                if (m != self && !m.skipNextUpdate && !m.destroy &&
+                    Math.abs(m.posX - posX) < (self.getSize() + m.getSize()) / 2
+                    && Math.abs(m.posY - posY) < (self.getSize() + m.getSize()) / 2)
+                    movableOut.add(m);
+        return movableOut;
+    }
 
 	/** Expects all pixel coordinates.
 	 * @return all the movables within the specified range */

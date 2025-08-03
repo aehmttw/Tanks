@@ -1,7 +1,7 @@
 package tanks.gui.screen;
 
 import tanks.*;
-import tanks.gui.Button;
+import tanks.gui.*;
 import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
@@ -396,9 +396,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	{
 		if (Game.screen == this)
 			this.drawDefaultBackground();
-
-		if (Chunk.debug)
-			Chunk.drawDebugStuff();
 
 		this.drawWithoutBackground();
 	}

@@ -1,31 +1,17 @@
 package tanks.tank;
 
-import basewindow.Color;
-import basewindow.Model;
+import basewindow.*;
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.effect.AttributeModifier;
-import tanks.effect.EffectManager;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.effect.*;
+import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
-import tanks.item.Item;
-import tanks.item.ItemDummyTankExplosion;
-import tanks.network.event.EventTankAddAttributeModifier;
-import tanks.network.event.EventTankUpdate;
-import tanks.network.event.EventTankUpdateHealth;
-import tanks.network.event.EventTankUpdateVisibility;
-import tanks.obstacle.ISolidObject;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleStackable;
-import tanks.tankson.MetadataProperty;
-import tanks.tankson.Property;
+import tanks.item.*;
+import tanks.network.event.*;
+import tanks.obstacle.*;
+import tanks.tankson.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 import static tanks.tank.TankPropertyCategory.*;
 
@@ -131,7 +117,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	/** Time this tank has been invisible for*/
 	public double timeInvisible = 0;
 
-	@TankBuildProperty @Property(category = appearanceBody, id = "color", name = "", miscType = Property.MiscType.colorRGB)
+	@TankBuildProperty @Property(category = appearanceBody, id = "color", miscType = Property.MiscType.colorRGB)
 	public Color color = new Color();
 
 	@TankBuildProperty @Property(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity", minValue = 0.0)
@@ -148,19 +134,19 @@ public abstract class Tank extends Movable implements ISolidObject
 	/** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
 	@Property(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = Property.MiscType.colorRGB)
 	public boolean enableSecondaryColor = false;
-	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color2", name = "", miscType = Property.MiscType.colorRGB)
+	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "color2", miscType = Property.MiscType.colorRGB)
 	public Color secondaryColor = new Color();
 	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness", minValue = 0.0)
 	public double turretSize = 8;
 	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "turret_length", name = "Turret length", minValue = 0.0)
 	public double turretLength = Game.tile_size;
-	@TankBuildProperty @Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count. \n For player tank builds with multiple bullets, the first one will be used.")
+	@Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count")
 	public boolean multipleTurrets = true;
 
 	/** Important: tertiary color values will not be used unless this option is set to true! */
 	@Property(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = Property.MiscType.colorRGB)
 	public boolean enableTertiaryColor = false;
-	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color3", name = "", miscType = Property.MiscType.colorRGB)
+	@TankBuildProperty @Property(category = appearanceTurretBase, id = "color3", miscType = Property.MiscType.colorRGB)
 	public Color tertiaryColor = new Color();
 
 	@TankBuildProperty @Property(category = appearanceTracks, id = "enable_tracks", name = "Lays tracks")
@@ -183,7 +169,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem", name = "Tank emblem", miscType = Property.MiscType.emblem)
 	public String emblem = null;
-	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_color", name = "", miscType = Property.MiscType.colorRGB)
+	@TankBuildProperty @Property(category = appearanceEmblem, id = "emblem_color", miscType = Property.MiscType.colorRGB)
 	public Color emblemColor = new Color();
 
 	@MetadataProperty(id = "rotation", name = "Rotation", selector = SelectorRotation.selector_name, image = "rotate_tank.png", keybind = "editor.rotate")
@@ -216,9 +202,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean standardUpdateEvent = true;
 
-	public HashMap<String, Object> extraProperties = new HashMap<>();
-
-	public boolean isBoss = false;
+    public boolean isBoss = false;
 	public Tank possessor;
 	public Tank possessingTank = null;
 	public boolean overridePossessedKills = true;
@@ -258,7 +242,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public static int nextFreeNetworkID()
 	{
-		if (freeIDs.size() > 0)
+		if (!freeIDs.isEmpty())
 			return freeIDs.remove(0);
 		else
 		{
@@ -297,55 +281,48 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (this.size <= 0)
 			return;
 
-		for (int i = 0; i < Game.movables.size(); i++)
+		for (Movable m : getCircleCollision(this, posX, posY))
 		{
-			Movable m = Game.movables.get(i);
+            if (!(m instanceof Tank))
+                continue;
 
-			if (m.skipNextUpdate)
-				continue;
+            Tank t = (Tank) m;
+            double distSq = GameObject.sqDistBetw(this, t);
+            this.hasCollided = true;
+            t.hasCollided = true;
 
-			if (this != m && m instanceof Tank && ((Tank)m).size > 0 && !m.destroy)
-			{
-				Tank t = (Tank) m;
-				double distSq = Math.pow(this.posX - m.posX, 2) + Math.pow(this.posY - m.posY, 2);
+            double ourSize = this.size;
+            double theirSize = t.size;
+            double ourMass = ourSize * ourSize;
+            double theirMass = theirSize * theirSize;
 
-				if (distSq <= Math.pow((this.size + t.size) / 2, 2))
-				{
-					this.hasCollided = true;
-					t.hasCollided = true;
+            double angle = this.getAngleInDirection(t.posX, t.posY);
 
-					double ourMass = this.size * this.size;
-					double theirMass = t.size * t.size;
+            double ourV = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+            double ourAngle = this.getPolarDirection();
+            double ourParallelV = ourV * Math.cos(ourAngle - angle);
+            double ourPerpV = ourV * Math.sin(ourAngle - angle);
 
-					double angle = this.getAngleInDirection(t.posX, t.posY);
+            double theirV = Math.sqrt(t.vX * t.vX + t.vY * t.vY);
+            double theirAngle = t.getPolarDirection();
+            double theirParallelV = theirV * Math.cos(theirAngle - angle);
+            double theirPerpV = theirV * Math.sin(theirAngle - angle);
 
-					double ourV = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
-					double ourAngle = this.getPolarDirection();
-					double ourParallelV = ourV * Math.cos(ourAngle - angle);
-					double ourPerpV = ourV * Math.sin(ourAngle - angle);
+            double newV = (ourParallelV * ourMass + theirParallelV * theirMass) / (ourMass + theirMass);
 
-					double theirV = Math.sqrt(t.vX * t.vX + t.vY * t.vY);
-					double theirAngle = t.getPolarDirection();
-					double theirParallelV = theirV * Math.cos(theirAngle - angle);
-					double theirPerpV = theirV * Math.sin(theirAngle - angle);
+            double dist = Math.sqrt(distSq);
+            this.moveInDirection(Math.cos(angle), Math.sin(angle), (dist - (ourSize + theirSize) / 2) * theirMass / (ourMass + theirMass));
+            t.moveInDirection(Math.cos(Math.PI + angle), Math.sin(Math.PI + angle), (dist - (ourSize + theirSize) / 2) * ourMass / (ourMass + theirMass));
 
-					double newV = (ourParallelV * ourMass + theirParallelV * theirMass) / (ourMass + theirMass);
+            if (distSq > Math.pow((this.posX + this.vX) - (t.posX + t.vX), 2) + Math.pow((this.posY + this.vY) - (t.posY + t.vY), 2))
+            {
+                this.setMotionInDirection(t.posX, t.posY, newV);
+                this.addPolarMotion(angle + Math.PI / 2, ourPerpV);
 
-					double dist = Math.sqrt(distSq);
-					this.moveInDirection(Math.cos(angle), Math.sin(angle), (dist - (this.size + t.size) / 2) * theirMass / (ourMass + theirMass));
-					t.moveInDirection(Math.cos(Math.PI + angle), Math.sin(Math.PI + angle), (dist - (this.size + t.size) / 2) * ourMass / (ourMass + theirMass));
-
-					if (distSq > Math.pow((this.posX + this.vX) - (t.posX + t.vX), 2) + Math.pow((this.posY + this.vY) - (t.posY + t.vY), 2))
-					{
-						this.setMotionInDirection(t.posX, t.posY, newV);
-						this.addPolarMotion(angle + Math.PI / 2, ourPerpV);
-
-						t.setMotionInDirection(this.posX, this.posY, -newV);
-						t.addPolarMotion(angle + Math.PI / 2, theirPerpV);
-					}
-				}
-			}
-		}
+                t.setMotionInDirection(this.posX, this.posY, -newV);
+                t.addPolarMotion(angle + Math.PI / 2, theirPerpV);
+            }
+        }
 
 		hasCollided = false;
 
@@ -380,9 +357,10 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.clippedTiles.addAll(this.stillClippedTiles);
 		this.stillClippedTiles.clear();
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
+		double bound = size / 2 + Game.tile_size / 2;
+
+		for (Obstacle o : Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
 		{
-			Obstacle o = Game.obstacles.get(i);
 			boolean bouncy = o.bouncy;
 
 			if (!o.tankCollision && !o.checkForObjects || (o instanceof ObstacleStackable && ((ObstacleStackable) o).startHeight > 1))
@@ -393,8 +371,6 @@ public abstract class Tank extends Movable implements ISolidObject
 
 			double dx = this.posX - o.posX;
 			double dy = this.posY - o.posY;
-
-			double bound = this.size / 2 + Game.tile_size / 2;
 
 			if (horizontalDist < bound && verticalDist < bound)
 			{
@@ -459,7 +435,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.size /= this.hitboxSize;
 	}
 
-	@Override
+    @Override
 	public void update()
 	{
 		if (this.networkID < 0)
@@ -1092,7 +1068,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public double getSize()
 	{
-		return size * hitboxSize;
+		return size;
 	}
 
 	public double getDamageMultiplier(GameObject source)
@@ -1367,7 +1343,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turretBase, x, y, size, size, 0);
 	}
 
-	protected static class ClippedTile
+	public static class ClippedTile
 	{
 		public final int x;
 		public final int y;

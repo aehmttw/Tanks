@@ -34,12 +34,13 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	 * Extra = can be placed anywhere without a full tile, can have tanks inside
 	 * */
 	public enum ObstacleType { full, ground, top, extra }
-	public ObstacleType type = ObstacleType.full;
+	public ObstacleType type = this instanceof ObstacleStackable ? ObstacleType.full : ObstacleType.top;
 
+	public double startHeight = 0;
 	public int drawLevel = 5;
 
 	public boolean checkForObjects = false;
-	public boolean update = false;
+	private boolean update = false;
 	public boolean bouncy = false;
 	public boolean allowBounce = true;
 	public boolean replaceTiles = true;
@@ -71,8 +72,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public String name;
 	public String description;
 
-	protected boolean[] validFaces = new boolean[2];
-
 	public double baseGroundHeight;
 
 	public boolean shouldClip = false;
@@ -97,6 +96,17 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public boolean isGlowEnabled()
 	{
 		return false;
+	}
+
+	public void setUpdate(boolean update)
+	{
+		this.update = update;
+		Game.checkObstaclesToUpdate.add(this);
+	}
+
+	public boolean shouldUpdate()
+	{
+		return update;
 	}
 
 	@Override
@@ -165,14 +175,23 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	}
 
+	public void afterAdd()
+	{
+
+	}
+
 	public void update()
 	{
-		this.clipFrames--;
-		if (this.clipFrames <= 0)
+		if (this.clipFrames-- <= 0)
 		{
-			this.update = false;
+			this.setUpdate(false);
 			this.shouldClip = false;
 		}
+	}
+
+	public void onNeighborUpdate()
+	{
+		refreshHitboxes();
 	}
 
 	public void reactToHit(double bx, double by)
@@ -180,35 +199,31 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	}
 
-	public boolean hasNeighbor(int ox, int oy, boolean unbreakable)
+	public boolean hasNeighbor(int ox, int oy)
 	{
 		int x = (int) (this.posX / Game.tile_size) + ox;
 		int y = (int) (this.posY / Game.tile_size) + oy;
-
-		if (unbreakable)
-			return Game.isUnbreakable(x, y);
-		else
-			return Game.isSolid(x, y);
+		return Game.isBulletSolid(x, y);
 	}
 
 	public boolean hasLeftNeighbor()
 	{
-		return hasNeighbor(-1, 0, false);
+		return hasNeighbor(-1, 0);
 	}
 
 	public boolean hasRightNeighbor()
 	{
-		return hasNeighbor(1, 0, false);
+		return hasNeighbor(1, 0);
 	}
 
 	public boolean hasUpperNeighbor()
 	{
-		return hasNeighbor(0, -1, false);
+		return hasNeighbor(0, -1);
 	}
 
 	public boolean hasLowerNeighbor()
 	{
-		return hasNeighbor(0, 1, false);
+		return hasNeighbor(0, 1);
 	}
 
 	/**
@@ -228,7 +243,8 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	public void postOverride()
 	{
-		Game.setObstacle(posX, posY, this);
+		if (this.startHeight > 0)
+			return;
 
 		if (this instanceof IAvoidObject)
 			Game.avoidObjects.add((IAvoidObject) this);
@@ -277,6 +293,31 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		return o;
 	}
 
+	@Override
+	public double getSize()
+	{
+		return Game.tile_size;
+	}
+
+	@Override
+	public boolean isFaceValid(Face f)
+	{
+		Obstacle o = Game.getObstacle(this.posX + f.direction.x() * Game.tile_size, this.posY + f.direction.y() * Game.tile_size);
+		return super.isFaceValid(f) && (o == null || o.tankCollision != tankCollision || o.bulletCollision != bulletCollision);
+	}
+
+	@Override
+	public boolean tankCollision()
+	{
+		return this.tankCollision;
+	}
+
+	@Override
+	public boolean bulletCollision()
+	{
+		return this.bulletCollision;
+	}
+
 	public void refreshHitboxes()
 	{
 		Chunk c = Chunk.getChunk(posX, posY);
@@ -289,6 +330,23 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public void onDestroy(Movable source)
 	{
 		Game.removeObstacles.add(this);
+	}
+
+	private static final ObjectArrayList<Obstacle> obstaclesCache = new ObjectArrayList<>();
+
+	public ObjectArrayList<Obstacle> getNeighbors()
+	{
+		obstaclesCache.clear();
+		for (int i = 0; i < 4; i++)
+		{
+			double newX = posX + Game.tile_size * Direction.X[i];
+			double newY = posY + Game.tile_size * Direction.Y[i];
+
+			Obstacle o = Game.getObstacle(newX, newY);
+			if (o != null)
+				obstaclesCache.add(o);
+		}
+		return obstaclesCache;
 	}
 
 	public void playDestroyAnimation(double posX, double posY, double radius)
@@ -358,24 +416,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		}
 	}
 
-	@Override
-	public double getSize()
-	{
-		return Game.tile_size;
-	}
-
-	@Override
-	public boolean tankCollision()
-	{
-		return tankCollision;
-	}
-
-	@Override
-	public boolean bulletCollision()
-	{
-		return bulletCollision;
-	}
-
 	/** Field to cache the obstacle array for reuse */
 	private static final ObjectArrayList<Obstacle> obstacleOut = new ObjectArrayList<>();
 
@@ -384,11 +424,11 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public static ObjectArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
 	{
 		obstacleOut.clear();
-		for (Obstacle o : Game.obstacles)
-		{
-			if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))
-				obstacleOut.add(o);
-		}
+
+		for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
+            for (Obstacle o : c.obstacles)
+                if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))
+                    obstacleOut.add(o);
 		return obstacleOut;
 	}
 
@@ -397,11 +437,10 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public static ObjectArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
 	{
 		obstacleOut.clear();
-		for (Obstacle o : Game.obstacles)
-		{
-			if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
-				obstacleOut.add(o);
-		}
+		for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
+			for (Obstacle o : c.obstacles)
+                if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+                    obstacleOut.add(o);
 		return obstacleOut;
 	}
 

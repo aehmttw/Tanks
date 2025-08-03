@@ -236,6 +236,18 @@ public class Chunk
         return tile;
     }
 
+    public static <K> K getChunkIfPresent(int tileX, int tileY, K fallback, Function<Chunk, K> func)
+    {
+        Chunk c = getChunk(tileX, tileY);
+        if (c == null) return fallback;
+        return func.apply(c);
+    }
+
+    public static <K> K getChunkIfPresent(double posX, double posY, K fallback, Function<Chunk, K> func)
+    {
+        return getChunkIfPresent(((int) (posX / Game.tile_size)), ((int) (posY / Game.tile_size)), fallback, func);
+    }
+
     public static Tile getOrDefault(int tileX, int tileY)
     {
         return getOrElse(tileX, tileY, Tile.fallbackTile);

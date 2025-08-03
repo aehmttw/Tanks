@@ -2079,7 +2079,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         for (Obstacle o : Game.checkObstaclesToUpdate)
         {
-            if (o == null)
+            if (o == null || !Chunk.getChunkIfPresent(o.posX, o.posY, false, chunk -> chunk.obstacles.contains(o)))
                 continue;
 
             if (o.shouldUpdate())

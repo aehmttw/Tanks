@@ -811,9 +811,9 @@ public class Level
 		}
 
 		for (Movable m : Game.movables)
-            m.refreshFaces = true;
+            m.refreshFaces();
 		for (Obstacle o : Game.obstacles)
-			o.refreshHitboxes();
+			o.refreshFaces();
 
 		ScreenLevelEditor s = null;
 

@@ -191,7 +191,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	public void onNeighborUpdate()
 	{
-		refreshHitboxes();
+		refreshFaces();
 	}
 
 	public void reactToHit(double bx, double by)
@@ -318,7 +318,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		return this.bulletCollision;
 	}
 
-	public void refreshHitboxes()
+	public void refreshFaces()
 	{
 		Chunk c = Chunk.getChunk(posX, posY);
 		if (c == null) return;
@@ -424,7 +424,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public static ObjectArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
 	{
 		obstacleOut.clear();
-
 		for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
             for (Obstacle o : c.obstacles)
                 if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))

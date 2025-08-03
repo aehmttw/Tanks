@@ -54,6 +54,7 @@ public class ObstacleBoostPanel extends Obstacle
             return;
 
         this.brightness = Math.min(this.brightness + Panel.frameFrequency * 8, 100);
+        setUpdate(true);
 
         if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.25)
             this.addEffect(m.posX, m.posY, 0);
@@ -64,8 +65,6 @@ public class ObstacleBoostPanel extends Obstacle
     {
         if (ScreenGame.finishedQuick)
             return;
-
-        setUpdate(true);
 
         this.onObjectEntryLocal(m);
 
@@ -132,7 +131,7 @@ public class ObstacleBoostPanel extends Obstacle
 
         if (prevBrightness != brightness)
             Game.redrawObstacles.add(this);
-        else
+        else if (brightness <= 0)
             setUpdate(false);
     }
 

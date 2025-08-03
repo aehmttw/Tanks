@@ -128,8 +128,16 @@ public class Ray
 
 	public boolean isInSight(Movable target)
 	{
-		return setVelocity(target.posX - this.posX, target.posY - this.posY).getTarget() == target;
+		return setBouncyBounces(0).setAngleInDirection(target.posX, target.posY).getTarget() == target;
 	}
+
+    public Ray setAngleInDirection(double posX, double posY)
+    {
+        this.angle = getAngleInDirection(posX, posY);
+        this.vX = speed * Math.cos(angle);
+        this.vY = speed * Math.sin(angle);
+        return this;
+    }
 
 	public Ray setVelocity(double vX, double vY)
 	{

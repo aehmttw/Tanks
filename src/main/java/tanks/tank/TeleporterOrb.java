@@ -125,9 +125,7 @@ public class TeleporterOrb extends Movable
 			this.tank.positionLock = false;
 
 			for (int i = 0; i < 100 * Game.effectMultiplier; i++)
-			{
-				this.createEffect();
-			}
+                this.createEffect();
 
 			this.tank.size = this.size;
 			return;
@@ -272,7 +270,13 @@ public class TeleporterOrb extends Movable
 		}
 	}
 
-	protected void addTrailObj(Trail t, int slot)
+    @Override
+    public boolean disableRayCollision()
+    {
+        return true;
+    }
+
+    protected void addTrailObj(Trail t, int slot)
 	{
 		Trail old = null;
 

@@ -189,8 +189,8 @@ public class ObstacleShrubbery extends Obstacle
 			}
 		}
 
-		setUpdate(true);
-	}
+        setUpdate((m.vX != 0 && m.vY != 0) || height < 255);
+    }
 
 	public double getTileHeight()
 	{

@@ -62,7 +62,7 @@ public class Game
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
-	public static ArrayList<IAvoidObject> avoidObjects = new ArrayList<>();
+	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
 	public static ArrayList<Obstacle> checkObstaclesToUpdate = new ArrayList<>();
 	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
@@ -141,7 +141,7 @@ public class Game
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;
-	public static boolean drawAutoZoom = true;
+	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
 	public static final boolean cinematic = false;
 

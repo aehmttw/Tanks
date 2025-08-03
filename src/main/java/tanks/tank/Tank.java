@@ -1120,50 +1120,46 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		for (Movable m: Game.movables)
 		{
-			if (m instanceof Tank && !Team.isAllied(m, this) && m != this && !((Tank) m).hidden && !m.destroy)
-			{
-				double boundedX = Math.min(Math.max(this.posX, Drawing.drawing.interfaceSizeX * 0.4),
-						Game.currentSizeX * Game.tile_size - Drawing.drawing.interfaceSizeX * 0.4);
-				double boundedY = Math.min(Math.max(this.posY, Drawing.drawing.interfaceSizeY * 0.4),
-						Game.currentSizeY * Game.tile_size - Drawing.drawing.interfaceSizeY * 0.4);
+            if (!(m instanceof Tank) || Team.isAllied(m, this) || m == this || ((Tank) m).hidden || m.destroy)
+                continue;
 
-				double xDist = Math.abs(m.posX - boundedX);
-				double yDist = Math.abs(m.posY - boundedY);
-				double dist = Math.max(xDist / (Drawing.drawing.interfaceSizeX), yDist / (Drawing.drawing.interfaceSizeY)) * 2.2;
+            if (m instanceof TankAIControlled && ((TankAIControlled) m).isSupportTank())
+                continue;
 
-				if (dist < nearest)
-				{
-					nearest = dist;
-					nearestM = m;
-				}
+            double boundedX = Math.min(Math.max(this.posX, Drawing.drawing.interfaceSizeX * 0.4),
+                    Game.currentSizeX * Game.tile_size - Drawing.drawing.interfaceSizeX * 0.4);
+            double boundedY = Math.min(Math.max(this.posY, Drawing.drawing.interfaceSizeY * 0.4),
+                    Game.currentSizeY * Game.tile_size - Drawing.drawing.interfaceSizeY * 0.4);
 
-				if (dist > farthestInSight)
-				{
-					Ray r = Ray.newRay(this.posX, this.posY, 0, 0, this);
-					r.vX = m.posX - this.posX;
-					r.vY = m.posY - this.posY;
-					double s = Movable.getSpeed(r.vX, r.vY);
-					r.vX /= s;
-					r.vY /= s;
-					r.trace = true;
+            double xDist = Math.abs(m.posX - boundedX);
+            double yDist = Math.abs(m.posY - boundedY);
+            double dist = Math.max(xDist / (Drawing.drawing.interfaceSizeX), yDist / (Drawing.drawing.interfaceSizeY)) * 2.2;
 
-					boolean isInSight = r.getTarget() == m;
-					if ((m == this.lastFarthestInSight && System.currentTimeMillis() - this.lastFarthestInSightUpdate <= 1000) || isInSight)
-					{
-						farthestM = m;
-						farthestInSight = dist;
-						farthestIsInSight = false;
+            if (dist < nearest)
+            {
+                nearest = dist;
+                nearestM = m;
+            }
 
-						if (isInSight)
-						{
-							farthestIsInSight = true;
-							this.lastFarthestInSight = (Tank) m;
-							this.lastFarthestInSightUpdate = System.currentTimeMillis();
-						}
-					}
-				}
-			}
-		}
+            if (dist < farthestInSight)
+                continue;
+
+            boolean isInSight = Ray.newRay(this.posX, this.posY, 0, 0, this)
+                .setTrace(Game.drawAutoZoom, true).isInSight(m);
+            if (!isInSight && (m != this.lastFarthestInSight || System.currentTimeMillis() - this.lastFarthestInSightUpdate > 1000))
+                continue;
+
+            farthestM = m;
+            farthestInSight = dist;
+            farthestIsInSight = false;
+
+            if (isInSight)
+            {
+                farthestIsInSight = true;
+                this.lastFarthestInSight = (Tank) m;
+                this.lastFarthestInSightUpdate = System.currentTimeMillis();
+            }
+        }
 
 		if (Game.drawAutoZoom)
 		{
@@ -1195,7 +1191,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	@Override
 	public boolean disableRayCollision()
 	{
-		return !currentlyTargetable;
+		return size <= 0;
 	}
 
 	public double getAutoZoom()

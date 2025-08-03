@@ -27,7 +27,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     private double lastSize = Integer.MAX_VALUE;
 
 	public double age = 0;
-	public boolean refreshFaces = true;
 
 	public boolean destroy = false;
 	public boolean dealsDamage = true;
@@ -71,8 +70,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		this.lastPosX = this.posX;
 		this.lastPosY = this.posY;
 		this.lastPosZ = this.posZ;
-
-		refreshFaces = false;
 	}
 
 	/** Cached list for checking chunks that the movable has just left */
@@ -80,40 +77,46 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void updateChunks()
 	{
-		if (!refreshFaces && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
+        boolean changed = collisionChanged();
+		if (!changed && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
 			return;
 
         lastSize = getSize();
 
-		if (refreshFaces && this instanceof IAvoidObject)
+		if (changed && this instanceof IAvoidObject)
 			Game.avoidObjects.add((IAvoidObject) this);
 
-		ObjectArrayList<Chunk> cache = getTouchingChunks();
+        refreshFaces();
+    }
 
-		for (Chunk c : cache)
-		{
-			if (prevChunks.add(c))
-				onEnterChunk(c);
-			c.faces.removeFaces(this);
-		}
+    public void refreshFaces()
+    {
+        ObjectArrayList<Chunk> cache = getTouchingChunks();
 
-		leaveChunks.clear();
-		for (Chunk c : prevChunks)
-		{
-			if (!cache.contains(c))
-			{
-				onLeaveChunk(c);
-				leaveChunks.add(c);
-			}
-		}
-		prevChunks.removeAll(leaveChunks);
+        for (Chunk c : cache)
+        {
+            if (prevChunks.add(c))
+                onEnterChunk(c);
+            c.faces.removeFaces(this);
+        }
 
-		updateFaces();
-		for (Chunk c : cache)
-			c.faces.addFaces(this);
-	}
+        leaveChunks.clear();
+        for (Chunk c : prevChunks)
+        {
+            if (!cache.contains(c))
+            {
+                onLeaveChunk(c);
+                leaveChunks.add(c);
+            }
+        }
+        prevChunks.removeAll(leaveChunks);
 
-	public void onEnterChunk(Chunk c)
+        updateFaces();
+        for (Chunk c : cache)
+            c.faces.addFaces(this);
+    }
+
+    public void onEnterChunk(Chunk c)
 	{
 		c.addMovable(this, false);
 	}

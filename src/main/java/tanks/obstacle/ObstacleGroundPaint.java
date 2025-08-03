@@ -1,13 +1,10 @@
 package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorColorAndNoise;
 import tanks.rendering.ShaderGroundColor;
 import tanks.tankson.MetadataProperty;
-
-import java.util.Arrays;
 
 public class ObstacleGroundPaint extends Obstacle
 {
@@ -26,7 +23,6 @@ public class ObstacleGroundPaint extends Obstacle
         this.checkForObjects = true;
 
         this.type = ObstacleType.ground;
-        this.setUpdate(true);
 
         this.replaceTiles = true;
         this.tileRenderer = ShaderGroundColor.class;

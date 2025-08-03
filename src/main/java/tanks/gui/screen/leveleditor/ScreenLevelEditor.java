@@ -2467,7 +2467,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
     public void play()
     {
         this.save();
-
         this.replaceSpawns();
 
         Game.currentLevel = new Level(Game.currentLevelString);
@@ -2476,9 +2475,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
         for (Obstacle o : Game.obstacles)
         {
-            o.postOverride();
-            o.removed = false;
-
             if (o instanceof ObstacleBeatBlock)
             {
                 Game.currentLevel.synchronizeMusic = true;

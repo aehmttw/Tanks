@@ -189,6 +189,9 @@ public class Level
 				obstaclesPos = preset[1].split(",");
 				tanks = preset[2].split(",");
 
+                if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
+                    this.disableFriendlyFire = true;
+
 				if (preset.length >= 4)
 				{
 					enableTeams = true;
@@ -438,9 +441,6 @@ public class Level
 			this.startingItems = new ArrayList<>();
 			this.shop = new ArrayList<>();
 		}
-
-        if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
-            this.disableFriendlyFire = true;
 	}
 
 	protected static ArrayList<String> getJsonObjects(String s)

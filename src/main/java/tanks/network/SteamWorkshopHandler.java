@@ -89,7 +89,7 @@ public class SteamWorkshopHandler
                 if (!needsToAcceptWLA)
                     Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! \n Please note that it may take a few minutes for it to show up in listings.", true);
                 else
-                    Game.screen = new ScreenWorkshopMustAcceptAgreement(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! \n However, you haven't yet accepted the Steam Workshop Legal agreement. \n Your " + uploadingType.toLowerCase() + " will be private until you do so.", true);
+                    Game.screen = new ScreenWorkshopMustAcceptAgreement(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! \n However, you haven't yet accepted the Steam Workshop Legal agreement. \n Your " + uploadingType.toLowerCase() + " will be protected until you do so.", true);
 
                 Game.game.fileManager.getFile(Game.homedir + uploadDir + "/" + uploadingName).delete();
                 Game.game.fileManager.getFile(Game.homedir + screenshotDir).delete();

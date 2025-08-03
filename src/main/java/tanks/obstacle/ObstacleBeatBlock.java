@@ -24,7 +24,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
     protected boolean lastOn = false;
     protected boolean firstUpdate = true;
 
-    private boolean refreshHitboxes;
+    protected boolean refreshHitboxes;
 
     public ObstacleBeatBlock(String name, double posX, double posY)
     {
@@ -84,6 +84,9 @@ public class ObstacleBeatBlock extends ObstacleStackable
 
             this.allowBounce = false;
             this.shouldClip = true;
+
+            this.verticalFaces = null;
+            this.horizontalFaces = null;
 
             this.lastOn = this.tankCollision;
         }

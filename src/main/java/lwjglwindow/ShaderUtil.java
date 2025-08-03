@@ -314,7 +314,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform1b extends LWJGLUniform implements ShaderProgram.Uniform1b
     {
-        private boolean value = false;
+        protected boolean value = false;
 
         public void set(Boolean b)
         {
@@ -330,7 +330,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform1i extends LWJGLUniform implements ShaderProgram.Uniform1i
     {
-        private int value = 0;
+        protected int value = 0;
 
         public void set(Integer i)
         {
@@ -346,7 +346,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform2i extends LWJGLUniform implements ShaderProgram.Uniform2i
     {
-        private final int[] value = new int[2];
+        protected final int[] value = new int[2];
 
         public void set(int i1, int i2)
         {
@@ -363,7 +363,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform3i extends LWJGLUniform implements ShaderProgram.Uniform3i
     {
-        private final int[] value = new int[3];
+        protected final int[] value = new int[3];
 
         public void set(int i1, int i2, int i3)
         {
@@ -381,7 +381,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform4i extends LWJGLUniform implements ShaderProgram.Uniform4i
     {
-        private final int[] value = new int[4];
+        protected final int[] value = new int[4];
 
         public void set(int i1, int i2, int i3, int i4)
         {
@@ -400,7 +400,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform1f extends LWJGLUniform implements ShaderProgram.Uniform1f
     {
-        private float value;
+        protected float value;
 
         public void set(Float i)
         {
@@ -416,7 +416,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform2f extends LWJGLUniform implements ShaderProgram.Uniform2f
     {
-        private final float[] value = new float[2];
+        protected final float[] value = new float[2];
 
         public void set(float i1, float i2)
         {
@@ -433,7 +433,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform3f extends LWJGLUniform implements ShaderProgram.Uniform3f
     {
-        private final float[] value = new float[3];
+        protected final float[] value = new float[3];
 
         public void set(float i1, float i2, float i3)
         {
@@ -451,7 +451,7 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniform4f extends LWJGLUniform implements ShaderProgram.Uniform4f
     {
-        private final float[] value = new float[4];
+        protected final float[] value = new float[4];
 
         public void set(float i1, float i2, float i3, float i4)
         {
@@ -470,8 +470,8 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniformMatrix2 extends LWJGLUniform implements ShaderProgram.UniformMatrix2
     {
-        private float[] matrix = new float[0];
-        private boolean transpose;
+        protected float[] matrix = new float[0];
+        protected boolean transpose;
 
         public void set(float[] floats, boolean transpose)
         {
@@ -493,8 +493,8 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniformMatrix3 extends LWJGLUniform implements ShaderProgram.UniformMatrix3
     {
-        private float[] matrix = new float[0];
-        private boolean transpose;
+        protected float[] matrix = new float[0];
+        protected boolean transpose;
 
         public void set(float[] floats, boolean transpose)
         {
@@ -516,8 +516,8 @@ public class ShaderUtil extends BaseShaderUtil
 
     public static class LWJGLUniformMatrix4 extends LWJGLUniform implements ShaderProgram.UniformMatrix4
     {
-        private float[] matrix = new float[0];
-        private boolean transpose;
+        protected float[] matrix = new float[0];
+        protected boolean transpose;
 
         public void set(float[] floats, boolean transpose)
         {

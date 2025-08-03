@@ -18,20 +18,20 @@ public class SteamSharedLibraryLoader
 		MacOS
 	}
 
-	private static final PLATFORM OS;
+	protected static final PLATFORM OS;
 
-	private static final boolean IS_64_BIT;
+	protected static final boolean IS_64_BIT;
 
-	private static final String SHARED_LIBRARY_EXTRACT_DIRECTORY = System.getProperty(
+	protected static final String SHARED_LIBRARY_EXTRACT_DIRECTORY = System.getProperty(
 			"com.codedisaster.steamworks.SharedLibraryExtractDirectory", "steamworks4j");
 
-	private static final String SHARED_LIBRARY_EXTRACT_PATH = System.getProperty(
+	protected static final String SHARED_LIBRARY_EXTRACT_PATH = System.getProperty(
 			"com.codedisaster.steamworks.SharedLibraryExtractPath", null);
 
-	private static final String SDK_REDISTRIBUTABLE_BIN_PATH = System.getProperty(
+	protected static final String SDK_REDISTRIBUTABLE_BIN_PATH = System.getProperty(
 			"com.codedisaster.steamworks.SDKRedistributableBinPath", "sdk/redistributable_bin");
 
-	private static final String SDK_LIBRARY_PATH = System.getProperty(
+	protected static final String SDK_LIBRARY_PATH = System.getProperty(
 			"com.codedisaster.steamworks.SDKLibraryPath", "sdk/public/steam/lib");
 
 	static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(
@@ -62,7 +62,7 @@ public class SteamSharedLibraryLoader
 		IS_64_BIT = osArch.equals("amd64") || osArch.equals("x86_64");
 	}
 
-	private static String getPlatformLibName(String libName)
+	protected static String getPlatformLibName(String libName)
 	{
 		switch (OS)
 		{
@@ -159,18 +159,18 @@ public class SteamSharedLibraryLoader
 		}
 	}
 
-	private static void extractLibrary(File librarySystemPath, String librarySystemName) throws IOException
+	protected static void extractLibrary(File librarySystemPath, String librarySystemName) throws IOException
 	{
 		extractLibrary(librarySystemPath,
 				SteamSharedLibraryLoader.class.getResourceAsStream("/" + librarySystemName));
 	}
 
-	private static void extractLibrary(File librarySystemPath, File librarySourcePath) throws IOException
+	protected static void extractLibrary(File librarySystemPath, File librarySourcePath) throws IOException
 	{
 		extractLibrary(librarySystemPath, new FileInputStream(librarySourcePath));
 	}
 
-	private static void extractLibrary(File librarySystemPath, InputStream input) throws IOException
+	protected static void extractLibrary(File librarySystemPath, InputStream input) throws IOException
 	{
 		if (input != null)
 		{
@@ -207,7 +207,7 @@ public class SteamSharedLibraryLoader
 		}
 	}
 
-	private static File discoverExtractLocation(String folderName, String fileName) throws IOException
+	protected static File discoverExtractLocation(String folderName, String fileName) throws IOException
 	{
 
 		File path;
@@ -270,7 +270,7 @@ public class SteamSharedLibraryLoader
 		throw new IOException("No suitable extraction path found");
 	}
 
-	private static boolean canWrite(File file)
+	protected static boolean canWrite(File file)
 	{
 
 		File folder = file.getParentFile();
@@ -314,7 +314,7 @@ public class SteamSharedLibraryLoader
 		}
 	}
 
-	private static boolean canExecute(File file)
+	protected static boolean canExecute(File file)
 	{
 
 		try

@@ -6,8 +6,8 @@ import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import tanks.obstacle.Face;
-import tanks.obstacle.ISolidObject;
+import tanks.obstacle.Face2;
+import tanks.obstacle.ISolidObject2;
 import tanks.obstacle.Obstacle;
 
 import java.util.Comparator;
@@ -16,19 +16,19 @@ import java.util.Random;
 @SuppressWarnings("UnusedReturnValue")
 public class Chunk
 {
-    private static final int TILE_DEPTH_VARIATION = 10;
+    protected static final int TILE_DEPTH_VARIATION = 10;
     public static Level defaultLevel = new Level("{28,18|,|,}");
     public static final Chunk zeroChunk = new Chunk();
     public static boolean debug = false;
 
     public static Int2ObjectOpenHashMap<Chunk> chunks = new Int2ObjectOpenHashMap<>();
     public static ObjectArrayList<Chunk> chunkList = new ObjectArrayList<>();
-    private static final ObjectArrayList<Chunk> chunkCache = new ObjectArrayList<>();
+    protected static final ObjectArrayList<Chunk> chunkCache = new ObjectArrayList<>();
     public static int chunkSize = 8;
 
     public final Level level;
     public final int chunkX, chunkY;
-    public Face[] borderFaces = new Face[4];
+    public Face2[] borderFaces = new Face2[4];
     public final ObjectOpenHashSet<Obstacle> obstacles = new ObjectOpenHashSet<>();
     public final ObjectOpenHashSet<Movable> movables = new ObjectOpenHashSet<>();
 
@@ -37,7 +37,7 @@ public class Chunk
     public final Tile[][] tileGrid = new Tile[chunkSize][chunkSize];
 
     /** The variable that caches the previous call to {@link Chunk#getChunk} */
-    private static Chunk prevChunk;
+    protected static Chunk prevChunk;
 
     public Chunk(Level l, Random r, int x, int y)
     {
@@ -55,7 +55,7 @@ public class Chunk
         }
     }
 
-    private Chunk()
+    protected Chunk()
     {
         this.level = null;
         this.chunkX = 0;
@@ -106,18 +106,18 @@ public class Chunk
     public void addBorderFace(Direction dir, Level l)
     {
         int side = dir.index();
-        Face f = new Face(null,
-                convert(chunkX + Face.x1[side], l, true),
-                convert(chunkY + Face.y1[side], l, false),
-                convert(chunkX + Face.x2[side], l, true),
-                convert(chunkY + Face.y2[side], l, false),
+        Face2 f = new Face2(null,
+                convert(chunkX + Face2.x1[side], l, true),
+                convert(chunkY + Face2.y1[side], l, false),
+                convert(chunkX + Face2.x2[side], l, true),
+                convert(chunkY + Face2.y2[side], l, false),
                 dir, true, true);
         borderFaces[side] = f;
         faces.getSide(dir.opposite().index()).add(f);
     }
 
     /** Helper to convert chunk coordinates to game coordinates and clamp it to the level size. */
-    private static double convert(int chunk, Level l, boolean isX)
+    protected static double convert(int chunk, Level l, boolean isX)
     {
         return Math.max(isX ? l.startX : l.startY, Math.min(isX ? l.sizeX : l.sizeY, chunk * Chunk.chunkSize)) * Game.tile_size;
     }
@@ -231,7 +231,7 @@ public class Chunk
             tc.accept(t);
     }
 
-    private static Tile returnTile(Tile tile)
+    protected static Tile returnTile(Tile tile)
     {
         return tile;
     }
@@ -364,7 +364,7 @@ public class Chunk
         for (Chunk c : chunkList)
         {
             int i = 0;
-            for (Face f : c.borderFaces)
+            for (Face2 f : c.borderFaces)
             {
                 if (f != null)
                 {
@@ -385,10 +385,10 @@ public class Chunk
                     Drawing.drawing.setColor(255, 255, 0);
                     drawClampedRect(
                             Game.currentLevel != null ? Game.currentLevel : defaultLevel,
-                            x + sX * Face.x1[i],
-                            y + sY * Face.y1[i],
-                            x + sX * (Face.x2[i] - Face.x1[i]),
-                            y + sY * (Face.y2[i] - Face.y1[i])
+                            x + sX * Face2.x1[i],
+                            y + sY * Face2.y1[i],
+                            x + sX * (Face2.x2[i] - Face2.x1[i]),
+                            y + sY * (Face2.y2[i] - Face2.y1[i])
                     );
                 }
                 i += 1;
@@ -402,7 +402,7 @@ public class Chunk
 
     /** Given a rectangle's bounding box, clamps it to the level borders and draws it.
      * Also ensures a line width of 2. */
-    private static void drawClampedRect(Level l, double x1, double y1, double x2, double y2)
+    protected static void drawClampedRect(Level l, double x1, double y1, double x2, double y2)
     {
         double sX = Math.max(1 / Drawing.drawing.scale, Math.min(l.sizeX * Game.tile_size - x1, x2 - x1));
         double sY = Math.max(1 / Drawing.drawing.scale, Math.min(l.sizeY * Game.tile_size - y1, y2 - y1));
@@ -482,26 +482,26 @@ public class Chunk
         /**
          * dynamic x, static y
          */
-        public final ObjectAVLTreeSet<Face> topFaces = new ObjectAVLTreeSet<>();
+        public final ObjectAVLTreeSet<Face2> topFaces = new ObjectAVLTreeSet<>();
         /**
          * dynamic x, static y
          */
-        public final ObjectAVLTreeSet<Face> bottomFaces = new ObjectAVLTreeSet<>(Comparator.reverseOrder());
+        public final ObjectAVLTreeSet<Face2> bottomFaces = new ObjectAVLTreeSet<>(Comparator.reverseOrder());
         /**
          * static x, dynamic y
          */
-        public final ObjectAVLTreeSet<Face> leftFaces = new ObjectAVLTreeSet<>();
+        public final ObjectAVLTreeSet<Face2> leftFaces = new ObjectAVLTreeSet<>();
         /**
          * static x, dynamic y
          */
-        public final ObjectAVLTreeSet<Face> rightFaces = new ObjectAVLTreeSet<>(Comparator.reverseOrder());
+        public final ObjectAVLTreeSet<Face2> rightFaces = new ObjectAVLTreeSet<>(Comparator.reverseOrder());
 
-        public void addFaces(ISolidObject s)
+        public void addFaces(ISolidObject2 s)
         {
             if (s.disableRayCollision())
                 return;
 
-            Face[] faces = s.getFaces();
+            Face2[] faces = s.getFaces();
             for (int i = 0; i < 4; i++)
             {
                 if (faces[i].valid)
@@ -509,17 +509,17 @@ public class Chunk
             }
         }
 
-        public void removeFaces(ISolidObject s)
+        public void removeFaces(ISolidObject2 s)
         {
             if (s.disableRayCollision())
                 return;
 
-            Face[] faces = s.getFaces();
+            Face2[] faces = s.getFaces();
             for (int i = 0; i < 4; i++)
                 getSide(i).remove(faces[i]);
         }
 
-        public ObjectAVLTreeSet<Face> getSide(int side)
+        public ObjectAVLTreeSet<Face2> getSide(int side)
         {
             switch (side)
             {

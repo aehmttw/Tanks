@@ -35,12 +35,12 @@ package lwjglwindow;
  * @author Per Bothner
  */
 public class IntHashTable {
-    private static final int DEFAULT_INITIAL_SIZE = 64;
+    protected static final int DEFAULT_INITIAL_SIZE = 64;
     protected Object[] objs; // the domain set
     protected int[] ints; // the image set
     protected int mask; // used to clip int's into the domain
     protected int num_bindings; // the number of mappings (including DELETED)
-    private static final Object DELETED = new Object();
+    protected static final Object DELETED = new Object();
 
     /**
      * Construct an Object {@literal ->} int hash table.

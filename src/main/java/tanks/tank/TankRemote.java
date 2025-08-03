@@ -115,7 +115,7 @@ public class TankRemote extends Tank
 		}
 	}
 
-	private static void initFieldsToClone()
+	protected static void initFieldsToClone()
 	{
 		fieldsToClone = new ArrayList<>();
 

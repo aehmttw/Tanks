@@ -79,7 +79,7 @@ public class Drawing
 
 	public String[] tooltip = null;
 
-	private Drawing()
+	protected Drawing()
 	{
 	}
 

@@ -76,8 +76,8 @@ public class StatusEffect
     public static class Instance
     {
         // Object recycling system
-        private static final Queue<Instance> recycleQueue = new ConcurrentLinkedQueue<>();
-        private static final int MAX_POOL_SIZE = 1000; // Prevent memory leaks from excessive pooling
+        protected static final Queue<Instance> recycleQueue = new ConcurrentLinkedQueue<>();
+        protected static final int MAX_POOL_SIZE = 1000; // Prevent memory leaks from excessive pooling
 
         public StatusEffect effect;
         public double age;
@@ -91,7 +91,7 @@ public class StatusEffect
         /**Age at which the Attribute is at full strength*/
         public double warmupAge;
 
-        private Instance() {}
+        protected Instance() {}
 
         public StatusEffect.Instance set(StatusEffect effect, double age, double warmupAge, double deteriorationAge, double maxAge)
         {
@@ -123,7 +123,7 @@ public class StatusEffect
         /**
          * Reset this Instance to default state for reuse
          */
-        private void reset()
+        protected void reset()
         {
             this.effect = null;
             this.age = 0;

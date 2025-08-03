@@ -8,6 +8,7 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.*;
 import tanks.rendering.TerrainRenderer;
 import tanks.tank.Ray;
+import tanks.tank.Ray2;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -226,8 +227,8 @@ public class DebugKeybinds
             return;
 
         handleDebugKeybinds();
-        Face.drawDebug();
+        Face2.drawDebug();
         Chunk.drawDebugStuff();
-        Ray.drawDebug();
+        Ray2.drawDebug();
     }
 }

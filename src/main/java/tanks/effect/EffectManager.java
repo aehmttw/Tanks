@@ -30,7 +30,7 @@ public class EffectManager
     /**
      * Linear search function to find status effect property by status effect reference
      */
-    private StatusEffectProperty findStatusEffectProperty(StatusEffect statusEffect)
+    protected StatusEffectProperty findStatusEffectProperty(StatusEffect statusEffect)
     {
         for (int i = 0; i < statusEffectProperties.size(); i++)
         {

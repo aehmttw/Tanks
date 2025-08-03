@@ -546,6 +546,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public ScreenGame()
     {
+        this.horizontalFaces = new Face[2];
+        this.horizontalFaces[0] = new Face(null, 0, 0, Game.currentSizeX * Game.tile_size, 0, true, false, true, true);
+        this.horizontalFaces[1] = new Face(null, 0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, true, true,true, true);
+
+        this.verticalFaces = new Face[2];
+        this.verticalFaces[0] = new Face(null, 0, 0,0, Game.currentSizeY * Game.tile_size, false, false,true, true);
+        this.verticalFaces[1] = new Face(null, Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size, false, true, true, true);
+
+
         Game.player.hotbar.resetTimers();
         eliminatedPlayers.clear();
         this.selfBatch = false;
@@ -698,6 +707,89 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         }
     }
 
+    public Face[] horizontalFaces;
+    public Face[] verticalFaces;
+
+    public void setupFaces()
+    {
+        Game.horizontalFaces.clear();
+        Game.verticalFaces.clear();
+
+        this.horizontalFaces[0].update(0, 0, Game.currentSizeX * Game.tile_size, 0);
+        this.horizontalFaces[1].update(0, Game.currentSizeY * Game.tile_size, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size);
+        Game.horizontalFaces.add(this.horizontalFaces[0]);
+        Game.horizontalFaces.add(this.horizontalFaces[1]);
+
+        this.verticalFaces[0].update(0, 0,0, Game.currentSizeY * Game.tile_size);
+        this.verticalFaces[1].update(Game.currentSizeX * Game.tile_size, 0, Game.currentSizeX * Game.tile_size, Game.currentSizeY * Game.tile_size);
+        Game.verticalFaces.add(this.verticalFaces[0]);
+        Game.verticalFaces.add(this.verticalFaces[1]);
+
+        Game.avoidObjects.clear();
+
+        for (int i = 0; i < Game.movables.size(); i++)
+        {
+            Movable m = Game.movables.get(i);
+            if (m instanceof IAvoidObject)
+                Game.avoidObjects.add((IAvoidObject) m);
+
+            if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
+            {
+                Game.removeMovables.add(m);
+                System.err.println("A movable's position became NaN! " + m);
+                Game.movables.add(new MovableNaN(m.lastPosX, m.lastPosY));
+            }
+            else if (m instanceof ISolidObject && !(m instanceof Tank && !((Tank) m).currentlyTargetable))
+            {
+                Game.horizontalFaces.addAll(Arrays.asList(((ISolidObject) m).getHorizontalFaces()));
+
+                Game.verticalFaces.addAll(Arrays.asList(((ISolidObject) m).getVerticalFaces()));
+            }
+        }
+
+        for (Obstacle o: Game.obstacles)
+        {
+            if (o instanceof IAvoidObject)
+                Game.avoidObjects.add((IAvoidObject) o);
+
+            Face[] faces = o.getHorizontalFaces();
+            boolean[] valid = o.getValidHorizontalFaces(true);
+            for (int i = 0; i < faces.length; i++)
+            {
+                if (valid[i])
+                    Game.horizontalFaces.add(faces[i]);
+            }
+
+            faces = o.getVerticalFaces();
+            valid = o.getValidVerticalFaces(true);
+            for (int i = 0; i < faces.length; i++)
+            {
+                if (valid[i])
+                    Game.verticalFaces.add(faces[i]);
+            }
+        }
+
+        try
+        {
+            Collections.sort(Game.horizontalFaces);
+        }
+        catch (Exception e)
+        {
+            System.err.println(Game.horizontalFaces);
+            Game.exitToCrash(e);
+        }
+
+        try
+        {
+            Collections.sort(Game.verticalFaces);
+        }
+        catch (Exception e)
+        {
+            System.err.println(Game.verticalFaces);
+            Game.exitToCrash(e);
+        }
+    }
+
     public void botShopping()
     {
         if (!this.shop.isEmpty())
@@ -821,7 +913,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         this.playerBuildsList.sortButtons();
     }
 
-    private static ButtonObject getButtonObject(int i, TankPlayable display, TankPlayer.ShopTankBuild t)
+    protected static ButtonObject getButtonObject(int i, TankPlayable display, TankPlayer.ShopTankBuild t)
     {
         return new ButtonObject(display, 0, 0, 75, 75, () ->
         {
@@ -1650,6 +1742,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             for (Effect e : Game.effects)
                 e.update();
 
+            setupFaces();
             updateGameField();
 
             for (Movable m : Game.movables)

@@ -661,15 +661,15 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
     public static class BufferProperty
     {
-        private static final ObjectArrayFIFOQueue<BufferProperty> buffers = new ObjectArrayFIFOQueue<>();
-        private static final ObjectArrayFIFOQueue<BufferProperty> recycledBuffers = new ObjectArrayFIFOQueue<>();
-        private static final int MAX_BUFFERS = 10000;
+        protected static final ObjectArrayFIFOQueue<BufferProperty> buffers = new ObjectArrayFIFOQueue<>();
+        protected static final ObjectArrayFIFOQueue<BufferProperty> recycledBuffers = new ObjectArrayFIFOQueue<>();
+        protected static final int MAX_BUFFERS = 10000;
 
         public int startPoint;
         public int size;
         public IBatchRenderableObject object;
 
-        private BufferProperty()
+        protected BufferProperty()
         {
         }
 

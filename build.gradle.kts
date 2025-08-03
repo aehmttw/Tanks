@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
 }
 
-fun get_hash(): String {
+fun getHash(): String {
     return Runtime.getRuntime()
         .exec("git rev-parse --short HEAD")
         .inputStream
@@ -25,7 +25,9 @@ val lwjglNatives = listOf(
 repositories {
     mavenCentral()
     mavenLocal()
-
+    maven {
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
+    }
 }
 
 dependencies {
@@ -49,18 +51,15 @@ dependencies {
 
     // Your other existing dependencies
     api(libs.org.l33tlabs.twl.pngdecoder)
-    api(libs.org.apache.commons.commons.io)
-    implementation("io.netty:netty-all:4.1.68.Final")
-    implementation("it.unimi.dsi:fastutil-core:8.5.15")
-
-    //Steamworks
-    api(files("libs/steamworks4j-1.10.0-SNAPSHOT.jar"))
-    api(files("libs/steamworks4j-lwjgl3-1.10.0-SNAPSHOT.jar"))
+    implementation("io.netty:netty-all:4.1.94.Final")
+    implementation("it.unimi.dsi:fastutil-core:8.5.16")
+    api("com.code-disaster.steamworks4j:steamworks4j:1.10.0-SNAPSHOT")
+    api("com.code-disaster.steamworks4j:steamworks4j-lwjgl3:1.10.0-SNAPSHOT")
 }
 
 group = "com.aehmttw"
 version = rootProject.file("src/main/resources/version.txt").readText().trim()
-rootProject.file("src/main/resources/hash.txt").writeText(get_hash())
+rootProject.file("src/main/resources/hash.txt").writeText(getHash())
 description = "Tanks"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
@@ -75,25 +74,15 @@ tasks.jar {
         from("src/main/java/META-INF/MANIFEST.MF")
     }
 
-    // If you have dependencies that need to be included in the JAR
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 }
 
-tasks.register<JavaExec>("run") {
+task("run", type = JavaExec::class) {
     description = "Runs the JAR file"
-    group = "application" // This puts the task in the "application" group in Gradle tasks list
-
-    // Ensure the JAR is built before trying to run it
+    group = "application"
     dependsOn(tasks.jar)
-
-    // Use the JAR file as the classpath
     classpath(tasks.jar.get().outputs.files)
-
-    // Set the main class to run
-    // Replace "com.aehmttw.tanks.Main" with your actual main class
     mainClass.set("main.Tanks")
-
-    // If your application needs a working directory to be set
     workingDir = project.projectDir
     args("debug")
 }

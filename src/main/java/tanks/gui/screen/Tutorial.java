@@ -202,7 +202,7 @@ public class Tutorial extends Minigame
                 }
             }
 
-            if (!Game.isSolid(27, 10) || !Game.isSolid(27, 11) || !Game.isSolid(27, 12) || !Game.isSolid(27, 13) || !Game.isSolid(27, 14))
+            if (!Game.isTankSolid(27, 10) || !Game.isTankSolid(27, 11) || !Game.isTankSolid(27, 12) || !Game.isTankSolid(27, 13) || !Game.isTankSolid(27, 14))
                 step = 6;
         }
         else if (step == 6 && brown.destroy)

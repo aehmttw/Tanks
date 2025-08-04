@@ -33,8 +33,11 @@ public class ObstacleIce extends Obstacle
 
         this.replaceTiles = true;
 
-        this.renderer = ShaderIce.class;
-        this.tileRenderer = ShaderGroundIce.class;
+        if (Game.enable3d)
+        {
+            this.renderer = ShaderIce.class;
+            this.tileRenderer = ShaderGroundIce.class;
+        }
 
         this.description = "A slippery layer of ice";
     }

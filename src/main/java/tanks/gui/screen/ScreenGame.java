@@ -2452,7 +2452,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         for (Obstacle o : Game.obstacles)
         {
-            if (!o.batchDraw)
+            if (!o.batchDraw || !Game.enable3d)
                 drawables[o.drawLevel].add(o);
 
             Effect e = o.getCompanionEffect();

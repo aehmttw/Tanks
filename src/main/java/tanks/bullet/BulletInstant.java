@@ -119,7 +119,6 @@ public class BulletInstant extends Bullet
 			if (Math.abs(this.lastFinalVX) < 0.01 && Math.abs(this.lastFinalVY) < 0.01)
 				this.destroy = true;
 		}
-        System.out.println(this.posX + "! " + this.vX);
 
         this.affectedByFrameFrequency = true;
 

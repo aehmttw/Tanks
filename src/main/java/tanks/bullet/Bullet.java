@@ -389,7 +389,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				t.vY += vY * mul;
 
 				t.recoilSpeed = t.getSpeed();
-				if (t.recoilSpeed > t.maxSpeed)
+
+                if (t.recoilSpeed > t.maxSpeed)
 				{
 					t.inControlOfMotion = false;
 					t.tookRecoil = true;

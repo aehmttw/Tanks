@@ -229,7 +229,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	{
 		this.vX = velocity * Math.cos(angle);
 		this.vY = velocity * Math.sin(angle);
-	}
+    }
 
 	public void set3dPolarMotion(double angle1, double angle2, double velocity)
 	{
@@ -329,15 +329,16 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     public static ObjectArrayList<Movable> getCircleCollision(Movable self, double posX, double posY)
     {
-        movableOut2.clear();
-        getSquareCollision(self, posX, posY);
-        for (Movable m: movableOut)
-        {
-            double d = (self.getSize() + m.getSize()) / 2;
-            if (Movable.sqDistBetw(self, m) < d * d)
-                movableOut2.add(self);
-        }
-        return movableOut2;
+        movableOut.clear();
+
+        for (Chunk c : Chunk.getChunksInRadius(posX, posY, self.getSize()))
+            for (Movable m : c.movables)
+                if (m != self && !m.skipNextUpdate && !m.destroy &&
+                    GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
+                    movableOut.add(m);
+
+
+        return movableOut;
     }
 
     public static ObjectArrayList<Movable> getSquareCollision(Movable self, double posX, double posY)

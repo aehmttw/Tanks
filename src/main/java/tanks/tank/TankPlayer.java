@@ -181,7 +181,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			}
 		}
 
-		if (this.tookRecoil)
+        if (this.tookRecoil)
 		{
 			if (this.recoilSpeed <= this.maxSpeed * this.maxSpeedModifier * 1.0001)
 			{
@@ -191,9 +191,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			else
 			{
 				this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-				this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
-			}
-		}
+                this.recoilSpeed *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
+            }
+        }
 		else if (this.inControlOfMotion)
 		{
 			double acceleration = this.acceleration * this.accelerationModifier;
@@ -251,10 +251,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 				this.addPolarMotion(a, acceleration * this.maxSpeed * Panel.frameFrequency);
 			}
 
-			if (a == -1)
+            if (a == -1)
 			{
-				this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
-				this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vX *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vY *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
 
 				if (Math.abs(this.vX) < 0.001)
 					this.vX = 0;
@@ -265,9 +265,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 			double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 
-			if (speed > maxVelocity)
+            if (speed > maxVelocity)
 				this.setPolarMotion(this.getPolarDirection(), maxVelocity);
-		}
+
+        }
 
 		double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
@@ -545,7 +546,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
 		}
 
-		super.update();
+        super.update();
     }
 
 	public Item.ItemStack<?> getItem(int click)
@@ -611,6 +612,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		b.setPolarMotion(this.angle + offset, speed);
 		b.speed = Math.abs(speed);
+
 		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
 		if (b.recoil != 0)

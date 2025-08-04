@@ -607,20 +607,20 @@ public class TankAIControlled extends Tank implements ITankField
 				else
 				{
 					this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-					this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
+					this.recoilSpeed *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
 				}
 			}
 			else if (this.inControlOfMotion)
 			{
-				this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
-				this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vX *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vY *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
 
 				if (this.enableMovement)
 					this.updateMotionAI();
 				else
 				{
-					this.vX *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
-					this.vY *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
+					this.vX *= Math.pow(1 - Math.min(1, 0.15 * this.frictionModifier), Panel.frameFrequency);
+					this.vY *= Math.pow(1 - Math.min(1, 0.15 * this.frictionModifier), Panel.frameFrequency);
 
 					if (this.enableDefensiveFiring && useRaysThisFrame)
 						this.checkForBulletThreats();

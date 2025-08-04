@@ -317,18 +317,6 @@ public abstract class Tank extends Movable implements ISolidObject
             double theirParallelV = t.vX * dx + t.vY * dy;
             double theirPerpV = -(t.vX * dy + t.vY * -dx);
 
-//            double angle = this.getAngleInDirection(t.posX, t.posY);
-
-//            double ourAngle = this.getPolarDirection();
-//            double ourV = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
-//            double ourParallelV2 = ourV * Math.cos(ourAngle - angle);
-//            double ourPerpV2 = ourV * Math.sin(ourAngle - angle);
-
-//            double theirV = Math.sqrt(t.vX * t.vX + t.vY * t.vY);
-//            double theirAngle = t.getPolarDirection();
-//            double theirParallelV2 = theirV * Math.cos(theirAngle - angle);
-//            double theirPerpV2 = theirV * Math.sin(theirAngle - angle);
-
             double newV = (ourParallelV * ourMass + theirParallelV * theirMass) / (ourMass + theirMass);
 
             double dist = Math.sqrt(distSq);
@@ -337,12 +325,6 @@ public abstract class Tank extends Movable implements ISolidObject
 
             if (distSq > Math.pow((this.posX + this.vX) - (t.posX + t.vX), 2) + Math.pow((this.posY + this.vY) - (t.posY + t.vY), 2))
             {
-//                this.setMotionInDirection(t.posX, t.posY, newV);
-//                this.addPolarMotion(angle + Math.PI / 2, ourPerpV);
-//
-//                t.setMotionInDirection(this.posX, this.posY, -newV);
-//                t.addPolarMotion(angle + Math.PI / 2, theirPerpV);
-
                 this.vX = newV * dx - ourPerpV * dy;
                 this.vY = newV * dy + ourPerpV * dx;
 
@@ -577,7 +559,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			Game.effects.add(e);
 		}
 
-		super.update();
+     	super.update();
 
 		if (this.health <= 0.00000001)
 		{
@@ -587,7 +569,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.managedMotion)
 		{
-			this.checkCollision();
+            this.checkCollision();
 
 			this.orientation = (this.orientation + Math.PI * 2) % (Math.PI * 2);
 

@@ -142,7 +142,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@Override
 	public void update()
 	{
-		if (Game.invulnerable)
+        if (Game.invulnerable)
 		{
 			this.resistExplosions = true;
 			this.resistBullets = true;
@@ -546,7 +546,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		}
 
 		super.update();
-	}
+    }
 
 	public Item.ItemStack<?> getItem(int click)
 	{

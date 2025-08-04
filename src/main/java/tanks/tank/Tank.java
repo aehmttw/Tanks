@@ -299,8 +299,17 @@ public abstract class Tank extends Movable implements ISolidObject
             double dx = t.posX - this.posX;
             double dy = t.posY - this.posY;
             double d = Math.sqrt(dx * dx + dy * dy);
-            dx /= d;
-            dy /= d;
+
+            if (d != 0)
+            {
+                dx /= d;
+                dy /= d;
+            }
+            else
+            {
+                dx = 1;
+                dy = 0;
+            }
 
             double ourParallelV = this.vX * dx + this.vY * dy;
             double ourPerpV = -(this.vX * dy + this.vY * -dx);

@@ -3021,6 +3021,8 @@ public class TankAIControlled extends Tank implements ITankField
 		x -= this.posX;
 		y -= this.posY;
         double d = Math.sqrt(x * x + y * y);
+        if (d == 0)
+            return;
 
 		this.aX = x / d * accel;
         this.aY = y / d * accel;

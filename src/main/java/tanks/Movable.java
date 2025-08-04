@@ -185,6 +185,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         double dx = x - this.posX;
         double dy = y - this.posY;
         double d = Math.sqrt(dx * dx + dy * dy);
+        if (d == 0)
+            return;
 
 		this.vX = velocity * dx / d;
 		this.vY = velocity * dy / d;

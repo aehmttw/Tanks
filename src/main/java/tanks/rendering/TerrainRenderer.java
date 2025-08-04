@@ -591,12 +591,8 @@ public class TerrainRenderer
             this.introShader.d3.set(Game.enable3d);
 
             for (int x = xStart; x <= xEnd; x++)
-            {
                 for (int y = yStart; y <= yEnd; y++)
-                {
                     this.drawMap(this.outOfBoundsRenderers, x, y);
-                }
-            }
 
             Game.game.window.shaderDefault.set();
             return;
@@ -615,15 +611,9 @@ public class TerrainRenderer
             if (size >= 0)
             {
                 for (int x = xStart; x <= xEnd; x++)
-                {
                     for (int y = yStart; y <= yEnd; y++)
-                    {
                         if (Game.screen instanceof IBlankBackgroundScreen || (Game.screen instanceof IConditionalOverlayScreen) || x != 0 || y != 0)
-                        {
                             this.drawMap(this.outOfBoundsRenderers, x, y);
-                        }
-                    }
-                }
             }
         }
 
@@ -684,8 +674,10 @@ public class TerrainRenderer
         if (Game.enable3d)
         {
             Obstacle top = t.obstacle();
-            if (top != null && top.replaceTiles && !top.removed)
+            if (!(Game.screen instanceof IBlankBackgroundScreen) && top != null && top.replaceTiles && !top.removed)
+            {
                 top.drawTile(t, r, g, b, depth, getExtra(x, y));
+            }
             else
             {
                 byte o = BaseShapeRenderer.hide_behind_face;

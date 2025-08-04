@@ -1083,10 +1083,15 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		if (Game.enable3d && Game.enable3dBg)
 		{
-			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX - e.size / 2, e.posY - e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX + e.size / 2, e.posY - e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX - e.size / 2, e.posY + e.size / 2));
-			e.posZ = Math.max(e.posZ, Game.sampleTerrainGroundHeight(e.posX + e.size / 2, e.posY + e.size / 2));
+            for (int i = 0; i < 4; i++)
+            {
+                double x = e.posX + e.size / 2 * Direction.X[i];
+                double y = e.posY + e.size / 2 * Direction.Y[i];
+                e.posZ = Math.max(
+                    e.posZ,
+                    Game.sampleTerrainGroundHeight(x, y) + Game.sampleGroundHeight(x, y)
+                );
+            }
 			e.posZ++;
 		}
 		else

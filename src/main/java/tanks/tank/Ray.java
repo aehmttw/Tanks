@@ -21,36 +21,22 @@ public class Ray
 	/** Caches the ray to avoid creating new temp objects */
 	public static Ray cacheRay = new Ray();
 
-	public double size = 10;
-	public double tankHitSizeMul = 1;
+	public double size, tankHitSizeMul;
 
-	public int bounces, bouncyBounces = 100;
+	public int bounces, bouncyBounces;
 	public double posX, posY, vX, vY, angle;
 	public double startX, startY;
 
-	public int maxChunkCheck = Integer.MAX_VALUE;
+	public boolean enableBounciness, asBullet, trace, dotted;
+    public boolean ignoreTanks, ignoreBullets, ignoreDestructible, ignoreShootThrough;
 
-	public boolean enableBounciness = true;
-	public boolean asBullet = true;
-	public boolean ignoreTanks = false, ignoreBullets = true;
-	public boolean ignoreDestructible = false;
-	public boolean ignoreShootThrough = false;
-
-	public boolean trace = Game.traceAllRays;
-	public boolean dotted = false;
-
-	public double speed = 10;
-	public double range;
-
-	public double age = 0;
-	public int traceAge;
+    public double speed, age, range;
+    public int maxChunkCheck, traceAge;
 
 	public Tank tank, targetTank;
-	public double targetTankSizeMul = 0;
+	public double targetTankSizeMul;
 
-	public DoubleArrayList bounceX = new DoubleArrayList();
-	public DoubleArrayList bounceY = new DoubleArrayList();
-
+	public DoubleArrayList bounceX = new DoubleArrayList(), bounceY = new DoubleArrayList();
 	public double targetX, targetY;
 	public boolean acquiredTarget = false;
 
@@ -96,7 +82,7 @@ public class Ray
 		this.posY = this.startY = y;
 		this.bounces = bounces;
 		this.bouncyBounces = 100;
-		setSize(10).setMaxChunks(Integer.MAX_VALUE);
+		setSize(10).setMaxChunks(100);
 
 		this.trace = Game.traceAllRays;
 		this.dotted = false;
@@ -108,7 +94,7 @@ public class Ray
 		this.ignoreShootThrough = false;
 
 		this.age = 0;
-		this.range = 0;
+		this.range = Double.MAX_VALUE;
 		this.tankHitSizeMul = 1;
 		this.acquiredTarget = false;
 		this.tank = tank.getBottomLevelPossessing();
@@ -184,17 +170,10 @@ public class Ray
 		return this;
 	}
 
-	@SuppressWarnings("unused")
-	public Ray setMaxDistance(double distance)
+	public Ray setRange(double distance)
 	{
-		setMaxChunks((int) (distance / Game.tile_size / Chunk.chunkSize + 1));
-		return this;
-	}
-
-	public Ray setRange(double range)
-	{
-		this.range = range;
-		return this;
+        range = distance;
+		return setMaxChunks((int) (distance / Game.tile_size / Chunk.chunkSize + 1));
 	}
 
 	public Ray setSize(double size)
@@ -214,7 +193,6 @@ public class Ray
 
 	public Movable getTarget()
 	{
-		double remainder = 0;
 		acquiredTarget = true;
 
 		if (testInsideObstacle(posX, posY))
@@ -240,13 +218,17 @@ public class Ray
 			}
 		}
 
+        this.bounceX.add(posX);
+        this.bounceY.add(posY);
+
 		boolean firstBounce = this.targetTank == null;
+        Movable target = null;
 
 		while (this.bounces >= 0 && this.bouncyBounces >= 0)
 		{
 			Chunk current = Chunk.getChunk(posX, posY);
 			if (current == null)
-				return null;
+				break;
 
 			checkFaceList(current, firstBounce);
 
@@ -255,7 +237,7 @@ public class Ray
 			firstBounce = false;
 
 			if (result.collisionFace == null)
-				return null;
+				break;
 
 			double dx = result.collisionX - posX, dy = result.collisionY - posY;
 
@@ -266,42 +248,13 @@ public class Ray
 				{
 					result.collisionX = posX + dx * range / dist;
 					result.collisionY = posY + dy * range / dist;
-					dx = result.collisionX - posX;
-					dy = result.collisionY - posY;
 					this.bounces = -1;
 				}
 				else
 					this.range -= dist;
 			}
 
-			if (trace && ScreenGame.isUpdatingGame())
-			{
-				double steps = (Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)) / (1 + Math.pow(this.vX, 2) + Math.pow(this.vY, 2))) / Math.max(this.size, 2) * 10 + 1);
-
-				if (dotted)
-					steps /= 2;
-
-				double s;
-				for (s = remainder; s <= steps; s++)
-				{
-					double x = posX + dx * s / steps;
-					double y = posY + dy * s / steps;
-
-					this.traceAge++;
-
-					double frac = 1 / (1 + this.traceAge / 100.0);
-					double z = this.tank.size / 2 + this.tank.turretSize / 2 * frac + (Game.tile_size / 4) * (1 - frac);
-					if (Game.screen instanceof ScreenGame && !ScreenGame.finished)
-					{
-						Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray)
-								.setSize(Math.max(this.size, min_trace_size)));
-					}
-				}
-
-				remainder = s - steps;
-			}
-
-			this.posX = result.collisionX;
+            this.posX = result.collisionX;
 			this.posY = result.collisionY;
 
 			if (Chunk.debug && trace)
@@ -333,7 +286,8 @@ public class Ray
 				bounceX.add(result.collisionX);
 				bounceY.add(result.collisionY);
 
-				return (Movable) obj;
+				target = (Movable) obj;
+                break;
 			}
 
 			if (obj instanceof Obstacle && ((Obstacle) obj).bouncy)
@@ -362,8 +316,51 @@ public class Ray
 			}
 		}
 
-		return null;
+        renderTraceEffect();
+		return target;
 	}
+
+    public void renderTraceEffect()
+    {
+        if (!trace || !ScreenGame.isUpdatingGame())
+            return;
+
+        if (bounceX.size() == 1)
+        {
+            double boundedRange = Math.min(Game.tile_size * 75, Math.min(maxChunkCheck * Chunk.chunkSize * Game.tile_size, range));
+            bounceX.add(posX + Math.cos(angle) * boundedRange);
+            bounceY.add(posY + Math.sin(angle) * boundedRange);
+        }
+
+        for (int i = 1; i < bounceX.size(); i++)
+        {
+            double prevX = bounceX.getDouble(i - 1);
+            double prevY = bounceY.getDouble(i - 1);
+            double dx = bounceX.getDouble(i) - prevX;
+            double dy = bounceY.getDouble(i) - prevY;
+            double steps = (Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)) / (1 + Math.pow(this.vX, 2) + Math.pow(this.vY, 2))) / Math.max(this.size, 2) * 10 + 1);
+
+            if (dotted)
+                steps /= 2;
+
+            double s;
+            for (s = 0; s <= steps; s++)
+            {
+                double x = prevX + dx * s / steps;
+                double y = prevY + dy * s / steps;
+
+                this.traceAge++;
+
+                double frac = 1 / (1 + this.traceAge / 100.0);
+                double z = this.tank.size / 2 + this.tank.turretSize / 2 * frac + (Game.tile_size / 4) * (1 - frac);
+                if (Game.screen instanceof ScreenGame && !ScreenGame.finished)
+                {
+                    Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray)
+                        .setSize(Math.max(this.size, min_trace_size)));
+                }
+            }
+        }
+    }
 
     private static final ObjectArrayList<Chunk> errorChunkCache = new ObjectArrayList<>();
 
@@ -430,7 +427,6 @@ public class Ray
 			double moveY = moveYBase * chunksChecked, moveYPrev = moveYBase * Math.max(0, chunksChecked - 1);
 
 			chunksAdded = 0;
-
             startingChunk = current;
 
 			// move forward one chunk in the ray's direction
@@ -529,6 +525,10 @@ public class Ray
 					t = (f.startX - size / 2 - this.posX) / vX;
 					collisionX = f.startX - size / 2;
 					collisionY = y;
+
+                    if (outOfRange(collisionX, collisionY))
+                        continue;
+
 					collisionFace = f;
 					break;
 				}
@@ -552,6 +552,10 @@ public class Ray
 					t = (f.startX + size / 2 - this.posX) / vX;
 					collisionX = f.startX + size / 2;
 					collisionY = y;
+
+                    if (outOfRange(collisionX, collisionY))
+                        continue;
+
 					collisionFace = f;
 					break;
 				}
@@ -581,6 +585,10 @@ public class Ray
 					{
 						collisionX = x;
 						collisionY = f.startY - size / 2;
+
+                        if (outOfRange(collisionX, collisionY))
+                            continue;
+
 						collisionFace = f;
 						t = t1;
 					}
@@ -611,6 +619,10 @@ public class Ray
 					{
 						collisionX = x;
 						collisionY = f.startY + size / 2;
+
+                        if (outOfRange(collisionX, collisionY))
+                            continue;
+
 						collisionFace = f;
 						t = t1;
 					}
@@ -622,7 +634,12 @@ public class Ray
 		result.set(t, collisionX, collisionY, collisionFace, corner);
 	}
 
-	public boolean passesThrough(Face f, boolean firstBounce)
+    public boolean outOfRange(double collisionX, double collisionY)
+    {
+        return GameObject.sqDistBetw(collisionX, collisionY, posX, posY) > range * range;
+    }
+
+    public boolean passesThrough(Face f, boolean firstBounce)
 	{
 		if ((asBullet ? !f.solidBullet : !f.solidTank) ||
 				(f.owner == tank && firstBounce))

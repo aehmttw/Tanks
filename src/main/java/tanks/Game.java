@@ -1147,7 +1147,7 @@ public class Game
 
 	public static double sampleGroundHeight(double px, double py)
 	{
-		return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::edgeDepth);
+		return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::groundHeight);
     }
 
 	public static double sampleEdgeGroundDepth(int x, int y)

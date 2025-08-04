@@ -451,13 +451,12 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			if (i != null)
 			{
 				Bullet b = i.item.bullet;
-				double lifespan = b.lifespan > 0 ? b.lifespan * b.speed + this.turretLength : 0;
+				double range = b.lifespan > 0 ?
+                    b.lifespan * b.speed + this.turretLength * em().getAttributeValue(AttributeModifier.bullet_speed, 1)
+                    : 0;
 				double rangeMax = b.getRangeMax();
 				double rangeMin = b.getRangeMin();
 				showTrace = b.showDefaultTrace;
-
-				if (lifespan > 0)
-					lifespan *= em().getAttributeValue(AttributeModifier.bullet_speed, 1);
 
 				for (int j = 0; j < b.shotCount; j++)
 				{
@@ -468,7 +467,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 					{
 						double spreadOff = 0;
 						if (b instanceof BulletGas)
-							spreadOff = Math.atan(((BulletGas) b).endSize / lifespan) / 2 * k;
+							spreadOff = Math.atan(((BulletGas) b).endSize / range) / 2 * k;
 
 						spreadOff += Math.toRadians(b.accuracySpread / 2) * k;
 
@@ -480,13 +479,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 								baseOff = Math.toRadians(b.multishotSpread) * ((j * 1.0 / (b.shotCount - 1)) - 0.5);
 						}
 
-						Ray r = Ray.newRay(this.posX, this.posY, this.angle + baseOff + spreadOff, 1, this);
-						r.bounces = b.bounces;
-						r.size = b.size;
-						if (k != 0)
-							r.size /= 2;
-
-						r.range = lifespan - this.turretLength;
+						Ray r = Ray.newRay(this.posX, this.posY, this.angle + baseOff + spreadOff, b.bounces, this)
+                            .setSize(k != 0 ? b.size / 2 : b.size);
+                        if (range > 0)
+                            r.setRange(range - this.turretLength);
 
 						double mx = this.mouseX - this.posX;
 						double my = this.mouseY - this.posY;
@@ -504,9 +500,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 						r.vX /= 2;
 						r.vY /= 2;
-						r.trace = true;
-						r.dotted = true;
-						r.moveOut(10 * this.size / Game.tile_size);
+                        r.setTrace(true, true).moveOut(10 * this.size / Game.tile_size);
 
 						if (rangeMax > 0)
 							this.drawRangeMax = rangeMax;
@@ -514,17 +508,15 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 						if (rangeMin > 0)
 							this.drawRangeMin = rangeMin;
 
-						if (lifespan > 0)
-							this.drawLifespan = lifespan;
+						if (range > 0)
+							this.drawLifespan = range;
 
 						if (showTrace)
 							r.getTarget();
 					}
 				}
 			}
-			else
-				showTrace = false;
-		}
+        }
 
 		Item.ItemStack<?> ib = this.player.hotbar.itemBar.getSelectedAction(false);
 		Bullet b = null;

@@ -622,15 +622,14 @@ public class Chunk
 
         public boolean canPlaceOn(GameObject o)
         {
-            boolean empty = obstacle() == null;
             if (!(o instanceof Obstacle))
-                return empty;
+                return obstacle() == null;
 
             Obstacle.ObstacleType t = ((Obstacle) o).type;
-            boolean canPlaceUnder = empty || obstacle().type == Obstacle.ObstacleType.top || obstacle().type == Obstacle.ObstacleType.extra;
+            boolean canPlaceUnder = fullObstacle == null || obstacle().type == Obstacle.ObstacleType.top || obstacle().type == Obstacle.ObstacleType.extra;
 
             if (t == Obstacle.ObstacleType.full || t == Obstacle.ObstacleType.top)
-                return empty;
+                return fullObstacle == null;
             if (t == Obstacle.ObstacleType.ground)
                 return canPlaceUnder && surfaceObstacle == null;
             if (t == Obstacle.ObstacleType.extra)

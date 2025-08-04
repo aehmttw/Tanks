@@ -3020,28 +3020,15 @@ public class TankAIControlled extends Tank implements ITankField
 	{
 		x -= this.posX;
 		y -= this.posY;
+        double d = Math.sqrt(x * x + y * y);
 
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y/x);
-		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-		double accX = accel * Math.cos(angle);
-		double accY = accel * Math.sin(angle);
-		this.aX = accX;
-		this.aY = accY;
-	}
+		this.aX = x / d * accel;
+        this.aY = y / d * accel;
+    }
 
 	public void setAccelerationAwayFromDirection(double x, double y, double accel)
 	{
-		this.setAccelerationInDirectionWithOffset(x, y, accel, Math.PI);
+		this.setAccelerationInDirection(x, y, -accel);
 	}
 
 	public void setAccelerationInDirectionWithOffset(double x, double y, double accel, double a)

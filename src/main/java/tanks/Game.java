@@ -141,7 +141,7 @@ public class Game
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;
-	public static boolean drawAutoZoom = true;
+	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
 	public static final boolean cinematic = false;
 

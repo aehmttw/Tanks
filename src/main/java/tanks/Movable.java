@@ -182,17 +182,17 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void setMotionInDirection(double x, double y, double velocity)
 	{
-		double angle = getAngleInDirection(x, y);
-		this.vX = velocity * Math.cos(angle);
-		this.vY = velocity * Math.sin(angle);
+        double dx = x - this.posX;
+        double dy = y - this.posY;
+        double d = Math.sqrt(dx * dx + dy * dy);
+
+		this.vX = velocity * dx / d;
+		this.vY = velocity * dy / d;
 	}
 
 	public void setMotionAwayFromDirection(double x, double y, double velocity)
 	{
-		double angle = getAngleInDirection(x, y);
-		angle += Math.PI;
-		this.vX = velocity * Math.cos(angle);
-		this.vY = velocity * Math.sin(angle);
+		setMotionInDirection(x, y, -velocity);
 	}
 
 	public void setMotionInDirectionWithOffset(double x, double y, double velocity, double a)
@@ -210,7 +210,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public double getPolarDirection()
 	{
-		return getPolarDirection(this.vX, this.vY);
+        return getPolarDirection(this.vX, this.vY);
 	}
 
 	public double getPolarPitch()
@@ -323,16 +323,19 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	/** Field to cache the movable array for reuse */
 	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
+    private static final ObjectArrayList<Movable> movableOut2 = new ObjectArrayList<>();
 
     public static ObjectArrayList<Movable> getCircleCollision(Movable self, double posX, double posY)
     {
-        movableOut.clear();
-        for (Chunk c : Chunk.getChunksInRadius(posX, posY, self.getSize()))
-            for (Movable m : c.movables)
-                if (m != self && !m.skipNextUpdate && !m.destroy &&
-                    GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
-                    movableOut.add(m);
-        return movableOut;
+        movableOut2.clear();
+        getSquareCollision(self, posX, posY);
+        for (Movable m: movableOut)
+        {
+            double d = (self.getSize() + m.getSize()) / 2;
+            if (Movable.sqDistBetw(self, m) < d * d)
+                movableOut2.add(self);
+        }
+        return movableOut2;
     }
 
     public static ObjectArrayList<Movable> getSquareCollision(Movable self, double posX, double posY)

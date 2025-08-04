@@ -9,6 +9,7 @@ import tanks.Game;
 import tanks.gui.ScreenIntro;
 import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleGroundPaint;
 
 import java.util.HashMap;
 

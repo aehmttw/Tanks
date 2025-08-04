@@ -118,6 +118,14 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         super.update();
 
+        if (this.destroy)
+        {
+            this.currentKnownVX = 0;
+            this.currentKnownVY = 0;
+            this.vX = 0;
+            this.vY = 0;
+        }
+
         double pvx = this.prevKnownVXFinal;
         double pvy = this.prevKnownVYFinal;
         double cvx = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
@@ -269,6 +277,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
     public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions, double time, long receiveTime)
     {
+        if (this.destroy)
+            return;
+
         if (checkMotion)
         {
             if (this.startUpdateTime == -1)

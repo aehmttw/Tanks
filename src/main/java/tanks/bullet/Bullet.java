@@ -1421,7 +1421,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public void addTrail(boolean redirect)
 	{
-		if (this.trails == null)
+        if (this.trails == null)
 			this.initTrails();
 
 		this.addedTrail = true;

@@ -1,5 +1,5 @@
 package tanks.gui.screen;
 
-public interface IOverlayScreen
+public interface IOverlayScreen extends IBlankBackgroundScreen
 {
 }

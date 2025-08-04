@@ -62,6 +62,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 	protected double drawRangeMin = -1;
 	protected double drawRangeMax = -1;
+    protected double drawSpread = -1;
 	protected double drawLifespan = -1;
 	protected boolean drawTrace = true;
 
@@ -511,6 +512,8 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 						if (range > 0)
 							this.drawLifespan = range;
 
+                        this.drawSpread = spreadOff;
+
 						if (showTrace)
 							r.getTarget();
 					}
@@ -704,7 +707,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@Override
 	public double getDrawLifespan() { return this.drawLifespan; }
 
-	@Override
+    @Override
+    public double getDrawSpread() { return this.drawSpread; }
+
+    @Override
 	public boolean getShowTrace() { return this.drawTrace; }
 
 	@Override

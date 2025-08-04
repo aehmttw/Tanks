@@ -135,6 +135,9 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
     public boolean getShowTrace() { return this.drawTrace; }
 
     @Override
+    public double getDrawSpread() { return this.drawSpread; }
+
+    @Override
     public void setDrawRanges(double lifespan, double rangeMin, double rangeMax, boolean trace)
     {
         this.drawLifespan = lifespan;

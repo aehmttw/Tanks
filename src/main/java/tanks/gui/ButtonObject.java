@@ -1,8 +1,6 @@
 package tanks.gui;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawableForInterface;
+import tanks.*;
 import tanks.obstacle.Obstacle;
 import tanks.translation.Translation;
 
@@ -13,6 +11,7 @@ public class ButtonObject extends Button
 	public IDrawableForInterface object;
 	public boolean tempDisableHover = false;
 	public Runnable drawBeforeTooltip = null;
+    public BiConsumer<Boolean, Boolean> drawSelected = this::drawSelected;
 	public boolean showText = false;
 
 	public double disabledColA = 127;
@@ -80,21 +79,9 @@ public class ButtonObject extends Button
 		}
 		
 		this.object.drawForInterface(this.posX, this.posY);
-		
-		if (!enabled)
-			drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB, this.disabledColA);
-		else if (selected && !Game.game.window.touchscreen)
-			drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB, this.selectedColA);
-		else
-			drawing.setColor(0, 0, 0, 0);
+        drawSelected.accept(enabled, selected && !Game.game.window.touchscreen);
 
-		double thickness = sizeX * 0.2;
-		drawing.fillInterfaceRect(posX - sizeX / 2 + thickness / 2, posY, thickness, sizeY);
-		drawing.fillInterfaceRect(posX + sizeX / 2 - thickness / 2, posY, thickness, sizeY);
-		drawing.fillInterfaceRect(posX, posY - sizeY / 2 + thickness / 2, sizeX - thickness * 2, thickness);
-		drawing.fillInterfaceRect(posX, posY + sizeY / 2 - thickness / 2, sizeX - thickness * 2, thickness);
-
-		if (!this.text.equals("") && this.showText)
+        if (!this.text.equals("") && this.showText)
 		{
 			drawing.setColor(255, 255, 255);
 			drawing.setInterfaceFontSize(12);
@@ -112,7 +99,25 @@ public class ButtonObject extends Button
 		this.tempDisableHover = false;
 	}
 
-	@Override
+    private void drawSelected(boolean hovered, boolean selected)
+    {
+        double thickness = sizeX * 0.2;
+        Drawing drawing = Drawing.drawing;
+
+        if (!enabled)
+            drawing.setColor(this.disabledColR, this.disabledColG, this.disabledColB, this.disabledColA);
+        else if (selected)
+            drawing.setColor(this.selectedColR, this.selectedColG, this.selectedColB, this.selectedColA);
+        else
+            drawing.setColor(0, 0, 0, 0);
+
+        drawing.fillInterfaceRect(posX - sizeX / 2 + thickness / 2, posY, thickness, sizeY);
+        drawing.fillInterfaceRect(posX + sizeX / 2 - thickness / 2, posY, thickness, sizeY);
+        drawing.fillInterfaceRect(posX, posY - sizeY / 2 + thickness / 2, sizeX - thickness * 2, thickness);
+        drawing.fillInterfaceRect(posX, posY + sizeY / 2 - thickness / 2, sizeX - thickness * 2, thickness);
+    }
+
+    @Override
 	public void setHoverTextUntranslated(String hoverText)
 	{
 		this.enableHover = true;

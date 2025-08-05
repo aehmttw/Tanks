@@ -849,7 +849,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
         int x = (int) (this.posX / Game.tile_size);
         int y = (int) (this.posY / Game.tile_size);
-        Chunk.Tile t = Chunk.getTile(x, y), prevTile = Chunk.getTile(prevGridX, prevGridY);
+        Chunk.Tile t = Chunk.getOrDefault(x, y), prevTile = Chunk.getOrDefault(prevGridX, prevGridY);
 
         if (this.type == EffectType.obstaclePiece3d)
         {

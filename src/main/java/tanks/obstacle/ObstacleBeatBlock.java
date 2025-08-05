@@ -164,6 +164,18 @@ public class ObstacleBeatBlock extends ObstacleStackable
         }
     }
 
+    @Override
+    public double getTileHeight()
+    {
+        return tankCollision ? super.getTileHeight() : 0;
+    }
+
+    @Override
+    public double getGroundHeight()
+    {
+        return baseGroundHeight;
+    }
+
     public void drawBox(double z, byte o)
     {
         float cx = (float) this.posX;

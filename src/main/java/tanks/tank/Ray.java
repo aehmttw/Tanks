@@ -195,7 +195,7 @@ public class Ray
 	{
 		acquiredTarget = true;
 
-		if (testInsideObstacle(posX, posY))
+		if (isOutOfBounds() || testInsideObstacle())
 			return null;
 
 		if (!ignoreTanks)
@@ -504,12 +504,17 @@ public class Ray
 		}
 	}
 
-	public boolean testInsideObstacle(double x, double y)
+    public boolean isOutOfBounds()
+    {
+        return posX <= 0 || posX > Game.currentSizeX * Game.tile_size || posY <= 0 || posY > Game.currentSizeY * Game.tile_size;
+    }
+
+	public boolean testInsideObstacle()
 	{
-		return isInsideObstacle(x - size / 2, y - size / 2) ||
-				isInsideObstacle(x + size / 2, y - size / 2) ||
-				isInsideObstacle(x + size / 2, y + size / 2) ||
-				isInsideObstacle(x - size / 2, y + size / 2);
+		return isInsideObstacle(posX - size / 2, posY - size / 2) ||
+				isInsideObstacle(posX + size / 2, posY - size / 2) ||
+				isInsideObstacle(posX + size / 2, posY + size / 2) ||
+				isInsideObstacle(posX - size / 2, posY + size / 2);
 	}
 
 	public void checkCollisionIn(Result result, Chunk.FaceList faceList, boolean firstBounce)
@@ -530,7 +535,7 @@ public class Ray
 				if (f.owner != null && f.owner == targetTank)
 					size *= targetTankSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startX < this.posX + size / 2)
+				if (passesThrough(f, firstBounce) || f.startX < this.posX - size / 2)
 					continue;
 
 				double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
@@ -557,7 +562,7 @@ public class Ray
 				if (f.owner instanceof Movable)
 					size *= tankHitSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startX > this.posX - size / 2)
+				if (passesThrough(f, firstBounce) || f.startX > this.posX + size / 2)
 					continue;
 
 				double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
@@ -589,7 +594,7 @@ public class Ray
 					continue;
 
 				double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
-				if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
+				if (x >= f.startX - size / 2 && x <= f.endX - size / 2)
 				{
 					double t1 = (f.startY - size / 2 - this.posY) / vY;
 
@@ -619,7 +624,7 @@ public class Ray
 				if (f.owner instanceof Movable)
 					size *= tankHitSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startY > this.posY - size / 2)
+				if (passesThrough(f, firstBounce) || f.startY > this.posY + size / 2)
 					continue;
 
 				double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;

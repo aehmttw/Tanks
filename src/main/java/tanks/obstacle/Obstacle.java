@@ -306,7 +306,8 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	@Override
 	public boolean isFaceValid(Face f)
 	{
-		Obstacle o = Game.getObstacle(this.posX + f.direction.x() * Game.tile_size, this.posY + f.direction.y() * Game.tile_size);
+        // the Math.floor is actually essential here wtf
+		Obstacle o = Game.getObstacle((int) Math.floor(this.posX / Game.tile_size) + f.direction.x(), (int) Math.floor(this.posY / Game.tile_size) + f.direction.y());
 		return super.isFaceValid(f) && (o == null || o.tankCollision != tankCollision || o.bulletCollision != bulletCollision);
 	}
 

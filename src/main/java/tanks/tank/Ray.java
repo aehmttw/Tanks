@@ -535,7 +535,7 @@ public class Ray
 				if (f.owner != null && f.owner == targetTank)
 					size *= targetTankSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startX < this.posX - size / 2)
+				if (passesThrough(f, firstBounce) || f.startX < this.posX + size / 2)
 					continue;
 
 				double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
@@ -562,7 +562,7 @@ public class Ray
 				if (f.owner instanceof Movable)
 					size *= tankHitSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startX > this.posX + size / 2)
+				if (passesThrough(f, firstBounce) || f.startX > this.posX - size / 2)
 					continue;
 
 				double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
@@ -594,7 +594,7 @@ public class Ray
 					continue;
 
 				double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
-				if (x >= f.startX - size / 2 && x <= f.endX - size / 2)
+				if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
 				{
 					double t1 = (f.startY - size / 2 - this.posY) / vY;
 
@@ -624,7 +624,7 @@ public class Ray
 				if (f.owner instanceof Movable)
 					size *= tankHitSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startY > this.posY + size / 2)
+				if (passesThrough(f, firstBounce) || f.startY > this.posY - size / 2)
 					continue;
 
 				double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;

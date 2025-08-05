@@ -39,6 +39,7 @@ public class Chunk
         @Override
         public Collection<Movable> containsErrors(Movable ignored)
         {
+            // compute symmetric difference (A xor B)
             Set<Movable> result = Chunk.chunkList.stream().flatMap(c -> c.movables.stream()).collect(Collectors.toSet());
             result.addAll(Game.movables);
             Set<Movable> disjoint = new HashSet<>(result);
@@ -53,16 +54,8 @@ public class Chunk
             System.err.println("Movable sync error: " + info.stream()
                     .map(m -> String.format("%s@(%.1f,%.1f)", m.getClass().getSimpleName(), m.posX, m.posY))
                 .collect(Collectors.joining(", ")));
-            for (Chunk c : chunkList)
-            {
-                c.movables.clear();
-                c.faces.clear();
-                for (Obstacle o : c.obstacles)
-                    c.faces.addFaces(o);
-            }
-            for (Movable m : Game.movables)
-                for (Chunk c : m.getTouchingChunks())
-                    c.addMovable(m);
+            if (Game.currentLevel != null)
+                Game.currentLevel.reloadTiles();
         }
     };
 

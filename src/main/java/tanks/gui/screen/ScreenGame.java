@@ -1008,6 +1008,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             Panel.autoZoom = !Panel.autoZoom;
         }
 
+        for (ErrorHandler<?, ?> h : ErrorHandler.errorHandlers)
+            h.updateTimer();
+
         Chunk.movableSyncHandler.checkForErrors(null);
 
         Game.player.hotbar.update();

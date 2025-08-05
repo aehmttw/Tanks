@@ -224,7 +224,7 @@ public class DebugKeybinds
 
     public static void renderDebugging()
     {
-        if (Game.game.window.drawingShadow)
+        if (!Game.debug || Game.game.window.drawingShadow)
             return;
 
         handleDebugKeybinds();

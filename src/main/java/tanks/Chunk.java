@@ -236,6 +236,18 @@ public class Chunk
         return tile;
     }
 
+    public static <K> K getChunkIfPresent(int tileX, int tileY, K fallback, Function<Chunk, K> func)
+    {
+        Chunk c = getChunk(tileX, tileY);
+        if (c == null) return fallback;
+        return func.apply(c);
+    }
+
+    public static <K> K getChunkIfPresent(double posX, double posY, K fallback, Function<Chunk, K> func)
+    {
+        return getChunkIfPresent(((int) (posX / Game.tile_size)), ((int) (posY / Game.tile_size)), fallback, func);
+    }
+
     public static Tile getOrDefault(int tileX, int tileY)
     {
         return getOrElse(tileX, tileY, Tile.fallbackTile);
@@ -290,11 +302,6 @@ public class Chunk
     public static void update()
     {
 
-    }
-
-    public static void reset()
-    {
-        populateChunks(defaultLevel);
     }
 
     /**
@@ -560,6 +567,11 @@ public class Chunk
             return obstacle() != null ? obstacle().getTileHeight() : -1000;
         }
 
+        public double tileDepth()
+        {
+            return depth;
+        }
+
         public double edgeDepth()
         {
             return obstacle() != null ? obstacle().getEdgeDrawDepth() : 0;
@@ -610,15 +622,14 @@ public class Chunk
 
         public boolean canPlaceOn(GameObject o)
         {
-            boolean empty = obstacle() == null;
             if (!(o instanceof Obstacle))
-                return empty;
+                return obstacle() == null;
 
             Obstacle.ObstacleType t = ((Obstacle) o).type;
-            boolean canPlaceUnder = empty || obstacle().type == Obstacle.ObstacleType.top || obstacle().type == Obstacle.ObstacleType.extra;
+            boolean canPlaceUnder = fullObstacle == null || obstacle().type == Obstacle.ObstacleType.top || obstacle().type == Obstacle.ObstacleType.extra;
 
             if (t == Obstacle.ObstacleType.full || t == Obstacle.ObstacleType.top)
-                return empty;
+                return fullObstacle == null;
             if (t == Obstacle.ObstacleType.ground)
                 return canPlaceUnder && surfaceObstacle == null;
             if (t == Obstacle.ObstacleType.extra)

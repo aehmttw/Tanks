@@ -798,7 +798,7 @@ public class Level
 		currentShadowIntensity = shadow;
 
 		Drawing.drawing.setScreenBounds(Game.tile_size * sizeX, Game.tile_size * sizeY);
-		Chunk.populateChunks(Game.currentLevel);
+		Chunk.populateChunks(this);
 		addLevelBorders();
 
 		for (Obstacle o : Game.obstacles)
@@ -811,9 +811,9 @@ public class Level
 		}
 
 		for (Movable m : Game.movables)
-            m.refreshFaces = true;
+            m.refreshFaces();
 		for (Obstacle o : Game.obstacles)
-			o.refreshHitboxes();
+			o.refreshFaces();
 
 		ScreenLevelEditor s = null;
 

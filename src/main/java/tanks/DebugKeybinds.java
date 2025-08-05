@@ -187,6 +187,8 @@ public class DebugKeybinds
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 50, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
                             String.format("H: %.0f GH: %.0f E: %.0f, D: %.1f", t1.height(), t1.groundHeight(), TerrainRenderer.getExtra(posX, posY), t1.depth));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 70, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
+                            String.format("C: (%.0f, %.0f, %.0f)", t1.colR, t1.colG, t1.colB));
+                    Game.game.window.fontRenderer.drawString(mx + 10, my + 90, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
                             String.format("TS: %b BS: %b U: %b", t1.tankSolid(), t1.bulletSolid(), Game.obstaclesToUpdate.contains(t1.obstacle())));
                     if (c != null && t1.obstacle() != null && !c.obstacles.contains(t1.obstacle()))
                     {

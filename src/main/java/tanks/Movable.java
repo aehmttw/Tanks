@@ -27,7 +27,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     private double lastSize = Integer.MAX_VALUE;
 
 	public double age = 0;
-	public boolean refreshFaces = true;
 
 	public boolean destroy = false;
 	public boolean dealsDamage = true;
@@ -71,8 +70,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		this.lastPosX = this.posX;
 		this.lastPosY = this.posY;
 		this.lastPosZ = this.posZ;
-
-		refreshFaces = false;
 	}
 
 	/** Cached list for checking chunks that the movable has just left */
@@ -80,37 +77,46 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void updateChunks()
 	{
-		if (!refreshFaces && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
+        boolean changed = collisionChanged();
+		if (!changed && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
 			return;
 
         lastSize = getSize();
 
-		ObjectArrayList<Chunk> cache = getTouchingChunks();
+		if (changed && this instanceof IAvoidObject)
+			Game.avoidObjects.add((IAvoidObject) this);
 
-		for (Chunk c : cache)
-		{
-			if (prevChunks.add(c))
-				onEnterChunk(c);
-			c.faces.removeFaces(this);
-		}
+        refreshFaces();
+    }
 
-		leaveChunks.clear();
-		for (Chunk c : prevChunks)
-		{
-			if (!cache.contains(c))
-			{
-				onLeaveChunk(c);
-				leaveChunks.add(c);
-			}
-		}
-		prevChunks.removeAll(leaveChunks);
+    public void refreshFaces()
+    {
+        ObjectArrayList<Chunk> cache = getTouchingChunks();
 
-		updateFaces();
-		for (Chunk c : cache)
-			c.faces.addFaces(this);
-	}
+        for (Chunk c : cache)
+        {
+            if (prevChunks.add(c))
+                onEnterChunk(c);
+            c.faces.removeFaces(this);
+        }
 
-	public void onEnterChunk(Chunk c)
+        leaveChunks.clear();
+        for (Chunk c : prevChunks)
+        {
+            if (!cache.contains(c))
+            {
+                onLeaveChunk(c);
+                leaveChunks.add(c);
+            }
+        }
+        prevChunks.removeAll(leaveChunks);
+
+        updateFaces();
+        for (Chunk c : cache)
+            c.faces.addFaces(this);
+    }
+
+    public void onEnterChunk(Chunk c)
 	{
 		c.addMovable(this, false);
 	}
@@ -356,11 +362,10 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public static ObjectArrayList<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
 	{
 		movableOut.clear();
-		for (Movable m : Game.movables)
-		{
-			if (Game.isOrdered(true, x1, m.posX, x2) && Game.isOrdered(true, y1, m.posY, y2))
-				movableOut.add(m);
-		}
+        for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
+            for (Movable m : c.movables)
+                if (Game.isOrdered(true, x1, m.posX, x2) && Game.isOrdered(true, y1, m.posY, y2))
+                    movableOut.add(m);
 		return movableOut;
 	}
 
@@ -370,11 +375,10 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	public static ObjectArrayList<Movable> getMovablesInRadius(double posX, double posY, double radius)
 	{
 		movableOut.clear();
-		for (Movable o : Game.movables)
-		{
-			if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
-				movableOut.add(o);
-		}
+        for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
+            for (Movable m : c.movables)
+                if (Movable.sqDistBetw(m.posX, m.posY, posX, posY) < radius * radius)
+                    movableOut.add(m);
 		return movableOut;
 	}
 

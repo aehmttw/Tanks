@@ -104,6 +104,7 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
     @Override
     public void preUpdate()
     {
+        updateChunks();
         this.lastPosX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
         this.lastPosY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
         this.lastPosZ = this.posZ;
@@ -132,6 +133,9 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
 
     @Override
     public boolean getShowTrace() { return this.drawTrace; }
+
+    @Override
+    public double getDrawSpread() { return this.drawSpread; }
 
     @Override
     public void setDrawRanges(double lifespan, double rangeMin, double rangeMax, boolean trace)

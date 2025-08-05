@@ -891,7 +891,7 @@ public class TankAIControlled extends Tank implements ITankField
 		else
 			b.moveOut(Math.signum(speed) * 50 * this.size / Game.tile_size * this.turretLength / Game.tile_size);
 
-		Game.movables.add(b);
+		Game.addMovable(b);
 		Game.eventsOut.add(new EventShootBullet(b));
 
 		double r = (this.enableDefensiveFiring && this.avoidTimer > 0 && this.disableOffset && this.bulletThreatCount > 1) ? (1 - this.defensiveFiringUrgency) : 1;
@@ -1126,7 +1126,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		t.setNetworkID(this.networkID);
 
-		Game.movables.add(t);
+		Game.addMovable(t);
 		Game.removeMovables.add(this);
 	}
 
@@ -2357,7 +2357,7 @@ public class TankAIControlled extends Tank implements ITankField
 		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
 		Game.eventsOut.add(new EventLayMine(m));
-		Game.movables.add(m);
+		Game.addMovable(m);
 		this.mineTimer = (this.random.nextDouble() * mineTimerRandom + mineTimerBase);
 
 		int count = fleeDistances.length;
@@ -2644,7 +2644,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.cooldown = Math.min(this.cooldownBase, this.sightTransformTank.cooldown);
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 0.75f);
 			Game.eventsOut.add(new EventTankTransformPreset(this, false, true));
-			Game.movables.add(this);
+			Game.addMovable(this);
 			Game.removeMovables.add(this.sightTransformTank);
 			this.skipNextUpdate = true;
 			this.justTransformed = true;
@@ -2676,17 +2676,8 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			if (this.targetEnemy != null)
 			{
-				Ray r = Ray.newRay(this.possessingTank.posX, this.possessingTank.posY, 0, 0, this);
-				r.vX = this.targetEnemy.posX - this.possessingTank.posX;
-				r.vY = this.targetEnemy.posY - this.possessingTank.posY;
-
-				double ma = Math.sqrt(r.vX * r.vX + r.vY * r.vY) / r.speed;
-				r.vX /= ma;
-				r.vY /= ma;
-
-				r.moveOut(5);
-
-				m = r.getTarget(2, (Tank) this.targetEnemy);
+				m = Ray.newRay(this.possessingTank.posX, this.possessingTank.posY, possessingTank.getAngleInDirection(targetEnemy.posX, targetEnemy.posY), 0, this)
+                    .getTarget(2, (Tank) this.targetEnemy);
 
 				if (((Tank) this.targetEnemy).possessor != null)
 					c = ((Tank) this.targetEnemy).getTopLevelPossessor().getClass();
@@ -2718,7 +2709,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 			Drawing.drawing.playGlobalSound("slowdown.ogg", 1);
 
-			Game.movables.add(this);
+			Game.addMovable(this);
 			Game.removeMovables.add(t);
 
 			this.skipNextUpdate = true;
@@ -2732,7 +2723,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.laser = new Laser(t.posX, t.posY, t.size / 2, this.targetEnemy.posX, this.targetEnemy.posY, ((Tank)this.targetEnemy).size / 2,
 					(this.mimicRange - GameObject.distanceBetween(t, this.targetEnemy)) / this.mimicRange * 10, this.targetEnemy.getAngleInDirection(t.posX, t.posY),
 					((Tank) this.targetEnemy).color);
-			Game.movables.add(this.laser);
+			Game.addMovable(this.laser);
 			Game.eventsOut.add(new EventTankMimicLaser(t, (Tank) this.targetEnemy, this.mimicRange));
 		}
 		else
@@ -2813,7 +2804,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 			this.justTransformed = true;
 
-			Game.movables.add(t);
+			Game.addMovable(t);
 			Game.removeMovables.add(this);
 
 			Drawing.drawing.playGlobalSound("transform.ogg");

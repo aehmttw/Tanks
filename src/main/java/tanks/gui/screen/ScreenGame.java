@@ -1638,7 +1638,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             if (Game.followingCam)
             {
-                Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 100;
+                Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 200;
                 Game.game.window.setCursorLocked(true);
                 this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
                 this.prevCursorY = Drawing.drawing.getInterfaceMouseX();
@@ -2009,10 +2009,23 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         this.updateMusic(prevMusic);
 
+        handleRemovals();
+
+        if (this.tutorial != null)
+        {
+            this.tutorial.update();
+        }
+    }
+
+    public static void handleRemovals()
+    {
         for (Movable m : Game.removeMovables)
         {
             for (Chunk chunk : m.getTouchingChunks())
                 chunk.removeMovable(m);
+
+            if (m instanceof IAvoidObject)
+                Game.avoidObjects.remove((IAvoidObject) m);
         }
 
         Game.movables.removeAll(Game.removeMovables);
@@ -2051,11 +2064,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Game.removeTracks.clear();
         Game.removeClouds.clear();
         ModAPI.removeMenus.clear();
-
-        if (this.tutorial != null)
-        {
-            this.tutorial.update();
-        }
     }
 
     public void updateGameField()
@@ -2087,7 +2095,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         for (Obstacle o : Game.checkObstaclesToUpdate)
         {
-            if (o == null)
+            if (o == null || !Chunk.getChunkIfPresent(o.posX, o.posY, false, chunk -> chunk.obstacles.contains(o)))
                 continue;
 
             if (o.shouldUpdate())

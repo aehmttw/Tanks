@@ -2,22 +2,19 @@ package tanks;
 
 import basewindow.*;
 import basewindow.transformation.AxisRotation;
-import tanks.gui.Button;
-import tanks.gui.Joystick;
+import tanks.gui.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.event.EventPlaySound;
 import tanks.obstacle.Obstacle;
-import tanks.rendering.TerrainRenderer;
-import tanks.rendering.TrackRenderer;
+import tanks.rendering.*;
 import tanks.tank.TankPlayer;
 import tanks.translation.Translation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class Drawing
 {
-	protected static boolean initialized = false;
+    protected static boolean initialized = false;
 
 	public double sizeX = 1400;
 	public double sizeY = 900;
@@ -704,20 +701,6 @@ public class Drawing
 		fillBox(o, x, y, z, sizeX, sizeY, sizeZ, (byte) 0);
 	}
 
-	/**
-	 * Options byte:
-	 * <p>
-	 * 0: default
-	 * <p>
-	 * +1 hide behind face
-	 * +2 hide front face
-	 * +4 hide bottom face
-	 * +8 hide top face
-	 * +16 hide left face
-	 * +32 hide right face
-	 * <p>
-	 * +64 draw on top
-	 */
 	public void fillBox(IBatchRenderableObject o, double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
 	{
 		this.terrainRenderer.addBox(o, x - sizeX / 2, y - sizeY / 2, z, sizeX, sizeY, sizeZ, options, false);

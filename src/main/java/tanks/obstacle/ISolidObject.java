@@ -7,4 +7,6 @@ public interface ISolidObject
 	Face[] getFaces();
 
 	void updateFaces();
+
+    boolean collisionChanged();
 }

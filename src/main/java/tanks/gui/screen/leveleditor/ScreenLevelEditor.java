@@ -994,16 +994,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             redoLength = -1;
         }
 
-        Game.effects.removeAll(Game.removeEffects);
-        Game.removeEffects.clear();
-
-        Game.movables.removeAll(Game.removeMovables);
-        Game.removeMovables.clear();
-
-        for (Obstacle o : Game.removeObstacles)
-            Game.removeObstacle(o);
-
-        Game.removeObstacles.clear();
+        ScreenGame.handleRemovals();
     }
 
     public void updateMetadata()
@@ -2467,18 +2458,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
     public void play()
     {
         this.save();
-
         this.replaceSpawns();
 
         Game.currentLevel = new Level(Game.currentLevelString);
+        Game.currentLevel.tilesRandomSeed = level.tilesRandomSeed;
         Game.currentLevel.timed = level.timer > 0;
         Game.currentLevel.timer = level.timer;
 
         for (Obstacle o : Game.obstacles)
         {
-            o.postOverride();
-            o.removed = false;
-
             if (o instanceof ObstacleBeatBlock)
             {
                 Game.currentLevel.synchronizeMusic = true;

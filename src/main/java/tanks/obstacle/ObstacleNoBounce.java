@@ -6,6 +6,7 @@ public class ObstacleNoBounce extends ObstacleStackable
 	{
 		super(name, posX, posY);
 
+        this.type = ObstacleType.full;
 		this.destructible = false;
 		this.allowBounce = false;
 		this.description = "An indestructible block which prevents bullets from bouncing";

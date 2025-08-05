@@ -61,6 +61,16 @@ public class ScreenDebug extends Screen
             "Draw faces: ", b -> Game.drawFaces = b, () -> Game.drawFaces
     );
 
+    Button drawAutoZoom = new Button.Toggle(
+            0, 0, this.objWidth, this.objHeight,
+            "Draw auto zoom: ", b -> Game.drawAutoZoom = b, () -> Game.drawAutoZoom
+    );
+
+    Button showUpdatingObstacles = new Button.Toggle(
+            0, 0, this.objWidth, this.objHeight,
+            "Show updating obstacles: ", b -> Game.showUpdatingObstacles = b, () -> Game.showUpdatingObstacles
+    );
+
     Button immutableFaces = new Button.Toggle(
             0, 0, this.objWidth, this.objHeight,
             "Immutable faces: ", b -> Game.immutableFaces = b, () -> Game.immutableFaces
@@ -70,7 +80,7 @@ public class ScreenDebug extends Screen
 
     public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(
             test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable,
-            fancyLighting, tankIDs, showPathfinding, drawFaces, immutableFaces
+            fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles, drawAutoZoom, immutableFaces
     )), 0, 0, -30);
 
     public ScreenDebug()

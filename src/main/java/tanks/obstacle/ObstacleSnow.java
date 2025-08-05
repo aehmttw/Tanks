@@ -90,7 +90,7 @@ public class ObstacleSnow extends Obstacle
         if (ScreenPartyLobby.isClient)
             this.depth = Math.max(0.05, this.depth - Panel.frameFrequency * 0.005);
 
-        Game.redrawObstacles.add(this);
+        redrawSelfAndNeighbors();
 
         if (Game.effectsEnabled && !ScreenGame.finished)
         {
@@ -164,7 +164,7 @@ public class ObstacleSnow extends Obstacle
             {
                 this.finalHeight = z;
                 Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-                Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, z * this.visualDepth, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+                Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, z * this.visualDepth, this.getOptionsByte(this.getTileHeight()));
             }
         }
     }

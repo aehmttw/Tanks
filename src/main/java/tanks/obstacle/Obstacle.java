@@ -1,11 +1,9 @@
 package tanks.obstacle;
 
-import basewindow.IBatchRenderableObject;
-import basewindow.ShaderGroup;
+import basewindow.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
-import tanks.rendering.ShaderGroundObstacle;
-import tanks.rendering.ShaderObstacle;
+import tanks.rendering.*;
 import tanks.tank.IAvoidObject;
 
 public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
@@ -34,7 +32,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	 * Extra = can be placed anywhere without a full tile, can have tanks inside
 	 * */
 	public enum ObstacleType { full, ground, top, extra }
-	public ObstacleType type = this instanceof ObstacleStackable ? ObstacleType.full : ObstacleType.top;
+	public ObstacleType type = ObstacleType.top;
 
 	public double startHeight = 0;
 	public int drawLevel = 5;
@@ -191,7 +189,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	public void onNeighborUpdate()
 	{
-		refreshHitboxes();
+		refreshFaces();
 	}
 
 	public void reactToHit(double bx, double by)
@@ -272,23 +270,29 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	{
 		byte o = 0;
 
-		if (Obstacle.draw_size < Game.tile_size)
-			return 0;
+		/*if (Obstacle.draw_size < Game.tile_size)
+			return o;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h)
-			o += 4;
+			o |= BaseShapeRenderer.HIDE_FRONT;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY - Game.tile_size) >= h)
-			o += 8;
+			o |= BaseShapeRenderer.HIDE_BACK;
 
 		if (Game.sampleObstacleHeight(this.posX - Game.tile_size, this.posY) >= h)
-			o += 16;
+			o |= BaseShapeRenderer.HIDE_LEFT;
 
 		if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h)
-			o += 32;
+			o |= BaseShapeRenderer.HIDE_RIGHT;*/
 
 		return o;
 	}
+
+    public void redrawSelfAndNeighbors()
+    {
+        Game.redrawObstacles.add(this);
+        Game.redrawObstacles.addAll(getNeighbors());
+    }
 
 	@Override
 	public double getSize()
@@ -299,7 +303,8 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	@Override
 	public boolean isFaceValid(Face f)
 	{
-		Obstacle o = Game.getObstacle(this.posX + f.direction.x() * Game.tile_size, this.posY + f.direction.y() * Game.tile_size);
+        // the Math.floor is actually essential here wtf
+		Obstacle o = Game.getObstacle((int) Math.floor(this.posX / Game.tile_size) + f.direction.x(), (int) Math.floor(this.posY / Game.tile_size) + f.direction.y());
 		return super.isFaceValid(f) && (o == null || o.tankCollision != tankCollision || o.bulletCollision != bulletCollision);
 	}
 
@@ -315,7 +320,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		return this.bulletCollision;
 	}
 
-	public void refreshHitboxes()
+	public void refreshFaces()
 	{
 		Chunk c = Chunk.getChunk(posX, posY);
 		if (c == null) return;
@@ -421,7 +426,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public static ObjectArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
 	{
 		obstacleOut.clear();
-
 		for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
             for (Obstacle o : c.obstacles)
                 if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))

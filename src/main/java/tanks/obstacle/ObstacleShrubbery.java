@@ -61,7 +61,7 @@ public class ObstacleShrubbery extends Obstacle
 		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
 		if (this.finalHeight != this.previousFinalHeight)
-            Game.redrawObstacles.add(this);
+            redrawSelfAndNeighbors();
 		else
 			setUpdate(false);
 	}
@@ -77,7 +77,7 @@ public class ObstacleShrubbery extends Obstacle
 		if (Game.enable3d)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight, this.getOptionsByte(this.getTileHeight()));
 		}
 		else
 		{
@@ -189,8 +189,8 @@ public class ObstacleShrubbery extends Obstacle
 			}
 		}
 
-		setUpdate(true);
-	}
+        setUpdate((m.vX != 0 && m.vY != 0) || height < 255);
+    }
 
 	public double getTileHeight()
 	{

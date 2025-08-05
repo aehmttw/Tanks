@@ -1,27 +1,15 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletArc;
 import tanks.gui.*;
-import tanks.gui.screen.leveleditor.OverlayObjectMenu;
-import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
-import tanks.item.Item;
 import tanks.tank.*;
-import tanks.tankson.FieldPointer;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
-import tanks.translation.Translation;
+import tanks.tankson.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 {
@@ -89,6 +77,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
     public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
 
+    @SuppressWarnings("unused")
     @Override
     public void setupTabs()
     {

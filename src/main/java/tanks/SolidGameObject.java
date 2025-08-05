@@ -6,6 +6,15 @@ import tanks.obstacle.ISolidObject;
 public abstract class SolidGameObject extends GameObject implements ISolidObject
 {
     public Face[] faces;
+    private boolean lastEnableCollision = false;
+
+    @Override
+    public boolean collisionChanged()
+    {
+        boolean b = lastEnableCollision;
+        lastEnableCollision = disableRayCollision();
+        return b != lastEnableCollision;
+    }
 
     public abstract double getSize();
 

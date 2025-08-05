@@ -265,18 +265,9 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			wave = 1;
 
 		for (int i = 0; i < Game.effects.size(); i++)
-		{
-			Game.effects.get(i).update();
-		}
+            Game.effects.get(i).update();
 
-		Game.tracks.removeAll(Game.removeTracks);
-		Game.removeTracks.clear();
-
-		Game.movables.removeAll(Game.removeMovables);
-		Game.removeMovables.clear();
-
-		Game.effects.removeAll(Game.removeEffects);
-		Game.removeEffects.clear();
+        ScreenGame.handleRemovals();
 
 		if (!Game.movables.contains(this.logo) && Game.screen == this)
 		{

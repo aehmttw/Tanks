@@ -62,7 +62,7 @@ public class Game
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
-	public static ArrayList<IAvoidObject> avoidObjects = new ArrayList<>();
+	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
 	public static ArrayList<Obstacle> checkObstaclesToUpdate = new ArrayList<>();
 	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
@@ -785,9 +785,16 @@ public class Game
 			Game.exitToCrash(new RuntimeException("Invalid tank added with Game.addTank(" + tank + ")"));
 
 		tank.registerNetworkID();
-		Game.movables.add(tank);
+		addMovable(tank);
 		Game.eventsOut.add(new EventTankCreate(tank));
 	}
+
+    public static void addMovable(Movable m)
+    {
+        for (Chunk c : m.getTouchingChunks())
+            c.addMovable(m);
+        Game.movables.add(m);
+    }
 
 	/**
 	 * Adds a tank to the game's movables list and generates/registers a network ID for it after it was spawned by another tank.
@@ -1126,30 +1133,14 @@ public class Game
 		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::bulletSolid);
 	}
 
-	public static double getTileHeight(double posX, double posY)
+	public static double sampleObstacleHeight(double posX, double posY)
 	{
-		return Chunk.getIfPresent(posX, posY, 0d, Chunk.Tile::edgeDepth);
+		return Chunk.getIfPresent(posX, posY, 0d, Chunk.Tile::height);
 	}
 
-	public static void removeSurfaceObstacle(Obstacle o)
+    public static double sampleGroundHeight(double px, double py)
 	{
-		Game.obstacles.remove(o);
-	}
-
-	public static void setObstacle(double posX, double posY, Obstacle o)
-	{
-		Chunk c = Chunk.getChunk(posX, posY);
-		if (c != null && !c.obstacles.contains(o))
-			c.obstacles.add(o);
-
-		Chunk.Tile t = Chunk.getTile(posX, posY);
-		if (t != null)
-			t.add(o);
-	}
-
-	public static double sampleGroundHeight(double px, double py)
-	{
-		return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::edgeDepth);
+		return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::groundHeight);
     }
 
 	public static double sampleEdgeGroundDepth(int x, int y)
@@ -1160,39 +1151,7 @@ public class Game
 	/** @return The depth that the tile renders with; not affected by obstacles */
 	public static double sampleTerrainGroundHeight(double px, double py)
 	{
-		int x = (int) (px / Game.tile_size);
-		int y = (int) (py / Game.tile_size);
-
-		if (px < 0)
-			x--;
-
-		if (py < 0)
-			y--;
-
-		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			return 0;
-
-		return Objects.requireNonNull(Chunk.getTile(x, y)).depth;
-	}
-
-	public static double sampleObstacleHeight(double px, double py)
-	{
-		int x = (int) (px / Game.tile_size);
-		int y = (int) (py / Game.tile_size);
-
-		if (px < 0)
-			x--;
-
-		if (py < 0)
-			y--;
-
-		double r;
-		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			r = 0;
-		else
-			r = Game.getTileHeight(px, py);
-
-		return r;
+		return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::tileDepth);
 	}
 
 	public static boolean stringsEqual(String a, String b)

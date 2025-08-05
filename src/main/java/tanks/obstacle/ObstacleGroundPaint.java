@@ -1,13 +1,10 @@
 package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorColorAndNoise;
 import tanks.rendering.ShaderGroundColor;
 import tanks.tankson.MetadataProperty;
-
-import java.util.Arrays;
 
 public class ObstacleGroundPaint extends Obstacle
 {
@@ -47,6 +44,12 @@ public class ObstacleGroundPaint extends Obstacle
     public double getTileHeight()
     {
         return 0;
+    }
+
+    @Override
+    public double getGroundHeight()
+    {
+        return baseGroundHeight;
     }
 
     @Override

@@ -2676,17 +2676,8 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			if (this.targetEnemy != null)
 			{
-				Ray r = Ray.newRay(this.possessingTank.posX, this.possessingTank.posY, 0, 0, this);
-				r.vX = this.targetEnemy.posX - this.possessingTank.posX;
-				r.vY = this.targetEnemy.posY - this.possessingTank.posY;
-
-				double ma = Math.sqrt(r.vX * r.vX + r.vY * r.vY) / r.speed;
-				r.vX /= ma;
-				r.vY /= ma;
-
-				r.moveOut(5);
-
-				m = r.getTarget(2, (Tank) this.targetEnemy);
+				m = Ray.newRay(this.possessingTank.posX, this.possessingTank.posY, possessingTank.getAngleInDirection(targetEnemy.posX, targetEnemy.posY), 0, this)
+                    .getTarget(2, (Tank) this.targetEnemy);
 
 				if (((Tank) this.targetEnemy).possessor != null)
 					c = ((Tank) this.targetEnemy).getTopLevelPossessor().getClass();

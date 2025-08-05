@@ -118,6 +118,12 @@ public class Laser extends Movable implements IDrawableWithGlow
             drawGlow();
     }
 
+    @Override
+    public boolean disableRayCollision()
+    {
+        return true;
+    }
+
     public void drawGlow()
     {
         if (!glows)

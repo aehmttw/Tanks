@@ -1401,8 +1401,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
     protected void handleBuild(boolean[] handled, boolean validRight, boolean batch, boolean paste)
     {
-        boolean skip = false;
-
         double mx = mousePlaceable.posX;
         double my = mousePlaceable.posY;
 
@@ -1412,9 +1410,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             my = mousePlaceable.posY;
         }
 
-        if ((mousePlaceable instanceof ObstacleStackable && ((ObstacleStackable) mousePlaceable).startHeight <= 0 && ((Obstacle) mousePlaceable).type == Obstacle.ObstacleType.full) || currentPlaceable != Placeable.obstacle)
-            skip = checkForMovable(mx, my);
 
+        boolean skip = checkForMovable(mx, my);
         if (skip) return;
         skip = checkForObstacle(validRight, mx, my);
 
@@ -1503,7 +1500,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         else
             this.undoActions.add(new EditorAction.ActionPlayerSpawn(this, t, true));
 
-        Game.movables.add(t);
+        Game.addMovable(t);
 
         if (!batch)
             Drawing.drawing.playVibration("click");
@@ -1529,7 +1526,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         t.setMetadata(mousePlaceable.getMetadata());
 
         this.undoActions.add(new EditorAction.ActionTank(t, true));
-        Game.movables.add(t);
+        Game.addMovable(t);
 
         if (!batch)
             Drawing.drawing.playVibration("click");
@@ -2525,7 +2522,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
                 Game.playerTank = tank;
                 tank.team = team;
-                Game.movables.add(tank);
+                Game.addMovable(tank);
             }
         }
 

@@ -56,7 +56,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void preUpdate()
 	{
-        removeFacesFromChunks();
+        refreshFaces();
 
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 		this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
@@ -97,7 +97,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public void refreshFaces()
     {
         removeFacesFromChunks();
-        prevChunks.removeAll(leaveChunks);
         updateFaces();
         addFacesToChunks();
     }
@@ -128,6 +127,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
                 leaveChunks.add(c);
             }
         }
+        prevChunks.removeAll(leaveChunks);
     }
 
     public void onEnterChunk(Chunk c)

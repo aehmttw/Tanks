@@ -317,15 +317,14 @@ public class Drawing
 
 	public void fillPartialInterfaceOval(double x, double y, double sizeX, double sizeY, double start, double end)
 	{
-		double drawX = gameToAbsoluteX(x, sizeX);
-		double drawY = gameToAbsoluteY(y, sizeY);
+        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
 
 		if (isOutOfBounds(drawX, drawY))
 			return;
 
-		double drawSizeX = (sizeX * scale);
-		double drawSizeY = (sizeY * scale);
-
+        double drawSizeX = (sizeX * interfaceScale);
+        double drawSizeY = (sizeY * interfaceScale);
 		Game.game.window.shapeRenderer.fillPartialOval(drawX, drawY, drawSizeX, drawSizeY, start, end);
 	}
 

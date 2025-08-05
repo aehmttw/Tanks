@@ -101,7 +101,7 @@ public class BulletInstant extends Bullet
 			if (ScreenGame.finished)
 				this.destroy = true;
 
-			if (GameObject.absoluteAngleBetween(this.getPolarDirection(), angle) >= 0.1)
+			if (this.homingSharpness != 0 && GameObject.absoluteAngleBetween(this.getPolarDirection(), angle) >= 0.1)
 			{
 				redirects++;
 				this.collisionX = this.posX;
@@ -119,7 +119,8 @@ public class BulletInstant extends Bullet
 			if (Math.abs(this.lastFinalVX) < 0.01 && Math.abs(this.lastFinalVY) < 0.01)
 				this.destroy = true;
 		}
-		this.affectedByFrameFrequency = true;
+
+        this.affectedByFrameFrequency = true;
 
 		if (!this.tank.isRemote)
 		{

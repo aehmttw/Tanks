@@ -296,31 +296,40 @@ public abstract class Tank extends Movable implements ISolidObject
             double ourMass = ourSize * ourSize;
             double theirMass = theirSize * theirSize;
 
-            double angle = this.getAngleInDirection(t.posX, t.posY);
+            double dx = t.posX - this.posX;
+            double dy = t.posY - this.posY;
+            double d = Math.sqrt(dx * dx + dy * dy);
 
-            double ourV = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
-            double ourAngle = this.getPolarDirection();
-            double ourParallelV = ourV * Math.cos(ourAngle - angle);
-            double ourPerpV = ourV * Math.sin(ourAngle - angle);
+            if (d != 0)
+            {
+                dx /= d;
+                dy /= d;
+            }
+            else
+            {
+                dx = 1;
+                dy = 0;
+            }
 
-            double theirV = Math.sqrt(t.vX * t.vX + t.vY * t.vY);
-            double theirAngle = t.getPolarDirection();
-            double theirParallelV = theirV * Math.cos(theirAngle - angle);
-            double theirPerpV = theirV * Math.sin(theirAngle - angle);
+            double ourParallelV = this.vX * dx + this.vY * dy;
+            double ourPerpV = -(this.vX * dy + this.vY * -dx);
+
+            double theirParallelV = t.vX * dx + t.vY * dy;
+            double theirPerpV = -(t.vX * dy + t.vY * -dx);
 
             double newV = (ourParallelV * ourMass + theirParallelV * theirMass) / (ourMass + theirMass);
 
             double dist = Math.sqrt(distSq);
-            this.moveInDirection(Math.cos(angle), Math.sin(angle), (dist - (ourSize + theirSize) / 2) * theirMass / (ourMass + theirMass));
-            t.moveInDirection(Math.cos(Math.PI + angle), Math.sin(Math.PI + angle), (dist - (ourSize + theirSize) / 2) * ourMass / (ourMass + theirMass));
+            this.moveInDirection(dx, dy, (dist - (ourSize + theirSize) / 2) * theirMass / (ourMass + theirMass));
+            t.moveInDirection(-dx, -dy, (dist - (ourSize + theirSize) / 2) * ourMass / (ourMass + theirMass));
 
             if (distSq > Math.pow((this.posX + this.vX) - (t.posX + t.vX), 2) + Math.pow((this.posY + this.vY) - (t.posY + t.vY), 2))
             {
-                this.setMotionInDirection(t.posX, t.posY, newV);
-                this.addPolarMotion(angle + Math.PI / 2, ourPerpV);
+                this.vX = newV * dx - ourPerpV * dy;
+                this.vY = newV * dy + ourPerpV * dx;
 
-                t.setMotionInDirection(this.posX, this.posY, -newV);
-                t.addPolarMotion(angle + Math.PI / 2, theirPerpV);
+                t.vX = newV * dx - theirPerpV * dy;
+                t.vY = newV * dy + theirPerpV * dx;
             }
         }
 
@@ -550,7 +559,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			Game.effects.add(e);
 		}
 
-		super.update();
+     	super.update();
 
 		if (this.health <= 0.00000001)
 		{
@@ -560,7 +569,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.managedMotion)
 		{
-			this.checkCollision();
+            this.checkCollision();
 
 			this.orientation = (this.orientation + Math.PI * 2) % (Math.PI * 2);
 

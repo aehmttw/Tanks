@@ -185,17 +185,19 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void setMotionInDirection(double x, double y, double velocity)
 	{
-		double angle = getAngleInDirection(x, y);
-		this.vX = velocity * Math.cos(angle);
-		this.vY = velocity * Math.sin(angle);
+        double dx = x - this.posX;
+        double dy = y - this.posY;
+        double d = Math.sqrt(dx * dx + dy * dy);
+        if (d == 0)
+            return;
+
+		this.vX = velocity * dx / d;
+		this.vY = velocity * dy / d;
 	}
 
 	public void setMotionAwayFromDirection(double x, double y, double velocity)
 	{
-		double angle = getAngleInDirection(x, y);
-		angle += Math.PI;
-		this.vX = velocity * Math.cos(angle);
-		this.vY = velocity * Math.sin(angle);
+		setMotionInDirection(x, y, -velocity);
 	}
 
 	public void setMotionInDirectionWithOffset(double x, double y, double velocity, double a)
@@ -213,7 +215,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public double getPolarDirection()
 	{
-		return getPolarDirection(this.vX, this.vY);
+        return getPolarDirection(this.vX, this.vY);
 	}
 
 	public double getPolarPitch()
@@ -230,7 +232,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	{
 		this.vX = velocity * Math.cos(angle);
 		this.vY = velocity * Math.sin(angle);
-	}
+    }
 
 	public void set3dPolarMotion(double angle1, double angle2, double velocity)
 	{
@@ -326,15 +328,19 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	/** Field to cache the movable array for reuse */
 	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
+    private static final ObjectArrayList<Movable> movableOut2 = new ObjectArrayList<>();
 
     public static ObjectArrayList<Movable> getCircleCollision(Movable self, double posX, double posY)
     {
         movableOut.clear();
+
         for (Chunk c : Chunk.getChunksInRadius(posX, posY, self.getSize()))
             for (Movable m : c.movables)
                 if (m != self && !m.skipNextUpdate && !m.destroy &&
                     GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
                     movableOut.add(m);
+
+
         return movableOut;
     }
 

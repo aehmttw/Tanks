@@ -20,7 +20,6 @@ public class ObstacleGroundPaint extends Obstacle
         this.destructible = false;
         this.tankCollision = false;
         this.bulletCollision = false;
-        this.checkForObjects = true;
 
         this.type = ObstacleType.ground;
 

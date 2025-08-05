@@ -27,5 +27,5 @@ void getVertVecs(out vec4 pos, out vec3 normal)
 
 vec4 getColor(vec4 colorIn)
 {
-    return colorIn * obstacleSizeFrac + vec4(groundColor, 1.0) * (1.0 - obstacleSizeFrac);
+    return (colorIn * obstacleSizeFrac + vec4(groundColor, 1.0) * (1.0 - obstacleSizeFrac));
 }

@@ -389,7 +389,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				t.vY += vY * mul;
 
 				t.recoilSpeed = t.getSpeed();
-				if (t.recoilSpeed > t.maxSpeed)
+
+                if (t.recoilSpeed > t.maxSpeed)
 				{
 					t.inControlOfMotion = false;
 					t.tookRecoil = true;
@@ -1420,7 +1421,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public void addTrail(boolean redirect)
 	{
-		if (this.trails == null)
+        if (this.trails == null)
 			this.initTrails();
 
 		this.addedTrail = true;

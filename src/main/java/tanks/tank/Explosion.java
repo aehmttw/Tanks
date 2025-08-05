@@ -295,7 +295,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
     public void handleExplosionKb(Movable m, double distSq)
     {
         double power = (1 - distSq / Math.pow(knockbackRadius + m.getSize() / 2, 2));
-        if (m instanceof Bullet)
+        if (m instanceof Bullet && this.bulletKnockback != 0)
         {
             double angle = this.getAngleInDirection(m.posX, m.posY);
             m.addPolarMotion(angle, power * this.bulletKnockback * Math.pow(Bullet.bullet_size, 2) / Math.max(1, Math.pow(((Bullet) m).size, 2)));
@@ -303,7 +303,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
             ((Bullet) m).collisionY = m.posY;
             ((Bullet) m).addTrail();
         }
-        else if (m instanceof Tank)
+        else if (m instanceof Tank && this.tankKnockback != 0)
         {
             double angle = this.getAngleInDirection(m.posX, m.posY);
             double vX = m.vX;

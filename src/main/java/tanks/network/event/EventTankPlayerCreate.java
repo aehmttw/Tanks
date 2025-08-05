@@ -115,6 +115,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 				((TankPlayerRemote) t).refreshAmmo();
 			}
 
+            t.hasName = true;
 			t.showName = true;
 			t.nameTag.name = this.username;
 

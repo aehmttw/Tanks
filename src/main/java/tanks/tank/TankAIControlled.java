@@ -607,20 +607,20 @@ public class TankAIControlled extends Tank implements ITankField
 				else
 				{
 					this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-					this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
+					this.recoilSpeed *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
 				}
 			}
 			else if (this.inControlOfMotion)
 			{
-				this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
-				this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vX *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vY *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
 
 				if (this.enableMovement)
 					this.updateMotionAI();
 				else
 				{
-					this.vX *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
-					this.vY *= Math.pow(1 - (0.15 * this.frictionModifier), Panel.frameFrequency);
+					this.vX *= Math.pow(1 - Math.min(1, 0.15 * this.frictionModifier), Panel.frameFrequency);
+					this.vY *= Math.pow(1 - Math.min(1, 0.15 * this.frictionModifier), Panel.frameFrequency);
 
 					if (this.enableDefensiveFiring && useRaysThisFrame)
 						this.checkForBulletThreats();
@@ -3020,28 +3020,17 @@ public class TankAIControlled extends Tank implements ITankField
 	{
 		x -= this.posX;
 		y -= this.posY;
+        double d = Math.sqrt(x * x + y * y);
+        if (d == 0)
+            return;
 
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y/x);
-		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-		double accX = accel * Math.cos(angle);
-		double accY = accel * Math.sin(angle);
-		this.aX = accX;
-		this.aY = accY;
-	}
+		this.aX = x / d * accel;
+        this.aY = y / d * accel;
+    }
 
 	public void setAccelerationAwayFromDirection(double x, double y, double accel)
 	{
-		this.setAccelerationInDirectionWithOffset(x, y, accel, Math.PI);
+		this.setAccelerationInDirection(x, y, -accel);
 	}
 
 	public void setAccelerationInDirectionWithOffset(double x, double y, double accel, double a)

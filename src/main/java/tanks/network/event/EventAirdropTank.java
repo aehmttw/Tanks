@@ -43,7 +43,7 @@ public class EventAirdropTank extends EventTankCreate
 
             t.team = tm;
             t.color.set(this.color);
-            t.secondaryColor.set(this.color);
+            t.secondaryColor.set(this.color2);
             Game.movables.add(new Crate(new TankRemote(t), height));
         }
     }

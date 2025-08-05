@@ -118,6 +118,14 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         super.update();
 
+        if (this.destroy)
+        {
+            this.currentKnownVX = 0;
+            this.currentKnownVY = 0;
+            this.vX = 0;
+            this.vY = 0;
+        }
+
         double pvx = this.prevKnownVXFinal;
         double pvy = this.prevKnownVYFinal;
         double cvx = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
@@ -217,7 +225,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             else
             {
                 this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-                this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
+                this.recoilSpeed *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
             }
         }
 
@@ -269,6 +277,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
     public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions, double time, long receiveTime)
     {
+        if (this.destroy)
+            return;
+
         if (checkMotion)
         {
             if (this.startUpdateTime == -1)
@@ -308,8 +319,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                 if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
                         && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
                         && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
-                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - this.friction * this.frictionModifier, time)) || Math.abs(this.lastVX) < 0.001)
-                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - this.friction * this.frictionModifier, time)) || Math.abs(this.lastVY) < 0.001)))
+                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001)
+                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVY) < 0.001)))
                 {
                     double changeVelocity = Math.sqrt(changeVelocitySq);
 

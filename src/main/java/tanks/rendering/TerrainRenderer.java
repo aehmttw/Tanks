@@ -9,6 +9,7 @@ import tanks.Game;
 import tanks.gui.ScreenIntro;
 import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleGroundPaint;
 
 import java.util.HashMap;
 
@@ -497,6 +498,7 @@ public class TerrainRenderer
             double sX = asPreview ? previewWidth : Game.currentSizeX;
             double x = xOffset * Game.tile_size * sX + offX;
             double y = yOffset * Game.tile_size * Game.currentSizeY + offY;
+
             double z = 0;
             double sc = 1;
 

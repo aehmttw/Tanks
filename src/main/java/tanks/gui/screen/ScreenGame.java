@@ -2075,6 +2075,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
 
             m.update();
+
+            if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
+            {
+                Game.removeMovables.add(m);
+                System.err.println("A movable's position became NaN! " + m);
+                Game.movables.add(new MovableNaN(m.lastPosX, m.lastPosY));
+            }
         }
 
         for (Obstacle o : Game.checkObstaclesToUpdate)
@@ -2445,7 +2452,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         for (Obstacle o : Game.obstacles)
         {
-            if (!o.batchDraw)
+            if (!o.batchDraw || !Game.enable3d)
                 drawables[o.drawLevel].add(o);
 
             Effect e = o.getCompanionEffect();

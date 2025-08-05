@@ -287,6 +287,14 @@ public abstract class Tank extends Movable implements ISolidObject
                 continue;
 
             Tank t = (Tank) m;
+            if (((Tank) m).size <= 0)
+                continue;
+
+            if (t.equals(this.possessor))
+            {
+                System.out.println(Game.movables.contains(this) + " " + Game.movables.contains(this.possessor));
+            }
+
             double distSq = GameObject.sqDistBetw(this, t);
             this.hasCollided = true;
             t.hasCollided = true;

@@ -364,7 +364,7 @@ public class Ray
 
     private static final ObjectArrayList<Chunk> errorChunkCache = new ObjectArrayList<>();
     private static final Object2IntOpenHashMap<GameObject> objectTriggerCount = new Object2IntOpenHashMap<>();
-    private static final int ERROR_THRESH = 3;
+    private static final int error_threshold = 3;
 
     /** Shouldn't be triggered 99% of the time */
     protected void detectAndFixErrors()
@@ -413,7 +413,7 @@ public class Ray
             return;
         }
 
-        if (objectTriggerCount.addTo((GameObject) so, 1) >= ERROR_THRESH)
+        if (objectTriggerCount.addTo((GameObject) so, 1) >= error_threshold)
         {
             System.err.printf("Ray collision face owner %s (%.0f, %.0f) not in chunk %s%n",
                 name, ((SolidGameObject) so).posX / Game.tile_size, ((SolidGameObject) so).posY / Game.tile_size,

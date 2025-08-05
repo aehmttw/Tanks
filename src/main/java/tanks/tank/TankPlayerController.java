@@ -104,7 +104,6 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
     @Override
     public void preUpdate()
     {
-        updateChunks();
         this.lastPosX = this.posX - this.interpolatedOffX * (interpolationTime - interpolatedProgress) / interpolationTime;
         this.lastPosY = this.posY - this.interpolatedOffY * (interpolationTime - interpolatedProgress) / interpolationTime;
         this.lastPosZ = this.posZ;

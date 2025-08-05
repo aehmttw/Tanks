@@ -645,7 +645,7 @@ public class TankAIControlled extends Tank implements ITankField
 			if (this.healthTransformTank != null && this.health <= this.transformHealthThreshold && !ScreenGame.finishedQuick)
 				this.handleHealthTransformation();
 
-			this.postUpdate();
+			this.preMotionUpdate();
 		}
 
 		if (!this.tookRecoil)
@@ -1063,6 +1063,7 @@ public class TankAIControlled extends Tank implements ITankField
 		this.transformRevertTimer = this.sightTransformRevertTime;
 		this.willRevertTransformation = true;
 		this.transform(this.sightTransformTank);
+        this.sightTransformTank.name = "AAAAAAAAAAAAAAAAAAAAAAAAA";
 		Drawing.drawing.playGlobalSound("timer.ogg", 1.25f);
 		Effect e1 = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.sightTransformTank.size * 0.75, Effect.EffectType.exclamation);
 		e1.size = this.sightTransformTank.size;
@@ -2356,7 +2357,8 @@ public class TankAIControlled extends Tank implements ITankField
 	{
 		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
-		Game.eventsOut.add(new EventLayMine(m));
+        Game.avoidObjects.add(m);
+        Game.eventsOut.add(new EventLayMine(m));
 		Game.addMovable(m);
 		this.mineTimer = (this.random.nextDouble() * mineTimerRandom + mineTimerBase);
 
@@ -2862,7 +2864,7 @@ public class TankAIControlled extends Tank implements ITankField
 	}
 
 	/** Called after updating but before applying motion. Intended to be overridden.*/
-	public void postUpdate()
+	public void preMotionUpdate()
 	{
 
 	}

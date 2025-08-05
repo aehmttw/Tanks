@@ -56,8 +56,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void preUpdate()
 	{
-		updateChunks();
-
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 		this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
 		this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
@@ -71,6 +69,11 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		this.lastPosY = this.posY;
 		this.lastPosZ = this.posZ;
 	}
+
+    public void postUpdate()
+    {
+        updateChunks();
+    }
 
 	/** Cached list for checking chunks that the movable has just left */
 	private static final ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
@@ -328,7 +331,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	/** Field to cache the movable array for reuse */
 	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
-    private static final ObjectArrayList<Movable> movableOut2 = new ObjectArrayList<>();
 
     public static ObjectArrayList<Movable> getCircleCollision(Movable self, double posX, double posY)
     {
@@ -349,11 +351,14 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         movableOut.clear();
         double bound = self.getSize() / 2 + Game.tile_size / 2;
         for (Chunk c : Chunk.getChunksInRange(posX - bound, posY - bound, posX + bound, posY + bound))
+        {
             for (Movable m : c.movables)
-                if (m != self && !m.skipNextUpdate && !m.destroy &&
-                    Math.abs(m.posX - posX) < (self.getSize() + m.getSize()) / 2
+            {
+                if (m != self && !m.skipNextUpdate && !m.destroy && Math.abs(m.posX - posX) < (self.getSize() + m.getSize()) / 2
                     && Math.abs(m.posY - posY) < (self.getSize() + m.getSize()) / 2)
                     movableOut.add(m);
+            }
+        }
         return movableOut;
     }
 

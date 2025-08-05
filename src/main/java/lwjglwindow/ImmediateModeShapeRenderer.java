@@ -500,7 +500,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             GL11.glBegin(GL11.GL_QUADS);
         }
 
-        if ((options & BaseShapeRenderer.HIDE_BOTTOM) == 0)
+        if ((options & BaseShapeRenderer.hide_bottom) == 0)
         {
             GL11.glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
@@ -524,7 +524,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options & BaseShapeRenderer.HIDE_FRONT) == 0)
+        if ((options & BaseShapeRenderer.hide_front) == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.8, this.window.colorG * 0.8, this.window.colorB * 0.8, this.window.colorA);
 
@@ -548,7 +548,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options & BaseShapeRenderer.HIDE_BACK) == 0)
+        if ((options & BaseShapeRenderer.hide_back) == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.8, this.window.colorG * 0.8, this.window.colorB * 0.8, this.window.colorA);
 
@@ -572,7 +572,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options & BaseShapeRenderer.HIDE_LEFT) == 0)
+        if ((options & BaseShapeRenderer.hide_left) == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.6, this.window.colorG * 0.6, this.window.colorB * 0.6, this.window.colorA);
 
@@ -596,7 +596,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options & BaseShapeRenderer.HIDE_RIGHT) == 0)
+        if ((options & BaseShapeRenderer.hide_right) == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.6, this.window.colorG * 0.6, this.window.colorB * 0.6, this.window.colorA);
 
@@ -620,7 +620,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options & BaseShapeRenderer.HIDE_TOP) == 0)
+        if ((options & BaseShapeRenderer.hide_top) == 0)
         {
             GL11.glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 

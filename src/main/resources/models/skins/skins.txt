@@ -29,11 +29,13 @@ tank_web,false
 tank_wood
 tank_zigzag_half,false
 tank_angel
+tank_armor_plates
 tank_blast
 tank_brick
 tank_card
 tank_circle
 tank_cobble
+tank_cracks
 tank_crosses
 tank_dots
 tank_envelope

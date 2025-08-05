@@ -1411,7 +1411,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         }
 
 
-        boolean skip = checkForMovable(mx, my);
+        boolean skip = false;
+
+        if (!(mousePlaceable instanceof Obstacle && !((Obstacle) mousePlaceable).tankCollision))
+            skip = checkForMovable(mx, my);
+
         if (skip) return;
         skip = checkForObstacle(validRight, mx, my);
 

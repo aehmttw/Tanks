@@ -78,6 +78,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 				this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username));
 		}
 
+        ScreenPartyLobby.muted = false;
 		ScreenPartyLobby.isClient = true;
 	}
 

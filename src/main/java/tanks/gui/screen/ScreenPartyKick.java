@@ -12,8 +12,7 @@ public class ScreenPartyKick extends Screen
 
     public Button kick;
 
-    public Button cancel = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Cancel", () -> Game.screen = ScreenPartyHost.activeScreen
-    );
+    public Button cancel = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Cancel", () -> Game.screen = ScreenPartyHost.activeScreen);
 
     public ScreenPartyKick(ServerHandler h)
     {

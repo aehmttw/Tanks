@@ -39,6 +39,8 @@ public class EventChat extends PersonalEvent
 				{
 					if (invalid)
 						s.sendEventAndClose(new EventKick("Invalid chat message received!"));
+                    else if (ScreenPartyHost.activeScreen.mutedPlayers.contains(this.clientID))
+                        s.sendEvent(new EventChat("\u00A7255000000255The party host has disabled your ability to chat!"));
 					else
 					{
 						ScreenPartyHost.chat.add(0, new ChatMessage(s.player, this.message));

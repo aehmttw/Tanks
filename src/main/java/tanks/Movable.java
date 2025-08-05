@@ -85,9 +85,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
         lastSize = getSize();
 
-		if (refreshFaces && this instanceof IAvoidObject)
-			Game.avoidObjects.add((IAvoidObject) this);
-
 		ObjectArrayList<Chunk> cache = getTouchingChunks();
 
 		for (Chunk c : cache)

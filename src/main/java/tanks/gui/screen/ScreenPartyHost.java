@@ -32,8 +32,10 @@ public class ScreenPartyHost extends Screen
     public static SynchronizedList<UUID> disconnectedPlayers = new SynchronizedList<>();
     public static ScreenPartyHost activeScreen;
 
+    public HashSet<UUID> mutedPlayers = new HashSet<>();
     public String ip = "";
 
+    public Button[] muteButtons = new Button[entries_per_page];
     public Button[] kickButtons = new Button[entries_per_page];
 
     public int usernamePage = 0;
@@ -187,6 +189,25 @@ public class ScreenPartyHost extends Screen
             kickButtons[i].selectedColB = 0;
 
             kickButtons[i].fontSize = this.textSize;
+
+            muteButtons[i] = new Button(this.centerX - 5,
+                this.centerY + (1 + i) * username_spacing + username_y_offset, 25, 25, "", () ->
+            {
+                ServerHandler sh = server.connections.get(j + usernamePage * entries_per_page);
+                UUID id = sh.clientID;
+                if (mutedPlayers.contains(id))
+                    mutedPlayers.remove(id);
+                else
+                    mutedPlayers.add(id);
+
+                sh.sendEvent(new EventMutePlayer(mutedPlayers.contains(id)));
+            });
+
+            muteButtons[i].textOffsetY = -2.5;
+            muteButtons[i].image = "chat.png";
+            muteButtons[i].imageSizeX = 20;
+            muteButtons[i].imageSizeY = 20;
+            muteButtons[i].fullInfo = true;
         }
 
         activeScreen = this;
@@ -282,6 +303,7 @@ public class ScreenPartyHost extends Screen
             for (int i = 0; i < entries; i++)
             {
                 this.kickButtons[i].update();
+                this.muteButtons[i].update();
             }
 
             int c = server.connections.size();
@@ -418,7 +440,21 @@ public class ScreenPartyHost extends Screen
 
                             if (i < server.connections.size())
                             {
-                                this.kickButtons[i - this.usernamePage * entries_per_page].draw();
+                                int n = i - this.usernamePage * entries_per_page;
+                                this.kickButtons[n].draw();
+
+                                if (mutedPlayers.contains(p.clientID))
+                                {
+                                    muteButtons[i].image = "mute.png";
+                                    muteButtons[n].setHoverText("Click to unmute %s.---%s is currently muted and can't chat.", p.username, p.username);
+                                }
+                                else
+                                {
+                                    muteButtons[i].image = "chat.png";
+                                    muteButtons[n].setHoverText("Click to mute %s and prevent them from chatting.---%s is currently not muted.", p.username, p.username);
+                                }
+
+                                this.muteButtons[n].draw();
 
                                 Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
                                 Drawing.drawing.setColor(0, 0, 0);

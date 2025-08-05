@@ -229,6 +229,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     {
         Game.eventsOut.add(new EventMineRemove(this));
         Game.removeMovables.add(this);
+        Game.avoidObjects.remove(this);
 
         if (!ScreenPartyLobby.isClient)
         {

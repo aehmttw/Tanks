@@ -455,11 +455,19 @@ public class Hotbar
 		if (Game.playerTank == null || Game.game.window.drawingShadow)
 			return;
 
+        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
+        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);
+        Game.game.window.loadPerspective();
+
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 
 		double px = Drawing.drawing.gameToInterfaceCoordsX(Game.playerTank.posX);
 		double py = Drawing.drawing.gameToInterfaceCoordsY(Game.playerTank.posY);
+
+        double z = Game.tile_size / 2 + Game.playerTank.posZ;
+        if (!Game.enable3d)
+            z = 0;
 
 		double healthSize = 120;
 
@@ -484,7 +492,7 @@ public class Hotbar
 			if (Level.isDark())
 				Drawing.drawing.setColor(255, 255, 255, 128 * opacity);
 
-			Drawing.drawing.fillPartialRing(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size / 2 + Game.playerTank.posZ, healthSize, thickness, 0, 1);
+			Drawing.drawing.fillPartialRing(Game.playerTank.posX, Game.playerTank.posY, z, healthSize, thickness, 0, 1);
 			Drawing.drawing.setColor(255, 128, 0, 255 * opacity);
 
 			double lives = 0;
@@ -502,15 +510,15 @@ public class Hotbar
 				shields = (int) (Game.playerTank.health - lives);
 			}
 
-			Drawing.drawing.fillPartialRing(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size / 2 + Game.playerTank.posZ, healthSize, thickness, 0, lives);
+			Drawing.drawing.fillPartialRing(Game.playerTank.posX, Game.playerTank.posY, z, healthSize, thickness, 0, lives);
 
 			if (shields > 0)
 			{
 				Drawing.drawing.setColor(255, 0, 0, 255 * opacity, 255);
-				Drawing.drawing.fillOval(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, Game.tile_size / 2 + Game.playerTank.posZ, 18, 18, 0, false, false);
+				Drawing.drawing.fillOval(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, z, 18, 18, 0, false, false);
 				Drawing.drawing.setFontSize(12);
 				Drawing.drawing.setColor(255, 255, 255, 255 * opacity, 255);
-				Drawing.drawing.drawText(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, Game.tile_size / 2 + Game.playerTank.posZ,  shields + "", false);
+				Drawing.drawing.drawText(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, z,  shields + "", false);
 			}
 		}
 
@@ -682,28 +690,28 @@ public class Hotbar
 				if (mines == 0)
 					Drawing.drawing.setColor(80, 80, 80, opacity1 * 255, 255);
 
-				Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size / 2 + Game.playerTank.posZ, 18 * m, 18 * m, false, false);
+				Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, z, 18 * m, 18 * m, false, false);
 
 				Drawing.drawing.setColor(255, 180, 0, opacity1 * 255, 255);
 				if (mines == 0)
 					Drawing.drawing.setColor(140, 140, 140, opacity1 * 255, 255);
 
-				Drawing.drawing.fillPartialRing(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size / 2 + Game.playerTank.posZ, 18 * m, 8, -cooldownFrac2, cooldownFrac2);
+				Drawing.drawing.fillPartialRing(Game.playerTank.posX, Game.playerTank.posY, z, 18 * m, 8, -cooldownFrac2, cooldownFrac2);
 
 				Drawing.drawing.setColor(255, 255, 0, opacity1 * 255, 255);
 				if (mines == 0)
 					Drawing.drawing.setColor(160, 160, 160, opacity1 * 255, 255);
 
-				Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size / 2 + Game.playerTank.posZ, 14 * m, 14 * m, false, false);
+				Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, z, 14 * m, 14 * m, false, false);
 
 				Drawing.drawing.setFontSize(12 * m);
 				Drawing.drawing.setColor(0, 0, 0, opacity1 * 255, 255);
 
-				Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size / 2 + Game.playerTank.posZ, mines + "", false);
+				Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY, z, mines + "", false);
 
 				Drawing.drawing.setFontSize(6 * m);
 				if (remainingItems > 0)
-					Drawing.drawing.drawText(Game.playerTank.posX + 15, Game.playerTank.posY + 15, Game.tile_size / 2 + Game.playerTank.posZ, remainingItems + "", false);
+					Drawing.drawing.drawText(Game.playerTank.posX + 15, Game.playerTank.posY + 15, z, remainingItems + "", false);
 			}
 		}
 
@@ -838,7 +846,11 @@ public class Hotbar
 			Drawing.drawing.setColor(0, 150, 255, opacityAllies * 255);
 			Drawing.drawing.drawInterfaceText(x - 1, y - 1, "" + alliedCount, false);
 		}
-	}
+
+        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
+        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
+        Game.game.window.loadPerspective();
+    }
 
 	public void drawTankIcon(double x, double y, double r, double g, double b, double opacity1, double size)
 	{

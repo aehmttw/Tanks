@@ -672,7 +672,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             {
                 Game.screen = new ScreenInfo(Game.screen, "Note!",
                         new String[]{"The base tank cooldown you picked is",
-                                "greater than the tank's bullet's cooldown.", "",
+                                "less than the tank's bullet's cooldown.", "",
                                 "The greater cooldown value will be used."});
             }
         }

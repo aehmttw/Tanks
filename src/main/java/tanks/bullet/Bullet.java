@@ -929,7 +929,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		for (Movable m : getSquareCollision(this, this.posX, this.posY))
         {
-            if (!(m instanceof Tank) || m.destroy)
+            if (!(m instanceof Tank) || m.destroy || ((Tank) m).size <= 0)
                 continue;
 
             Tank t = (Tank) m;

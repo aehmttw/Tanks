@@ -2,13 +2,13 @@ package basewindow;
 
 public abstract class BaseShapeRenderer
 {
-    public static final byte HIDE_BOTTOM = 1;
-    public static final byte HIDE_TOP = 1 << 1;
-    public static final byte HIDE_FRONT = 1 << 2;
-    public static final byte HIDE_BACK = 1 << 3;
-    public static final byte HIDE_LEFT = 1 << 4;
-    public static final byte HIDE_RIGHT = 1 << 5;
-    public static final byte HIDE_ALL = 63;
+    public static final byte hide_bottom = 1;
+    public static final byte hide_top = 1 << 1;
+    public static final byte hide_front = 1 << 2;
+    public static final byte hide_back = 1 << 3;
+    public static final byte hide_left = 1 << 4;
+    public static final byte hide_right = 1 << 5;
+    public static final byte hide_all = 63;
 
     public abstract void fillOval(double x, double y, double sX, double sY);
 

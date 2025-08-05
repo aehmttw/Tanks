@@ -492,6 +492,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             m.item.networkIndex = num == null ? 0 : num;
         }
 
+        Game.avoidObjects.add(m);
         Game.eventsOut.add(new EventLayMine(m));
         Game.movables.add(m);
 

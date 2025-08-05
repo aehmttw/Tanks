@@ -102,9 +102,11 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         rawOpacity *= rawOpacity * this.frameDamageMultipler;
         double opacity = Math.min(rawOpacity * 255 * this.opacity, 254) * (1 - this.destroyTimer / this.maxDestroyTimer);
 
-        double frac = 0;
+        double frac = 1;
         if (this.lifespan > 0)
             frac = Math.max(0, 1 - this.age / this.lifespan);
+        else
+            opacity = Math.min(255 * this.opacity, 254) * (1 - this.destroyTimer / this.maxDestroyTimer);
 
         Drawing.drawing.setColor(this.startColor.red * frac + this.endColor.red * (1 - frac), this.startColor.green * frac + this.endColor.green * (1 - frac), this.startColor.blue * frac + this.endColor.blue * (1 - frac), opacity, this.effect.luminance);
 
@@ -121,9 +123,12 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         rawOpacity *= this.frameDamageMultipler * this.effect.glowIntensity;
         double opacity = Math.min(rawOpacity * 255 * this.opacity, 255) * (1 - this.destroyTimer / this.maxDestroyTimer);
 
-        double frac = 0;
+        double frac = 1;
         if (this.lifespan > 0)
             frac = Math.max(0, 1 - this.age / this.lifespan);
+        else
+            opacity = Math.min(255 * this.opacity, 255) * (1 - this.destroyTimer / this.maxDestroyTimer);
+
 
         if (!this.effect.overrideGlowColor)
             Drawing.drawing.setColor(this.startColor.red * frac + this.endColor.red * (1 - frac), this.startColor.green * frac + this.endColor.green * (1 - frac), this.startColor.blue * frac + this.endColor.blue * (1 - frac), opacity, opacity / 255 * this.effect.glowIntensity);
@@ -200,7 +205,15 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         if (this.lifespan > life)
             speed *= this.lifespan / life;
 
-        double l = Math.min(Drawing.drawing.interfaceSizeX * 0.6, this.lifespan * this.speed);
+        double ls = this.lifespan;
+
+        if (life <= 0)
+        {
+            life = 200;
+            ls = 2000;
+        }
+
+        double l = Math.min(Drawing.drawing.interfaceSizeX * 0.6, ls * this.speed);
         double start = x - l / 2;
 
         r.setSeed(0);
@@ -223,7 +236,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         startSize *= limit / max;
         endSize *= limit / max;
 
-        for (int i = 0; i < life; i++)
+        for (int i = 0; i < (int) life; i++)
         {
             double rawOpacity = (1.0 - i / life);
             double opacity = Math.min(rawOpacity * rawOpacity * 255 * this.opacity, 254);
@@ -232,14 +245,21 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
             if (life > 0)
                 frac = Math.max(0, 1 - i / life);
 
+            double f = frac;
+            if (this.lifespan <= 0)
+            {
+                opacity = Math.min(255 * this.opacity, 254);
+                frac = 1;
+            }
+
             Drawing.drawing.setColor(c1.red * frac + c2.red * (1 - frac) + randoms[i] * this.noise.red,
                     c1.green * frac + c2.green * (1 - frac) + randoms[i] * this.noise.green,
                     c1.blue * frac + c2.blue * (1 - frac) + randoms[i] * this.noise.blue,
                     opacity, this.effect.luminance);
-            Drawing.drawing.fillInterfaceOval(start + l * (1 - frac), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed, (frac * startSize + (1 - frac) * endSize), (frac * startSize + (1 - frac) * endSize));
+            Drawing.drawing.fillInterfaceOval(start + l * (1 - f), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed, (frac * startSize + (1 - frac) * endSize), (frac * startSize + (1 - frac) * endSize));
         }
 
-        for (int i = 0; i < life; i++)
+        for (int i = 0; i < (int) life; i++)
         {
             double rawOpacity = (1.0 - i / life);
             double opacity = Math.min(rawOpacity * 255 * this.opacity, 254);
@@ -247,6 +267,13 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
             double frac = 0;
             if (life > 0)
                 frac = Math.max(0, 1 - i / life);
+
+            double f = frac;
+            if (this.lifespan <= 0)
+            {
+                opacity = Math.min(255 * this.opacity, 254);
+                frac = 1;
+            }
 
             if (!this.effect.overrideGlowColor)
                 Drawing.drawing.setColor(c1.red * frac + c2.red * (1 - frac) + randoms[i] * this.noise.red,
@@ -256,7 +283,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
             else
                 Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, opacity, opacity / 255 * this.effect.glowIntensity);
 
-            Drawing.drawing.fillInterfaceGlow(start + l * (1 - frac), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed, this.effect.glowSize * (frac * startSize + (1 - frac) * endSize), this.effect.glowSize * (frac * startSize + (1 - frac) * endSize));
+            Drawing.drawing.fillInterfaceGlow(start + l * (1 - f), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed, this.effect.glowSize * (frac * startSize + (1 - frac) * endSize), this.effect.glowSize * (frac * startSize + (1 - frac) * endSize));
 
         }
     }

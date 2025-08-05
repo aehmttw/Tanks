@@ -207,6 +207,12 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 			if (m != this.logo || this.controlPlayer)
 			{
+                if (m.skipNextUpdate)
+                {
+                    m.skipNextUpdate = false;
+                    continue;
+                }
+
 				m.preUpdate();
 				m.update();
 			}
@@ -222,6 +228,11 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 			if ((m instanceof Tank && m.team != logo.team) || (m instanceof Crate && ((Crate) m).tank.team != logo.team))
 				enemies++;
 		}
+
+        for (Movable m: Game.movables)
+        {
+            m.postUpdate();
+        }
 
 		if (enemies <= 1 && !this.controlPlayer)
 		{

@@ -2022,7 +2022,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         for (Movable m : Game.removeMovables)
         {
             for (Chunk chunk : m.getTouchingChunks())
+            {
                 chunk.removeMovable(m);
+            }
 
             if (m instanceof IAvoidObject)
                 Game.avoidObjects.remove((IAvoidObject) m);
@@ -2084,6 +2086,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
 
             m.update();
+            m.postUpdate();
 
             if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
             {

@@ -97,6 +97,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public void refreshFaces()
     {
         removeFacesFromChunks();
+        prevChunks.removeAll(leaveChunks);
         updateFaces();
         addFacesToChunks();
     }
@@ -127,7 +128,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
                 leaveChunks.add(c);
             }
         }
-        prevChunks.removeAll(leaveChunks);
     }
 
     public void onEnterChunk(Chunk c)

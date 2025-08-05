@@ -36,6 +36,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         this.bulletItem.networkIndex = 0;
         this.mineItem.networkIndex = -1;
         this.seekChance *= 5;
+        this.enablePathfinding = false;
 
         this.abilities.add(this.bulletItem);
         this.abilities.add(this.mineItem);

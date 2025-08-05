@@ -24,12 +24,12 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorRed.inputText.length() <= 0)
                 colorRed.inputText = colorRed.previousInputText;
 
-            screenLevelEditor.level.color.red = Integer.parseInt(colorRed.inputText);
+            screenLevelEditor.level.color.red = Double.parseDouble(colorRed.inputText);
 
             colorVarRed.maxValue = 255 - screenLevelEditor.level.color.red;
             colorVarRed.performValueCheck();
 
-            screenLevelEditor.level.colorVar.red = Integer.parseInt(colorVarRed.inputText);
+            screenLevelEditor.level.colorVar.red = Double.parseDouble(colorVarRed.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
@@ -47,12 +47,12 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorGreen.inputText.length() <= 0)
                 colorGreen.inputText = colorGreen.previousInputText;
 
-            screenLevelEditor.level.color.green = Integer.parseInt(colorGreen.inputText);
+            screenLevelEditor.level.color.green = Double.parseDouble(colorGreen.inputText);
 
             colorVarGreen.maxValue = 255 - screenLevelEditor.level.color.green;
             colorVarGreen.performValueCheck();
 
-            screenLevelEditor.level.colorVar.green = Integer.parseInt(colorVarGreen.inputText);
+            screenLevelEditor.level.colorVar.green = Double.parseDouble(colorVarGreen.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
@@ -70,12 +70,12 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorBlue.inputText.length() <= 0)
                 colorBlue.inputText = colorBlue.previousInputText;
 
-            screenLevelEditor.level.color.blue = Integer.parseInt(colorBlue.inputText);
+            screenLevelEditor.level.color.blue = Double.parseDouble(colorBlue.inputText);
 
             colorVarBlue.maxValue = 255 - screenLevelEditor.level.color.blue;
             colorVarBlue.performValueCheck();
 
-            screenLevelEditor.level.colorVar.blue = Integer.parseInt(colorVarBlue.inputText);
+            screenLevelEditor.level.colorVar.blue = Double.parseDouble(colorVarBlue.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
@@ -93,12 +93,12 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorVarRed.inputText.length() <= 0)
                 colorVarRed.inputText = colorVarRed.previousInputText;
 
-            screenLevelEditor.level.colorVar.red = Integer.parseInt(colorVarRed.inputText);
+            screenLevelEditor.level.colorVar.red = Double.parseDouble(colorVarRed.inputText);
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorVar.red + "");
+                , (int) screenLevelEditor.level.colorVar.red + "");
 
         colorVarRed.allowLetters = false;
         colorVarRed.allowSpaces = false;
@@ -110,12 +110,12 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorVarGreen.inputText.length() <= 0)
                 colorVarGreen.inputText = colorVarGreen.previousInputText;
 
-            screenLevelEditor.level.colorVar.green = Integer.parseInt(colorVarGreen.inputText);
+            screenLevelEditor.level.colorVar.green = Double.parseDouble(colorVarGreen.inputText);
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorVar.green + "");
+                , (int) screenLevelEditor.level.colorVar.green + "");
 
         colorVarGreen.allowLetters = false;
         colorVarGreen.allowSpaces = false;
@@ -127,12 +127,12 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorVarBlue.inputText.length() <= 0)
                 colorVarBlue.inputText = colorVarBlue.previousInputText;
 
-            screenLevelEditor.level.colorVar.blue = Integer.parseInt(colorVarBlue.inputText);
+            screenLevelEditor.level.colorVar.blue = Double.parseDouble(colorVarBlue.inputText);
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorVar.blue + "");
+                , (int) screenLevelEditor.level.colorVar.blue + "");
 
         colorVarBlue.allowLetters = false;
         colorVarBlue.allowSpaces = false;

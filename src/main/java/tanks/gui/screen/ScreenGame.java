@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import basewindow.*;
 import basewindow.transformation.*;
 import tanks.*;
+import tanks.bullet.Bullet;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
@@ -1834,7 +1835,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     for (int m = 0; m < Game.movables.size(); m++)
                     {
                         Movable mo = Game.movables.get(m);
-                        if (mo instanceof tanks.bullet.Bullet || mo instanceof Mine)
+                        if (mo instanceof Bullet || mo instanceof Mine)
                         {
                             noMovables = false;
                             mo.destroy = true;
@@ -2548,6 +2549,28 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
 
             drawables[i].clear();
+        }
+
+        if (Game.drawAvoidObjects)
+        {
+            for (IAvoidObject o : Game.avoidObjects)
+            {
+                double x = 0;
+                double y = 0;
+                if (o instanceof Movable)
+                {
+                    x = ((Movable) o).posX;
+                    y = ((Movable) o).posY;
+                }
+                if (o instanceof Obstacle)
+                {
+                    x = ((Obstacle) o).posX;
+                    y = ((Obstacle) o).posY;
+                }
+
+                Drawing.drawing.setColor(255, 0, 0, 50);
+                Mine.drawRange2D(x, y, o.getRadius());
+            }
         }
 
         if (Game.showUpdatingObstacles)

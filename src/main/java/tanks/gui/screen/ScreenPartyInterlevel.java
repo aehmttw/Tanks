@@ -8,6 +8,9 @@ import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
 
+import java.util.HashSet;
+import java.util.UUID;
+
 public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 {
     public ScreenGame previous;

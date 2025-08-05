@@ -243,9 +243,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	{
 		if (this.startHeight > 0)
 			return;
-
-		if (this instanceof IAvoidObject)
-			Game.avoidObjects.add((IAvoidObject) this);
 	}
 
 	/**

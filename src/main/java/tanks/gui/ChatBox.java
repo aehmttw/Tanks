@@ -7,6 +7,7 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenInfo;
+import tanks.gui.screen.ScreenPartyLobby;
 
 public class ChatBox extends TextBox
 {
@@ -203,6 +204,8 @@ public class ChatBox extends TextBox
 	public void draw()
 	{
 		Drawing drawing = Drawing.drawing;
+        if (ScreenPartyLobby.isClient && ScreenPartyLobby.muted)
+            return;
 
 		if (this.selected)
 		{

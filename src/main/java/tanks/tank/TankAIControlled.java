@@ -3081,7 +3081,32 @@ public class TankAIControlled extends Tank implements ITankField
 				String value = s.substring(equals + 1, s.indexOf(";"));
 				String propname = s.substring(0, equals);
 
-				for (Field f : TankAIControlled.class.getFields())
+                if (propname.equals("color_r"))
+                    t.color.red = Double.parseDouble(value);
+                else if (propname.equals("color_g"))
+                    t.color.green = Double.parseDouble(value);
+                else if (propname.equals("color_b"))
+                    t.color.blue = Double.parseDouble(value);
+                else if (propname.equals("color_r2"))
+                    t.secondaryColor.red = Double.parseDouble(value);
+                else if (propname.equals("color_g2"))
+                    t.secondaryColor.green = Double.parseDouble(value);
+                else if (propname.equals("color_b2"))
+                    t.secondaryColor.blue = Double.parseDouble(value);
+                else if (propname.equals("color_r3"))
+                    t.tertiaryColor.red = Double.parseDouble(value);
+                else if (propname.equals("color_g3"))
+                    t.tertiaryColor.green = Double.parseDouble(value);
+                else if (propname.equals("color_b3"))
+                    t.tertiaryColor.blue = Double.parseDouble(value);
+                else if (propname.equals("emblem_r"))
+                    t.emblemColor.red = Double.parseDouble(value);
+                else if (propname.equals("emblem_g"))
+                    t.emblemColor.green = Double.parseDouble(value);
+                else if (propname.equals("emblem_b"))
+                    t.emblemColor.blue = Double.parseDouble(value);
+
+                for (Field f : TankAIControlled.class.getFields())
 				{
 					boolean found = true;
 

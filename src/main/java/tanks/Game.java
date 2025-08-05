@@ -143,6 +143,7 @@ public class Game
 	public static boolean showNetworkIDs = false;
 	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
+    public static boolean drawAvoidObjects = false;
 	public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;
@@ -340,7 +341,8 @@ public class Game
 		NetworkEventMap.register(EventAnnounceConnection.class);
 		NetworkEventMap.register(EventChat.class);
 		NetworkEventMap.register(EventPlayerChat.class);
-		NetworkEventMap.register(EventLoadLevel.class);
+        NetworkEventMap.register(EventMutePlayer.class);
+        NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
 		NetworkEventMap.register(EventSetLevelVersus.class);
 		NetworkEventMap.register(EventLevelFinishedQuick.class);

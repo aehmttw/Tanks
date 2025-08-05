@@ -18,7 +18,7 @@ public class ScreenOverlayChat
     {
         if (ScreenPartyHost.isServer)
             ScreenPartyHost.chatbox.update(persistent);
-        else if (ScreenPartyLobby.isClient && !Game.connectedToOnline && ScreenPartyLobby.chatbox != null)
+        else if (ScreenPartyLobby.isClient && !Game.connectedToOnline && ScreenPartyLobby.chatbox != null && !ScreenPartyLobby.muted)
             ScreenPartyLobby.chatbox.update(persistent);
     }
 

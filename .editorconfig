@@ -10,6 +10,9 @@ indent_size = 4
 tab_width = 4
 max_line_length = 120
 
+[*.yml]
+indent_size = 2
+
 [*.java]
 ij_java_block_brace_style = next_line
 ij_java_method_brace_style = next_line

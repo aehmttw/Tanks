@@ -65,7 +65,7 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 tasks.jar {
     archiveBaseName.set("Tanks")
-    archiveVersion.set(project.version.toString())
+    archiveVersion.set("${version}-${getHash()}")
     archiveClassifier.set("")
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

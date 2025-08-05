@@ -255,6 +255,9 @@ public class Panel
 			}
 		}
 
+        for (ErrorHandler<?, ?> h : ErrorHandler.errorHandlers)
+			h.updateTimer();
+
 		this.frameStartTime = System.currentTimeMillis();
 
 		if (firstFrame)

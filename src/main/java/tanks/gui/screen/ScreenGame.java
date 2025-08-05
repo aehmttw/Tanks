@@ -1008,6 +1008,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             Panel.autoZoom = !Panel.autoZoom;
         }
 
+        Chunk.movableSyncHandler.checkForErrors(null);
+
         Game.player.hotbar.update();
         minimap.update();
 

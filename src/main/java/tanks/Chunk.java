@@ -2,16 +2,11 @@ package tanks;
 
 import basewindow.IBatchRenderableObject;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import tanks.obstacle.Face;
-import tanks.obstacle.ISolidObject;
-import tanks.obstacle.Obstacle;
+import it.unimi.dsi.fastutil.objects.*;
+import tanks.obstacle.*;
 
-import java.util.Comparator;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("UnusedReturnValue")
 public class Chunk
@@ -38,6 +33,38 @@ public class Chunk
 
     /** The variable that caches the previous call to {@link Chunk#getChunk} */
     private static Chunk prevChunk;
+
+    public static ErrorHandler<Movable, Collection<Movable>> movableSyncHandler = new ErrorHandler<Movable, Collection<Movable>>(200, 1)
+    {
+        @Override
+        public Collection<Movable> containsErrors(Movable ignored)
+        {
+            Set<Movable> result = Chunk.chunkList.stream().flatMap(c -> c.movables.stream()).collect(Collectors.toSet());
+            result.addAll(Game.movables);
+            Set<Movable> disjoint = new HashSet<>(result);
+            disjoint.retainAll(Game.movables);
+            result.removeAll(disjoint);
+            return result.isEmpty() ? noErrorReturnValue() : result;
+        }
+
+        @Override
+        public void handleError(Movable obj, Collection<Movable> info)
+        {
+            System.err.println("Movable sync error: " + info.stream()
+                    .map(m -> String.format("%s@(%.1f,%.1f)", m.getClass().getSimpleName(), m.posX, m.posY))
+                .collect(Collectors.joining(", ")));
+            for (Chunk c : chunkList)
+            {
+                c.movables.clear();
+                c.faces.clear();
+                for (Obstacle o : c.obstacles)
+                    c.faces.addFaces(o);
+            }
+            for (Movable m : Game.movables)
+                for (Chunk c : m.getTouchingChunks())
+                    c.addMovable(m);
+        }
+    };
 
     public Chunk(Level l, Random r, int x, int y)
     {

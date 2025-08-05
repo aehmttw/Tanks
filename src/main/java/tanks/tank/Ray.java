@@ -419,7 +419,7 @@ public class Ray
                 name, ((SolidGameObject) so).posX / Game.tile_size, ((SolidGameObject) so).posY / Game.tile_size,
                 errorChunkCache.stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
                     .collect(Collectors.joining(", ")));
-            if (Game.currentLevel != null)
+            if (!Game.immutableFaces && Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
             objectTriggerCount.removeInt(so);
         }

@@ -2008,6 +2008,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         this.updateMusic(prevMusic);
 
+        handleRemovals();
+
+        if (this.tutorial != null)
+        {
+            this.tutorial.update();
+        }
+    }
+
+    public static void handleRemovals()
+    {
         for (Movable m : Game.removeMovables)
         {
             for (Chunk chunk : m.getTouchingChunks())
@@ -2050,11 +2060,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Game.removeTracks.clear();
         Game.removeClouds.clear();
         ModAPI.removeMenus.clear();
-
-        if (this.tutorial != null)
-        {
-            this.tutorial.update();
-        }
     }
 
     public void updateGameField()

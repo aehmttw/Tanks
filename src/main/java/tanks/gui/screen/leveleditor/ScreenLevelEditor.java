@@ -994,16 +994,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             redoLength = -1;
         }
 
-        Game.effects.removeAll(Game.removeEffects);
-        Game.removeEffects.clear();
-
-        Game.movables.removeAll(Game.removeMovables);
-        Game.removeMovables.clear();
-
-        for (Obstacle o : Game.removeObstacles)
-            Game.removeObstacle(o);
-
-        Game.removeObstacles.clear();
+        ScreenGame.handleRemovals();
     }
 
     public void updateMetadata()

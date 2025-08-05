@@ -48,6 +48,12 @@ public class ObstacleGroundPaint extends Obstacle
     }
 
     @Override
+    public double getGroundHeight()
+    {
+        return baseGroundHeight;
+    }
+
+    @Override
     public void draw()
     {
         if (!Game.enable3d)

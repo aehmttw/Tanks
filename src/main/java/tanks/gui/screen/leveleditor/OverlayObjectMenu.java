@@ -180,27 +180,6 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             }
                     , t.description);
 
-            b.drawSelected = (enabled, hovered) ->
-            {
-                double size = Math.min(75, t.size) + (hovered ? 10 : 5);
-                double colA = 64;
-                Drawing d = Drawing.drawing;
-                if (hovered)
-                    d.setColor(255, 255, 255, colA);
-                else if (!enabled)
-                    d.setColor(150, 150, 150, colA);
-                else
-                    return;
-
-                d.drawInterfaceModel(t.baseModel, b.posX, b.posY, size, size, 0);
-                d.drawInterfaceModel(t.turretBaseModel, b.posX, b.posY, size, size, 0);
-                d.drawInterfaceModel(t.turretModel, b.posX, b.posY, size, size, 0);
-                d.drawInterfaceModel(t.colorModel, b.posX, b.posY, size, size, 0);
-
-                if (t.emblem != null)
-                    d.drawInterfaceImage(t.emblem, b.posX, b.posY, size * 0.5, size * 0.5);
-            };
-
             if (t.description.isEmpty())
                 b.enableHover = false;
 

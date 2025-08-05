@@ -1,11 +1,9 @@
 package tanks.obstacle;
 
-import basewindow.IBatchRenderableObject;
-import basewindow.ShaderGroup;
+import basewindow.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
-import tanks.rendering.ShaderGroundObstacle;
-import tanks.rendering.ShaderObstacle;
+import tanks.rendering.*;
 import tanks.tank.IAvoidObject;
 
 public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
@@ -275,23 +273,29 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	{
 		byte o = 0;
 
-		if (Obstacle.draw_size < Game.tile_size)
-			return 0;
+		/*if (Obstacle.draw_size < Game.tile_size)
+			return o;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h)
-			o += 4;
+			o |= BaseShapeRenderer.HIDE_FRONT;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY - Game.tile_size) >= h)
-			o += 8;
+			o |= BaseShapeRenderer.HIDE_BACK;
 
 		if (Game.sampleObstacleHeight(this.posX - Game.tile_size, this.posY) >= h)
-			o += 16;
+			o |= BaseShapeRenderer.HIDE_LEFT;
 
 		if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h)
-			o += 32;
+			o |= BaseShapeRenderer.HIDE_RIGHT;*/
 
 		return o;
 	}
+
+    public void redrawSelfAndNeighbors()
+    {
+        Game.redrawObstacles.add(this);
+        Game.redrawObstacles.addAll(getNeighbors());
+    }
 
 	@Override
 	public double getSize()

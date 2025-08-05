@@ -272,6 +272,13 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		Game.tracks.removeAll(Game.removeTracks);
 		Game.removeTracks.clear();
 
+
+        for (Movable m : Game.removeMovables)
+        {
+            for (Chunk chunk : m.getTouchingChunks())
+                chunk.removeMovable(m);
+        }
+
 		Game.movables.removeAll(Game.removeMovables);
 		Game.removeMovables.clear();
 

@@ -1,12 +1,9 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
-import tanks.rendering.ShaderBeatBlocks;
-import tanks.rendering.ShaderGroundObstacleBeatBlock;
+import tanks.rendering.*;
 import tanks.tankson.MetadataProperty;
 
 public class ObstacleBeatBlock extends ObstacleStackable
@@ -106,73 +103,47 @@ public class ObstacleBeatBlock extends ObstacleStackable
 
         if (Game.enable3d)
         {
-            for (int i = 0; i < Math.min(this.stackHeight, default_max_height); i++)
-            {
-                int in = default_max_height - 1 - i;
-                drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA, this.glow);
+            drawStacks();
+            return;
+        }
 
-                byte option = 0;
+        int freq = (int) this.beatFrequency;
+        boolean alt = this.alternate;
 
-                if (stackHeight % 1 == 0)
-                {
-                    byte o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size));
+        double timeTillChange = ObstacleBeatBlock.timeTillChange(freq) % (600 / freq);
 
-                    if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
-                        options[i] = o;
+        double beatTime = 37.5;
+        int warningBeats = freq == 1 ? 3 : freq == 2 ? 2 : freq == 4 ? 1 : 0;
+        float flash = 0f;
 
-                    drawBox( i * Game.tile_size + this.startHeight * Game.tile_size, o);
-                }
-                else
-                {
-                    byte o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size));
+        if (timeTillChange < beatTime * warningBeats)
+            flash = (float) Math.max(0, ((timeTillChange + 600.0) % beatTime) / beatTime - 0.5);
 
-                    if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
-                        options[i] = o;
+        boolean on = ObstacleBeatBlock.isOn(freq, alt);
+        float f = (float) (Obstacle.draw_size);
 
-                    drawBox((i - 1 + stackHeight % 1.0) * Game.tile_size + this.startHeight * Game.tile_size, o);
-                }
-            }
+        float small = 0.25f;
+        float large = 1.0f;
+
+        float size;
+        if (warningBeats > 0)
+        {
+            if (on)
+                size = (float) (small + (large - small) * Math.min(1, timeTillChange / 8));
+            else
+                size = (float) (small + (large - small) * (1.0 - Math.min(1, timeTillChange / 8)));
         }
         else
-        {
-            int freq = (int) this.beatFrequency;
-            boolean alt = this.alternate;
+            size = (on ? large : small);
 
-            double timeTillChange = ObstacleBeatBlock.timeTillChange(freq) % (600 / freq);
+        if (!on)
+            flash *= 2;
 
-            double beatTime = 37.5;
-            int warningBeats = freq == 1 ? 3 : freq == 2 ? 2 : freq == 4 ? 1 : 0;
-            float flash = 0f;
+        drawing.setColor(this.outlineColorR * (1 - flash), this.outlineColorG * (1 - flash), this.outlineColorB * (1 - flash), this.colorA, this.glow);
+        drawing.fillRect(this, this.posX, this.posY, f * size, f * size);
 
-            if (timeTillChange < beatTime * warningBeats)
-                flash = (float) Math.max(0, ((timeTillChange + 600.0) % beatTime) / beatTime - 0.5);
-
-            boolean on = ObstacleBeatBlock.isOn(freq, alt);
-            float f = (float) (Obstacle.draw_size);
-
-            float small = 0.25f;
-            float large = 1.0f;
-
-            float size;
-            if (warningBeats > 0)
-            {
-                if (on)
-                    size = (float) (small + (large - small) * Math.min(1, timeTillChange / 8));
-                else
-                    size = (float) (small + (large - small) * (1.0 - Math.min(1, timeTillChange / 8)));
-            }
-            else
-                size = (on ? large : small);
-
-            if (!on)
-                flash *= 2;
-
-            drawing.setColor(this.outlineColorR * (1 - flash), this.outlineColorG * (1 - flash), this.outlineColorB * (1 - flash), this.colorA, this.glow);
-            drawing.fillRect(this, this.posX, this.posY, f * size, f * size);
-
-            drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash) + 255 * flash, this.colorB * (1 - flash) + 255 * flash, this.colorA, this.glow);
-            drawing.fillRect(this, this.posX, this.posY, f * size * 0.9, f * size * 0.9);
-        }
+        drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash) + 255 * flash, this.colorB * (1 - flash) + 255 * flash, this.colorA, this.glow);
+        drawing.fillRect(this, this.posX, this.posY, f * size * 0.9, f * size * 0.9);
     }
 
     public void drawBox(double z, byte o)

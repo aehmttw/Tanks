@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.*;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.TextWithStyling;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class Ray
 {
-	public static double min_trace_size = 5;
+    public static double min_trace_size = 5;
 
 	public static int chunksAdded;
 	/** Caches the chunks to avoid creating new temp objects */
@@ -363,6 +363,8 @@ public class Ray
     }
 
     private static final ObjectArrayList<Chunk> errorChunkCache = new ObjectArrayList<>();
+    private static final Object2IntOpenHashMap<GameObject> objectTriggerCount = new Object2IntOpenHashMap<>();
+    private static final int ERROR_THRESH = 3;
 
     /** Shouldn't be triggered 99% of the time */
     protected void detectAndFixErrors()
@@ -370,13 +372,14 @@ public class Ray
         if (Ray.result.collisionFace == null)
             return;
 
-        boolean error = false;
         ISolidObject so = Ray.result.collisionFace.owner;
         if (!(so instanceof GameObject))
             return;
 
         double posX = ((GameObject) so).posX;
         double posY = ((GameObject) so).posY;
+        boolean error = false;
+
         String name = null;
         errorChunkCache.clear();
 
@@ -390,24 +393,35 @@ public class Ray
                 name = ((Obstacle) so).name;
             }
         }
-        else if (so instanceof Movable)
+        else if (so instanceof Movable && !((Movable) so).skipNextUpdate)
         {
             ObjectArrayList<Chunk> chunks = ((Movable) so).getTouchingChunks();
-            error = chunks.stream().anyMatch(c -> !c.movables.contains(so));
-            if (error)
+            for (Chunk c : chunks)
             {
-                errorChunkCache.addAll(chunks);
-                name = so instanceof Tank ? ((Tank) so).name : so.toString();
+                if (!c.movables.contains(so))
+                {
+                    error = true;
+                    name = (so instanceof Tank ? ((Tank) so).name : so.toString());
+                    errorChunkCache.add(c);
+                }
             }
         }
 
-        if (error)
+        if (!error)
         {
-            System.err.println("Ray collision face owner " + name + " not in chunk " +
+            objectTriggerCount.removeInt(so);
+            return;
+        }
+
+        if (objectTriggerCount.addTo((GameObject) so, 1) >= ERROR_THRESH)
+        {
+            System.err.printf("Ray collision face owner %s (%.0f, %.0f) not in chunk %s%n",
+                name, ((SolidGameObject) so).posX / Game.tile_size, ((SolidGameObject) so).posY / Game.tile_size,
                 errorChunkCache.stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
                     .collect(Collectors.joining(", ")));
             if (Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
+            objectTriggerCount.removeInt(so);
         }
     }
 

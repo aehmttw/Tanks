@@ -1637,7 +1637,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             if (Game.followingCam)
             {
-                Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 100;
+                Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 200;
                 Game.game.window.setCursorLocked(true);
                 this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
                 this.prevCursorY = Drawing.drawing.getInterfaceMouseX();

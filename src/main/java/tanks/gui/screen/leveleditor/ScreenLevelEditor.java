@@ -2470,6 +2470,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         this.replaceSpawns();
 
         Game.currentLevel = new Level(Game.currentLevelString);
+        Game.currentLevel.tilesRandomSeed = level.tilesRandomSeed;
         Game.currentLevel.timed = level.timer > 0;
         Game.currentLevel.timer = level.timer;
 

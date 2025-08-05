@@ -304,11 +304,6 @@ public class Chunk
 
     }
 
-    public static void reset()
-    {
-        populateChunks(defaultLevel);
-    }
-
     /**
      * @param pix Coordinate in pixels
      * @return The tile position relative to the top left corner of the chunk the coordinate is in
@@ -570,6 +565,11 @@ public class Chunk
         public double height()
         {
             return obstacle() != null ? obstacle().getTileHeight() : -1000;
+        }
+
+        public double tileDepth()
+        {
+            return depth;
         }
 
         public double edgeDepth()

@@ -16,9 +16,6 @@ public class ObstacleStackable extends Obstacle
     public double[] stackColorG = new double[default_max_height];
     public double[] stackColorB = new double[default_max_height];
 
-    protected byte[] options = new byte[default_max_height];
-    protected byte[] lastOptions = new byte[default_max_height];
-
     public ObstacleStackable(String name, double posX, double posY)
     {
         super(name, posX, posY);
@@ -75,36 +72,19 @@ public class ObstacleStackable extends Obstacle
         drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA, this.glow);
 
         if (Game.enable3d)
-        {
-            for (int i = 0; i < Math.min(stackHeight, default_max_height); i++)
-            {
-                int in = default_max_height - 1 - i;
-                drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA, this.glow);
-
-                byte option = 0;
-
-                if (stackHeight % 1 == 0)
-                {
-                    byte o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size));
-
-                    if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
-                        options[i] = o;
-
-                    drawing.fillBox(this, this.posX, this.posY, i * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size, o);
-                }
-                else
-                {
-                    byte o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size));
-
-                    if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
-                        options[i] = o;
-
-                    drawing.fillBox(this, this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size, o);
-                }
-            }
-        }
+            drawStacks();
         else
             drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
+    }
+
+    public void drawStacks()
+    {
+        for (int i = 0; i < Math.min(stackHeight, default_max_height); i++)
+        {
+            byte o = this.getOptionsByte((i + 1) * Game.tile_size);
+            Drawing.drawing.setColor(this.stackColorR[i], this.stackColorG[i], this.stackColorB[i], this.colorA, this.glow);
+            Drawing.drawing.fillBox(this, this.posX, this.posY, i * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size * Math.min(1, stackHeight - i), o);
+        }
     }
 
     @Override

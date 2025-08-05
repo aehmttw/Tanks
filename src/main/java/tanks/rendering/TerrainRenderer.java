@@ -204,7 +204,7 @@ public class TerrainRenderer
 
         int h = (int) (z / Game.tile_size) * 8;
 
-        if (options % 2 == 0)
+        if ((options & BaseShapeRenderer.HIDE_BOTTOM) == 0)
         {
             s.setColor(r1, g1, b1, a, g);
             addVertexCoord(s, shader, h + 1f);
@@ -222,7 +222,7 @@ public class TerrainRenderer
             s.addPoint(x0, y1, z0);
         }
 
-        if ((options >> 2) % 2 == 0)
+        if ((options & BaseShapeRenderer.HIDE_FRONT) == 0)
         {
             s.setColor(r2, g2, b2, a, g);
             addVertexCoord(s, shader, h + 7f);
@@ -240,7 +240,7 @@ public class TerrainRenderer
             s.addPoint(x0, y1, z0);
         }
 
-        if ((options >> 3) % 2 == 0)
+        if ((options & BaseShapeRenderer.HIDE_BACK) == 0)
         {
             s.setColor(r2, g2, b2, a, g);
             addVertexCoord(s, shader, h + 5f);
@@ -258,7 +258,7 @@ public class TerrainRenderer
             s.addPoint(x0, y0, z0);
         }
 
-        if ((options >> 4) % 2 == 0)
+        if ((options & BaseShapeRenderer.HIDE_LEFT) == 0)
         {
             s.setColor(r3, g3, b3, a, g);
             addVertexCoord(s, shader, h + 6f);
@@ -276,7 +276,7 @@ public class TerrainRenderer
             s.addPoint(x0, y0, z0);
         }
 
-        if ((options >> 5) % 2 == 0)
+        if ((options & BaseShapeRenderer.HIDE_RIGHT) == 0)
         {
             s.setColor(r3, g3, b3, a, g);
             addVertexCoord(s, shader, h + 3f);
@@ -294,7 +294,7 @@ public class TerrainRenderer
             s.addPoint(x1, y0, z1);
         }
 
-        if ((options >> 1) % 2 == 0)
+        if ((options & BaseShapeRenderer.HIDE_TOP) == 0)
         {
             s.setColor(r1, g1, b1, a, g);
             addVertexCoord(s, shader, h + 7f);
@@ -680,13 +680,13 @@ public class TerrainRenderer
             }
             else
             {
-                byte o = BaseShapeRenderer.hide_behind_face;
+                byte o = BaseShapeRenderer.HIDE_BOTTOM;
                 if (!Game.fancyTerrain || !Game.enable3dBg)
                 {
-                    if (Game.sampleEdgeGroundDepth(x - 1, y) >= 0) o |= BaseShapeRenderer.hide_left_face;
-                    if (Game.sampleEdgeGroundDepth(x + 1, y) >= 0) o |= BaseShapeRenderer.hide_right_face;
-                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_high_face;
-                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_low_face;
+                    if (Game.sampleEdgeGroundDepth(x - 1, y) >= 0) o |= BaseShapeRenderer.HIDE_LEFT;
+                    if (Game.sampleEdgeGroundDepth(x + 1, y) >= 0) o |= BaseShapeRenderer.HIDE_RIGHT;
+                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.HIDE_FRONT;
+                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.HIDE_BACK;
                 }
 
                 double extra = getExtra(x, y);
@@ -703,7 +703,7 @@ public class TerrainRenderer
                     x * Game.tile_size,
                     y * Game.tile_size,
                     0, Game.tile_size, Game.tile_size,
-                    0, (byte) ~(BaseShapeRenderer.hide_front_face), false);
+                    0, BaseShapeRenderer.HIDE_BOTTOM, false);
         }
 
         if (!this.staged)
@@ -713,13 +713,13 @@ public class TerrainRenderer
                     x * Game.tile_size,
                     y * Game.tile_size,
                     -Game.tile_size, Game.tile_size, Game.tile_size,
-                    Game.tile_size + depth, BaseShapeRenderer.hide_behind_face, true);
+                    Game.tile_size + depth, BaseShapeRenderer.HIDE_BOTTOM, true);
             else
                 this.addBox(t,
                         x * Game.tile_size,
                         y * Game.tile_size,
                         0, Game.tile_size, Game.tile_size,
-                        0, (byte) ~(BaseShapeRenderer.hide_front_face), true);
+                        0, BaseShapeRenderer.HIDE_BOTTOM, true);
         }
     }
 
@@ -790,6 +790,9 @@ public class TerrainRenderer
 
     public void drawObstacle(Obstacle o)
     {
+        if (!o.batchDraw || o.removed)
+            return;
+
         int i = Math.max(0, Math.min(Game.currentSizeX - 1, (int) (o.posX / Game.tile_size)));
         int j = Math.max(0, Math.min(Game.currentSizeY - 1, (int) (o.posY / Game.tile_size)));
 
@@ -799,8 +802,7 @@ public class TerrainRenderer
         currentColor[2] = (float) (t.colB / 255.0);
         currentDepth = t.depth;
 
-        if (o.batchDraw && !o.removed)
-            o.draw();
+        o.draw();
     }
 
 

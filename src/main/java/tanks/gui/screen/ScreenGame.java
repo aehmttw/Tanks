@@ -560,6 +560,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             introBattleMusicEnd -= 40;
 
         this.drawDarkness = false;
+        this.drawDebugInternally = true;
 
         Game.clouds.clear();
 
@@ -2562,33 +2563,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             drawables[i].clear();
         }
 
-        if (Game.drawAvoidObjects)
-        {
-            for (IAvoidObject o : Game.avoidObjects)
-            {
-                double x = 0;
-                double y = 0;
-                if (o instanceof Movable)
-                {
-                    x = ((Movable) o).posX;
-                    y = ((Movable) o).posY;
-                }
-                if (o instanceof Obstacle)
-                {
-                    x = ((Obstacle) o).posX;
-                    y = ((Obstacle) o).posY;
-                }
-
-                Drawing.drawing.setColor(255, 0, 0, 50);
-                Mine.drawRange2D(x, y, o.getRadius());
-            }
-        }
-
-        if (Game.showUpdatingObstacles)
-        {
-            for (Obstacle o : Game.obstaclesToUpdate)
-                o.draw3dOutline(255, 255, 0);
-        }
+        DebugKeybinds.renderDebugging();
 
         if (Panel.darkness > 0)
         {
@@ -2599,9 +2574,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         drawSpectateOverlay();
 
         if (!(paused && screenshotMode) && Game.player.hotbar.enabledItemBar)
-        {
             Game.player.hotbar.itemBar.drawOverlay();
-        }
 
         if (!this.showDefaultMouse)
             Panel.panel.drawMouseTarget(true);

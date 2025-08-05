@@ -51,6 +51,8 @@ public abstract class Screen implements IBatchRenderableObject
 
 	public IBatchRenderableObject[][] tiles;
 
+    public boolean drawDebugInternally = false;
+
 	public double lastObsSize;
 
 	public Screen()

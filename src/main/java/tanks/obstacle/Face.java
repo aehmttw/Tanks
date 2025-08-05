@@ -102,6 +102,7 @@ public class Face implements Comparable<Face>
             result = cx != 0 ? cx : cy;
         else
             result = cy != 0 ? cy : cx;
+
         return result != 0 ? result : Integer.compare(
             owner != null ? owner.hashCode() : Integer.MIN_VALUE,
             f.owner != null ? f.owner.hashCode() : Integer.MIN_VALUE

@@ -49,7 +49,7 @@ public class Chunk
         }
 
         @Override
-        public void handleError(Movable obj, Collection<Movable> info)
+        public void handleError(Movable ignored, Collection<Movable> info)
         {
             System.err.println("Movable sync error: " + info.stream()
                     .map(m -> String.format("%s@(%.1f,%.1f)", m.getClass().getSimpleName(), m.posX, m.posY))

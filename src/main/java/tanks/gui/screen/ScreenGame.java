@@ -2023,6 +2023,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         {
             for (Chunk chunk : m.getTouchingChunks())
                 chunk.removeMovable(m);
+
+            if (m instanceof IAvoidObject)
+                Game.avoidObjects.remove((IAvoidObject) m);
         }
 
         Game.movables.removeAll(Game.removeMovables);

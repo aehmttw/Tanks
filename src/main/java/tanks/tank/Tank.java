@@ -278,9 +278,6 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void checkCollision()
 	{
-		if (this.size <= 0)
-			return;
-
 		for (Movable m : getCircleCollision(this, posX, posY))
 		{
             if (!(m instanceof Tank))
@@ -374,7 +371,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		this.clippedTiles.addAll(this.stillClippedTiles);
 		this.stillClippedTiles.clear();
 
-		double bound = size / 2 + Game.tile_size / 2;
+		double bound = size / 2 + Game.tile_size / 2 + 1;
 
 		for (Obstacle o : Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
 		{

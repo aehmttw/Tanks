@@ -7,7 +7,7 @@ import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.*;
 import tanks.rendering.TerrainRenderer;
-import tanks.tank.Ray;
+import tanks.tank.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -224,12 +224,28 @@ public class DebugKeybinds
 
     public static void renderDebugging()
     {
-        if (Game.game.window.drawingShadow)
+        if (!Game.debug || Game.game.window.drawingShadow)
             return;
 
         handleDebugKeybinds();
         Face.drawDebug();
         Chunk.drawDebugStuff();
         Ray.drawDebug();
+
+        if (Game.drawAvoidObjects)
+        {
+            for (IAvoidObject o : Game.avoidObjects)
+            {
+                if (!(o instanceof GameObject)) continue;
+                Drawing.drawing.setColor(255, 0, 0, 50);
+                Mine.drawRange2D(((GameObject) o).posX, ((GameObject) o).posY, o.getRadius());
+            }
+        }
+
+        if (Game.showUpdatingObstacles)
+        {
+            for (Obstacle o : Game.obstaclesToUpdate)
+                o.draw3dOutline(255, 255, 0);
+        }
     }
 }

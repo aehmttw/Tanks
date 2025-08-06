@@ -72,7 +72,10 @@ public class ObstacleShrubbery extends Obstacle
 		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
 		if (!Game.enable3d && (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing))
-			this.height = 127;
+        {
+            this.height = 127;
+            setUpdate(true);
+        }
 
 		if (Game.enable3d)
 		{

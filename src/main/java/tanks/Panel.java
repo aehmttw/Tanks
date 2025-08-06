@@ -862,7 +862,7 @@ public class Panel
 		if (Game.screen.showDefaultMouse)
 			this.drawMouseTarget();
 
-		if (Game.debug)
+		if (!Game.screen.drawDebugInternally)
 			DebugKeybinds.renderDebugging();
 
 		Drawing.drawing.setColor(255, 255, 255);

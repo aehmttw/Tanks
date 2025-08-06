@@ -2285,7 +2285,7 @@ public class TankAIControlled extends Tank implements ITankField
 				else
 					distSq = Math.pow(((Obstacle) o).posX - this.posX, 2) + Math.pow(((Obstacle) o).posY - this.posY, 2);
 
-				if (distSq <= Math.pow(o.getRadius() * this.mineAvoidSensitivity, 2))
+				if (distSq <= Math.pow(o.getRadius() * this.mineAvoidSensitivity + size / 2, 2))
 				{
 					double d = o.getSeverity(this.posX, this.posY);
 

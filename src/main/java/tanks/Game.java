@@ -573,7 +573,7 @@ public class Game
 		registerTank(TankGold.class, "gold", 1.0 / 4);
 		registerTank(TankDarkGreen.class, "darkgreen", 1.0 / 10);
 		registerTank(TankBlack.class, "black", 1.0 / 10);
-		registerTank(TankMimic.class, "mimic", 100.0 / 4);
+		registerTank(TankMimic.class, "mimic", 1.0 / 4);
 		registerTank(TankLightBlue.class, "lightblue", 1.0 / 8);
 		registerTank(TankPink.class, "pink", 1.0 / 12);
 		registerTank(TankMini.class, "mini", 0);

@@ -56,6 +56,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void preUpdate()
 	{
+        refreshFaces();
+
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 		this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
 		this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
@@ -94,6 +96,19 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     public void refreshFaces()
     {
+        removeFacesFromChunks();
+        updateFaces();
+        addFacesToChunks();
+    }
+
+    public void addFacesToChunks()
+    {
+        for (Chunk c : getTouchingChunks())
+            c.faces.addFaces(this);
+    }
+
+    public void removeFacesFromChunks()
+    {
         ObjectArrayList<Chunk> cache = getTouchingChunks();
 
         for (Chunk c : cache)
@@ -113,10 +128,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
             }
         }
         prevChunks.removeAll(leaveChunks);
-
-        updateFaces();
-        for (Chunk c : cache)
-            c.faces.addFaces(this);
     }
 
     public void onEnterChunk(Chunk c)
@@ -131,8 +142,13 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public ObjectArrayList<Chunk> getTouchingChunks()
 	{
-		double size = getSize();
-		return Chunk.getChunksInRange(posX - size / 2, posY - size / 2, posX + size / 2, posY + size / 2);
+		double bound = getSize() / 2;
+		return Chunk.getChunksInRange(
+            Math.min(lastPosX, posX) - bound,
+            Math.min(lastPosY, posY) - bound,
+            Math.max(lastPosX, posX) + bound,
+            Math.max(lastPosY, posY) + bound
+        );
 	}
 
 	public void update()

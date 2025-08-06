@@ -1,13 +1,10 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
+import tanks.*;
+import tanks.gui.*;
 import tanks.tank.TankPlayer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class ScreenDebug extends Screen
 {
@@ -16,72 +13,32 @@ public class ScreenDebug extends Screen
             "Test stuff", () -> Game.screen = new ScreenTestDebug()
     );
 
-    Button traceAllRays = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Trace rays: ", b -> Game.traceAllRays = b, () -> Game.traceAllRays
-    );
-
-    Button firstPerson = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "First person: ", b -> Game.firstPerson = b, () -> Game.firstPerson
-    );
-
-    Button followingCam = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Immersive camera: ", b -> Game.followingCam = b, () -> Game.followingCam
-    );
-
-    Button showPathfinding = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Show pathfinding: ", b -> Game.showPathfinding = b, () -> Game.showPathfinding
-    );
-
-    Button tankIDs = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Tank IDs: ", b -> Game.showNetworkIDs = b, () -> Game.showNetworkIDs
-    );
-
-    Button invulnerable = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Invulnerable: ", b -> Game.invulnerable = b, () -> Game.invulnerable
-    );
-
-    Button fancyLighting = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Fancy lighting: ", b -> Game.fancyLights = b, () -> Game.fancyLights
-    );
-
-    Button destroyCheat = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Destroy cheat: ", b -> TankPlayer.enableDestroyCheat = b, () -> TankPlayer.enableDestroyCheat
-    );
-
-    Button drawFaces = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Draw faces: ", b -> Game.drawFaces = b, () -> Game.drawFaces
-    );
-
-    Button drawAutoZoom = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Draw auto zoom: ", b -> Game.drawAutoZoom = b, () -> Game.drawAutoZoom
-    );
-
-    Button showUpdatingObstacles = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Show updating obstacles: ", b -> Game.showUpdatingObstacles = b, () -> Game.showUpdatingObstacles
-    );
-
-    Button immutableFaces = new Button.Toggle(
-            0, 0, this.objWidth, this.objHeight,
-            "Immutable faces: ", b -> Game.immutableFaces = b, () -> Game.immutableFaces
-    );
+    Button traceAllRays = createToggle("Trace rays: ", b -> Game.traceAllRays = b, () -> Game.traceAllRays);
+    Button firstPerson = createToggle("First person: ", b -> Game.firstPerson = b, () -> Game.firstPerson);
+    Button followingCam = createToggle("Following camera: ", b -> Game.followingCam = b, () -> Game.followingCam);
+    Button showPathfinding = createToggle("Show pathfinding: ", b -> Game.showPathfinding = b, () -> Game.showPathfinding);
+    Button tankIDs = createToggle("Tank IDs: ", b -> Game.showNetworkIDs = b, () -> Game.showNetworkIDs);
+    Button invulnerable = createToggle("Invulnerable: ", b -> Game.invulnerable = b, () -> Game.invulnerable);
+    Button fancyLighting = createToggle("Fancy lighting: ", b -> Game.fancyLights = b, () -> Game.fancyLights);
+    Button destroyCheat = createToggle("Destroy cheat: ", b -> TankPlayer.enableDestroyCheat = b, () -> TankPlayer.enableDestroyCheat);
+    Button drawFaces = createToggle("Draw faces: ", b -> Game.drawFaces = b, () -> Game.drawFaces);
+    Button drawAutoZoom = createToggle("Draw auto zoom: ", b -> Game.drawAutoZoom = b, () -> Game.drawAutoZoom);
+    Button showUpdatingObstacles = createToggle("Show updating obstacles: ", b -> Game.showUpdatingObstacles = b, () -> Game.showUpdatingObstacles);
+    Button immutableFaces = createToggle("Immutable faces: ", b -> Game.immutableFaces = b, () -> Game.immutableFaces);
+    Button drawAvoidObjects = createToggle("Draw avoid objects: ", b -> Game.drawAvoidObjects = b, () -> Game.drawAvoidObjects);
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
 
     public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(
             test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable,
-            fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles, drawAutoZoom, immutableFaces
+            fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles,
+            drawAutoZoom, immutableFaces, drawAvoidObjects
     )), 0, 0, -30);
+
+    public Button createToggle(String text, Consumer<Boolean> setter, Producer<Boolean> getter)
+    {
+        return new Button.Toggle(0, 0, this.objWidth, this.objHeight, text, setter, getter);
+    }
 
     public ScreenDebug()
     {

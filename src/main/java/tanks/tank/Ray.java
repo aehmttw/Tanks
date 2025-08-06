@@ -105,6 +105,49 @@ public class Ray
 		return this;
 	}
 
+    private static final ObjectArrayList<Chunk> errorChunkCache = new ObjectArrayList<>();
+
+    public static ErrorHandler<GameObject, Collection<Chunk>> ghostFaceHandler = new ErrorHandler<GameObject, Collection<Chunk>>(50, 2)
+    {
+        @Override
+        public Collection<Chunk> containsErrors(GameObject obj)
+        {
+            errorChunkCache.clear();
+            if (obj instanceof Obstacle)
+            {
+                Chunk c = Chunk.getChunk(obj.posX, obj.posY);
+                if (c != null && !c.obstacles.contains(obj))
+                {
+                    errorChunkCache.add(c);
+                    return errorChunkCache;
+                }
+            }
+            else if (obj instanceof Movable)
+            {
+                for (Chunk c : ((Movable) obj).getTouchingChunks())
+                {
+                    if (!c.movables.contains(obj))
+                        errorChunkCache.add(c);
+                }
+                if (!errorChunkCache.isEmpty())
+                    return errorChunkCache;
+            }
+            return noErrorReturnValue();
+        }
+
+        @Override
+        public void handleError(GameObject obj, Collection<Chunk> info)
+        {
+            String name = obj instanceof Obstacle ? ((Obstacle) obj).name : obj instanceof Tank ? ((Tank) obj).name : obj.toString();
+            System.err.printf("Ray collision face owner %s (%.0f, %.0f) not in chunk %s%n",
+                name, obj.posX / Game.tile_size, obj.posY / Game.tile_size,
+                info.stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
+                    .collect(Collectors.joining(", ")));
+            if (!Game.immutableFaces && Game.currentLevel != null)
+                Game.currentLevel.reloadTiles();
+        }
+    };
+
 	public Movable getTarget(double mul, Tank targetTank)
 	{
 		this.targetTank = targetTank;
@@ -275,10 +318,10 @@ public class Ray
                 ));
 			}
 
-            if (Panel.panel.ageFrames % 50 == 0)
-                detectAndFixErrors();
-
 			ISolidObject obj = result.collisionFace.owner;
+            if (obj instanceof GameObject)
+                ghostFaceHandler.checkForErrors((GameObject) obj);
+
 			if (obj instanceof Movable)
 			{
 				this.targetX = result.collisionX;
@@ -359,69 +402,6 @@ public class Ray
                         .setSize(Math.max(this.size, min_trace_size)));
                 }
             }
-        }
-    }
-
-    private static final ObjectArrayList<Chunk> errorChunkCache = new ObjectArrayList<>();
-    private static final Object2IntOpenHashMap<GameObject> objectTriggerCount = new Object2IntOpenHashMap<>();
-    private static final int error_threshold = 3;
-
-    /** Shouldn't be triggered 99% of the time */
-    protected void detectAndFixErrors()
-    {
-        if (Ray.result.collisionFace == null)
-            return;
-
-        ISolidObject so = Ray.result.collisionFace.owner;
-        if (!(so instanceof GameObject))
-            return;
-
-        double posX = ((GameObject) so).posX;
-        double posY = ((GameObject) so).posY;
-        boolean error = false;
-
-        String name = null;
-        errorChunkCache.clear();
-
-        if (so instanceof Obstacle)
-        {
-            Chunk current = Chunk.getChunk(posX, posY);
-            error = !current.obstacles.contains(so);
-            if (error)
-            {
-                errorChunkCache.add(current);
-                name = ((Obstacle) so).name;
-            }
-        }
-        else if (so instanceof Movable && !((Movable) so).skipNextUpdate)
-        {
-            ObjectArrayList<Chunk> chunks = ((Movable) so).getTouchingChunks();
-            for (Chunk c : chunks)
-            {
-                if (!c.movables.contains(so))
-                {
-                    error = true;
-                    name = (so instanceof Tank ? ((Tank) so).name : so.toString());
-                    errorChunkCache.add(c);
-                }
-            }
-        }
-
-        if (!error)
-        {
-            objectTriggerCount.removeInt(so);
-            return;
-        }
-
-        if (objectTriggerCount.addTo((GameObject) so, 1) >= error_threshold)
-        {
-            System.err.printf("Ray collision face owner %s (%.0f, %.0f) not in chunk %s%n",
-                name, ((SolidGameObject) so).posX / Game.tile_size, ((SolidGameObject) so).posY / Game.tile_size,
-                errorChunkCache.stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
-                    .collect(Collectors.joining(", ")));
-            if (!Game.immutableFaces && Game.currentLevel != null)
-                Game.currentLevel.reloadTiles();
-            objectTriggerCount.removeInt(so);
         }
     }
 
@@ -535,7 +515,7 @@ public class Ray
 				if (f.owner != null && f.owner == targetTank)
 					size *= targetTankSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startX < this.posX - size / 2)
+				if (passesThrough(f, firstBounce) || f.startX < this.posX + size / 2)
 					continue;
 
 				double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
@@ -562,7 +542,7 @@ public class Ray
 				if (f.owner instanceof Movable)
 					size *= tankHitSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startX > this.posX + size / 2)
+				if (passesThrough(f, firstBounce) || f.startX > this.posX - size / 2)
 					continue;
 
 				double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
@@ -594,7 +574,7 @@ public class Ray
 					continue;
 
 				double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
-				if (x >= f.startX - size / 2 && x <= f.endX - size / 2)
+				if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
 				{
 					double t1 = (f.startY - size / 2 - this.posY) / vY;
 
@@ -624,7 +604,7 @@ public class Ray
 				if (f.owner instanceof Movable)
 					size *= tankHitSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startY > this.posY + size / 2)
+				if (passesThrough(f, firstBounce) || f.startY > this.posY - size / 2)
 					continue;
 
 				double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;

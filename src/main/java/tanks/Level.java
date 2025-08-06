@@ -534,8 +534,6 @@ public class Level
 			Game.movables.add(t);
 		}
 
-		this.reloadTiles();
-
 		this.availablePlayerSpawns.clear();
 
 		int playerCount = 1;
@@ -770,6 +768,8 @@ public class Level
 				s.currentMetadata.put(SelectorTeam.selector_name, s.teams.get(Math.min(s.teams.size() - 1, 1)));
 			}
 		}
+
+        this.reloadTiles();
 
 		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventEnterLevel());

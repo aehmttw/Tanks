@@ -32,10 +32,16 @@ jobs:
       - name: Build
         run: ./gradlew build
 
-      - name: Upload build artifacts
+      - name: Determine artifact name
+        id: find_artifact
+        run: |
+          file=$(basename build/libs/*.jar)
+          echo "artifact_name=$file" >> $GITHUB_OUTPUT
+
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: artifact
+          name: ${{ steps.find_artifact.outputs.artifact_name }}
           path: build/libs/*.jar
 
 #  codacy:

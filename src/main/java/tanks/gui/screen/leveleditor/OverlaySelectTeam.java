@@ -56,6 +56,8 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
             else if (this.selector.selectedIndex == j)
                 this.selector.selectedIndex = i;
         };
+
+        this.musicInstruments = true;
     }
 
     @Override

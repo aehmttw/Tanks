@@ -635,17 +635,25 @@ public class Arcade extends Minigame
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Victory!");
             }
         }
-
-        if (Hotbar.circular)
-            this.drawChainTimerCircle();
-        else
-            this.drawChainTimer();
     }
 
     @Override
     public void loadInterlevelScreen()
     {
         Game.screen = new ScreenArcadeBonuses(this);
+    }
+
+    @Override
+    public void drawHotbar()
+    {
+        if (!Hotbar.circular)
+            this.drawChainTimer();
+    }
+
+    @Override
+    public void drawCircleHotbar()
+    {
+        this.drawChainTimerCircle();
     }
 
     public void spawnTank()

@@ -44,6 +44,7 @@ public class OverlaySelectBlockHeight extends ScreenLevelEditorOverlay
 
         this.selector = selector;
         screenLevelEditor.paused = true;
+        this.musicInstruments = true;
 
         staggering.imageSizeX = 40;
         staggering.imageSizeY = 40;

@@ -29,6 +29,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     public int initialGridX, initialGridY;
     public Movable linkedMovable;
 
+    public static double timeSinceLastTrack = 0;
+
     //Effects that have this set to true are removed faster when the level has ended
     public boolean fastRemoveOnExit = false;
 
@@ -518,7 +520,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             for (int i = 0; i < max; i++)
             {
                 double a = (max - i) / 400;
-                Drawing.drawing.setColor(255 * a, 255 * a, 200 * a, 255, 1.0);
+                Drawing.drawing.setColor(255, 255, 200, 255 * a, 1.0);
                 Drawing.drawing.fillBox(this.posX, this.posY, i, Game.tile_size, Game.tile_size, 0, (byte) 62);
             }
 
@@ -840,19 +842,15 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
             if (Game.effects.contains(this) && !Game.removeEffects.contains(this))
                 Game.removeEffects.add(this);
-            else if (Game.tracks.contains(this) && !Game.removeTracks.contains(this))
-            {
-                Drawing.drawing.trackRenderer.remove(this);
-                Game.removeTracks.add(this);
-            }
         }
 
         int x = (int) (this.posX / Game.tile_size);
         int y = (int) (this.posY / Game.tile_size);
-        Chunk.Tile t = Chunk.getOrDefault(x, y), prevTile = Chunk.getOrDefault(prevGridX, prevGridY);
 
         if (this.type == EffectType.obstaclePiece3d)
         {
+            Chunk.Tile t = Chunk.getOrDefault(x, y), prevTile = Chunk.getOrDefault(prevGridX, prevGridY);
+
             boolean collidedX = false;
             boolean collidedY = false;
             boolean collided;

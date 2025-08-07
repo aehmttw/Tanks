@@ -5,6 +5,7 @@ import tanks.gui.*;
 import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
+import tanks.rendering.TrackRenderer;
 import tanks.tank.*;
 
 import static basewindow.InputCodes.*;
@@ -104,6 +105,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 	public ScreenTitle()
 	{
+		Effect.timeSinceLastTrack = TrackRenderer.getMaxTrackAge();
 		Game.movables.clear();
 		ScreenGame.finished = false;
 
@@ -195,10 +197,26 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		}
 
 		Obstacle.draw_size = Game.tile_size;
-		for (int i = 0; i < Game.tracks.size(); i++)
-		{
-			Game.tracks.get(i).update();
-		}
+        double time = Panel.frameFrequency;
+        while (time > 0)
+        {
+            Effect e = Game.tracks.peek();
+            if (e == null)
+                break;
+
+            e.maxAge -= time;
+
+            if (e.maxAge <= 0)
+            {
+                time = -e.maxAge;
+                e.state = Effect.State.recycle;
+                Game.recycleEffects.add(Game.tracks.poll());
+
+                Drawing.drawing.trackRenderer.remove(e);
+            }
+        }
+
+        Effect.timeSinceLastTrack += Panel.frameFrequency;
 
 		int enemies = 0;
 		for (int i = 0; i < Game.movables.size(); i++)

@@ -676,10 +676,8 @@ public abstract class Tank extends Movable implements ISolidObject
 		e2.setPolarMotion(0, 0);
 		this.setEffectHeight(e1);
 		this.setEffectHeight(e2);
-		e1.firstDraw();
-		e2.firstDraw();
-		Game.tracks.add(e1);
-		Game.tracks.add(e2);
+		Game.addTrack(e1);
+		Game.addTrack(e2);
 	}
 
 	public void drawForInterface(double x, double y, double sizeMul)

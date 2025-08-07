@@ -4,6 +4,8 @@ import tanks.*;
 import tanks.bullet.Trail;
 import tanks.bullet.Trail3D;
 import tanks.effect.AttributeModifier;
+import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenGame;
 import tanks.network.event.EventTankTeleport;
 
 import java.util.ArrayList;
@@ -70,6 +72,7 @@ public class TeleporterOrb extends Movable
 	public void draw() 
 	{
 		double frac = 1 - Math.min(this.posZ / 200, 1);
+        double endFrac = (ScreenGame.finishTimer / ScreenGame.finishTimerMax);
 
 		if (trails != null)
 		{
@@ -86,9 +89,9 @@ public class TeleporterOrb extends Movable
 		Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac);
 
 		if (Game.enable3d)
-			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2, (this.size - this.tank.size) / 2, true, true);
+			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2 * endFrac, (this.size - this.tank.size) / 2 * endFrac, true, true);
 
-		for (int i = 0; i < this.size - this.tank.size; i++)
+		for (int i = 0; i < (this.size - this.tank.size) * endFrac; i++)
 		{
 			Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac, 20);
 			//Drawing.drawing.setColor(255, 255, 255, 20);
@@ -111,7 +114,7 @@ public class TeleporterOrb extends Movable
 		if (Game.game.window.touchscreen)
 			freq = 1;
 
-		this.age += Panel.frameFrequency * em().getAttributeValue(AttributeModifier.velocity, 1);
+		this.age += Panel.frameFrequency * em().getAttributeValue(AttributeModifier.velocity, 1) * (ScreenGame.finishTimer / ScreenGame.finishTimerMax);
 
 		this.tank.vX = 0;
 		this.tank.vY = 0;
@@ -137,23 +140,24 @@ public class TeleporterOrb extends Movable
 		this.posZ = Math.sin((this.maxAge - Math.max(0, Math.min(this.maxAge, this.age))) / this.maxAge * Math.PI) *
 				Math.sqrt(Math.pow(this.dX - this.iX, 2) + Math.pow(this.dY - this.iY, 2)) / 2;
 
+        float fracmod = (float) (ScreenGame.finishTimer / ScreenGame.finishTimerMax);
 		if (this.age <= 0)
 		{
 			if (this.tank == Game.playerTank)
-				Drawing.drawing.playSound("teleport1.ogg", 1, 0.25f * freq);
+				Drawing.drawing.playSound("teleport1.ogg", 1* fracmod, 0.25f * freq * fracmod);
 
 			frac = 1;
 		}
 		else if (this.age >= this.maxAge)
 		{
 			if (this.tank == Game.playerTank)
-				Drawing.drawing.playSound("teleport1.ogg", 1, 0.25f * freq);
+				Drawing.drawing.playSound("teleport1.ogg", 1* fracmod, 0.25f * freq * fracmod);
 
 			frac = 0;
 		}
 
 		if (this.tank == Game.playerTank)
-			Drawing.drawing.playSound("teleport2.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5), freq * (1 - (float) (tank.size / size)) / 4f);
+			Drawing.drawing.playSound("teleport2.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5)* fracmod, freq * (1 - (float) (tank.size / size)) / 4f* fracmod);
 
 
 		if (this.age <= -50)
@@ -213,7 +217,7 @@ public class TeleporterOrb extends Movable
 				}
 				else
 				{
-					trailLength += t.update(trailLength, this.age > maxAge);
+					trailLength += t.update(trailLength, this.age > maxAge || ScreenGame.finishedQuick);
 				}
 			}
 		}
@@ -312,7 +316,7 @@ public class TeleporterOrb extends Movable
 	
 	public void createEffect()
 	{
-		if (!Game.effectsEnabled)
+		if (!Game.effectsEnabled || ScreenGame.finishedQuick)
 			return;
 
 		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.teleporterPiece);

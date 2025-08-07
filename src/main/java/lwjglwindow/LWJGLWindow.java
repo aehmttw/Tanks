@@ -1234,16 +1234,22 @@ public class LWJGLWindow extends BaseWindow
 	public void setGlowBlendFunc()
 	{
 		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+        if (!drawingShadow)
+            this.currentShaderGroup.shaderBase.blendFunc.set(1);
 	}
 
 	public void setLightBlendFunc()
 	{
 		glBlendFunc(GL_DST_COLOR, GL_ONE);
+        if (!drawingShadow)
+            this.currentShaderGroup.shaderBase.blendFunc.set(2);
 	}
 
 	public void setTransparentBlendFunc()
 	{
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if (!drawingShadow)
+            this.currentShaderGroup.shaderBase.blendFunc.set(0);
 	}
 
 	public int createVBO()

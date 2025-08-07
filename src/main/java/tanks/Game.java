@@ -66,11 +66,19 @@ public class Game
 	public static ArrayList<Obstacle> checkObstaclesToUpdate = new ArrayList<>();
 	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
-	public static ArrayList<Effect> tracks = new ArrayList<>();
-	public static ArrayList<Cloud> clouds = new ArrayList<>();
+    public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
 
-	public static ArrayList<Player> botPlayers = new ArrayList<>();
+    /**
+     * Tracks are only added to the end and removed from the beginning since they always have the same max age.
+     * This means that we can use a queue to prevent updating every track every frame. Each track keeps track of
+	 * how long ago the previous track was added (as maxAge). To handle removal, subtract time elapsed from this
+	 * lifespan value, and if it goes below zero, remove that track and repeat with the remainder of time elapsed.
+     */
+    public static Queue<Effect> tracks = new LinkedList<>();
+
+
+    public static ArrayList<Player> botPlayers = new ArrayList<>();
 	public static int botPlayerCount = 0;
 
 	/**
@@ -111,7 +119,6 @@ public class Game
 	public static HashSet<Movable> removeMovables = new HashSet<>();
 	public static HashSet<Obstacle> removeObstacles = new HashSet<>();
 	public static HashSet<Effect> removeEffects = new HashSet<>();
-	public static HashSet<Effect> removeTracks = new HashSet<>();
 	public static HashSet<Cloud> removeClouds = new HashSet<>();
 
 	public static ArrayList<Effect> addEffects = new ArrayList<>();
@@ -799,6 +806,14 @@ public class Game
             Game.avoidObjects.add((IAvoidObject) m);
     }
 
+    public static void addTrack(Effect e)
+    {
+        Game.tracks.add(e);
+		e.firstDraw();
+        e.maxAge = Effect.timeSinceLastTrack;
+        Effect.timeSinceLastTrack = 0;
+    }
+
 	/**
 	 * Adds a tank to the game's movables list and generates/registers a network ID for it after it was spawned by another tank.
 	 * Use this if you want to spawn computer-controlled tanks from another tank if you are not connected to a server.
@@ -1286,7 +1301,6 @@ public class Game
 		avoidObjects.clear();
 		recycleEffects.clear();
 		removeEffects.clear();
-		removeTracks.clear();
 		removeClouds.clear();
 
 		if (Game.currentLevel != null)

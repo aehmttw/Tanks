@@ -55,6 +55,12 @@ uniform int lightsCount;
 uniform int lightsTexSize;
 uniform sampler2D lightsTexture;
 
+#define BLEND_TRANSPARENT 0
+#define BLEND_GLOW 1
+#define BLEND_LIGHT 2
+
+uniform int blendFunc;
+
 float rescale(float f)
 {
     return (1.0 - f) * (-LIGHT_SCALE / 2.0 + 0.5) + (f) * (LIGHT_SCALE / 2.0 + 0.5);
@@ -247,6 +253,9 @@ void main(void)
         if (depthtest)
             gl_FragColor.xyz *= maxLight;
     }
+
+    if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
+        gl_FragColor.rgb *= gl_FragColor.a;
 
     //gl_FragColor.xyz = 0.5 + 100.0 * (gl_FragColor.xyz - 0.5);
 

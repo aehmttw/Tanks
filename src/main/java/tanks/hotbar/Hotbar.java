@@ -6,6 +6,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
+import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankModels;
@@ -448,6 +449,9 @@ public class Hotbar
 			else
 				Drawing.drawing.displayInterfaceText(posX, posY, s);
 		}
+
+        if (Game.currentLevel instanceof Minigame)
+            ((Minigame) Game.currentLevel).drawHotbar();
 	}
 
 	public void drawCircle()
@@ -715,7 +719,15 @@ public class Hotbar
 			}
 		}
 
-		this.ignoreInitialStats = false;
+        if (Game.currentLevel instanceof Minigame)
+            ((Minigame) Game.currentLevel).drawCircleHotbar();
+
+        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
+        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
+        Game.game.window.loadPerspective();
+
+
+        this.ignoreInitialStats = false;
 
 		Item.ItemStack<?> bullet = this.itemBar.getSelectedAction(false);
 		int stackCount = 0;
@@ -847,9 +859,8 @@ public class Hotbar
 			Drawing.drawing.drawInterfaceText(x - 1, y - 1, "" + alliedCount, false);
 		}
 
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
-        Game.game.window.loadPerspective();
+        if (Game.currentLevel instanceof Minigame)
+            ((Minigame) Game.currentLevel).drawHotbar();
     }
 
 	public void drawTankIcon(double x, double y, double r, double g, double b, double opacity1, double size)

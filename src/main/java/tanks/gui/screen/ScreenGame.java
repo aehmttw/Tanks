@@ -13,6 +13,7 @@ import tanks.minigames.Minigame;
 import tanks.network.*;
 import tanks.network.event.*;
 import tanks.obstacle.*;
+import tanks.rendering.TrackRenderer;
 import tanks.tank.*;
 
 import java.util.*;
@@ -547,6 +548,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public ScreenGame()
     {
+        Effect.timeSinceLastTrack = TrackRenderer.getMaxTrackAge();
         Game.player.hotbar.resetTimers();
         eliminatedPlayers.clear();
         this.selfBatch = false;
@@ -2056,20 +2058,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Game.effects.addAll(Game.addEffects);
         Game.addEffects.clear();
 
-        for (Effect e : Game.removeTracks)
-        {
-            if (e.state == Effect.State.removed)
-            {
-                e.state = Effect.State.recycle;
-                Game.tracks.remove(e);
-                Game.recycleEffects.add(e);
-            }
-        }
-
         Game.removeMovables.clear();
         Game.removeObstacles.clear();
         Game.removeEffects.clear();
-        Game.removeTracks.clear();
         Game.removeClouds.clear();
         ModAPI.removeMenus.clear();
     }
@@ -2112,13 +2103,34 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             else
                 Game.obstaclesToUpdate.remove(o);
         }
+
         Game.checkObstaclesToUpdate.clear();
 
         for (Obstacle o : Game.obstaclesToUpdate)
             o.update();
 
-        for (Effect e : Game.tracks)
-            e.update();
+        double time = Panel.frameFrequency;
+        while (time > 0)
+        {
+            Effect e = Game.tracks.peek();
+            if (e == null)
+                break;
+
+            e.maxAge -= time;
+
+            if (e.maxAge <= 0)
+            {
+                time = -e.maxAge;
+                e.state = Effect.State.recycle;
+                Game.recycleEffects.add(Game.tracks.poll());
+
+                Drawing.drawing.trackRenderer.remove(e);
+            }
+            else
+                break;
+        }
+
+        Effect.timeSinceLastTrack += Panel.frameFrequency;
 
         Game.player.hotbar.update();
     }

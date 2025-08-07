@@ -27,6 +27,8 @@ public class OverlaySelectRotation extends ScreenLevelEditorOverlay
     {
         super(previous, screenLevelEditor);
 
+        this.musicInstruments = true;
+
         this.selector = selector;
 
         this.rotateDown.fontSize = 24;

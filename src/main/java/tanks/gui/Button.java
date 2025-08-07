@@ -553,14 +553,14 @@ public class Button implements IDrawable, ITrigger
 		Game.game.window.shapeRenderer.setBatchMode(true, true, false, glow);
 
 		Drawing drawing = Drawing.drawing;
-		drawing.setColor(0, 0, 0, 0);
+		drawing.setColor(r, g, b, 0);
 		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY - sizeY * size, 0);
 		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY - sizeY * size, 0);
 		drawing.setColor(r, g, b, a);
 		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
 		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
 
-		drawing.setColor(0, 0, 0, 0);
+        drawing.setColor(r, g, b, 0);
 		drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY + sizeY * size, 0);
 		drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY + sizeY * size, 0);
 		drawing.setColor(r, g, b, a);
@@ -574,13 +574,13 @@ public class Button implements IDrawable, ITrigger
 		{
 			drawing.setColor(r, g, b, a);
 			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
-			drawing.setColor(0, 0, 0, 0);
+            drawing.setColor(r, g, b, 0);
 			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 15) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 15) / 30.0 * Math.PI) * size, 0);
 			drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 16) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 16) / 30.0 * Math.PI) * size, 0);
 
 			drawing.setColor(r, g, b, a);
 			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
-			drawing.setColor(0, 0, 0, 0);
+            drawing.setColor(r, g, b, 0);
 			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 45) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 45) / 30.0 * Math.PI) * size, 0);
 			drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 46) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 46) / 30.0 * Math.PI) * size, 0);
 		}

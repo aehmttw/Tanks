@@ -89,12 +89,29 @@ public abstract class Minigame extends Level
     }
 
     /**
-     * Draw any HUD things here
+     * Draw anything for the game here
      */
     public void draw()
     {
 
     }
+
+    /**
+     * Draw stuff that needs to be pinned directly to the screen in the hotbar
+     */
+    public void drawHotbar()
+    {
+
+    }
+
+    /**
+     * Draw the circle-style hotbar, affected by angled perspective
+     */
+    public void drawCircleHotbar()
+    {
+
+    }
+
 
     /**
      * Override this method to do something when the level has started to end

@@ -140,6 +140,7 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
                 this.randoms[i][j] = Math.random();
             }
         }
+        this.musicInstruments = true;
 
         this.setColor();
     }

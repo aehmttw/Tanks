@@ -85,7 +85,12 @@ public class DisplayFireworks
             Firework f = fireworks.get(i);
 
             if (f.type == Firework.FireworkType.particle_group)
+            {
                 f.explosion.drawTrail();
+
+                if (f.age - Panel.frameFrequency >= f.maxAge && f.explosion.hasTrail)
+                    f.explosion.trailRenderer.free();
+            }
         }
 
         Game.game.window.shaderDefault.set();

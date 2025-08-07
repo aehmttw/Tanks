@@ -930,13 +930,12 @@ public class Panel
 			double c = 127 * Obstacle.draw_size / Game.tile_size;
             double a = 255;
 
-			double r2 = 0;
-			double g2 = 0;
-			double b2 = 0;
+			double r2 = c;
+			double g2 = c;
+			double b2 = c;
 			double a2 = 0;
 
 			Drawing.drawing.setColor(c, c, c, a, 1);
-			Game.game.window.shapeRenderer.setBatchMode(true, false, true, true, false);
 
 			double size = 12 * Drawing.drawing.interfaceScale / Drawing.drawing.scale;
 			double height = 100;

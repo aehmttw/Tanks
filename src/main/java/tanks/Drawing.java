@@ -937,14 +937,14 @@ public class Drawing
 		double b = this.currentColorB;
 		double a = this.currentColorA;
 
-		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.setColor(r, g, b, 0);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, size, angle);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, size, angle);
 		Drawing.drawing.setColor(r, g, b, a);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, 0, angle);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, 0, angle);
 
-		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.setColor(r, g, b, 0);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, -size, angle);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, -size, angle);
 		Drawing.drawing.setColor(r, g, b, a);
@@ -952,21 +952,21 @@ public class Drawing
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, 0, angle);
 
 		angle += Math.PI / 2;
-		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.setColor(r, g, b, 0);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, size, angle);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, size, angle);
 		Drawing.drawing.setColor(r, g, b, a);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, 0, angle);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, 0, angle);
 
-		Drawing.drawing.setColor(0, 0, 0, 0);
+		Drawing.drawing.setColor(r, g, b, 0);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, -size, angle);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, -size, angle);
 		Drawing.drawing.setColor(r, g, b, a);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, size2, 0, angle);
 		Drawing.drawing.addInterfaceVertexRotated(x, y, z, -size2, 0, angle);
 
-		Game.game.window.shapeRenderer.setBatchMode(false, true, false, true);
+		Game.game.window.shapeRenderer.setBatchMode(false, true, false, false);
 
 	}
 

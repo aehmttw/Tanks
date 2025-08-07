@@ -26,9 +26,6 @@ public class DisplayLevel
     {
         Game.screen.drawDefaultBackground();
 
-        for (Effect e: Game.tracks)
-            drawables[0].add(e);
-
         for (Movable m: Game.movables)
             drawables[m.drawLevel].add(m);
 

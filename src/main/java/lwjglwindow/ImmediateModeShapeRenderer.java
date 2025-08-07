@@ -58,20 +58,14 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             d += step;
 
-            if (!shade)
-                glColor3d(0, 0, 0);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
 
             glVertex2d(pX, pY);
             pX = x + Math.cos(d) * sX / 2;
             pY = y + Math.sin(d) * sY / 2;
             glVertex2d(pX, pY);
 
-            if (!shade)
-                glColor3d(this.window.colorR * this.window.colorA, this.window.colorG * this.window.colorA, this.window.colorB * this.window.colorA);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
             glVertex2d(x, y);
         }
@@ -203,20 +197,14 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             d += step;
 
-            if (!shade)
-                glColor3d(0, 0, 0);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
 
             glVertex3d(pX, pY, z);
             pX = x + Math.cos(d) * sX / 2;
             pY = y + Math.sin(d) * sY / 2;
             glVertex3d(pX, pY, z);
 
-            if (!shade)
-                glColor3d(this.window.colorR * this.window.colorA, this.window.colorG * this.window.colorA, this.window.colorB * this.window.colorA);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
             glVertex3d(x, y, z);
         }
@@ -352,20 +340,14 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             d += step;
 
-            if (!shade)
-                glColor3d(0, 0, 0);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
 
             glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2, y + ox * this.window.bby1 + oy * this.window.bby2, z + ox * this.window.bbz1 + oy * this.window.bbz2);
             ox = Math.cos(d) * sX / 2;
             oy = Math.sin(d) * sY / 2;
             glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2, y + ox * this.window.bby1 + oy * this.window.bby2, z + ox * this.window.bbz1 + oy * this.window.bbz2);
 
-            if (!shade)
-                glColor3d(this.window.colorR * this.window.colorA, this.window.colorG * this.window.colorA, this.window.colorB * this.window.colorA);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
             glVertex3d(x, y, z);
         }

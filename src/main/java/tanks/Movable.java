@@ -348,11 +348,12 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	/** Field to cache the movable array for reuse */
 	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
 
-    public static ObjectArrayList<Movable> getCircleCollision(Movable self, double posX, double posY)
+    public static ObjectArrayList<Movable> getCircleCollision(GameObject self)
     {
         movableOut.clear();
+        double x = self.posX, y = self.posY;
 
-        for (Chunk c : Chunk.getChunksInRadius(posX, posY, self.getSize()))
+        for (Chunk c : Chunk.getChunksInRadius(x, y, self.getSize()))
             for (Movable m : c.movables)
                 if (m != self && !m.skipNextUpdate && !m.destroy &&
                     GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
@@ -362,16 +363,18 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         return movableOut;
     }
 
-    public static ObjectArrayList<Movable> getSquareCollision(Movable self, double posX, double posY)
+    public static ObjectArrayList<Movable> getSquareCollision(GameObject self)
     {
         movableOut.clear();
         double bound = self.getSize() / 2 + Game.tile_size / 2;
-        for (Chunk c : Chunk.getChunksInRange(posX - bound, posY - bound, posX + bound, posY + bound))
+        double x = self.posX, y = self.posY;
+
+        for (Chunk c : Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
         {
             for (Movable m : c.movables)
             {
-                if (m != self && !m.skipNextUpdate && !m.destroy && Math.abs(m.posX - posX) < (self.getSize() + m.getSize()) / 2
-                    && Math.abs(m.posY - posY) < (self.getSize() + m.getSize()) / 2)
+                if (m != self && !m.skipNextUpdate && !m.destroy && Math.abs(m.posX - x) < (self.getSize() + m.getSize()) / 2
+                    && Math.abs(m.posY - y) < (self.getSize() + m.getSize()) / 2)
                     movableOut.add(m);
             }
         }

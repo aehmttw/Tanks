@@ -927,7 +927,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		this.inside.clear();
 
-		for (Movable m : getSquareCollision(this, this.posX, this.posY))
+		for (Movable m : getSquareCollision(this))
         {
             if (!(m instanceof Tank) || m.destroy || ((Tank) m).size <= 0)
                 continue;
@@ -947,7 +947,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
             this.inside.add(t);
         }
-        for (Movable m : getCircleCollision(this, this.posX, this.posY))
+        for (Movable m : getCircleCollision(this))
         {
             if (!(m instanceof Bullet || m instanceof Mine))
                 continue;

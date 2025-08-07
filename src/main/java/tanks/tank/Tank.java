@@ -278,7 +278,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void checkCollision()
 	{
-		for (Movable m : getCircleCollision(this, posX, posY))
+		for (Movable m : getCircleCollision(this))
 		{
             if (!(m instanceof Tank))
                 continue;

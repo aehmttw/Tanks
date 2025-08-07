@@ -9,9 +9,7 @@ import java.util.LinkedHashMap;
 
 public abstract class GameObject
 {
-    public double posX;
-    public double posY;
-    public double posZ;
+    public double posX, posY, posZ;
 
     public boolean draggable = false;
 
@@ -42,6 +40,11 @@ public abstract class GameObject
     public void refreshMetadata()
     {
 
+    }
+
+    public double getSize()
+    {
+        return 0;
     }
 
     protected void setupMetadataFields()

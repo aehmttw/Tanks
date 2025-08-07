@@ -11,7 +11,7 @@ import tanks.obstacle.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Ray
+public class Ray extends GameObject
 {
     public static double min_trace_size = 5;
 
@@ -24,7 +24,7 @@ public class Ray
 	public double size, tankHitSizeMul;
 
 	public int bounces, bouncyBounces;
-	public double posX, posY, vX, vY, angle;
+	public double vX, vY, angle;
 	public double startX, startY;
 
 	public boolean enableBounciness, asBullet, trace, dotted;
@@ -160,6 +160,12 @@ public class Ray
 		return setBouncyBounces(0).setAngleInDirection(target.posX, target.posY).getTarget() == target;
 	}
 
+    @Override
+    public double getSize()
+    {
+        return size;
+    }
+
     public Ray setAngleInDirection(double posX, double posY)
     {
         this.angle = getAngleInDirection(posX, posY);
@@ -233,6 +239,7 @@ public class Ray
 	}
 
 	public static final Result result = new Result();
+    private static final Result tempResult = new Result();
 
 	public Movable getTarget()
 	{
@@ -243,21 +250,10 @@ public class Ray
 
 		if (!ignoreTanks)
 		{
-			Chunk c = Chunk.getChunk(posX, posY);
-			if (c == null)
-				return null;
-
-			for (Movable m : c.movables)
+			for (Movable m : Movable.getSquareCollision(this))
 			{
-				if (!(m instanceof Tank) || m == this.tank)
-					continue;
-
-				Tank t = (Tank) m;
-				if (this.posX + this.size / 2 >= t.posX - t.size / 2 &&
-						this.posX - this.size / 2 <= t.posX + t.size / 2 &&
-						this.posY + this.size / 2 >= t.posY - t.size / 2 &&
-						this.posY - this.size / 2 <= t.posY + t.size / 2)
-					return t;
+				if (m instanceof Tank && m != this.tank)
+                    return m;
 			}
 		}
 
@@ -267,41 +263,39 @@ public class Ray
 		boolean firstBounce = this.targetTank == null;
         Movable target = null;
 
-		while (this.bounces >= 0 && this.bouncyBounces >= 0)
-		{
-			Chunk current = Chunk.getChunk(posX, posY);
-			if (current == null)
-				break;
+        while (this.bounces >= 0 && this.bouncyBounces >= 0)
+        {
+            totalChunksChecked = 0;
+            Chunk current = Chunk.getChunk(posX, posY);
+            if (current == null)
+                break;
 
-			checkFaceList(current, firstBounce);
+            checkFaceList(current, firstBounce);
 
-			this.age += result.t;
+            this.age += result.t;
 
-			firstBounce = false;
+            firstBounce = false;
 
-			if (result.collisionFace == null)
-				break;
+            if (result.collisionFace == null)
+                break;
 
-			double dx = result.collisionX - posX, dy = result.collisionY - posY;
+            double dx = result.collisionX - posX, dy = result.collisionY - posY;
 
-			if (this.range > 0)
-			{
-				double dist = Math.sqrt(dx * dx + dy * dy);
-				if (this.range < dist)
-				{
-					result.collisionX = posX + dx * range / dist;
-					result.collisionY = posY + dy * range / dist;
-					this.bounces = -1;
-				}
-				else
-					this.range -= dist;
-			}
+            double dist = Math.sqrt(dx * dx + dy * dy);
+            if (this.range < dist)
+            {
+                result.collisionX = posX + dx * range / dist;
+                result.collisionY = posY + dy * range / dist;
+                this.bounces = -1;
+            }
+            else
+                this.range -= dist;
 
             this.posX = result.collisionX;
-			this.posY = result.collisionY;
+            this.posY = result.collisionY;
 
-			if (Chunk.debug && trace)
-			{
+            if (Chunk.debug && trace)
+            {
                 debugTexts.add(new DebugText(
                     "@", bounces, bouncyBounces, 16,
                     posX, posY
@@ -316,48 +310,48 @@ public class Ray
                     symbol, bounces, bouncyBounces, 16,
                     result.collisionFace.endX, result.collisionFace.endY
                 ));
-			}
+            }
 
-			ISolidObject obj = result.collisionFace.owner;
+            ISolidObject obj = result.collisionFace.owner;
             if (obj instanceof GameObject)
                 ghostFaceHandler.checkForErrors((GameObject) obj);
 
-			if (obj instanceof Movable)
-			{
-				this.targetX = result.collisionX;
-				this.targetY = result.collisionY;
-				bounceX.add(result.collisionX);
-				bounceY.add(result.collisionY);
+            if (obj instanceof Movable)
+            {
+                this.targetX = result.collisionX;
+                this.targetY = result.collisionY;
+                bounceX.add(result.collisionX);
+                bounceY.add(result.collisionY);
 
-				target = (Movable) obj;
+                target = (Movable) obj;
                 break;
-			}
+            }
 
-			if (obj instanceof Obstacle && ((Obstacle) obj).bouncy)
-				this.bouncyBounces--;
-			else if (obj instanceof Obstacle && !((Obstacle) obj).allowBounce)
-				this.bounces = -1;
-			else
-				this.bounces--;
+            if (obj instanceof Obstacle && ((Obstacle) obj).bouncy)
+                this.bouncyBounces--;
+            else if (obj instanceof Obstacle && !((Obstacle) obj).allowBounce)
+                this.bounces = -1;
+            else
+                this.bounces--;
 
-			bounceX.add(result.collisionX);
-			bounceY.add(result.collisionY);
+            bounceX.add(result.collisionX);
+            bounceY.add(result.collisionY);
 
-			if (this.bounces >= 0)
-			{
-				if (result.corner)
-				{
-					this.vX = -this.vX;
-					this.vY = -this.vY;
-				}
-				else if (!result.collisionFace.direction.isNonZeroX())
-					this.vY = -this.vY;
-				else
-					this.vX = -this.vX;
+            if (this.bounces >= 0)
+            {
+                if (result.corner)
+                {
+                    this.vX = -this.vX;
+                    this.vY = -this.vY;
+                }
+                else if (!result.collisionFace.direction.isNonZeroX())
+                    this.vY = -this.vY;
+                else
+                    this.vX = -this.vX;
 
-				this.angle = Movable.getPolarDirection(this.vX, this.vY);
-			}
-		}
+                this.angle = Movable.getPolarDirection(this.vX, this.vY);
+            }
+        }
 
         renderTraceEffect();
 		return target;
@@ -405,12 +399,12 @@ public class Ray
         }
     }
 
+    private int totalChunksChecked = 0;
+
     public void checkFaceList(Chunk current, boolean firstBounce)
 	{
 		if (current == null)
 			return;
-
-		int totalChunksChecked = 0;
 
 		chunkCheck:
 		for (int chunksChecked = 0; chunksChecked < maxChunkCheck; chunksChecked++)
@@ -425,15 +419,35 @@ public class Ray
 
 			// move forward one chunk in the ray's direction
 			Chunk mid = chunksChecked > 0 ? Chunk.getChunk(posX + moveX, posY + moveY) : null;
-			// add chunk in front (use current chunk for distance comparison)
+			// add chunk in front
 			addChunk(mid);
 
-			// if the ray moved diagonally, add the chunks on the sides (use current chunk for distance comparison)
+			// if the ray moved diagonally, add the chunks on the sides
 			if (mid == null || current.manhattanDist(mid) > 1)
 			{
 				addChunk(Chunk.getChunk(posX + moveXPrev, posY + moveY));
 				addChunk(Chunk.getChunk(posX + moveX, posY + moveYPrev));
 			}
+
+            if (Chunk.debug && trace && totalChunksChecked > 0)
+            {
+                debugTexts.add(new DebugText(
+                    (vX > 0 ? "+x" : "-x") + (vY > 0 ? "+y" : "-y"), bounces, bouncyBounces, 16,
+                    posX + moveX, posY + moveY
+                ));
+
+                if (mid == null || current.manhattanDist(mid) > 1)
+                {
+                    debugTexts.add(new DebugText(
+                        vY > 0 ? "+x" : "-x", bounces, bouncyBounces, 16,
+                        posX + moveX, posY
+                    ));
+                    debugTexts.add(new DebugText(
+                        vX > 0 ? "+y" : "-y", bounces, bouncyBounces, 16,
+                        posX, posY + moveY
+                    ));
+                }
+            }
 
 			if (chunksAdded == 0)
 				break;
@@ -447,41 +461,24 @@ public class Ray
 				if (chunk == null)
 					continue;
 
-				totalChunksChecked++;
+				checkCollisionIn(result, chunk, firstBounce);
 
-				if (Chunk.debug && trace)
-				{
-                    // displays the order of chunks checked and locations that the ray checked
-                    debugTexts.add(new DebugText(
-                        "" + totalChunksChecked, bounces, bouncyBounces, 48,
-                        (chunk.chunkX + 0.5) * Chunk.chunkSize * Game.tile_size + (totalChunksChecked * 15),
-                        (chunk.chunkY + 0.5) * Chunk.chunkSize * Game.tile_size
-                    ));
+                if (result.collisionFace != null)
+                {
+                    double x = result.collisionX, y = result.collisionY, bound = size / 2;
+                    for (Chunk c : Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
+                    {
+                        if (c == chunk)
+                            continue;
 
-					debugTexts.add(new DebugText(
-                        (vX > 0 ? "+x" : "-x") + (vY > 0 ? "+y" : "-y"), bounces, bouncyBounces, 16,
-                        posX + moveX, posY + moveY
-                    ));
-
-					if (mid == null || current.manhattanDist(mid) > 1)
-					{
-                        debugTexts.add(new DebugText(
-                            vY > 0 ? "+x" : "-x", bounces, bouncyBounces, 16,
-                            posX + moveX, posY
-                        ));
-                        debugTexts.add(new DebugText(
-                            vX > 0 ? "+y" : "-y", bounces, bouncyBounces, 16,
-                            posX, posY + moveY
-                        ));
-					}
-				}
-
-				checkCollisionIn(result, chunk.faces, firstBounce);
-
-				if (result.collisionFace != null)
-					break chunkCheck;
-			}
-		}
+                        checkCollisionIn(tempResult, c, firstBounce);
+                        if (tempResult.collisionFace != null && tempResult.t < result.t)
+                            result.set(tempResult.t, tempResult.collisionX, tempResult.collisionY, tempResult.collisionFace, tempResult.corner);
+                    }
+                    break chunkCheck;
+                }
+            }
+        }
 	}
 
     public boolean isOutOfBounds()
@@ -497,7 +494,7 @@ public class Ray
 				isInsideObstacle(posX - size / 2, posY + size / 2);
 	}
 
-	public void checkCollisionIn(Result result, Chunk.FaceList faceList, boolean firstBounce)
+	public void checkCollisionIn(Result result, Chunk chunk, boolean firstBounce)
 	{
 		Face collisionFace = null;
 		double t = Double.MAX_VALUE;
@@ -506,7 +503,7 @@ public class Ray
 
 		if (vX > 0)
 		{
-			for (Face f : faceList.leftFaces)
+			for (Face f : chunk.faces.leftFaces)
 			{
 				double size = this.size;
 
@@ -535,7 +532,7 @@ public class Ray
 		}
 		else if (vX < 0)
 		{
-			for (Face f : faceList.rightFaces)
+			for (Face f : chunk.faces.rightFaces)
 			{
 				double size = this.size;
 
@@ -563,7 +560,7 @@ public class Ray
 
 		if (vY > 0)
 		{
-			for (Face f : faceList.topFaces)
+			for (Face f : chunk.faces.topFaces)
 			{
 				double size = this.size;
 
@@ -597,7 +594,7 @@ public class Ray
 		}
 		else if (vY < 0)
 		{
-			for (Face f : faceList.bottomFaces)
+			for (Face f : chunk.faces.bottomFaces)
 			{
 				double size = this.size;
 
@@ -629,6 +626,18 @@ public class Ray
 				}
 			}
 		}
+
+        totalChunksChecked++;
+
+        if (Chunk.debug && trace)
+        {
+            // displays the order of chunks checked and locations that the ray checked
+            debugTexts.add(new DebugText(
+                "" + totalChunksChecked, bounces, bouncyBounces, 48,
+                (chunk.chunkX + 0.5) * Chunk.chunkSize * Game.tile_size + (totalChunksChecked * 15),
+                (chunk.chunkY + 0.5) * Chunk.chunkSize * Game.tile_size
+            ));
+        }
 
 		result.set(t, collisionX, collisionY, collisionFace, corner);
 	}

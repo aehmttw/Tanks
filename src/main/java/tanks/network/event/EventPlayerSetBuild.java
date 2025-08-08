@@ -9,6 +9,7 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.Server;
 import tanks.network.ServerHandler;
 import tanks.tank.TankPlayer;
+import tanks.tank.TankPlayerController;
 import tanks.tank.TankPlayerRemote;
 
 public class EventPlayerSetBuild extends PersonalEvent

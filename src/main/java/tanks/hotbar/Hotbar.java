@@ -6,6 +6,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
+import tanks.item.ItemShield;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
@@ -466,18 +467,13 @@ public class Hotbar
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 
-		double px = Drawing.drawing.gameToInterfaceCoordsX(Game.playerTank.posX);
-		double py = Drawing.drawing.gameToInterfaceCoordsY(Game.playerTank.posY);
-
         double z = Game.tile_size / 2 + Game.playerTank.posZ;
         if (!Game.enable3d)
             z = 0;
 
 		double healthSize = 120;
 
-		double size = 60;
 		double thickness = 10;
-		int hotbarSlots = (this.itemBar.showItems ? ItemBar.item_bar_size : 0);
 
 		this.itemBar.drawCircle();
 
@@ -528,195 +524,8 @@ public class Hotbar
 
 		if (this.enabledAmmunitionBar)
 		{
-			int live = 1;
-			int max = 1;
-
-			double cooldownFrac = 0;
-			double bcooldown = 50;
-
-			double cooldownFrac2 = 0;
-			double mcooldown = 50;
-
-			if (Game.playerTank instanceof TankPlayerController)
-			{
-				TankPlayerController p = ((TankPlayerController) Game.playerTank);
-				live = p.liveBullets;
-				max = p.maxLiveBullets;
-				cooldownFrac = p.bulletCooldown / p.bulletCooldownBase;
-
-				if (p.bulletCooldownBase > bcooldown)
-					bcooldown = p.bulletCooldownBase;
-			}
-			else
-			{
-				ItemBullet.ItemStackBullet ib = null;
-				if (Game.playerTank != null && !Game.playerTank.destroy && Game.playerTank.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
-					ib = (ItemBullet.ItemStackBullet) Game.playerTank.getPrimaryAbility();
-
-				if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
-					ib = (ItemBullet.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
-
-				if (ib != null)
-				{
-					live = ib.liveBullets;
-					max = ib.item.bullet.maxLiveBullets;
-
-					if (ib.stackSize > 0 && ib.stackSize < max)
-						max = Math.min(max, ib.stackSize + live);
-
-					if (ib.destroy)
-					{
-						max = 1;
-						live = 1;
-					}
-
-					cooldownFrac = ib.cooldown / ib.item.cooldownBase;
-
-					if (ib.item.cooldownBase > bcooldown)
-						bcooldown = ib.item.cooldownBase;
-				}
-			}
-
-			if (lastCooldownFrac < cooldownFrac && Game.playerTank != null && Game.playerTank.health > 0 && !ignoreInitialStats)
-				timeSinceBulletChange = 0;
-
-			lastCooldownFrac = cooldownFrac;
-
-			if (lastLiveBullets != live && Game.playerTank != null && !Game.playerTank.destroy)
-			{
-				lastLiveBullets = live;
-
-				if (!ignoreInitialStats)
-					timeSinceBulletChange = 0;
-			}
-			double ammo = live * 1.0 / max;
-			double ammo2 = (live - cooldownFrac) / max;
-
-			if (max <= 0)
-			{
-				max = 1;
-				ammo = 0;
-				ammo2 = -cooldownFrac;
-			}
-
-			if (Game.playerTank != null && Game.playerTank.destroy)
-			{
-				ammo = 1;
-				ammo2 = 1;
-				max = 1;
-			}
-
-			double opacity = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceBulletChange / bcooldown));
-			Drawing.drawing.setColor(0, 0, 0, opacity * 128);
-
-			if (Level.isDark())
-				Drawing.drawing.setColor(255, 255, 255, 128 * opacity);
-
-			Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, 1);
-
-			Drawing.drawing.setColor(0, 255, 255, opacity * 255);
-			Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, Math.min(1, Math.max(0, 1 - ammo2)));
-
-			Drawing.drawing.setColor(0, 200, 255, opacity * 255);
-			Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, Math.min(1, Math.max(0, 1 - ammo)));
-
-			Drawing.drawing.setColor(0, 255, 255, opacity * 255);
-			Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, Math.min(1, Math.max(0, -ammo2 * max)));
-
-			Drawing.drawing.setColor(0, 0, 0, 128 * opacity);
-
-			if (max <= 100)
-			{
-				for (int i = 1; i <= max; i++)
-				{
-					double frac = i * 1.0 / max;
-					Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, frac, 0.005);
-				}
-			}
-
-			if (Game.playerTank != null && !Game.playerTank.destroy)
-			{
-				int mines = 0;
-				int remainingItems = 0;
-
-				if (Game.playerTank instanceof TankPlayerController)
-				{
-					TankPlayerController p = ((TankPlayerController) Game.playerTank);
-					mines = p.maxLiveMines - p.liveMines;
-
-					cooldownFrac2 = p.mineCooldown / p.mineCooldownBase;
-					if (p.mineCooldownBase > mcooldown)
-						mcooldown = p.mineCooldownBase;
-				}
-				else
-				{
-					ItemMine.ItemStackMine m = null;
-
-					if (Game.playerTank.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
-						m = (ItemMine.ItemStackMine) Game.playerTank.getSecondaryAbility();
-
-					if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
-						m = (ItemMine.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
-
-					if (m != null)
-					{
-						cooldownFrac2 = m.cooldown / m.item.cooldownBase;
-
-						mines = m.item.mine.maxLiveMines - m.liveMines;
-
-						if (m.stackSize > 0)
-							mines = Math.min(m.stackSize, mines);
-
-						if (m.destroy)
-							mines = 0;
-
-						remainingItems = m.stackSize;
-					}
-				}
-
-				if (lastMines != mines)
-				{
-					lastMines = mines;
-
-					if (!ignoreInitialStats)
-						timeSinceMineChange = 0;
-				}
-
-				if (lastCooldownFrac2 < cooldownFrac2 && Game.playerTank != null && !Game.playerTank.destroy && !ignoreInitialStats)
-					timeSinceMineChange = 0;
-
-				lastCooldownFrac = cooldownFrac;
-
-				double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
-
-				double m = 2;
-				Drawing.drawing.setColor(255, 0, 0, opacity1 * 255, 255);
-				if (mines == 0)
-					Drawing.drawing.setColor(80, 80, 80, opacity1 * 255, 255);
-
-				Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, z, 18 * m, 18 * m, false, false);
-
-				Drawing.drawing.setColor(255, 180, 0, opacity1 * 255, 255);
-				if (mines == 0)
-					Drawing.drawing.setColor(140, 140, 140, opacity1 * 255, 255);
-
-				Drawing.drawing.fillPartialRing(Game.playerTank.posX, Game.playerTank.posY, z, 18 * m, 8, -cooldownFrac2, cooldownFrac2);
-
-				Drawing.drawing.setColor(255, 255, 0, opacity1 * 255, 255);
-				if (mines == 0)
-					Drawing.drawing.setColor(160, 160, 160, opacity1 * 255, 255);
-
-				Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, z, 14 * m, 14 * m, false, false);
-
-				Drawing.drawing.setFontSize(12 * m);
-				Drawing.drawing.setColor(0, 0, 0, opacity1 * 255, 255);
-
-				Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY, z, mines + "", false);
-
-				Drawing.drawing.setFontSize(6 * m);
-				if (remainingItems > 0)
-					Drawing.drawing.drawText(Game.playerTank.posX + 15, Game.playerTank.posY + 15, z, remainingItems + "", false);
-			}
+			drawBullets();
+			drawMines();
 		}
 
         if (Game.currentLevel instanceof Minigame)
@@ -885,6 +694,231 @@ public class Hotbar
 
 		Drawing.drawing.setColor(r3, g3, b3, opacity1 * 255);
 		Drawing.drawing.drawInterfaceModel(TankModels.plainTankModel.turretBase, x, y, size, size, 0);
+	}
+
+	public void drawBullets()
+	{
+		double size = 60;
+		double thickness = 10;
+		int hotbarSlots = (this.itemBar.showItems ? ItemBar.item_bar_size : 0);
+
+		double mx = Drawing.drawing.getInterfaceMouseX();
+		double my = Drawing.drawing.getInterfaceMouseY();
+
+		int live = 1;
+		int max = 1;
+
+		double cooldownFrac = 0;
+		double bcooldown = 50;
+
+		ItemBullet.ItemStackBullet ib = null;
+		if (Game.playerTank != null && !Game.playerTank.destroy && Game.playerTank.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
+			ib = (ItemBullet.ItemStackBullet) Game.playerTank.getPrimaryAbility();
+
+		if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
+			ib = (ItemBullet.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
+
+		if (Game.playerTank instanceof TankPlayerController && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
+		{
+			TankPlayerController p = ((TankPlayerController) Game.playerTank);
+			live = p.liveBullets;
+			max = p.maxLiveBullets;
+			cooldownFrac = p.bulletCooldown / p.bulletCooldownBase;
+
+			if (ib != null && ib.stackSize > 0 && ib.stackSize < max)
+				max = Math.min(max, ib.stackSize + live);
+
+			if (p.bulletCooldownBase > bcooldown)
+				bcooldown = p.bulletCooldownBase;
+		}
+		else
+		{
+			if (ib != null)
+			{
+				live = ib.liveBullets;
+				max = ib.item.bullet.maxLiveBullets;
+
+				if (ib.stackSize > 0 && ib.stackSize < max)
+					max = Math.min(max, ib.stackSize + live);
+
+				if (ib.destroy)
+				{
+					max = 1;
+					live = 1;
+				}
+
+				cooldownFrac = ib.cooldown / ib.item.cooldownBase;
+
+				if (ib.item.cooldownBase > bcooldown)
+					bcooldown = ib.item.cooldownBase;
+			}
+		}
+
+		if (lastCooldownFrac < cooldownFrac && Game.playerTank != null && Game.playerTank.health > 0 && !ignoreInitialStats)
+			timeSinceBulletChange = 0;
+
+		lastCooldownFrac = cooldownFrac;
+
+		if (lastLiveBullets != live && Game.playerTank != null && !Game.playerTank.destroy)
+		{
+			lastLiveBullets = live;
+
+			if (!ignoreInitialStats)
+				timeSinceBulletChange = 0;
+		}
+		double ammo = live * 1.0 / max;
+		double ammo2 = (live - cooldownFrac) / max;
+
+		if (max <= 0)
+		{
+			max = 1;
+			ammo = 0;
+			ammo2 = -cooldownFrac;
+		}
+
+		if (Game.playerTank != null && Game.playerTank.destroy)
+		{
+			ammo = 1;
+			ammo2 = 1;
+			max = 1;
+		}
+
+		double opacity = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceBulletChange / bcooldown));
+		Drawing.drawing.setColor(0, 0, 0, opacity * 128);
+
+		if (Level.isDark())
+			Drawing.drawing.setColor(255, 255, 255, 128 * opacity);
+
+		Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, 1);
+
+		Drawing.drawing.setColor(0, 255, 255, opacity * 255);
+		Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, Math.min(1, Math.max(0, 1 - ammo2)));
+
+		Drawing.drawing.setColor(0, 200, 255, opacity * 255);
+		Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, Math.min(1, Math.max(0, 1 - ammo)));
+
+		Drawing.drawing.setColor(0, 255, 255, opacity * 255);
+		Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, Math.min(1, Math.max(0, -ammo2 * max)));
+
+		Drawing.drawing.setColor(0, 0, 0, 128 * opacity);
+
+		if (max <= 100 && ib != null)
+		{
+			for (int i = 1; i <= max; i++)
+			{
+				double frac = i * 1.0 / max;
+				Drawing.drawing.fillInterfacePartialRing(mx, my, size, thickness, frac, 0.005);
+			}
+		}
+
+		lastCooldownFrac = cooldownFrac;
+	}
+
+	public void drawMines()
+	{
+		int hotbarSlots = 0;
+		if (Game.playerTank != null)
+			hotbarSlots = (this.itemBar.showItems ? ItemBar.item_bar_size : 0);
+
+		double cooldownFrac2 = 0;
+		double mcooldown = 50;
+
+		if (Game.playerTank != null && !Game.playerTank.destroy)
+		{
+			double z = Game.tile_size / 2 + Game.playerTank.posZ;
+			if (!Game.enable3d)
+				z = 0;
+
+			int mines = 0;
+			int remainingItems = 0;
+
+			boolean clientPlaying = Game.playerTank instanceof TankPlayerController && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing;
+
+			if (clientPlaying)
+			{
+				TankPlayerController p = ((TankPlayerController) Game.playerTank);
+				mines = p.maxLiveMines - p.liveMines;
+				if (p.maxLiveMines == 0)
+					mines = -1;
+
+				cooldownFrac2 = p.mineCooldown / p.mineCooldownBase;
+				if (p.mineCooldownBase > mcooldown)
+					mcooldown = p.mineCooldownBase;
+			}
+
+			ItemMine.ItemStackMine m = null;
+
+			if (Game.playerTank.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
+				m = (ItemMine.ItemStackMine) Game.playerTank.getSecondaryAbility();
+
+			if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
+				m = (ItemMine.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
+
+			if (m != null)
+			{
+				if (!clientPlaying)
+				{
+					cooldownFrac2 = m.cooldown / m.item.cooldownBase;
+
+					mines = m.item.mine.maxLiveMines - m.liveMines;
+
+					if (m.item.mine.maxLiveMines == 0)
+						mines = -1;
+				}
+
+				if (m.stackSize > 0)
+					mines = Math.min(m.stackSize, mines);
+
+				if (m.destroy)
+					mines = 0;
+
+				remainingItems = m.stackSize;
+			}
+			else
+				return;
+
+			if (lastMines != mines)
+			{
+				lastMines = mines;
+
+				if (!ignoreInitialStats)
+					timeSinceMineChange = 0;
+			}
+
+			if (lastCooldownFrac2 < cooldownFrac2 && Game.playerTank != null && !Game.playerTank.destroy && !ignoreInitialStats)
+				timeSinceMineChange = 0;
+
+			double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
+
+			double ms = 2;
+			Drawing.drawing.setColor(255, 0, 0, opacity1 * 255, 255);
+			if (mines == 0)
+				Drawing.drawing.setColor(80, 80, 80, opacity1 * 255, 255);
+
+			Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, z, 18 * ms, 18 * ms, false, false);
+
+			Drawing.drawing.setColor(255, 180, 0, opacity1 * 255, 255);
+			if (mines == 0)
+				Drawing.drawing.setColor(140, 140, 140, opacity1 * 255, 255);
+
+			Drawing.drawing.fillPartialRing(Game.playerTank.posX, Game.playerTank.posY, z, 18 * ms, 8, -cooldownFrac2, cooldownFrac2);
+
+			Drawing.drawing.setColor(255, 255, 0, opacity1 * 255, 255);
+			if (mines == 0)
+				Drawing.drawing.setColor(160, 160, 160, opacity1 * 255, 255);
+
+			Drawing.drawing.fillOval(Game.playerTank.posX, Game.playerTank.posY, z, 14 * ms, 14 * ms, false, false);
+
+			Drawing.drawing.setFontSize(12 * ms);
+			Drawing.drawing.setColor(0, 0, 0, opacity1 * 255, 255);
+
+			if (mines >= 0)
+				Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY, z, mines + "", false);
+
+			Drawing.drawing.setFontSize(6 * ms);
+			if (remainingItems > 0)
+				Drawing.drawing.drawText(Game.playerTank.posX + 15, Game.playerTank.posY + 15, z, remainingItems + "", false);
+		}
 	}
 
 	public void resetTimers()

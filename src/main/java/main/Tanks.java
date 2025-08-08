@@ -41,6 +41,8 @@ public class Tanks
                 Game.debug = true;
             if (arg.equals("mac") || arg.equals("no_relaunch"))
                 relaunch = false;
+            if (arg.equals("no_steam"))
+                Game.disableSteam = true;
 
             if (i < args.length - 1 && args[i].equals("+connect_lobby"))
                 Game.steamLobbyInvite = Long.parseLong(args[i + 1]);

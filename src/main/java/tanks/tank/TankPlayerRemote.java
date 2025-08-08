@@ -254,10 +254,10 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                 im = (ItemMine.ItemStackMine) b.slots[b.selected];
         }
 
-        int lb = ib == null ? 0 : ib.liveBullets;
+        int lb = ib == null ? 1 : ib.liveBullets;
         int lm = im == null ? 0 : im.liveMines;
 
-        int mlb = ib == null ? 0 : ib.item.bullet.maxLiveBullets;
+        int mlb = ib == null ? 1 : ib.item.bullet.maxLiveBullets;
         int mlm = im == null ? 0 : im.item.mine.maxLiveMines;
 
         double cooldown = ib == null ? 0 : ib.cooldown;

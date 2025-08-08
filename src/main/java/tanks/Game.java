@@ -60,6 +60,8 @@ public class Game
 
 	public static final int absoluteDepthBase = 1000;
 
+	public static boolean disableSteam = false;
+
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
 	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
@@ -536,7 +538,8 @@ public class Game
 		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 
 		steamNetworkHandler = new SteamNetworkHandler();
-		steamNetworkHandler.load();
+		if (!disableSteam)
+			steamNetworkHandler.load();
 
 		registerEvents();
 		DefaultItems.initialize();

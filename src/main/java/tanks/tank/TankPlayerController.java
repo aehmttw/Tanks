@@ -57,6 +57,10 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
         if (this.bulletCooldown < 0)
             this.bulletCooldown = 0;
 
+        this.mineCooldown -= Panel.frameFrequency;
+        if (this.mineCooldown < 0)
+            this.mineCooldown = 0;
+
         super.update();
 
         this.interpolatedPosX = this.posX;

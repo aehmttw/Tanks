@@ -912,7 +912,7 @@ public class Panel
 				Drawing.drawing.setColor(0, 0, 0);
 			}
 
-			if (Game.playerTank != null && Game.screen instanceof ScreenGame)
+			if (Game.playerTank != null && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing && !((ScreenGame) Game.screen).paused)
 			{
 				Item.ItemStack<?> i = Game.playerTank.player.hotbar.itemBar.getSelectedAction(false);
 				if (i == null || i.destroy)

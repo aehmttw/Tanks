@@ -824,7 +824,7 @@ public class Game
 	public static void spawnTank(Tank tank, Tank parent)
 	{
 		tank.registerNetworkID();
-		Game.movables.add(tank);
+		Game.addMovable(tank);
 		Game.eventsOut.add(new EventTankSpawn(tank, parent));
 	}
 

@@ -2492,7 +2492,7 @@ public class TankAIControlled extends Tank implements ITankField
 					if (s.resolvedTank.getClass().equals(TankAIControlled.class))
 					{
 						t2 = new TankAIControlled("", this.posX + x, this.posY + y, 0, 0, 0, 0, this.angle, ShootAI.none);
-						((TankAIControlled)(s.resolvedTank)).cloneProperties((TankAIControlled) t2);
+						((TankAIControlled) s.resolvedTank).cloneProperties((TankAIControlled) t2);
 					}
 					else
 					{

@@ -124,7 +124,7 @@ public class Ray extends GameObject
             }
             else if (obj instanceof Movable)
             {
-                for (Chunk c : ((Movable) obj).getTouchingChunks())
+                for (Chunk c : ((Movable) obj).getCurrentChunks())
                 {
                     if (!c.movables.contains(obj))
                         errorChunkCache.add(c);
@@ -143,7 +143,7 @@ public class Ray extends GameObject
                 name, obj.posX / Game.tile_size, obj.posY / Game.tile_size,
                 info.stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
                     .collect(Collectors.joining(", ")));
-            if (!Game.immutableFaces && Game.currentLevel != null)
+            if (Game.fixErrors && Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
         }
     };
@@ -270,7 +270,7 @@ public class Ray extends GameObject
             if (current == null)
                 break;
 
-            checkFaceList(current, firstBounce);
+            checkCollision(current, firstBounce);
 
             this.age += result.t;
 
@@ -401,7 +401,7 @@ public class Ray extends GameObject
 
     private int totalChunksChecked = 0;
 
-    public void checkFaceList(Chunk current, boolean firstBounce)
+    public void checkCollision(Chunk current, boolean firstBounce)
 	{
 		if (current == null)
 			return;
@@ -461,7 +461,7 @@ public class Ray extends GameObject
 				if (chunk == null)
 					continue;
 
-				checkCollisionIn(result, chunk, firstBounce);
+				checkCollisionInChunk(result, chunk, firstBounce);
 
                 if (result.collisionFace != null)
                 {
@@ -471,7 +471,7 @@ public class Ray extends GameObject
                         if (c == chunk)
                             continue;
 
-                        checkCollisionIn(tempResult, c, firstBounce);
+                        checkCollisionInChunk(tempResult, c, firstBounce);
                         if (tempResult.collisionFace != null && tempResult.t < result.t)
                             result.set(tempResult.t, tempResult.collisionX, tempResult.collisionY, tempResult.collisionFace, tempResult.corner);
                     }
@@ -494,7 +494,7 @@ public class Ray extends GameObject
 				isInsideObstacle(posX - size / 2, posY + size / 2);
 	}
 
-	public void checkCollisionIn(Result result, Chunk chunk, boolean firstBounce)
+	public void checkCollisionInChunk(Result result, Chunk chunk, boolean firstBounce)
 	{
 		Face collisionFace = null;
 		double t = Double.MAX_VALUE;

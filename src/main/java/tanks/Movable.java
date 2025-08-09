@@ -1,17 +1,11 @@
 package tanks;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
-import tanks.effect.AttributeModifier;
-import tanks.effect.EffectManager;
+import it.unimi.dsi.fastutil.objects.*;
+import tanks.effect.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
-import tanks.tank.IAvoidObject;
-import tanks.tank.NameTag;
-import tanks.tankson.MetadataProperty;
-import tanks.tankson.Property;
+import tanks.tank.*;
+import tanks.tankson.*;
 
 import java.lang.reflect.Field;
 
@@ -47,6 +41,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	@MetadataProperty(id = "team", name = "Team", selector = SelectorTeam.selector_name, image = "team.png", keybind = "editor.team")
 	public Team team;
 
+    private boolean firstFrame = true;
+
 	public Movable(double x, double y)
 	{
 		this.posX = x;
@@ -58,83 +54,70 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void preUpdate()
 	{
-        refreshFaces();
+        updateChunks();
 
-		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
-		this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
-		this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
-		this.lastVZ = (this.posZ - this.lastPosZ) / frameFrequency;
-
-		this.lastOriginalVX = this.vX;
-		this.lastOriginalVY = this.vY;
-		this.lastOriginalVZ = this.vZ;
-
-		this.lastPosX = this.posX;
-		this.lastPosY = this.posY;
-		this.lastPosZ = this.posZ;
-	}
+        if (firstFrame)
+        {
+            firstFrame = false;
+            if (this instanceof IAvoidObject)
+                Game.avoidObjects.add((IAvoidObject) this);
+        }
+    }
 
     public void postUpdate()
     {
         updateChunks();
+        updateLastPositions();
     }
 
-	/** Cached list for checking chunks that the movable has just left */
-	private static final ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
+    public void updateLastPositions()
+    {
+        double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
+        this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
+        this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
+        this.lastVZ = (this.posZ - this.lastPosZ) / frameFrequency;
+
+        this.lastOriginalVX = this.vX;
+        this.lastOriginalVY = this.vY;
+        this.lastOriginalVZ = this.vZ;
+
+        this.lastPosX = this.posX;
+        this.lastPosY = this.posY;
+        this.lastPosZ = this.posZ;
+    }
 
 	public void updateChunks()
 	{
-        boolean changed = collisionChanged();
-		if (!changed && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
+		if (!collisionChanged() && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
 			return;
 
         lastSize = getSize();
-
-		if (changed && this instanceof IAvoidObject)
-			Game.avoidObjects.add((IAvoidObject) this);
-
         refreshFaces();
     }
 
     public void refreshFaces()
     {
-        removeFacesFromChunks();
+        ObjectArrayList<Chunk> cache = getCurrentChunks();
+
+        for (Chunk c : prevChunks)
+        {
+            if (!cache.contains(c))
+                onLeaveChunk(c);
+        }
+        prevChunks.retainAll(cache);
         updateFaces();
-        addFacesToChunks();
-    }
-
-    public void addFacesToChunks()
-    {
-        for (Chunk c : getTouchingChunks())
-            c.faces.addFaces(this);
-    }
-
-    public void removeFacesFromChunks()
-    {
-        ObjectArrayList<Chunk> cache = getTouchingChunks();
 
         for (Chunk c : cache)
         {
             if (prevChunks.add(c))
                 onEnterChunk(c);
-            c.faces.removeFaces(this);
+            c.markDirty();
         }
-
-        leaveChunks.clear();
-        for (Chunk c : prevChunks)
-        {
-            if (!cache.contains(c))
-            {
-                onLeaveChunk(c);
-                leaveChunks.add(c);
-            }
-        }
-        prevChunks.removeAll(leaveChunks);
     }
 
     public void onEnterChunk(Chunk c)
 	{
-		c.addMovable(this, false);
+		c.addMovable(this);
 	}
 
 	public void onLeaveChunk(Chunk c)
@@ -142,7 +125,18 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		c.removeMovable(this);
 	}
 
-	public ObjectArrayList<Chunk> getTouchingChunks()
+    public ObjectArrayList<Chunk> getCurrentChunks()
+    {
+        double bound = getSize() / 2;
+        return Chunk.getChunksInRange(
+            posX - bound,
+            posY - bound,
+            posX + bound,
+            posY + bound
+        );
+    }
+
+    public ObjectArrayList<Chunk> getTouchingChunks()
 	{
 		double bound = getSize() / 2;
 		return Chunk.getChunksInRange(
@@ -223,8 +217,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void setMotionInDirectionWithOffset(double x, double y, double velocity, double a)
 	{
-		double angle = getAngleInDirection(x, y);
-		angle += a;
+		double angle = getAngleInDirection(x, y) + a;
 		this.vX = velocity * Math.cos(angle);
 		this.vY = velocity * Math.sin(angle);
 	}
@@ -348,8 +341,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	}
 
 	/** Field to cache the movable array for reuse */
-	private static final ObjectSet<Movable> movableOut = new ObjectOpenHashSet<>();
-	private static final ObjectArrayList<Movable> movableOutList = new ObjectArrayList<>();
+	private static final ObjectSet<Movable> movableOut = new ObjectArraySet<>();
 
     public static ObjectSet<Movable> getCircleCollision(GameObject self)
     {
@@ -361,7 +353,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
                 if (m != self && !m.skipNextUpdate && !m.destroy &&
                     GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
                     movableOut.add(m);
-
 
         return movableOut;
     }
@@ -411,11 +402,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public static Movable findMovable(double x, double y)
 	{
-		Movable.getMovablesInRadius(x, y, 1);
-		movableOutList.clear();
-		movableOutList.addAll(movableOut);
-		if (!movableOutList.isEmpty())
-			return movableOutList.get(0);
+		for (Movable m : Movable.getMovablesInRadius(x, y, 1))
+			return m;
 		return null;
 	}
 

@@ -1,6 +1,6 @@
 package tanks.tank;
 
-import tanks.Game;
+import tanks.*;
 import tanks.bullet.DefaultItems;
 
 /**
@@ -37,4 +37,14 @@ public class TankGreen extends TankAIControlled
 
 		this.description = "A deadly stationary tank which shoots rockets that bounce twice";
 	}
+
+    @Override
+    public void preUpdate()
+    {
+        if (Panel.panel.ageFrames % 74 < 37)
+            posX = 14 * 50;
+        else
+            posX = 17 * 50;
+        super.preUpdate();
+    }
 }

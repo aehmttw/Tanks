@@ -114,7 +114,7 @@ public class BulletInstant extends Bullet
 				angle = this.getPolarDirection();
 			}
 
-			super.update();
+			superUpdate();
 
 			if (Math.abs(this.lastFinalVX) < 0.01 && Math.abs(this.lastFinalVY) < 0.01)
 				this.destroy = true;
@@ -300,7 +300,9 @@ public class BulletInstant extends Bullet
 
 	public void superUpdate()
 	{
+        preUpdate();
 		super.update();
+        postUpdate();
 	}
 
 	public void addTrail(boolean redirect)

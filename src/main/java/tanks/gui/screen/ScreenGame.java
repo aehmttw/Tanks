@@ -2030,9 +2030,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         for (Movable m : Game.removeMovables)
         {
             for (Chunk chunk : m.getTouchingChunks())
-            {
                 chunk.removeMovable(m);
-            }
 
             if (m instanceof IAvoidObject)
                 Game.avoidObjects.remove((IAvoidObject) m);
@@ -2067,10 +2065,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public void updateGameField()
     {
-        for (int i = 0; i < Game.movables.size(); i++)
-        {
-            Game.movables.get(i).preUpdate();
-        }
+        for (Movable m : Game.movables)
+            m.preUpdate();
 
         for (int i = 0; i < Game.movables.size(); i++)
         {
@@ -2083,6 +2079,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
 
             m.update();
+        }
+
+        for (Movable m : Game.movables)
+        {
             m.postUpdate();
 
             if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
@@ -2092,6 +2092,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 Game.movables.add(new MovableNaN(m.lastPosX, m.lastPosY));
             }
         }
+
+        Chunk.handleDirtyChunks();
 
         for (Obstacle o : Game.checkObstaclesToUpdate)
         {

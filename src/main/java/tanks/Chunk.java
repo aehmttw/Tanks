@@ -4,6 +4,7 @@ import basewindow.IBatchRenderableObject;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.*;
 import tanks.obstacle.*;
+import tanks.tank.Tank;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,10 +17,12 @@ public class Chunk
     public static final Chunk zeroChunk = new Chunk();
     public static boolean debug = false;
 
-    public static Int2ObjectOpenHashMap<Chunk> chunks = new Int2ObjectOpenHashMap<>();
+    public static Int2ObjectOpenHashMap<Chunk> chunkMap = new Int2ObjectOpenHashMap<>();
     public static ObjectArrayList<Chunk> chunkList = new ObjectArrayList<>();
     private static final ObjectArrayList<Chunk> chunkCache = new ObjectArrayList<>();
     public static int chunkSize = 8;
+
+    private static final ObjectArrayList<Chunk> dirtyChunks = new ObjectArrayList<>();
 
     public final Level level;
     public final int chunkX, chunkY;
@@ -34,7 +37,7 @@ public class Chunk
     /** The variable that caches the previous call to {@link Chunk#getChunk} */
     private static Chunk prevChunk;
 
-    public static ErrorHandler<Movable, Collection<Movable>> movableSyncHandler = new ErrorHandler<Movable, Collection<Movable>>(200, 1)
+    public static ErrorHandler<Movable, Collection<Movable>> movableSyncHandler = new ErrorHandler<Movable, Collection<Movable>>(200, 2)
     {
         @Override
         public Collection<Movable> containsErrors(Movable ignored)
@@ -54,7 +57,7 @@ public class Chunk
             System.err.println("Movable sync error: " + info.stream()
                     .map(m -> String.format("%s@(%.1f,%.1f)", m.getClass().getSimpleName(), m.posX, m.posY))
                 .collect(Collectors.joining(", ")));
-            if (Game.currentLevel != null)
+            if (Game.fixErrors && Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
         }
     };
@@ -162,6 +165,14 @@ public class Chunk
         return chunkPos * Chunk.chunkSize * Game.tile_size;
     }
 
+    public static void handleDirtyChunks()
+    {
+        for (Chunk c : dirtyChunks)
+            c.faces.sort();
+
+        dirtyChunks.clear();
+    }
+
     public int manhattanDist(Chunk other)
     {
         return Math.abs(chunkX - other.chunkX) + Math.abs(chunkY - other.chunkY);
@@ -188,7 +199,12 @@ public class Chunk
             return;
 
         movables.remove(m);
-        faces.removeFaces(m);
+        System.out.println((m instanceof Tank ? ((Tank) m).name : m.getClass().getSimpleName()) + " " + faces.removeFaces(m));
+    }
+
+    public void markDirty()
+    {
+        dirtyChunks.add(this);
     }
 
     public void addObstacle(Obstacle o)
@@ -431,7 +447,8 @@ public class Chunk
 
         Drawing.drawing.setColor(255, 255, 255);
         for (Movable m : Game.movables)
-            Drawing.drawing.drawText(m.posX, m.posY, m.getTouchingChunks().size() + "");
+            Drawing.drawing.drawText(m.posX, m.posY, m.getCurrentChunks().stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
+                    .collect(Collectors.joining(", ")));
     }
 
     /** Given a rectangle's bounding box, clamps it to the level borders and draws it.
@@ -457,7 +474,7 @@ public class Chunk
     {
         if (clear)
         {
-            chunks.clear();
+            chunkMap.clear();
             chunkList.clear();
             prevChunk = null;
         }
@@ -489,7 +506,7 @@ public class Chunk
         if (prevChunk != null && prevChunk.chunkX == chunkX && prevChunk.chunkY == chunkY)
             return prevChunk;
 
-        Chunk c = chunks.get(encodeChunkCoords(chunkX, chunkY));
+        Chunk c = chunkMap.get(encodeChunkCoords(chunkX, chunkY));
         if (c != null)
             prevChunk = c;
         return c;
@@ -498,7 +515,7 @@ public class Chunk
     public static Chunk addChunk(int chunkX, int chunkY, Chunk c)
     {
         chunkList.add(c);
-        return chunks.put(encodeChunkCoords(chunkX, chunkY), c);
+        return chunkMap.put(encodeChunkCoords(chunkX, chunkY), c);
     }
 
     public static int f(int i)
@@ -516,44 +533,56 @@ public class Chunk
         /**
          * dynamic x, static y
          */
-        public final ObjectAVLTreeSet<Face> topFaces = new ObjectAVLTreeSet<>();
+        public final ObjectArrayList<Face> topFaces = new ObjectArrayList<>();
         /**
          * dynamic x, static y
          */
-        public final ObjectAVLTreeSet<Face> bottomFaces = new ObjectAVLTreeSet<>(Comparator.reverseOrder());
+        public final ObjectArrayList<Face> bottomFaces = new ObjectArrayList<>();
         /**
          * static x, dynamic y
          */
-        public final ObjectAVLTreeSet<Face> leftFaces = new ObjectAVLTreeSet<>();
+        public final ObjectArrayList<Face> leftFaces = new ObjectArrayList<>();
         /**
          * static x, dynamic y
          */
-        public final ObjectAVLTreeSet<Face> rightFaces = new ObjectAVLTreeSet<>(Comparator.reverseOrder());
+        public final ObjectArrayList<Face> rightFaces = new ObjectArrayList<>();
 
-        public void addFaces(ISolidObject s)
+        public boolean addFaces(ISolidObject s)
         {
             if (s.disableRayCollision())
-                return;
+                return false;
 
             Face[] faces = s.getFaces();
+            boolean changed = false;
             for (int i = 0; i < 4; i++)
             {
                 if (faces[i].valid)
-                    getSide(i).add(faces[i]);
+                    changed |= getSide(i).add(faces[i]);
             }
+            return changed;
         }
 
-        public void removeFaces(ISolidObject s)
+        public boolean removeFaces(ISolidObject s)
         {
             if (s.disableRayCollision())
-                return;
+                return false;
 
             Face[] faces = s.getFaces();
+            boolean changed = false;
             for (int i = 0; i < 4; i++)
-                getSide(i).remove(faces[i]);
+                changed |= getSide(i).remove(faces[i]);
+            return changed;
         }
 
-        public ObjectAVLTreeSet<Face> getSide(int side)
+        public void sort()
+        {
+            topFaces.unstableSort(null);
+            bottomFaces.unstableSort(Comparator.reverseOrder());
+            leftFaces.unstableSort(null);
+            rightFaces.unstableSort(Comparator.reverseOrder());
+        }
+
+        public ObjectArrayList<Face> getSide(int side)
         {
             switch (side)
             {

@@ -29,7 +29,7 @@ public abstract class ErrorHandler<K, V>
 
     public void checkForErrors(K obj)
     {
-        if (intervalTimer > 0)
+        if (Game.fixErrors && intervalTimer > 0)
             return;
 
         V info = containsErrors(obj);
@@ -44,6 +44,12 @@ public abstract class ErrorHandler<K, V>
             handleError(obj, info);
             errorCounts.removeInt(obj);
         }
+    }
+
+    public void reset()
+    {
+        errorCounts.clear();
+        intervalTimer = baseInterval;
     }
 
     public V noErrorReturnValue()

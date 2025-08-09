@@ -248,9 +248,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		}
 
         for (Movable m: Game.movables)
-        {
             m.postUpdate();
-        }
 
 		if (enemies <= 1 && !this.controlPlayer)
 		{

@@ -31,7 +31,7 @@ public class Face implements Comparable<Face>
 
 
     public ISolidObject owner;
-    public final Direction direction;
+    public Direction direction;
     public boolean solidTank, solidBullet;
     public boolean valid = true;
 
@@ -155,5 +155,26 @@ public class Face implements Comparable<Face>
             return String.format("%.1f-%.1f %.1f  %s", this.startX, this.endX, this.startY, ownerName);
         else
             return String.format("%.1f %.1f-%.1f  %s", this.startX, this.startY, this.endY, ownerName);
+    }
+
+    /** A face used for comparison */
+    public static class DummyFace extends Face
+    {
+        private static final DummyFace dummy = new DummyFace();
+
+        public static DummyFace set(Direction d, double compare)
+        {
+            dummy.direction = d;
+            if (d.isNonZeroY())
+                dummy.startX = dummy.endX = compare;
+            else
+                dummy.startY = dummy.endY = compare;
+            return dummy;
+        }
+
+        private DummyFace()
+        {
+            super(null, Direction.right, false, false);
+        }
     }
 }

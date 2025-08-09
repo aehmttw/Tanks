@@ -150,6 +150,13 @@ public class DebugKeybinds
             notifications.add(new ScreenElement.Notification("Shaders reloaded! (Remember to rebuild)"));
         }
 
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_PERIOD))
+        {
+            System.gc();
+            Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_PERIOD);
+            notifications.add(new ScreenElement.Notification("GC completed"));
+        }
+
         int brightness;
         if (Game.currentLevel != null && Level.isDark())
             brightness = 255;

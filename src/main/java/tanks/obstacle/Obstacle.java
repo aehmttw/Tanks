@@ -3,8 +3,7 @@ package tanks.obstacle;
 import basewindow.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
-import tanks.rendering.*;
-import tanks.tank.IAvoidObject;
+import tanks.rendering.ShaderObstacle;
 
 public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
 {
@@ -270,20 +269,20 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	{
 		byte o = 0;
 
-		/*if (Obstacle.draw_size < Game.tile_size)
+		if (Obstacle.draw_size < Game.tile_size)
 			return o;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h)
-			o |= BaseShapeRenderer.HIDE_FRONT;
+			o |= BaseShapeRenderer.hide_front;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY - Game.tile_size) >= h)
-			o |= BaseShapeRenderer.HIDE_BACK;
+			o |= BaseShapeRenderer.hide_back;
 
 		if (Game.sampleObstacleHeight(this.posX - Game.tile_size, this.posY) >= h)
-			o |= BaseShapeRenderer.HIDE_LEFT;
+			o |= BaseShapeRenderer.hide_left;
 
 		if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h)
-			o |= BaseShapeRenderer.HIDE_RIGHT;*/
+			o |= BaseShapeRenderer.hide_right;
 
 		return o;
 	}

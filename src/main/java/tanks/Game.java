@@ -50,7 +50,7 @@ import java.util.*;
 
 public class Game
 {
-	public enum Framework {lwjgl, libgdx}
+    public enum Framework {lwjgl, libgdx}
 	public static Framework framework;
 
 	public static final double tile_size = 50;
@@ -186,6 +186,7 @@ public class Game
 	public static boolean showPathfinding = false;
 	public static boolean showUpdatingObstacles = false;
 	public static boolean immutableFaces = false;
+    public static boolean fixErrors = true;
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
@@ -1310,6 +1311,9 @@ public class Game
 			Chunk.populateChunks(Game.currentLevel);
 		else
 			Chunk.initialize();
+
+        for (ErrorHandler<?, ?> h: ErrorHandler.errorHandlers)
+			h.reset();
 
 		resetNetworkIDs();
 

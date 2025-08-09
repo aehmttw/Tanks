@@ -269,7 +269,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	{
 		byte o = 0;
 
-		if (Obstacle.draw_size < Game.tile_size)
+		/*if (Obstacle.draw_size < Game.tile_size)
 			return o;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h)
@@ -282,7 +282,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 			o |= BaseShapeRenderer.hide_left;
 
 		if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h)
-			o |= BaseShapeRenderer.hide_right;
+			o |= BaseShapeRenderer.hide_right;*/
 
 		return o;
 	}
@@ -290,7 +290,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public void redrawSelfAndNeighbors()
     {
         Game.redrawObstacles.add(this);
-        Game.redrawObstacles.addAll(getNeighbors());
+//        Game.redrawObstacles.addAll(getNeighbors());
     }
 
 	@Override

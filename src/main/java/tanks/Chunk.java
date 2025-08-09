@@ -4,7 +4,6 @@ import basewindow.IBatchRenderableObject;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.*;
 import tanks.obstacle.*;
-import tanks.tank.Tank;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -199,7 +198,7 @@ public class Chunk
             return;
 
         movables.remove(m);
-        System.out.println((m instanceof Tank ? ((Tank) m).name : m.getClass().getSimpleName()) + " " + faces.removeFaces(m));
+        faces.removeFaces(m);
     }
 
     public void markDirty()

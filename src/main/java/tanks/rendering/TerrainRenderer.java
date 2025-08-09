@@ -686,8 +686,8 @@ public class TerrainRenderer
                 {
                     if (Game.sampleEdgeGroundDepth(x - 1, y) >= 0) o |= BaseShapeRenderer.hide_left;
                     if (Game.sampleEdgeGroundDepth(x + 1, y) >= 0) o |= BaseShapeRenderer.hide_right;
-                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_front;
-                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_back;
+                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_back;
+                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_front;
                 }
 
                 double extra = getExtra(x, y);

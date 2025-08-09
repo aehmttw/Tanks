@@ -70,7 +70,7 @@ public class TerrainRenderer
         double extra = 0;
         for (int dir = 0; dir < 4; dir++)
             extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Direction.X[dir], y + Direction.Y[dir]));
-        extra += Game.sampleEdgeGroundDepth(x, y);
+        extra += Math.max(0, Game.sampleEdgeGroundDepth(x, y));
 
         return extra;
     }

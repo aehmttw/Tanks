@@ -105,6 +105,33 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     }
 
     @Override
+    public void fillRect(double x, double y, double z, double sX, double sY, boolean depthTest)
+    {
+        if (depthTest)
+        {
+            this.window.enableDepthtest();
+
+            if (this.window.colorA < 1)
+                glDepthMask(false);
+        }
+        else
+            this.window.disableDepthtest();
+
+        glBegin(GL_QUADS);
+        glVertex3d(x, y, z);
+        glVertex3d(x + sX, y, z);
+        glVertex3d(x + sX, y + sY, z);
+        glVertex3d(x, y + sY, z);
+        glEnd();
+
+        if (depthTest)
+        {
+            glDepthMask(true);
+            this.window.disableDepthtest();
+        }
+    }
+
+    @Override
     public void fillPartialOval(double x, double y, double sX, double sY, double start, double end)
     {
         x += sX / 2;
@@ -408,7 +435,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glEnd();
     }
 
-    public void fillRect(double x, double y, double sX, double sY, double radius)
+    public void fillRoundedRect(double x, double y, double sX, double sY, double radius)
     {
         if (radius <= 0.2)
         {
@@ -807,7 +834,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         if (width >= Math.min(sX, sY) * 0.9 || radius >= Math.min(sX, sY) * 0.9)
         {
-            fillRect(x, y, sX, sY, radius);
+            fillRoundedRect(x, y, sX, sY, radius);
             return;
         }
 

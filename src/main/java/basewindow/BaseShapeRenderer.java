@@ -48,7 +48,9 @@ public abstract class BaseShapeRenderer
 
     public abstract void fillRect(double x, double y, double sX, double sY);
 
-    public abstract void fillRect(double x, double y, double sX, double sY, double radius);
+    public abstract void fillRect(double x, double y, double z, double sX, double sY, boolean depthTest);
+
+    public abstract void fillRoundedRect(double x, double y, double sX, double sY, double radius);
 
     public abstract void fillBox(double x, double y, double z, double sX, double sY, double sZ, String texture);
 

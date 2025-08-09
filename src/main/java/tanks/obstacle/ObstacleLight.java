@@ -92,7 +92,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
 	public void draw3dOutline(double r, double g, double b, double a)
 	{
 		Drawing.drawing.setColor(r, g, b, a);
-		Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size / 2, Obstacle.draw_size / 2, Obstacle.draw_size / 2);
+		Drawing.drawing.fillBox(this.posX, this.posY, Game.sampleTerrainGroundHeight(this.posX, this.posY), Obstacle.draw_size / 2, Obstacle.draw_size / 2, Obstacle.draw_size / 2);
 	}
 
 	@Override

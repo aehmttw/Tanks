@@ -1,7 +1,7 @@
 package tanks;
 
 import basewindow.*;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
@@ -12,7 +12,7 @@ import tanks.tank.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static tanks.Panel.notifs;
+import static tanks.Panel.notifications;
 
 public class DebugKeybinds
 {
@@ -21,12 +21,33 @@ public class DebugKeybinds
         if (!Game.game.window.pressedKeys.contains(InputCodes.KEY_F3))
             return;
 
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_Q))
+        {
+            Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_Q);
+
+            notifications.add(new ScreenElement.Notification("Debug keybinds, press \u00A7255127000255F3\u00A7r with: \n " +
+                    "\u00A7255127000255Q\u00A7r -> show help \n " +
+                    "\u00A7255127000255B\u00A7r -> draw collision boxes \n " +
+                    "\u00A7255127000255V\u00A7r -> reload tiles \n " +
+                    "\u00A7255127000255K\u00A7r -> log pressed keys to console \n " +
+                    "\u00A7255127000255D\u00A7r -> clear the chat \n " +
+                    "\u00A7255127000255A\u00A7r -> reload terrain renderer \n " +
+                    "\u00A7255127000255T\u00A7r -> reload shader \n " +
+                    "\u00A7255127000255Hold\u00A7r -> show tile coordinates \n " +
+                    "\u00A7255127000255Hold + S\u00A7r -> show mouse coordinates \n " +
+                    "\u00A7255127000255Hold + Shift + S\u00A7r -> show offset mouse coordinates and scales \n " +
+                    "\u00A7255127000255Hold + 1\u00A7r -> show tile details \n " +
+                    "\u00A7255127000255Hold + 2\u00A7r -> show movable metadata \n " +
+                    "\u00A7255127000255Hold + 3\u00A7r -> show obstacle metadata \n " +
+                    "\u00A7255127000255F12\u00A7r -> Crash the game", 2000, 350));
+        }
+
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_B))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_B);
             Game.drawFaces = !Game.drawFaces;
-            notifs.add(new ScreenElement.Notification("Collision boxes: \u00a7255200000255"
-                    + (Game.drawFaces ? "shown" : "hidden"), 200));
+            notifications.add(new ScreenElement.Notification("Collision boxes: \u00a7255127000255"
+                    + (Game.drawFaces ? "shown" : "hidden"), 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_V))
@@ -36,16 +57,16 @@ public class DebugKeybinds
                 Game.currentLevel.reloadTiles();
             else
                 Chunk.populateChunks(Chunk.defaultLevel);
-            notifs.add(new ScreenElement.Notification(Game.currentLevel != null ? "Reloaded tiles with current level" :
-                    "Reloaded tiles with default level", 200));
+            notifications.add(new ScreenElement.Notification(Game.currentLevel != null ? "Reloaded tiles with current level" :
+                    "Reloaded tiles with default level", 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_G))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_G);
             Chunk.debug = !Chunk.debug;
-            notifs.add(new ScreenElement.Notification("Chunk borders: \u00a7255200000255"
-                    + (Chunk.debug ? "shown" : "hidden"), 200));
+            notifications.add(new ScreenElement.Notification("Chunk borders: \u00a7255127000255"
+                    + (Chunk.debug ? "shown" : "hidden"), 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_K))
@@ -56,7 +77,7 @@ public class DebugKeybinds
             System.out.println("pressedKeys: " + func.apply(Game.game.window.pressedKeys));
             System.out.println("validPressedKeys: " + func.apply(Game.game.window.validPressedKeys));
             System.out.println("textPressedKeys: " + func.apply(Game.game.window.textPressedKeys));
-            notifs.add(new ScreenElement.Notification("Pressed keys have been logged to the console", 300));
+            notifications.add(new ScreenElement.Notification("Pressed keys have been logged to the console", 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_D))
@@ -75,7 +96,7 @@ public class DebugKeybinds
                 {
                     chat.clear();
                 }
-                notifs.add(new ScreenElement.Notification("Chat cleared", 200));
+                notifications.add(new ScreenElement.Notification("Chat cleared", 800));
             }
         }
 
@@ -86,10 +107,10 @@ public class DebugKeybinds
             if (!(Game.screen instanceof ScreenCrusadeDetails))
             {
                 Drawing.drawing.terrainRenderer.reset();
-                notifs.add(new ScreenElement.Notification("Terrain reloaded!"));
+                notifications.add(new ScreenElement.Notification("Terrain reloaded!", 800));
             }
             else
-                notifs.add(new ScreenElement.Notification("F3+A doesn't work here!"));
+                notifications.add(new ScreenElement.Notification("F3+A doesn't work here!", 800));
 
         }
 
@@ -126,7 +147,7 @@ public class DebugKeybinds
 
             Game.game.shaderInstances = newShaders;
             Drawing.drawing.terrainRenderer.reset();
-            notifs.add(new ScreenElement.Notification("Shaders reloaded! (Remember to rebuild)"));
+            notifications.add(new ScreenElement.Notification("Shaders reloaded! (Remember to rebuild)"));
         }
 
         int brightness;
@@ -199,9 +220,9 @@ public class DebugKeybinds
             }
             else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_2))
             {
-                ObjectArrayList<Movable> v = Movable.getMovablesInRadius(mx, my, 50);
+                ObjectSet<Movable> v = Movable.getMovablesInRadius(mx, my, 50);
                 if (!v.isEmpty())
-                    text += " M: " + v.get(0).getMetadata();
+                    text += " M: " + v.stream().iterator().next().getMetadata();
             }
             else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_3))
             {

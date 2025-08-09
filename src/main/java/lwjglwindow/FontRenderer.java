@@ -91,12 +91,27 @@ public class FontRenderer extends BaseFontRenderer
 		double curX = x;
 		char[] c = s.toCharArray();
 
+		double r0 = this.window.colorR;
+		double g0 = this.window.colorG;
+		double b0 = this.window.colorB;
+		double a0 = this.window.colorA;
+
 		for (int i = 0; i < c.length; i++)
 		{
 			if (c[i] == '\u00C2')
 				continue;
 			else if (c[i] == '\u00A7')
 			{
+				if (s.length() <= i + 1)
+					continue;
+
+				if (c[i + 1] == 'r')
+				{
+					i++;
+					this.window.setColor(r0 * 255, g0 * 255, b0 * 255, a0 * 255);
+					continue;
+				}
+
 				if (s.length() <= i + 12)
 					continue;
 
@@ -128,12 +143,26 @@ public class FontRenderer extends BaseFontRenderer
 		char[] c = s.toCharArray();
 		double opacity = this.window.colorA;
 
+		double r0 = this.window.colorR;
+		double g0 = this.window.colorG;
+		double b0 = this.window.colorB;
+		double a0 = this.window.colorA;
+
 		for (int i = 0; i < c.length; i++)
 		{
 			if (c[i] == '\u00C2')
 				continue;
 			else if (c[i] == '\u00A7')
 			{
+				if (s.length() <= i + 1)
+					continue;
+
+				if (c[i + 1] == 'r')
+				{
+					i++;
+					this.window.setColor(r0 * 255, g0 * 255, b0 * 255, a0 * 255);
+					continue;
+				}
 				if (s.length() <= i + 12)
 					continue;
 
@@ -168,6 +197,15 @@ public class FontRenderer extends BaseFontRenderer
 				continue;
 			else if (c[i] == '\u00A7')
 			{
+				if (s.length() <= i + 1)
+					continue;
+
+				if (c[i + 1] == 'r')
+				{
+					i++;
+					continue;
+				}
+
 				if (s.length() <= i + 12)
 					continue;
 

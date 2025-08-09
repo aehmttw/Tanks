@@ -8,6 +8,7 @@ import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.IOverlayScreen;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.event.EventObstacleShrubberyBurn;
+import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderShrubbery;
 import tanks.tank.Tank;
 
@@ -47,6 +48,7 @@ public class ObstacleShrubbery extends Obstacle
 
 		this.description = "A destructible bush in which you can hide by standing still";
 		this.renderer = ShaderShrubbery.class;
+		this.tileRenderer = ShaderGroundObstacle.class;
 	}
 
 	@Override
@@ -100,7 +102,7 @@ public class ObstacleShrubbery extends Obstacle
 	public void draw3dOutline(double r, double g, double b, double a)
 	{
 		Drawing.drawing.setColor(r, g, b, a);
-		Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight);
+		Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)));
 	}
 
 	public boolean isInside(double x, double y)

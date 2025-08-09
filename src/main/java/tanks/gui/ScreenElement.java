@@ -1,6 +1,7 @@
 package tanks.gui;
 
 import tanks.Drawing;
+import tanks.Game;
 import tanks.Level;
 import tanks.Panel;
 
@@ -8,70 +9,71 @@ import java.util.ArrayList;
 
 public abstract class ScreenElement
 {
-    public int duration;
+    public double duration;
     public double age = 0;
 
     public static class Notification extends ScreenElement
     {
         public ArrayList<String> text;
-        public double sY;
-        public boolean fadeStart = false;
-
-        public int colorR = 255, colorG = 255, colorB = 128;
+        public double sizeY;
+        public double removeDuration = 100;
+        public double width = 250;
 
         public Notification(String text)
         {
-            this(text, 500);
+            this(text, 1000, 250);
         }
 
-        public Notification(String text, int duration)
+        public Notification(String text, double duration)
         {
-            this.text = Drawing.drawing.wrapText(text, 250, 16);
-            this.duration = duration;
-            this.sY = Math.max(4, this.text.size() + 2) * 20;
+            this(text, duration, 250);
         }
 
-        public void draw(double prevSY)
+        public Notification(String text, double duration, double width)
+        {
+            Drawing.drawing.playSound("toast.ogg");
+            this.text = Drawing.drawing.wrapText(text, width, 16);
+            this.width = width;
+            this.duration = duration;
+            this.sizeY = Math.max(2, this.text.size() + 1) * 20;
+        }
+
+        public double draw(double prevSY)
         {
             this.age += Panel.frameFrequency;
 
-            double fadeDuration = Math.min(75, duration * 0.2);
-            double mult = Math.sin(Math.min(Math.min(1, age / fadeDuration), 1 - Math.max(0, age - duration + fadeDuration) / fadeDuration) * Math.PI / 2);
-            double addX = (1 - mult) * 400, addY = (1 - mult) * 50, colA = mult * 255;
-            double x = Drawing.drawing.interfaceSizeX - 320;
-            double y = Drawing.drawing.interfaceSizeY - Drawing.drawing.statsHeight - sY - 80 - prevSY;
+            double mult = Math.sin(Math.min(1, this.age / 50.0) * Math.PI / 2);
+            double addX = (1 - mult) * 400;
+            double colA = mult * 255 * Math.min(1, 2.0 - this.age / (this.duration * 0.5));
+            double x = Drawing.drawing.interfaceSizeX - 70 - this.width;
+            double y = Drawing.drawing.interfaceSizeY - Drawing.drawing.statsHeight - sizeY - 80 - prevSY;
 
-            if (!fadeStart && duration - age < fadeDuration)
+            double bg = Level.isDark() ? 0 : 255;
+            double fg = Level.isDark() ? 255 : 0;
+
+            Drawing.drawing.setColor(bg, bg, bg, colA / 2);
+            Drawing.drawing.drawConcentricPopup(x + this.width / 2 + 33 + addX, y + sizeY / 2, this.width + 65, sizeY + 10, 5, 27);
+            Drawing.drawing.setInterfaceFontSize(16);
+
+            Drawing.drawing.setColor(fg, fg, fg, colA);
+            for (int i = 0; i < this.text.size(); i++)
             {
-                fadeStart = true;
-                Panel.lastNotifTime = System.currentTimeMillis();
+                double r = Game.game.window.colorR;
+                double g = Game.game.window.colorG;
+                double b = Game.game.window.colorB;
+                Drawing.drawing.setColor(fg, fg, fg, colA);
+                Drawing.drawing.drawUncenteredInterfaceText(x + 50 + addX, y + i * 20 + 12, String.format("\u00A7%03d%03d%03d255", (int) (r * 255), (int) (g * 255), (int) (b * 255)) + this.text.get(i));
             }
 
-            Drawing.drawing.setColor(0, 0, 0, colA / 2);
-            Drawing.drawing.drawPopup(x + 158 + addX, y + addY + sY / 2, 315, sY + 10, 5, 5);
-            Drawing.drawing.setInterfaceFontSize(16);
-
-            Drawing.drawing.setColor(colorR, colorG, colorB);
-            Drawing.drawing.fillInterfaceProgressRect(x + 157.5 + addX, y + addY + sY - 2.5, 303, 5, 1 - Math.min(duration, age + fadeDuration - 10) / duration);
-
-            Drawing.drawing.setColor(255, 255, 255, colA);
-            for (int i = 0; i < this.text.size(); i++)
-                Drawing.drawing.drawUncenteredInterfaceText(x + 50 + addX, y + addY + i * 20 + 12, this.text.get(i));
-
             Drawing.drawing.setColor(0, 150, 255, colA);
-            Drawing.drawing.fillInterfaceOval(x + 27 + addX, y + addY + 20, 25, 25);
+            Drawing.drawing.fillInterfaceOval(x + 27 + addX, y + 20, 25, 25);
 
             Drawing.drawing.setColor(255, 255, 255, colA);
             Drawing.drawing.setInterfaceFontSize(16);
-            Drawing.drawing.drawInterfaceText(x + 27 + addX, y + addY + 20, "!");
-        }
+            Drawing.drawing.drawInterfaceText(x + 27 + addX, y + 20, "!");
 
-        public Notification setColor(int r, int g, int b)
-        {
-            this.colorR = r;
-            this.colorG = g;
-            this.colorB = b;
-            return this;
+            double deteriorationProgress = Math.max(this.age - this.duration, 0) / this.removeDuration;
+            return (this.sizeY + 15) * (Math.sin(Math.PI * (0.5 - deteriorationProgress)) + 1) / 2;
         }
     }
 

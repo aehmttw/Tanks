@@ -123,7 +123,7 @@ public class TeleporterOrb extends Movable
 		{
 			Game.removeMovables.add(this);
 			this.tank.invulnerable = false;
-			this.tank.currentlyTargetable = true;
+			this.tank.currentlyTargetable = this.tank.targetable;
 			this.tank.inControlOfMotion = true;
 			this.tank.positionLock = false;
 

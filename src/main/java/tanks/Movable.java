@@ -2,6 +2,8 @@ package tanks;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import tanks.effect.AttributeModifier;
 import tanks.effect.EffectManager;
 import tanks.gui.screen.ScreenGame;
@@ -346,9 +348,10 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	}
 
 	/** Field to cache the movable array for reuse */
-	private static final ObjectArrayList<Movable> movableOut = new ObjectArrayList<>();
+	private static final ObjectSet<Movable> movableOut = new ObjectOpenHashSet<>();
+	private static final ObjectArrayList<Movable> movableOutList = new ObjectArrayList<>();
 
-    public static ObjectArrayList<Movable> getCircleCollision(GameObject self)
+    public static ObjectSet<Movable> getCircleCollision(GameObject self)
     {
         movableOut.clear();
         double x = self.posX, y = self.posY;
@@ -363,7 +366,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         return movableOut;
     }
 
-    public static ObjectArrayList<Movable> getSquareCollision(GameObject self)
+    public static ObjectSet<Movable> getSquareCollision(GameObject self)
     {
         movableOut.clear();
         double bound = self.getSize() / 2 + Game.tile_size / 2;
@@ -383,7 +386,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	/** Expects all pixel coordinates.
 	 * @return all the movables within the specified range */
-	public static ObjectArrayList<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
+	public static ObjectSet<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
 	{
 		movableOut.clear();
         for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
@@ -396,7 +399,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	/** Expects all pixel coordinates.
 	 * @return all the movables within a certain radius of the position */
-	public static ObjectArrayList<Movable> getMovablesInRadius(double posX, double posY, double radius)
+	public static ObjectSet<Movable> getMovablesInRadius(double posX, double posY, double radius)
 	{
 		movableOut.clear();
         for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
@@ -408,9 +411,11 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public static Movable findMovable(double x, double y)
 	{
-		ObjectArrayList<Movable> movables = Movable.getMovablesInRadius(x, y, 1);
-		if (!movables.isEmpty())
-			return movables.get(0);
+		Movable.getMovablesInRadius(x, y, 1);
+		movableOutList.clear();
+		movableOutList.addAll(movableOut);
+		if (!movableOutList.isEmpty())
+			return movableOutList.get(0);
 		return null;
 	}
 

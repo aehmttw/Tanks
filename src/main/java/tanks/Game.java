@@ -1130,7 +1130,7 @@ public class Game
 
 		Game.redrawObstacles.add(o);
 
-		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY)
+		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && o.replaceTiles)
 			Game.redrawGroundTiles.add(new GroundTile(x, y));
 	}
 

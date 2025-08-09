@@ -19,8 +19,7 @@ import java.util.*;
 public class Panel
 {
     public static boolean onlinePaused;
-    public static LinkedList<Notification> notifs = new LinkedList<>();
-	public static long lastNotifTime = 0;
+    public static ArrayList<Notification> notifications = new ArrayList<>();
 	public static CenterMessage currentMessage;
 	public static String lastWindowTitle = "";
 
@@ -215,7 +214,7 @@ public class Panel
 
 	public void update()
 	{
-		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F12) && Game.game.window.validPressedKeys.contains(InputCodes.KEY_LEFT_ALT) && Game.debug)
+		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F12) && Game.game.window.validPressedKeys.contains(InputCodes.KEY_F3) && Game.debug)
 		{
 			Game.game.window.validPressedKeys.clear();
 			Game.exitToCrash(new Exception("Manually initiated crash"));
@@ -225,7 +224,7 @@ public class Panel
 		{
 			try
 			{
-				Game.game.window.screenshot(saveScreenshotDir);
+				Game.game.window.screenshot(saveScreenshotDir, false);
 				saveScreenshotDir = null;
 			}
 			catch (Exception e)
@@ -245,8 +244,7 @@ public class Panel
 				try
 				{
 					String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
-					Game.game.window.screenshot(dir);
-					ScreenOverlayChat.notify("Screenshot saved to " + dir + "! \n Press Shift + " + Game.game.input.screenshot.getInputs() + " to open the screenshots directory.");
+					notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) + "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.", 1200, 400));
 				}
 				catch (Exception e)
 				{
@@ -832,23 +830,22 @@ public class Panel
 			this.drawBar();
 		}
 
-		if (!notifs.isEmpty())
+		if (!notifications.isEmpty())
 		{
 			double sy = 0;
-			for (int i = 0; i < notifs.size(); i++)
+			for (int i = 0; i < notifications.size(); i++)
 			{
-				if (i == 1 && notifs.get(0).fadeStart)
-					sy -= Math.min(750, System.currentTimeMillis() - lastNotifTime) * (notifs.get(0).sY + 100) / 750;
-
-				Notification n = notifs.get(i);
+				Notification n = notifications.get(i);
 				if (i > 0)
-					n.age = Math.max(0, Math.min(n.age, notifs.get(i-1).age - 25));
-				n.draw(sy);
-				sy += n.sY + 15;
-			}
+					n.age = Math.max(0, Math.min(n.age, notifications.get(i-1).age - 25));
+				sy += n.draw(sy);
 
-			if (notifs.get(0).age > notifs.get(0).duration)
-				notifs.pop();
+				if (notifications.get(i).age > notifications.get(i).duration + notifications.get(i).removeDuration)
+				{
+					notifications.remove(i);
+					i--;
+				}
+			}
 		}
 
 		if (currentMessage != null)

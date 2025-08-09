@@ -48,7 +48,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	 */
 	public boolean batchDraw = true;
 	public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
-	public Class<? extends ShaderGroup> tileRenderer = ShaderGroundObstacle.class;
+	public Class<? extends ShaderGroup> tileRenderer = ShaderGroup.class;
 
 	/** Obstacles with different render numbers can have different values for their uniforms */
 	public int rendererNumber = 0;

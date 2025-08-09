@@ -237,12 +237,14 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         ItemBar b = this.player.hotbar.itemBar;
         ItemBullet.ItemStackBullet ib = null;
         ItemMine.ItemStackMine im = null;
+        Item.ItemStack<?> i2 = null;
 
         if (this.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
             ib = (ItemBullet.ItemStackBullet) this.getPrimaryAbility();
 
-        if (this.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
-            im = (ItemMine.ItemStackMine) this.getSecondaryAbility();
+        i2 = this.getSecondaryAbility();
+        if (i2 instanceof ItemMine.ItemStackMine)
+            im = (ItemMine.ItemStackMine) i2;
 
         int hotbarSlots = (this.player.hotbar.itemBar.showItems ? ItemBar.item_bar_size : 0);
 
@@ -263,8 +265,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         double cooldown = ib == null ? 0 : ib.cooldown;
         double cooldownBase = ib == null ? 0 : ib.item.cooldownBase;
 
-        double cooldown2 = im == null ? 0 : im.cooldown;
-        double cooldownBase2 = im == null ? 0 : im.item.cooldownBase;
+        double cooldown2 = i2 == null ? 0 : i2.cooldown;
+        double cooldownBase2 = i2 == null ? 0 : i2.item.cooldownBase;
 
         if (lastLiveBullets != lb || mlb != lastMaxLiveBullets || lm != lastLiveMines || mlm != lastMaxLiveMines)
             Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, lb, mlb, lm, mlm, cooldown, cooldownBase, cooldown2, cooldownBase2));

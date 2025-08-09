@@ -59,7 +59,8 @@ public class ObstacleSnow extends Obstacle
     @Override
     public void draw3dOutline(double r, double g, double b, double a)
     {
-
+        Drawing.drawing.setColor(r, g, b, a);
+        Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.depth * 0.2 * Game.tile_size);
     }
 
     @Override

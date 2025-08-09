@@ -293,12 +293,12 @@ public class EditorButtons
                 if (!vertical)
                 {
                     double centerY = posY - sizeY / 2 + Math.max(sizeY / 2, s / 2);
-                    Drawing.drawing.fillInterfaceRect(posX, centerY, sizeX, s, 9999);
+                    Drawing.drawing.fillInterfaceRoundedRect(posX, centerY, sizeX, s, 9999);
                 }
                 else
                 {
                     double centerX = posX - sizeX / 2 + Math.max(sizeX / 2, s / 2);
-                    Drawing.drawing.fillInterfaceRect(centerX, posY, s, sizeY, 9999);
+                    Drawing.drawing.fillInterfaceRoundedRect(centerX, posY, s, sizeY, 9999);
                 }
 
                 for (int i = subMenuButtons.size() - 1; i >= 0; i--)

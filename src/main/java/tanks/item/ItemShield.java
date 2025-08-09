@@ -61,7 +61,7 @@ public class ItemShield extends Item implements ICopyable<ItemShield>
         @Override
         public boolean usable(Tank t)
         {
-            return (this.item.max <= 0 || t.health < this.item.max) && this.cooldown <= 0;
+            return (this.item.max <= 0 || t.health < this.item.max + t.baseHealth) && this.cooldown <= 0;
         }
     }
 }

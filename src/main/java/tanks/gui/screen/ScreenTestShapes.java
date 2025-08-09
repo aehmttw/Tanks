@@ -73,7 +73,7 @@ public class ScreenTestShapes extends Screen
 
         Drawing.drawing.setColor(50, 50, 50, 128);
         Drawing.drawing.drawRect(this.centerX - this.objXSpace / 2 - 10, this.centerY - this.objYSpace * 2 + 20, length, width, borderWidth, borderRadius);
-        Drawing.drawing.fillRect(this.centerX + this.objXSpace / 2 + 10, this.centerY - this.objYSpace * 2 + 20, length, width, borderRadius);
+        Drawing.drawing.fillRoundedRect(this.centerX + this.objXSpace / 2 + 10, this.centerY - this.objYSpace * 2 + 20, length, width, borderRadius);
         Drawing.drawing.setColor(255, 0, 0, 128);
 
         double size = Math.min(Math.min(10, length - 15), Math.min(10, width - 15));

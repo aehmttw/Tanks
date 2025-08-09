@@ -283,6 +283,13 @@ public class Chunk
         return getIfPresent(((int) (tileX / Game.tile_size)), ((int) (tileY / Game.tile_size)), fallback, func);
     }
 
+    public static <K> K get(double tileX, double tileY, Function<Tile, K> func)
+    {
+        Tile t = getTile(tileX, tileY);
+        if (t == null) throw new RuntimeException("not present");
+        return func.apply(t);
+    }
+
     public static <K> K getIfPresent(int tileX, int tileY, K fallback, Function<Tile, K> func)
     {
         Tile t = getTile(tileX, tileY);

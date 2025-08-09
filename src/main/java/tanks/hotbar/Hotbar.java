@@ -526,6 +526,7 @@ public class Hotbar
 		{
 			drawBullets();
 			drawMines();
+			drawShields();
 		}
 
         if (Game.currentLevel instanceof Minigame)
@@ -914,6 +915,77 @@ public class Hotbar
 
 			if (mines >= 0)
 				Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY, z, mines + "", false);
+
+			Drawing.drawing.setFontSize(6 * ms);
+			if (remainingItems > 0)
+				Drawing.drawing.drawText(Game.playerTank.posX + 15, Game.playerTank.posY + 15, z, remainingItems + "", false);
+		}
+	}
+
+	public void drawShields()
+	{
+		double cooldownFrac2 = 0;
+		double mcooldown = 50;
+
+		if (Game.playerTank != null && !Game.playerTank.destroy)
+		{
+			double z = Game.tile_size / 2 + Game.playerTank.posZ;
+			if (!Game.enable3d)
+				z = 0;
+
+			int remainingItems = 0;
+
+			boolean clientPlaying = Game.playerTank instanceof TankPlayerController && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing;
+
+			if (clientPlaying)
+			{
+				TankPlayerController p = ((TankPlayerController) Game.playerTank);
+
+				cooldownFrac2 = p.mineCooldown / p.mineCooldownBase;
+				if (p.mineCooldownBase > mcooldown)
+					mcooldown = p.mineCooldownBase;
+			}
+
+			Item.ItemStack<?> st = Game.player.hotbar.itemBar.getSelectedAction(true);
+			ItemShield.ItemStackShield s = null;
+			if (st instanceof ItemShield.ItemStackShield)
+				s = (ItemShield.ItemStackShield) st;
+
+			if (s != null)
+			{
+				if (!clientPlaying)
+				{
+					cooldownFrac2 = s.cooldown / s.item.cooldownBase;
+				}
+
+				remainingItems = s.stackSize;
+			}
+			else
+				return;
+
+			if (lastCooldownFrac2 < cooldownFrac2 && !Game.playerTank.destroy && !ignoreInitialStats)
+				timeSinceMineChange = 0;
+
+			double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
+
+			double ms = 2;
+
+			double frac = 1 - cooldownFrac2;
+
+			Drawing.drawing.setColor(140, 140, 140, opacity1 * 255, 255);
+			Drawing.drawing.drawImage("shield_icon.png", Game.playerTank.posX, Game.playerTank.posY, z, 18 * ms, 18 * ms, false, 0, 0, 1, 1 - frac);
+
+			Drawing.drawing.setColor(255, 255, 255, opacity1 * 255, 255);
+			if (Game.playerTank.baseHealth + s.item.max <= Game.playerTank.health)
+				Drawing.drawing.setColor(180, 180, 180, opacity1 * 255, 255);
+
+			Drawing.drawing.drawImage("shield_icon.png", Game.playerTank.posX, Game.playerTank.posY - 18 * ms * (frac - 1), z, 18 * ms, 18 * ms, false, 0, 1 - frac, 1, 1);
+
+			Drawing.drawing.setColor(0, 0, 0, opacity1 * 255, 255);
+			Drawing.drawing.setFontSize(6 * ms);
+			Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY - 9, z, Game.playerTank.health + "", false);
+			Drawing.drawing.fillRect(Game.playerTank.posX, Game.playerTank.posY - 2, z, 20, 2, false);
+			Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY + 5, z, "" + (Game.playerTank.baseHealth + s.item.max), false);
 
 			Drawing.drawing.setFontSize(6 * ms);
 			if (remainingItems > 0)

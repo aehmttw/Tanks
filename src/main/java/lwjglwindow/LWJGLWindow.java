@@ -1307,7 +1307,7 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public void screenshot(String dir)
+	public String screenshot(String dir, boolean async)
     {
 		glfwGetFramebufferSize(window, w, h);
 
@@ -1320,30 +1320,38 @@ public class LWJGLWindow extends BaseWindow
 		GL20.glReadBuffer(GL_FRONT);
 		GL20.glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
-		new Thread(() ->
+		File f = new File(dir);
+
+		Runnable r = () ->
 		{
-            try
-            {
-                // adapted from http://forum.lwjgl.org/index.php?topic=6452.0
-                BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+			try
+			{
+				// adapted from http://forum.lwjgl.org/index.php?topic=6452.0
+				BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 
-                for (int x = image.getWidth() - 1; x >= 0; x--)
-                {
-                    for (int y = image.getHeight() - 1; y >= 0; y--)
-                    {
-                        int i = (x + w * y) * 4;
-                        image.setRGB(x, image.getHeight() - 1 - y, (((buffer.get(i) & 0xFF) & 0x0ff) << 16) | (((buffer.get(i + 1) & 0xFF) & 0x0ff) << 8) | ((buffer.get(i + 2) & 0xFF) & 0x0ff));
-                    }
-                }
+				for (int x = image.getWidth() - 1; x >= 0; x--)
+				{
+					for (int y = image.getHeight() - 1; y >= 0; y--)
+					{
+						int i = (x + w * y) * 4;
+						image.setRGB(x, image.getHeight() - 1 - y, (((buffer.get(i) & 0xFF) & 0x0ff) << 16) | (((buffer.get(i + 1) & 0xFF) & 0x0ff) << 8) | ((buffer.get(i + 2) & 0xFF) & 0x0ff));
+					}
+				}
 
-                File f = new File(dir);
-                ImageIO.write(image, "png", f);
-            }
-            catch (IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        }).start();
+				ImageIO.write(image, "png", f);
+			}
+			catch (IOException e)
+			{
+				throw new RuntimeException(e);
+			}
+		};
+
+		if (async)
+			new Thread(r).start();
+		else
+			r.run();
+
+		return f.getPath();
 	}
 
 	public void setForceModelGlow(boolean glow)

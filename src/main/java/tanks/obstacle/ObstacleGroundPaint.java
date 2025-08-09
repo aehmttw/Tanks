@@ -36,8 +36,8 @@ public class ObstacleGroundPaint extends Obstacle
     @Override
     public void draw3dOutline(double r, double g, double b, double a)
     {
-        Drawing.drawing.setColor(r, g, b);
-        Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);
+        Drawing.drawing.setColor(r, g, b, a);
+        Drawing.drawing.fillRect(this.posX, this.posY,  Game.sampleTerrainGroundHeight(this.posX, this.posY), Obstacle.draw_size, Obstacle.draw_size, false);
     }
 
     @Override

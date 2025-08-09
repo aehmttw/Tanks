@@ -9,6 +9,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.event.EventObstacleBoostPanelEffect;
 import tanks.rendering.ShaderBoostPanel;
+import tanks.rendering.ShaderGroundObstacle;
 import tanks.tank.Tank;
 
 public class ObstacleBoostPanel extends Obstacle
@@ -34,6 +35,7 @@ public class ObstacleBoostPanel extends Obstacle
         this.colorB = 0;
 
         this.renderer = ShaderBoostPanel.class;
+        this.tileRenderer = ShaderGroundObstacle.class;
 
         glow = Effect.createNewEffect(this.posX, this.posY, 0, Effect.EffectType.boostLight);
 
@@ -43,7 +45,7 @@ public class ObstacleBoostPanel extends Obstacle
     @Override
     public void draw3dOutline(double r, double g, double b, double a)
     {
-        Drawing.drawing.setColor(r, g, b);
+        Drawing.drawing.setColor(r, g, b, a);
         Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);
     }
 

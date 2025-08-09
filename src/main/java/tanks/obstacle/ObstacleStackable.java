@@ -1,7 +1,9 @@
 package tanks.obstacle;
 
+import basewindow.ShaderGroup;
 import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
+import tanks.rendering.ShaderGroundObstacle;
 import tanks.tankson.MetadataProperty;
 
 public class ObstacleStackable extends Obstacle
@@ -41,6 +43,7 @@ public class ObstacleStackable extends Obstacle
             this.stackColorB[i] = col2[2];
         }
 
+        this.tileRenderer = ShaderGroundObstacle.class;
         this.description = "A solid block which can be destroyed by mines";
     }
 

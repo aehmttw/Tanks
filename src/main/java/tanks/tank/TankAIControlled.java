@@ -2115,7 +2115,7 @@ public class TankAIControlled extends Tank implements ITankField
 			target = ray2.getTarget();
 		}
 
-		if (inRange && (target != null && !(target instanceof TankNPC) && target.equals(this.targetEnemy) || (target instanceof Tank && !((Tank) target).hidden && !Team.isAllied(target, this))))
+		if (inRange && (target != null && !(target instanceof TankNPC) && target.equals(this.targetEnemy) || (target instanceof Tank && !((Tank) target).hidden && !Team.isAllied(target, this) && ((Tank) target).currentlyTargetable)))
 		{
 			this.targetEnemy = target;
 			this.lockedAngle = searchAngle;

@@ -287,7 +287,7 @@ public abstract class BaseWindow
 
     public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
 
-    public abstract void screenshot(String dir) throws IOException;
+    public abstract String screenshot(String dir, boolean async) throws IOException;
 
     public abstract void setForceModelGlow(boolean glow);
 

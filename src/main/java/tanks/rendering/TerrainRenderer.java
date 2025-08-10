@@ -619,40 +619,49 @@ public class TerrainRenderer
         }
 
         if (!(Game.screen instanceof IBlankBackgroundScreen || (Game.screen instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) Game.screen).isOverlayEnabled())))
+            renderShaders();
+
+        Game.game.window.shaderDefault.set();
+    }
+
+    public void renderShaders()
+    {
+        for (int i = 0; i < 10; i++)
         {
-            for (int i = 0; i < 10; i++)
+            for (Class<? extends ShaderGroup> s : this.renderers.keySet())
             {
-                for (Class<? extends ShaderGroup> s : this.renderers.keySet())
+                try
                 {
-                    try
+                    RendererDrawLayer drawLayer = s.getAnnotation(RendererDrawLayer.class);
+                    if ((drawLayer == null && i == 5) || (drawLayer != null && drawLayer.value() == i))
                     {
-                        RendererDrawLayer drawLayer = s.getAnnotation(RendererDrawLayer.class);
-                        if ((drawLayer == null && i == 5) || (drawLayer != null && drawLayer.value() == i))
+                        ShaderGroup so = getShader(s);
+                        so.set();
+
+                        if (so instanceof IObstacleSizeShader)
+                            ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));
+
+                        if (so instanceof IObstacleTimeShader)
+                            ((IObstacleTimeShader) so).setTime(((int) System.currentTimeMillis()) % 30000);
+
+                        if (so instanceof IShrubHeightShader)
+                            ((IShrubHeightShader) so).setShrubHeight(getShrubHeight());
+
+                        if (so instanceof IGraphicsOptionsShader)
                         {
-                            ShaderGroup so = getShader(s);
-                            so.set();
-
-                            if (so instanceof IObstacleSizeShader)
-                                ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));
-
-                            if (so instanceof IObstacleTimeShader)
-                                ((IObstacleTimeShader) so).setTime(((int) System.currentTimeMillis()) % 30000);
-
-                            if (so instanceof IShrubHeightShader)
-                                ((IShrubHeightShader) so).setShrubHeight(getShrubHeight());
-
-                            this.drawMap(this.renderers.get(s), 0, 0);
+                            ((IGraphicsOptionsShader) so).setEnable3d(Game.enable3d);
+                            ((IGraphicsOptionsShader) so).setEnableFancyTerrain(Game.fancyTerrain);
                         }
+
+                        this.drawMap(this.renderers.get(s), 0, 0);
                     }
-                    catch (Exception e)
-                    {
-                        Game.exitToCrash(e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    Game.exitToCrash(e);
                 }
             }
         }
-
-        Game.game.window.shaderDefault.set();
     }
 
     public void drawTile(int x, int y)

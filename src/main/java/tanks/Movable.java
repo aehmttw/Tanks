@@ -100,6 +100,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public void refreshFaces()
     {
         ObjectArrayList<Chunk> cache = getTouchingChunks();
+        recordData("refreshFaces");
 
         for (Chunk c : prevChunks)
         {

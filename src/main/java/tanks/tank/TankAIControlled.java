@@ -653,9 +653,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.vX += this.aX * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
 			this.vY += this.aY * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
 
-			double currentSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
-
-			if (currentSpeed > maxSpeed * maxSpeedModifier)
+			if (getSpeed() > maxSpeed * maxSpeedModifier)
 				this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
 		}
 
@@ -2997,18 +2995,14 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void setPolarAcceleration(double angle, double acceleration)
 	{
-		double accX = acceleration * Math.cos(angle);
-		double accY = acceleration * Math.sin(angle);
-		this.aX = accX;
-		this.aY = accY;
+		this.aX = acceleration * Math.cos(angle);
+		this.aY = acceleration * Math.sin(angle);
 	}
 
 	public void addPolarAcceleration(double angle, double acceleration)
 	{
-		double accX = acceleration * Math.cos(angle);
-		double accY = acceleration * Math.sin(angle);
-		this.aX += accX;
-		this.aY += accY;
+		this.aX += acceleration * Math.cos(angle);
+		this.aY += acceleration * Math.sin(angle);
 	}
 
 	public void setAccelerationInDirection(double x, double y, double accel)
@@ -3030,26 +3024,9 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void setAccelerationInDirectionWithOffset(double x, double y, double accel, double a)
 	{
-		x -= this.posX;
-		y -= this.posY;
-
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y/x);
-		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-		angle += a;
-		double accX = accel * Math.cos(angle);
-		double accY = accel * Math.sin(angle);
-		this.aX = accX;
-		this.aY = accY;
+		double angle = getAngleInDirection(x, y) + a;
+		this.aX = accel * Math.cos(angle);
+		this.aY = accel * Math.sin(angle);
 	}
 
 	@Override

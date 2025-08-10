@@ -33,6 +33,7 @@ public class DebugKeybinds
                     "\u00A7255127000255D\u00A7r -> clear the chat \n " +
                     "\u00A7255127000255A\u00A7r -> reload terrain renderer \n " +
                     "\u00A7255127000255T\u00A7r -> reload shader \n " +
+                    "\u00A7255127000255G\u00A7r -> perform a GC \n " +
                     "\u00A7255127000255Hold\u00A7r -> show tile coordinates \n " +
                     "\u00A7255127000255Hold + S\u00A7r -> show mouse coordinates \n " +
                     "\u00A7255127000255Hold + Shift + S\u00A7r -> show offset mouse coordinates and scales \n " +

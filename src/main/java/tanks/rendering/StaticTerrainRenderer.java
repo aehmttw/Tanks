@@ -325,7 +325,26 @@ public class StaticTerrainRenderer extends TerrainRenderer
             }
         }
 
-        renderShaders();
+        for (int i = 0; i < 10; i++)
+        {
+            for (Class<? extends ShaderGroup> s : this.renderers.keySet())
+            {
+                try
+                {
+                    RendererDrawLayer drawLayer = s.getAnnotation(RendererDrawLayer.class);
+                    if ((drawLayer == null && i == 5) || (drawLayer != null && drawLayer.value() == i))
+                    {
+                        configureShader(s);
+                        this.drawMap(this.renderers.get(s), 0, 0);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Game.exitToCrash(e);
+                }
+            }
+        }
+
         Game.game.window.shaderDefault.set();
     }
 

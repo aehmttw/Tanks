@@ -153,6 +153,9 @@ public class Chunk
 
     public static void handleDirtyChunks()
     {
+        if (dirtyChunks.isEmpty())
+            return;
+
         for (Chunk c : dirtyChunks)
             c.faces.sort();
 

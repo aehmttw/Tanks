@@ -153,7 +153,8 @@ public class Game
 	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
     public static boolean drawAvoidObjects = false;
-	public static final boolean cinematic = false;
+    public static boolean recordMovableData = false;
+    public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;
 
@@ -186,7 +187,7 @@ public class Game
 	public static boolean showPathfinding = false;
 	public static boolean showUpdatingObstacles = false;
 	public static boolean immutableFaces = false;
-    public static boolean fixErrors = true;
+    public static boolean disableErrorFixing = false;
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;

@@ -188,14 +188,12 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
 
         if (this.destroysObstacles && !ScreenPartyLobby.isClient)
         {
-            for (Obstacle o: Obstacle.getObstaclesInRadius(posX, posY, radius))
+            for (Obstacle o: Obstacle.getObstaclesInRadius(posX, posY, radius + Game.tile_size / 2))
             {
-                if (Math.pow(Math.abs(o.posX - this.posX), 2) + Math.pow(Math.abs(o.posY - this.posY), 2) < Math.pow(radius + Game.tile_size / 2, 2) && o.destructible && !Game.removeObstacles.contains(o))
-                {
-                    o.onDestroy(this);
-                    o.playDestroyAnimation(this.posX, this.posY, this.radius);
-                    Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, this.posX, this.posY, this.radius + Game.tile_size / 2));
-                }
+                if (!o.destructible) continue;
+                o.onDestroy(this);
+                o.playDestroyAnimation(this.posX, this.posY, this.radius);
+                Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, this.posX, this.posY, this.radius + Game.tile_size / 2));
             }
         }
 

@@ -1094,6 +1094,8 @@ public class TankAIControlled extends Tank implements ITankField
 		this.possessingTank = t;
 		t.posX = this.posX;
 		t.posY = this.posY;
+        t.lastPosX = this.posX;
+        t.lastPosY = this.posY;
 		t.vX = this.vX;
 		t.vY = this.vY;
 		t.angle = this.angle;

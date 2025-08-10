@@ -8,6 +8,8 @@ import tanks.tank.*;
 import tanks.tankson.*;
 
 import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
 {
@@ -97,17 +99,21 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     public void refreshFaces()
     {
-        ObjectArrayList<Chunk> cache = getCurrentChunks();
+        ObjectArrayList<Chunk> cache = getTouchingChunks();
 
         for (Chunk c : prevChunks)
         {
             if (!cache.contains(c))
+            {
                 onLeaveChunk(c);
+                c.markDirty();
+            }
         }
+
         prevChunks.retainAll(cache);
         updateFaces();
 
-        for (Chunk c : cache)
+        for (Chunk c : getCurrentChunks())
         {
             if (prevChunks.add(c))
                 onEnterChunk(c);
@@ -138,17 +144,13 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     public ObjectArrayList<Chunk> getTouchingChunks()
 	{
-		double bound = getSize() / 2;
-		return Chunk.getChunksInRange(
-            Math.min(lastPosX, posX) - bound,
-            Math.min(lastPosY, posY) - bound,
-            Math.max(lastPosX, posX) + bound,
-            Math.max(lastPosY, posY) + bound
-        );
+		return getCurrentChunks();
 	}
 
 	public void update()
 	{
+        recordData("update");
+
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 
 		if (!destroy)
@@ -446,4 +448,71 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 			Game.exitToCrash(e);
 		}
 	}
+
+    public static ErrorHandler<Movable, Collection<Movable>> movableSyncHandler = new ErrorHandler<Movable, Collection<Movable>>(200, 2)
+    {
+        @Override
+        public Collection<Movable> containsErrors(Movable ignored)
+        {
+            // compute symmetric difference (A xor B)
+            Set<Movable> result = getDisjointMovables();
+            return result.isEmpty() ? noErrorReturnValue() : result;
+        }
+
+        @Override
+        public void handleError(Movable ignored, Collection<Movable> info)
+        {
+            System.err.println("-----Movable sync error-----\n" + info.stream().map(m ->
+                {
+                    boolean inGameMovables = Game.movables.contains(m);
+                    return String.format("%s: %sGame.movables, %s",
+                        gameObjectString(m),
+                        inGameMovables ? "*" : "!",
+                        Chunk.chunkList.stream().filter(c -> c.movables.contains(m) != inGameMovables)
+                            .map(c -> (c.movables.contains(m) ? "*" : "!") + c)
+                            .collect(Collectors.joining(", "))
+                    );
+                }
+            ).collect(Collectors.joining("\n")));
+            if (!Game.disableErrorFixing && Game.currentLevel != null)
+                Game.currentLevel.reloadTiles();
+        }
+    };
+
+    public static Set<Movable> getDisjointMovables()
+    {
+        Set<Movable> result = Chunk.chunkList.stream().flatMap(c -> c.movables.stream()).collect(Collectors.toSet());
+        result.addAll(Game.movables);
+        Set<Movable> disjoint = new HashSet<>(result);
+        disjoint.retainAll(Game.movables);
+        result.removeAll(disjoint);
+        return result;
+    }
+
+    public ArrayList<DebugData> data = new ArrayList<>();
+
+    public static class DebugData
+    {
+        public String name;
+        public double posX, posY, lastPosX, lastPosY, size;
+        public ObjectArrayList<Chunk> touchedChunks, prevChunks;
+
+        public DebugData(Movable b, String name)
+        {
+            this.name = name;
+            posX = b.posX;
+            posY = b.posY;
+            lastPosX = b.lastPosX;
+            lastPosY = b.lastPosY;
+            size = b.getSize();
+            touchedChunks = new ObjectArrayList<>(b.getTouchingChunks());
+            prevChunks = new ObjectArrayList<>(b.prevChunks);
+        }
+    }
+
+    public void recordData(String name)
+    {
+        if (Game.recordMovableData)
+            data.add(new DebugData(this, name));
+    }
 }

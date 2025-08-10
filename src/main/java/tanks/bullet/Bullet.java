@@ -2,26 +2,17 @@ package tanks.bullet;
 
 import basewindow.Color;
 import tanks.*;
-import tanks.effect.AttributeModifier;
-import tanks.effect.EffectManager;
-import tanks.effect.StatusEffect;
-import tanks.gui.ChatMessage;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.effect.*;
+import tanks.gui.*;
+import tanks.gui.screen.*;
 import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleStackable;
+import tanks.obstacle.*;
 import tanks.tank.*;
 import tanks.tankson.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 @TanksONable("bullet")
 public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable

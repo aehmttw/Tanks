@@ -1,6 +1,5 @@
 package tanks.obstacle;
 
-import basewindow.ShaderGroup;
 import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.rendering.ShaderGroundObstacle;

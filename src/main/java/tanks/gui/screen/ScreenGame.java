@@ -1014,7 +1014,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         for (ErrorHandler<?, ?> h : ErrorHandler.errorHandlers)
             h.updateTimer();
 
-        Chunk.movableSyncHandler.checkForErrors(null);
+        Movable.movableSyncHandler.checkForErrors(null);
 
         Game.player.hotbar.update();
         minimap.update();
@@ -2527,6 +2527,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 {
                     if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
                         ((IDrawableWithGlow) d).drawGlow();
+                }
+            }
+
+            if (i == 9 && Game.disableErrorFixing)
+            {
+                for (Movable m : Movable.getDisjointMovables())
+                {
+                    Drawing.drawing.setColor(255, 0, 0, 127);
+                    Drawing.drawing.fillRect(m.posX, m.posY, m.getSize(), m.getSize());
+                    m.draw();
                 }
             }
 

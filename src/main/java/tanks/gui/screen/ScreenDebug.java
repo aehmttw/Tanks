@@ -26,14 +26,15 @@ public class ScreenDebug extends Screen
     Button showUpdatingObstacles = createToggle("Show updating obstacles: ", b -> Game.showUpdatingObstacles = b, () -> Game.showUpdatingObstacles);
     Button immutableFaces = createToggle("Immutable faces: ", b -> Game.immutableFaces = b, () -> Game.immutableFaces);
     Button drawAvoidObjects = createToggle("Draw avoid objects: ", b -> Game.drawAvoidObjects = b, () -> Game.drawAvoidObjects);
-    Button fixErrors = createToggle("Fix errors: ", b -> Game.fixErrors = b, () -> Game.fixErrors);
+    Button disableFixes = createToggle("Disable fixes: ", b -> Game.disableErrorFixing = b, () -> Game.disableErrorFixing);
+    Button recordMovableData = createToggle("Record movable data: ", b -> Game.recordMovableData = b, () -> Game.recordMovableData);
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
 
     public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(
             test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable,
             fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles,
-            drawAutoZoom, immutableFaces, drawAvoidObjects, fixErrors
+            drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData
     )), 0, 0, -30);
 
     public Button createToggle(String text, Consumer<Boolean> setter, Producer<Boolean> getter)

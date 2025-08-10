@@ -253,7 +253,7 @@ public class Panel
 			}
 		}
 
-		this.frameStartTime = System.currentTimeMillis();
+        this.frameStartTime = System.currentTimeMillis();
 
 		if (firstFrame)
 			this.setUp();

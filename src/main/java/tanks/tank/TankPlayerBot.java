@@ -33,8 +33,8 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
 
         this.turretAimSpeed *= 2;
 
-        this.bulletItem.networkIndex = 0;
-        this.mineItem.networkIndex = -1;
+        this.bulletItem.networkIndex = -1;
+        this.mineItem.networkIndex = -2;
         this.seekChance *= 5;
 
         this.abilities.add(this.bulletItem);
@@ -138,7 +138,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
             }
         }
 
-        int netIndex = 0;
+        int netIndex = -1;
         for (Item.ItemStack<?> i: this.abilities)
         {
             i.networkIndex = netIndex;
@@ -168,7 +168,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
                 mines.add((ItemMine.ItemStackMine) s);
         }
 
-        int netIndex = 0;
+        int netIndex = -1;
         for (Item.ItemStack<?> i: this.abilities)
         {
             i.networkIndex = netIndex;
@@ -212,6 +212,9 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
 //        Drawing.drawing.drawText(this.posX + 25, this.posY + 25, 50, this.bulletItem.stackSize + "");
 //
 //        Drawing.drawing.drawText(this.posX - 25, this.posY + 25, 50, this.player.hotbar.coins + "");
+//
+//        Drawing.drawing.drawText(this.posX, this.posY + 35, 50, this.player.ownedBuilds.size() + "");
+
     }
 
     public void setBulletItem(ItemBullet.ItemStackBullet i)

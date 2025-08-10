@@ -2008,7 +2008,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			if (b instanceof BulletInstant)
 			{
-				this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX, this.nearestBullet.posY);
+				this.aimAngle = this.getAngleInDirection(this.nearestBulletDeflect.posX, this.nearestBulletDeflect.posY);
 				this.aim = true;
 			}
 			else

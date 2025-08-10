@@ -586,9 +586,9 @@ public abstract class Tank extends Movable implements ISolidObject
 
 				double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
 				if (GameObject.absoluteAngleBetween(this.orientation, dir) <= GameObject.absoluteAngleBetween(this.orientation + Math.PI, dir))
-					this.orientation -= GameObject.angleBetween(this.orientation, dir) / 20 * dist;
+					this.orientation -= GameObject.angleBetween(this.orientation, dir) / 20 * Math.min(10, dist);
 				else
-					this.orientation -= GameObject.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+					this.orientation -= GameObject.angleBetween(this.orientation + Math.PI, dir) / 20 * Math.min(10, dist);
 			}
 		}
 

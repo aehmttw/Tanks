@@ -204,7 +204,7 @@ public class TerrainRenderer
 
         int h = (int) (z / Game.tile_size) * 8;
 
-        if ((options & BaseShapeRenderer.hide_bottom) == 0)
+        if ((options & BaseShapeRenderer.hide_neg_z) == 0)
         {
             s.setColor(r1, g1, b1, a, g);
             addVertexCoord(s, shader, h + 1f);
@@ -222,7 +222,7 @@ public class TerrainRenderer
             s.addPoint(x0, y1, z0);
         }
 
-        if ((options & BaseShapeRenderer.hide_front) == 0)
+        if ((options & BaseShapeRenderer.hide_pos_y) == 0)
         {
             s.setColor(r2, g2, b2, a, g);
             addVertexCoord(s, shader, h + 7f);
@@ -240,7 +240,7 @@ public class TerrainRenderer
             s.addPoint(x0, y1, z0);
         }
 
-        if ((options & BaseShapeRenderer.hide_back) == 0)
+        if ((options & BaseShapeRenderer.hide_neg_y) == 0)
         {
             s.setColor(r2, g2, b2, a, g);
             addVertexCoord(s, shader, h + 5f);
@@ -258,7 +258,7 @@ public class TerrainRenderer
             s.addPoint(x0, y0, z0);
         }
 
-        if ((options & BaseShapeRenderer.hide_left) == 0)
+        if ((options & BaseShapeRenderer.hide_neg_x) == 0)
         {
             s.setColor(r3, g3, b3, a, g);
             addVertexCoord(s, shader, h + 6f);
@@ -276,7 +276,7 @@ public class TerrainRenderer
             s.addPoint(x0, y0, z0);
         }
 
-        if ((options & BaseShapeRenderer.hide_right) == 0)
+        if ((options & BaseShapeRenderer.hide_pos_x) == 0)
         {
             s.setColor(r3, g3, b3, a, g);
             addVertexCoord(s, shader, h + 3f);
@@ -294,7 +294,7 @@ public class TerrainRenderer
             s.addPoint(x1, y0, z1);
         }
 
-        if ((options & BaseShapeRenderer.hide_top) == 0)
+        if ((options & BaseShapeRenderer.hide_pos_z) == 0)
         {
             s.setColor(r1, g1, b1, a, g);
             addVertexCoord(s, shader, h + 7f);
@@ -691,13 +691,13 @@ public class TerrainRenderer
             }
             else
             {
-                byte o = BaseShapeRenderer.hide_bottom;
+                byte o = BaseShapeRenderer.hide_neg_z;
                 if (!Game.fancyTerrain || !Game.enable3dBg)
                 {
-                    if (Game.sampleEdgeGroundDepth(x - 1, y) >= 0) o |= BaseShapeRenderer.hide_left;
-                    if (Game.sampleEdgeGroundDepth(x + 1, y) >= 0) o |= BaseShapeRenderer.hide_right;
-                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_back;
-                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_front;
+                    if (Game.sampleEdgeGroundDepth(x - 1, y) >= 0) o |= BaseShapeRenderer.hide_neg_x;
+                    if (Game.sampleEdgeGroundDepth(x + 1, y) >= 0) o |= BaseShapeRenderer.hide_pos_x;
+                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_pos_y;
+                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_neg_y;
                 }
 
                 double extra = getExtra(x, y);
@@ -714,7 +714,7 @@ public class TerrainRenderer
                     x * Game.tile_size,
                     y * Game.tile_size,
                     0, Game.tile_size, Game.tile_size,
-                    0, BaseShapeRenderer.hide_bottom, false);
+                    0, BaseShapeRenderer.hide_neg_z, false);
         }
 
         if (!this.staged)
@@ -724,13 +724,13 @@ public class TerrainRenderer
                     x * Game.tile_size,
                     y * Game.tile_size,
                     -Game.tile_size, Game.tile_size, Game.tile_size,
-                    Game.tile_size + depth, BaseShapeRenderer.hide_bottom, true);
+                    Game.tile_size + depth, BaseShapeRenderer.hide_neg_z, true);
             else
                 this.addBox(t,
                         x * Game.tile_size,
                         y * Game.tile_size,
                         0, Game.tile_size, Game.tile_size,
-                        0, BaseShapeRenderer.hide_bottom, true);
+                        0, BaseShapeRenderer.hide_neg_z, true);
         }
     }
 

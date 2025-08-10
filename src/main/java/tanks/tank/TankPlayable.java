@@ -231,8 +231,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                 }
             }
 
-            if (this.maxSpeed <= 0)
-                m.enableMovement = false;
+            m.enableMovement = this.maxSpeed > 0;
+            m.health = m.baseHealth;
 
             m.enableTertiaryColor = true;
 

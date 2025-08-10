@@ -14,6 +14,8 @@ import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankRemote;
 
+import java.util.ArrayList;
+
 public class EventLoadLevel extends PersonalEvent
 {
 	public String level;
@@ -83,10 +85,9 @@ public class EventLoadLevel extends PersonalEvent
 			if (level.startsWith("minigame="))
 				Game.currentLevel = Game.registryMinigame.minigames.get(level.substring(level.indexOf("=") + 1)).getConstructor().newInstance();
 			else
-				Game.currentLevel = new Level(level, true);
+				Game.currentLevel = new Level(level, new ArrayList<>(), true, disableFriendlyFire);
 
 			Game.currentLevel.startTime = startTime;
-			Game.currentLevel.disableFriendlyFire = disableFriendlyFire;
 			Game.currentLevel.loadLevel();
 		}
 		catch (Exception e)

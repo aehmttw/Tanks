@@ -384,7 +384,7 @@ public abstract class Item extends GameObject
 
 				bullet.bullet.recoil = Double.parseDouble(p[15]);
 				bullet.bullet.heavy = Boolean.parseBoolean(p[16]);
-				bullet.bullet.pitch /= Bullet.bullet_size / bullet.bullet.size;
+				bullet.bullet.pitch *= Bullet.bullet_size / bullet.bullet.size;
 
 				if (p.length > 17)
 				{

@@ -173,7 +173,6 @@ public class BulletBlock extends BulletArc
     public double bounce()
     {
         double ht = super.bounce();
-//        System.out.println(this.posZ + " " + this.posX + " " + this.posY);
 
         this.vZ = -this.vZ * this.bounciness;
         if (!this.destroy)

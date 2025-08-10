@@ -39,6 +39,10 @@ public class ItemShield extends Item implements ICopyable<ItemShield>
         public void use(Tank t)
         {
             t.health += this.item.amount;
+            if (this.item.amount > 0)
+                t.healFlashAnimation = 1;
+            else if (this.item.amount < 0 && t.health > 0)
+                t.damageFlashAnimation = 1;
 
             if (t.health > this.item.max + t.baseHealth)
                 t.health = this.item.max + t.baseHealth;

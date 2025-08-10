@@ -83,6 +83,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
     public double bufferCooldown = 0;
     public Item.ItemStack<?> lastItem = null;
+    
+    public boolean didAction = false;
 
     public TankPlayerRemote(double x, double y, double angle, Player p)
     {
@@ -267,9 +269,12 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         double cooldown2 = i2 == null ? 0 : i2.cooldown;
         double cooldownBase2 = i2 == null ? 0 : i2.item.cooldownBase;
+        System.out.println(cooldown2);
 
-        if (lastLiveBullets != lb || mlb != lastMaxLiveBullets || lm != lastLiveMines || mlm != lastMaxLiveMines)
+        if (lastLiveBullets != lb || mlb != lastMaxLiveBullets || lm != lastLiveMines || mlm != lastMaxLiveMines || didAction)
             Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, lb, mlb, lm, mlm, cooldown, cooldownBase, cooldown2, cooldownBase2));
+
+        this.didAction = false;
 
         lastLiveBullets = lb;
         lastLiveMines = lm;
@@ -524,9 +529,12 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         Item.ItemStack<?> s = right ? this.getSecondaryAbility() : this.getPrimaryAbility();
         if (s != null)
         {
-            s.networkIndex = -a;
+            s.networkIndex = -a - 1;
             if (s.attemptUse(this))
+            {
                 Game.eventsOut.add(new EventUpdateTankAbility(this.player, right ? this.selectedSecondaryAbility : this.selectedPrimaryAbility));
+                this.didAction = true;
+            }
         }
     }
 
@@ -537,7 +545,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         if (this.abilities.size() > click)
         {
-            this.getAbility(click).networkIndex = -click;
+            this.getAbility(click).networkIndex = -click - 1;
 
             if (this.getAbility(click) != this.lastItem && this.bufferCooldown > 0)
                 return;

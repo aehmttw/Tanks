@@ -67,7 +67,7 @@ public class EventLayMine extends PersonalEvent
 				if (t2 instanceof TankAIControlled)
 					sm = ((TankAIControlled) ((TankRemote) t).tank).mineItem;
 				else if (t2 instanceof TankPlayer)
-					sm = ((ItemMine.ItemStackMine)(((TankPlayer) t2).abilities.get(-this.item)));
+					sm = ((ItemMine.ItemStackMine)(((TankPlayer) t2).abilities.get(-this.item - 1)));
 			}
 
 			if (sm == null)

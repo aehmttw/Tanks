@@ -696,6 +696,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         ArrayList<Item.ShopItem> shop = c.getShop();
         this.initShop(shop);
         this.initBuilds(c.getBuildsShop());
+        this.botShopping();
         for (int i = 0; i < this.shop.size(); i++)
         {
             Game.currentLevel.itemNumbers.put(this.shop.get(i).itemStack.item.name, i + 1);
@@ -704,6 +705,34 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public void botShopping()
     {
+        for (Player p: Game.botPlayers)
+        {
+            ArrayList<TankPlayer.ShopTankBuild> unowned = new ArrayList<>();
+            for (TankPlayer.ShopTankBuild sb : this.builds)
+            {
+                if (!p.ownedBuilds.contains(sb.name))
+                    unowned.add(sb);
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (unowned.isEmpty())
+                    break;
+
+                int n = (int) (Math.random() * unowned.size());
+                TankPlayer.ShopTankBuild si = unowned.get(n);
+                if (p.hotbar.coins >= si.price)
+                {
+                    unowned.remove(n);
+                    p.ownedBuilds.add(si.name);
+                    p.hotbar.coins -= si.price;
+
+                    if (si.price <= 0)
+                        i--;
+                }
+            }
+        }
+
         if (!this.shop.isEmpty())
         {
             for (Player p : Game.botPlayers)
@@ -786,9 +815,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             Game.eventsOut.add(new EventAddShopItem(i, item.itemStack.item.name, b.rawSubtext, p, item.itemStack.item.icon));
         }
-
-        if (Crusade.crusadeMode)
-            this.botShopping();
 
         this.initializeShopList();
 
@@ -956,7 +982,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     Panel.zoomTarget = Game.playerTank.getAutoZoom();
 
                 if (spectatingTank != null && !spectatingTank.destroy && Panel.autoZoom)
+                {
+                    if (spectatingTank.possessingTank != null)
+                        spectatingTank = spectatingTank.possessingTank;
+
+                    if (spectatingTank.possessor != null && spectatingTank.possessor.possessingTank == null)
+                        spectatingTank = spectatingTank.possessor;
+
                     Panel.zoomTarget = spectatingTank.getAutoZoom();
+                }
             }
         }
 

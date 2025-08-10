@@ -85,8 +85,7 @@ public class BulletArc extends Bullet
             }
             else
             {
-                double ht = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
-
+                double ht = (this.vZ + Math.sqrt(Math.max(0, this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2)))) / gravity;
                 this.posX += ht * this.vX;
                 this.posY += ht * this.vY;
                 this.posZ = Game.tile_size / 2;

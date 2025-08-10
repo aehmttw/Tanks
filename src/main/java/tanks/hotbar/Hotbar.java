@@ -532,11 +532,6 @@ public class Hotbar
         if (Game.currentLevel instanceof Minigame)
             ((Minigame) Game.currentLevel).drawCircleHotbar();
 
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
-        Game.game.window.loadPerspective();
-
-
         this.ignoreInitialStats = false;
 
 		Item.ItemStack<?> bullet = this.itemBar.getSelectedAction(false);
@@ -555,6 +550,10 @@ public class Hotbar
 			Drawing.drawing.setInterfaceFontSize(10);
 			Drawing.drawing.drawInterfaceText(mx + 17, my + 17, stackCount + "", true);
 		}
+
+		Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
+		Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
+		Game.game.window.loadPerspective();
 
 		int enemyCount = 0;
 		int alliedCount = 0;
@@ -889,6 +888,7 @@ public class Hotbar
 			if (lastCooldownFrac2 < cooldownFrac2 && Game.playerTank != null && !Game.playerTank.destroy && !ignoreInitialStats)
 				timeSinceMineChange = 0;
 
+			lastCooldownFrac2 = cooldownFrac2;
 			double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
 
 			double ms = 2;
@@ -954,9 +954,7 @@ public class Hotbar
 			if (s != null)
 			{
 				if (!clientPlaying)
-				{
 					cooldownFrac2 = s.cooldown / s.item.cooldownBase;
-				}
 
 				remainingItems = s.stackSize;
 			}
@@ -965,6 +963,8 @@ public class Hotbar
 
 			if (lastCooldownFrac2 < cooldownFrac2 && !Game.playerTank.destroy && !ignoreInitialStats)
 				timeSinceMineChange = 0;
+
+			lastCooldownFrac2 = cooldownFrac2;
 
 			double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
 

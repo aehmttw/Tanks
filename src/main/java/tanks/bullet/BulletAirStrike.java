@@ -1,5 +1,7 @@
 package tanks.bullet;
 
+import basewindow.transformation.Scale;
+import basewindow.transformation.Transformation;
 import tanks.*;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletBounce;
@@ -183,7 +185,7 @@ public class BulletAirStrike extends Bullet
 
         while (posZ < 1100)
         {
-            for (int i = 0; i <= this.bounces; i++)
+            for (int i = 0; i <= this.bounces + 1; i++)
             {
                 Effect e1 = Effect.createNewEffect(ix + dx * i, iy + dy * i, posZ, Effect.EffectType.ray);
                 e1.size = this.size;

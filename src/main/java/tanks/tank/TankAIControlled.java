@@ -590,7 +590,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		this.justTransformed = false;
 
-		if (this.spawnedTankEntries.size() > 0 && !ScreenGame.finishedQuick && !this.destroy)
+		if (!this.spawnedTankEntries.isEmpty() && !ScreenGame.finishedQuick && !this.destroy)
 			this.updateSpawningAI();
 
 		if (!this.destroy)
@@ -2010,7 +2010,7 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			if (b instanceof BulletInstant)
 			{
-				this.aimAngle = this.getAngleInDirection(this.nearestBullet.posX, this.nearestBullet.posY);
+				this.aimAngle = this.getAngleInDirection(this.nearestBulletDeflect.posX, this.nearestBulletDeflect.posY);
 				this.aim = true;
 			}
 			else

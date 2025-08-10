@@ -101,12 +101,12 @@ public class Level
 
     public Level(String level, boolean remote)
     {
-        this(level, new ArrayList<>(), remote);
+        this(level, new ArrayList<>(), remote, ScreenPartyHost.isServer && Game.disablePartyFriendlyFire);
     }
 
     public Level(String level, ArrayList<TankAIControlled> customTanks)
     {
-        this(level, customTanks, false);
+        this(level, customTanks, false, ScreenPartyHost.isServer && Game.disablePartyFriendlyFire);
     }
 
 	/**
@@ -116,8 +116,9 @@ public class Level
 	 * Do not include these in the level string.)<br>
 	 * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
 	 */
-	public Level(String level, ArrayList<TankAIControlled> customTanks, boolean remote)
+	public Level(String level, ArrayList<TankAIControlled> customTanks, boolean remote, boolean disableFriendlyFire)
 	{
+		this.disableFriendlyFire = disableFriendlyFire;
         this.remote = remote;
 
         this.customTanks = customTanks;
@@ -188,9 +189,6 @@ public class Level
 				screen = preset[0].split(",");
 				obstaclesPos = preset[1].split(",");
 				tanks = preset[2].split(",");
-
-                if (ScreenPartyHost.isServer && Game.disablePartyFriendlyFire)
-                    this.disableFriendlyFire = true;
 
 				if (preset.length >= 4)
 				{
@@ -480,6 +478,7 @@ public class Level
     {
 		Game.currentLevel = this;
 		Game.currentLevelString = this.levelString;
+		Chunk.populateChunks(this, true);
 
 		if (Game.deterministicMode)
 			random = new Random(Game.seed);
@@ -562,8 +561,8 @@ public class Level
 			ArrayList<Integer> extraSpawnsX = new ArrayList<>();
 			ArrayList<Integer> extraSpawnsY = new ArrayList<>();
 
-			boolean[][] explored = new boolean[Game.currentSizeX][Game.currentSizeY];
-			boolean[][] blacklist = new boolean[Game.currentSizeX][Game.currentSizeY];
+			boolean[][] explored = new boolean[this.sizeX][this.sizeY];
+			boolean[][] blacklist = new boolean[this.sizeX][this.sizeY];
 
 			ArrayList<Tile> queue = new ArrayList<>();
 			queue.add(new Tile((int) (playerSpawnsX.get(i) / Game.tile_size), (int) (playerSpawnsY.get(i) / Game.tile_size)));
@@ -587,8 +586,7 @@ public class Level
 					else
 						t1 = new Tile(t.posX, t.posY + 1);
 
-
-					if (t1.posX >= 0 && t1.posX < Game.currentSizeX && t1.posY >= 0 && t1.posY < Game.currentSizeY &&
+					if (t1.posX >= 0 && t1.posX < this.sizeX && t1.posY >= 0 && t1.posY < this.sizeY &&
 							!Game.isTankSolid(t1.posX, t1.posY) && !isSolidTank(t1.posX, t1.posY) && !explored[t1.posX][t1.posY])
 					{
 						explored[t1.posX][t1.posY] = true;
@@ -610,9 +608,9 @@ public class Level
 
 							setSolidTank(t1.posX, t1.posY, true);
 
-							for (int x = Math.max(t1.posX - 1, 0); x <= Math.min(t1.posX + 1, Game.currentSizeX - 1); x++)
+							for (int x = Math.max(t1.posX - 1, 0); x <= Math.min(t1.posX + 1, this.sizeX - 1); x++)
 							{
-								for (int y = Math.max(t1.posY - 1, 0); y <= Math.min(t1.posY + 1, Game.currentSizeY - 1); y++)
+								for (int y = Math.max(t1.posY - 1, 0); y <= Math.min(t1.posY + 1, this.sizeY - 1); y++)
 								{
 									blacklist[x][y] = true;
 								}

@@ -578,7 +578,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		Item.ItemStack<?> s = right ? this.getSecondaryAbility() : this.getPrimaryAbility();
 		if (s != null)
 		{
-			s.networkIndex = -a;
+			s.networkIndex = -a - 1;
 			s.attemptUse(this);
 		}
 	}
@@ -595,7 +595,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		if (s != null)
 		{
-			s.networkIndex = -click;
+			s.networkIndex = -click - 1;
 			s.attemptUse(this);
 		}
 	}
@@ -649,7 +649,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
-		if (m.item.networkIndex >= 0)
+		if (m.item.networkIndex > 0)
 		{
 			Integer num = 0;
 			if (Game.currentLevel != null)

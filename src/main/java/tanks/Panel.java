@@ -448,9 +448,15 @@ public class Panel
 						}
 						else if (m instanceof TankPlayerBot)
 						{
-							int b = (int) (Math.random() * s.builds.size());
-							s.builds.get(b).clonePropertiesTo((TankPlayerBot) m);
-							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayerBot) m).networkID, b));
+							ArrayList<TankPlayer.ShopTankBuild> owned = new ArrayList<>();
+							for (TankPlayer.ShopTankBuild sb: ((ScreenGame) Game.screen).builds)
+							{
+								if (((TankPlayerBot)m).player.ownedBuilds.contains(sb.name))
+									owned.add(sb);
+							}
+							int b = (int) (Math.random() * owned.size());
+							owned.get(b).clonePropertiesTo((TankPlayerBot) m);
+							Game.eventsOut.add(new EventPlayerRevealBuild(((TankPlayerBot) m).networkID, ((ScreenGame) Game.screen).builds.indexOf(owned.get(b))));
 						}
 					}
 				}

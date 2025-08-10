@@ -123,10 +123,16 @@ public class EventTankPlayerCreate extends PersonalEvent
 				t.nameTag.name = Game.chatFilter.filterChat(t.nameTag.name);
 		}
 
-		setColor(t);
-
 		if (t instanceof TankPlayable)
+		{
+			setColor(t);
 			Game.currentLevel.playerBuilds.get(0).clonePropertiesTo((TankPlayable) t);
+		}
+		else if (t instanceof TankPlayerBot)
+		{
+			setColor(t);
+			Game.currentLevel.playerBuilds.get(0).clonePropertiesTo((TankPlayerBot) t);
+		}
 
 		if (team.equals("**"))
 			t.team = Game.playerTeam;

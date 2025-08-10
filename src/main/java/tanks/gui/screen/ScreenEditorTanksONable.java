@@ -951,7 +951,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 ScreenEditorItem ss = new ScreenEditorItem(p.cast(), Game.screen);
                 ss.showLoadFromTemplate = true;
 
-                if (this instanceof ScreenEditorPlayerTankBuild)
+                if (this instanceof ScreenEditorPlayerTankBuild || this instanceof ScreenEditorTank)
                     ss.defaultUnlimitedItems = true;
 
                 s = ss;

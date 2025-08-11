@@ -8,8 +8,6 @@ import tanks.tank.IAvoidObject;
 
 public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
 {
-    public static ObjectArraySet<Obstacle> refreshFacesNextFrame = new ObjectArraySet<>();
-
 	public Effect.EffectType destroyEffect = Effect.EffectType.obstaclePiece;
 	public double destroyEffectAmount = 1;
 

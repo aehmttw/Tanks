@@ -2123,17 +2123,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
         }
 
-        if (!Obstacle.refreshFacesNextFrame.isEmpty())
-        {
-            for (Obstacle o : Obstacle.refreshFacesNextFrame)
-            {
-                o.refreshFaces();
-                for (Obstacle o1 : o.getNeighbors())
-                    o1.onNeighborUpdate();
-            }
-            Obstacle.refreshFacesNextFrame.clear();
-        }
-
         Chunk.handleDirtyChunks();
 
         for (Obstacle o : Game.checkObstaclesToUpdate)

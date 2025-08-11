@@ -5,8 +5,7 @@ import tanks.tank.Tank;
 import tanks.tankson.MetadataProperty;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public abstract class GameObject
 {

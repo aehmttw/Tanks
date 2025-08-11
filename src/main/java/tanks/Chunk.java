@@ -32,7 +32,7 @@ public class Chunk
     /**
      * Stores faces of Movables, which are updated every frame
      */
-    public final FaceList faces = new FaceList();
+    public final FaceList faces = new FaceList(this);
     public final Tile[][] tileGrid = new Tile[chunkSize][chunkSize];
 
     /**
@@ -169,18 +169,12 @@ public class Chunk
 
     public void addMovable(Movable m)
     {
-        addMovable(m, true);
-    }
-
-    public void addMovable(Movable m, boolean refresh)
-    {
         if (m == null)
             return;
 
         movables.add(m);
         m.prevChunks.add(this);
-        if (refresh)
-            faces.addFaces(m);
+        faces.addFaces(m);
     }
 
     public void removeMovable(Movable m)
@@ -210,18 +204,12 @@ public class Chunk
 
     public void addObstacle(Obstacle o)
     {
-        addObstacle(o, true);
-    }
-
-    public void addObstacle(Obstacle o, boolean refresh)
-    {
         if (o == null)
             return;
 
         setObstacle(gameToPosInChunk(o.posX), gameToPosInChunk(o.posY), o);
         obstacles.add(o);
-        if (refresh)
-            faces.addFaces(o);
+        faces.addFaces(o);
     }
 
     public void removeObstacle(Obstacle o)
@@ -251,6 +239,19 @@ public class Chunk
                 chunkCache.add(c);
         }
         return chunkCache;
+    }
+
+    public static Chunk runIfChunkPresent(int tileX, int tileY, Consumer<Chunk> tc)
+    {
+        Chunk c = getChunk(tileX, tileY);
+        if (c != null)
+            tc.accept(c);
+        return c;
+    }
+
+    public static Chunk runIfChunkPresent(double posX, double posY, Consumer<Chunk> tc)
+    {
+        return runIfChunkPresent((int) (posX / Game.tile_size), (int) (posY / Game.tile_size), tc);
     }
 
     public static Tile runIfTilePresent(int tileX, int tileY, Consumer<Tile> tc)
@@ -551,6 +552,8 @@ public class Chunk
 
     public static class FaceList
     {
+        public final Chunk chunk;
+
         /**
          * dynamic x, static y
          */
@@ -568,6 +571,11 @@ public class Chunk
          */
         public final ObjectArrayList<Face> rightFaces = new ObjectArrayList<>();
 
+        public FaceList(Chunk chunk)
+        {
+            this.chunk = chunk;
+        }
+
         public boolean addFaces(ISolidObject s)
         {
             if (s.disableRayCollision())
@@ -580,6 +588,8 @@ public class Chunk
                 if (faces[i].valid)
                     changed |= getSide(i).add(faces[i]);
             }
+            if (changed)
+                chunk.markDirty();
             return changed;
         }
 

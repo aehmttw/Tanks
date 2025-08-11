@@ -800,14 +800,7 @@ public class Level
 		addLevelBorders();
 
 		for (Obstacle o : Game.obstacles)
-		{
             o.postOverride();
-
-			Chunk c = Chunk.getChunk(o.posX, o.posY);
-			if (c != null)
-				c.addObstacle(o, false);
-		}
-
 		for (Movable m : Game.movables)
             m.refreshFaces();
 		for (Obstacle o : Game.obstacles)

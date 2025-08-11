@@ -1,12 +1,15 @@
 package tanks.obstacle;
 
 import basewindow.*;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.*;
 import tanks.*;
 import tanks.rendering.ShaderObstacle;
+import tanks.tank.IAvoidObject;
 
 public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
 {
+    public static ObjectArraySet<Obstacle> refreshFacesNextFrame = new ObjectArraySet<>();
+
 	public Effect.EffectType destroyEffect = Effect.EffectType.obstaclePiece;
 	public double destroyEffectAmount = 1;
 
@@ -188,7 +191,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	public void onNeighborUpdate()
 	{
-		refreshFaces();
+		updateFaces();
 	}
 
 	public void reactToHit(double bx, double by)
@@ -238,10 +241,24 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d, (byte) 4);
 	}
 
+    public void refreshFaces()
+    {
+        updateFaces();
+        for (Obstacle o : getNeighbors())
+            o.onNeighborUpdate();
+    }
+
 	public void postOverride()
 	{
 		if (this.startHeight > 0)
 			return;
+
+        Chunk c = Chunk.getChunk(posX, posY);
+        if (c != null)
+            c.addObstacle(this);
+
+        if (this instanceof IAvoidObject)
+            Game.avoidObjects.add((IAvoidObject) this);
 	}
 
 	/**
@@ -317,15 +334,6 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public boolean bulletCollision()
 	{
 		return this.bulletCollision;
-	}
-
-	public void refreshFaces()
-	{
-		Chunk c = Chunk.getChunk(posX, posY);
-		if (c == null) return;
-		c.faces.removeFaces(this);
-		updateFaces();
-		c.faces.addFaces(this);
 	}
 
 	public void onDestroy(Movable source)

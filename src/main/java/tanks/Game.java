@@ -861,13 +861,6 @@ public class Game
 		Game.obstacles.add(o);
 		o.postOverride();
 
-		Chunk c = Chunk.getChunk(o.posX, o.posY);
-		if (c != null)
-			c.addObstacle(o, refresh);
-
-		if (o instanceof IAvoidObject)
-			Game.avoidObjects.add((IAvoidObject) o);
-
 		if (refresh)
             redraw(o);
 
@@ -1324,6 +1317,8 @@ public class Game
 		Game.player.hotbar.itemBar.showItems = false;
 		Game.player.ownedBuilds = new HashSet<>();
 		Game.player.buildName = "player";
+
+        ScreenGame.lastTimePassed = 0;
 
 		//if (Game.game.window != null)
 		//	Game.game.window.setShowCursor(false);

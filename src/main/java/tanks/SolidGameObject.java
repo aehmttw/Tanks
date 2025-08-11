@@ -1,7 +1,6 @@
 package tanks;
 
-import tanks.obstacle.Face;
-import tanks.obstacle.ISolidObject;
+import tanks.obstacle.*;
 
 public abstract class SolidGameObject extends GameObject implements ISolidObject
 {
@@ -44,6 +43,7 @@ public abstract class SolidGameObject extends GameObject implements ISolidObject
 
         double s = this.getSize();
 
+        boolean validChanged = false;
         for (int i = 0; i < 4; i++)
         {
             Face f = this.faces[i];
@@ -56,7 +56,10 @@ public abstract class SolidGameObject extends GameObject implements ISolidObject
                     tankCollision(),
                     bulletCollision()
             );
+            validChanged = validChanged || f.valid && !f.lastValid;
         }
+        if (validChanged)
+            Chunk.runIfChunkPresent(this.posX, this.posY, c -> c.faces.addFaces(this));
     }
 
     public boolean tankCollision()

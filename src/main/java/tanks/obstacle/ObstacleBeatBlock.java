@@ -213,8 +213,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
         this.colorB = col[2] * 0.75 + 255 * 0.25;
 
         this.setUpdate(true);
-        this.tankCollision = false;
-        this.bulletCollision = false;
+        this.tankCollision = this.bulletCollision = isOn(beatFrequency, alternate);
 
         for (int i = 0; i < default_max_height; i++)
         {

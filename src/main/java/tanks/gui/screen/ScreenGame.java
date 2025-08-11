@@ -1048,7 +1048,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         for (ErrorHandler<?, ?> h : ErrorHandler.errorHandlers)
             h.updateTimer();
 
-        Chunk.movableSyncHandler.checkForErrors(null);
+        Movable.movableSyncHandler.checkForErrors(null);
 
         Game.player.hotbar.update();
         minimap.update();
@@ -2064,9 +2064,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         for (Movable m : Game.removeMovables)
         {
             for (Chunk chunk : m.getTouchingChunks())
-            {
                 chunk.removeMovable(m);
-            }
 
             if (m instanceof IAvoidObject)
                 Game.avoidObjects.remove((IAvoidObject) m);
@@ -2101,10 +2099,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public void updateGameField()
     {
-        for (int i = 0; i < Game.movables.size(); i++)
-        {
-            Game.movables.get(i).preUpdate();
-        }
+        for (Movable m : Game.movables)
+            m.preUpdate();
 
         for (int i = 0; i < Game.movables.size(); i++)
         {
@@ -2126,6 +2122,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 Game.movables.add(new MovableNaN(m.lastPosX, m.lastPosY));
             }
         }
+
+        Chunk.handleDirtyChunks();
 
         for (Obstacle o : Game.checkObstaclesToUpdate)
         {
@@ -2559,6 +2557,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 {
                     if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
                         ((IDrawableWithGlow) d).drawGlow();
+                }
+            }
+
+            if (i == 9 && Game.disableErrorFixing)
+            {
+                for (Movable m : Movable.getDisjointMovables())
+                {
+                    Drawing.drawing.setColor(255, 0, 0, 127);
+                    Drawing.drawing.fillRect(m.posX, m.posY, m.getSize(), m.getSize());
+                    m.draw();
                 }
             }
 

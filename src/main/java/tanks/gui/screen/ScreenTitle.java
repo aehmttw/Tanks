@@ -233,6 +233,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 				m.preUpdate();
 				m.update();
+                m.postUpdate();
 			}
 
 			if (m instanceof Tank && m != this.logo)
@@ -247,10 +248,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 				enemies++;
 		}
 
-        for (Movable m: Game.movables)
-        {
-            m.postUpdate();
-        }
 
 		if (enemies <= 1 && !this.controlPlayer)
 		{

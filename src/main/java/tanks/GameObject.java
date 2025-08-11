@@ -1,11 +1,11 @@
 package tanks;
 
 import tanks.gui.screen.leveleditor.selector.MetadataSelector;
+import tanks.tank.Tank;
 import tanks.tankson.MetadataProperty;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 public abstract class GameObject
 {
@@ -82,6 +82,16 @@ public abstract class GameObject
         {
             Game.exitToCrash(e);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format(
+            "%s@(%.0f,%.0f)",
+            this instanceof Tank ? ((Tank) this).name : this.getClass().getSimpleName(),
+            this.posX, this.posY
+        );
     }
 
     public HashMap<String, MetadataSelector> getMetadataProperties()

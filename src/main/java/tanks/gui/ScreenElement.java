@@ -31,7 +31,7 @@ public abstract class ScreenElement
 
         public Notification(String text, double duration, double width)
         {
-            Drawing.drawing.playSound("toast.ogg");
+            Drawing.drawing.playSound("toast.ogg", 1, Game.soundVolume);
             this.text = Drawing.drawing.wrapText(text, width, 16);
             this.width = width;
             this.duration = duration;

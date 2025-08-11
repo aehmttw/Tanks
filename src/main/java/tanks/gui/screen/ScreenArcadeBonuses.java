@@ -56,7 +56,6 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         this.score = a.score;
         this.originalScore = a.score;
 
-        ArrayList<Bonus> bonuses = new ArrayList<>();
         bonuses.add(new Bonus("Tank driver", 5, 255, 255, 40));
         bonuses.add(new Bonus("Arcade player", 5, 40, 40, 255));
         bonuses.add(new Bonus("Participation medal", 5, 255, 40, 40));
@@ -171,19 +170,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         else if (a.kills >= 40)
             bonuses.add(new Bonus("Tank destroyer", 20, 255, 80, 155));
 
-        while (!bonuses.isEmpty())
-        {
-            this.bonuses.add(bonuses.remove((int) (Math.random() * bonuses.size())));
-        }
-
-        Collections.sort(this.bonuses, new Comparator<Bonus>()
-        {
-            @Override
-            public int compare(Bonus o1, Bonus o2)
-            {
-                return o2.value - o1.value;
-            }
-        });
+        this.bonuses.sort((o1, o2) -> o2.value - o1.value);
 
         Game.eventsOut.add(new EventArcadeBonuses(this.bonuses.get(0), this.bonuses.get(1), this.bonuses.get(2)));
     }

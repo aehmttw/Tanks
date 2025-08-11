@@ -1,12 +1,13 @@
 package tanks.rendering;
 
-import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
+import basewindow.*;
 
-public class ShaderBoostPanel extends RendererShader implements IObstacleSizeShader, IObstacleVertexCoordShader, IObstacleTimeShader, IGlowShader
+public class ShaderBoostPanel extends RendererShader implements IObstacleSizeShader, IObstacleVertexCoordShader, IObstacleTimeShader, IGlowShader, IGraphicsOptionsShader
 {
     @OnlyBaseUniform
     public Uniform1i time;
+    @OnlyBaseUniform
+    public Uniform1b enableFancyTerrain;
     public Uniform1f obstacleSizeFrac;
     public Attribute1f vertexCoord;
 
@@ -44,5 +45,11 @@ public class ShaderBoostPanel extends RendererShader implements IObstacleSizeSha
     public float getGlow()
     {
         return 1.0f;
+    }
+
+    @Override
+    public void setEnableFancyTerrain(boolean enableFancyTerrain)
+    {
+        this.enableFancyTerrain.set(enableFancyTerrain);
     }
 }

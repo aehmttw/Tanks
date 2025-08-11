@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.objects.*;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.TextWithStyling;
@@ -15,95 +15,118 @@ public class Ray extends GameObject
 {
     public static double min_trace_size = 5;
 
-	public static int chunksAdded;
-	/** Caches the chunks to avoid creating new temp objects */
-	public static Chunk[] chunkCache = new Chunk[40];
-	/** Caches the ray to avoid creating new temp objects */
-	public static Ray cacheRay = new Ray();
+    public static int chunksAdded;
+    /**
+     * Caches the chunks to avoid creating new temp objects
+     */
+    public static Chunk[] chunkCache = new Chunk[40];
+    /**
+     * Caches the ray to avoid creating new temp objects
+     */
+    public static Ray cacheRay = new Ray();
 
-	public double size, tankHitSizeMul;
+    public double size, tankHitSizeMul;
 
-	public int bounces, bouncyBounces;
-	public double vX, vY, angle;
-	public double startX, startY;
+    public int bounces, bouncyBounces;
+    public double vX, vY, angle;
+    public double startX, startY;
 
-	public boolean enableBounciness, asBullet, trace, dotted;
+    public boolean enableBounciness, asBullet, trace, dotted;
     public boolean ignoreTanks, ignoreBullets, ignoreDestructible, ignoreShootThrough;
 
     public double speed, age, range;
     public int maxChunkCheck, traceAge;
 
-	public Tank tank, targetTank;
-	public double targetTankSizeMul;
+    public Tank tank, targetTank;
+    public double targetTankSizeMul;
 
-	public DoubleArrayList bounceX = new DoubleArrayList(), bounceY = new DoubleArrayList();
-	public double targetX, targetY;
-	public boolean acquiredTarget = false;
+    public DoubleArrayList bounceX = new DoubleArrayList(), bounceY = new DoubleArrayList();
+    public double targetX, targetY;
+    public boolean acquiredTarget = false;
 
-    /** Set this and use {@linkplain #chunkComparator} to sort the chunks by manhattan distance from this chunk */
+    /**
+     * Set this and use {@linkplain #chunkComparator} to sort the chunks by manhattan distance from this chunk
+     */
     private static Chunk startingChunk = Chunk.zeroChunk;
-    /** Method references don't allocate new objects; however lambdas do (they create temp classes) */
-    private static int keyExtractor(Chunk c) { return c.manhattanDist(startingChunk); }
-    /** Comparator that sorts the chunks by manhattan distance from {@linkplain #startingChunk} */
+
+    /**
+     * Method references don't allocate new objects; however lambdas do (they create temp classes)
+     */
+    private static int keyExtractor(Chunk c)
+    {
+        return c.manhattanDist(startingChunk);
+    }
+
+    /**
+     * Comparator that sorts the chunks by manhattan distance from {@linkplain #startingChunk}
+     */
     private static final Comparator<Chunk> chunkComparator = Comparator.comparingInt(Ray::keyExtractor);
 
-	/** Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}  */
-	public static Ray newRay(double x, double y, double angle, int bounces, Tank tank)
-	{
-		return newRay(x, y, angle, bounces, tank, 10);
-	}
+    /**
+     * Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}
+     */
+    public static Ray newRay(double x, double y, double angle, int bounces, Tank tank)
+    {
+        return newRay(x, y, angle, bounces, tank, 10);
+    }
 
-	/** Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}  */
-	public static Ray newRay(double x, double y, double angle, int bounces, Tank tank, double speed)
-	{
-		return cacheRay.set(x, y, angle, bounces, tank, speed);
-	}
+    /**
+     * Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}
+     */
+    public static Ray newRay(double x, double y, double angle, int bounces, Tank tank, double speed)
+    {
+        return cacheRay.set(x, y, angle, bounces, tank, speed);
+    }
 
-	/** Creates another ray with the properties of the last ray.<br>
-	 * To set custom properties on your ray copy:
-	 * <blockquote><pre>
-	 *     Ray copy = Ray.newRay(params).copy()
-	 * </pre></blockquote>
-	 * */
-	public Ray copy()
-	{
-		return new Ray().set(posX, posY, angle, bounces, tank, speed);
-	}
+    /**
+     * Creates another ray with the properties of the last ray.<br>
+     * To set custom properties on your ray copy:
+     * <blockquote><pre>
+     *     Ray copy = Ray.newRay(params).copy()
+     * </pre></blockquote>
+     *
+     */
+    public Ray copy()
+    {
+        return new Ray().set(posX, posY, angle, bounces, tank, speed);
+    }
 
-	private Ray() {}
+    private Ray()
+    {
+    }
 
-	public Ray set(double x, double y, double angle, int bounces, Tank tank, double speed)
-	{
-		this.vX = speed * Math.cos(angle);
-		this.vY = speed * Math.sin(angle);
-		this.angle = angle;
+    public Ray set(double x, double y, double angle, int bounces, Tank tank, double speed)
+    {
+        this.vX = speed * Math.cos(angle);
+        this.vY = speed * Math.sin(angle);
+        this.angle = angle;
 
-		this.posX = this.startX = x;
-		this.posY = this.startY = y;
-		this.bounces = bounces;
-		this.bouncyBounces = 100;
-		setSize(10).setMaxChunks(100);
+        this.posX = this.startX = x;
+        this.posY = this.startY = y;
+        this.bounces = bounces;
+        this.bouncyBounces = 100;
+        setSize(10).setMaxChunks(100);
 
-		this.trace = Game.traceAllRays;
-		this.dotted = false;
-		this.enableBounciness = true;
-		this.ignoreTanks = false;
-		this.ignoreBullets = true;
-		this.asBullet = true;
-		this.ignoreDestructible = false;
-		this.ignoreShootThrough = false;
+        this.trace = Game.traceAllRays;
+        this.dotted = false;
+        this.enableBounciness = true;
+        this.ignoreTanks = false;
+        this.ignoreBullets = true;
+        this.asBullet = true;
+        this.ignoreDestructible = false;
+        this.ignoreShootThrough = false;
 
-		this.age = 0;
-		this.range = Double.MAX_VALUE;
-		this.tankHitSizeMul = 1;
-		this.acquiredTarget = false;
-		this.tank = tank.getBottomLevelPossessing();
+        this.age = 0;
+        this.range = Double.MAX_VALUE;
+        this.tankHitSizeMul = 1;
+        this.acquiredTarget = false;
+        this.tank = tank.getBottomLevelPossessing();
 
-		this.bounceX.clear();
-		this.bounceY.clear();
+        this.bounceX.clear();
+        this.bounceY.clear();
 
-		return this;
-	}
+        return this;
+    }
 
     private static final ObjectArrayList<Chunk> errorChunkCache = new ObjectArrayList<>();
 
@@ -124,7 +147,7 @@ public class Ray extends GameObject
             }
             else if (obj instanceof Movable)
             {
-                for (Chunk c : ((Movable) obj).getTouchingChunks())
+                for (Chunk c : ((Movable) obj).getCurrentChunks())
                 {
                     if (!c.movables.contains(obj))
                         errorChunkCache.add(c);
@@ -138,27 +161,28 @@ public class Ray extends GameObject
         @Override
         public void handleError(GameObject obj, Collection<Chunk> info)
         {
-            String name = obj instanceof Obstacle ? ((Obstacle) obj).name : obj instanceof Tank ? ((Tank) obj).name : obj.toString();
-            System.err.printf("Ray collision face owner %s (%.0f, %.0f) not in chunk %s%n",
-                name, obj.posX / Game.tile_size, obj.posY / Game.tile_size,
-                info.stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
-                    .collect(Collectors.joining(", ")));
-            if (!Game.immutableFaces && Game.currentLevel != null)
+            System.err.printf("-----Ray collision face owner error-----%n" +
+                    "%s not in %s%n",
+                gameObjectString(obj),
+                info.stream().map(Chunk::toString)
+                .collect(Collectors.joining(", "))
+            );
+            if (!Game.disableErrorFixing && Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
         }
     };
 
-	public Movable getTarget(double mul, Tank targetTank)
-	{
-		this.targetTank = targetTank;
-		this.targetTankSizeMul = mul;
-		return this.getTarget();
-	}
+    public Movable getTarget(double mul, Tank targetTank)
+    {
+        this.targetTank = targetTank;
+        this.targetTankSizeMul = mul;
+        return this.getTarget();
+    }
 
-	public boolean isInSight(Movable target)
-	{
-		return setBouncyBounces(0).setAngleInDirection(target.posX, target.posY).getTarget() == target;
-	}
+    public boolean isInSight(Movable target)
+    {
+        return setBouncyBounces(0).setAngleInDirection(target.posX, target.posY).getTarget() == target;
+    }
 
     @Override
     public double getSize()
@@ -174,93 +198,93 @@ public class Ray extends GameObject
         return this;
     }
 
-	public Ray setVelocity(double vX, double vY)
-	{
-		this.vX = vX;
-		this.vY = vY;
-		this.angle = Movable.getPolarDirection(vX, vY);
-		return this;
-	}
+    public Ray setVelocity(double vX, double vY)
+    {
+        this.vX = vX;
+        this.vY = vY;
+        this.angle = Movable.getPolarDirection(vX, vY);
+        return this;
+    }
 
-	public Ray setShootThrough(boolean shootThrough)
-	{
-		this.ignoreShootThrough = shootThrough;
-		return this;
-	}
+    public Ray setShootThrough(boolean shootThrough)
+    {
+        this.ignoreShootThrough = shootThrough;
+        return this;
+    }
 
-	public Ray setExplosive(boolean explosive)
-	{
-		this.ignoreDestructible = explosive;
-		return this;
-	}
+    public Ray setExplosive(boolean explosive)
+    {
+        this.ignoreDestructible = explosive;
+        return this;
+    }
 
-	public Ray setBouncyBounces(int bouncyBounces)
-	{
-		this.bouncyBounces = bouncyBounces;
-		return this;
-	}
+    public Ray setBouncyBounces(int bouncyBounces)
+    {
+        this.bouncyBounces = bouncyBounces;
+        return this;
+    }
 
-	public Ray setAsBullet(boolean testBulletCollision)
-	{
-		this.asBullet = testBulletCollision;
-		return this;
-	}
+    public Ray setAsBullet(boolean testBulletCollision)
+    {
+        this.asBullet = testBulletCollision;
+        return this;
+    }
 
-	public Ray setMaxChunks(int maxChunks)
-	{
-		this.maxChunkCheck = maxChunks;
-		return this;
-	}
+    public Ray setMaxChunks(int maxChunks)
+    {
+        this.maxChunkCheck = maxChunks;
+        return this;
+    }
 
-	public Ray setTrace(boolean trace, boolean dotted)
-	{
-		this.trace = trace;
-		this.dotted = dotted;
-		return this;
-	}
+    public Ray setTrace(boolean trace, boolean dotted)
+    {
+        this.trace = trace;
+        this.dotted = dotted;
+        return this;
+    }
 
-	public Ray setRange(double distance)
-	{
+    public Ray setRange(double distance)
+    {
         range = distance;
-		return setMaxChunks((int) (distance / Game.tile_size / Chunk.chunkSize + 1));
-	}
+        return setMaxChunks((int) (distance / Game.tile_size / Chunk.chunkSize + 1));
+    }
 
-	public Ray setSize(double size)
-	{
-		this.size = size;
-		return this;
-	}
+    public Ray setSize(double size)
+    {
+        this.size = size;
+        return this;
+    }
 
-	public Ray moveOut(double amount)
-	{
-		this.posX += this.vX * amount;
-		this.posY += this.vY * amount;
-		return this;
-	}
+    public Ray moveOut(double amount)
+    {
+        this.posX += this.vX * amount;
+        this.posY += this.vY * amount;
+        return this;
+    }
 
-	public static final Result result = new Result();
+    public static final Result result = new Result();
     private static final Result tempResult = new Result();
 
-	public Movable getTarget()
-	{
-		acquiredTarget = true;
+    public Movable getTarget()
+    {
+        acquiredTarget = true;
 
-		if (isOutOfBounds() || testInsideObstacle())
-			return null;
+        if (isOutOfBounds() || testInsideObstacle())
+            return null;
 
-		if (!ignoreTanks)
-		{
-			for (Movable m : Movable.getSquareCollision(this))
-			{
-				if (m instanceof Tank && m != this.tank)
+        if (!ignoreTanks)
+        {
+            for (Movable m : Movable.getSquareCollision(this))
+            {
+                if (m instanceof Tank && m != this.tank)
                     return m;
-			}
-		}
+            }
+        }
 
         this.bounceX.add(posX);
         this.bounceY.add(posY);
 
-		boolean firstBounce = this.targetTank == null;
+        boolean firstBounce = this.targetTank == null;
         Movable target = null;
 
         while (this.bounces >= 0 && this.bouncyBounces >= 0)
@@ -270,7 +294,7 @@ public class Ray extends GameObject
             if (current == null)
                 break;
 
-            checkFaceList(current, firstBounce);
+            checkCollision(current, firstBounce);
 
             this.age += result.t;
 
@@ -354,8 +378,8 @@ public class Ray extends GameObject
         }
 
         renderTraceEffect();
-		return target;
-	}
+        return target;
+    }
 
     public void renderTraceEffect()
     {
@@ -401,33 +425,33 @@ public class Ray extends GameObject
 
     private int totalChunksChecked = 0;
 
-    public void checkFaceList(Chunk current, boolean firstBounce)
-	{
-		if (current == null)
-			return;
+    public void checkCollision(Chunk current, boolean firstBounce)
+    {
+        if (current == null)
+            return;
 
-		chunkCheck:
-		for (int chunksChecked = 0; chunksChecked < maxChunkCheck; chunksChecked++)
-		{
-			double moveXBase = Chunk.chunkSize * Game.tile_size * Math.cos(angle);
-			double moveYBase = Chunk.chunkSize * Game.tile_size * Math.sin(angle);
-			double moveX = moveXBase * chunksChecked, moveXPrev = moveXBase * Math.max(0, chunksChecked - 1);
-			double moveY = moveYBase * chunksChecked, moveYPrev = moveYBase * Math.max(0, chunksChecked - 1);
+        chunkCheck:
+        for (int chunksChecked = 0; chunksChecked < maxChunkCheck; chunksChecked++)
+        {
+            double moveXBase = Chunk.chunkSize * Game.tile_size * Math.cos(angle);
+            double moveYBase = Chunk.chunkSize * Game.tile_size * Math.sin(angle);
+            double moveX = moveXBase * chunksChecked, moveXPrev = moveXBase * Math.max(0, chunksChecked - 1);
+            double moveY = moveYBase * chunksChecked, moveYPrev = moveYBase * Math.max(0, chunksChecked - 1);
 
-			chunksAdded = 0;
+            chunksAdded = 0;
             startingChunk = current;
 
-			// move forward one chunk in the ray's direction
-			Chunk mid = chunksChecked > 0 ? Chunk.getChunk(posX + moveX, posY + moveY) : null;
-			// add chunk in front
-			addChunk(mid);
+            // move forward one chunk in the ray's direction
+            Chunk mid = chunksChecked > 0 ? Chunk.getChunk(posX + moveX, posY + moveY) : null;
+            // add chunk in front
+            addChunk(mid);
 
-			// if the ray moved diagonally, add the chunks on the sides
-			if (mid == null || current.manhattanDist(mid) > 1)
-			{
-				addChunk(Chunk.getChunk(posX + moveXPrev, posY + moveY));
-				addChunk(Chunk.getChunk(posX + moveX, posY + moveYPrev));
-			}
+            // if the ray moved diagonally, add the chunks on the sides
+            if (mid == null || current.manhattanDist(mid) > 1)
+            {
+                addChunk(Chunk.getChunk(posX + moveXPrev, posY + moveY));
+                addChunk(Chunk.getChunk(posX + moveX, posY + moveYPrev));
+            }
 
             if (Chunk.debug && trace && totalChunksChecked > 0)
             {
@@ -449,19 +473,19 @@ public class Ray extends GameObject
                 }
             }
 
-			if (chunksAdded == 0)
-				break;
+            if (chunksAdded == 0)
+                break;
 
-			// sort the chunks by distance from the current chunk
-			Arrays.sort(chunkCache, 0, chunksAdded, chunkComparator);
+            // sort the chunks by distance from the current chunk
+            Arrays.sort(chunkCache, 0, chunksAdded, chunkComparator);
 
-			for (int i = 0; i < chunksAdded; i++)
-			{
-				Chunk chunk = chunkCache[i];
-				if (chunk == null)
-					continue;
+            for (int i = 0; i < chunksAdded; i++)
+            {
+                Chunk chunk = chunkCache[i];
+                if (chunk == null)
+                    continue;
 
-				checkCollisionIn(result, chunk, firstBounce);
+                checkCollisionInChunk(result, chunk, firstBounce);
 
                 if (result.collisionFace != null)
                 {
@@ -471,7 +495,7 @@ public class Ray extends GameObject
                         if (c == chunk)
                             continue;
 
-                        checkCollisionIn(tempResult, c, firstBounce);
+                        checkCollisionInChunk(tempResult, c, firstBounce);
                         if (tempResult.collisionFace != null && tempResult.t < result.t)
                             result.set(tempResult.t, tempResult.collisionX, tempResult.collisionY, tempResult.collisionFace, tempResult.corner);
                     }
@@ -479,153 +503,153 @@ public class Ray extends GameObject
                 }
             }
         }
-	}
+    }
 
     public boolean isOutOfBounds()
     {
         return posX <= 0 || posX > Game.currentSizeX * Game.tile_size || posY <= 0 || posY > Game.currentSizeY * Game.tile_size;
     }
 
-	public boolean testInsideObstacle()
-	{
-		return isInsideObstacle(posX - size / 2, posY - size / 2) ||
-				isInsideObstacle(posX + size / 2, posY - size / 2) ||
-				isInsideObstacle(posX + size / 2, posY + size / 2) ||
-				isInsideObstacle(posX - size / 2, posY + size / 2);
-	}
+    public boolean testInsideObstacle()
+    {
+        return isInsideObstacle(posX - size / 2, posY - size / 2) ||
+            isInsideObstacle(posX + size / 2, posY - size / 2) ||
+            isInsideObstacle(posX + size / 2, posY + size / 2) ||
+            isInsideObstacle(posX - size / 2, posY + size / 2);
+    }
 
-	public void checkCollisionIn(Result result, Chunk chunk, boolean firstBounce)
-	{
-		Face collisionFace = null;
-		double t = Double.MAX_VALUE;
-		boolean corner = false;
-		double collisionX = 0, collisionY = 0;
+    public void checkCollisionInChunk(Result result, Chunk chunk, boolean firstBounce)
+    {
+        Face collisionFace = null;
+        double t = Double.MAX_VALUE;
+        boolean corner = false;
+        double collisionX = 0, collisionY = 0;
 
-		if (vX > 0)
-		{
-			for (Face f : chunk.faces.leftFaces)
-			{
-				double size = this.size;
+        if (vX > 0)
+        {
+            for (Face f : chunk.faces.leftFaces)
+            {
+                double size = this.size;
 
-				if (f.owner instanceof Movable)
-					size *= tankHitSizeMul;
-				if (f.owner != null && f.owner == targetTank)
-					size *= targetTankSizeMul;
+                if (f.owner instanceof Movable)
+                    size *= tankHitSizeMul;
+                if (f.owner != null && f.owner == targetTank)
+                    size *= targetTankSizeMul;
 
-				if (passesThrough(f, firstBounce) || f.startX < this.posX + size / 2)
-					continue;
+                if (passesThrough(f, firstBounce) || f.startX < this.posX + size / 2)
+                    continue;
 
-				double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
-				if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
-				{
-					t = (f.startX - size / 2 - this.posX) / vX;
-					collisionX = f.startX - size / 2;
-					collisionY = y;
-
-                    if (outOfRange(collisionX, collisionY))
-                        continue;
-
-					collisionFace = f;
-					break;
-				}
-			}
-		}
-		else if (vX < 0)
-		{
-			for (Face f : chunk.faces.rightFaces)
-			{
-				double size = this.size;
-
-				if (f.owner instanceof Movable)
-					size *= tankHitSizeMul;
-
-				if (passesThrough(f, firstBounce) || f.startX > this.posX - size / 2)
-					continue;
-
-				double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
-				if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
-				{
-					t = (f.startX + size / 2 - this.posX) / vX;
-					collisionX = f.startX + size / 2;
-					collisionY = y;
+                double y = (f.startX - size / 2 - this.posX) * vY / vX + this.posY;
+                if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
+                {
+                    t = (f.startX - size / 2 - this.posX) / vX;
+                    collisionX = f.startX - size / 2;
+                    collisionY = y;
 
                     if (outOfRange(collisionX, collisionY))
                         continue;
 
-					collisionFace = f;
-					break;
-				}
-			}
-		}
+                    collisionFace = f;
+                    break;
+                }
+            }
+        }
+        else if (vX < 0)
+        {
+            for (Face f : chunk.faces.rightFaces)
+            {
+                double size = this.size;
 
-		if (vY > 0)
-		{
-			for (Face f : chunk.faces.topFaces)
-			{
-				double size = this.size;
+                if (f.owner instanceof Movable)
+                    size *= tankHitSizeMul;
 
-				if (f.owner instanceof Movable)
-					size *= tankHitSizeMul;
+                if (passesThrough(f, firstBounce) || f.startX > this.posX - size / 2)
+                    continue;
 
-				if (passesThrough(f, firstBounce) || f.startY < this.posY + size / 2)
-					continue;
+                double y = (f.startX + size / 2 - this.posX) * vY / vX + this.posY;
+                if (y >= f.startY - size / 2 && y <= f.endY + size / 2)
+                {
+                    t = (f.startX + size / 2 - this.posX) / vX;
+                    collisionX = f.startX + size / 2;
+                    collisionY = y;
 
-				double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
-				if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
-				{
-					double t1 = (f.startY - size / 2 - this.posY) / vY;
+                    if (outOfRange(collisionX, collisionY))
+                        continue;
 
-					if (t1 == t)
-						corner = true;
-					else if (t1 < t)
-					{
-						collisionX = x;
-						collisionY = f.startY - size / 2;
+                    collisionFace = f;
+                    break;
+                }
+            }
+        }
 
-                        if (outOfRange(collisionX, collisionY))
-                            continue;
+        if (vY > 0)
+        {
+            for (Face f : chunk.faces.topFaces)
+            {
+                double size = this.size;
 
-						collisionFace = f;
-						t = t1;
-					}
-					break;
-				}
-			}
-		}
-		else if (vY < 0)
-		{
-			for (Face f : chunk.faces.bottomFaces)
-			{
-				double size = this.size;
+                if (f.owner instanceof Movable)
+                    size *= tankHitSizeMul;
 
-				if (f.owner instanceof Movable)
-					size *= tankHitSizeMul;
+                if (passesThrough(f, firstBounce) || f.startY < this.posY + size / 2)
+                    continue;
 
-				if (passesThrough(f, firstBounce) || f.startY > this.posY - size / 2)
-					continue;
+                double x = (f.startY - size / 2 - this.posY) * vX / vY + this.posX;
+                if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
+                {
+                    double t1 = (f.startY - size / 2 - this.posY) / vY;
 
-				double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;
-				if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
-				{
-					double t1 = (f.startY + size / 2 - this.posY) / vY;
-
-					if (t1 == t)
-						corner = true;
-					else if (t1 < t)
-					{
-						collisionX = x;
-						collisionY = f.startY + size / 2;
+                    if (t1 == t)
+                        corner = true;
+                    else if (t1 < t)
+                    {
+                        collisionX = x;
+                        collisionY = f.startY - size / 2;
 
                         if (outOfRange(collisionX, collisionY))
                             continue;
 
-						collisionFace = f;
-						t = t1;
-					}
-					break;
-				}
-			}
-		}
+                        collisionFace = f;
+                        t = t1;
+                    }
+                    break;
+                }
+            }
+        }
+        else if (vY < 0)
+        {
+            for (Face f : chunk.faces.bottomFaces)
+            {
+                double size = this.size;
+
+                if (f.owner instanceof Movable)
+                    size *= tankHitSizeMul;
+
+                if (passesThrough(f, firstBounce) || f.startY > this.posY - size / 2)
+                    continue;
+
+                double x = (f.startY + size / 2 - this.posY) * vX / vY + this.posX;
+                if (x >= f.startX - size / 2 && x <= f.endX + size / 2)
+                {
+                    double t1 = (f.startY + size / 2 - this.posY) / vY;
+
+                    if (t1 == t)
+                        corner = true;
+                    else if (t1 < t)
+                    {
+                        collisionX = x;
+                        collisionY = f.startY + size / 2;
+
+                        if (outOfRange(collisionX, collisionY))
+                            continue;
+
+                        collisionFace = f;
+                        t = t1;
+                    }
+                    break;
+                }
+            }
+        }
 
         totalChunksChecked++;
 
@@ -639,8 +663,8 @@ public class Ray extends GameObject
             ));
         }
 
-		result.set(t, collisionX, collisionY, collisionFace, corner);
-	}
+        result.set(t, collisionX, collisionY, collisionFace, corner);
+    }
 
     public boolean outOfRange(double collisionX, double collisionY)
     {
@@ -648,21 +672,22 @@ public class Ray extends GameObject
     }
 
     public boolean passesThrough(Face f, boolean firstBounce)
-	{
-		if ((asBullet ? !f.solidBullet : !f.solidTank) ||
-				(f.owner == tank && firstBounce))
-			return true;
+    {
+        if ((asBullet ? !f.solidBullet : !f.solidTank) ||
+            (f.owner == tank && firstBounce))
+            return true;
 
-		if (f.owner instanceof Obstacle && !((Obstacle) f.owner).bouncy)
-		{
-			Obstacle o = (Obstacle) f.owner;
-			return (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
-		}
+        if (f.owner instanceof Obstacle && !((Obstacle) f.owner).bouncy)
+        {
+            Obstacle o = (Obstacle) f.owner;
+            return (this.ignoreDestructible && o.destructible) || (this.ignoreShootThrough && o.shouldShootThrough);
+        }
 
-		return (ignoreTanks && f.owner instanceof Tank) || (ignoreBullets && f.owner instanceof Bullet);
-	}
+        return (ignoreTanks && f.owner instanceof Tank) || (ignoreBullets && f.owner instanceof Bullet);
+    }
 
     private static final ObjectArrayList<DebugText> debugTexts = new ObjectArrayList<>();
+
     private static class DebugText
     {
         public TextWithStyling text;
@@ -689,85 +714,85 @@ public class Ray extends GameObject
         debugTexts.clear();
     }
 
-	public static final class Result
-	{
-		private double t, collisionX, collisionY;
-		private Face collisionFace;
-		private boolean corner;
+    public static final class Result
+    {
+        private double t, collisionX, collisionY;
+        private Face collisionFace;
+        private boolean corner;
 
-		public void set(double t, double collisionX, double collisionY, Face collisionFace, boolean corner)
-		{
-			this.t = t;
-			this.collisionX = collisionX;
-			this.collisionY = collisionY;
-			this.collisionFace = collisionFace;
-			this.corner = corner;
-		}
-	}
+        public void set(double t, double collisionX, double collisionY, Face collisionFace, boolean corner)
+        {
+            this.t = t;
+            this.collisionX = collisionX;
+            this.collisionY = collisionY;
+            this.collisionFace = collisionFace;
+            this.corner = corner;
+        }
+    }
 
-	public double getDist()
-	{
-		this.bounceX.add(this.posX);
-		this.bounceY.add(this.posY);
+    public double getDist()
+    {
+        this.bounceX.add(this.posX);
+        this.bounceY.add(this.posY);
 
-		if (!acquiredTarget)
-			this.getTarget();
+        if (!acquiredTarget)
+            this.getTarget();
 
-		return Math.sqrt(getSquaredFinalDist());
-	}
+        return Math.sqrt(getSquaredFinalDist());
+    }
 
-	public double getTargetDist(double mul, Tank m)
-	{
-		return Math.sqrt(getSquaredTargetDist(mul, m));
-	}
+    public double getTargetDist(double mul, Tank m)
+    {
+        return Math.sqrt(getSquaredTargetDist(mul, m));
+    }
 
-	public double getSquaredTargetDist(double mul, Tank m)
-	{
-		this.bounceX.add(0, this.posX);
-		this.bounceY.add(0, this.posY);
+    public double getSquaredTargetDist(double mul, Tank m)
+    {
+        this.bounceX.add(0, this.posX);
+        this.bounceY.add(0, this.posY);
 
-		if (this.getTarget(mul, m) != m)
-			return -1;
+        if (this.getTarget(mul, m) != m)
+            return -1;
 
-		return getSquaredFinalDist();
-	}
+        return getSquaredFinalDist();
+    }
 
-	private double getSquaredFinalDist()
-	{
-		double dist = 0;
-		for (int i = 0; i < this.bounceX.size() - 1; i++)
-			dist += Math.pow(this.bounceX.getDouble(i + 1) - this.bounceX.getDouble(i), 2) + Math.pow(this.bounceY.getDouble(i + 1) - this.bounceY.getDouble(i), 2);
+    private double getSquaredFinalDist()
+    {
+        double dist = 0;
+        for (int i = 0; i < this.bounceX.size() - 1; i++)
+            dist += Math.pow(this.bounceX.getDouble(i + 1) - this.bounceX.getDouble(i), 2) + Math.pow(this.bounceY.getDouble(i + 1) - this.bounceY.getDouble(i), 2);
 
-		if (this.bounces >= 0)
-			dist += Chunk.chunkToPixel(maxChunkCheck);
+        if (this.bounces >= 0)
+            dist += Chunk.chunkToGame(maxChunkCheck);
 
-		return dist;
-	}
+        return dist;
+    }
 
-	private void addChunk(Chunk c)
-	{
-		if (c == null || (chunksAdded > 0 && c == chunkCache[chunksAdded - 1]))
-			return;
+    private void addChunk(Chunk c)
+    {
+        if (c == null || (chunksAdded > 0 && c == chunkCache[chunksAdded - 1]))
+            return;
 
-		chunkCache[chunksAdded++] = c;
-	}
+        chunkCache[chunksAdded++] = c;
+    }
 
-	public double getAngleInDirection(double x, double y)
-	{
-		x -= this.posX;
-		y -= this.posY;
+    public double getAngleInDirection(double x, double y)
+    {
+        x -= this.posX;
+        y -= this.posY;
 
-		return Movable.getPolarDirection(x, y);
-	}
+        return Movable.getPolarDirection(x, y);
+    }
 
-	public boolean isInsideObstacle(double x, double y)
-	{
-		Obstacle o = Game.getObstacle(x, y);
-		return o != null && collision(o) && !(ignoreShootThrough && o.shouldShootThrough) && !(ignoreDestructible && o.destructible);
-	}
+    public boolean isInsideObstacle(double x, double y)
+    {
+        Obstacle o = Game.getObstacle(x, y);
+        return o != null && collision(o) && !(ignoreShootThrough && o.shouldShootThrough) && !(ignoreDestructible && o.destructible);
+    }
 
-	public boolean collision(Obstacle o)
-	{
-		return asBullet ? o.bulletCollision : o.tankCollision;
-	}
+    public boolean collision(Obstacle o)
+    {
+        return asBullet ? o.bulletCollision : o.tankCollision;
+    }
 }

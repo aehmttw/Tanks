@@ -1,6 +1,6 @@
 package tanks.tank;
 
-import tanks.Game;
+import tanks.*;
 import tanks.bullet.DefaultItems;
 
 /**

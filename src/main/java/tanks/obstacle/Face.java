@@ -31,9 +31,9 @@ public class Face implements Comparable<Face>
 
 
     public ISolidObject owner;
-    public final Direction direction;
+    public Direction direction;
     public boolean solidTank, solidBullet;
-    public boolean valid = true;
+    public boolean valid = true, lastValid = true;
 
     public Face(ISolidObject o, Direction direction, boolean tank, boolean bullet)
     {
@@ -120,6 +120,7 @@ public class Face implements Comparable<Face>
         this.startY = y1;
         this.endX = x2;
         this.endY = y2;
+        this.lastValid = this.valid;
         this.valid = valid;
         this.solidTank = tank;
         this.solidBullet = bullet;

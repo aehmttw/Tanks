@@ -327,6 +327,8 @@ public abstract class Tank extends Movable implements ISolidObject
             double dist = Math.sqrt(distSq);
             this.moveInDirection(dx, dy, (dist - (ourSize + theirSize) / 2) * theirMass / (ourMass + theirMass));
             t.moveInDirection(-dx, -dy, (dist - (ourSize + theirSize) / 2) * ourMass / (ourMass + theirMass));
+            this.updateChunks();
+            t.updateChunks();
 
             if (distSq > Math.pow((this.posX + this.vX) - (t.posX + t.vX), 2) + Math.pow((this.posY + this.vY) - (t.posY + t.vY), 2))
             {

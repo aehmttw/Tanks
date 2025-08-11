@@ -1,19 +1,15 @@
 package tanks;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
-import tanks.effect.AttributeModifier;
-import tanks.effect.EffectManager;
+import it.unimi.dsi.fastutil.objects.*;
+import tanks.effect.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
-import tanks.tank.IAvoidObject;
-import tanks.tank.NameTag;
-import tanks.tankson.MetadataProperty;
-import tanks.tankson.Property;
+import tanks.tank.*;
+import tanks.tankson.*;
 
 import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
 {
@@ -47,6 +43,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	@MetadataProperty(id = "team", name = "Team", selector = SelectorTeam.selector_name, image = "team.png", keybind = "editor.team")
 	public Team team;
 
+    private boolean firstFrame = true;
+
 	public Movable(double x, double y)
 	{
 		this.posX = x;
@@ -58,83 +56,75 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void preUpdate()
 	{
-        refreshFaces();
+        updateChunks();
 
-		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
-		this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
-		this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
-		this.lastVZ = (this.posZ - this.lastPosZ) / frameFrequency;
-
-		this.lastOriginalVX = this.vX;
-		this.lastOriginalVY = this.vY;
-		this.lastOriginalVZ = this.vZ;
-
-		this.lastPosX = this.posX;
-		this.lastPosY = this.posY;
-		this.lastPosZ = this.posZ;
-	}
+        if (firstFrame)
+        {
+            firstFrame = false;
+            if (this instanceof IAvoidObject)
+                Game.avoidObjects.add((IAvoidObject) this);
+        }
+    }
 
     public void postUpdate()
     {
         updateChunks();
+        updateLastPositions();
     }
 
-	/** Cached list for checking chunks that the movable has just left */
-	private static final ObjectArrayList<Chunk> leaveChunks = new ObjectArrayList<>();
+    public void updateLastPositions()
+    {
+        double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
+        this.lastVX = (this.posX - this.lastPosX) / frameFrequency;
+        this.lastVY = (this.posY - this.lastPosY) / frameFrequency;
+        this.lastVZ = (this.posZ - this.lastPosZ) / frameFrequency;
+
+        this.lastOriginalVX = this.vX;
+        this.lastOriginalVY = this.vY;
+        this.lastOriginalVZ = this.vZ;
+
+        this.lastPosX = this.posX;
+        this.lastPosY = this.posY;
+        this.lastPosZ = this.posZ;
+    }
 
 	public void updateChunks()
 	{
-        boolean changed = collisionChanged();
-		if (!changed && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
+		if (!collisionChanged() && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
 			return;
 
         lastSize = getSize();
-
-		if (changed && this instanceof IAvoidObject)
-			Game.avoidObjects.add((IAvoidObject) this);
-
         refreshFaces();
     }
 
     public void refreshFaces()
     {
-        removeFacesFromChunks();
-        updateFaces();
-        addFacesToChunks();
-    }
-
-    public void addFacesToChunks()
-    {
-        for (Chunk c : getTouchingChunks())
-            c.faces.addFaces(this);
-    }
-
-    public void removeFacesFromChunks()
-    {
         ObjectArrayList<Chunk> cache = getTouchingChunks();
+        recordData("refreshFaces");
 
-        for (Chunk c : cache)
-        {
-            if (prevChunks.add(c))
-                onEnterChunk(c);
-            c.faces.removeFaces(this);
-        }
-
-        leaveChunks.clear();
         for (Chunk c : prevChunks)
         {
             if (!cache.contains(c))
             {
                 onLeaveChunk(c);
-                leaveChunks.add(c);
+                c.markDirty();
             }
         }
-        prevChunks.removeAll(leaveChunks);
+
+        prevChunks.retainAll(cache);
+        updateFaces();
+
+        for (Chunk c : getCurrentChunks())
+        {
+            if (prevChunks.add(c))
+                onEnterChunk(c);
+            c.markDirty();
+        }
     }
 
     public void onEnterChunk(Chunk c)
 	{
-		c.addMovable(this, false);
+		c.addMovable(this);
 	}
 
 	public void onLeaveChunk(Chunk c)
@@ -142,19 +132,26 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		c.removeMovable(this);
 	}
 
-	public ObjectArrayList<Chunk> getTouchingChunks()
-	{
-		double bound = getSize() / 2;
-		return Chunk.getChunksInRange(
-            Math.min(lastPosX, posX) - bound,
-            Math.min(lastPosY, posY) - bound,
-            Math.max(lastPosX, posX) + bound,
-            Math.max(lastPosY, posY) + bound
+    public ObjectArrayList<Chunk> getCurrentChunks()
+    {
+        double bound = getSize() / 2;
+        return Chunk.getChunksInRange(
+            posX - bound,
+            posY - bound,
+            posX + bound,
+            posY + bound
         );
+    }
+
+    public ObjectArrayList<Chunk> getTouchingChunks()
+	{
+		return getCurrentChunks();
 	}
 
 	public void update()
 	{
+        recordData("update");
+
 		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 
 		if (!destroy)
@@ -223,8 +220,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public void setMotionInDirectionWithOffset(double x, double y, double velocity, double a)
 	{
-		double angle = getAngleInDirection(x, y);
-		angle += a;
+		double angle = getAngleInDirection(x, y) + a;
 		this.vX = velocity * Math.cos(angle);
 		this.vY = velocity * Math.sin(angle);
 	}
@@ -348,8 +344,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	}
 
 	/** Field to cache the movable array for reuse */
-	private static final ObjectSet<Movable> movableOut = new ObjectOpenHashSet<>();
-	private static final ObjectArrayList<Movable> movableOutList = new ObjectArrayList<>();
+	private static final ObjectSet<Movable> movableOut = new ObjectArraySet<>();
 
     public static ObjectSet<Movable> getCircleCollision(GameObject self)
     {
@@ -361,7 +356,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
                 if (m != self && !m.skipNextUpdate && !m.destroy &&
                     GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
                     movableOut.add(m);
-
 
         return movableOut;
     }
@@ -411,11 +405,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	public static Movable findMovable(double x, double y)
 	{
-		Movable.getMovablesInRadius(x, y, 1);
-		movableOutList.clear();
-		movableOutList.addAll(movableOut);
-		if (!movableOutList.isEmpty())
-			return movableOutList.get(0);
+		for (Movable m : Movable.getMovablesInRadius(x, y, 1))
+			return m;
 		return null;
 	}
 
@@ -458,4 +449,71 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 			Game.exitToCrash(e);
 		}
 	}
+
+    public static ErrorHandler<Movable, Collection<Movable>> movableSyncHandler = new ErrorHandler<Movable, Collection<Movable>>(200, 2)
+    {
+        @Override
+        public Collection<Movable> containsErrors(Movable ignored)
+        {
+            // compute symmetric difference (A xor B)
+            Set<Movable> result = getDisjointMovables();
+            return result.isEmpty() ? noErrorReturnValue() : result;
+        }
+
+        @Override
+        public void handleError(Movable ignored, Collection<Movable> info)
+        {
+            System.err.println("-----Movable sync error-----\n" + info.stream().map(m ->
+                {
+                    boolean inGameMovables = Game.movables.contains(m);
+                    return String.format("%s: %sGame.movables, %s",
+                        gameObjectString(m),
+                        inGameMovables ? "*" : "!",
+                        Chunk.chunkList.stream().filter(c -> c.movables.contains(m) != inGameMovables)
+                            .map(c -> (c.movables.contains(m) ? "*" : "!") + c)
+                            .collect(Collectors.joining(", "))
+                    );
+                }
+            ).collect(Collectors.joining("\n")));
+            if (!Game.disableErrorFixing && Game.currentLevel != null)
+                Game.currentLevel.reloadTiles();
+        }
+    };
+
+    public static Set<Movable> getDisjointMovables()
+    {
+        Set<Movable> result = Chunk.chunkList.stream().flatMap(c -> c.movables.stream()).collect(Collectors.toSet());
+        result.addAll(Game.movables);
+        Set<Movable> disjoint = new HashSet<>(result);
+        disjoint.retainAll(Game.movables);
+        result.removeAll(disjoint);
+        return result;
+    }
+
+    public ArrayList<DebugData> data = new ArrayList<>();
+
+    public static class DebugData
+    {
+        public String name;
+        public double posX, posY, lastPosX, lastPosY, size;
+        public ObjectArrayList<Chunk> touchedChunks, prevChunks;
+
+        public DebugData(Movable b, String name)
+        {
+            this.name = name;
+            posX = b.posX;
+            posY = b.posY;
+            lastPosX = b.lastPosX;
+            lastPosY = b.lastPosY;
+            size = b.getSize();
+            touchedChunks = new ObjectArrayList<>(b.getTouchingChunks());
+            prevChunks = new ObjectArrayList<>(b.prevChunks);
+        }
+    }
+
+    public void recordData(String name)
+    {
+        if (Game.recordMovableData)
+            data.add(new DebugData(this, name));
+    }
 }

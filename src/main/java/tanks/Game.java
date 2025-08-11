@@ -50,7 +50,7 @@ import java.util.*;
 
 public class Game
 {
-	public enum Framework {lwjgl, libgdx}
+    public enum Framework {lwjgl, libgdx}
 	public static Framework framework;
 
 	public static final double tile_size = 50;
@@ -153,7 +153,8 @@ public class Game
 	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
     public static boolean drawAvoidObjects = false;
-	public static final boolean cinematic = false;
+    public static boolean recordMovableData = false;
+    public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;
 
@@ -186,6 +187,7 @@ public class Game
 	public static boolean showPathfinding = false;
 	public static boolean showUpdatingObstacles = false;
 	public static boolean immutableFaces = false;
+    public static boolean disableErrorFixing = false;
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
@@ -827,7 +829,7 @@ public class Game
 	public static void spawnTank(Tank tank, Tank parent)
 	{
 		tank.registerNetworkID();
-		Game.movables.add(tank);
+		Game.addMovable(tank);
 		Game.eventsOut.add(new EventTankSpawn(tank, parent));
 	}
 
@@ -858,13 +860,6 @@ public class Game
 		o.removed = false;
 		Game.obstacles.add(o);
 		o.postOverride();
-
-		Chunk c = Chunk.getChunk(o.posX, o.posY);
-		if (c != null)
-			c.addObstacle(o, refresh);
-
-		if (o instanceof IAvoidObject)
-			Game.avoidObjects.add((IAvoidObject) o);
 
 		if (refresh)
             redraw(o);
@@ -1311,6 +1306,9 @@ public class Game
 		else
 			Chunk.initialize();
 
+        for (ErrorHandler<?, ?> h: ErrorHandler.errorHandlers)
+			h.reset();
+
 		resetNetworkIDs();
 
 		Game.player.hotbar.coins = 0;
@@ -1319,6 +1317,8 @@ public class Game
 		Game.player.hotbar.itemBar.showItems = false;
 		Game.player.ownedBuilds = new HashSet<>();
 		Game.player.buildName = "player";
+
+        ScreenGame.lastTimePassed = 0;
 
 		//if (Game.game.window != null)
 		//	Game.game.window.setShowCursor(false);

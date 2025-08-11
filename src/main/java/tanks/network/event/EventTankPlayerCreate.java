@@ -167,7 +167,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 		if ((Game.currentLevel instanceof Arcade || Game.currentLevel instanceof RampageTrial) && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
 			t.invulnerabilityTimer = 250;
 
-		Game.movables.add(t);
+		Game.addMovable(t);
 	}
 
 	public void setColor(Tank t)

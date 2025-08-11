@@ -70,7 +70,7 @@ public class TerrainRenderer
         double extra = 0;
         for (int dir = 0; dir < 4; dir++)
             extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Direction.X[dir], y + Direction.Y[dir]));
-        extra += Game.sampleEdgeGroundDepth(x, y);
+        extra += Math.max(0, Game.sampleEdgeGroundDepth(x, y));
 
         return extra;
     }
@@ -629,18 +629,7 @@ public class TerrainRenderer
                         RendererDrawLayer drawLayer = s.getAnnotation(RendererDrawLayer.class);
                         if ((drawLayer == null && i == 5) || (drawLayer != null && drawLayer.value() == i))
                         {
-                            ShaderGroup so = getShader(s);
-                            so.set();
-
-                            if (so instanceof IObstacleSizeShader)
-                                ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));
-
-                            if (so instanceof IObstacleTimeShader)
-                                ((IObstacleTimeShader) so).setTime(((int) System.currentTimeMillis()) % 30000);
-
-                            if (so instanceof IShrubHeightShader)
-                                ((IShrubHeightShader) so).setShrubHeight(getShrubHeight());
-
+                            configureShader(s);
                             this.drawMap(this.renderers.get(s), 0, 0);
                         }
                     }
@@ -653,6 +642,27 @@ public class TerrainRenderer
         }
 
         Game.game.window.shaderDefault.set();
+    }
+
+    public void configureShader(Class<? extends ShaderGroup> sg)
+    {
+        ShaderGroup so = this.getShader(sg);
+        so.set();
+
+        if (so instanceof IObstacleSizeShader)
+            ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));
+
+        if (so instanceof IObstacleTimeShader)
+            ((IObstacleTimeShader) so).setTime(((int) System.currentTimeMillis()) % 30000);
+
+        if (so instanceof IShrubHeightShader)
+            ((IShrubHeightShader) so).setShrubHeight(getShrubHeight());
+
+        if (so instanceof IGraphicsOptionsShader)
+        {
+            ((IGraphicsOptionsShader) so).setEnable3d(Game.enable3d);
+            ((IGraphicsOptionsShader) so).setEnableFancyTerrain(Game.fancyTerrain);
+        }
     }
 
     public void drawTile(int x, int y)
@@ -686,8 +696,8 @@ public class TerrainRenderer
                 {
                     if (Game.sampleEdgeGroundDepth(x - 1, y) >= 0) o |= BaseShapeRenderer.hide_neg_x;
                     if (Game.sampleEdgeGroundDepth(x + 1, y) >= 0) o |= BaseShapeRenderer.hide_pos_x;
-                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_pos_y;
-                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_neg_y;
+                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_neg_y;
+                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_pos_y;
                 }
 
                 double extra = getExtra(x, y);

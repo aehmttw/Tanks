@@ -1,11 +1,21 @@
 package tanks;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import tanks.tank.Tank;
 
 import java.util.*;
 
 public abstract class ErrorHandler<K, V>
 {
+    public static String gameObjectString(GameObject o)
+    {
+        return String.format(
+            "%s@(%.0f,%.0f)",
+            o instanceof Tank ? ((Tank) o).name : o.getClass().getSimpleName(),
+            o.posX, o.posY
+        );
+    }
+
     public static final ArrayList<ErrorHandler<?, ?>> errorHandlers = new ArrayList<>();
 
     public final Object2IntOpenHashMap<K> errorCounts = new Object2IntOpenHashMap<>();
@@ -23,8 +33,8 @@ public abstract class ErrorHandler<K, V>
     public void updateTimer()
     {
         intervalTimer -= Panel.frameFrequency;
-        if (intervalTimer <= -Panel.frameFrequency * 10)
-            intervalTimer = baseInterval;
+        if (intervalTimer <= -Panel.frameFrequency * 5)
+            intervalTimer = baseInterval * (Game.disableErrorFixing ? 0.2 : 1);
     }
 
     public void checkForErrors(K obj)
@@ -44,6 +54,12 @@ public abstract class ErrorHandler<K, V>
             handleError(obj, info);
             errorCounts.removeInt(obj);
         }
+    }
+
+    public void reset()
+    {
+        errorCounts.clear();
+        intervalTimer = baseInterval;
     }
 
     public V noErrorReturnValue()

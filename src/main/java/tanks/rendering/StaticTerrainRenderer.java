@@ -334,18 +334,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
                     RendererDrawLayer drawLayer = s.getAnnotation(RendererDrawLayer.class);
                     if ((drawLayer == null && i == 5) || (drawLayer != null && drawLayer.value() == i))
                     {
-                        ShaderGroup so = getShader(s);
-                        so.set();
-
-                        if (so instanceof IObstacleSizeShader)
-                            ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));
-
-                        if (so instanceof IObstacleTimeShader)
-                            ((IObstacleTimeShader) so).setTime(((int) System.currentTimeMillis()) % 30000);
-
-                        if (so instanceof IShrubHeightShader)
-                            ((IShrubHeightShader) so).setShrubHeight(getShrubHeight());
-
+                        configureShader(s);
                         this.drawMap(this.renderers.get(s), 0, 0);
                     }
                 }

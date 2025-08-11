@@ -653,9 +653,7 @@ public class TankAIControlled extends Tank implements ITankField
 			this.vX += this.aX * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
 			this.vY += this.aY * maxSpeed * Panel.frameFrequency * this.accelerationModifier;
 
-			double currentSpeed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
-
-			if (currentSpeed > maxSpeed * maxSpeedModifier)
+			if (getSpeed() > maxSpeed * maxSpeedModifier)
 				this.setPolarMotion(this.getPolarDirection(), maxSpeed * maxSpeedModifier);
 		}
 
@@ -1094,6 +1092,8 @@ public class TankAIControlled extends Tank implements ITankField
 		this.possessingTank = t;
 		t.posX = this.posX;
 		t.posY = this.posY;
+        t.lastPosX = this.posX;
+        t.lastPosY = this.posY;
 		t.vX = this.vX;
 		t.vY = this.vY;
 		t.angle = this.angle;
@@ -1186,7 +1186,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 			int chosenDir = (int)(this.random.nextDouble() * directions.size());
 
-			if (directions.size() == 0)
+			if (directions.isEmpty())
 				this.direction = (this.direction + 2) % 4;
 			else
 				this.direction = directions.get(chosenDir);
@@ -1233,9 +1233,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void pathfind()
 	{
-		long time = System.currentTimeMillis();
-
-		Tile[][] tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
+        Tile[][] tiles = new Tile[Game.currentSizeX][Game.currentSizeY];
 
 		for (int i = 0; i < tiles.length; i++)
 		{
@@ -1360,7 +1358,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		double mul = 1;
 
-		if (this.path.size() > 0 && this.path.get(0).type == Tile.Type.destructible)
+		if (!this.path.isEmpty() && this.path.get(0).type == Tile.Type.destructible)
 			mul = 3;
 		else if (this.path.size() > 1 && this.path.get(1).type == Tile.Type.destructible)
 			mul = 2;
@@ -2492,7 +2490,7 @@ public class TankAIControlled extends Tank implements ITankField
 					if (s.resolvedTank.getClass().equals(TankAIControlled.class))
 					{
 						t2 = new TankAIControlled("", this.posX + x, this.posY + y, 0, 0, 0, 0, this.angle, ShootAI.none);
-						((TankAIControlled)(s.resolvedTank)).cloneProperties((TankAIControlled) t2);
+						((TankAIControlled) s.resolvedTank).cloneProperties((TankAIControlled) t2);
 					}
 					else
 					{
@@ -2995,18 +2993,14 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void setPolarAcceleration(double angle, double acceleration)
 	{
-		double accX = acceleration * Math.cos(angle);
-		double accY = acceleration * Math.sin(angle);
-		this.aX = accX;
-		this.aY = accY;
+		this.aX = acceleration * Math.cos(angle);
+		this.aY = acceleration * Math.sin(angle);
 	}
 
 	public void addPolarAcceleration(double angle, double acceleration)
 	{
-		double accX = acceleration * Math.cos(angle);
-		double accY = acceleration * Math.sin(angle);
-		this.aX += accX;
-		this.aY += accY;
+		this.aX += acceleration * Math.cos(angle);
+		this.aY += acceleration * Math.sin(angle);
 	}
 
 	public void setAccelerationInDirection(double x, double y, double accel)
@@ -3028,26 +3022,9 @@ public class TankAIControlled extends Tank implements ITankField
 
 	public void setAccelerationInDirectionWithOffset(double x, double y, double accel, double a)
 	{
-		x -= this.posX;
-		y -= this.posY;
-
-		double angle = 0;
-		if (x > 0)
-			angle = Math.atan(y/x);
-		else if (x < 0)
-			angle = Math.atan(y/x) + Math.PI;
-		else
-		{
-			if (y > 0)
-				angle = Math.PI / 2;
-			else if (y < 0)
-				angle = Math.PI * 3 / 2;
-		}
-		angle += a;
-		double accX = accel * Math.cos(angle);
-		double accY = accel * Math.sin(angle);
-		this.aX = accX;
-		this.aY = accY;
+		double angle = getAngleInDirection(x, y) + a;
+		this.aX = accel * Math.cos(angle);
+		this.aY = accel * Math.sin(angle);
 	}
 
 	@Override
@@ -3083,30 +3060,45 @@ public class TankAIControlled extends Tank implements ITankField
 				String value = s.substring(equals + 1, s.indexOf(";"));
 				String propname = s.substring(0, equals);
 
-                if (propname.equals("color_r"))
-                    t.color.red = Double.parseDouble(value);
-                else if (propname.equals("color_g"))
-                    t.color.green = Double.parseDouble(value);
-                else if (propname.equals("color_b"))
-                    t.color.blue = Double.parseDouble(value);
-                else if (propname.equals("color_r2"))
-                    t.secondaryColor.red = Double.parseDouble(value);
-                else if (propname.equals("color_g2"))
-                    t.secondaryColor.green = Double.parseDouble(value);
-                else if (propname.equals("color_b2"))
-                    t.secondaryColor.blue = Double.parseDouble(value);
-                else if (propname.equals("color_r3"))
-                    t.tertiaryColor.red = Double.parseDouble(value);
-                else if (propname.equals("color_g3"))
-                    t.tertiaryColor.green = Double.parseDouble(value);
-                else if (propname.equals("color_b3"))
-                    t.tertiaryColor.blue = Double.parseDouble(value);
-                else if (propname.equals("emblem_r"))
-                    t.emblemColor.red = Double.parseDouble(value);
-                else if (propname.equals("emblem_g"))
-                    t.emblemColor.green = Double.parseDouble(value);
-                else if (propname.equals("emblem_b"))
-                    t.emblemColor.blue = Double.parseDouble(value);
+                switch (propname)
+                {
+                    case "color_r":
+                        t.color.red = Double.parseDouble(value);
+                        break;
+                    case "color_g":
+                        t.color.green = Double.parseDouble(value);
+                        break;
+                    case "color_b":
+                        t.color.blue = Double.parseDouble(value);
+                        break;
+                    case "color_r2":
+                        t.secondaryColor.red = Double.parseDouble(value);
+                        break;
+                    case "color_g2":
+                        t.secondaryColor.green = Double.parseDouble(value);
+                        break;
+                    case "color_b2":
+                        t.secondaryColor.blue = Double.parseDouble(value);
+                        break;
+                    case "color_r3":
+                        t.tertiaryColor.red = Double.parseDouble(value);
+                        break;
+                    case "color_g3":
+                        t.tertiaryColor.green = Double.parseDouble(value);
+                        break;
+                    case "color_b3":
+                        t.tertiaryColor.blue = Double.parseDouble(value);
+                        break;
+                    case "emblem_r":
+                        t.emblemColor.red = Double.parseDouble(value);
+                        break;
+                    case "emblem_g":
+                        t.emblemColor.green = Double.parseDouble(value);
+                        break;
+                    case "emblem_b":
+                        t.emblemColor.blue = Double.parseDouble(value);
+                        break;
+                }
 
                 for (Field f : TankAIControlled.class.getFields())
 				{

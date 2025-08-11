@@ -840,7 +840,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         {
             this.state = State.removed;
 
-            if (Game.effects.contains(this) && !Game.removeEffects.contains(this))
+            if (Game.effects.contains(this))
                 Game.removeEffects.add(this);
         }
 
@@ -849,76 +849,79 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
         if (this.type == EffectType.obstaclePiece3d)
         {
-            Chunk.Tile t = Chunk.getOrDefault(x, y), prevTile = Chunk.getOrDefault(prevGridX, prevGridY);
-
-            boolean collidedX = false;
-            boolean collidedY = false;
-            boolean collided;
-
-            if (x < 0 || x >= Game.currentSizeX)
-                collidedX = true;
-
-            if (y < 0 || y >= Game.currentSizeY)
-                collidedY = true;
-
-            if (this.posZ <= 5)
+            if (x != prevGridX || y != prevGridY)
             {
-                this.vZ = -0.6 * this.vZ;
-                this.vX *= 0.8;
-                this.vY *= 0.8;
-                this.posZ = 10 - this.posZ;
-            }
+                Chunk.Tile t = Chunk.getOrDefault(x, y);
 
-            if (!(collidedX || collidedY))
-            {
-                collided = this.posZ <= t.height();
+                boolean collidedX = false;
+                boolean collidedY = false;
+                boolean collided;
 
-                if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY && t.height() != prevTile.height())
-                {
-                    collidedX = this.prevGridX != x;
-                    collidedY = this.prevGridY != y;
-                }
-            }
-            else
-                collided = true;
+                if (x < 0 || x >= Game.currentSizeX)
+                    collidedX = true;
 
-            this.vZ -= 0.1 * Panel.frameFrequency;
+                if (y < 0 || y >= Game.currentSizeY)
+                    collidedY = true;
 
-            if (collided)
-            {
-                this.vX *= 0.8;
-                this.vY *= 0.8;
-
-                if (collidedX)
-                {
-                    double barrierX = this.prevGridX * Game.tile_size;
-
-                    if (this.vX > 0)
-                        barrierX += Game.tile_size;
-
-                    double dist = this.posX - barrierX;
-
-                    this.vX = -this.vX;
-                    this.posX = this.posX - dist;
-                }
-
-                if (collidedY)
-                {
-                    double barrierY = this.prevGridY * Game.tile_size;
-
-                    if (this.vY > 0)
-                        barrierY += Game.tile_size;
-
-                    double dist = this.posY - barrierY;
-
-                    this.vY = -this.vY;
-                    this.posY = this.posY - dist;
-                }
-
-                if (!collidedX && !collidedY && (x != this.initialGridX || y != initialGridY) && Math.abs(this.posZ - t.height()) < Game.tile_size / 2)
+                if (this.posZ <= 5)
                 {
                     this.vZ = -0.6 * this.vZ;
-                    this.posZ = (2 * t.height() - this.posZ);
+                    this.vX *= 0.8;
+                    this.vY *= 0.8;
+                    this.posZ = 10 - this.posZ;
+                }
+
+                if (!(collidedX || collidedY))
+                {
+                    collided = this.posZ <= t.height();
+
+                    if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY && t.height() != Chunk.getOrDefault(prevGridX, prevGridY).height())
+                    {
+                        collidedX = this.prevGridX != x;
+                        collidedY = this.prevGridY != y;
+                    }
+                }
+                else
+                    collided = true;
+
+                this.vZ -= 0.1 * Panel.frameFrequency;
+
+                if (collided)
+                {
+                    this.vX *= 0.8;
+                    this.vY *= 0.8;
+
+                    if (collidedX)
+                    {
+                        double barrierX = this.prevGridX * Game.tile_size;
+
+                        if (this.vX > 0)
+                            barrierX += Game.tile_size;
+
+                        double dist = this.posX - barrierX;
+
+                        this.vX = -this.vX;
+                        this.posX = this.posX - dist;
+                    }
+
+                    if (collidedY)
+                    {
+                        double barrierY = this.prevGridY * Game.tile_size;
+
+                        if (this.vY > 0)
+                            barrierY += Game.tile_size;
+
+                        double dist = this.posY - barrierY;
+
+                        this.vY = -this.vY;
+                        this.posY = this.posY - dist;
+                    }
+
+                    if (!collidedX && !collidedY && (x != this.initialGridX || y != initialGridY) && Math.abs(this.posZ - t.height()) < Game.tile_size / 2)
+                    {
+                        this.vZ = -0.6 * this.vZ;
+                        this.posZ = (2 * t.height() - this.posZ);
+                    }
                 }
             }
 

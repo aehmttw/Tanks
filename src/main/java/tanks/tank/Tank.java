@@ -3,7 +3,7 @@ package tanks.tank;
 import basewindow.*;
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.effect.*;
+import tanks.attribute.*;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.*;
@@ -286,11 +286,6 @@ public abstract class Tank extends Movable implements ISolidObject
             Tank t = (Tank) m;
             if (((Tank) m).size <= 0)
                 continue;
-
-            if (t.equals(this.possessor))
-            {
-                System.out.println(Game.movables.contains(this) + " " + Game.movables.contains(this.possessor));
-            }
 
             double distSq = GameObject.sqDistBetw(this, t);
             this.hasCollided = true;

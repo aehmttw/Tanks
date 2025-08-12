@@ -1,7 +1,7 @@
 package tanks.obstacle;
 
 import tanks.*;
-import tanks.effect.StatusEffect;
+import tanks.attribute.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.rendering.ShaderMud;
 import tanks.tank.Tank;

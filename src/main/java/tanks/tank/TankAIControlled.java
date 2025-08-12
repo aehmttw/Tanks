@@ -3,7 +3,7 @@ package tanks.tank;
 import basewindow.Color;
 import tanks.*;
 import tanks.bullet.*;
-import tanks.effect.AttributeModifier;
+import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.*;
 import tanks.network.event.*;
@@ -559,6 +559,8 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (this.healthTransformTankField != null)
 			this.healthTransformTank = ((TankAIControlled) this.healthTransformTankField.resolve()).instantiate(this.name, 0, 0, 0);
+
+		this.setRandomDistance();
 	}
 
 	public void updateStart()
@@ -900,6 +902,35 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (this.shootAIType.equals(ShootAI.alternate))
 			this.straightShoot = !this.straightShoot;
+
+		this.setRandomDistance();
+	}
+
+	public void setRandomDistance()
+	{
+		if ((this.shootAIType == ShootAI.sprinkler) && (this.bulletItem.item.bullet instanceof BulletArc || this.bulletItem.item.bullet instanceof BulletAirStrike))
+		{
+			double min = this.size;
+			double max = Math.max(Game.currentSizeX, Game.currentSizeY) * Game.tile_size;
+
+			if (this.bulletItem.item.bullet instanceof BulletArc)
+			{
+				BulletArc a = (BulletArc) this.bulletItem.item.bullet;
+				if (((BulletArc) this.bulletItem.item.bullet).maxRange > 0)
+					max = a.maxRange;
+
+				min = Math.max(a.minRange, min);
+			}
+
+			if (this.bulletItem.item.bullet instanceof BulletAirStrike)
+			{
+				BulletAirStrike a = (BulletAirStrike) this.bulletItem.item.bullet;
+				if (this.bulletItem.item.bullet.range > 0)
+					max = a.range;
+			}
+
+			this.distance = this.random.nextDouble() * (max - min) + min;
+		}
 	}
 
 	public void updateTarget()
@@ -1625,7 +1656,9 @@ public class TankAIControlled extends Tank implements ITankField
 		if ((this.enableLookingAtTargetEnemy || this.straightShoot || this.sightTransformTank != null) && this.useRaysThisFrame)
 			this.lookAtTargetEnemy();
 
-		if (b instanceof BulletArc)
+		if (this.shootAIType.equals(ShootAI.wander) || this.shootAIType.equals(ShootAI.sprinkler))
+			this.updateTurretWander();
+		else if (b instanceof BulletArc)
 		{
 			this.setAimAngleArc();
 			this.updateTurretStraight();
@@ -1642,8 +1675,6 @@ public class TankAIControlled extends Tank implements ITankField
 
 			if (this.shootAIType.equals(ShootAI.none))
 				this.angle = this.orientation;
-			else if (this.shootAIType.equals(ShootAI.wander) || this.shootAIType.equals(ShootAI.sprinkler))
-				this.updateTurretWander();
 			else if (this.shootAIType.equals(ShootAI.straight) || this.straightShoot)
 				this.updateTurretStraight();
 			else
@@ -1652,6 +1683,8 @@ public class TankAIControlled extends Tank implements ITankField
 
 		if (!(b instanceof BulletArc || b instanceof BulletAirStrike))
 			this.pitch -= GameObject.angleBetween(this.pitch, 0) / 10 * Panel.frameFrequency;
+		else
+			this.updatePitch();
 
 		if (!this.chargeUp)
 		{
@@ -1728,13 +1761,23 @@ public class TankAIControlled extends Tank implements ITankField
 	public void updateTurretWander()
 	{
 		Bullet b = this.getBullet();
-		if (useRaysThisFrame)
+		
+		if (this.shootAIType == ShootAI.sprinkler && this.chargeUp)
+			this.charge();
+		
+		if (useRaysThisFrame || chargeUp)
 		{
 			Ray a = Ray.newRay(this.posX, this.posY, this.angle, b.bounces, this);
 			a.moveOut(this.size / 10);
 			a.size = b.size;
 			a.ignoreDestructible = this.aimIgnoreDestructible;
 			a.ignoreShootThrough = true;
+
+			if (b instanceof BulletAirStrike || b instanceof BulletArc)
+			{
+				b.obstacleCollision = false;
+				b.bounces = 0;
+			}
 
 			Movable m = a.getTarget();
 
@@ -1755,9 +1798,11 @@ public class TankAIControlled extends Tank implements ITankField
 			}
 			else
 			{
-				if (!(m == null))
-					if (!Team.isAllied(m, this) && m instanceof Tank && !((Tank) m).hidden)
-						this.shoot();
+				if (!(m == null) && !Team.isAllied(m, this) && m instanceof Tank && !((Tank) m).hidden)
+				{
+					this.distance = Movable.distanceBetween(this, m);
+					this.shoot();
+				}
 			}
 		}
 
@@ -1812,17 +1857,6 @@ public class TankAIControlled extends Tank implements ITankField
 		if (!this.hasTarget || this.targetEnemy == null)
 			return;
 
-		if (b instanceof BulletArc)
-		{
-			double pitch = Math.atan(this.distance / b.speed * 0.5 * BulletArc.gravity / b.speed);
-			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
-		}
-		else if (b instanceof BulletAirStrike)
-		{
-			double pitch = Math.PI / 2;
-			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
-		}
-
 		this.checkAndShoot();
 
 		double speed = this.turretAimSpeed;
@@ -1847,6 +1881,21 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 		else
 			this.angle = this.aimAngle;
+	}
+
+	public void updatePitch()
+	{
+		Bullet b = this.getBullet();
+		if (b instanceof BulletArc)
+		{
+			double pitch = Math.atan(this.distance / b.speed * 0.5 * BulletArc.gravity / b.speed);
+			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
+		}
+		else if (b instanceof BulletAirStrike)
+		{
+			double pitch = Math.PI / 2;
+			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
+		}
 	}
 
 	public void setAimAngleStraight()

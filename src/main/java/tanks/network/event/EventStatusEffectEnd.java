@@ -2,7 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Movable;
-import tanks.effect.StatusEffect;
+import tanks.attribute.StatusEffect;
 import tanks.bullet.Bullet;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;

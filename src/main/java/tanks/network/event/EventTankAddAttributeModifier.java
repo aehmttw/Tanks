@@ -1,7 +1,7 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.effect.AttributeModifier;
+import tanks.attribute.AttributeModifier;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 

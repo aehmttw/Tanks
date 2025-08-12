@@ -4,7 +4,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
-import tanks.effect.AttributeModifier;
+import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.item.*;

@@ -5,7 +5,7 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.bullet.Bullet;
-import tanks.effect.AttributeModifier;
+import tanks.attribute.AttributeModifier;
 import tanks.item.ItemBullet;
 
 public class Turret extends Movable

@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.effect.AttributeModifier;
+import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.tankson.Property;
 

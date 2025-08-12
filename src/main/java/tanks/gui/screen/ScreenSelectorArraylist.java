@@ -8,7 +8,7 @@ import tanks.gui.SelectorDrawable;
 
 import java.util.ArrayList;
 
-public class ScreenSelectorArraylist extends Screen implements IConditionalOverlayScreen, IDarkScreen, IScreenWithCompletion
+public class ScreenSelectorArraylist extends Screen implements IConditionalOverlayScreen, IDarkScreen, IScreenWithCompletion, IBlankBackgroundScreen
 {
     public Screen screen;
 

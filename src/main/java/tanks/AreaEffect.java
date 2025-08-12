@@ -1,6 +1,6 @@
 package tanks;
 
-import tanks.effect.AttributeModifier;
+import tanks.attribute.AttributeModifier;
 
 public abstract class AreaEffect extends Movable
 {	

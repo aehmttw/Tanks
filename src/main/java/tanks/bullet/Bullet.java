@@ -2,7 +2,7 @@ package tanks.bullet;
 
 import basewindow.Color;
 import tanks.*;
-import tanks.effect.*;
+import tanks.attribute.*;
 import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.item.ItemBullet;

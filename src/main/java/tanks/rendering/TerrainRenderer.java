@@ -719,6 +719,8 @@ public class TerrainRenderer
 
         if (!this.staged)
         {
+            Drawing.drawing.setColor(r, g, b);
+
             if (Game.enable3d)
                 this.addBox(t,
                     x * Game.tile_size,

@@ -90,7 +90,7 @@ public class SpeedrunTimer
             Drawing.drawing.setColor(0, 0, 0, alpha);
 
         Drawing.drawing.setInterfaceFontSize(24);
-        Drawing.drawing.drawInterfaceText(posX, posY, "Level time: " + getTime(ScreenGame.lastTimePassed) + levelDiff, false);
+        Drawing.drawing.displayInterfaceText(posX, posY, false, "Level time: %s", getTime(ScreenGame.lastTimePassed) + levelDiff);
 
         if (Crusade.crusadeMode)
         {
@@ -100,7 +100,7 @@ public class SpeedrunTimer
                 Drawing.drawing.setColor(0, 0, 0, alpha);
 
             Drawing.drawing.setInterfaceFontSize(12);
-            Drawing.drawing.drawInterfaceText(posX, posY + 20, "Crusade time: " + getTime(Crusade.currentCrusade.timePassed) + crusadeDiff, false);
+            Drawing.drawing.displayInterfaceText(posX, posY + 20, false, "Crusade time: %s",  getTime(Crusade.currentCrusade.timePassed) + crusadeDiff);
         }
     }
 

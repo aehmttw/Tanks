@@ -1317,8 +1317,6 @@ public class Game
 		Game.player.ownedBuilds = new HashSet<>();
 		Game.player.buildName = "player";
 
-        ScreenGame.lastTimePassed = 0;
-
 		//if (Game.game.window != null)
 		//	Game.game.window.setShowCursor(false);
 	}

@@ -1,8 +1,8 @@
 package tanks;
 
-import tanks.effect.AttributeModifier;
-import tanks.effect.AttributeModifier.Operation;
-import tanks.effect.StatusEffect;
+import tanks.attribute.AttributeModifier;
+import tanks.attribute.AttributeModifier.Operation;
+import tanks.attribute.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.event.EventCreateFreezeEffect;

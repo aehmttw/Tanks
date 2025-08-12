@@ -1,7 +1,7 @@
 package tanks.minigames;
 
 import tanks.*;
-import tanks.effect.StatusEffect;
+import tanks.attribute.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.event.*;

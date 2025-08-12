@@ -63,7 +63,7 @@ public class ObstacleBreakable extends ObstacleStackable
             this.stackColorB[i] = this.stackColorB[i + 1];
         }
 
-        this.playDestroyAnimation(bx - (this.posX - bx) * 2, by - (this.posY - by) * 2, Game.tile_size);
+        this.playDestroyAnimation(bx - (this.posX - bx) * 2, by - (this.posY - by) * 2, Game.tile_size * 2);
 
         this.stackHeight = height - 1;
 
@@ -94,15 +94,33 @@ public class ObstacleBreakable extends ObstacleStackable
 
         drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
 
-        double prevStackHeight = stackHeight;
-        stackHeight = getTileHeight() / Game.tile_size;
+        double offset = Math.pow(this.fallAnimation / 100, 2) * Game.tile_size;
 
         if (Game.enable3d)
-            drawStacks();
+        {
+            for (int i = 0; i < Math.min(this.stackHeight, default_max_height); i++)
+            {
+                drawing.setColor(this.stackColorR[i], this.stackColorG[i], this.stackColorB[i], this.colorA);
+
+                byte option = 0;
+                double cutoff = -Math.min((i - 1 + stackHeight % 1.0) * Game.tile_size, 0);
+
+                byte o;
+
+                if (stackHeight % 1 == 0)
+                {
+                    o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size + offset));
+                    drawing.fillBox(this, this.posX, this.posY, offset + i * Game.tile_size, draw_size, draw_size, draw_size, o);
+                }
+                else
+                {
+                    o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size + offset));
+                    drawing.fillBox(this, this.posX, this.posY, offset + (i - 1 + stackHeight % 1.0) * Game.tile_size + cutoff, draw_size, draw_size, draw_size - cutoff, o);
+                }
+            }
+        }
         else
             drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
-
-        stackHeight = prevStackHeight;
     }
 
     public double getTileHeight()

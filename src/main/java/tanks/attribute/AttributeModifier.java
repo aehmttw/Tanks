@@ -1,4 +1,4 @@
-package tanks.effect;
+package tanks.attribute;
 
 import tanks.Panel;
 

@@ -1,7 +1,7 @@
 package tanks.bullet;
 
 import tanks.*;
-import tanks.effect.AttributeModifier;
+import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
 import tanks.tank.Ray;
@@ -65,6 +65,9 @@ public class BulletArc extends Bullet
     @Override
     public void update()
     {
+        this.range = 0;
+        this.lifespan = 0;
+
         super.update();
 
         if (this.delay > 0)

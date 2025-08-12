@@ -2,9 +2,9 @@ package tanks.obstacle;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.effect.AttributeModifier;
-import tanks.effect.EffectManager;
-import tanks.effect.StatusEffect;
+import tanks.attribute.AttributeModifier;
+import tanks.attribute.EffectManager;
+import tanks.attribute.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.event.EventObstacleBoostPanelEffect;

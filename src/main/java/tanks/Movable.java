@@ -1,7 +1,7 @@
 package tanks;
 
 import it.unimi.dsi.fastutil.objects.*;
-import tanks.effect.*;
+import tanks.attribute.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.tank.*;

@@ -2,7 +2,7 @@ package tanks.item;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.effect.AttributeModifier;
+import tanks.attribute.AttributeModifier;
 import tanks.minigames.Minigame;
 import tanks.tank.Tank;
 import tanks.tankson.ICopyable;

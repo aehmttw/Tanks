@@ -246,7 +246,7 @@ public class Ray extends GameObject
     public Ray setRange(double distance)
     {
         range = distance;
-        return setMaxChunks((int) (distance / Game.tile_size / Chunk.chunkSize + 1));
+        return setMaxChunks((int) (distance / Game.tile_size / Chunk.chunkSize + 2));
     }
 
     public Ray setSize(double size)

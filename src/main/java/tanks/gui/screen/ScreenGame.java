@@ -1877,26 +1877,20 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                 if (ScreenGame.finishTimer > 0)
                 {
-                    ScreenGame.finishTimer -= Panel.frameFrequency;
-                    if (ScreenGame.finishTimer < 0)
-                        ScreenGame.finishTimer = 0;
+                    ScreenGame.finishTimer = Math.max(0, ScreenGame.finishTimer - Panel.frameFrequency);
                 }
                 else
                 {
                     boolean noMovables = true;
 
-                    for (int m = 0; m < Game.movables.size(); m++)
+                    for (Movable m : Game.movables)
                     {
-                        Movable mo = Game.movables.get(m);
-                        if (mo instanceof Bullet || mo instanceof Mine)
+                        if (m instanceof Bullet || m instanceof Mine)
                         {
                             noMovables = false;
-                            mo.destroy = true;
+                            m.destroy = true;
                         }
                     }
-
-                    for (Effect e : Game.effects)
-                        e.maxAge = Math.min(e.maxAge, ScreenGame.finishTimerMax + 100);
 
                     int includedPlayers = 0;
 
@@ -1904,6 +1898,15 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                         includedPlayers = ScreenPartyHost.includedPlayers.size();
                     else if (ScreenPartyLobby.isClient)
                         includedPlayers = ScreenPartyLobby.includedPlayers.size();
+
+                    for (Effect e : Game.effects)
+                    {
+                        if (e.maxAge > 100)
+                        {
+                            e.age = 0;
+                            e.maxAge = 100;
+                        }
+                    }
 
                     if (Game.effects.isEmpty() && noMovables && !(isVersus && ((finishQuickTimer < introResultsMusicEnd / 10.0 - rankingsTimeIntro) || (rankingsOverlay.namesCount != includedPlayers))))
                     {

@@ -1895,13 +1895,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                         }
                     }
 
+                    for (Effect e : Game.effects)
+                        e.maxAge = Math.min(e.maxAge, ScreenGame.finishTimerMax + 100);
+
                     int includedPlayers = 0;
 
                     if (ScreenPartyHost.isServer)
                         includedPlayers = ScreenPartyHost.includedPlayers.size();
                     else if (ScreenPartyLobby.isClient)
                         includedPlayers = ScreenPartyLobby.includedPlayers.size();
-                    if (Game.effects.size() <= 0 && noMovables && !(isVersus && ((finishQuickTimer < introResultsMusicEnd / 10.0 - rankingsTimeIntro) || (rankingsOverlay.namesCount != includedPlayers))))
+
+                    if (Game.effects.isEmpty() && noMovables && !(isVersus && ((finishQuickTimer < introResultsMusicEnd / 10.0 - rankingsTimeIntro) || (rankingsOverlay.namesCount != includedPlayers))))
                     {
                         if (Game.followingCam)
                             Game.game.window.setCursorPos(Panel.windowWidth / 2, Panel.windowHeight / 2);

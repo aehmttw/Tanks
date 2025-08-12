@@ -65,7 +65,7 @@ public class ScreenEditorTrail extends ScreenEditorTanksONable<Trail>
         }
 
         this.target.get().drawForInterface(start, end, 150, Bullet.bullet_size, max);
-        this.target.get().drawForInterface(start, end, 90, Bullet.bullet_size, max, true);
+        this.target.get().drawForInterface(start, end, 90, Bullet.bullet_size, max, true, false);
     }
 
     @Override

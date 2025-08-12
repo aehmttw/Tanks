@@ -214,6 +214,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
                 Drawing.drawing.trackRenderer.remove(e);
             }
+			else
+				break;
         }
 
         Effect.timeSinceLastTrack += Panel.frameFrequency;

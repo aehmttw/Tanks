@@ -457,15 +457,6 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                     s.onComplete = this::setupTrails;
                     Game.screen = s;
                 }));
-                if (this.trails.get(i).glow)
-                {
-                    this.buttons.get(i).bgColR = 140;
-                    this.buttons.get(i).bgColG = 140;
-                    this.buttons.get(i).bgColB = 140;
-                    this.buttons.get(i).selectedColR -= 115;
-                    this.buttons.get(i).selectedColG -= 115;
-                    this.buttons.get(i).selectedColB -= 115;
-                }
             }
 
             this.buttons.add(new Button(Drawing.drawing.interfaceSizeX / 2, buttons_start + buttons_spacing * (this.trails.size() % trails_per_page), 60, 60, "+", () ->
@@ -520,7 +511,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                 if (i < this.trails.size())
                 {
                     if (buttons.get(i).selected)
-                        this.trails.get(i).drawForInterface(start, end, 175, Bullet.bullet_size, ((ScreenEditorBulletEffect)this.screen).trailLength, true);
+                        this.trails.get(i).drawForInterface(start, end, 175, Bullet.bullet_size, ((ScreenEditorBulletEffect)this.screen).trailLength, true, false);
                 }
             }
         }
@@ -540,6 +531,10 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                 if (i < this.trails.size())
                 {
                     buttons.get(i).draw();
+
+                    if (this.trails.get(i).glow)
+                        this.trails.get(i).drawForInterface(start, end, buttons_start + buttons_spacing * (i % trails_per_page), Bullet.bullet_size, max, false, true);
+
                     this.trails.get(i).drawForInterface(start, end, buttons_start + buttons_spacing * (i % trails_per_page), Bullet.bullet_size, max);
 
                     upButtons[n].enabled = i != 0;

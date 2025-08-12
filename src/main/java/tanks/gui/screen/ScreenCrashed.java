@@ -62,6 +62,9 @@ public class ScreenCrashed extends Screen
 		this.chatroom.imageSizeX = imgsize;
 		this.chatroom.imageSizeY = imgsize;
 		this.chatroom.imageXOffset = 150 * this.chatroom.sizeX / 350;
+
+		Game.game.window.transformations.clear();
+		Game.game.window.loadPerspective();
 	}
 
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Exit the game", () -> System.exit(0));

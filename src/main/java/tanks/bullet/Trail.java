@@ -3,11 +3,12 @@ package tanks.bullet;
 import basewindow.Color;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
+import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 import tanks.tankson.TanksONable;
 
 @TanksONable("trail")
-public class Trail implements IDrawable
+public class Trail implements IDrawable, ICopyable<Trail>
 {
     public double backX;
     public double backY;
@@ -145,10 +146,10 @@ public class Trail implements IDrawable
 
     public void drawForInterface(double x, double x1, double y, double height, double dist)
     {
-        drawForInterface(x, x1, y, height, dist, false);
+        drawForInterface(x, x1, y, height, dist, false, false);
     }
 
-    public void drawForInterface(double x, double x1, double y, double height, double dist, boolean outline)
+    public void drawForInterface(double x, double x1, double y, double height, double dist, boolean outline, boolean shadow)
     {
         double frac1 = this.delay / dist;
         double frac2 = (this.delay + this.maxLength) / dist;
@@ -169,30 +170,44 @@ public class Trail implements IDrawable
             return;
         }
 
+        double fw = this.frontWidth;
+        double bw = this.backWidth;
+
         Drawing.drawing.setColor(this.frontColor);
-        Game.game.window.shapeRenderer.setBatchMode(true, false, false, this.glow);
+
+        if (shadow)
+        {
+            fw += 1;
+            bw += 1;
+            Drawing.drawing.setColor(0, 0, 0);
+        }
+
+        Game.game.window.shapeRenderer.setBatchMode(true, false, false, this.glow && !shadow);
 
         if (this.frontCircle)
-            Drawing.drawing.fillPartialInterfaceOval(start, y, this.frontWidth * height, this.frontWidth * height, 0.25, 0.75);
+            Drawing.drawing.fillPartialInterfaceOval(start, y, fw * height, fw * height, 0.25, 0.75);
 
-        Game.game.window.shapeRenderer.setBatchMode(false, false, false, this.glow);
+        Game.game.window.shapeRenderer.setBatchMode(false, false, false, this.glow && !shadow);
 
 
-        Game.game.window.shapeRenderer.setBatchMode(true, true, false, this.glow);
-        Drawing.drawing.addInterfaceVertex(start, y - this.frontWidth / 2 * height, 0);
-        Drawing.drawing.addInterfaceVertex(start, y + this.frontWidth / 2 * height, 0);
+        Game.game.window.shapeRenderer.setBatchMode(true, true, false, this.glow && !shadow);
+        Drawing.drawing.addInterfaceVertex(start, y - fw / 2 * height, 0);
+        Drawing.drawing.addInterfaceVertex(start, y + fw / 2 * height, 0);
 
         Drawing.drawing.setColor(this.backColor);
-        Drawing.drawing.addInterfaceVertex(end, y + this.backWidth / 2 * height, 0);
-        Drawing.drawing.addInterfaceVertex(end, y - this.backWidth / 2 * height, 0);
-        Game.game.window.shapeRenderer.setBatchMode(false, true, false, this.glow);
+        if (shadow)
+            Drawing.drawing.setColor(0, 0, 0);
 
-        Game.game.window.shapeRenderer.setBatchMode(true, false, false, this.glow);
+        Drawing.drawing.addInterfaceVertex(end, y + bw / 2 * height, 0);
+        Drawing.drawing.addInterfaceVertex(end, y - bw / 2 * height, 0);
+        Game.game.window.shapeRenderer.setBatchMode(false, true, false, this.glow && !shadow);
+
+        Game.game.window.shapeRenderer.setBatchMode(true, false, false, this.glow && !shadow);
 
         if (this.backCircle)
-            Drawing.drawing.fillPartialInterfaceOval(end, y, this.backWidth * height, this.backWidth * height, 0.75, 1.25);
+            Drawing.drawing.fillPartialInterfaceOval(end, y, bw * height, bw * height, 0.75, 1.25);
 
-        Game.game.window.shapeRenderer.setBatchMode(false, false, false, this.glow);
+        Game.game.window.shapeRenderer.setBatchMode(false, false, false, this.glow && !shadow);
     }
 
     @Override

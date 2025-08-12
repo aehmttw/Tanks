@@ -465,7 +465,7 @@ public class Drawing
 
 	public void fillRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
 	{
-		terrainRenderer.addBox(o, x - sizeX / 2, y - sizeY / 2, 0, sizeX, sizeY, 1, (byte) 64, false);
+		terrainRenderer.addBox(o, x - sizeX / 2, y - sizeY / 2, 0, sizeX, sizeY, 1, (byte) 61, false);
 	}
 
 	public void fillRect(double x, double y, double z, double sizeX, double sizeY, boolean depthTest)
@@ -1682,14 +1682,14 @@ public class Drawing
 		return Game.screen.getOffsetY() + (Game.currentSizeY * Drawing.drawing.interfaceScaleZoom / 18.0 - 1) * interfaceSizeY / 2 * scale;
 	}
 
-	public double getHorizontalMargin()
+	public double getHorizontalInterfaceMargin()
 	{
-		return (Game.game.window.absoluteWidth - sizeX / scale) / 2;
+		return (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2;
 	}
 
-	public double getVerticalMargin()
+	public double getVerticalInterfaceMargin()
 	{
-		return (Game.game.window.absoluteHeight - statsHeight - sizeY / scale) / 2;
+		return ((Game.game.window.absoluteHeight - statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
 	}
 
 	/**

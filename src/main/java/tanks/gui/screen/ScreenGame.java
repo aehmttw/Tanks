@@ -1176,7 +1176,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             boolean dead = Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).removeMusicWhenDead && Game.playerTank != null && Game.playerTank.destroy;
 
-            if (!this.paused && !showRankings)
+            if (!this.paused && !showRankings && !ScreenGame.finishedQuick)
             {
                 if (!Game.currentLevel.timed && !dead)
                 {
@@ -1542,7 +1542,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 }
                 else
                 {
-                    this.music = "ready/silence.ogg";
+                    if (Game.enableLayeredMusic)
+                        this.music = "ready/silence.ogg";
+                    else
+                        this.music = "ready_music_1.ogg";
+
                     this.musicID = "ready";
                 }
 
@@ -1578,7 +1582,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                         {
                             if (this.readyPanelCounter * 10 >= introMusicEnd)
                             {
-                                this.music = "ready/silence.ogg";
+                                if (Game.enableLayeredMusic)
+                                    this.music = "ready/silence.ogg";
+                                else
+                                    this.music = "ready_music_1.ogg";
+
                                 this.musicID = "ready";
                             }
                             else
@@ -1625,7 +1633,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     {
                         if (this.readyPanelCounter * 10 >= introMusicEnd)
                         {
-                            this.music = "ready/shaker.ogg";
+                            if (Game.enableLayeredMusic)
+                                this.music = "ready/shaker.ogg";
+                            else
+                                this.music = "ready_music_2.ogg";
                             this.musicID = "ready";
                         }
                         else
@@ -2276,11 +2287,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if (this.readyPanelCounter * 10 >= introMusicEnd)
         {
-            this.music = "ready/shaker.ogg";
+            if (Game.enableLayeredMusic)
+                this.music = "ready/shaker.ogg";
+            else
+                this.music = "ready_music_2.ogg";
             this.musicID = "ready";
 
             if (this.paused || this.shopScreen || this.buildsScreen)
-                this.music = "ready/silence.ogg";
+            {
+                if (Game.enableLayeredMusic)
+                    this.music = "ready/silence.ogg";
+                else
+                    this.music = "ready_music_1.ogg";
+            }
         }
         else
         {
@@ -2849,7 +2868,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                                     name = cp.username;
 
                                 Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, name);
-                                Drawing.drawing.setColor(cp.color, opacity);
+                                Drawing.drawing.setColor(cp.teamColor, opacity);
                                 Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 200, 40 * (i - base) + 100, name);
                                 Tank.drawTank(Drawing.drawing.interfaceSizeX - 240 - Drawing.drawing.getStringWidth(name) / 2, 40 * (i - base) + 100, cp.color, cp.color2, cp.color3, opacity / 255 * 25);
                             }
@@ -3160,7 +3179,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             ChatMessage m = new ChatMessage(tanks.translation.Translation.translate(s, p.username, remaining));
             ScreenPartyHost.chat.add(0, m);
             Game.eventsOut.add(new EventChat(m.rawMessage));
-            Drawing.drawing.playGlobalSound("hit_chain.ogg", (float) Math.pow(2, remaining * 1.0 / (ScreenPartyHost.includedPlayers.size() - 1) * -2 + 2), 0.5f);
+            Drawing.drawing.playGlobalSound("hit_chain.ogg", (float) Math.pow(2, Math.round(12 * (remaining * 1.0 / (ScreenPartyHost.includedPlayers.size() - 1) * -2 + 2)) / 12.0), 0.5f);
         }
     }
 

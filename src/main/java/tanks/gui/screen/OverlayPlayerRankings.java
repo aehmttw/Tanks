@@ -14,6 +14,12 @@ public class OverlayPlayerRankings
     public int namesCount;
     public int prevNames;
 
+    public boolean minimized = false;
+    public double minFrac = 0;
+    public double minCooldownMax = 500;
+    public double minCooldown = minCooldownMax;
+    public boolean initialAddDone = false;
+
     public OverlayPlayerRankings(ScreenGame s)
     {
         this.screen = s;
@@ -24,25 +30,41 @@ public class OverlayPlayerRankings
         if (Game.game.window.drawingShadow)
             return;
 
+        minCooldown -= Panel.frameFrequency;
+        minimized = minCooldown < 0 && !(ScreenGame.finishedQuick);
+
+        if (minimized)
+            minFrac += Panel.frameFrequency / 100;
+        else
+            minFrac -= Panel.frameFrequency / 25;
+
+        minFrac = Math.min(1, Math.max(0, minFrac));
+
         double s = time;
 
         double delay = screen.introResultsMusicEnd / 10.0 - 15;
 
-        double extraWidth = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2;
+        double extraWidth = Drawing.drawing.getHorizontalInterfaceMargin();
         double height = (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale;
+        double width = Math.min(time / delay, 1) * 400 - (minFrac * 300);
+
+        double x = Drawing.drawing.interfaceSizeX + 200 - width + extraWidth - minFrac * 150;
+        if (Drawing.drawing.getInterfaceMouseX() > x - width / 2 || !initialAddDone)
+        {
+            minimized = false;
+            minCooldown = minCooldownMax;
+        }
 
         Drawing.drawing.setColor(0, 0, 0, Math.max(0, 127 * Math.min(1, (time * 10) / 200) * Math.min(s / 25, 1)));
-        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX + extraWidth / 2, Drawing.drawing.interfaceSizeY / 2, extraWidth, height);
-        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX - Math.min(time / delay, 1) * 200, Drawing.drawing.interfaceSizeY / 2,
-                Math.min(time / delay, 1) * 400, height);
+        Drawing.drawing.fillInterfaceRect(x, Drawing.drawing.interfaceSizeY / 2,
+                width, height);
 
         double c = time - delay - 15;
 
         double opacity = Math.max(Math.min(s / delay, 1) * 255, 0);
         Drawing.drawing.setColor(255, 255, 255, opacity);
-        Drawing.drawing.setInterfaceFontSize(this.screen.titleSize);
-
-        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX + 200 - Math.min(time / delay, 1) * 400, 50, "Rankings:");
+        Drawing.drawing.setInterfaceFontSize(this.screen.titleSize * (0.5 - minFrac * 0.5 + 0.5));
+        Drawing.drawing.displayInterfaceText(x, 50, "Rankings:");
 
         int includedPlayers = 0;
 
@@ -56,11 +78,16 @@ public class OverlayPlayerRankings
         if (screen.eliminatedPlayers.size() < namesCount)
             namesCount = screen.eliminatedPlayers.size();
 
+        boolean added = false;
         while (screen.eliminatedPlayers.size() > namesCount && c > lastNewName + spacing)
         {
+            added = true;
             lastNewName = lastNewName + spacing;
             namesCount++;
         }
+
+        if (c > lastNewName + spacing && !added)
+            initialAddDone = true;
 
         int slots = (int) ((Drawing.drawing.interfaceSizeY - 100) / 40) - 1;
 
@@ -77,7 +104,7 @@ public class OverlayPlayerRankings
                 {
                     j++;
                     ConnectedPlayer cp = screen.eliminatedPlayers.get(i);
-                    Drawing.drawing.setColor(cp.teamColor, opacity);
+                    Drawing.drawing.setColor(cp.teamColor, opacity * (1 - minFrac));
 
                     String name;
                     if (Game.enableChatFilter)
@@ -89,17 +116,25 @@ public class OverlayPlayerRankings
                     if (!(Game.screen instanceof ScreenGame))
                         n = namesCount - i;
 
-                    Drawing.drawing.setBoundedInterfaceFontSize(this.screen.textSize, 250, name);
-                    Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX - 180, 40 * j + 100, n + ". " + name);
-                    Tank.drawTank(Drawing.drawing.interfaceSizeX - 220 - Drawing.drawing.getStringWidth(n + ". " + name) / 2, 40 * j + 100, cp.color, cp.color2, cp.color3, opacity / 255 * 25);
+                    Drawing.drawing.setBoundedInterfaceFontSize(this.screen.textSize * (1 - minFrac), 250, name);
+                    Drawing.drawing.drawInterfaceText(x + 20, 40 * j + 100, n + ". " + name);
+
+                    double w = Drawing.drawing.getStringWidth(n + ". " + name);
+                    Drawing.drawing.setInterfaceFontSize(this.screen.textSize);
+                    Drawing.drawing.setColor(cp.teamColor, opacity * minFrac);
+                    Drawing.drawing.drawInterfaceText(x - (20 + w / 2) * (1 - minFrac) - 22 * minFrac, 40 * j + 100, n + ".");
+
+                    Tank.drawTank(x - (20 + w / 2) * (1 - minFrac) + 18 * minFrac, 40 * j + 100, cp.color, cp.color2, cp.color3, opacity / 255 * 25);
                 }
             }
 
             if (includedPlayers > namesCount)
             {
-                Drawing.drawing.setColor(255, 255, 255, opacity / 2);
                 Drawing.drawing.setInterfaceFontSize(this.screen.textSize);
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX - 200, 100, "%d remaining...", includedPlayers - namesCount);
+                Drawing.drawing.setColor(255, 255, 255, opacity / 2 * (1 - minFrac));
+                Drawing.drawing.displayInterfaceText(x, 100, "%d remaining...", includedPlayers - namesCount);
+                Drawing.drawing.setColor(255, 255, 255, opacity / 2 * (minFrac));
+                Drawing.drawing.displayInterfaceText(x, 100, "+%d...", includedPlayers - namesCount);
             }
         }
 

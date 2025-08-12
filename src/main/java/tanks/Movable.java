@@ -94,10 +94,10 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 			return;
 
         lastSize = getSize();
-        refreshFaces();
+        refreshFacesAndChunks();
     }
 
-    public void refreshFaces()
+    public void refreshFacesAndChunks()
     {
         ObjectArrayList<Chunk> cache = getTouchingChunks();
         recordData("refreshFaces");
@@ -120,6 +120,12 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
                 onEnterChunk(c);
             c.markDirty();
         }
+    }
+
+    @Override
+    public boolean isRemoved()
+    {
+        return destroy;
     }
 
     public void onEnterChunk(Chunk c)
@@ -148,7 +154,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		return getCurrentChunks();
 	}
 
-	public void update()
+    public void update()
 	{
         recordData("update");
 

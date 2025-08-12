@@ -860,14 +860,13 @@ public class Game
 		o.removed = false;
 		Game.obstacles.add(o);
 		o.postOverride();
+        o.afterAdd();
 
 		if (refresh)
             redraw(o);
 
-		o.afterAdd();
-
-		for (Obstacle o1 : o.getNeighbors())
-			o1.onNeighborUpdate();
+        for (Obstacle o1 : o.getNeighbors())
+            o1.onNeighborUpdate();
 	}
 
 	public static boolean usernameInvalid(String username)
@@ -1102,9 +1101,7 @@ public class Game
 		Drawing.drawing.terrainRenderer.remove(o);
 		o.removed = true;
 		redraw(o);
-		Chunk c = Chunk.getChunk(o.posX, o.posY);
-		if (c != null)
-			c.removeObstacle(o);
+		Chunk.runIfChunkPresent(o.posX, o.posY, chunk -> chunk.removeObstacle(o));
 
 		if (o.shouldUpdate())
 			Game.obstaclesToUpdate.remove(o);
@@ -1300,6 +1297,8 @@ public class Game
 		recycleEffects.clear();
 		removeEffects.clear();
 		removeClouds.clear();
+
+        SolidGameObject.addFacesToChunks.clear();
 
 		if (Game.currentLevel != null)
 			Chunk.populateChunks(Game.currentLevel);

@@ -802,9 +802,9 @@ public class Level
 		for (Obstacle o : Game.obstacles)
             o.postOverride();
 		for (Movable m : Game.movables)
-            m.refreshFaces();
+            m.refreshFacesAndChunks();
 		for (Obstacle o : Game.obstacles)
-			o.refreshFaces();
+			o.refreshFacesAndChunks();
 
 		ScreenLevelEditor s = null;
 

@@ -14,14 +14,11 @@ public class ObstacleBeatBlock extends ObstacleStackable
     public double beatFrequency = 1;
     public boolean alternate;
 
-    public double outlineColorR;
-    public double outlineColorG;
-    public double outlineColorB;
+    public double outlineColorR, outlineColorG, outlineColorB;
+    public boolean refreshHitboxes = false;
 
     protected boolean lastOn = false;
     protected boolean firstUpdate = true;
-
-    private boolean refreshHitboxes;
 
     public ObstacleBeatBlock(String name, double posX, double posY)
     {
@@ -65,10 +62,10 @@ public class ObstacleBeatBlock extends ObstacleStackable
         this.bulletCollision = on;
         this.tankCollision = on;
 
-        if (this.refreshHitboxes)
+        if (refreshHitboxes)
         {
-            this.refreshHitboxes = false;
-            refreshFaces();
+            refreshHitboxes = false;
+            refreshSelfAndNeighbors();
         }
 
         if (this.tankCollision != lastOn || firstUpdate)
@@ -77,7 +74,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
                 this.postOverride();
 
             this.firstUpdate = false;
-            this.refreshHitboxes = true;
+            refreshHitboxes = true;
 
             this.allowBounce = false;
             this.shouldClip = true;

@@ -1927,9 +1927,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                         {
                             Panel.levelPassed = false;
 
-                            for (int i = 0; i < Game.players.size(); i++)
+                            for (Player p : Game.players)
                             {
-                                if (Game.players.get(i) != null && Game.players.get(i).tank != null && aliveTeams.contains(Game.players.get(i).tank.team) || (!aliveTeams.isEmpty() && aliveTeams.get(0).name.equals(Game.players.get(i).clientID.toString())))
+                                if (p != null && p.tank != null && aliveTeams.contains(p.tank.team) || (!aliveTeams.isEmpty() && aliveTeams.get(0).name.equals(p.clientID.toString())))
                                 {
                                     Panel.levelPassed = true;
 
@@ -1996,10 +1996,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                                     if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
                                         Game.eventsOut.add(new EventShowCrusadeStats());
 
-                                    for (int i = 0; i < Game.players.size(); i++)
-                                    {
-                                        Game.eventsOut.add(new EventUpdateRemainingLives(Game.players.get(i)));
-                                    }
+                                    for (Player p: Game.players)
+                                        Game.eventsOut.add(new EventUpdateRemainingLives(p));
                                 }
                                 else if (ScreenInterlevel.fromQuickPlay != null)
                                     exitQuickPlay();

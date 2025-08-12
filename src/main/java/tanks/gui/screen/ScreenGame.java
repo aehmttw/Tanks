@@ -2094,6 +2094,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         }
         SolidGameObject.addFacesToChunks.clear();
 
+        Chunk.handleDirtyChunks();
+
         Game.effects.addAll(Game.addEffects);
         Game.addEffects.clear();
 

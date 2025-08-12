@@ -33,7 +33,7 @@ public class Face implements Comparable<Face>
     public ISolidObject owner;
     public Direction direction;
     public boolean solidTank, solidBullet;
-    public boolean valid = true, lastValid = true;
+    public boolean valid = true, lastValid = false;
 
     public Face(ISolidObject o, Direction direction, boolean tank, boolean bullet)
     {
@@ -46,7 +46,7 @@ public class Face implements Comparable<Face>
     public Face(ISolidObject o, double x1, double y1, double x2, double y2, Direction direction, boolean tank, boolean bullet)
     {
         this(o, direction, tank, bullet);
-        update(x1, y1, x2, y2, true, tank, bullet);
+        update(x1, y1, x2, y2);
     }
 
     public static void drawDebug()
@@ -111,21 +111,19 @@ public class Face implements Comparable<Face>
 
     public void update(double x1, double y1, double x2, double y2)
     {
-        update(x1, y1, x2, y2, true, this.solidTank, this.solidBullet);
-    }
-
-    public void update(double x1, double y1, double x2, double y2, boolean valid, boolean tank, boolean bullet)
-    {
         this.startX = x1;
         this.startY = y1;
         this.endX = x2;
         this.endY = y2;
+        validate();
+    }
+
+    public void updateCollision(boolean valid, boolean tank, boolean bullet)
+    {
         this.lastValid = this.valid;
         this.valid = valid;
         this.solidTank = tank;
         this.solidBullet = bullet;
-
-        validate();
     }
 
     public void validate()

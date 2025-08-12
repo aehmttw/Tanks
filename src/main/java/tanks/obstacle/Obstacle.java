@@ -107,7 +107,13 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		return update;
 	}
 
-	@Override
+    @Override
+    public boolean isRemoved()
+    {
+        return removed || Game.removeObstacles.contains(this);
+    }
+
+    @Override
 	public void drawAt(double x, double y)
 	{
 		double x1 = this.posX;
@@ -239,7 +245,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d, (byte) 4);
 	}
 
-    public void refreshFaces()
+    public void refreshSelfAndNeighbors()
     {
         updateFaces();
         for (Obstacle o : getNeighbors())
@@ -319,7 +325,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	{
         // the Math.floor is actually essential here wtf
 		Obstacle o = Game.getObstacle((int) Math.floor(this.posX / Game.tile_size) + f.direction.x(), (int) Math.floor(this.posY / Game.tile_size) + f.direction.y());
-		return super.isFaceValid(f) && (o == null || o.tankCollision != tankCollision || o.bulletCollision != bulletCollision);
+		return super.isFaceValid(f) && (o == null || o.isRemoved() || o.tankCollision != tankCollision || o.bulletCollision != bulletCollision);
 	}
 
 	@Override
@@ -339,7 +345,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		Game.removeObstacles.add(this);
 	}
 
-	private static final ObjectArrayList<Obstacle> obstaclesCache = new ObjectArrayList<>();
+    private static final ObjectArrayList<Obstacle> obstaclesCache = new ObjectArrayList<>();
 
 	public ObjectArrayList<Obstacle> getNeighbors()
 	{

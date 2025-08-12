@@ -65,7 +65,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
         if (refreshHitboxes)
         {
             refreshHitboxes = false;
-            refreshFaces();
+            refreshSelfAndNeighbors();
         }
 
         if (this.tankCollision != lastOn || firstUpdate)

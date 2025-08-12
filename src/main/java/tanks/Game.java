@@ -1101,9 +1101,7 @@ public class Game
 		Drawing.drawing.terrainRenderer.remove(o);
 		o.removed = true;
 		redraw(o);
-		Chunk c = Chunk.getChunk(o.posX, o.posY);
-		if (c != null)
-			c.removeObstacle(o);
+		Chunk.runIfChunkPresent(o.posX, o.posY, chunk -> chunk.removeObstacle(o));
 
 		if (o.shouldUpdate())
 			Game.obstaclesToUpdate.remove(o);

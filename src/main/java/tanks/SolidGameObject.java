@@ -65,7 +65,7 @@ public abstract class SolidGameObject extends GameObject implements ISolidObject
 
     public abstract boolean isRemoved();
 
-    public void refreshFaces()
+    public void refreshFacesAndChunks()
     {
         updateFaces();
     }

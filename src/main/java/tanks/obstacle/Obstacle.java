@@ -245,10 +245,11 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d, (byte) 4);
 	}
 
-    public void refreshNeighbors()
+    public void refreshSelfAndNeighbors()
     {
         updateFaces();
-        addFacesToChunks.addAll(getNeighbors());
+        for (Obstacle o : getNeighbors())
+            o.onNeighborUpdate();
     }
 
 	public void postOverride()

@@ -154,6 +154,7 @@ public class Game
 	public static boolean drawFaces = false;
     public static boolean drawAvoidObjects = false;
     public static boolean recordMovableData = false;
+    public static boolean recordEventData = false;
     public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;
@@ -178,7 +179,7 @@ public class Game
 
 	public static boolean vsync = true;
 	public static int maxFPS = 0;
-	public static int networkRate = 60;
+	public static int networkRate = 10;
 
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
@@ -344,6 +345,7 @@ public class Game
 
 	public static void registerEvents()
 	{
+        NetworkEventMap.register(EventStackedGroup.class);
 		NetworkEventMap.register(EventSendClientDetails.class);
 		NetworkEventMap.register(EventPing.class);
 		NetworkEventMap.register(EventConnectionSuccess.class);

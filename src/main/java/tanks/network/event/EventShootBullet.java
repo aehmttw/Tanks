@@ -1,19 +1,12 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Panel;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletInstant;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankRemote;
+import tanks.*;
+import tanks.bullet.*;
+import tanks.item.*;
+import tanks.tank.*;
 
-public class EventShootBullet extends PersonalEvent
+public class EventShootBullet extends PersonalEvent implements IStackableEvent
 {
 	public int id;
 	public int tank;
@@ -25,8 +18,10 @@ public class EventShootBullet extends PersonalEvent
 	public double vZ;
 	public double speed;
 	public int item;
-	
-	public EventShootBullet()
+
+    public boolean isStackable;
+
+    public EventShootBullet()
 	{
 		
 	}
@@ -35,6 +30,7 @@ public class EventShootBullet extends PersonalEvent
 	{
 		this.id = b.networkID;
         this.tank = b.tank.networkID;
+        this.isStackable = b.affectedByFrameFrequency;
 		this.posX = b.posX;
 		this.posY = b.posY;
 		this.posZ = b.posZ;
@@ -45,7 +41,13 @@ public class EventShootBullet extends PersonalEvent
 		this.item = b.item.networkIndex;
 	}
 
-	@Override
+    @Override
+    public boolean isStackable()
+    {
+        return isStackable;
+    }
+
+    @Override
 	public void execute() 
 	{
 		if (this.clientID != null)
@@ -144,4 +146,10 @@ public class EventShootBullet extends PersonalEvent
 		this.speed = b.readDouble();
 		this.item = b.readInt();
 	}
+
+    @Override
+    public int getIdentifier()
+    {
+        return tank;
+    }
 }

@@ -1,51 +1,32 @@
 package tanks.network;
 
-import com.codedisaster.steamworks.SteamID;
-import com.codedisaster.steamworks.SteamNetworking;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.*;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.event.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
-public class ServerHandler extends ChannelInboundHandlerAdapter
+public class ServerHandler extends NetworkHandler
 {
-	public MessageReader reader = new MessageReader();
-
 	protected ArrayList<Integer> queuedEventIndices = new ArrayList<>();
 	protected ArrayList<INetworkEvent> queuedEvents = new ArrayList<>();
-
-	protected SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
-	protected HashMap<Integer, IStackableEvent> stackedEvents = new HashMap<>();
-	protected long lastStackedEventSend = 0;
-
-	public ChannelHandlerContext ctx;
-	public SteamID steamID;
 
 	public Server server;
 
 	public boolean initialized = false;
+    public UUID clientID;
 
 	public Player player;
-	public UUID clientID;
 	public String rawUsername;
 	public String username;
 
 	public long lastPingSent;
 	public long lastLatency;
 	public boolean pingReceived = true;
-
-	public boolean joined = false;
-	public boolean closed = false;
 
 	public ServerHandler(Server s)
 	{
@@ -90,20 +71,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 				ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + this.username + " has left the party\u00A7000000000255"));
 			}
 		}
-
-//		//System.out.println(eventFrequencies);
-//
-//		for (String s: eventFrequencies.keySet())
-//		{
-//			System.out.println(s + ": " + eventFrequencies.get(s));
-//		}
-	}
+    }
 
 	/**
 	 * Queues an event to be added, to be sent exactly after all the events currently
 	 * in Game.eventsOut
-	 * @param e
-	 */
+     */
 	public void queueEvent(INetworkEvent e)
 	{
 		this.queuedEvents.add(e);
@@ -137,139 +110,29 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		}
 	}
 
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, Object msg)
-	{
-		if (closed)
-			return;
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg)
+    {
+        if (closed)
+            return;
 
-		this.ctx = ctx;
-		ByteBuf buffy = (ByteBuf) msg;
-		this.reader.queueMessage(this, buffy, this.clientID);
+        this.ctx = ctx;
+        this.reader.queueMessage(this, ((ByteBuf) msg), this.clientID);
 
-		if (steamID == null)
-			ReferenceCountUtil.release(msg);
-	}
+        if (steamID == null)
+            ReferenceCountUtil.release(msg);
+    }
 
-	public void reply()
-	{
-		synchronized (this.events)
-		{
-			INetworkEvent prev = null;
-			for (int i = 0; i < this.events.size(); i++)
-			{
-				INetworkEvent e = this.events.get(i);
+    @Override
+    public void reply()
+    {
+        super.reply();
 
-				if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
-					this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
-				else
-				{
-					if (prev != null)
-						this.sendEvent(prev,false);
-
-					prev = e;
-				}
-			}
-
-			long time = System.currentTimeMillis() * Game.networkRate / 1000;
-			if (time != lastStackedEventSend)
-			{
-				lastStackedEventSend = time;
-				int size = this.stackedEvents.values().size();
-
-				if (prev != null)
-					this.sendEvent(prev, size == 0);
-
-				for (IStackableEvent e: this.stackedEvents.values())
-				{
-					size--;
-					this.sendEvent(e, size <= 0);
-				}
-				this.stackedEvents.clear();
-			}
-			else if (prev != null)
-				this.sendEvent(prev, true);
-
-			if (steamID == null)
-				this.ctx.flush();
-
-			this.events.clear();
-
-			if (pingReceived && System.currentTimeMillis() - lastPingSent > 1000)
-			{
-				pingReceived = false;
-				lastPingSent = System.currentTimeMillis();
-				this.sendEvent(new EventPing(false));
-			}
-		}
-	}
-
-	public synchronized void sendEvent(INetworkEvent e)
-	{
-		this.sendEvent(e, true);
-	}
-
-	public HashMap<String, Integer> eventFrequencies = new HashMap<>();
-
-	public synchronized void sendEvent(INetworkEvent e, boolean flush)
-	{
-		eventFrequencies.putIfAbsent(e.getClass().getSimpleName(), 0);
-		eventFrequencies.put(e.getClass().getSimpleName(), eventFrequencies.get(e.getClass().getSimpleName()) + 1);
-
-		if (steamID != null)
-		{
-			SteamNetworking.P2PSend sendType = SteamNetworking.P2PSend.ReliableWithBuffering;
-
-			if (flush)
-				sendType = SteamNetworking.P2PSend.Reliable;
-
-			Game.steamNetworkHandler.send(steamID.getAccountID(), e, sendType);
-			return;
-		}
-
-		ByteBuf b = ctx.channel().alloc().buffer();
-
-		int i = NetworkEventMap.get(e.getClass());
-		if (i == -1)
-			throw new RuntimeException("The network event " + e.getClass() + " has not been registered!");
-
-		b.writeInt(i);
-		e.write(b);
-
-		ByteBuf b2 = ctx.channel().alloc().buffer();
-		b2.writeInt(b.readableBytes());
-		MessageReader.upstreamBytes += b.readableBytes() + 4;
-		MessageReader.updateLastMessageTime();
-		b2.writeBytes(b);
-
-		if (flush)
-			ctx.channel().writeAndFlush(b2);
-		else
-			ctx.channel().write(b2);
-
-		ReferenceCountUtil.release(b);
-	}
-
-	public synchronized void sendEventAndClose(INetworkEvent e)
-	{
-		this.closed = true;
-		if (steamID != null)
-			Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
-		else
-			this.sendEvent(e);
-
-		if (ctx != null)
-			ctx.close();
-
-		if (steamID != null)
-			Game.steamNetworkHandler.queueClose(steamID.getAccountID());
-	}
-
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
-	{
-		cause.printStackTrace();
-
-		ctx.close();
-	}
+        if (pingReceived && System.currentTimeMillis() - lastPingSent > 1000)
+        {
+            pingReceived = false;
+            lastPingSent = System.currentTimeMillis();
+            this.stackEvent(new EventPing(false));
+        }
+    }
 }

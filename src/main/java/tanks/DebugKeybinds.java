@@ -1,10 +1,11 @@
 package tanks;
 
 import basewindow.*;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.*;
 import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.network.event.INetworkEvent;
 import tanks.obstacle.*;
 import tanks.rendering.TerrainRenderer;
 import tanks.tank.*;
@@ -251,6 +252,48 @@ public class DebugKeybinds
         Game.game.window.fontRenderer.drawString(mx + 10, my + 10, Drawing.drawing.fontSize, Drawing.drawing.fontSize, text);
     }
 
+    public static final BiConsumer<Object2IntOpenHashMap<Class<? extends INetworkEvent>>, ArrayList<String>> sortEvents =
+        (map, lines) ->
+        map.object2IntEntrySet().stream()
+            .sorted(Comparator.comparingInt(entry -> ((Object2IntMap.Entry<?>) entry).getIntValue()).reversed())
+            .limit(5)
+            .forEach(entry -> lines.add(entry.getKey().getSimpleName() + ": " + entry.getIntValue()));
+
+    public static void drawEventCount()
+    {
+        Object2IntOpenHashMap<Class<? extends INetworkEvent>> in = Panel.panel.eventsInCount;
+        Object2IntOpenHashMap<Class<? extends INetworkEvent>> out = Panel.panel.eventsOutCount;
+
+        if (!Game.recordEventData || (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient))
+            return;
+
+        ArrayList<String> lines = new ArrayList<>();
+        if (!in.isEmpty() || !out.isEmpty())
+        {
+            lines.add("\u00a7255127000255Events in:\u00a7r");
+            sortEvents.accept(in, lines);
+            lines.add("\u00a7255127000255Events out:\u00a7r");
+            sortEvents.accept(out, lines);
+        }
+        else
+            lines.add("No events");
+
+        Drawing.drawing.setColor(255, 255, 255, 128);
+        double centerY = Drawing.drawing.getInterfaceEdgeY(true) - 350;
+
+        Drawing.drawing.setInterfaceFontSize(20);
+        Drawing.drawing.setColor(0, 0, 0);
+        int i = -lines.size() / 2;
+        for (String s : lines)
+        {
+            Drawing.drawing.drawUncenteredInterfaceText(
+                75,
+                centerY + 30 * (i++),
+                s
+            );
+        }
+    }
+
     public static void renderDebugging()
     {
         if (!Game.debug || Game.game.window.drawingShadow)
@@ -260,6 +303,7 @@ public class DebugKeybinds
         Face.drawDebug();
         Chunk.drawDebugStuff();
         Ray.drawDebug();
+        drawEventCount();
 
         if (Game.drawAvoidObjects)
         {

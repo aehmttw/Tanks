@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.InputCodes;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import tanks.extension.Extension;
 import tanks.gui.*;
 import tanks.gui.ScreenElement.*;
@@ -100,7 +101,10 @@ public class Panel
 	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
 	public String saveScreenshotDir = null;
 
-	public static void initialize()
+    public final Object2IntOpenHashMap<Class<? extends INetworkEvent>> eventsInCount = new Object2IntOpenHashMap<>();
+    public final Object2IntOpenHashMap<Class<? extends INetworkEvent>> eventsOutCount = new Object2IntOpenHashMap<>();
+
+    public static void initialize()
 	{
 		if (!initialized)
 			panel = new Panel();
@@ -348,11 +352,23 @@ public class Panel
 				if (!(Game.eventsIn.get(i) instanceof IOnlineServerEvent))
 				{
 					INetworkEvent e = Game.eventsIn.get(i);
+                    INetworkEvent prev = null;
 
 					if (e instanceof IStackableEvent)
-						stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+                        prev = stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
 					else
-						Game.eventsIn.get(i).execute();
+                        Game.eventsIn.get(i).execute();
+
+                    if (Game.recordEventData && prev == null)
+                    {
+                        if (e instanceof EventStackedGroup)
+                        {
+                            for (INetworkEvent e2 : ((EventStackedGroup) e).events)
+                                eventsInCount.addTo(e2.getClass(), 1);
+                        }
+                        else
+                            eventsInCount.addTo(e.getClass(), 1);
+                    }
 				}
 			}
 

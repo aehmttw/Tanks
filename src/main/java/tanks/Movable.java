@@ -122,6 +122,12 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         }
     }
 
+    @Override
+    public boolean isRemoved()
+    {
+        return destroy;
+    }
+
     public void onEnterChunk(Chunk c)
 	{
 		c.addMovable(this);
@@ -148,7 +154,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		return getCurrentChunks();
 	}
 
-	public void update()
+    public void update()
 	{
         recordData("update");
 

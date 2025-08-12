@@ -860,14 +860,13 @@ public class Game
 		o.removed = false;
 		Game.obstacles.add(o);
 		o.postOverride();
+        o.afterAdd();
 
 		if (refresh)
             redraw(o);
 
-		o.afterAdd();
-
-		for (Obstacle o1 : o.getNeighbors())
-			o1.onNeighborUpdate();
+        for (Obstacle o1 : o.getNeighbors())
+            o1.onNeighborUpdate();
 	}
 
 	public static boolean usernameInvalid(String username)

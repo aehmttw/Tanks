@@ -1298,6 +1298,8 @@ public class Game
 		removeEffects.clear();
 		removeClouds.clear();
 
+        SolidGameObject.addFacesToChunks.clear();
+
 		if (Game.currentLevel != null)
 			Chunk.populateChunks(Game.currentLevel);
 		else

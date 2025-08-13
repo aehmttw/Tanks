@@ -2,8 +2,8 @@ package tanks.tank;
 
 import basewindow.*;
 import tanks.*;
-import tanks.bullet.Bullet;
 import tanks.attribute.*;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.*;
@@ -1096,9 +1096,10 @@ public abstract class Tank extends Movable implements ISolidObject
             {
                 double x = e.posX + e.size / 2 * Direction.X[i];
                 double y = e.posY + e.size / 2 * Direction.Y[i];
+                Chunk.Tile t = Chunk.getOrDefault((int) (x / Game.tile_size), (int) (y / Game.tile_size));
                 e.posZ = Math.max(
                     e.posZ,
-                    Game.sampleTerrainGroundHeight(x, y) + Game.sampleGroundHeight(x, y)
+                    t.obstacle() != null ? t.obstacle().getGroundHeight() : t.tileDepth()
                 );
             }
 			e.posZ++;

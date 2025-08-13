@@ -91,18 +91,21 @@ public class ObstacleBreakable extends ObstacleStackable
             return;
 
         Drawing drawing = Drawing.drawing;
-
         drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
-
-        double prevStackHeight = stackHeight;
-        stackHeight = getTileHeight() / Game.tile_size;
 
         if (Game.enable3d)
             drawStacks();
         else
             drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
+    }
 
-        stackHeight = prevStackHeight;
+    @Override
+    public void drawStacks()
+    {
+        double anim = Math.pow(this.fallAnimation / 100, 2);
+        startHeight += anim;
+        super.drawStacks();
+        startHeight -= anim;
     }
 
     public double getTileHeight()

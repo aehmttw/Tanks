@@ -580,7 +580,7 @@ Failed to connect=连接失败
 Random co-op=随机合作关卡
 Random versus=随机对战关卡
 
-# Options (设置)`
+# Options (设置)
 Window options=窗口选项
 Miscellaneous options=杂项
 Open game folder=打开游戏文件夹
@@ -601,3 +601,10 @@ Quit=退出关卡
 
 # End Menu (游戏结束菜单)
 Replay level=重新游玩关卡
+
+# Crusades
+Battle cleared!=战斗胜利!
+Battle failed!=战斗失败!
+# Current battle:=当前战斗：
+# Remaining lives:=剩余生命：
+Start over=从第一关重新开始

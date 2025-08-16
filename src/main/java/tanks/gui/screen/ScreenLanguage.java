@@ -70,6 +70,10 @@ public class ScreenLanguage extends Screen
         }
         ));*/
 
+        languages.buttons.add(3, new Button(0, 0, 350, 40, "简体中文", () ->
+                changeLanguage(new Translation("zhcn.lang"))
+        ));
+
         languages.sortButtons();
     }
 

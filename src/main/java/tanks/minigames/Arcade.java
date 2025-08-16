@@ -103,7 +103,10 @@ public class Arcade extends Minigame
             for (String si : items)
             {
                 Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
+
+                String originalName = i.item.name;
                 i.item.name = Translation.translate(i.item.name);
+                itemsMap.put(originalName, i);
 
                 itemNumbers.put(i.item.name, id + 1);
                 id++;

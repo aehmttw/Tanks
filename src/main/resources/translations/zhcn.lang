@@ -60,7 +60,7 @@ Rearrange items=重新排列物品
 Add item=添加物品
 Bullet=子弹
 Mine=地雷
-Shield=盾牌
+Shield=护盾
 From template=从模板
 Basic bullet=普通子弹
 Basic mine=普通地雷
@@ -69,7 +69,6 @@ Laser=激光
 Bouncy fire bullet=反弹火焰子弹
 Mega mine=超级地雷
 Zap=闪电
-Shield=盾牌
 Freezing bullet=冰冻子弹
 Flamethrower=火焰喷射器
 Mega bullet=超级子弹
@@ -556,17 +555,11 @@ Play Tanks in new ways!=以新的方式游玩坦克!
 # Tutorial (教程)
 Welcome to Tanks!=欢迎来到"坦克:十字军东征"!
 You can control the tank in the circle using the keyboard.=你可以使用键盘来控制圆圈中的坦克
-# Move up:=向上移动:
-# Move down:=向下移动:
-# Move left:=向左移动:
-# Move right:=向右移动:
-# Move over here to continue=移动到这里继续
-# Shoot these enemy tanks!=射击这些敌方坦克!
 Restart tutorial=重新开始教程
 You can see your health, available bullets and mines,=你可以查看你的生命值、可用的子弹和地雷和剩余敌人数量。
-# and remaining enemy tanks by pressing=按下
 Now finish off the battle by destroying that gray tank,=现在通过摧毁那辆灰色坦克来完成战斗,
 but watch out - it can move!=但要小心——它可以移动!
+
 # Multiplayer (多人游戏)
 Players using Steam can invite friends to their party or=使用Steam的玩家可以邀请好友加入其派对
 make their party public to other Steam players.=或将派对设为公开以供其他Steam玩家加入
@@ -608,3 +601,10 @@ Battle failed!=战斗失败!
 # Current battle:=当前战斗：
 # Remaining lives:=剩余生命：
 Start over=从第一关重新开始
+
+# Items (物品)
+Block=方块
+Basic mine=基础地雷
+Basic bullet=基础子弹
+Rocket=火箭
+Void rocket=虚空火箭

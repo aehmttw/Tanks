@@ -28,14 +28,14 @@ public class NameTag implements IDrawable
     {
         Drawing.drawing.setFontSize(size * ((Game.tile_size - this.tank.destroyTimer) / Game.tile_size) * Math.min(this.tank.drawAge / Game.tile_size, 1));
 
-        Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 255, 0);
+        Drawing.drawing.setColor(this.tank.secondaryColor.red, this.tank.secondaryColor.green, this.tank.secondaryColor.blue, 255, 0);
 
         if (Game.enable3d)
             Drawing.drawing.drawText(tank.posX + ox + 2, tank.posY + oy + 2, tank.posZ + oz + 2, name);
         else
             Drawing.drawing.drawText(tank.posX + ox + 2, tank.posY + oy + 2, name);
 
-        Drawing.drawing.setColor(this.tank.colorR, this.tank.colorG, this.tank.colorB, 255, 0.5);
+        Drawing.drawing.setColor(this.tank.color.red, this.tank.color.green, this.tank.color.blue, 255, 0.5);
 
         if (Game.enable3d)
             Drawing.drawing.drawText(tank.posX + ox, tank.posY + oy, tank.posZ + oz, name);

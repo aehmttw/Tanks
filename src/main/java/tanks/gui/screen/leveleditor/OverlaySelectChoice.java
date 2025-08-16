@@ -31,6 +31,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
         edit.fullInfo = true;
         edit.image = "icons/pencil.png";
         edit.imageSizeX = edit.imageSizeY = 20;
+        this.musicInstruments = true;
 
         int i = 0;
         for (V b : selector.choices)

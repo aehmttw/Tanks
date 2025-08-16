@@ -1,5 +1,7 @@
 package tanks;
 
+import tanks.attribute.AttributeModifier;
+
 public abstract class AreaEffect extends Movable
 {	
 	public boolean constantlyImbue = true;
@@ -15,7 +17,7 @@ public abstract class AreaEffect extends Movable
 	@Override
 	public void update()
 	{
-		this.age += Panel.frameFrequency * this.getAttributeValue(AttributeModifier.clock_speed, 1);
+		this.age += Panel.frameFrequency * em().getAttributeValue(AttributeModifier.clock_speed, 1);
 		
 		if (constantlyImbue)
 		{

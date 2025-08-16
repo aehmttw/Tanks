@@ -40,6 +40,8 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
 
     public Uniform1i tex;
 
+    public Uniform1i blendFunc;
+
 //    public Uniform1b useNormal;
 
     public BaseWindow window;
@@ -63,6 +65,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
         this.tex.set(0);
         this.depthTexture.set(1);
         this.lightsTexture.set(2);
+        this.blendFunc.set(0);
     }
 
     public void renderVBO(int vertexBufferID, int colorBufferID, int texBufferID, int normalBufferID, int numberIndices)

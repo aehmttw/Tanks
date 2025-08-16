@@ -1,7 +1,11 @@
 package tanks;
 
-import basewindow.*;
+import basewindow.BaseFile;
+import basewindow.BaseFileManager;
+import basewindow.BaseWindow;
+import basewindow.ShaderGroup;
 import com.codedisaster.steamworks.SteamMatchmaking;
+import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -21,7 +25,10 @@ import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.item.ItemShield;
-import tanks.minigames.*;
+import tanks.minigames.ArcadeBeatBlocks;
+import tanks.minigames.ArcadeClassic;
+import tanks.minigames.CastleRampage;
+import tanks.minigames.Minigame;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
 import tanks.network.SteamNetworkHandler;
@@ -35,7 +42,10 @@ import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 
 public class Game
@@ -45,34 +55,32 @@ public class Game
 
 	public static final double tile_size = 50;
 
-	public static final int[] dirX = {1, -1, 0, 0};
-	public static final int[] dirY = {0, 0, 1, -1};
-
 	public static UUID computerID;
 	public static final UUID clientID = UUID.randomUUID();
 
 	public static final int absoluteDepthBase = 1000;
 
-	public static ArrayList<Face> horizontalFaces = new ArrayList<>();
-	public static ArrayList<Face> verticalFaces = new ArrayList<>();
-
-	public boolean[][] solidGrid;
-	public boolean[][] unbreakableGrid;
-	public double[][] heightGrid;
-	public double[][] groundHeightGrid;
-	public double[][] groundEdgeHeightGrid;
-
-	public double[][] lastHeightGrid;
+	public static boolean disableSteam = false;
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
-	public static ArrayList<IAvoidObject> avoidObjects = new ArrayList<>();
+	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
+	public static ArrayList<Obstacle> checkObstaclesToUpdate = new ArrayList<>();
+	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
-	public static ArrayList<Effect> tracks = new ArrayList<>();
-	public static ArrayList<Cloud> clouds = new ArrayList<>();
+    public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
 
-	public static ArrayList<Player> botPlayers = new ArrayList<>();
+    /**
+     * Tracks are only added to the end and removed from the beginning since they always have the same max age.
+     * This means that we can use a queue to prevent updating every track every frame. Each track keeps track of
+	 * how long ago the previous track was added (as maxAge). To handle removal, subtract time elapsed from this
+	 * lifespan value, and if it goes below zero, remove that track and repeat with the remainder of time elapsed.
+     */
+    public static Queue<Effect> tracks = new LinkedList<>();
+
+
+    public static ArrayList<Player> botPlayers = new ArrayList<>();
 	public static int botPlayerCount = 0;
 
 	/**
@@ -113,7 +121,6 @@ public class Game
 	public static HashSet<Movable> removeMovables = new HashSet<>();
 	public static HashSet<Obstacle> removeObstacles = new HashSet<>();
 	public static HashSet<Effect> removeEffects = new HashSet<>();
-	public static HashSet<Effect> removeTracks = new HashSet<>();
 	public static HashSet<Cloud> removeClouds = new HashSet<>();
 
 	public static ArrayList<Effect> addEffects = new ArrayList<>();
@@ -135,25 +142,19 @@ public class Game
 	public static int currentSizeY = 18;
 	public static double bgResMultiplier = 1;
 
-	public static double[][] tilesR = new double[28][18];
-	public static double[][] tilesG = new double[28][18];
-	public static double[][] tilesB = new double[28][18];
-	public static double[][] tilesFlash = new double[28][18];
-
-	public static Obstacle[][] tileDrawables = new Obstacle[28][18];
-
-	public static double[][] tilesDepth = new double[28][18];
-
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
 
-    public static final int network_protocol = 58;
+    public static final int network_protocol = 59;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
-	public static boolean showTankIDs = false;
+	public static boolean showNetworkIDs = false;
 	public static boolean drawAutoZoom = false;
-	public static final boolean cinematic = false;
+	public static boolean drawFaces = false;
+    public static boolean drawAvoidObjects = false;
+    public static boolean recordMovableData = false;
+    public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;
 
@@ -183,6 +184,10 @@ public class Game
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
 	public static boolean xrayBullets = true;
+	public static boolean showPathfinding = false;
+	public static boolean showUpdatingObstacles = false;
+	public static boolean immutableFaces = false;
+    public static boolean disableErrorFixing = false;
 
 	public static boolean followingCam = false;
 	public static boolean firstPerson = false;
@@ -261,7 +266,7 @@ public class Game
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
 	public static RegistryMetadataSelectors registryMetadataSelectors = new RegistryMetadataSelectors();
 
-	public final HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
+	public HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
 	public ShaderGroundIntro shaderIntro;
 	public ShaderGroundOutOfBounds shaderOutOfBounds;
 	public ShaderTracks shaderTracks;
@@ -302,7 +307,8 @@ public class Game
 	public static final String crusadeDir = directoryPath + "/crusades";
 	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
 	public static final String itemDir = directoryPath + "/items";
-	public static final String tankDir = directoryPath + "/tanks";
+    public static final String bulletEffectsDir = directoryPath + "/bullet_effects";
+    public static final String tankDir = directoryPath + "/tanks";
 	public static final String buildDir = directoryPath + "/builds";
 	public static final String extensionDir = directoryPath + "/extensions/";
 	public static final String crashesPath = directoryPath + "/crashes/";
@@ -346,7 +352,8 @@ public class Game
 		NetworkEventMap.register(EventAnnounceConnection.class);
 		NetworkEventMap.register(EventChat.class);
 		NetworkEventMap.register(EventPlayerChat.class);
-		NetworkEventMap.register(EventLoadLevel.class);
+        NetworkEventMap.register(EventMutePlayer.class);
+        NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
 		NetworkEventMap.register(EventSetLevelVersus.class);
 		NetworkEventMap.register(EventLevelFinishedQuick.class);
@@ -504,14 +511,9 @@ public class Game
 		Game.registryModelTank.registerFullModel(dir);
 	}
 
-	public static void registerTankEmblems()
+	public static void registerTankSkin(TankModels.TankSkin s)
 	{
-		ArrayList<String> emblems = Game.game.fileManager.getInternalFileContents("/images/emblems/emblems.txt");
-
-		for (String s: emblems)
-		{
-			Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + s + ".png"));
-		}
+		Game.registryModelTank.registerSkin(s);
 	}
 
 	public static void registerMinigame(Class<? extends Minigame> minigame, String name, String desc)
@@ -538,10 +540,11 @@ public class Game
 		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 
 		steamNetworkHandler = new SteamNetworkHandler();
-		steamNetworkHandler.load();
+		if (!disableSteam)
+			steamNetworkHandler.load();
 
 		registerEvents();
-		DefaultBullets.initialize();
+		DefaultItems.initialize();
 
 		registerObstacle(ObstacleStackable.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
@@ -615,9 +618,6 @@ public class Game
 		registerMetadataSelector(SelectorColor.selector_name, SelectorColor.class);
 		registerMetadataSelector(SelectorColorAndNoise.selector_name, SelectorColorAndNoise.class);
 
-		TankPlayer.default_bullet = new Bullet();
-		TankPlayer.default_mine = new Mine();
-
 		homedir = System.getProperty("user.home");
 
 		if (Game.framework == Framework.libgdx)
@@ -668,6 +668,12 @@ public class Game
 		{
 			itemsFile.mkdirs();
 		}
+
+        BaseFile effectsFile = game.fileManager.getFile(homedir + bulletEffectsDir);
+        if (!effectsFile.exists())
+        {
+            effectsFile.mkdirs();
+        }
 
 		BaseFile tanksFile = game.fileManager.getFile(homedir + tankDir);
 		if (!tanksFile.exists())
@@ -776,7 +782,7 @@ public class Game
 	{
 		TankModels.initialize();
 
-		BulletBlock.block = Drawing.drawing.createModel("/models/cube/");
+		BulletBlock.block = Drawing.drawing.getModel("/models/cube/");
 	}
 
 	/**
@@ -791,9 +797,27 @@ public class Game
 			Game.exitToCrash(new RuntimeException("Invalid tank added with Game.addTank(" + tank + ")"));
 
 		tank.registerNetworkID();
-		Game.movables.add(tank);
+		addMovable(tank);
 		Game.eventsOut.add(new EventTankCreate(tank));
 	}
+
+    public static void addMovable(Movable m)
+    {
+        for (Chunk c : m.getTouchingChunks())
+            c.addMovable(m);
+
+        Game.movables.add(m);
+        if (m instanceof IAvoidObject)
+            Game.avoidObjects.add((IAvoidObject) m);
+    }
+
+    public static void addTrack(Effect e)
+    {
+        Game.tracks.add(e);
+		e.firstDraw();
+        e.maxAge = Effect.timeSinceLastTrack;
+        Effect.timeSinceLastTrack = 0;
+    }
 
 	/**
 	 * Adds a tank to the game's movables list and generates/registers a network ID for it after it was spawned by another tank.
@@ -805,7 +829,7 @@ public class Game
 	public static void spawnTank(Tank tank, Tank parent)
 	{
 		tank.registerNetworkID();
-		Game.movables.add(tank);
+		Game.addMovable(tank);
 		Game.eventsOut.add(new EventTankSpawn(tank, parent));
 	}
 
@@ -828,64 +852,21 @@ public class Game
 
 	public static void addObstacle(Obstacle o)
 	{
-		o.removed = false;
-		Game.obstacles.add(o);
-		Game.redrawObstacles.add(o);
-
-		int x = (int) (o.posX / Game.tile_size);
-		int y = (int) (o.posY / Game.tile_size);
-
-		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && Game.enable3d)
-			Game.redrawGroundTiles.add(new GroundTile(x, y));
-
-		if (Game.enable3d && (!Game.fancyTerrain || !Game.enable3dBg))
-		{
-			if (x > 0) Game.redrawGroundTiles.add(new GroundTile(x - 1, y));
-			if (x < Game.currentSizeX - 1)  Game.redrawGroundTiles.add(new GroundTile(x + 1, y));
-			if (y > 0) Game.redrawGroundTiles.add(new GroundTile(x, y - 1));
-			if (y < Game.currentSizeY - 1) Game.redrawGroundTiles.add(new GroundTile(x, y + 1));
-		}
+		addObstacle(o, true);
 	}
 
-	public static void recomputeHeightGrid()
+	public static void addObstacle(Obstacle o, boolean refresh)
 	{
-		for (int i = 0; i < Game.game.heightGrid.length; i++)
-		{
-			Arrays.fill(Game.game.heightGrid[i], -1000);
-			Arrays.fill(Game.game.groundHeightGrid[i], -1000);
-			Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
-			Arrays.fill(Game.tileDrawables[i], null);
-		}
+		o.removed = false;
+		Game.obstacles.add(o);
+		o.postOverride();
+        o.afterAdd();
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
+		if (refresh)
+            redraw(o);
 
-			if (o.replaceTiles)
-				o.postOverride();
-
-			int x = (int) (o.posX / Game.tile_size);
-			int y = (int) (o.posY / Game.tile_size);
-
-			if (!(!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY))
-			{
-				Game.game.heightGrid[x][y] = Math.max(o.getTileHeight(), Game.game.heightGrid[x][y]);
-				Game.game.groundHeightGrid[x][y] = Math.max(o.getGroundHeight(), Game.game.groundHeightGrid[x][y]);
-				Game.game.groundEdgeHeightGrid[x][y] = Math.max(o.getEdgeDrawDepth(), Game.game.groundEdgeHeightGrid[x][y]);
-			}
-		}
-
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				if (Game.game.groundHeightGrid[i][j] <= -1000)
-					Game.game.groundHeightGrid[i][j] = Game.tilesDepth[i][j];
-
-				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
-					Game.game.groundEdgeHeightGrid[i][j] = 0;
-			}
-		}
+        for (Obstacle o1 : o.getNeighbors())
+            o1.onNeighborUpdate();
 	}
 
 	public static boolean usernameInvalid(String username)
@@ -1091,132 +1072,99 @@ public class Game
 	public static void resetTiles()
 	{
 		Drawing.drawing.setScreenBounds(Game.tile_size * 28, Game.tile_size * 18);
+		Chunk.initialize();
 
-		Game.tilesR = new double[28][18];
-		Game.tilesG = new double[28][18];
-		Game.tilesB = new double[28][18];
-		Game.tilesDepth = new double[28][18];
-		Game.tilesFlash = new double[28][18];
-		Game.game.heightGrid = new double[28][18];
-		Game.game.groundHeightGrid = new double[28][18];
-		Game.game.groundEdgeHeightGrid = new double[28][18];
-		Game.tileDrawables = new Obstacle[28][18];
+		Level.currentColor.red = 235;
+		Level.currentColor.green = 207;
+		Level.currentColor.blue = 166;
 
-		double var = 0;
-
-		if (Game.fancyTerrain)
-			var = 20;
-
-		Random tilesRandom = new Random(0);
-		for (int i = 0; i < 28; i++)
-		{
-			for (int j = 0; j < 18; j++)
-			{
-				Game.tilesR[i][j] = (235 + tilesRandom.nextDouble() * var);
-				Game.tilesG[i][j] = (207 + tilesRandom.nextDouble() * var);
-				Game.tilesB[i][j] = (166 + tilesRandom.nextDouble() * var);
-				double rand = tilesRandom.nextDouble() * var / 2;
-				Game.tilesDepth[i][j] = Game.enable3dBg ? rand : 0;
-			}
-		}
-
-		Level.currentColorR = 235;
-		Level.currentColorG = 207;
-		Level.currentColorB = 166;
-
-		Level.currentColorVarR = 20;
-		Level.currentColorVarG = 20;
-		Level.currentColorVarB = 20;
+		Level.currentColorVar.red = 20;
+		Level.currentColorVar.green = 20;
+		Level.currentColorVar.blue = 20;
 
 		Level.currentLightIntensity = 1.0;
 		Level.currentShadowIntensity = 0.75;
 	}
 
-	// todo: chunk loading system
-//	public static Obstacle getObstacle(int posX, int posY)
-//	{
-////		return Objects.requireNonNullElse(Chunk.getTile(posX, posY), Chunk.emptyTile).obstacle;
-//		return null;
-//	}
-//
-//	public static Obstacle getSurfaceObstacle(int posX, int posY)
-//	{
-//		/*Chunk c = Chunk.getChunk(posX / Chunk.chunkSize, posY / Chunk.chunkSize);
-//		if (c != null)
-//			return Objects.requireNonNullElse(c.getChunkTile(posX, posY), Chunk.emptyTile).surfaceObstacle;*/
-//		return null;
-//	}
-//
-//	public static Obstacle getObstacle(double posX, double posY)
-//	{
-//		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-//	}
-//
-//	public static Obstacle getSurfaceObstacle(double posX, double posY)
-//	{
-//		return getSurfaceObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
-//	}
-
-	public static double sampleGroundHeight(double px, double py)
+	public static Obstacle getObstacle(int tileX, int tileY)
 	{
-		int x = (int) (px / Game.tile_size);
-		int y = (int) (py / Game.tile_size);
-
-		if (!Game.enable3dBg || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			return 0;
-		else
-			return Game.tilesDepth[x][y] + 0;
+		Chunk.Tile t = Chunk.getTile(tileX, tileY);
+		return t != null ? t.obstacle() : null;
 	}
 
-	public static double sampleTerrainGroundHeight(double px, double py)
+	public static Obstacle getObstacle(double posX, double posY)
 	{
-		int x = (int) (px / Game.tile_size);
-		int y = (int) (py / Game.tile_size);
+		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+	public static void removeObstacle(Obstacle o)
+	{
+		Drawing.drawing.terrainRenderer.remove(o);
+		o.removed = true;
+		redraw(o);
+		Chunk.runIfChunkPresent(o.posX, o.posY, chunk -> chunk.removeObstacle(o));
 
-		if (px < 0)
-			x--;
+		if (o.shouldUpdate())
+			Game.obstaclesToUpdate.remove(o);
 
-		if (py < 0)
-			y--;
+		if (o instanceof IAvoidObject)
+			Game.avoidObjects.remove(o);
 
-		double r;
-		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			r = 0;
-		else
-			r = Game.game.groundHeightGrid[x][y];
+		for (Obstacle o1: o.getNeighbors())
+			o1.onNeighborUpdate();
 
-		return r;
+		Game.obstacles.remove(o);
+    }
+
+	public static void redraw(Obstacle o)
+	{
+		int x = (int) (o.posX / Game.tile_size);
+		int y = (int) (o.posY / Game.tile_size);
+
+		Game.redrawObstacles.add(o);
+
+		if (x >= 0 && y >= 0 && x < Game.currentSizeX && y < Game.currentSizeY && o.replaceTiles)
+			Game.redrawGroundTiles.add(new GroundTile(x, y));
 	}
 
-	public static double sampleObstacleHeight(double px, double py)
+	public static boolean isTankSolid(double posX, double posY)
 	{
-		int x = (int) (px / Game.tile_size);
-		int y = (int) (py / Game.tile_size);
-
-		if (px < 0)
-			x--;
-
-		if (py < 0)
-			y--;
-
-		double r;
-		if (!Game.fancyTerrain || !Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			r = 0;
-		else
-			r = Game.game.heightGrid[x][y];
-
-		return r;
+		return isTankSolid((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
+
+	public static boolean isTankSolid(int tileX, int tileY)
+	{
+		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::tankSolid);
+	}
+
+	public static boolean isBulletSolid(double posX, double posY)
+	{
+		return isBulletSolid((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
+	}
+
+	public static boolean isBulletSolid(int tileX, int tileY)
+	{
+		return Chunk.getIfPresent(tileX, tileY, false, Chunk.Tile::bulletSolid);
+	}
+
+	public static double sampleObstacleHeight(double posX, double posY)
+	{
+		return Chunk.getIfPresent(posX, posY, 0d, Chunk.Tile::height);
+	}
+
+    public static double sampleGroundHeight(double px, double py)
+	{
+		return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::groundHeight);
+    }
 
 	public static double sampleEdgeGroundDepth(int x, int y)
 	{
-		double r;
-		if (!Game.enable3d || x < 0 || x >= Game.currentSizeX || y < 0 || y >= Game.currentSizeY)
-			r = 0;
-		else
-			r = Game.game.groundEdgeHeightGrid[x][y];
+		return Chunk.getIfPresent(x, y, 0d, Chunk.Tile::edgeDepth);
+	}
 
-		return r;
+	/** @return The depth that the tile renders with; not affected by obstacles */
+	public static double sampleTerrainGroundHeight(double px, double py)
+	{
+		return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::tileDepth);
 	}
 
 	public static boolean stringsEqual(String a, String b)
@@ -1332,7 +1280,7 @@ public class Game
 	public static void cleanUp()
 	{
 		resetTiles();
-
+		Game.currentLevel = null;
 		silentCleanUp();
 	}
 
@@ -1343,11 +1291,22 @@ public class Game
 		movables.clear();
 		effects.clear();
 		clouds.clear();
+		obstaclesToUpdate.clear();
+		checkObstaclesToUpdate.clear();
+		avoidObjects.clear();
 		recycleEffects.clear();
 		removeEffects.clear();
-		removeTracks.clear();
 		removeClouds.clear();
-		Game.tileDrawables = new Obstacle[Game.currentSizeX][Game.currentSizeY];
+
+        SolidGameObject.addFacesToChunks.clear();
+
+		if (Game.currentLevel != null)
+			Chunk.populateChunks(Game.currentLevel);
+		else
+			Chunk.initialize();
+
+        for (ErrorHandler<?, ?> h: ErrorHandler.errorHandlers)
+			h.reset();
 
 		resetNetworkIDs();
 

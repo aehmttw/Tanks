@@ -194,6 +194,18 @@ public class InputSelector implements IDrawable, ITrigger
 		this.posY = y;
 	}
 
+	@Override
+	public double getPositionX()
+	{
+		return this.posX;
+	}
+
+	@Override
+	public double getPositionY()
+	{
+		return this.posY;
+	}
+
 	public void update()
 	{
 		this.justPressed = false;

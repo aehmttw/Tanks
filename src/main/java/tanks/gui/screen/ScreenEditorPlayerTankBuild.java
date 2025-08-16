@@ -66,23 +66,6 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
     public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
 
     @Override
-    public void setupLayoutParameters()
-    {
-        this.interfaceScaleZoomOverride = 1;
-        centerX = Drawing.drawing.baseInterfaceSizeX / 2;
-        centerY = Drawing.drawing.baseInterfaceSizeY / 2;
-        Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX;
-        Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY;
-    }
-
-    public void resetLayout()
-    {
-        Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
-        Drawing.drawing.interfaceSizeX = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceScaleZoom;
-        Drawing.drawing.interfaceSizeY = Drawing.drawing.interfaceSizeY / Drawing.drawing.interfaceScaleZoom;
-    }
-
-    @Override
     public void setupTabs()
     {
         Tab general = new TabGeneral(this, "General", TankPropertyCategory.general);
@@ -159,7 +142,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 Property p = f.getAnnotation(Property.class);
                 TankBuildProperty p1 = f.getAnnotation(TankBuildProperty.class);
 
-                if (p1 != null && p != null && ((p1.category().equals("default") && p.category().equals(this.category)) || p1.category().equals(this.category)) && p.miscType() != Property.MiscType.color)
+                if (p1 != null && p != null && ((p1.category().equals("default") && p.category().equals(this.category)) || p1.category().equals(this.category)))
                     this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(target.get(), f), p));
             }
         }
@@ -272,22 +255,18 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             this.preview.colorModel = tank.colorModel;
             this.preview.turretBaseModel = tank.turretBaseModel;
             this.preview.turretModel = tank.turretModel;
+            this.preview.baseSkin = tank.baseSkin;
+            this.preview.colorSkin = tank.colorSkin;
+            this.preview.turretBaseSkin = tank.turretBaseSkin;
+            this.preview.turretSkin = tank.turretSkin;
             this.preview.size = tank.size;
             this.preview.turretSize = tank.turretSize;
             this.preview.turretLength = tank.turretLength;
             this.preview.emblem = tank.emblem;
-            this.preview.colorR = tank.colorR;
-            this.preview.colorG = tank.colorG;
-            this.preview.colorB = tank.colorB;
-            this.preview.secondaryColorR = tank.secondaryColorR;
-            this.preview.secondaryColorG = tank.secondaryColorG;
-            this.preview.secondaryColorB = tank.secondaryColorB;
-            this.preview.tertiaryColorR = tank.tertiaryColorR;
-            this.preview.tertiaryColorG = tank.tertiaryColorG;
-            this.preview.tertiaryColorB = tank.tertiaryColorB;
-            this.preview.emblemR = tank.emblemR;
-            this.preview.emblemG = tank.emblemG;
-            this.preview.emblemB = tank.emblemB;
+            this.preview.color.set(tank.color);
+            this.preview.secondaryColor.set(tank.secondaryColor);
+            this.preview.tertiaryColor.set(tank.tertiaryColor);
+            this.preview.emblemColor.set(tank.emblemColor);
             this.preview.luminance = tank.luminance;
             this.preview.glowIntensity = tank.glowIntensity;
             this.preview.glowSize = tank.glowSize;
@@ -387,15 +366,12 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             super.drawUIElements();
 
             TankPlayer tank = screen.target.get();
-            double turretBaseR = tank.tertiaryColorR;
-            double turretBaseG = tank.tertiaryColorG;
-            double turretBaseB = tank.tertiaryColorB;
 
             double s = Game.tile_size * 0.8;
 
             if (tank.emblem != null)
             {
-                Drawing.drawing.setColor(tank.emblemR, tank.emblemG, tank.emblemB);
+                Drawing.drawing.setColor(tank.emblemColor);
                 Drawing.drawing.drawInterfaceImage(tank.emblem, margin, screen.centerY + 60 - space * 3, s, s);
             }
 
@@ -404,21 +380,21 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             if (Game.framework == Game.Framework.libgdx)
                 offmul = 0;
 
-            Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 255, 0.5);
+            Drawing.drawing.setColor(tank.tertiaryColor, 255, 0.5);
             Drawing.drawing.drawInterfaceModel2D(tank.turretBaseModel, margin, screen.centerY + 60 - space * 2 + 4 * offmul, 0, s, s, s);
 
-            Drawing.drawing.setColor(tank.secondaryColorR, tank.secondaryColorG, tank.secondaryColorB, 255, 0.5);
+            Drawing.drawing.setColor(tank.secondaryColor, 255, 0.5);
             Drawing.drawing.drawInterfaceModel2D(tank.turretModel, margin, screen.centerY + 60 - space * 1, 0, s, s, s);
 
-            Drawing.drawing.setColor(tank.colorR, tank.colorG, tank.colorB, 255, 0.5);
+            Drawing.drawing.setColor(tank.color, 255, 0.5);
             Drawing.drawing.drawInterfaceModel2D(tank.colorModel, margin, screen.centerY + 60 - space * 0 + 7 * offmul, 0, s, s, s);
 
-            Drawing.drawing.setColor(tank.secondaryColorR, tank.secondaryColorG, tank.secondaryColorB, 255, 0.5);
+            Drawing.drawing.setColor(tank.secondaryColor, 255, 0.5);
             Drawing.drawing.drawInterfaceModel2D(tank.baseModel, margin, screen.centerY + 60 + space * 1 + 7 * offmul, 0, s, s, s);
 
             Drawing.drawing.setColor(80, 80, 80);
             Drawing.drawing.fillInterfaceOval(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
-            Drawing.drawing.setColor(tank.secondaryColorR * preview.glowIntensity, tank.secondaryColorG * preview.glowIntensity, tank.secondaryColorB * preview.glowIntensity, 255, 1);
+            Drawing.drawing.setColor(tank.secondaryColor.red * preview.glowIntensity, tank.secondaryColor.green * preview.glowIntensity, tank.secondaryColor.blue * preview.glowIntensity, 255, 1);
             Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.glowSize / 4, s * 1.5 * preview.glowSize / 4);
             Drawing.drawing.setColor(255, 255, 255, 255 * preview.lightIntensity, 1);
             Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.lightSize / 4, s * 1.5 * preview.lightSize / 4, false, true);
@@ -437,10 +413,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
     public class TabPartPicker extends TabWithPreview
     {
         public int colorIndex;
-
-        public TextBoxSlider colorRed;
-        public TextBoxSlider colorGreen;
-        public TextBoxSlider colorBlue;
+        public SelectorColor colorPicker;
 
         String enableColorText = "Override color: ";
         Button enableColor = new Button(0, 0, this.screen.objWidth, this.screen.objHeight, "", new Runnable()
@@ -472,10 +445,6 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                     enable = tank.overrideEmblemColor;
                 }
 
-                colorRed.inputText = (int) colorRed.value + "";
-                colorGreen.inputText = (int) colorGreen.value + "";
-                colorBlue.inputText = (int) colorBlue.value + "";
-
                 setColorText(enable);
             }
         },
@@ -486,31 +455,15 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             TankPlayer tank = screen.target.get();
 
             if (colorIndex == 2)
-            {
-                tank.secondaryColorR = Turret.calculateSecondaryColor(tank.colorR);
-                tank.secondaryColorG = Turret.calculateSecondaryColor(tank.colorG);
-                tank.secondaryColorB = Turret.calculateSecondaryColor(tank.colorB);
-            }
+                Turret.setSecondary(tank.color, tank.secondaryColor);
             else if (colorIndex == 3)
-            {
-                tank.tertiaryColorR = (tank.secondaryColorR + tank.colorR) / 2;
-                tank.tertiaryColorG = (tank.secondaryColorG + tank.colorG) / 2;
-                tank.tertiaryColorB = (tank.secondaryColorB + tank.colorB) / 2;
-            }
+                Turret.setTertiary(tank.color, tank.secondaryColor, tank.tertiaryColor);
             else if (colorIndex == 4)
             {
                 if (tank.overrideSecondaryColor)
-                {
-                    tank.emblemR = tank.secondaryColorR;
-                    tank.emblemG = tank.secondaryColorG;
-                    tank.emblemB = tank.secondaryColorB;
-                }
+                    tank.emblemColor.set(tank.secondaryColor);
                 else
-                {
-                    tank.emblemR = Turret.calculateSecondaryColor(tank.colorR);
-                    tank.emblemG = Turret.calculateSecondaryColor(tank.colorG);
-                    tank.emblemB = Turret.calculateSecondaryColor(tank.colorB);
-                }
+                    Turret.setSecondary(tank.color, tank.emblemColor);
             }
 
             setColorTextboxes();
@@ -528,86 +481,6 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
         {
             super(screen, parent, name, category);
             this.colorIndex = colorIndex;
-
-            colorRed = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Red", () ->
-            {
-                TankPlayer tank = (TankPlayer) screen.target.get();
-                if (colorRed.inputText.length() <= 0)
-                    colorRed.inputText = colorRed.previousInputText;
-
-                int red = Integer.parseInt(colorRed.inputText);
-
-                if (colorIndex == 1)
-                    tank.colorR = red;
-                else if (colorIndex == 2)
-                    tank.secondaryColorR = red;
-                else if (colorIndex == 3)
-                    tank.tertiaryColorR = red;
-                else if (colorIndex == 4)
-                    tank.emblemR = red;
-            }
-                    , 0, 0, 255, 1);
-
-            colorRed.allowLetters = false;
-            colorRed.allowSpaces = false;
-            colorRed.maxChars = 3;
-            colorRed.maxValue = 255;
-            colorRed.checkMaxValue = true;
-            colorRed.integer = true;
-
-            colorGreen = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight,"Green", () ->
-            {
-                TankPlayer tank = (TankPlayer) screen.target.get();
-
-                if (colorGreen.inputText.length() <= 0)
-                    colorGreen.inputText = colorGreen.previousInputText;
-
-                int green = Integer.parseInt(colorGreen.inputText);
-
-                if (colorIndex == 1)
-                    tank.colorG = green;
-                else if (colorIndex == 2)
-                    tank.secondaryColorG = green;
-                else if (colorIndex == 3)
-                    tank.tertiaryColorG = green;
-                else if (colorIndex == 4)
-                    tank.emblemG = green;
-            }
-                    , 0, 0, 255, 1);
-
-            colorGreen.allowLetters = false;
-            colorGreen.allowSpaces = false;
-            colorGreen.maxChars = 3;
-            colorGreen.maxValue = 255;
-            colorGreen.checkMaxValue = true;
-            colorGreen.integer = true;
-
-            colorBlue = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Blue", () ->
-            {
-                TankPlayer tank = (TankPlayer) screen.target.get();
-
-                if (colorBlue.inputText.length() <= 0)
-                    colorBlue.inputText = colorBlue.previousInputText;
-
-                int blue = Integer.parseInt(colorBlue.inputText);
-
-                if (colorIndex == 1)
-                    tank.colorB = blue;
-                else if (colorIndex == 2)
-                    tank.secondaryColorB = blue;
-                else if (colorIndex == 3)
-                    tank.tertiaryColorB = blue;
-                else if (colorIndex == 4)
-                    tank.emblemB = blue;
-            }
-                    , 0, 0, 255, 1);
-
-            colorBlue.allowLetters = false;
-            colorBlue.allowSpaces = false;
-            colorBlue.maxChars = 3;
-            colorBlue.maxValue = 255;
-            colorBlue.checkMaxValue = true;
-            colorBlue.integer = true;
         }
 
         public TabPartPicker(ScreenEditorPlayerTankBuild screen, String name, String category, int colorIndex)
@@ -627,29 +500,6 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
         {
             TankPlayer tank = screen.target.get();
 
-            int r = (int) tank.colorR;
-            int g = (int) tank.colorG;
-            int b = (int) tank.colorB;
-
-            if (colorIndex == 2)
-            {
-                r = (int) tank.secondaryColorR;
-                g = (int) tank.secondaryColorG;
-                b = (int) tank.secondaryColorB;
-            }
-            else if (colorIndex == 3)
-            {
-                r = (int) tank.tertiaryColorR;
-                g = (int) tank.tertiaryColorG;
-                b = (int) tank.tertiaryColorB;
-            }
-            else if (colorIndex == 4)
-            {
-                r = (int) tank.emblemR;
-                g = (int) tank.emblemG;
-                b = (int) tank.emblemB;
-            }
-
             if (colorIndex == 1)
                 this.setColorText(tank.overridePrimaryColor);
             else if (colorIndex == 2)
@@ -659,13 +509,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             else if (colorIndex == 4)
                 this.setColorText(tank.overrideEmblemColor);
 
-            this.colorRed.value = r;
-            this.colorGreen.value = g;
-            this.colorBlue.value = b;
-
-            this.colorRed.inputText = r + "";
-            this.colorGreen.inputText = g + "";
-            this.colorBlue.inputText = b + "";
+            this.colorPicker.updateColors();
         }
 
         @Override
@@ -675,21 +519,15 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 this.uiElements.add(new EmptySpace());
 
             this.uiElements.add(enableColor);
-
-            this.uiElements.add(colorRed);
-            this.uiElements.add(colorGreen);
-            this.uiElements.add(colorBlue);
+            this.uiElements.add(colorPicker);
 
             super.sortUIElements();
 
-            this.uiElements.remove(colorRed);
-            this.uiElements.remove(colorGreen);
-            this.uiElements.remove(colorBlue);
-
             this.uiElements.remove(enableColor);
+            this.uiElements.remove(colorPicker);
 
-            autoColor.posX = colorBlue.posX - this.screen.objXSpace;
-            autoColor.posY = colorBlue.posY;
+            autoColor.posX = colorPicker.colorBlue.posX - this.screen.objXSpace;
+            autoColor.posY = colorPicker.colorBlue.posY;
         }
 
         @Override
@@ -699,38 +537,20 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             TankPlayer tank = screen.target.get();
 
             if (!tank.overridePrimaryColor)
-            {
-                tank.colorR = TankPlayer.default_primary_color[0];
-                tank.colorG = TankPlayer.default_primary_color[1];
-                tank.colorB = TankPlayer.default_primary_color[2];
-            }
+                tank.color.set(TankPlayer.default_primary_color);
 
             if (!tank.overrideSecondaryColor)
-            {
-                tank.secondaryColorR = TankPlayer.default_secondary_color[0];
-                tank.secondaryColorG = TankPlayer.default_secondary_color[1];
-                tank.secondaryColorB = TankPlayer.default_secondary_color[2];
-            }
+                tank.secondaryColor.set(TankPlayer.default_secondary_color);
 
             if (!tank.overrideTertiaryColor)
-            {
-                tank.tertiaryColorR = TankPlayer.default_tertiary_color[0];
-                tank.tertiaryColorG = TankPlayer.default_tertiary_color[1];
-                tank.tertiaryColorB = TankPlayer.default_tertiary_color[2];
-            }
+                tank.tertiaryColor.set(TankPlayer.default_tertiary_color);
 
             if (!tank.overrideEmblemColor)
-            {
-                tank.emblemR = TankPlayer.default_secondary_color[0];
-                tank.emblemG = TankPlayer.default_secondary_color[1];
-                tank.emblemB = TankPlayer.default_secondary_color[2];
-            }
+                tank.emblemColor.set(TankPlayer.default_secondary_color);
 
             if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||  (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
             {
-                this.colorRed.update();
-                this.colorGreen.update();
-                this.colorBlue.update();
+                this.colorPicker.update();
 
                 if ((this.colorIndex == 2 && tank.overridePrimaryColor) ||
                         (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
@@ -766,10 +586,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
             if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||  (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
             {
-                this.updateColors();
-                this.colorRed.draw();
-                this.colorGreen.draw();
-                this.colorBlue.draw();
+                this.colorPicker.draw();
 
                 if ((this.colorIndex == 2 && tank.overridePrimaryColor) ||
                         (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
@@ -778,37 +595,45 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             }
         }
 
-        public void updateColors()
+        @Override
+        public void addFields()
         {
-            colorRed.r1 = 0;
-            colorRed.r2 = 255;
-            colorRed.g1 = colorGreen.value;
-            colorRed.g2 = colorGreen.value;
-            colorRed.b1 = colorBlue.value;
-            colorRed.b2 = colorBlue.value;
+            this.uiElements.clear();
+            for (Field f : this.screen.fields)
+            {
+                Property p = f.getAnnotation(Property.class);
+                if (p != null && p.category().equals(this.category))
+                {
+                    ITrigger t = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
 
-            colorGreen.r1 = colorRed.value;
-            colorGreen.r2 = colorRed.value;
-            colorGreen.g1 = 0;
-            colorGreen.g2 = 255;
-            colorGreen.b1 = colorBlue.value;
-            colorGreen.b2 = colorBlue.value;
+                    if (p.miscType() != Property.MiscType.colorRGB)
+                    {
+                        this.uiElements.add(t);
+                        for (int i = 1; i < t.getSize(); i++)
+                        {
+                            this.uiElements.add(new EmptySpace());
+                        }
+                    }
+                    else if (t instanceof SelectorColor)
+                        this.colorPicker = (SelectorColor) t;
+                }
+            }
 
-            colorBlue.r1 = colorRed.value;
-            colorBlue.r2 = colorRed.value;
-            colorBlue.g1 = colorGreen.value;
-            colorBlue.g2 = colorGreen.value;
-            colorBlue.b1 = 0;
-            colorBlue.b2 = 255;
+            try
+            {
+                if (this.colorIndex == 2 && this.colorPicker == null)
+                {
+                    Field f = Tank.class.getField("secondaryColor");
+                    this.colorPicker = (SelectorColor) screen.getUIElementForField(new FieldPointer<>(target.get(), f), f.getAnnotation(Property.class));
+                }
+            }
+            catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
 
-            if (!colorRed.selected)
-                colorRed.function.run();
-
-            if (!colorGreen.selected)
-                colorGreen.function.run();
-
-            if (!colorBlue.selected)
-                colorBlue.function.run();
+            if (this.colorPicker == null)
+                throw new RuntimeException("lmao no color picker " + this.name);
         }
     }
 
@@ -844,6 +669,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             {
                 Consumer<Item.ItemStack<?>> addItem = (Item.ItemStack<?> i) ->
                 {
+                    i.maxStackSize = 0;
+                    i.stackSize = 0;
                     target.get().abilities.add(i);
 
                     ScreenEditorItem s = new ScreenEditorItem(new ArrayListIndexPointer<>(target.get().abilities, target.get().abilities.size() - 1), screen);
@@ -868,6 +695,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
         public void addFields()
         {
             this.deleteButtons.clear();
+            this.upButtons.clear();
+            this.downButtons.clear();
 
             TankPlayer t = target.get();
             for (int i = 0; i < t.abilities.size(); i++)
@@ -940,6 +769,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
                 upButtons.add(up);
                 downButtons.add(down);
+
             }
 
             if (t.abilities.size() < TankPlayer.max_abilities)
@@ -954,6 +784,9 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             {
                 Button b = this.deleteButtons.get(i);
                 b.update();
+
+                if (this.upButtons.size() <= i)
+                    break;
 
                 Button up = this.upButtons.get(i);
                 Button down = this.downButtons.get(i);

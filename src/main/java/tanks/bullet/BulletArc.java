@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import tanks.*;
+import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
 import tanks.tank.Ray;
@@ -51,7 +52,6 @@ public class BulletArc extends Bullet
         this.enableCollision = false;
         this.posZ = Game.tile_size / 2;
         this.maxDestroyTimer = 100;
-        this.obstacleCollision = false;
         this.canBeCanceled = false;
         this.moveOut = false;
         this.trail3d = true;
@@ -65,12 +65,15 @@ public class BulletArc extends Bullet
     @Override
     public void update()
     {
+        this.range = 0;
+        this.lifespan = 0;
+
         super.update();
 
         if (this.delay > 0)
             return;
 
-        double gravMod = this.getAttributeValue(AttributeModifier.velocity, 1);
+        double gravMod = em().getAttributeValue(AttributeModifier.velocity, 1);
 
         this.vZ -= gravity * Panel.frameFrequency * gravMod;
         this.posZ -= gravity * gravMod * Panel.frameFrequency * Panel.frameFrequency * 0.5;
@@ -85,10 +88,7 @@ public class BulletArc extends Bullet
             }
             else
             {
-//                double dif = (this.posZ - Game.tile_size / 2) / this.vZ;
-//                this.posX -= dif * this.vX;
-//                this.posY -= dif * this.vY;
-                double ht = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
+                double ht = (this.vZ + Math.sqrt(Math.max(0, this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2)))) / gravity;
                 this.posX += ht * this.vX;
                 this.posY += ht * this.vY;
                 this.posZ = Game.tile_size / 2;
@@ -117,7 +117,7 @@ public class BulletArc extends Bullet
     {
         this.bounces--;
 
-        double ht = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
+        double ht = (this.vZ + Math.sqrt(Math.max(0, this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2)))) / gravity;
         this.posX += this.vX * ht;
         this.posY += this.vY * ht;
         this.posZ = Game.tile_size / 2;
@@ -128,6 +128,10 @@ public class BulletArc extends Bullet
 
         this.justBounced = true;
         this.checkCollisionLocal();
+
+        this.collisionX = this.posX;
+        this.collisionY = this.posY;
+        this.addTrail();
 
         return ht;
     }
@@ -185,7 +189,7 @@ public class BulletArc extends Bullet
 
     public void drawShadow()
     {
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 0.5);
+        Drawing.drawing.setColor(this.outlineColor, 2 * (60 - this.posZ / 32) * (1 - Math.min(this.destroyTimer / 60, 1)), 0.5);
         Drawing.drawing.fillGlow(this.posX, this.posY, this.size * 2, this.size * 2, true);
         Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
     }
@@ -194,12 +198,12 @@ public class BulletArc extends Bullet
     {
         double s = (1.5 - frac) * this.size * 4;
         double d = Math.max(1 - (this.destroyTimer / this.maxDestroyTimer) * 2, 0);
-        Drawing.drawing.setColor(this.baseColorR, this.baseColorG, this.baseColorB, frac * 255 * d, 1);
+        Drawing.drawing.setColor(this.baseColor, frac * 255 * d, 1);
         Drawing.drawing.drawImage(frac * Math.PI / 2, "cursor.png", x, y, s, s);
 
         if (Game.glowEnabled)
         {
-            Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * 255 * d, 1);
+            Drawing.drawing.setColor(this.outlineColor, frac * 255 * d, 1);
             Drawing.drawing.fillGlow(x, y, this.size * 4, this.size * 4);
         }
     }
@@ -267,7 +271,7 @@ public class BulletArc extends Bullet
         return this.maxRange;
     }
 
-    public void drawTrace(double ix, double iy, double fx, double fy, double angle)
+    public void drawTrace(double ix, double iy, double fx, double fy)
     {
         double ox = this.posX;
         double oy = this.posY;
@@ -283,7 +287,6 @@ public class BulletArc extends Bullet
         this.posZ = Game.tile_size / 2;
         this.accuracySpreadCircle = 0;
         this.setTargetLocation(fx, fy);
-        //this.setPolarMotion(angle, this.getSpeed());
         this.accuracySpreadCircle = ots;
 
         double speed = (Math.sqrt(Math.pow(this.vX, 2) + Math.pow(this.vY, 2)));

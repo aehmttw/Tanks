@@ -1,5 +1,6 @@
 package tanks.gui;
 
+import basewindow.Color;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Player;
@@ -15,15 +16,9 @@ public class ChatMessage
 	public ArrayList<String> lines;
 
 	public boolean enableTankIcon = false;
-	public double r1;
-	public double g1;
-	public double b1;
-	public double r2;
-	public double g2;
-	public double b2;
-	public double r3 = -1;
-	public double g3 = -1;
-	public double b3 = -1;
+	public Color color1 = new Color();
+	public Color color2 = new Color();
+	public Color color3 = new Color();
 
 	public ChatMessage(String s)
 	{
@@ -47,15 +42,15 @@ public class ChatMessage
 			String[] c = u.substring(1).split("\\|")[0].split(",");
 
 			this.enableTankIcon = true;
-			this.r1 = Integer.parseInt(c[0]);
-			this.g1 = Integer.parseInt(c[1]);
-			this.b1 = Integer.parseInt(c[2]);
-			this.r2 = Integer.parseInt(c[3]);
-			this.g2 = Integer.parseInt(c[4]);
-			this.b2 = Integer.parseInt(c[5]);
-			this.r3 = Integer.parseInt(c[6]);
-			this.g3 = Integer.parseInt(c[7]);
-			this.b3 = Integer.parseInt(c[8]);
+			this.color1.red = Integer.parseInt(c[0]);
+			this.color1.green = Integer.parseInt(c[1]);
+			this.color1.blue = Integer.parseInt(c[2]);
+			this.color2.red = Integer.parseInt(c[3]);
+			this.color2.green = Integer.parseInt(c[4]);
+			this.color2.blue = Integer.parseInt(c[5]);
+			this.color3.red = Integer.parseInt(c[6]);
+			this.color3.green = Integer.parseInt(c[7]);
+			this.color3.blue = Integer.parseInt(c[8]);
 		}
 
 		this.rawMessage = n + ": " + s;
@@ -69,15 +64,10 @@ public class ChatMessage
 
 	public ChatMessage(Player p, String s)
 	{
-		this.r1 = p.colorR;
-		this.g1 = p.colorG;
-		this.b1 = p.colorB;
-		this.r2 = p.colorR2;
-		this.g2 = p.colorG2;
-		this.b2 = p.colorB2;
-		this.r3 = p.colorR3;
-		this.g3 = p.colorG3;
-		this.b3 = p.colorB3;
+		this.color1.set(p.color);
+		this.color2.set(p.color2);
+		this.color3.set(p.color3);
+
 		this.enableTankIcon = true;
 
 		String n = "    " + p.username;

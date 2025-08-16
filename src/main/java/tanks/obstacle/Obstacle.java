@@ -1,12 +1,12 @@
 package tanks.obstacle;
 
-import basewindow.IBatchRenderableObject;
-import basewindow.ShaderGroup;
+import basewindow.*;
+import it.unimi.dsi.fastutil.objects.*;
 import tanks.*;
-import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderObstacle;
+import tanks.tank.IAvoidObject;
 
-public abstract class Obstacle extends GameObject implements IDrawableForInterface, ISolidObject, IDrawableWithGlow, IBatchRenderableObject
+public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
 {
 	public Effect.EffectType destroyEffect = Effect.EffectType.obstaclePiece;
 	public double destroyEffectAmount = 1;
@@ -34,10 +34,11 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public enum ObstacleType { full, ground, top, extra }
 	public ObstacleType type = ObstacleType.top;
 
+	public double startHeight = 0;
 	public int drawLevel = 5;
 
 	public boolean checkForObjects = false;
-	public boolean update = false;
+	private boolean update = false;
 	public boolean bouncy = false;
 	public boolean allowBounce = true;
 	public boolean replaceTiles = true;
@@ -47,7 +48,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	 */
 	public boolean batchDraw = true;
 	public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
-	public Class<? extends ShaderGroup> tileRenderer = ShaderGroundObstacle.class;
+	public Class<? extends ShaderGroup> tileRenderer = ShaderGroup.class;
 
 	/** Obstacles with different render numbers can have different values for their uniforms */
 	public int rendererNumber = 0;
@@ -69,11 +70,6 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public String name;
 	public String description;
 
-	public Face[] horizontalFaces;
-	public Face[] verticalFaces;
-
-	protected boolean[] validFaces = new boolean[2];
-
 	public double baseGroundHeight;
 
 	public boolean shouldClip = false;
@@ -86,8 +82,6 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		this.posX = (int) ((posX + 0.5) * Game.tile_size);
 		this.posY = (int) ((posY + 0.5) * Game.tile_size);
 		this.draggable = true;
-
-		this.baseGroundHeight = Game.sampleGroundHeight(this.posX, this.posY);
 	}
 
 	@Override
@@ -102,7 +96,24 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		return false;
 	}
 
-	@Override
+	public void setUpdate(boolean update)
+	{
+		this.update = update;
+		Game.checkObstaclesToUpdate.add(this);
+	}
+
+	public boolean shouldUpdate()
+	{
+		return update;
+	}
+
+    @Override
+    public boolean isRemoved()
+    {
+        return removed || Game.removeObstacles.contains(this);
+    }
+
+    @Override
 	public void drawAt(double x, double y)
 	{
 		double x1 = this.posX;
@@ -168,14 +179,23 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	}
 
+	public void afterAdd()
+	{
+
+	}
+
 	public void update()
 	{
-		this.clipFrames--;
-		if (this.clipFrames <= 0)
+		if (this.clipFrames-- <= 0)
 		{
-			this.update = false;
+			this.setUpdate(false);
 			this.shouldClip = false;
 		}
+	}
+
+	public void onNeighborUpdate()
+	{
+		updateFaces();
 	}
 
 	public void reactToHit(double bx, double by)
@@ -183,40 +203,31 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	}
 
-	public boolean hasNeighbor(int ox, int oy, boolean unbreakable)
+	public boolean hasNeighbor(int ox, int oy)
 	{
 		int x = (int) (this.posX / Game.tile_size) + ox;
 		int y = (int) (this.posY / Game.tile_size) + oy;
-
-		if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-		{
-			if (unbreakable)
-				return Game.game.unbreakableGrid[x][y];
-			else
-				return Game.game.solidGrid[x][y];
-		}
-
-		return false;
+		return Game.isBulletSolid(x, y);
 	}
 
 	public boolean hasLeftNeighbor()
 	{
-		return hasNeighbor(-1, 0, false);
+		return hasNeighbor(-1, 0);
 	}
 
 	public boolean hasRightNeighbor()
 	{
-		return hasNeighbor(1, 0, false);
+		return hasNeighbor(1, 0);
 	}
 
 	public boolean hasUpperNeighbor()
 	{
-		return hasNeighbor(0, -1, false);
+		return hasNeighbor(0, -1);
 	}
 
 	public boolean hasLowerNeighbor()
 	{
-		return hasNeighbor(0, 1, false);
+		return hasNeighbor(0, 1);
 	}
 
 	/**
@@ -231,61 +242,27 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 	public void drawTile(IBatchRenderableObject tile, double r, double g, double b, double d, double extra)
 	{
 		Drawing.drawing.setColor(r, g, b);
-		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d);
+		Drawing.drawing.fillBox(tile, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d, (byte) 4);
 	}
+
+    public void refreshSelfAndNeighbors()
+    {
+        updateFaces();
+        for (Obstacle o : getNeighbors())
+            o.onNeighborUpdate();
+    }
 
 	public void postOverride()
 	{
-		int x = (int)(this.posX / Game.tile_size);
-		int y = (int)(this.posY / Game.tile_size);
+		if (this.startHeight > 0)
+			return;
 
-		if (x >= 0 && x < Game.tileDrawables.length && y >= 0 && y < Game.tileDrawables[0].length)
-		{
-			if (Game.tileDrawables[x][y] == null || Game.tileDrawables[x][y].type != ObstacleType.ground)
-				Game.tileDrawables[x][y] = this;
-		}
-	}
+        Chunk c = Chunk.getChunk(posX, posY);
+        if (c != null)
+            c.addObstacle(this);
 
-	@Override
-	public Face[] getHorizontalFaces()
-	{
-		if (this.horizontalFaces == null)
-		{
-			this.horizontalFaces = new Face[2];
-			double s = Game.tile_size / 2;
-			this.horizontalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX + s, this.posY - s, true, true, this.tankCollision, this.bulletCollision);
-			this.horizontalFaces[1] = new Face(this, this.posX - s, this.posY + s, this.posX + s, this.posY + s, true, false, this.tankCollision, this.bulletCollision);
-		}
-
-		return this.horizontalFaces;
-	}
-
-	public boolean[] getValidHorizontalFaces(boolean unbreakable)
-	{
-		this.validFaces[0] = false;
-		this.validFaces[1] = false;
-		return this.validFaces;
-	}
-
-	@Override
-	public Face[] getVerticalFaces()
-	{
-		if (this.verticalFaces == null)
-		{
-			this.verticalFaces = new Face[2];
-			double s = Game.tile_size / 2;
-			this.verticalFaces[0] = new Face(this, this.posX - s, this.posY - s, this.posX - s, this.posY + s, false, true, this.tankCollision, this.bulletCollision);
-			this.verticalFaces[1] = new Face(this, this.posX + s, this.posY - s, this.posX + s, this.posY + s, false, false, this.tankCollision, this.bulletCollision);
-		}
-
-		return this.verticalFaces;
-	}
-
-	public boolean[] getValidVerticalFaces(boolean unbreakable)
-	{
-		this.validFaces[0] = false;
-		this.validFaces[1] = false;
-		return this.validFaces;
+        if (this instanceof IAvoidObject)
+            Game.avoidObjects.add((IAvoidObject) this);
 	}
 
 	/**
@@ -311,33 +288,78 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 
 	public byte getOptionsByte(double h)
 	{
-		/* TODO: maybe re-implement pruning hidden obstacle faces, especially if adding obstacle grid
-
 		byte o = 0;
 
-		if (Obstacle.draw_size < Game.tile_size)
-			return 0;
+		/*if (Obstacle.draw_size < Game.tile_size)
+			return o;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h)
-			o += 4;
+			o |= BaseShapeRenderer.hide_front;
 
 		if (Game.sampleObstacleHeight(this.posX, this.posY - Game.tile_size) >= h)
-			o += 8;
+			o |= BaseShapeRenderer.hide_back;
 
 		if (Game.sampleObstacleHeight(this.posX - Game.tile_size, this.posY) >= h)
-			o += 16;
+			o |= BaseShapeRenderer.hide_left;
 
 		if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h)
-			o += 32;
+			o |= BaseShapeRenderer.hide_right;*/
 
-		return o;*/
+		return o;
+	}
 
-		return 0;
+    public void redrawSelfAndNeighbors()
+    {
+        Game.redrawObstacles.add(this);
+//        Game.redrawObstacles.addAll(getNeighbors());
+    }
+
+	@Override
+	public double getSize()
+	{
+		return Game.tile_size;
+	}
+
+	@Override
+	public boolean isFaceValid(Face f)
+	{
+        // the Math.floor is actually essential here wtf
+		Obstacle o = Game.getObstacle((int) Math.floor(this.posX / Game.tile_size) + f.direction.x(), (int) Math.floor(this.posY / Game.tile_size) + f.direction.y());
+		return super.isFaceValid(f) && (o == null || o.isRemoved() || o.tankCollision != tankCollision || o.bulletCollision != bulletCollision);
+	}
+
+	@Override
+	public boolean tankCollision()
+	{
+		return this.tankCollision;
+	}
+
+	@Override
+	public boolean bulletCollision()
+	{
+		return this.bulletCollision;
 	}
 
 	public void onDestroy(Movable source)
 	{
 		Game.removeObstacles.add(this);
+	}
+
+    private static final ObjectArrayList<Obstacle> obstaclesCache = new ObjectArrayList<>();
+
+	public ObjectArrayList<Obstacle> getNeighbors()
+	{
+		obstaclesCache.clear();
+		for (int i = 0; i < 4; i++)
+		{
+			double newX = posX + Game.tile_size * Direction.X[i];
+			double newY = posY + Game.tile_size * Direction.Y[i];
+
+			Obstacle o = Game.getObstacle(newX, newY);
+			if (o != null)
+				obstaclesCache.add(o);
+		}
+		return obstaclesCache;
 	}
 
 	public void playDestroyAnimation(double posX, double posY, double radius)
@@ -368,7 +390,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 							e.colG = this.colorG;
 							e.colB = this.colorB;
 
-							double dist = Movable.distanceBetween(this, e);
+							double dist = GameObject.distanceBetween(this, e);
 							double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 							double rad = radius - Game.tile_size / 2;
 							double v = (rad * Math.sqrt(2) - dist) / (rad * 2);
@@ -395,7 +417,7 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 						e.colG = this.colorG;
 						e.colB = this.colorB;
 
-						double dist = Movable.distanceBetween(this, e);
+						double dist = GameObject.distanceBetween(this, e);
 						double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 						double rad = radius - Game.tile_size / 2;
 						e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);
@@ -407,18 +429,35 @@ public abstract class Obstacle extends GameObject implements IDrawableForInterfa
 		}
 	}
 
-	public Effect getCompanionEffect()
+	/** Field to cache the obstacle array for reuse */
+	private static final ObjectArrayList<Obstacle> obstacleOut = new ObjectArrayList<>();
+
+	/** Expects all pixel coordinates.
+	 * @return all the obstacles within the specified range */
+	public static ObjectArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
 	{
-		return null;
+		obstacleOut.clear();
+		for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
+            for (Obstacle o : c.obstacles)
+                if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))
+                    obstacleOut.add(o);
+		return obstacleOut;
 	}
 
-	public static boolean canPlaceOn(ObstacleType t1, ObstacleType t2)
+	/** Expects all pixel coordinates.
+	 * @return all the obstacles within a certain radius of the position */
+	public static ObjectArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
 	{
-		if (t1 == ObstacleType.full || t2 == ObstacleType.full)
-			return false;
-		else if (t1 == ObstacleType.extra || t2 == ObstacleType.extra)
-			return true;
-		else
-			return t1 != t2;
+		obstacleOut.clear();
+		for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
+			for (Obstacle o : c.obstacles)
+                if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+                    obstacleOut.add(o);
+		return obstacleOut;
 	}
+
+    public Effect getCompanionEffect()
+    {
+        return null;
+    }
 }

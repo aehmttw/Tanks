@@ -17,6 +17,7 @@ import tanks.translation.Translation;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.UUID;
 
 public class ScreenPartyHost extends Screen
@@ -29,8 +30,10 @@ public class ScreenPartyHost extends Screen
     public static SynchronizedList<UUID> disconnectedPlayers = new SynchronizedList<>();
     public static ScreenPartyHost activeScreen;
 
+    public HashSet<UUID> mutedPlayers = new HashSet<>();
     public String ip = "";
 
+    public Button[] muteButtons = new Button[entries_per_page];
     public Button[] kickButtons = new Button[entries_per_page];
 
     public int usernamePage = 0;
@@ -184,6 +187,25 @@ public class ScreenPartyHost extends Screen
             kickButtons[i].selectedColB = 0;
 
             kickButtons[i].fontSize = this.textSize;
+
+            muteButtons[i] = new Button(this.centerX - 5,
+                this.centerY + (1 + i) * username_spacing + username_y_offset, 25, 25, "", () ->
+            {
+                ServerHandler sh = server.connections.get(j + usernamePage * entries_per_page);
+                UUID id = sh.clientID;
+                if (mutedPlayers.contains(id))
+                    mutedPlayers.remove(id);
+                else
+                    mutedPlayers.add(id);
+
+                sh.sendEvent(new EventMutePlayer(mutedPlayers.contains(id)));
+            });
+
+            muteButtons[i].textOffsetY = -2.5;
+            muteButtons[i].image = "chat.png";
+            muteButtons[i].imageSizeX = 20;
+            muteButtons[i].imageSizeY = 20;
+            muteButtons[i].fullInfo = true;
         }
 
         activeScreen = this;
@@ -279,6 +301,7 @@ public class ScreenPartyHost extends Screen
             for (int i = 0; i < entries; i++)
             {
                 this.kickButtons[i].update();
+                this.muteButtons[i].update();
             }
 
             int c = server.connections.size();
@@ -360,7 +383,7 @@ public class ScreenPartyHost extends Screen
             title = Translation.translate("Party host");
 
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - ipY, title);
-        this.toggleIP.posX = this.centerX + Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
+        this.toggleIP.posX = this.centerX + Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
         this.toggleIP.posY = this.centerY - ipY;
 
         if (Game.showIP)
@@ -389,7 +412,7 @@ public class ScreenPartyHost extends Screen
 
                 Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, Game.player.username);
                 Drawing.drawing.drawInterfaceText(this.centerX - 190, this.centerY + username_y_offset, n);
-                Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, this.centerY + username_y_offset, Game.player.colorR, Game.player.colorG, Game.player.colorB, Game.player.colorR2, Game.player.colorG2, Game.player.colorB2, Game.player.colorR3, Game.player.colorG3, Game.player.colorB3);
+                Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, this.centerY + username_y_offset, Game.player.color, Game.player.color2, Game.player.color3);
             }
 
             if (server.connections != null)
@@ -411,11 +434,25 @@ public class ScreenPartyHost extends Screen
                             Drawing.drawing.setColor(0, 0, 0);
                             Drawing.drawing.drawInterfaceText(this.centerX - 190, y, username);
 
-                            Tank.drawTank(this.centerX - w - 230, y, p.colorR, p.colorG, p.colorB, p.colorR2, p.colorG2, p.colorB2, p.colorR3, p.colorG3, p.colorB3);
+                            Tank.drawTank(this.centerX - w - 230, y, p.color, p.color2, p.color3);
 
                             if (i < server.connections.size())
                             {
-                                this.kickButtons[i - this.usernamePage * entries_per_page].draw();
+                                int n = i - this.usernamePage * entries_per_page;
+                                this.kickButtons[n].draw();
+
+                                if (mutedPlayers.contains(p.clientID))
+                                {
+                                    muteButtons[i].image = "mute.png";
+                                    muteButtons[n].setHoverText("Click to unmute %s.---%s is currently muted and can't chat.", p.username, p.username);
+                                }
+                                else
+                                {
+                                    muteButtons[i].image = "chat.png";
+                                    muteButtons[n].setHoverText("Click to mute %s and prevent them from chatting.---%s is currently not muted.", p.username, p.username);
+                                }
+
+                                this.muteButtons[n].draw();
 
                                 Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
                                 Drawing.drawing.setColor(0, 0, 0);
@@ -507,9 +544,9 @@ public class ScreenPartyHost extends Screen
             double power = (int) Math.min(5, Math.max(0, Math.random() * 9 - 2)) / 5.0;
 
             double[] col = Game.getRainbowColor(Math.random());
-            p.colorR = (int) (col[0] * (1 - power) + shade * power);
-            p.colorG = (int) (col[1] * (1 - power) + shade * power);
-            p.colorB = (int) (col[2] * (1 - power) + shade * power);
+            p.color.red = (int) (col[0] * (1 - power) + shade * power);
+            p.color.green = (int) (col[1] * (1 - power) + shade * power);
+            p.color.blue = (int) (col[2] * (1 - power) + shade * power);
 
             boolean two = false;
             if (Math.random() < 0.8)
@@ -518,15 +555,15 @@ public class ScreenPartyHost extends Screen
                 shade = (int) (Math.random() * 5) / 5.0 * 255.0;
                 power = (int) Math.min(5, Math.max(0, Math.random() * 9 - 2)) / 5.0;
                 col = Game.getRainbowColor(Math.random());
-                p.colorR2 = (int) (col[0] * (1 - power) + shade * power);
-                p.colorG2 = (int) (col[1] * (1 - power) + shade * power);
-                p.colorB2 = (int) (col[2] * (1 - power) + shade * power);
+                p.color2.red = (int) (col[0] * (1 - power) + shade * power);
+                p.color2.green = (int) (col[1] * (1 - power) + shade * power);
+                p.color2.blue = (int) (col[2] * (1 - power) + shade * power);
             }
             else
             {
-                p.colorR2 = (int) Turret.calculateSecondaryColor(col[0]);
-                p.colorG2 = (int) Turret.calculateSecondaryColor(col[1]);
-                p.colorB2 = (int) Turret.calculateSecondaryColor(col[2]);
+                p.color2.red = (int) Turret.calculateSecondaryColor(col[0]);
+                p.color2.green = (int) Turret.calculateSecondaryColor(col[1]);
+                p.color2.blue = (int) Turret.calculateSecondaryColor(col[2]);
             }
 
             if (two && Math.random() < 0.2)
@@ -534,15 +571,15 @@ public class ScreenPartyHost extends Screen
                 shade = (int) (Math.random() * 5) / 5.0 * 255.0;
                 power = (int) Math.min(5, Math.max(0, Math.random() * 9 - 2)) / 5.0;
                 col = Game.getRainbowColor(Math.random());
-                p.colorR3 = (int) (col[0] * (1 - power) + shade * power);
-                p.colorG3 = (int) (col[1] * (1 - power) + shade * power);
-                p.colorB3 = (int) (col[2] * (1 - power) + shade * power);
+                p.color3.red = (int) (col[0] * (1 - power) + shade * power);
+                p.color3.green = (int) (col[1] * (1 - power) + shade * power);
+                p.color3.blue = (int) (col[2] * (1 - power) + shade * power);
             }
             else
             {
-                p.colorR3 = (p.colorR + p.colorR2) / 2;
-                p.colorG3 = (p.colorG + p.colorG2) / 2;
-                p.colorB3 = (p.colorB + p.colorB2) / 2;
+                p.color3.red = (p.color.red + p.color2.red) / 2;
+                p.color3.green = (p.color.green + p.color2.green) / 2;
+                p.color3.blue = (p.color.blue + p.color2.blue) / 2;
             }
 
             p.isBot = true;

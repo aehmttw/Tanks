@@ -1,176 +1,59 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.gui.Button;
+import tanks.*;
+import tanks.gui.*;
 import tanks.tank.TankPlayer;
+
+import java.util.*;
 
 public class ScreenDebug extends Screen
 {
-    public String traceText = "Trace rays: ";
-    public String firstPersonText = "First person: ";
-    public String followingCamText = "Immersive camera: ";
-    public String tankIDsText = "Show tank IDs: ";
-    public String invulnerableText = "Invulnerable: ";
-    public String fancyLightsText = "Fancy lighting: ";
-    public String destroyCheatText = "Destroy cheat: ";
+    Button test = new Button(
+            0, 0, this.objWidth, this.objHeight,
+            "Test stuff", () -> Game.screen = new ScreenTestDebug()
+    );
+
+    Button traceAllRays = createToggle("Trace rays: ", b -> Game.traceAllRays = b, () -> Game.traceAllRays);
+    Button firstPerson = createToggle("First person: ", b -> Game.firstPerson = b, () -> Game.firstPerson);
+    Button followingCam = createToggle("Following camera: ", b -> Game.followingCam = b, () -> Game.followingCam);
+    Button showPathfinding = createToggle("Show pathfinding: ", b -> Game.showPathfinding = b, () -> Game.showPathfinding);
+    Button tankIDs = createToggle("Tank IDs: ", b -> Game.showNetworkIDs = b, () -> Game.showNetworkIDs);
+    Button invulnerable = createToggle("Invulnerable: ", b -> Game.invulnerable = b, () -> Game.invulnerable);
+    Button fancyLighting = createToggle("Fancy lighting: ", b -> Game.fancyLights = b, () -> Game.fancyLights);
+    Button destroyCheat = createToggle("Destroy cheat: ", b -> TankPlayer.enableDestroyCheat = b, () -> TankPlayer.enableDestroyCheat);
+    Button drawFaces = createToggle("Draw faces: ", b -> Game.drawFaces = b, () -> Game.drawFaces);
+    Button drawAutoZoom = createToggle("Draw auto zoom: ", b -> Game.drawAutoZoom = b, () -> Game.drawAutoZoom);
+    Button showUpdatingObstacles = createToggle("Show updating obstacles: ", b -> Game.showUpdatingObstacles = b, () -> Game.showUpdatingObstacles);
+    Button immutableFaces = createToggle("Immutable faces: ", b -> Game.immutableFaces = b, () -> Game.immutableFaces);
+    Button drawAvoidObjects = createToggle("Draw avoid objects: ", b -> Game.drawAvoidObjects = b, () -> Game.drawAvoidObjects);
+    Button disableFixes = createToggle("Disable fixes: ", b -> Game.disableErrorFixing = b, () -> Game.disableErrorFixing);
+    Button recordMovableData = createToggle("Record movable data: ", b -> Game.recordMovableData = b, () -> Game.recordMovableData);
+
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
+
+    public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(
+            test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable,
+            fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles,
+            drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData
+    )), 0, 0, -30);
+
+    public Button createToggle(String text, Consumer<Boolean> setter, Producer<Boolean> getter)
+    {
+        return new Button.Toggle(0, 0, this.objWidth, this.objHeight, text, setter, getter);
+    }
 
     public ScreenDebug()
     {
         this.music = "menu_options.ogg";
         this.musicID = "menu";
 
-        if (Game.traceAllRays)
-            traceAllRays.setText(traceText, ScreenOptions.onText);
-        else
-            traceAllRays.setText(traceText, ScreenOptions.offText);
-
-        if (Game.firstPerson)
-            firstPerson.setText(firstPersonText, ScreenOptions.onText);
-        else
-            firstPerson.setText(firstPersonText, ScreenOptions.offText);
-
-        if (Game.followingCam)
-            followingCam.setText(followingCamText, ScreenOptions.onText);
-        else
-            followingCam.setText(followingCamText, ScreenOptions.offText);
-
-        if (Game.showTankIDs)
-            tankIDs.setText(tankIDsText, ScreenOptions.onText);
-        else
-            tankIDs.setText(tankIDsText, ScreenOptions.offText);
-
-        if (Game.invulnerable)
-            invulnerable.setText(invulnerableText, ScreenOptions.onText);
-        else
-            invulnerable.setText(invulnerableText, ScreenOptions.offText);
-
-        if (Game.fancyLights)
-            fancyLighting.setText(fancyLightsText, ScreenOptions.onText);
-        else
-            fancyLighting.setText(fancyLightsText, ScreenOptions.offText);
-
-        if (TankPlayer.enableDestroyCheat)
-            destroyCheat.setText(destroyCheatText, ScreenOptions.onText);
-        else
-            destroyCheat.setText(destroyCheatText, ScreenOptions.offText);
+        debugButtons.setRowsAndColumns(6, 3);
     }
-
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
-
-    Button test = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Test stuff", () -> Game.screen = new ScreenTestDebug());
-
-    Button traceAllRays = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.traceAllRays = !Game.traceAllRays;
-
-            if (Game.traceAllRays)
-                traceAllRays.setText(traceText, ScreenOptions.onText);
-            else
-                traceAllRays.setText(traceText, ScreenOptions.offText);
-        }
-    });
-
-    Button firstPerson = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.firstPerson = !Game.firstPerson;
-
-            if (Game.firstPerson)
-                firstPerson.setText(firstPersonText, ScreenOptions.onText);
-            else
-                firstPerson.setText(firstPersonText, ScreenOptions.offText);
-        }
-    });
-
-    Button followingCam = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.followingCam = !Game.followingCam;
-
-            if (Game.followingCam)
-                followingCam.setText(followingCamText, ScreenOptions.onText);
-            else
-                followingCam.setText(followingCamText, ScreenOptions.offText);
-        }
-    });
-
-    Button tankIDs = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.showTankIDs = !Game.showTankIDs;
-
-            if (Game.showTankIDs)
-                tankIDs.setText(tankIDsText, ScreenOptions.onText);
-            else
-                tankIDs.setText(tankIDsText, ScreenOptions.offText);
-        }
-    });
-
-    Button invulnerable = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.invulnerable = !Game.invulnerable;
-
-            if (Game.invulnerable)
-                invulnerable.setText(invulnerableText, ScreenOptions.onText);
-            else
-                invulnerable.setText(invulnerableText, ScreenOptions.offText);
-        }
-    });
-
-    Button fancyLighting = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.fancyLights = !Game.fancyLights;
-
-            if (Game.fancyLights)
-                fancyLighting.setText(fancyLightsText, ScreenOptions.onText);
-            else
-                fancyLighting.setText(fancyLightsText, ScreenOptions.offText);
-        }
-    });
-
-    Button destroyCheat = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            TankPlayer.enableDestroyCheat = !TankPlayer.enableDestroyCheat;
-
-            if (TankPlayer.enableDestroyCheat)
-                destroyCheat.setText(destroyCheatText, ScreenOptions.onText);
-            else
-                destroyCheat.setText(destroyCheatText, ScreenOptions.offText);
-        }
-    });
-
-
 
     @Override
     public void update()
     {
-        test.update();
-        traceAllRays.update();
-        followingCam.update();
-        firstPerson.update();
-        invulnerable.update();
-        tankIDs.update();
-        fancyLighting.update();
-        destroyCheat.update();
+        debugButtons.update();
         back.update();
     }
 
@@ -180,16 +63,9 @@ public class ScreenDebug extends Screen
         this.drawDefaultBackground();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 210, "Debug menu");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, "Debug menu");
 
-        firstPerson.draw();
-        followingCam.draw();
-        test.draw();
-        traceAllRays.draw();
-        tankIDs.draw();
-        invulnerable.draw();
-        fancyLighting.draw();
-        destroyCheat.draw();
+        debugButtons.draw();
         back.draw();
     }
 }

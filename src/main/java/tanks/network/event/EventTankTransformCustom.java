@@ -1,5 +1,6 @@
 package tanks.network.event;
 
+import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.Effect;
@@ -15,18 +16,11 @@ public class EventTankTransformCustom extends PersonalEvent
 {
     public int tank;
 
-    public double red;
-    public double green;
-    public double blue;
-
-    public double red2;
-    public double green2;
-    public double blue2;
+    public Color color = new Color();
+    public Color color2 = new Color();
+    public Color color3 = new Color();
 
     public boolean enableCol3;
-    public double red3;
-    public double green3;
-    public double blue3;
 
     public double size;
     public double turretSize;
@@ -38,9 +32,7 @@ public class EventTankTransformCustom extends PersonalEvent
     public String turretModel;
 
     public String emblem;
-    public double emblemRed;
-    public double emblemGreen;
-    public double emblemBlue;
+    public Color emblemColor = new Color();
 
     public double glowIntensity;
     public double glowSize;
@@ -73,18 +65,11 @@ public class EventTankTransformCustom extends PersonalEvent
     {
         tank = t.networkID;
 
-        this.red = newTank.colorR;
-        this.green = newTank.colorG;
-        this.blue = newTank.colorB;
-
-        this.red2 = newTank.secondaryColorR;
-        this.green2 = newTank.secondaryColorG;
-        this.blue2 = newTank.secondaryColorB;
+        this.color.set(newTank.color);
+        this.color2.set(newTank.secondaryColor);
+        this.color3.set(newTank.tertiaryColor);
 
         this.enableCol3 = newTank.enableTertiaryColor;
-        this.red3 = newTank.tertiaryColorR;
-        this.green3 = newTank.tertiaryColorG;
-        this.blue3 = newTank.tertiaryColorB;
 
         this.luminance = newTank.luminance;
         this.glowIntensity = newTank.glowIntensity;
@@ -104,14 +89,12 @@ public class EventTankTransformCustom extends PersonalEvent
         this.effect = effect;
 
         this.emblem = newTank.emblem;
-        this.emblemRed = newTank.emblemR;
-        this.emblemGreen = newTank.emblemG;
-        this.emblemBlue = newTank.emblemB;
+        this.emblemColor.set(newTank.emblemColor);
 
         if (newTank instanceof TankAIControlled)
         {
-            this.bulletCount = ((TankAIControlled) newTank).bullet.shotCount;
-            this.bulletSpread = ((TankAIControlled) newTank).bullet.multishotSpread;
+            this.bulletCount = ((TankAIControlled) newTank).getBullet().shotCount;
+            this.bulletSpread = ((TankAIControlled) newTank).getBullet().multishotSpread;
         }
 
         this.enableTracks = newTank.enableTracks;
@@ -132,15 +115,13 @@ public class EventTankTransformCustom extends PersonalEvent
             t.turretSize = turretSize;
             t.turretLength = turretLength;
 
-            t.baseModel = Drawing.drawing.createModel(baseModel);
-            t.colorModel = Drawing.drawing.createModel(colorModel);
-            t.turretBaseModel = Drawing.drawing.createModel(turretBaseModel);
-            t.turretModel = Drawing.drawing.createModel(turretModel);
+            t.baseModel = Drawing.drawing.getModel(baseModel);
+            t.colorModel = Drawing.drawing.getModel(colorModel);
+            t.turretBaseModel = Drawing.drawing.getModel(turretBaseModel);
+            t.turretModel = Drawing.drawing.getModel(turretModel);
 
             t.emblem = emblem;
-            t.emblemR = emblemRed;
-            t.emblemG = emblemGreen;
-            t.emblemB = emblemBlue;
+            t.emblemColor.set(emblemColor);
 
             t.luminance = this.luminance;
             t.glowIntensity = this.glowIntensity;
@@ -150,8 +131,8 @@ public class EventTankTransformCustom extends PersonalEvent
 
             if (((TankRemote) t).tank instanceof TankAIControlled)
             {
-                ((TankAIControlled) ((TankRemote) t).tank).bullet.shotCount = bulletCount;
-                ((TankAIControlled) ((TankRemote) t).tank).bullet.multishotSpread = bulletSpread;
+                ((TankAIControlled) ((TankRemote) t).tank).getBullet().shotCount = bulletCount;
+                ((TankAIControlled) ((TankRemote) t).tank).getBullet().multishotSpread = bulletSpread;
             }
 
             t.mandatoryKill = requiredKill;
@@ -167,12 +148,12 @@ public class EventTankTransformCustom extends PersonalEvent
             {
                 Effect e1 = Effect.createNewEffect(t.posX, t.posY, t.posZ + this.size * 0.75, Effect.EffectType.exclamation);
                 e1.size = this.size;
-                e1.colR = t.colorR;
-                e1.colG = t.colorG;
-                e1.colB = t.colorB;
-                e1.glowR = this.red;
-                e1.glowG = this.green;
-                e1.glowB = this.blue;
+                e1.colR = t.color.red;
+                e1.colG = t.color.green;
+                e1.colB = t.color.blue;
+                e1.glowR = this.color.red;
+                e1.glowG = this.color.green;
+                e1.glowB = this.color.blue;
                 Game.effects.add(e1);
             }
             else if (effect == poof)
@@ -183,9 +164,9 @@ public class EventTankTransformCustom extends PersonalEvent
                     {
                         Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 4, Effect.EffectType.piece);
                         double var = 50;
-                        e.colR = Math.min(255, Math.max(0, t.colorR + Math.random() * var - var / 2));
-                        e.colG = Math.min(255, Math.max(0, t.colorG + Math.random() * var - var / 2));
-                        e.colB = Math.min(255, Math.max(0, t.colorB + Math.random() * var - var / 2));
+                        e.colR = Math.min(255, Math.max(0, t.color.red + Math.random() * var - var / 2));
+                        e.colG = Math.min(255, Math.max(0, t.color.green + Math.random() * var - var / 2));
+                        e.colB = Math.min(255, Math.max(0, t.color.blue + Math.random() * var - var / 2));
 
                         if (Game.enable3d)
                             e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, 1 + Math.random() * t.size / 50.0);
@@ -197,18 +178,11 @@ public class EventTankTransformCustom extends PersonalEvent
                 }
             }
 
-            t.colorR = red;
-            t.colorG = green;
-            t.colorB = blue;
-
-            t.secondaryColorR = red2;
-            t.secondaryColorG = green2;
-            t.secondaryColorB = blue2;
+            t.color.set(this.color);
+            t.secondaryColor.set(this.color2);
+            t.tertiaryColor.set(this.color3);
 
             t.enableTertiaryColor = enableCol3;
-            t.tertiaryColorR = red3;
-            t.tertiaryColorG = green3;
-            t.tertiaryColorB = blue3;
         }
     }
 
@@ -217,18 +191,11 @@ public class EventTankTransformCustom extends PersonalEvent
     {
         b.writeInt(this.tank);
 
-        b.writeDouble(this.red);
-        b.writeDouble(this.green);
-        b.writeDouble(this.blue);
-
-        b.writeDouble(this.red2);
-        b.writeDouble(this.green2);
-        b.writeDouble(this.blue2);
+        NetworkUtils.writeColor(b, this.color);
+        NetworkUtils.writeColor(b, this.color2);
+        NetworkUtils.writeColor(b, this.color3);
 
         b.writeBoolean(this.enableCol3);
-        b.writeDouble(this.red3);
-        b.writeDouble(this.green3);
-        b.writeDouble(this.blue3);
 
         b.writeDouble(this.glowIntensity);
         b.writeDouble(this.glowSize);
@@ -246,9 +213,7 @@ public class EventTankTransformCustom extends PersonalEvent
         NetworkUtils.writeString(b, this.turretModel);
 
         NetworkUtils.writeString(b, this.emblem);
-        b.writeDouble(this.emblemRed);
-        b.writeDouble(this.emblemGreen);
-        b.writeDouble(this.emblemBlue);
+        NetworkUtils.writeColor(b, this.emblemColor);
 
         b.writeInt(this.bulletCount);
         b.writeDouble(this.bulletSpread);
@@ -273,18 +238,11 @@ public class EventTankTransformCustom extends PersonalEvent
     {
         this.tank = b.readInt();
 
-        this.red = b.readDouble();
-        this.green = b.readDouble();
-        this.blue = b.readDouble();
-
-        this.red2 = b.readDouble();
-        this.green2 = b.readDouble();
-        this.blue2 = b.readDouble();
+        NetworkUtils.readColor(b, this.color);
+        NetworkUtils.readColor(b, this.color2);
+        NetworkUtils.readColor(b, this.color3);
 
         this.enableCol3 = b.readBoolean();
-        this.red3 = b.readDouble();
-        this.green3 = b.readDouble();
-        this.blue3 = b.readDouble();
 
         this.glowIntensity = b.readDouble();
         this.glowSize = b.readDouble();
@@ -302,9 +260,7 @@ public class EventTankTransformCustom extends PersonalEvent
         this.turretModel = NetworkUtils.readString(b);
 
         this.emblem = NetworkUtils.readString(b);
-        this.emblemRed = b.readDouble();
-        this.emblemGreen = b.readDouble();
-        this.emblemBlue = b.readDouble();
+        NetworkUtils.readColor(b, this.emblemColor);
 
         this.bulletCount = b.readInt();
         this.bulletSpread = b.readDouble();

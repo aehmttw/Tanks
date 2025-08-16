@@ -456,6 +456,10 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                     break;
                 }
             }
+
+            if (Game.registryTank.getEntry(t.name) != null)
+                duplicate = true;
+
             if (duplicate)
                 clone.name = System.currentTimeMillis() + "";
 
@@ -610,12 +614,6 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         deleteMode.draw();
         openFolder.draw();
         quit.draw();
-    }
-
-    @Override
-    public void setupLayoutParameters()
-    {
-
     }
 
     @Override

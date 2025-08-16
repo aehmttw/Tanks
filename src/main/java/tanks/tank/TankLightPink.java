@@ -1,7 +1,6 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
 
 /**
  * A tank which gets angry on line of sight
@@ -24,14 +23,12 @@ public class TankLightPink extends TankAIControlled
         this.cooldownRandom = 60;
         this.shootAIType = ShootAI.reflect;
         this.avoidanceSeekOpenSpaces = true;
-        this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
+        this.bulletAvoidBehavior = BulletAvoidBehavior.dodge;
 
         if (Game.tankTextures)
         {
             this.emblem = "emblems/angry.png";
-            this.emblemR = this.secondaryColorR;
-            this.emblemG = this.secondaryColorG;
-            this.emblemB = this.secondaryColorB;
+            this.emblemColor.set(this.secondaryColor);
         }
 
         this.sightTransformTankField = new TankLightPinkAngry(this.name, x, y, angle);

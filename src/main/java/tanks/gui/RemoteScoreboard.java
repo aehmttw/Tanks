@@ -58,7 +58,7 @@ public class RemoteScoreboard implements IFixedMenu
         double longestSX = 0;
         for (int i = 0; i < names.size(); i++)
         {
-            double textSizeX = Game.game.window.fontRendererDefault.getStringSizeX(namesFontSize / 32, names.get(i));
+            double textSizeX = Game.game.window.fontRenderer.getStringSizeX(namesFontSize / 32, names.get(i));
 
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(40);

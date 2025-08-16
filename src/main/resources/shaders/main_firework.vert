@@ -32,5 +32,5 @@ void getVertVecs(out vec4 pos, out vec3 normal)
 
 vec4 getColor(vec4 colorIn)
 {
-    return vec4((color.rgb + colorIn.rgb) * (1.0 - fireworkGlow * colorIn.a) * (1.0 - fireworkGlow * (time / maxAge)), 1.0 - (time / maxAge));
+    return vec4((color.rgb + colorIn.rgb) * (1.0 - fireworkGlow * colorIn.a), 1.0 - (time / maxAge));
 }

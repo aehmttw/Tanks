@@ -34,7 +34,7 @@ public class EventShootBullet extends PersonalEvent
 	public EventShootBullet(Bullet b)
 	{
 		this.id = b.networkID;
-		this.tank = b.tank.networkID;
+        this.tank = b.tank.networkID;
 		this.posX = b.posX;
 		this.posY = b.posY;
 		this.posZ = b.posZ;
@@ -82,7 +82,7 @@ public class EventShootBullet extends PersonalEvent
 				if (t2 instanceof TankAIControlled)
 					sb = ((TankAIControlled) t2).bulletItem;
 				else if (t2 instanceof TankPlayer)
-					sb = ((ItemBullet.ItemStackBullet)(((TankPlayer) t2).abilities.get(-this.item)));
+					sb = ((ItemBullet.ItemStackBullet)(((TankPlayer) t2).abilities.get(-this.item - 1)));
 			}
 
 			if (sb == null)

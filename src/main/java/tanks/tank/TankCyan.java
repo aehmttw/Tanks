@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A support tank which shoots freezing bullets that deal low damage
@@ -20,8 +20,8 @@ public class TankCyan extends TankAIControlled
 		this.cooldownBase = 240;
 		this.turretAimSpeed = 0.01;
 
-		this.setBullet(DefaultBullets.freezing_bullet);
-		this.bullet.maxLiveBullets = 1;
+		this.setBullet(DefaultItems.freezing_bullet);
+		this.getBullet().maxLiveBullets = 1;
 
 		this.enableLookingAtTargetEnemy = false;
 		this.turnChance = 0.001;
@@ -32,9 +32,7 @@ public class TankCyan extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/snowflake.png";
-			this.emblemR = 160;
-			this.emblemG = 255;
-			this.emblemB = 255;
+			this.emblemColor.set(160, 255, 255);
 		}
 
 		this.description = "A support tank which shoots freezing bullets that deal low damage";

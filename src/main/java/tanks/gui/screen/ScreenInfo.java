@@ -68,10 +68,10 @@ public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDa
         Drawing.drawing.setColor(255, 255, 255);
 
         double width = 0;
-        double height = Game.game.window.fontRendererDefault.getStringSizeY(Drawing.drawing.fontSize, "hello") / Drawing.drawing.interfaceScale - this.objYSpace / 2;
+        double height = Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, "hello") / Drawing.drawing.interfaceScale - this.objYSpace / 2;
         for (int i = 0; i < text.length; i++)
         {
-            width = Math.max(Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, this.text[i]) / Drawing.drawing.interfaceScale, width);
+            width = Math.max(Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, this.text[i]) / Drawing.drawing.interfaceScale, width);
             height += this.objYSpace / 2;
         }
 

@@ -1,17 +1,17 @@
 package tanks;
 
-public class Team 
+import basewindow.Color;
+
+public class Team
 {
 	public boolean enableColor;
-	public double teamColorR = 0;
-	public double teamColorG = 0;
-	public double teamColorB = 0;
+	public Color teamColor = new Color();
 
 	public boolean friendlyFire = true;
 	public String name;
 
-	protected static double[] teamColor = new double[3];
-	
+	public static double[] returnColor = new double[3];
+
 	public Team(String name)
 	{
 		this.name = name;
@@ -28,9 +28,9 @@ public class Team
 	{
 		this.name = name;
 		this.enableColor = true;
-		this.teamColorR = r;
-		this.teamColorG = g;
-		this.teamColorB = b;
+		this.teamColor.red = r;
+		this.teamColor.green = g;
+		this.teamColor.blue = b;
 
 		this.friendlyFire = ff;
 	}
@@ -55,15 +55,15 @@ public class Team
 		else if (!m.team.enableColor)
             return setTeamColor(r, g, b);
 		else
-			return setTeamColor(m.team.teamColorR, m.team.teamColorG, m.team.teamColorB);
+			return setTeamColor(m.team.teamColor.red, m.team.teamColor.green, m.team.teamColor.blue);
 	}
 
 	protected static double[] setTeamColor(double r, double g, double b)
     {
-        teamColor[0] = r;
-        teamColor[1] = g;
-        teamColor[2] = b;
-        return teamColor;
+        returnColor[0] = r;
+		returnColor[1] = g;
+		returnColor[2] = b;
+        return returnColor;
     }
 
 	public static double[] getObjectColor(double[] col, double r, double g, double b, Movable m)
@@ -73,7 +73,7 @@ public class Team
 		else if (!m.team.enableColor)
 			return setTeamColor(col, r, g, b);
 		else
-			return setTeamColor(col, m.team.teamColorR, m.team.teamColorG, m.team.teamColorB);
+			return setTeamColor(col, m.team.teamColor.red, m.team.teamColor.green, m.team.teamColor.blue);
 	}
 
 	protected static double[] setTeamColor(double[] col, double r, double g, double b)

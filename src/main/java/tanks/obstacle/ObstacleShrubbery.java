@@ -8,6 +8,7 @@ import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.IOverlayScreen;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.event.EventObstacleShrubberyBurn;
+import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderShrubbery;
 import tanks.tank.Tank;
 
@@ -45,31 +46,26 @@ public class ObstacleShrubbery extends Obstacle
 			this.heightMultiplier = 0.8;
 		}
 
-		this.update = true;
-
 		this.description = "A destructible bush in which you can hide by standing still";
-
 		this.renderer = ShaderShrubbery.class;
+		this.tileRenderer = ShaderGroundObstacle.class;
 	}
 
 	@Override
 	public void update()
 	{
 		this.previousFinalHeight = this.finalHeight;
-
 		this.height = Math.min(this.height + Panel.frameFrequency, 255);
 
-		if (ScreenGame.finishedQuick && !Game.enable3d)
-		{
-			this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
-		}
+		if (ScreenGame.finishedQuick)
+            this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 
 		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
 		if (this.finalHeight != this.previousFinalHeight)
-		{
-			Game.redrawObstacles.add(this);
-		}
+            redrawSelfAndNeighbors();
+		else
+			setUpdate(false);
 	}
 
 	@Override
@@ -77,18 +73,16 @@ public class ObstacleShrubbery extends Obstacle
 	{
 		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
-		if (!Game.enable3d)
-		{
-			if (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && (!((ScreenGame) Game.screen).playing))
-			{
-				this.height = 127;
-			}
-		}
+		if (!Game.enable3d && (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing))
+        {
+            this.height = 127;
+            setUpdate(true);
+        }
 
 		if (Game.enable3d)
 		{
 			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight, this.getOptionsByte(this.getTileHeight()));
 		}
 		else
 		{
@@ -108,7 +102,7 @@ public class ObstacleShrubbery extends Obstacle
 	public void draw3dOutline(double r, double g, double b, double a)
 	{
 		Drawing.drawing.setColor(r, g, b, a);
-		Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight);
+		Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)));
 	}
 
 	public boolean isInside(double x, double y)
@@ -132,7 +126,7 @@ public class ObstacleShrubbery extends Obstacle
 							this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x);
 
 					((Tank) m).hiddenPoints[x + 1][y + 1] = ((Tank) m).hiddenPoints[x + 1][y + 1] ||
-							(this.height >= 255 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
+							(this.height >= 240 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
 				}
 			}
 		}
@@ -187,19 +181,21 @@ public class ObstacleShrubbery extends Obstacle
 			double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
 			this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
 
-			if (Game.playerTank == null || Game.playerTank.destroy)
-				return;
-
-			double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
-
-			double radius = 62500;
-			if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+			if (!(Game.playerTank == null || Game.playerTank.destroy))
 			{
-				int sound = (int) (Math.random() * 4 + 1);
-				Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
+				double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
+
+				double radius = 62500;
+				if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+				{
+					int sound = (int) (Math.random() * 4 + 1);
+					Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
+				}
 			}
 		}
-	}
+
+        setUpdate((m.vX != 0 && m.vY != 0) || height < 255);
+    }
 
 	public double getTileHeight()
 	{
@@ -213,8 +209,4 @@ public class ObstacleShrubbery extends Obstacle
 		return this.finalHeight * shrubScale;
 	}
 
-	public byte getOptionsByte(double h)
-	{
-		return 0;
-	}
 }

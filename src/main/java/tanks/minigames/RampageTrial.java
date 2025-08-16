@@ -1,6 +1,7 @@
 package tanks.minigames;
 
 import tanks.*;
+import tanks.attribute.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.event.*;
@@ -105,7 +106,7 @@ public class RampageTrial extends Minigame
                     {
                         double duration = rampageDuration + rampageExitDuration;
                         double detAge = rampageExitDuration;
-                        m.addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
+                        m.em().addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
                     }
                 }
             }
@@ -159,7 +160,7 @@ public class RampageTrial extends Minigame
                 {
                     double duration = 10 + 10;
                     double detAge = 10;
-                    m.addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
+                    m.em().addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
                 }
             }
         }
@@ -231,12 +232,8 @@ public class RampageTrial extends Minigame
         TankPlayer t = new TankPlayer(old.posX, old.posY, old.angle);
         t.team = Game.playerTeamNoFF;
         t.player = p;
-        t.colorR = p.colorR;
-        t.colorG = p.colorG;
-        t.colorB = p.colorB;
-        t.secondaryColorR = p.colorR2;
-        t.secondaryColorG = p.colorG2;
-        t.secondaryColorB = p.colorB2;
+        t.color.set(p.color);
+        t.secondaryColor.set(p.color2);
         t.invulnerabilityTimer = 250;
         Game.movables.add(new Crate(t, 1000));
         Game.eventsOut.add(new EventAirdropTank(t, 1000));

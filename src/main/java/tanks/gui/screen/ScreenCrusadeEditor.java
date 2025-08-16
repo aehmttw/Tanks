@@ -166,8 +166,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
                 {
                     Crusade.CrusadeLevel level = c.levels.remove(li);
                     ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, li + 1, (ScreenCrusadeEditor) Game.screen);
-                    Level l = new Level(level.levelString);
-                    l.customTanks = level.tanks;
+                    Level l = new Level(level.levelString, level.tanks);
                     l.loadLevel(s);
                     Game.screen = s;
                 }
@@ -176,8 +175,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
                     String level = c.levels.get(li).levelString;
 
                     ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(c, level, li, Game.screen);
-                    Level l = new Level(level);
-                    l.customTanks = c.customTanks;
+                    Level l = new Level(level, c.customTanks);
                     l.loadLevel(s);
                     Game.screen = s;
                 }
@@ -657,9 +655,9 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
         else
         {
             Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
-            double w1 = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, this.crusade.name.replace("_", " ")) / Drawing.drawing.interfaceScale;
+            double w1 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, this.crusade.name.replace("_", " ")) / Drawing.drawing.interfaceScale;
             Drawing.drawing.setInterfaceFontSize(this.textSize);
-            double w2 = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, "Bonus life frequency: " + this.crusade.bonusLifeFrequency) / Drawing.drawing.interfaceScale;
+            double w2 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, "Bonus life frequency: " + this.crusade.bonusLifeFrequency) / Drawing.drawing.interfaceScale;
             double o = this.objYSpace;
             double w = w1 + w2 + o;
 

@@ -20,7 +20,7 @@ public class TankWhite extends TankAIControlled
 		this.turretAimSpeed = 0.045;
 		this.turretIdleSpeed = 0.001;
 		this.avoidanceSeekOpenSpaces = true;
-		this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
+		this.bulletAvoidBehavior = BulletAvoidBehavior.dodge;
 
 		this.description = "An invisible smart tank";
 	}

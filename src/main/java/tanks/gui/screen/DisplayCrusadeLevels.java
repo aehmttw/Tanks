@@ -12,7 +12,6 @@ import tanks.tank.TankAIControlled;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
@@ -50,12 +49,12 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
     protected int index = 0;
     protected int levelsLoaded = 0;
 
-    public double lastR = Level.currentColorR;
-    public double lastG = Level.currentColorG;
-    public double lastB = Level.currentColorB;
-    public double lastDR = Level.currentColorVarR;
-    public double lastDG = Level.currentColorVarG;
-    public double lastDB = Level.currentColorVarB;
+    public double lastR = Level.currentColor.red;
+    public double lastG = Level.currentColor.green;
+    public double lastB = Level.currentColor.blue;
+    public double lastDR = Level.currentColorVar.red;
+    public double lastDG = Level.currentColorVar.green;
+    public double lastDB = Level.currentColorVar.blue;
 
     protected static DisplayCrusadeLevels currentScreen;
 
@@ -93,9 +92,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         Game.cleanUp();
 
-        l.level = new Level(l.levelString);
-        l.level.tilesRandomSeed = (int) (Math.random() * 1000);
-        l.level.customTanks = l.tanks;
+        l.level = new Level(l.levelString, l.tanks);
 
         if (!l.isTransition)
             addTransitionLevels(l);
@@ -115,13 +112,6 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         TerrainRenderer r = Drawing.drawing.terrainRenderer;
         Drawing.drawing.terrainRenderer = l.renderer;
-
-        for (int i = 0; i < Game.game.heightGrid.length; i++)
-        {
-            Arrays.fill(Game.game.heightGrid[i], -1000);
-            Arrays.fill(Game.game.groundHeightGrid[i], -1000);
-            Arrays.fill(Game.game.groundEdgeHeightGrid[i], -1000);
-        }
 
         this.drawBgRect = false;
         this.stageOnly = true;
@@ -150,12 +140,12 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
         {
             ScreenLevel l2 = new ScreenLevel();
             double frac = f * 1.0 / fade;
-            int r = (int) (this.lastR * (1 - frac) + l.level.colorR * frac);
-            int g = (int) (this.lastG * (1 - frac) + l.level.colorG * frac);
-            int b = (int) (this.lastB * (1 - frac) + l.level.colorB * frac);
-            int dr = (int) (this.lastDR * (1 - frac) + l.level.colorVarR * frac);
-            int dg = (int) (this.lastDG * (1 - frac) + l.level.colorVarG * frac);
-            int db = (int) (this.lastDB * (1 - frac) + l.level.colorVarB * frac);
+            int r = (int) (this.lastR * (1 - frac) + l.level.color.red * frac);
+            int g = (int) (this.lastG * (1 - frac) + l.level.color.green * frac);
+            int b = (int) (this.lastB * (1 - frac) + l.level.color.blue * frac);
+            int dr = (int) (this.lastDR * (1 - frac) + l.level.colorVar.red * frac);
+            int dg = (int) (this.lastDG * (1 - frac) + l.level.colorVar.green * frac);
+            int db = (int) (this.lastDB * (1 - frac) + l.level.colorVar.blue * frac);
             l2.levelString = "{28,1," + r + "," + g + "," + b + "," + dr + "," + dg + "," + db + "||100-0-player}";
             Game.movables = l2.movables;
             Game.obstacles = l2.obstacles;
@@ -163,12 +153,12 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
             initialize(l2);
         }
 
-        this.lastR = l.level.colorR;
-        this.lastG = l.level.colorG;
-        this.lastB = l.level.colorB;
-        this.lastDR = l.level.colorVarR;
-        this.lastDG = l.level.colorVarG;
-        this.lastDB = l.level.colorVarB;
+        this.lastR = l.level.color.red;
+        this.lastG = l.level.color.green;
+        this.lastB = l.level.color.blue;
+        this.lastDR = l.level.colorVar.red;
+        this.lastDG = l.level.colorVar.green;
+        this.lastDB = l.level.colorVar.blue;
     }
 
     public double getLevelPos(double i)
@@ -249,6 +239,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                         Game.obstacles = obstacles;
 
                         initialize(n);
+
                         this.levelsLoaded++;
 
                         if (levels.indexOf(n) == levels.size() - 1)
@@ -276,26 +267,9 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                         drawables[m.nameTag.drawLevel].add(m.nameTag);
                 }
 
-                if (Game.enable3d)
-                {
-                    for (int n = 0; n < drawables.length; n++)
-                    {
-                        for (Obstacle o : Game.obstacles)
-                        {
-                            if (o.drawLevel == n && !o.batchDraw)
-                            {
-                                drawables[n].add(o);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    for (Obstacle o : Game.obstacles)
-                    {
+                for (Obstacle o : Game.obstacles)
+                    if (!o.batchDraw)
                         drawables[o.drawLevel].add(o);
-                    }
-                }
 
                 translation.x = (Drawing.drawing.baseInterfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size) / Game.game.window.absoluteWidth * Drawing.drawing.interfaceScale;
                 translation.y = Game.tile_size * -(i - rem) / Game.game.window.absoluteHeight * Drawing.drawing.scale;

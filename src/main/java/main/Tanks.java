@@ -41,6 +41,8 @@ public class Tanks
                 Game.debug = true;
             if (arg.equals("mac") || arg.equals("no_relaunch"))
                 relaunch = false;
+            if (arg.equals("no_steam"))
+                Game.disableSteam = true;
 
             if (i < args.length - 1 && args[i].equals("+connect_lobby"))
                 Game.steamLobbyInvite = Long.parseLong(args[i + 1]);
@@ -92,7 +94,10 @@ public class Tanks
                     Game.game.window.antialiasingEnabled = Game.antialiasing;
 
                     if (!path.endsWith(".jar"))
+                    {
                         Game.game.window.buildDate = "Running from source";
+                        Game.game.window.runningFromSource = true;
+                    }
                     else if (f.exists())
                     {
                         String hash = Game.readHashFromFile();

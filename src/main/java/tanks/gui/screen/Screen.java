@@ -51,6 +51,8 @@ public abstract class Screen implements IBatchRenderableObject
 
 	public IBatchRenderableObject[][] tiles;
 
+    public boolean drawDebugInternally = false;
+
 	public double lastObsSize;
 
 	public Screen()
@@ -96,18 +98,6 @@ public abstract class Screen implements IBatchRenderableObject
 		if (!(Game.screen instanceof IDarkScreen))
 			Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
-		for (int i = 0; i < Game.currentSizeX; i++)
-		{
-			for (int j = 0; j < Game.currentSizeY; j++)
-			{
-				if (Game.game.heightGrid[i][j] <= -1000)
-					Game.game.heightGrid[i][j] = 0;
-
-				if (Game.game.groundEdgeHeightGrid[i][j] <= -1000)
-					Game.game.groundEdgeHeightGrid[i][j] = 0;
-			}
-		}
-
 		double frac = 0;
 
 		if (this instanceof ScreenGame || this instanceof ILevelPreviewScreen || (this instanceof IOverlayScreen
@@ -119,7 +109,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 		if (drawBgRect && (!(this instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d))))
 		{
-			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColorR, 92 * frac + (1 - frac) * Level.currentColorG, 16 * frac + (1 - frac) * Level.currentColorB);
+			Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColor.red, 92 * frac + (1 - frac) * Level.currentColor.green, 16 * frac + (1 - frac) * Level.currentColor.blue);
 
 			double mul = 1;
 			if (Game.angledView)
@@ -128,11 +118,11 @@ public abstract class Screen implements IBatchRenderableObject
 			Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
 					mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
-			Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB, 255.0 * size);
+			Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue, 255.0 * size);
 			Drawing.drawing.fillBackgroundRect(this, Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
 		}
 
-		Drawing.drawing.setColor(Level.currentColorR, Level.currentColorG, Level.currentColorB);
+		Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
 
 		if (stageOnly && Drawing.drawing.terrainRenderer instanceof StaticTerrainRenderer)
 			((StaticTerrainRenderer) Drawing.drawing.terrainRenderer).stage();

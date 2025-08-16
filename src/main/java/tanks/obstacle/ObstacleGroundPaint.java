@@ -1,13 +1,10 @@
 package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorColorAndNoise;
 import tanks.rendering.ShaderGroundColor;
 import tanks.tankson.MetadataProperty;
-
-import java.util.Arrays;
 
 public class ObstacleGroundPaint extends Obstacle
 {
@@ -23,10 +20,8 @@ public class ObstacleGroundPaint extends Obstacle
         this.destructible = false;
         this.tankCollision = false;
         this.bulletCollision = false;
-        this.checkForObjects = true;
 
         this.type = ObstacleType.ground;
-        this.update = true;
 
         this.replaceTiles = true;
         this.tileRenderer = ShaderGroundColor.class;
@@ -41,14 +36,20 @@ public class ObstacleGroundPaint extends Obstacle
     @Override
     public void draw3dOutline(double r, double g, double b, double a)
     {
-        Drawing.drawing.setColor(r, g, b);
-        Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);
+        Drawing.drawing.setColor(r, g, b, a);
+        Drawing.drawing.fillRect(this.posX, this.posY,  Game.sampleTerrainGroundHeight(this.posX, this.posY), Obstacle.draw_size, Obstacle.draw_size, false);
     }
 
     @Override
     public double getTileHeight()
     {
         return 0;
+    }
+
+    @Override
+    public double getGroundHeight()
+    {
+        return baseGroundHeight;
     }
 
     @Override

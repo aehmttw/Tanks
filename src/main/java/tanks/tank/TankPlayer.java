@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import basewindow.Color;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
@@ -7,6 +8,7 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
+import tanks.attribute.AttributeModifier;
 import tanks.gui.Button;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
@@ -60,6 +62,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 	protected double drawRangeMin = -1;
 	protected double drawRangeMax = -1;
+    protected double drawSpread = -1;
 	protected double drawLifespan = -1;
 	protected boolean drawTrace = true;
 
@@ -69,9 +72,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	public double mouseX;
 	public double mouseY;
 
-	public static int[] default_primary_color = new int[]{0, 150, 255};
-	public static int[] default_secondary_color = new int[]{(int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150), (int) Turret.calculateSecondaryColor(255)};
-	public static int[] default_tertiary_color = new int[]{(default_primary_color[0] + default_secondary_color[0]) / 2, (default_primary_color[1] + default_secondary_color[1]) / 2, (default_primary_color[2] + default_secondary_color[2]) / 2};
+	public static Color default_primary_color = new Color(0, 150, 255, 255);
+	public static Color default_secondary_color = new Color((int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150), (int) Turret.calculateSecondaryColor(255), 255);
+	public static Color default_tertiary_color = new Color((default_primary_color.red + default_secondary_color.red) / 2, (default_primary_color.green + default_secondary_color.green) / 2, (default_primary_color.blue + default_secondary_color.blue) / 2, 255);
 
 	public static final int max_abilities = 5;
 
@@ -122,19 +125,11 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 	public TankPlayer setPlayerColor()
 	{
-		this.colorR = Game.player.colorR;
-		this.colorG = Game.player.colorG;
-		this.colorB = Game.player.colorB;
-		this.secondaryColorR = Game.player.colorR2;
-		this.secondaryColorG = Game.player.colorG2;
-		this.secondaryColorB = Game.player.colorB2;
+		this.color.set(Game.player.color);
+		this.secondaryColor.set(Game.player.color2);
 		this.enableTertiaryColor = Game.player.enableTertiaryColor;
-		this.tertiaryColorR = Game.player.colorR3;
-		this.tertiaryColorG = Game.player.colorG3;
-		this.tertiaryColorB = Game.player.colorB3;
-		this.emblemR = this.secondaryColorR;
-		this.emblemG = this.secondaryColorG;
-		this.emblemB = this.secondaryColorB;
+		this.tertiaryColor.set(Game.player.color3);
+		this.emblemColor.set(Game.player.color2);
 		this.saveColors();
 		return this;
 	}
@@ -148,7 +143,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@Override
 	public void update()
 	{
-		if (Game.invulnerable)
+        if (Game.invulnerable)
 		{
 			this.resistExplosions = true;
 			this.resistBullets = true;
@@ -187,7 +182,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			}
 		}
 
-		if (this.tookRecoil)
+        if (this.tookRecoil)
 		{
 			if (this.recoilSpeed <= this.maxSpeed * this.maxSpeedModifier * 1.0001)
 			{
@@ -197,9 +192,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			else
 			{
 				this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
-				this.recoilSpeed *= Math.pow(1 - this.friction * this.frictionModifier, Panel.frameFrequency);
-			}
-		}
+                this.recoilSpeed *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
+            }
+        }
 		else if (this.inControlOfMotion)
 		{
 			double acceleration = this.acceleration * this.accelerationModifier;
@@ -257,10 +252,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 				this.addPolarMotion(a, acceleration * this.maxSpeed * Panel.frameFrequency);
 			}
 
-			if (a == -1)
+            if (a == -1)
 			{
-				this.vX *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
-				this.vY *= Math.pow(1 - (this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vX *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
+				this.vY *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
 
 				if (Math.abs(this.vX) < 0.001)
 					this.vX = 0;
@@ -271,11 +266,12 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 			double speed = Math.sqrt(this.vX * this.vX + this.vY * this.vY);
 
-			if (speed > maxVelocity)
+            if (speed > maxVelocity)
 				this.setPolarMotion(this.getPolarDirection(), maxVelocity);
-		}
 
-		double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+        }
+
+		double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
 		for (Item.ItemStack<?> s: this.abilities)
 		{
@@ -291,7 +287,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			for (Item.ItemStack<?> i: h.itemBar.slots)
 			{
 				if (i != null && !i.isEmpty)
-                    i.updateCooldown(reload);
+					i.updateCooldown(reload);
 			}
 		}
 
@@ -457,13 +453,12 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			if (i != null)
 			{
 				Bullet b = i.item.bullet;
-				double lifespan = b.lifespan > 0 ? b.lifespan * b.speed + this.turretLength : 0;
+				double range = b.lifespan > 0 ?
+                    b.lifespan * b.speed + this.turretLength * em().getAttributeValue(AttributeModifier.bullet_speed, 1)
+                    : 0;
 				double rangeMax = b.getRangeMax();
 				double rangeMin = b.getRangeMin();
 				showTrace = b.showDefaultTrace;
-
-				if (lifespan > 0)
-					lifespan *= this.getAttributeValue(AttributeModifier.bullet_speed, 1);
 
 				for (int j = 0; j < b.shotCount; j++)
 				{
@@ -472,11 +467,11 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 					for (int k = -gasSpread; k <= gasSpread; k++)
 					{
-						double gasOff = 0;
+						double spreadOff = 0;
 						if (b instanceof BulletGas)
-							gasOff = Math.atan(((BulletGas) b).endSize / lifespan) / 2 * k;
+							spreadOff = Math.atan(((BulletGas) b).endSize / range) / 2 * k;
 
-						gasOff += Math.toRadians(b.accuracySpread / 2) * k;
+						spreadOff += Math.toRadians(b.accuracySpread / 2) * k;
 
 						if (b.shotCount > 1)
 						{
@@ -486,25 +481,28 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 								baseOff = Math.toRadians(b.multishotSpread) * ((j * 1.0 / (b.shotCount - 1)) - 0.5);
 						}
 
-						Ray r = new Ray(this.posX, this.posY, this.angle + baseOff + gasOff, 1, this);
-						r.bounces = b.bounces;
-						r.size = b.size;
-						if (k != 0)
-							r.size /= 2;
+						Ray r = Ray.newRay(this.posX, this.posY, this.angle + baseOff + spreadOff, b.bounces, this)
+                            .setSize(k != 0 ? b.size / 2 : b.size);
+                        if (range > 0)
+                            r.setRange(range - this.turretLength);
 
-						r.range = lifespan - this.turretLength;
+						double mx = this.mouseX - this.posX;
+						double my = this.mouseY - this.posY;
+
+						double offset = baseOff + spreadOff;
+						double tx = Math.cos(offset) * mx + Math.sin(offset) * my;
+						double ty = -Math.sin(offset) * mx + Math.cos(offset) * my;
+						b.setTargetLocation(this.posX + tx, this.posY + ty);
 
 						if (b instanceof BulletArc)
-							((BulletArc) b).drawTrace(this.posX, this.posY, this.mouseX, this.mouseY, this.angle + baseOff + gasOff);
+							((BulletArc) b).drawTrace(this.posX, this.posY, this.posX + tx, this.posY + ty);
 
 						if (b instanceof BulletAirStrike)
-							((BulletAirStrike) b).drawTrace(this.posX, this.posY, this.mouseX, this.mouseY);
+							((BulletAirStrike) b).drawTrace(this.posX, this.posY, this.posX + tx, this.posY + ty);
 
 						r.vX /= 2;
 						r.vY /= 2;
-						r.trace = true;
-						r.dotted = true;
-						r.moveOut(10 * this.size / Game.tile_size);
+                        r.setTrace(true, true).moveOut(10 * this.size / Game.tile_size);
 
 						if (rangeMax > 0)
 							this.drawRangeMax = rangeMax;
@@ -512,20 +510,39 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 						if (rangeMin > 0)
 							this.drawRangeMin = rangeMin;
 
-						if (lifespan > 0)
-							this.drawLifespan = lifespan;
+						if (range > 0)
+							this.drawLifespan = range;
+
+                        this.drawSpread = spreadOff;
 
 						if (showTrace)
 							r.getTarget();
 					}
 				}
 			}
-			else
-				showTrace = false;
+        }
+
+		Item.ItemStack<?> ib = this.player.hotbar.itemBar.getSelectedAction(false);
+		Bullet b = null;
+		if (ib instanceof ItemBullet.ItemStackBullet)
+			b = ((ItemBullet.ItemStackBullet) ib).item.bullet;
+
+		if (!(b instanceof BulletArc || b instanceof BulletAirStrike))
+			this.pitch -= GameObject.angleBetween(this.pitch, 0) / 10 * Panel.frameFrequency;
+
+		if (b instanceof BulletArc)
+		{
+			double pitch = Math.atan(GameObject.distanceBetween(this.posX, this.posY, this.mouseX, this.mouseY) / b.speed * 0.5 * BulletArc.gravity / b.speed);
+			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
+		}
+		else if (b instanceof BulletAirStrike)
+		{
+			double pitch = Math.PI / 2;
+			this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
 		}
 
-		super.update();
-	}
+        super.update();
+    }
 
 	public Item.ItemStack<?> getItem(int click)
 	{
@@ -561,7 +578,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		Item.ItemStack<?> s = right ? this.getSecondaryAbility() : this.getPrimaryAbility();
 		if (s != null)
 		{
-			s.networkIndex = -a;
+			s.networkIndex = -a - 1;
 			s.attemptUse(this);
 		}
 	}
@@ -578,7 +595,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		if (s != null)
 		{
-			s.networkIndex = -click;
+			s.networkIndex = -click - 1;
 			s.attemptUse(this);
 		}
 	}
@@ -590,7 +607,8 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		b.setPolarMotion(this.angle + offset, speed);
 		b.speed = Math.abs(speed);
-		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * this.getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
+
+		this.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0 * b.recoil * em().getAttributeValue(AttributeModifier.recoil, 1) * b.frameDamageMultipler);
 
 		if (b.recoil != 0)
 		{
@@ -631,7 +649,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
-		if (m.item.networkIndex >= 0)
+		if (m.item.networkIndex > 0)
 		{
 			Integer num = 0;
 			if (Game.currentLevel != null)
@@ -640,6 +658,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		}
 
 		Game.eventsOut.add(new EventLayMine(m));
+		Game.avoidObjects.add(m);
 		Game.movables.add(m);
 	}
 
@@ -690,7 +709,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	@Override
 	public double getDrawLifespan() { return this.drawLifespan; }
 
-	@Override
+    @Override
+    public double getDrawSpread() { return this.drawSpread; }
+
+    @Override
 	public boolean getShowTrace() { return this.drawTrace; }
 
 	@Override

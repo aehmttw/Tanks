@@ -2,7 +2,6 @@ package tanks.bullet;
 
 import basewindow.Model;
 import basewindow.transformation.AxisRotation;
-import basewindow.transformation.Rotation;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
@@ -18,7 +17,7 @@ public class Trail3D extends Trail
     protected double frontAngleOffsetPitch;
     protected double backAngleOffsetPitch;
 
-    public static Model cap = Drawing.drawing.createModel("/models/cap/");
+    public static Model cap = Drawing.drawing.getModel("/models/cap/");
 
     public Trail3D(Movable m, double speed, double backX, double backY, double backZ,
                    double delay, double backWidth, double frontWidth, double length,
@@ -96,10 +95,10 @@ public class Trail3D extends Trail
             {
                 frac3 = 0;
                 Drawing.drawing.setColor(
-                        this.frontR * (1 - frac1) + this.backR * frac1,
-                        this.frontG * (1 - frac1) + this.backG * frac1,
-                        this.frontB * (1 - frac1) + this.backB * frac1,
-                        (this.frontA * (1 - frac1) + this.backA * frac1) * opacity, this.luminosity);
+                        this.frontColor.red * (1 - frac1) + this.backColor.red * frac1,
+                        this.frontColor.green * (1 - frac1) + this.backColor.green * frac1,
+                        this.frontColor.blue * (1 - frac1) + this.backColor.blue * frac1,
+                        (this.frontColor.alpha * (1 - frac1) + this.backColor.alpha * frac1) * opacity, this.luminosity);
 
                 if (frontCircle || (showOutsides && showOutsideFront))
                     drawCap3D(this.frontX, this.frontY, this.frontZ, frontWidth, angle, pitch + Math.PI);
@@ -107,7 +106,7 @@ public class Trail3D extends Trail
             else
             {
                 frontWidth = this.frontWidth;
-                Drawing.drawing.setColor(this.frontR, this.frontG, this.frontB, this.frontA * opacity, this.luminosity);
+                Drawing.drawing.setColor(this.frontColor.red, this.frontColor.green, this.frontColor.blue, this.frontColor.alpha * opacity, this.luminosity);
 
                 if (frontCircle)
                     drawCap3D(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.backZ * frac3 + this.frontZ * (1 - frac3), frontWidth, angle, pitch);
@@ -123,10 +122,10 @@ public class Trail3D extends Trail
             {
                 frac4 = 0;
                 Drawing.drawing.setColor(
-                        this.frontR * (1 - frac2) + this.backR * frac2,
-                        this.frontG * (1 - frac2) + this.backG * frac2,
-                        this.frontB * (1 - frac2) + this.backB * frac2,
-                        (this.frontA * (1 - frac2) + this.backA * frac2) * opacity, this.luminosity);
+                        this.frontColor.red * (1 - frac2) + this.backColor.red * frac2,
+                        this.frontColor.green * (1 - frac2) + this.backColor.green * frac2,
+                        this.frontColor.blue * (1 - frac2) + this.backColor.blue * frac2,
+                        (this.frontColor.alpha * (1 - frac2) + this.backColor.alpha * frac2) * opacity, this.luminosity);
 
                 Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
@@ -136,7 +135,7 @@ public class Trail3D extends Trail
             else
             {
                 backWidth = this.backWidth;
-                Drawing.drawing.setColor(this.backR, this.backG, this.backB, this.backA * opacity, this.luminosity);
+                Drawing.drawing.setColor(this.backColor.red, this.backColor.green, this.backColor.blue, this.backColor.alpha * opacity, this.luminosity);
 
                 Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
@@ -233,6 +232,9 @@ public class Trail3D extends Trail
     AxisRotation[] rotations = new AxisRotation[]{new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0), new AxisRotation(Game.game.window, AxisRotation.Axis.pitch, 0)};
     public void drawCap3D(double x, double y, double z, double width, double angle, double pitch)
     {
+        if (Game.game.window.drawingShadow)
+            return;
+
         rotations[0].angle = -(angle - Math.PI / 2);
         rotations[1].angle = -(pitch);
         Game.game.window.setForceModelGlow(glow);

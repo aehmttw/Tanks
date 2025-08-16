@@ -1,8 +1,10 @@
 package tanks.gui.screen;
 
-import tanks.*;
+import tanks.Crusade;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
 import tanks.gui.Button;
-import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
 
 import java.util.ArrayList;
@@ -36,8 +38,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
             String level = crusade.levels.get(index + 1).levelString;
 
             ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, index + 1, previous);
-            Level l = new Level(level);
-            l.customTanks = crusade.customTanks;
+            Level l = new Level(level, crusade.customTanks);
             l.loadLevel(s);
             Game.screen = s;
         }
@@ -53,8 +54,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
             String level = crusade.levels.get(index - 1).levelString;
 
             ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, index - 1, previous);
-            Level l = new Level(level);
-            l.customTanks = crusade.customTanks;
+            Level l = new Level(level, crusade.customTanks);
             l.loadLevel(s);
             Game.screen = s;
         }
@@ -100,9 +100,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
     public void update()
     {
         this.back.update();
-
-        if (Game.enable3d)
-            Game.recomputeHeightGrid();
 
         if (Game.game.input.editorPause.isValid())
         {

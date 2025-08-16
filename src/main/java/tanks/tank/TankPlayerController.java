@@ -1,19 +1,8 @@
 package tanks.tank;
 
-import basewindow.InputPoint;
-import tanks.AttributeModifier;
-import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletAirStrike;
-import tanks.bullet.BulletArc;
-import tanks.gui.screen.ScreenGame;
-import tanks.hotbar.Hotbar;
-import tanks.hotbar.ItemBar;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemRemote;
 import tanks.network.event.EventTankControllerUpdateC;
 
 import java.util.Arrays;
@@ -67,6 +56,10 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
         this.bulletCooldown -= Panel.frameFrequency;
         if (this.bulletCooldown < 0)
             this.bulletCooldown = 0;
+
+        this.mineCooldown -= Panel.frameFrequency;
+        if (this.mineCooldown < 0)
+            this.mineCooldown = 0;
 
         super.update();
 
@@ -143,6 +136,9 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
 
     @Override
     public boolean getShowTrace() { return this.drawTrace; }
+
+    @Override
+    public double getDrawSpread() { return this.drawSpread; }
 
     @Override
     public void setDrawRanges(double lifespan, double rangeMin, double rangeMax, boolean trace)

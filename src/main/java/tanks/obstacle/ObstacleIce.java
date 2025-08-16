@@ -3,7 +3,7 @@ package tanks.obstacle;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
-import tanks.StatusEffect;
+import tanks.attribute.StatusEffect;
 import tanks.rendering.ShaderGroundIce;
 import tanks.rendering.ShaderIce;
 import tanks.tank.Tank;
@@ -33,8 +33,11 @@ public class ObstacleIce extends Obstacle
 
         this.replaceTiles = true;
 
-        this.renderer = ShaderIce.class;
-        this.tileRenderer = ShaderGroundIce.class;
+        if (Game.enable3d)
+        {
+            this.renderer = ShaderIce.class;
+            this.tileRenderer = ShaderGroundIce.class;
+        }
 
         this.description = "A slippery layer of ice";
     }
@@ -42,17 +45,15 @@ public class ObstacleIce extends Obstacle
     @Override
     public void draw3dOutline(double r, double g, double b, double a)
     {
-        Drawing.drawing.setColor(r, g, b);
-        Drawing.drawing.fillRect(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size);
+        Drawing.drawing.setColor(r, g, b, a);
+        Drawing.drawing.fillRect(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, false);
     }
 
     @Override
     public void onObjectEntry(Movable m)
     {
         if (m instanceof Tank)
-        {
-            m.addStatusEffect(StatusEffect.ice, 0, 5, 10);
-        }
+            m.em().addStatusEffect(StatusEffect.ice, 0, 5, 10);
     }
 
     @Override

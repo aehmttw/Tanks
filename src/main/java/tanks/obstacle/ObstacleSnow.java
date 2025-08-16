@@ -2,6 +2,7 @@ package tanks.obstacle;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.attribute.StatusEffect;
 import tanks.gui.screen.*;
 import tanks.network.event.EventObstacleSnowMelt;
 import tanks.rendering.ShaderSnow;
@@ -58,7 +59,8 @@ public class ObstacleSnow extends Obstacle
     @Override
     public void draw3dOutline(double r, double g, double b, double a)
     {
-
+        Drawing.drawing.setColor(r, g, b, a);
+        Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.depth * 0.2 * Game.tile_size);
     }
 
     @Override
@@ -66,8 +68,8 @@ public class ObstacleSnow extends Obstacle
     {
         if (!ScreenPartyLobby.isClient && (m instanceof Tank || m instanceof Bullet))
         {
-            m.addStatusEffect(StatusEffect.snow_velocity, 0, 20, 30);
-            m.addStatusEffect(StatusEffect.snow_friction, 0, 5, 10);
+            m.em().addStatusEffect(StatusEffect.snow_velocity, 0, 20, 30);
+            m.em().addStatusEffect(StatusEffect.snow_friction, 0, 5, 10);
 
             int amt = 5;
             int lastDepth = (int) Math.ceil(this.depth * amt);
@@ -89,7 +91,7 @@ public class ObstacleSnow extends Obstacle
         if (ScreenPartyLobby.isClient)
             this.depth = Math.max(0.05, this.depth - Panel.frameFrequency * 0.005);
 
-        Game.redrawObstacles.add(this);
+        redrawSelfAndNeighbors();
 
         if (Game.effectsEnabled && !ScreenGame.finished)
         {
@@ -163,14 +165,9 @@ public class ObstacleSnow extends Obstacle
             {
                 this.finalHeight = z;
                 Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-                Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, z * this.visualDepth, (byte) (this.getOptionsByte(this.getTileHeight()) + 1));
+                Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, z * this.visualDepth, this.getOptionsByte(this.getTileHeight()));
             }
         }
-    }
-
-    public byte getOptionsByte(double h)
-    {
-        return 0;
     }
 
     public double getTileHeight()

@@ -2,6 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletEffect;
 
 /**
  * A small, primitive tank which shoots tiny, low damage bullets
@@ -16,14 +17,15 @@ public class TankMini extends TankAIControlled
 		this.maxSpeed = 1.5;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
-		this.bullet.maxLiveBullets = 1;
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
 		this.turretAimSpeed = 0.02;
-		this.bullet.bounces = 0;
-		this.bullet.effect = Bullet.BulletEffect.trail;
-		this.bullet.damage = 0.25;
-		this.bullet.size /= 2;
+		Bullet b = this.getBullet();
+		b.maxLiveBullets = 1;
+		b.bounces = 0;
+		b.effect = BulletEffect.trail.getCopy();
+		b.damage = 0.25;
+		b.size /= 2;
 		this.enableLookingAtTargetEnemy = true;
 		this.turnChance = 0.001;
 		this.enableBulletAvoidance = false;
@@ -35,9 +37,7 @@ public class TankMini extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/square.png";
-			this.emblemR = this.secondaryColorR;
-			this.emblemG = this.secondaryColorG;
-			this.emblemB = this.secondaryColorB;
+			this.emblemColor.set(this.secondaryColor);
 		}
 
 		this.description = "A small, primitive tank which shoots tiny, low damage bullets";

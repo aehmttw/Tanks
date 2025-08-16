@@ -1,10 +1,12 @@
 package tanks.tank;
 
-import tanks.AttributeModifier;
+import basewindow.Color;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.bullet.Bullet;
+import tanks.attribute.AttributeModifier;
+import tanks.item.ItemBullet;
 
 public class Turret extends Movable
 {
@@ -14,17 +16,13 @@ public class Turret extends Movable
 	{
 		super(t.posX, t.posY);
 		this.tank = t;
-		this.tank.secondaryColorR = calculateSecondaryColor(this.tank.colorR);
-		this.tank.secondaryColorG = calculateSecondaryColor(this.tank.colorG);
-		this.tank.secondaryColorB = calculateSecondaryColor(this.tank.colorB);
-		this.tank.tertiaryColorR = (this.tank.colorR + this.tank.secondaryColorR) / 2;
-		this.tank.tertiaryColorG = (this.tank.colorG + this.tank.secondaryColorG) / 2;
-		this.tank.tertiaryColorB = (this.tank.colorB + this.tank.secondaryColorB) / 2;
+		setSecondary(this.tank.color, this.tank.secondaryColor);
+		setTertiary(this.tank.color, this.tank.secondaryColor, this.tank.tertiaryColor);
 	}
 
 	public void draw(double rotation, double vAngle, boolean forInterface, boolean in3d, boolean transparent)
 	{
-		double luminance = this.tank.getAttributeValue(AttributeModifier.glow, this.tank.luminance);
+		double luminance = this.tank.em().getAttributeValue(AttributeModifier.glow, this.tank.luminance);
 
 		if (this.tank.fullBrightness)
 			luminance = 1;
@@ -47,17 +45,24 @@ public class Turret extends Movable
 		double length = size / Game.tile_size * frac * rawLength;
 		double thickness = this.tank.turretSize * size * frac / 8;
 
-		if (transparent)
-			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 127, luminance);
-		else
-			Drawing.drawing.setColor(this.tank.secondaryColorR, this.tank.secondaryColorG, this.tank.secondaryColorB, 255, luminance);
-
+		Drawing.drawing.setColor(this.tank.secondaryColor.red, this.tank.secondaryColor.green, this.tank.secondaryColor.blue, transparent ? 127 : 255, luminance);
 
 		Bullet b = null;
 		if (this.tank instanceof TankAIControlled)
-			b = ((TankAIControlled) this.tank).bullet;
-		else if (this.tank instanceof TankRemote && !(((TankRemote) this.tank).tank instanceof TankPlayer))
-			b = ((TankAIControlled) ((TankRemote) this.tank).tank).bullet;
+			b = ((TankAIControlled) this.tank).getBullet();
+		else if (this.tank instanceof TankRemote && !(((TankRemote) this.tank).tank instanceof TankPlayable))
+			b = ((TankAIControlled) ((TankRemote) this.tank).tank).getBullet();
+		else
+		{
+			ItemBullet.ItemStackBullet ib = null;
+			if (this.tank instanceof TankPlayable)
+				ib = ((TankPlayable) this.tank).getFirstBullet();
+			else if  (this.tank instanceof TankRemote)
+				ib = ((TankPlayable) ((TankRemote) this.tank).tank).getFirstBullet();
+
+			if (ib != null)
+				b = ib.item.bullet;
+		}
 
 		if (b != null && b.shotCount > 1 && this.tank.multipleTurrets)
 		{
@@ -74,21 +79,18 @@ public class Turret extends Movable
 		else
 			this.drawBarrel(forInterface, in3d, baseSize, length, thickness, rotation, vAngle);
 
-		double turretBaseR = (this.tank.secondaryColorR + this.tank.colorR) / 2;
-		double turretBaseG = (this.tank.secondaryColorG + this.tank.colorG) / 2;
-		double turretBaseB = (this.tank.secondaryColorB + this.tank.colorB) / 2;
+		double turretBaseR = (this.tank.secondaryColor.red + this.tank.color.red) / 2;
+		double turretBaseG = (this.tank.secondaryColor.green + this.tank.color.green) / 2;
+		double turretBaseB = (this.tank.secondaryColor.blue + this.tank.color.blue) / 2;
 
 		if (this.tank.enableTertiaryColor)
 		{
-			turretBaseR = this.tank.tertiaryColorR;
-			turretBaseG = this.tank.tertiaryColorG;
-			turretBaseB = this.tank.tertiaryColorB;
+			turretBaseR = this.tank.tertiaryColor.red;
+			turretBaseG = this.tank.tertiaryColor.green;
+			turretBaseB = this.tank.tertiaryColor.blue;
 		}
 
-		if (transparent)
-			Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 127, luminance);
-		else
-			Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, 255, luminance);
+		Drawing.drawing.setColor(turretBaseR, turretBaseG, turretBaseB, transparent ? 127 : 255, luminance);
 
 		if (forInterface)
 		{
@@ -135,4 +137,13 @@ public class Turret extends Movable
 		return (input + 64) / 2;
 	}
 
+	public static void setSecondary(Color src, Color target)
+	{
+		target.set(calculateSecondaryColor(src.red), calculateSecondaryColor(src.green), calculateSecondaryColor(src.blue));
+	}
+
+	public static void setTertiary(Color c1, Color c2, Color target)
+	{
+		target.set((c1.red + c2.red) / 2, (c1.green + c2.green) / 2, (c1.blue + c2.blue) / 2);
+	}
 }

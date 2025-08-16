@@ -24,16 +24,16 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorRed.inputText.length() <= 0)
                 colorRed.inputText = colorRed.previousInputText;
 
-            screenLevelEditor.level.colorR = Integer.parseInt(colorRed.inputText);
+            screenLevelEditor.level.color.red = Double.parseDouble(colorRed.inputText);
 
-            colorVarRed.maxValue = 255 - screenLevelEditor.level.colorR;
+            colorVarRed.maxValue = 255 - screenLevelEditor.level.color.red;
             colorVarRed.performValueCheck();
 
-            screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
+            screenLevelEditor.level.colorVar.red = Double.parseDouble(colorVarRed.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorR, 0, 255, 1);
+                , screenLevelEditor.level.color.red, 0, 255, 1);
 
         colorRed.allowLetters = false;
         colorRed.allowSpaces = false;
@@ -47,16 +47,16 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorGreen.inputText.length() <= 0)
                 colorGreen.inputText = colorGreen.previousInputText;
 
-            screenLevelEditor.level.colorG = Integer.parseInt(colorGreen.inputText);
+            screenLevelEditor.level.color.green = Double.parseDouble(colorGreen.inputText);
 
-            colorVarGreen.maxValue = 255 - screenLevelEditor.level.colorG;
+            colorVarGreen.maxValue = 255 - screenLevelEditor.level.color.green;
             colorVarGreen.performValueCheck();
 
-            screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
+            screenLevelEditor.level.colorVar.green = Double.parseDouble(colorVarGreen.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorG, 0, 255, 1);
+                , screenLevelEditor.level.color.green, 0, 255, 1);
 
         colorGreen.allowLetters = false;
         colorGreen.allowSpaces = false;
@@ -70,16 +70,16 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorBlue.inputText.length() <= 0)
                 colorBlue.inputText = colorBlue.previousInputText;
 
-            screenLevelEditor.level.colorB = Integer.parseInt(colorBlue.inputText);
+            screenLevelEditor.level.color.blue = Double.parseDouble(colorBlue.inputText);
 
-            colorVarBlue.maxValue = 255 - screenLevelEditor.level.colorB;
+            colorVarBlue.maxValue = 255 - screenLevelEditor.level.color.blue;
             colorVarBlue.performValueCheck();
 
-            screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
+            screenLevelEditor.level.colorVar.blue = Double.parseDouble(colorVarBlue.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorB, 0, 255, 1);
+                , screenLevelEditor.level.color.blue, 0, 255, 1);
 
         colorBlue.allowLetters = false;
         colorBlue.allowSpaces = false;
@@ -93,12 +93,12 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorVarRed.inputText.length() <= 0)
                 colorVarRed.inputText = colorVarRed.previousInputText;
 
-            screenLevelEditor.level.colorVarR = Integer.parseInt(colorVarRed.inputText);
+            screenLevelEditor.level.colorVar.red = Double.parseDouble(colorVarRed.inputText);
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorVarR + "");
+                , (int) screenLevelEditor.level.colorVar.red + "");
 
         colorVarRed.allowLetters = false;
         colorVarRed.allowSpaces = false;
@@ -110,12 +110,12 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorVarGreen.inputText.length() <= 0)
                 colorVarGreen.inputText = colorVarGreen.previousInputText;
 
-            screenLevelEditor.level.colorVarG = Integer.parseInt(colorVarGreen.inputText);
+            screenLevelEditor.level.colorVar.green = Double.parseDouble(colorVarGreen.inputText);
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorVarG + "");
+                , (int) screenLevelEditor.level.colorVar.green + "");
 
         colorVarGreen.allowLetters = false;
         colorVarGreen.allowSpaces = false;
@@ -127,21 +127,21 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             if (colorVarBlue.inputText.length() <= 0)
                 colorVarBlue.inputText = colorVarBlue.previousInputText;
 
-            screenLevelEditor.level.colorVarB = Integer.parseInt(colorVarBlue.inputText);
+            screenLevelEditor.level.colorVar.blue = Double.parseDouble(colorVarBlue.inputText);
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         }
-                , screenLevelEditor.level.colorVarB + "");
+                , (int) screenLevelEditor.level.colorVar.blue + "");
 
         colorVarBlue.allowLetters = false;
         colorVarBlue.allowSpaces = false;
         colorVarBlue.maxChars = 3;
         colorVarBlue.checkMaxValue = true;
 
-        colorVarRed.maxValue = 255 - screenLevelEditor.level.colorR;
-        colorVarGreen.maxValue = 255 - screenLevelEditor.level.colorG;
-        colorVarBlue.maxValue = 255 - screenLevelEditor.level.colorB;
+        colorVarRed.maxValue = 255 - screenLevelEditor.level.color.red;
+        colorVarGreen.maxValue = 255 - screenLevelEditor.level.color.green;
+        colorVarBlue.maxValue = 255 - screenLevelEditor.level.color.blue;
     }
 
     public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", this::escape);

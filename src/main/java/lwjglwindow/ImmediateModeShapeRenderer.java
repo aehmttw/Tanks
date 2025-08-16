@@ -58,20 +58,14 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             d += step;
 
-            if (!shade)
-                glColor3d(0, 0, 0);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
 
             glVertex2d(pX, pY);
             pX = x + Math.cos(d) * sX / 2;
             pY = y + Math.sin(d) * sY / 2;
             glVertex2d(pX, pY);
 
-            if (!shade)
-                glColor3d(this.window.colorR * this.window.colorA, this.window.colorG * this.window.colorA, this.window.colorB * this.window.colorA);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
             glVertex2d(x, y);
         }
@@ -101,6 +95,33 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glBegin(GL_TRIANGLE_FAN);
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
             glVertex3d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2, z);
+        glEnd();
+
+        if (depthTest)
+        {
+            glDepthMask(true);
+            this.window.disableDepthtest();
+        }
+    }
+
+    @Override
+    public void fillRect(double x, double y, double z, double sX, double sY, boolean depthTest)
+    {
+        if (depthTest)
+        {
+            this.window.enableDepthtest();
+
+            if (this.window.colorA < 1)
+                glDepthMask(false);
+        }
+        else
+            this.window.disableDepthtest();
+
+        glBegin(GL_QUADS);
+        glVertex3d(x, y, z);
+        glVertex3d(x + sX, y, z);
+        glVertex3d(x + sX, y + sY, z);
+        glVertex3d(x, y + sY, z);
         glEnd();
 
         if (depthTest)
@@ -203,20 +224,14 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             d += step;
 
-            if (!shade)
-                glColor3d(0, 0, 0);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
 
             glVertex3d(pX, pY, z);
             pX = x + Math.cos(d) * sX / 2;
             pY = y + Math.sin(d) * sY / 2;
             glVertex3d(pX, pY, z);
 
-            if (!shade)
-                glColor3d(this.window.colorR * this.window.colorA, this.window.colorG * this.window.colorA, this.window.colorB * this.window.colorA);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
             glVertex3d(x, y, z);
         }
@@ -352,20 +367,14 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             d += step;
 
-            if (!shade)
-                glColor3d(0, 0, 0);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
 
             glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2, y + ox * this.window.bby1 + oy * this.window.bby2, z + ox * this.window.bbz1 + oy * this.window.bbz2);
             ox = Math.cos(d) * sX / 2;
             oy = Math.sin(d) * sY / 2;
             glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2, y + ox * this.window.bby1 + oy * this.window.bby2, z + ox * this.window.bbz1 + oy * this.window.bbz2);
 
-            if (!shade)
-                glColor3d(this.window.colorR * this.window.colorA, this.window.colorG * this.window.colorA, this.window.colorB * this.window.colorA);
-            else
-                glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
             glVertex3d(x, y, z);
         }
@@ -426,7 +435,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glEnd();
     }
 
-    public void fillRect(double x, double y, double sX, double sY, double radius)
+    public void fillRoundedRect(double x, double y, double sX, double sY, double radius)
     {
         if (radius <= 0.2)
         {
@@ -500,7 +509,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             GL11.glBegin(GL11.GL_QUADS);
         }
 
-        if (options % 2 == 0)
+        if ((options & BaseShapeRenderer.hide_neg_z) == 0)
         {
             GL11.glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
@@ -524,7 +533,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options >> 2) % 2 == 0)
+        if ((options & BaseShapeRenderer.hide_pos_y) == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.8, this.window.colorG * 0.8, this.window.colorB * 0.8, this.window.colorA);
 
@@ -548,7 +557,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options >> 3) % 2 == 0)
+        if ((options & BaseShapeRenderer.hide_neg_y) == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.8, this.window.colorG * 0.8, this.window.colorB * 0.8, this.window.colorA);
 
@@ -572,7 +581,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options >> 4) % 2 == 0)
+        if ((options & BaseShapeRenderer.hide_neg_x) == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.6, this.window.colorG * 0.6, this.window.colorB * 0.6, this.window.colorA);
 
@@ -596,7 +605,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options >> 5) % 2 == 0)
+        if ((options & BaseShapeRenderer.hide_pos_x) == 0)
         {
             GL11.glColor4d(this.window.colorR * 0.6, this.window.colorG * 0.6, this.window.colorB * 0.6, this.window.colorA);
 
@@ -620,7 +629,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             }
         }
 
-        if ((options >> 1) % 2 == 0)
+        if ((options & BaseShapeRenderer.hide_pos_z) == 0)
         {
             GL11.glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
 
@@ -825,7 +834,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         if (width >= Math.min(sX, sY) * 0.9 || radius >= Math.min(sX, sY) * 0.9)
         {
-            fillRect(x, y, sX, sY, radius);
+            fillRoundedRect(x, y, sX, sY, radius);
             return;
         }
 

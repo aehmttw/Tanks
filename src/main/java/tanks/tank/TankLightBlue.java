@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A tank which blows strong air currents
@@ -24,7 +24,7 @@ public class TankLightBlue extends TankAIControlled
 		this.cooldownBase = 0;
 		this.cooldownRandom = 0;
 
-		this.setBullet(DefaultBullets.air);
+		this.setBullet(DefaultItems.air);
 		this.bulletItem.item.cooldownBase = 0;
 
 		this.coinValue = 8;
@@ -32,9 +32,7 @@ public class TankLightBlue extends TankAIControlled
 		if (Game.tankTextures)
 		{
 			this.emblem = "emblems/pinwheel.png";
-			this.emblemR = this.secondaryColorR;
-			this.emblemG = this.secondaryColorG;
-			this.emblemB = this.secondaryColorB;
+			this.emblemColor.set(this.secondaryColor);
 		}
 
 		this.description = "A tank which blows strong gusts of air";

@@ -18,6 +18,7 @@ import java.util.UUID;
 
 public class ScreenPartyLobby extends Screen
 {
+    public static boolean muted = false;
 	public static ArrayList<ConnectedPlayer> connections = new ArrayList<>();
 	public static int connectedBots = 0;
 	public static boolean isClient = false;
@@ -101,7 +102,7 @@ public class ScreenPartyLobby extends Screen
 		if (!Game.showIP)
 			title = Translation.translate("Connected to party");
 
-		this.toggleIP.posX = this.centerX + Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
+		this.toggleIP.posX = this.centerX + Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
 		this.toggleIP.posY = this.centerY - 270;
 
 		if (Game.showIP)
@@ -158,7 +159,7 @@ public class ScreenPartyLobby extends Screen
 						Drawing.drawing.setColor(0, 0, 0);
 						Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, y, n);
 
-						Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, y, c.colorR, c.colorG, c.colorB, c.colorR2, c.colorG2, c.colorB2, c.colorR3, c.colorG3, c.colorB3);
+						Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, y, c.color, c.color2, c.color3);
 					}
 				}
 			}

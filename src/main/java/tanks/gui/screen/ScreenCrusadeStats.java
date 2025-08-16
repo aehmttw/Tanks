@@ -13,6 +13,7 @@ import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
+import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 
 import java.util.ArrayList;
@@ -228,6 +229,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             ((ScreenCrusadeStats)Game.screen).view = view;
         });
 
+        changePlayer.format = false;
         changePlayer.selectedOption = us;
         changePlayer.manualDarkMode = true;
         changePlayer.quick = true;
@@ -393,13 +395,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void addItems()
     {
-        //TODO
-        ItemBullet b = new ItemBullet(TankPlayer.default_bullet);
-        b.name = TankPlayer.default_bullet_name;
-        ItemMine m = new ItemMine(TankPlayer.default_mine);
-        m.name = TankPlayer.default_mine_name;
-        this.addItem(b);
-        this.addItem(m);
+        for (TankPlayer.ShopTankBuild b: crusade.getBuildsShop())
+        {
+            for (Item.ItemStack<?> i: b.abilities)
+            {
+                this.addItem(i.item);
+            }
+        }
 
         for (Item.ShopItem i: crusade.getShop())
         {
@@ -1506,9 +1508,9 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             Drawing.drawing.setInterfaceFontSize(24);
             this.tank.drawForInterface(this.getXOffset() + Game.screen.centerX + tanks_1, this.yPos, 0.5 * age / maxAge);
-            double r = processColor(this.tank.colorR);
-            double g = processColor(this.tank.colorG);
-            double b = processColor(this.tank.colorB);
+            double r = processColor(this.tank.color.red);
+            double g = processColor(this.tank.color.green);
+            double b = processColor(this.tank.color.blue);
             double a = 255 * age / maxAge;
             drawStatistic(this.getXOffset() + Game.screen.centerX + tanks_2, this.yPos, this.kills + "", 1 - killRank, r, g, b, a, -24);
             drawStatistic(this.getXOffset() + Game.screen.centerX + tanks_2a, this.yPos, "x", 0, r, g, b, a, 24);

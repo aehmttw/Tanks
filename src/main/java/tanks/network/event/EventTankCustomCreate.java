@@ -1,5 +1,6 @@
 package tanks.network.event;
 
+import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Team;
@@ -17,9 +18,7 @@ public class EventTankCustomCreate extends PersonalEvent
 	public double size;
 	public double turretSize;
 	public double turretLength;
-	public double red;
-	public double green;
-	public double blue;
+	public Color color = new Color();
 	public double lives;
 	public double baseLives;
 
@@ -47,9 +46,7 @@ public class EventTankCustomCreate extends PersonalEvent
 		this.size = t.size;
 		this.turretSize = t.turretSize;
 		this.turretLength = t.turretLength;
-		this.red = t.colorR;
-		this.green = t.colorG;
-		this.blue = t.colorB;
+		this.color.set(t.color);
 		this.lives = t.health;
 		this.baseLives = t.baseHealth;
 
@@ -67,7 +64,7 @@ public class EventTankCustomCreate extends PersonalEvent
 		if (this.team.equals("**"))
 			t = Game.enemyTeam;
 
-		TankRemote tank = new TankRemote(name, posX, posY, angle, t, size, turretSize, turretLength, red, green, blue, lives, baseLives);
+		TankRemote tank = new TankRemote(name, posX, posY, angle, t, size, turretSize, turretLength, color.red, color.green, color.blue, lives, baseLives);
 		tank.setNetworkID(this.id);
 
 		Game.movables.add(tank);
@@ -84,9 +81,7 @@ public class EventTankCustomCreate extends PersonalEvent
 		b.writeDouble(this.size);
 		b.writeDouble(this.turretSize);
 		b.writeDouble(this.turretLength);
-		b.writeDouble(this.red);
-		b.writeDouble(this.green);
-		b.writeDouble(this.blue);
+		NetworkUtils.writeColor(b, this.color);
 		b.writeDouble(this.lives);
 		b.writeDouble(this.baseLives);
 
@@ -104,9 +99,7 @@ public class EventTankCustomCreate extends PersonalEvent
 		this.size = b.readDouble();
 		this.turretSize = b.readDouble();
 		this.turretLength = b.readDouble();
-		this.red = b.readDouble();
-		this.green = b.readDouble();
-		this.blue = b.readDouble();
+		NetworkUtils.readColor(b, this.color);
 		this.lives = b.readDouble();
 		this.baseLives = b.readDouble();
 

@@ -6,7 +6,8 @@ public class ObstacleIndestructible extends ObstacleStackable
 	public ObstacleIndestructible(String name, double posX, double posY) 
 	{
 		super(name, posX, posY);
-		
+
+        this.type = ObstacleType.full;
 		this.destructible = false;
 		this.description = "A solid indestructible block";
 	}

@@ -1,8 +1,7 @@
 package tanks.tank;
 
-import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.DefaultBullets;
+import tanks.*;
+import tanks.bullet.DefaultItems;
 
 /**
  * A deadly stationary tank which shoots rockets that bounce twice
@@ -20,7 +19,8 @@ public class TankGreen extends TankAIControlled
 		this.turretIdleSpeed = 0.01;
 		this.turretIdleTimerRandom = 250;
 
-		this.setBullet(DefaultBullets.sniper_rocket);
+		this.setBullet(DefaultItems.sniper_rocket);
+		this.getBullet().recoil = 0;
 
 		this.turretIdleTimerBase = 25;
 		this.turretIdleTimerRandom = 500;
@@ -29,8 +29,8 @@ public class TankGreen extends TankAIControlled
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.fixed.color;
-			this.baseModel = TankModels.diagonalStripes.base;
+			this.colorSkin = TankModels.fixed;
+			this.baseSkin = TankModels.diagonalStripes;
 		}
 
 		this.coinValue = 10;

@@ -4,6 +4,7 @@
 #extension GL_EXT_gpu_shader4 : enable
 
 uniform int time;
+uniform bool enableFancyTerrain;
 uniform float obstacleSizeFrac;
 attribute float vertexCoord;
 
@@ -18,9 +19,8 @@ vec4 getPos(mat4 transform)
     float size = SIZE * (1.0 - obstacleSizeFrac);
     float coordX = float((coord & 1) * -2 + 1) * size;
     float coordY = float(((coord >> 1) & 1) * -2 + 1) * size;
-    float coordZ = float(((coord >> 2) & 1) * -2 + 1) * size;
 
-    return vec4(gl_Vertex.x + coordX, gl_Vertex.y + coordY, gl_Vertex.z + coordZ, gl_Vertex.w);
+    return vec4(gl_Vertex.x + coordX, gl_Vertex.y + coordY, gl_Vertex.z, gl_Vertex.w);
 }
 
 vec3 getNormal(mat4 transform)
@@ -36,6 +36,6 @@ void getVertVecs(out vec4 pos, out vec3 normal)
 
 vec4 getColor(vec4 colorIn)
 {
-    float offset = (sin((colorIn.a * 255.0f * 50.0f + time / 300.0f * PI * 2) / 10.0f) + 1.0f) * 40.0f / 255.0f;
+    float offset = float(enableFancyTerrain) * (sin((colorIn.a * 255.0f * 50.0f + time / 300.0f * PI * 2) / 10.0f) + 1.0f) * 40.0f / 255.0f;
     return vec4((1.0f - offset / 2) * colorIn.r, min(1.0f, 0.7f - offset + colorIn.g) * colorIn.r, colorIn.g * colorIn.r, 1.0f);
 }

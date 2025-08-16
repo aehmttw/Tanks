@@ -2,15 +2,11 @@ package tanks.bullet;
 
 import basewindow.Model;
 import basewindow.transformation.AxisRotation;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventAddObstacleBullet;
-import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tank.Crate;
 import tanks.tank.Tank;
@@ -131,54 +127,44 @@ public class BulletBlock extends BulletArc
         int y = (int) (this.posY / Game.tile_size);
 
         ObstacleStackable o = new ObstacleStackable("normal", x, y);
-        o.colorR = this.originalOutlineColorR;
-        o.colorG = this.originalOutlineColorG;
-        o.colorB = this.originalOutlineColorB;
+        o.colorR = this.originalOutlineColor.red;
+        o.colorG = this.originalOutlineColor.green;
+        o.colorB = this.originalOutlineColor.blue;
 
         for (int i = 0; i < o.stackColorR.length; i++)
         {
-            o.stackColorR[i] = this.originalOutlineColorR;
-            o.stackColorG[i] = this.originalOutlineColorG;
-            o.stackColorB[i] = this.originalOutlineColorB;
+            o.stackColorR[i] = this.originalOutlineColor.red;
+            o.stackColorG[i] = this.originalOutlineColor.green;
+            o.stackColorB[i] = this.originalOutlineColor.blue;
         }
 
-        o.update = true;
+        o.setUpdate(true);
         o.shouldClip = true;
         o.clipFrames = 2;
 
         if (ScreenGame.finishedQuick)
             return;
 
-        boolean found = x < 0 || y < 0 || x >= Game.currentSizeX || y >= Game.currentSizeY;
+        boolean canPlace = Chunk.getIfPresent(x, y, false, tile -> tile.canPlaceOn(o));
 
-        if (!found)
+        if (canPlace)
         {
-            for (Obstacle o1 : Game.obstacles)
-            {
-                if (o1.posX == o.posX && o1.posY == o.posY && !Obstacle.canPlaceOn(o.type, o1.type))
-                {
-                    found = true;
-                    break;
-                }
-            }
-        }
-
-        if (!found)
             Game.addObstacle(o);
+        }
         else
         {
             Drawing.drawing.playGlobalSound("break.ogg");
             o.playDestroyAnimation(this.posX, this.posY, Game.tile_size);
         }
 
-        Game.eventsOut.add(new EventAddObstacleBullet(o, !found));
+        Game.eventsOut.add(new EventAddObstacleBullet(o, canPlace));
     }
 
     @Override
     public void drawCursor(double frac, double x, double y)
     {
         double f2 = Math.max(0, (this.maxDestroyTimer - this.destroyTimer) / this.maxDestroyTimer);
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, frac * f2 * 255);
+        Drawing.drawing.setColor(this.outlineColor, frac * f2 * 255);
         Crate.fillOutlineRect(x, y, Game.tile_size * (2 - frac) * f2);
         Crate.fillOutlineRect(x, y, Game.tile_size * (frac) * f2);
     }
@@ -187,7 +173,6 @@ public class BulletBlock extends BulletArc
     public double bounce()
     {
         double ht = super.bounce();
-//        System.out.println(this.posZ + " " + this.posX + " " + this.posY);
 
         this.vZ = -this.vZ * this.bounciness;
         if (!this.destroy)
@@ -199,6 +184,10 @@ public class BulletBlock extends BulletArc
             this.maxRange = 0;
             this.minRange = 0;
             this.minAirTime = 0;
+
+            // Floating point precision errors...
+            x = Math.round(x * 100000) / 100000;
+            y = Math.round(y * 100000) / 100000;
 
             if (x >= Game.tile_size / 2 && x <= (Game.currentSizeX - 0.5) * Game.tile_size &&
                     y >= Game.tile_size / 2 && y <= (Game.currentSizeY - 0.5) * Game.tile_size)
@@ -278,7 +267,7 @@ public class BulletBlock extends BulletArc
             size = Game.tile_size * Math.max((this.maxDestroyTimer - this.destroyTimer) / this.maxDestroyTimer, 0);
         }
 
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB);
+        Drawing.drawing.setColor(this.outlineColor);
 
         // todo 2d
         if (Game.enable3d)
@@ -311,7 +300,7 @@ public class BulletBlock extends BulletArc
         {
             double opacity = 1.0 - Math.min(this.posZ / 1000, 0.8);
             double sizeModifier = (1.0 - opacity) * 60 * (size / Bullet.bullet_size);
-            Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, opacity * opacity * opacity * 255);
+            Drawing.drawing.setColor(this.outlineColor, opacity * opacity * opacity * 255);
             Drawing.drawing.fillRect(this.posX, this.posY, size + sizeModifier, size + sizeModifier);
         }
         //Drawing.drawing.fillBox(this.posX, this.posY, this.posZ - size / 2, size, size, size);
@@ -354,7 +343,7 @@ public class BulletBlock extends BulletArc
                 Drawing.drawing.playGlobalSound("break.ogg");
 
                 if (Game.enable3d)
-                    ObstacleStackable.destroyAnimation3d(this.posX, this.posY, this.posZ - Game.tile_size / 2, this.posX - this.vX, this.posY - this.vY, Game.tile_size, Effect.EffectType.obstaclePiece3d, Game.tile_size, Game.effectMultiplier, this.originalOutlineColorR, this.originalOutlineColorG, this.originalOutlineColorB);
+                    ObstacleStackable.destroyAnimation3d(this.posX, this.posY, this.posZ - Game.tile_size / 2, this.posX - this.vX, this.posY - this.vY, Game.tile_size, Effect.EffectType.obstaclePiece3d, Game.tile_size, Game.effectMultiplier, this.originalOutlineColor.red, this.originalOutlineColor.green, this.originalOutlineColor.blue);
 
                 this.outOfBounds = true;
             }
@@ -377,6 +366,8 @@ public class BulletBlock extends BulletArc
         double time = (this.vZ + Math.sqrt(this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2))) / gravity;
         double x = this.posX + this.vX * time;
         double y = this.posY + this.vY * time;
+        x = Math.round(x * 100000) / 100000;
+        y = Math.round(y * 100000) / 100000;
 
         double max = this.maxRange;
         double min = this.minRange;

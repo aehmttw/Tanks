@@ -1,6 +1,7 @@
 package tanks.tankson;
 
-public interface Serializable {
-    public String serialize();
-    public Serializable deserialize(String s);
+public interface Serializable
+{
+    String serialize();
+    Serializable deserialize(String s);
 }

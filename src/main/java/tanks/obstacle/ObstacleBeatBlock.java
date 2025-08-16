@@ -1,12 +1,9 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
-import tanks.rendering.ShaderBeatBlocks;
-import tanks.rendering.ShaderGroundObstacleBeatBlock;
+import tanks.rendering.*;
 import tanks.tankson.MetadataProperty;
 
 public class ObstacleBeatBlock extends ObstacleStackable
@@ -17,9 +14,8 @@ public class ObstacleBeatBlock extends ObstacleStackable
     public double beatFrequency = 1;
     public boolean alternate;
 
-    public double outlineColorR;
-    public double outlineColorG;
-    public double outlineColorB;
+    public double outlineColorR, outlineColorG, outlineColorB;
+    public boolean refreshHitboxes = false;
 
     protected boolean lastOn = false;
     protected boolean firstUpdate = true;
@@ -66,20 +62,20 @@ public class ObstacleBeatBlock extends ObstacleStackable
         this.bulletCollision = on;
         this.tankCollision = on;
 
+        if (refreshHitboxes)
+        {
+            refreshHitboxes = false;
+            refreshSelfAndNeighbors();
+        }
+
         if (this.tankCollision != lastOn || firstUpdate)
         {
             if (firstUpdate)
                 this.postOverride();
 
             this.firstUpdate = false;
-            int x = (int) (this.posX / Game.tile_size);
-            int y = (int) (this.posY / Game.tile_size);
+            refreshHitboxes = true;
 
-            if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
-                Game.game.solidGrid[x][y] = this.tankCollision;
-
-            this.verticalFaces = null;
-            this.horizontalFaces = null;
             this.allowBounce = false;
             this.shouldClip = true;
 
@@ -90,12 +86,6 @@ public class ObstacleBeatBlock extends ObstacleStackable
             this.allowBounce = true;
             this.shouldClip = false;
         }
-    }
-
-    @Override
-    public double getTileHeight()
-    {
-        return 0;
     }
 
     @Override
@@ -120,19 +110,11 @@ public class ObstacleBeatBlock extends ObstacleStackable
                 if (stackHeight % 1 == 0)
                 {
                     byte o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size));
-
-                    if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
-                        options[i] = o;
-
                     drawBox( i * Game.tile_size + this.startHeight * Game.tile_size, o);
                 }
                 else
                 {
                     byte o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size));
-
-                    if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
-                        options[i] = o;
-
                     drawBox((i - 1 + stackHeight % 1.0) * Game.tile_size + this.startHeight * Game.tile_size, o);
                 }
             }
@@ -179,12 +161,23 @@ public class ObstacleBeatBlock extends ObstacleStackable
         }
     }
 
+    @Override
+    public double getTileHeight()
+    {
+        return tankCollision ? super.getTileHeight() : 0;
+    }
+
+    @Override
+    public double getGroundHeight()
+    {
+        return baseGroundHeight;
+    }
+
     public void drawBox(double z, byte o)
     {
         float cx = (float) this.posX;
         float cy = (float) this.posY;
-        float h = (float) (Game.sampleGroundHeight(this.posX, this.posY));
-        float cz = (float) (h);
+        float cz = (float) Game.sampleTerrainGroundHeight(this.posX, this.posY);
 
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92, o, false, cx, cy, cz);
 
@@ -216,9 +209,8 @@ public class ObstacleBeatBlock extends ObstacleStackable
         this.colorG = col[1] * 0.75 + 255 * 0.25;
         this.colorB = col[2] * 0.75 + 255 * 0.25;
 
-        this.update = true;
-        this.tankCollision = false;
-        this.bulletCollision = false;
+        this.setUpdate(true);
+        this.tankCollision = this.bulletCollision = isOn(beatFrequency, alternate);
 
         for (int i = 0; i < default_max_height; i++)
         {

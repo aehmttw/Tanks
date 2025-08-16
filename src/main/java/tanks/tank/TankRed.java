@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A stationary tank which shoots lasers.
@@ -25,14 +25,15 @@ public class TankRed extends TankAIControlled
 		this.chargeUp = true;
 		this.coinValue = 6;
 
-		this.setBullet(DefaultBullets.laser);
+		this.setBullet(DefaultItems.laser);
+		this.getBullet().recoil = 0;
 
 		if (Game.tankTextures)
 		{
-			this.colorModel = TankModels.fixed.color;
+			this.colorSkin = TankModels.fixed;
 			this.emblem = "emblems/laser.png";
-			this.emblemR = 110;
-			this.turretModel = TankModels.cross.turret;
+			this.emblemColor.red = 110;
+			this.turretSkin = TankModels.cross;
 		}
 
 		this.description = "A stationary tank which shoots deadly lasers";

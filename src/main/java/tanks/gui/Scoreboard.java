@@ -221,7 +221,7 @@ public class Scoreboard implements IFixedMenu
         {
             for (int i = 0; i < playerNames.length; i++)
             {
-                double textSizeX = Game.game.window.fontRendererDefault.getStringSizeX(namesFontSize / 32, playerNames[i].username);
+                double textSizeX = Game.game.window.fontRenderer.getStringSizeX(namesFontSize / 32, playerNames[i].username);
 
                 Drawing.drawing.setInterfaceFontSize(this.namesFontSize);
                 Drawing.drawing.setColor(255, 255, 255);
@@ -247,7 +247,7 @@ public class Scoreboard implements IFixedMenu
         {
             for (int i = 0; i < teamNames.length; i++)
             {
-                double textSizeX = Game.game.window.fontRendererDefault.getStringSizeX(namesFontSize / 32, teamNames[i].name);
+                double textSizeX = Game.game.window.fontRenderer.getStringSizeX(namesFontSize / 32, teamNames[i].name);
 
                 Drawing.drawing.setInterfaceFontSize(this.namesFontSize);
                 Drawing.drawing.setColor(255, 255, 255);

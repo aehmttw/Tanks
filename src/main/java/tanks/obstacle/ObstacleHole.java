@@ -50,7 +50,9 @@ public class ObstacleHole extends Obstacle
 	public void draw3dOutline(double r, double g, double b, double a)
 	{
 		Drawing.drawing.setColor(r, g, b, a);
-		Drawing.drawing.fillBox(this.posX, this.posY, Game.sampleGroundHeight(this.posX, this.posY) - Game.tile_size / 2,Game.tile_size / 2, Game.tile_size / 2, Game.tile_size / 2);
+		double h = Game.sampleTerrainGroundHeight(this.posX, this.posY);
+		if (h >= 0)
+			Drawing.drawing.fillRect(this.posX, this.posY, h,Game.tile_size / 2, Game.tile_size / 2, false);
 	}
 
 	@Override

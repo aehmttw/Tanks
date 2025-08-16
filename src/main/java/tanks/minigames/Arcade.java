@@ -2,14 +2,21 @@ package tanks.minigames;
 
 import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.*;
+import tanks.attribute.StatusEffect;
+import tanks.gui.screen.IDarkScreen;
+import tanks.gui.screen.ScreenArcadeBonuses;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.Hotbar;
 import tanks.item.Item;
 import tanks.item.ItemShield;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
-import tanks.tank.*;
+import tanks.tank.Crate;
+import tanks.tank.IServerPlayerTank;
+import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -104,10 +111,10 @@ public class Arcade extends Minigame
                 itemsMap.put(i.item.name, i);
             }
 
-            tankItemsMap.put("mint", "Fire bullet");
+            tankItemsMap.put("mint", "Rocket");
             tankItemsMap.put("yellow", "Mega mine");
             tankItemsMap.put("red", "Laser");
-            tankItemsMap.put("green", "Bouncy fire bullet");
+            tankItemsMap.put("green", "Sniper rocket");
             tankItemsMap.put("blue", "Zap");
             tankItemsMap.put("medic", "Shield");
             tankItemsMap.put("cyan", "Freezing bullet");
@@ -116,8 +123,8 @@ public class Arcade extends Minigame
             tankItemsMap.put("mustard", "Artillery shell");
             tankItemsMap.put("orangered", "Explosive bullet");
             tankItemsMap.put("darkgreen", "Mini bullet");
-            tankItemsMap.put("black", "Dark fire bullet");
-            tankItemsMap.put("salmon", "Homing bullet");
+            tankItemsMap.put("black", "Void rocket");
+            tankItemsMap.put("salmon", "Homing rocket");
             tankItemsMap.put("lightblue", "Air");
             tankItemsMap.put("lightpink", "Laser");
             tankItemsMap.put("gold", "Zap");
@@ -252,7 +259,7 @@ public class Arcade extends Minigame
                             detAge = 0;
                         }
 
-                        m.addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
+                        m.em().addStatusEffect(StatusEffect.arcade_rampage[power - 1], 0, detAge, duration);
                     }
                 }
 
@@ -501,12 +508,8 @@ public class Arcade extends Minigame
         TankPlayer t = new TankPlayer(this.playerSpawnsX.get(r), this.playerSpawnsY.get(r), this.playerSpawnsAngle.get(r));
         t.team = Game.playerTeamNoFF;
         t.player = p;
-        t.colorR = p.colorR;
-        t.colorG = p.colorG;
-        t.colorB = p.colorB;
-        t.secondaryColorR = p.colorR2;
-        t.secondaryColorG = p.colorG2;
-        t.secondaryColorB = p.colorB2;
+        t.color.set(p.color);
+        t.secondaryColor.set(p.color2);
         double h = this.random.nextDouble() * 400 + 800;
         Game.movables.add(new Crate(t, h));
         Game.eventsOut.add(new EventAirdropTank(t, h));
@@ -632,14 +635,25 @@ public class Arcade extends Minigame
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Victory!");
             }
         }
-
-        this.drawChainTimer();
     }
 
     @Override
     public void loadInterlevelScreen()
     {
         Game.screen = new ScreenArcadeBonuses(this);
+    }
+
+    @Override
+    public void drawHotbar()
+    {
+        if (!Hotbar.circular)
+            this.drawChainTimer();
+    }
+
+    @Override
+    public void drawCircleHotbar()
+    {
+        this.drawChainTimerCircle();
     }
 
     public void spawnTank()
@@ -670,7 +684,7 @@ public class Arcade extends Minigame
             else if (other)
                 y += Game.currentSizeY - 4;
 
-            if (!Game.game.solidGrid[x][y])
+            if (!Game.isTankSolid(x, y))
             {
                 found = true;
 
@@ -789,7 +803,7 @@ public class Arcade extends Minigame
 
         Drawing.drawing.setInterfaceFontSize(36 * (1 + 0.25 * frac));
         String s = Translation.translate("Score: %d", score);
-        double size = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
         Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
 
     }
@@ -854,5 +868,56 @@ public class Arcade extends Minigame
         Drawing.drawing.drawInterfaceText(x + 2, y + 2 - 17, getRampageTitle());
         Drawing.drawing.setColor(Math.min(255, col[0]), Math.min(255, col[1]), Math.min(255, col[2]), (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
         Drawing.drawing.drawInterfaceText(x, y - 17, getRampageTitle());
+    }
+
+    public void drawChainTimerCircle()
+    {
+        if (Game.playerTank == null)
+            return;
+
+        double frac = Game.player.hotbar.circleVisibility / Game.player.hotbar.circleVisibilityMax;
+
+        double pulse = 5 * (1 - Math.min(1, (age - lastHit) / 25));
+        if (chain < 2)
+            pulse = 1;
+
+        if (Level.isDark())
+            Drawing.drawing.setColor(255, 255, 255, 128 * chainOpacity * frac, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0, 128 * chainOpacity * frac, 255);
+
+        double x = Game.playerTank.posX;
+        double y = Game.playerTank.posY;
+
+        double c = 0.5 - Math.min(max_power * 3, chain) / 30.0;
+        if (c < 0)
+            c += (int) (-c) + 1;
+
+        double[] col = Game.getRainbowColor(c);
+
+        double lh = lastHit;
+
+        if (frenzy)
+            lh = age;
+
+        if (this.age <= 0)
+            chainOpacity = 0;
+
+        double size = 145;
+        double thickness = 10;
+
+        Drawing.drawing.fillPartialRing(x, y, Game.playerTank.posZ + Game.tile_size / 2, size + pulse, thickness + pulse * 2, 0, 1);
+
+        if (chain > 0)
+        {
+            Drawing.drawing.setColor(col[0], col[1], col[2], chainOpacity * frac * 255, 255);
+            Drawing.drawing.fillPartialRing(x, y, Game.playerTank.posZ + Game.tile_size / 2, size + pulse, thickness + pulse * 2, 0.5 - Math.max(0, 1 - (this.age - lh) / rampage_duration), Math.max(0, 1 - (this.age - lh) / rampage_duration));
+
+            Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, chainOpacity * frac * 255, 255);
+            Drawing.drawing.fillOval(x - size / 2 + thickness / 4, y, Game.playerTank.posZ + Game.tile_size / 2, 18 + pulse, 18 + pulse, false, false);
+            Drawing.drawing.setFontSize(12 + pulse);
+            Drawing.drawing.setColor(255, 255, 255, chainOpacity * frac * 255, 255);
+            Drawing.drawing.drawText(x - size / 2 + thickness / 4, y, Game.playerTank.posZ + Game.tile_size / 2, chain + "", false);
+        }
     }
 }

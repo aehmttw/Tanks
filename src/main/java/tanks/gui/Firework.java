@@ -238,9 +238,7 @@ public class Firework extends Movable
 				Drawing.drawing.fillInterfaceOval(posX, posY, posZ, s, s);
 
 			if (this.age < this.maxAge)
-			{
 				next.add(this);
-			}
 		}
 		else if (type == FireworkType.particle)
 		{
@@ -264,16 +262,12 @@ public class Firework extends Movable
 			this.list.add(f);*/
 
 			if (this.age < this.maxAge)
-			{
 				next.add(this);
-			}
 		}
 		else if (type == FireworkType.flash)
 		{
 			if (this.age < this.maxAge)
-			{
 				next.add(this);
-			}
 		}
 		else if (type == FireworkType.particle_group)
 		{
@@ -283,7 +277,7 @@ public class Firework extends Movable
 				next.add(this);
 			}
 			else
-				this.explosion.renderer.free();
+                this.explosion.renderer.free();
 		}
 
 		this.age += Panel.frameFrequency;
@@ -757,34 +751,34 @@ public class Firework extends Movable
 					return;
 				}
 
-				Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, 0);
 				Drawing.drawing.addInterfaceVertex(this.posX + this.oX * s, this.posY + this.oY * s, this.posZ);
 
-				Drawing.drawing.setColor(firework.colorR * a, firework.colorG * a, firework.colorB * a);
+				Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a);
 				Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
 
-				Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, 0);
 				Drawing.drawing.addInterfaceVertex(next.posX + next.oX * s2, next.posY + next.oY * s2, next.posZ);
 				Drawing.drawing.addInterfaceVertex(next.posX + next.oX * s2, next.posY + next.oY * s2, next.posZ);
 
-				Drawing.drawing.setColor(firework.colorR * a2, firework.colorG * a2, firework.colorB * a2);
+				Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a2);
 				Drawing.drawing.addInterfaceVertex(next.posX, next.posY, next.posZ);
 
-				Drawing.drawing.setColor(firework.colorR * a, firework.colorG * a, firework.colorB * a);
+				Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a);
 				Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
 
 				Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
-				Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, 0);
 				Drawing.drawing.addInterfaceVertex(this.posX - this.oX * s, this.posY - this.oY * s, this.posZ);
 
-				Drawing.drawing.setColor(firework.colorR * a2, firework.colorG * a2, firework.colorB * a2);
+				Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a2);
 				Drawing.drawing.addInterfaceVertex(next.posX, next.posY, next.posZ);
 
 				Drawing.drawing.addInterfaceVertex(next.posX, next.posY, next.posZ);
-				Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, 0);
 				Drawing.drawing.addInterfaceVertex(next.posX - next.oX * s2, next.posY - next.oY * s2, next.posZ);
 
-				Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, 0);
 				Drawing.drawing.addInterfaceVertex(this.posX - this.oX * s, this.posY - this.oY * s, this.posZ);
 
 				this.next.drawGlow();
@@ -805,10 +799,10 @@ public class Firework extends Movable
 					double a1 = angle + Math.PI * i / sides * sign;
 					double a2 = angle + Math.PI * (i + 1) / sides * sign;
 
-					Drawing.drawing.setColor(0, 0, 0);
+                    Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, 0);
 					Drawing.drawing.addInterfaceVertex(this.posX + Math.cos(a1) * s / 2, this.posY + Math.sin(a1) * s / 2, this.posZ);
 					Drawing.drawing.addInterfaceVertex(this.posX + Math.cos(a2) * s / 2, this.posY + Math.sin(a2) * s / 2, this.posZ);
-					Drawing.drawing.setColor(firework.colorR * a, firework.colorG * a, firework.colorB * a);
+					Drawing.drawing.setColor(firework.colorR, firework.colorG, firework.colorB, a);
 					Drawing.drawing.addInterfaceVertex(this.posX, this.posY, this.posZ);
 				}
 			}

@@ -28,7 +28,7 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
         this.colorB = 0;
 
         this.replaceTiles = true;
-        this.update = true;
+        this.setUpdate(true);
 
         this.description = "A pool of hot lava that severely damages tanks";
     }
@@ -37,7 +37,7 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
     public void draw3dOutline(double r, double g, double b, double a)
     {
         Drawing.drawing.setColor(r, g, b);
-        Drawing.drawing.fillRect(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size);
+        Drawing.drawing.fillRect(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, false);
     }
 
     @Override

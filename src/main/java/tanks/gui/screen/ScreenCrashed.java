@@ -62,6 +62,9 @@ public class ScreenCrashed extends Screen
 		this.chatroom.imageSizeX = imgsize;
 		this.chatroom.imageSizeY = imgsize;
 		this.chatroom.imageXOffset = 150 * this.chatroom.sizeX / 350;
+
+		Game.game.window.transformations.clear();
+		Game.game.window.loadPerspective();
 	}
 
 	Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Exit the game", () -> System.exit(0));
@@ -116,7 +119,10 @@ public class ScreenCrashed extends Screen
 			drawing.drawInterfaceText(100, 100, sadFace);
 
 		drawing.setInterfaceFontSize(48);
-		drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, ohNoes + " Tanks ran into a problem!");
+		if (!Game.game.window.runningFromSource)
+			drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, ohNoes + " Tanks ran into a problem!");
+		else
+			drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, 100, ohNoes + " You did it again! You silly coder...");
 
 		drawing.setInterfaceFontSize(24);
 
@@ -127,8 +133,8 @@ public class ScreenCrashed extends Screen
 		drawing.displayInterfaceText(50, 350,  false, "Crash details:");
 
 		double boxWidth = 1300;
-		double width = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, Game.crashMessage) / Drawing.drawing.interfaceScale;
-		double width2 = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, Game.crashLine) / Drawing.drawing.interfaceScale;
+		double width = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashMessage) / Drawing.drawing.interfaceScale;
+		double width2 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashLine) / Drawing.drawing.interfaceScale;
 
 		double scale = Math.min(1, boxWidth / width);
 		double scale2 = Math.min(1, boxWidth / width2);

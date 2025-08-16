@@ -83,7 +83,7 @@ public class Tutorial extends Minigame
         this.gray = new TankGray("gray", 47.5 * Game.tile_size, 9.5 * Game.tile_size, Math.PI);
         this.gray.team = Game.enemyTeam;
 
-        arrow = Drawing.drawing.createModel();
+        arrow = Drawing.drawing.newModel();
         arrow.shapes = new ModelPart.Shape[2];
         arrow.shapes[0] = new ModelPart.Triangle(new ModelPart.Point(-1, 0, 0), new ModelPart.Point(-1.75, 0, 0), new ModelPart.Point(-2, 0.25, 0), 1);
         arrow.shapes[1] = new ModelPart.Triangle(new ModelPart.Point(-1, 0, 0), new ModelPart.Point(-1.75, 0, 0), new ModelPart.Point(-2, -0.25, 0), 1);
@@ -202,7 +202,7 @@ public class Tutorial extends Minigame
                 }
             }
 
-            if (!Game.game.solidGrid[27][10] || !Game.game.solidGrid[27][11] || !Game.game.solidGrid[27][12] || !Game.game.solidGrid[27][13] || !Game.game.solidGrid[27][14])
+            if (!Game.isTankSolid(27, 10) || !Game.isTankSolid(27, 11) || !Game.isTankSolid(27, 12) || !Game.isTankSolid(27, 13) || !Game.isTankSolid(27, 14))
                 step = 6;
         }
         else if (step == 6 && brown.destroy)

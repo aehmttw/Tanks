@@ -1,10 +1,8 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
+import tanks.rendering.ShaderGroundObstacle;
 import tanks.tankson.MetadataProperty;
 
 public class ObstacleStackable extends Obstacle
@@ -18,9 +16,6 @@ public class ObstacleStackable extends Obstacle
     public double[] stackColorR = new double[default_max_height];
     public double[] stackColorG = new double[default_max_height];
     public double[] stackColorB = new double[default_max_height];
-
-    protected byte[] options = new byte[default_max_height];
-    protected byte[] lastOptions = new byte[default_max_height];
 
     public ObstacleStackable(String name, double posX, double posY)
     {
@@ -47,6 +42,7 @@ public class ObstacleStackable extends Obstacle
             this.stackColorB[i] = col2[2];
         }
 
+        this.tileRenderer = ShaderGroundObstacle.class;
         this.description = "A solid block which can be destroyed by mines";
     }
 
@@ -78,36 +74,19 @@ public class ObstacleStackable extends Obstacle
         drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA, this.glow);
 
         if (Game.enable3d)
-        {
-            for (int i = 0; i < Math.min(stackHeight, default_max_height); i++)
-            {
-                int in = default_max_height - 1 - i;
-                drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA, this.glow);
-
-                byte option = 0;
-
-                if (stackHeight % 1 == 0)
-                {
-                    byte o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size));
-
-                    if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
-                        options[i] = o;
-
-                    drawing.fillBox(this, this.posX, this.posY, i * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size, o);
-                }
-                else
-                {
-                    byte o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size));
-
-                    if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
-                        options[i] = o;
-
-                    drawing.fillBox(this, this.posX, this.posY, (i - 1 + stackHeight % 1.0) * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size, o);
-                }
-            }
-        }
+            drawStacks();
         else
             drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
+    }
+
+    public void drawStacks()
+    {
+        for (int i = 0; i < Math.min(stackHeight, default_max_height); i++)
+        {
+            byte o = this.getOptionsByte((i + 1) * Game.tile_size);
+            Drawing.drawing.setColor(this.stackColorR[i], this.stackColorG[i], this.stackColorB[i], this.colorA, this.glow);
+            Drawing.drawing.fillBox(this, this.posX, this.posY, i * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size * Math.min(1, stackHeight - i), o);
+        }
     }
 
     @Override
@@ -123,7 +102,7 @@ public class ObstacleStackable extends Obstacle
 
         Drawing.drawing.setColor(r, g, b, a, 0.5);
         Drawing.drawing.fillBox(this.posX, this.posY, this.startHeight * Game.tile_size,
-                Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, this.getOptionsByte(this.getTileHeight()));
+                Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, (byte) 0);
     }
 
     @Override
@@ -141,7 +120,10 @@ public class ObstacleStackable extends Obstacle
     public void setMetadata(String s)
     {
         if (s.isEmpty())
+        {
+            this.stackHeight = 1;
             return;
+        }
 
         String[] metadata = s.split("-");
 
@@ -152,22 +134,6 @@ public class ObstacleStackable extends Obstacle
             this.stackHeight = Double.parseDouble(metadata[0]);
 
         this.refreshMetadata();
-    }
-
-    @Override
-    public boolean[] getValidHorizontalFaces(boolean unbreakable)
-    {
-        this.validFaces[0] = (!this.hasNeighbor(0, -1, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-        this.validFaces[1] = (!this.hasNeighbor(0, 1, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-        return this.validFaces;
-    }
-
-    @Override
-    public boolean[] getValidVerticalFaces(boolean unbreakable)
-    {
-        this.validFaces[0] = (!this.hasNeighbor(-1, 0, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-        this.validFaces[1] = (!this.hasNeighbor(1, 0, unbreakable) || this.startHeight > 1) && !(!this.tankCollision && !this.bulletCollision);
-        return this.validFaces;
     }
 
     @Override

@@ -2,11 +2,13 @@ package tanks.item;
 
 import tanks.*;
 import tanks.bullet.Bullet;
+import tanks.attribute.AttributeModifier;
 import tanks.minigames.Minigame;
 import tanks.tank.Tank;
+import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 
-public class ItemBullet extends Item
+public class ItemBullet extends Item implements ICopyable<ItemBullet>
 {
 	public static final String item_class_name = "bullet";
 
@@ -62,7 +64,7 @@ public class ItemBullet extends Item
 
 				int q = (int) Math.min(this.item.bullet.shotCount, Math.ceil(remainingQty / useAmt));
 
-				double speedmul = m.getAttributeValue(AttributeModifier.bullet_speed, 1);
+				double speedmul = m.em().getAttributeValue(AttributeModifier.bullet_speed, 1);
 
 				if (this.item.bullet.shotSound != null && this.item.bullet.soundVolume > 0)
 					Drawing.drawing.playGlobalSound(this.item.bullet.shotSound,

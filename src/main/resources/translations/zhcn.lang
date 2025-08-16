@@ -542,6 +542,12 @@ Pick a name for the copy!=填写一个名称来保存副本!
 Save copy=保存副本
 Delete level=删除关卡
 
+# Select Game mode (选择游戏模式)
+Steam workshop=Steam创意工坊
+Upload crusade=上传十字军东征
+Browse crusades=浏览十字军东征
+My uploaded creations=我上传的内容
+
 # Singleplayer (单人游戏)
 Play Tanks in new ways!=以新的方式游玩坦克!
 # Fight battles in an order,=按顺序进行战斗,

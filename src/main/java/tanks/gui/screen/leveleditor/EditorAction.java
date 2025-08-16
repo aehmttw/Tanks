@@ -29,10 +29,7 @@ public abstract class EditorAction
         public void undo()
         {
             if (!add)
-            {
                 Game.addObstacle(this.obstacle);
-                this.obstacle.removed = false;
-            }
             else
                 Game.removeObstacles.add(this.obstacle);
         }

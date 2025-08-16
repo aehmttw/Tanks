@@ -1,7 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A tank which adds extra health to its allies and becomes explosive as a last stand
@@ -13,7 +13,7 @@ public class TankMedic extends TankAIControlled
 		super(name, x, y, Game.tile_size, 255, 255, 255, angle, ShootAI.straight);
 
 		this.emblem = "emblems/medic.png";
-		this.emblemG = 200;
+		this.emblemColor.green = 200;
 		this.enableMovement = true;
 		this.maxSpeed = 0.75;
 		this.enableMineLaying = false;
@@ -21,8 +21,8 @@ public class TankMedic extends TankAIControlled
 		this.cooldownRandom = 0;
 		this.cooldownBase = 0;
 		this.turretAimSpeed = 0.02;
-		this.setBullet(DefaultBullets.healing_ray);
-		this.bullet.maxLiveBullets = 1;
+		this.setBullet(DefaultItems.healing_ray);
+		this.getBullet().maxLiveBullets = 1;
 		this.bulletItem.item.cooldownBase = 0;
 		this.turnChance = 0.001;
 		this.enablePathfinding = true;

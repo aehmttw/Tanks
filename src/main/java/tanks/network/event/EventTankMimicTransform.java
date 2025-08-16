@@ -58,15 +58,19 @@ public class EventTankMimicTransform extends PersonalEvent
                 t1 = new TankDummy(t.name, t.posX, t.posY, t.angle);
             }
 
+            TankModels.TankSkin baseSkin = t.baseSkin;
+            TankModels.TankSkin turretBaseSkin = t.turretBaseSkin;
+            TankModels.TankSkin turretSkin = t.turretSkin;
+
             ((TankRemote) t).copyTank(t1);
             ((TankRemote) t).invisible = false;
             t.fromRegistry = false;
 
             if (!(this.target == this.tank))
             {
-                t.baseModel = TankModels.checkerboard.base;
-                t.turretBaseModel = TankModels.checkerboard.turretBase;
-                t.turretModel = TankModels.checkerboard.turret;
+                t.baseSkin = baseSkin;
+                t.turretBaseSkin = turretBaseSkin;
+                t.turretSkin = turretSkin;
 
                 if (Game.effectsEnabled)
                 {
@@ -74,9 +78,9 @@ public class EventTankMimicTransform extends PersonalEvent
                     {
                         Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 4, Effect.EffectType.piece);
                         double var = 50;
-                        e.colR = Math.min(255, Math.max(0, t.colorR + Math.random() * var - var / 2));
-                        e.colG = Math.min(255, Math.max(0, t.colorG + Math.random() * var - var / 2));
-                        e.colB = Math.min(255, Math.max(0, t.colorB + Math.random() * var - var / 2));
+                        e.colR = Math.min(255, Math.max(0, t.color.red + Math.random() * var - var / 2));
+                        e.colG = Math.min(255, Math.max(0, t.color.green + Math.random() * var - var / 2));
+                        e.colB = Math.min(255, Math.max(0, t.color.blue + Math.random() * var - var / 2));
 
                         if (Game.enable3d)
                             e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, 1 + Math.random() * t.size / 50.0);

@@ -1,7 +1,9 @@
 package tanks.gui.screen;
 
 import tanks.Drawing;
+import tanks.Effect;
 import tanks.Game;
+import tanks.Player;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
@@ -10,12 +12,15 @@ import tanks.gui.*;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.registry.RegistryBullet;
+import tanks.tank.Tank;
 import tanks.tank.Turret;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
 {
@@ -24,12 +29,10 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public Tab col1;
     public Tab col2;
     public Tab col3;
-    public Tab glow;
 
     public Button col1Button;
     public Button col2Button;
     public Button col3Button;
-    public Button glowButton;
 
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
     {
@@ -72,6 +75,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             }
         };
 
+//        bullet.get().initTrails();
         this.title = "Edit %s";
         this.objName = "bullet";
     }
@@ -137,6 +141,9 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
 
     public class TabAppearance extends ScreenEditorTanksONable<Bullet>.Tab
     {
+        public ArrayList<Effect> effects = new ArrayList<>();
+        public ArrayList<Effect> removeEffects = new ArrayList<>();
+        Random rand = new Random();
         double margin = screen.centerX - screen.objWidth / 2 + screen.objHeight / 2 - screen.objXSpace / 2;
 
         public TabAppearance(ScreenEditorBullet screen, String name, String category)
@@ -158,15 +165,8 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                     ITrigger el = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
                     if (gas)
                     {
-                        if (p.id().equals("effect"))
-                            continue;
-                        else if (p.id().equals("size"))
+                        if (p.id().equals("size"))
                             ((TextBox) el).setText("Start size");
-                    }
-                    else
-                    {
-                        if (p.id().equals("effect"))
-                            ((Selector) el).images = new String[]{"bullet_large.png", "bullet_normal.png", "bullet_air.png", "bullet_fire.png", "bullet_dark_fire.png", "bullet_fire_trail.png", "bullet_freeze.png", "bullet_boost.png"};
                     }
 
                     this.uiElements.add(el);
@@ -197,9 +197,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                     continue;
 
                 Button b = new Button(0, 0, 350, 40, t.name, () -> screen.setTab(t));
-                if (t == glow)
-                    glowButton = b;
-                else if (t == col1)
+                if (t == col1)
                     col1Button = b;
                 else if (t == col2)
                     col2Button = b;
@@ -246,22 +244,39 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         @Override
         public void drawUIElements()
         {
-            super.drawUIElements();
             Bullet bullet = screen.target.get();
 
-            double s = Game.tile_size * 0.8;
-            Drawing.drawing.setColor(80, 80, 80);
-            Drawing.drawing.fillInterfaceOval(margin, glowButton.posY, s * 1.5, s * 1.5);
-            if (bullet.overrideOutlineColor)
-                Drawing.drawing.setColor(bullet.outlineColorR * bullet.glowIntensity, bullet.outlineColorG * bullet.glowIntensity, bullet.outlineColorB * bullet.glowIntensity, 255, 1);
-            else
-                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * bullet.glowIntensity, Turret.calculateSecondaryColor(150) * bullet.glowIntensity, Turret.calculateSecondaryColor(255) * bullet.glowIntensity, 255, 1);
+            if (!Game.game.window.drawingShadow)
+            {
+                for (Effect e : this.effects)
+                {
+                    e.update();
 
-            Drawing.drawing.fillInterfaceGlow(margin, glowButton.posY, s * 1.5 * bullet.glowSize / 4, s * 1.5 * bullet.glowSize / 4);
+                    if (e.age > e.maxAge)
+                        removeEffects.add(e);
+                }
+
+                effects.removeAll(removeEffects);
+                removeEffects.clear();
+
+                for (Effect f : this.effects)
+                {
+                    f.draw();
+                }
+
+                for (Effect f : this.effects)
+                {
+                    f.drawGlow();
+                }
+            }
+
+            bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, rand, Player.default_primary, Player.default_secondary);
+
+            super.drawUIElements();
 
             Drawing.drawing.setInterfaceFontSize(24);
             if (bullet.overrideOutlineColor)
-                Drawing.drawing.setColor(bullet.outlineColorR, bullet.outlineColorG, bullet.outlineColorB);
+                Drawing.drawing.setColor(bullet.outlineColor);
             else
                 Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
 
@@ -281,7 +296,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             }
 
             if (bullet.overrideBaseColor)
-                Drawing.drawing.setColor(bullet.baseColorR, bullet.baseColorG, bullet.baseColorB);
+                Drawing.drawing.setColor(bullet.baseColor);
             else
                 Drawing.drawing.setColor(0, 150, 255);
 
@@ -293,20 +308,17 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 Drawing.drawing.drawInterfaceText(margin, col1Button.posY, "-");
             }
 
-            if (bullet.overrideOutlineColor)
-                Drawing.drawing.setColor(bullet.outlineColorR, bullet.outlineColorG, bullet.outlineColorB);
-            else
-                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255));
         }
     }
 
     public class TabColorPicker extends ScreenEditorTanksONable<Bullet>.Tab
     {
-        public int colorIndex;
+        public ArrayList<Effect> effects = new ArrayList<>();
+        public ArrayList<Effect> removeEffects = new ArrayList<>();
+        Random rand = new Random();
 
-        public TextBoxSlider colorRed;
-        public TextBoxSlider colorGreen;
-        public TextBoxSlider colorBlue;
+        public int colorIndex;
+        public SelectorColor colorPicker;
 
         String enableColorText = "Custom color: ";
         Button enableColor = new Button(0, 0, this.screen.objWidth, this.screen.objHeight, "", new Runnable()
@@ -321,17 +333,11 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 {
                     b.overrideBaseColor = !b.overrideBaseColor;
                     enable = b.overrideBaseColor;
-                    colorRed.inputText = (int) colorRed.value + "";
-                    colorGreen.inputText = (int) colorGreen.value + "";
-                    colorBlue.inputText = (int) colorBlue.value + "";
                 }
                 else if (colorIndex == 2)
                 {
                     b.overrideOutlineColor = !b.overrideOutlineColor;
                     enable = b.overrideOutlineColor;
-                    colorRed.inputText = (int) colorRed.value + "";
-                    colorGreen.inputText = (int) colorGreen.value + "";
-                    colorBlue.inputText = (int) colorBlue.value + "";
                 }
 
                 setColorText(enable);
@@ -351,81 +357,6 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         {
             super(screen, parent, name, category);
             this.colorIndex = colorIndex;
-
-            colorRed = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Red", () ->
-            {
-                Bullet b = screen.target.get();
-
-                if (colorRed.inputText.length() <= 0)
-                    colorRed.inputText = colorRed.previousInputText;
-
-                int red = Integer.parseInt(colorRed.inputText);
-
-                if (colorIndex == 1)
-                    b.baseColorR = red;
-                else if (colorIndex == 2)
-                    b.outlineColorR = red;
-                else if (colorIndex == 3)
-                    ((BulletGas) b).noiseR = red;
-            }
-                    , 0, 0, 255, 1);
-
-            colorRed.allowLetters = false;
-            colorRed.allowSpaces = false;
-            colorRed.maxChars = 3;
-            colorRed.maxValue = 255;
-            colorRed.checkMaxValue = true;
-            colorRed.integer = true;
-
-            colorGreen = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Green", () ->
-            {
-                Bullet b = screen.target.get();
-
-                if (colorGreen.inputText.length() <= 0)
-                    colorGreen.inputText = colorGreen.previousInputText;
-
-                int green = Integer.parseInt(colorGreen.inputText);
-
-                if (colorIndex == 1)
-                    b.baseColorG = green;
-                else if (colorIndex == 2)
-                    b.outlineColorG = green;
-                else if (colorIndex == 3)
-                    ((BulletGas) b).noiseG = green;
-            }
-                    , 0, 0, 255, 1);
-
-            colorGreen.allowLetters = false;
-            colorGreen.allowSpaces = false;
-            colorGreen.maxChars = 3;
-            colorGreen.maxValue = 255;
-            colorGreen.checkMaxValue = true;
-            colorGreen.integer = true;
-
-            colorBlue = new TextBoxSlider(0, 0, this.screen.objWidth, this.screen.objHeight, "Blue", () ->
-            {
-                Bullet b = screen.target.get();
-
-                if (colorBlue.inputText.length() <= 0)
-                    colorBlue.inputText = colorBlue.previousInputText;
-
-                int blue = Integer.parseInt(colorBlue.inputText);
-
-                if (colorIndex == 1)
-                    b.baseColorB = blue;
-                else if (colorIndex == 2)
-                    b.outlineColorB = blue;
-                else if (colorIndex == 3)
-                    ((BulletGas) b).noiseB = blue;
-            }
-                    , 0, 0, 255, 1);
-
-            colorBlue.allowLetters = false;
-            colorBlue.allowSpaces = false;
-            colorBlue.maxChars = 3;
-            colorBlue.maxValue = 255;
-            colorBlue.checkMaxValue = true;
-            colorBlue.integer = true;
         }
 
         public TabColorPicker(ScreenEditorBullet screen, String name, String category, int colorIndex)
@@ -439,32 +370,10 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             super.set();
 
             Bullet bullet = screen.target.get();
-            int r = (int) bullet.baseColorR;
-            int g = (int) bullet.baseColorG;
-            int b = (int) bullet.baseColorB;
             this.setColorText(bullet.overrideBaseColor);
 
             if (colorIndex == 2)
-            {
-                r = (int) bullet.outlineColorR;
-                g = (int) bullet.outlineColorG;
-                b = (int) bullet.outlineColorB;
                 this.setColorText(bullet.overrideOutlineColor);
-            }
-            else if (colorIndex == 3)
-            {
-                r = (int) ((BulletGas) bullet).noiseR;
-                g = (int) ((BulletGas) bullet).noiseG;
-                b = (int) ((BulletGas) bullet).noiseB;
-            }
-
-            this.colorRed.value = r;
-            this.colorGreen.value = g;
-            this.colorBlue.value = b;
-
-            this.colorRed.inputText = r + "";
-            this.colorGreen.inputText = g + "";
-            this.colorBlue.inputText = b + "";
         }
 
         @Override
@@ -473,15 +382,13 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             if (this.colorIndex == 1 || this.colorIndex == 2)
                 this.uiElements.add(enableColor);
 
-            this.uiElements.add(colorRed);
-            this.uiElements.add(colorGreen);
-            this.uiElements.add(colorBlue);
+            if (this.colorPicker != null)
+                this.uiElements.add(this.colorPicker);
 
             super.sortUIElements();
 
-            this.uiElements.remove(colorRed);
-            this.uiElements.remove(colorGreen);
-            this.uiElements.remove(colorBlue);
+            if (this.colorPicker != null)
+                this.uiElements.remove(this.colorPicker);
         }
 
         @Override
@@ -491,78 +398,76 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             super.updateUIElements();
 
             if ((this.colorIndex == 1 && bullet.overrideBaseColor) || (this.colorIndex == 2 && bullet.overrideOutlineColor) || this.colorIndex == 3)
+                this.colorPicker.update();
+        }
+
+        @Override
+        public void draw()
+        {
+            Bullet bullet = screen.target.get();
+            if (!Game.game.window.drawingShadow)
             {
-                this.colorRed.update();
-                this.colorGreen.update();
-                this.colorBlue.update();
+                for (Effect e : this.effects)
+                {
+                    e.update();
+
+                    if (e.age > e.maxAge)
+                        removeEffects.add(e);
+                }
+
+                effects.removeAll(removeEffects);
+                removeEffects.clear();
+
+                for (Effect f : this.effects)
+                {
+                    f.draw();
+                }
+
+                for (Effect f : this.effects)
+                {
+                    f.drawGlow();
+                }
             }
+
+            bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, rand, Player.default_primary, Player.default_secondary);
+            super.draw();
+
         }
 
         @Override
         public void drawUIElements()
         {
             Bullet bullet = screen.target.get();
-            this.updateColors();
-
             if ((this.colorIndex == 1 && bullet.overrideBaseColor) || (this.colorIndex == 2 && bullet.overrideOutlineColor) || this.colorIndex == 3)
-            {
-                this.colorRed.draw();
-                this.colorGreen.draw();
-                this.colorBlue.draw();
-            }
+                this.colorPicker.draw();
 
             super.drawUIElements();
         }
 
-        public void updateColors()
+        @Override
+        public void addFields()
         {
-            colorRed.r1 = 0;
-            colorRed.r2 = 255;
-            colorRed.g1 = colorGreen.value;
-            colorRed.g2 = colorGreen.value;
-            colorRed.b1 = colorBlue.value;
-            colorRed.b2 = colorBlue.value;
+            this.uiElements.clear();
+            for (Field f: this.screen.fields)
+            {
+                Property p = f.getAnnotation(Property.class);
 
-            colorGreen.r1 = colorRed.value;
-            colorGreen.r2 = colorRed.value;
-            colorGreen.g1 = 0;
-            colorGreen.g2 = 255;
-            colorGreen.b1 = colorBlue.value;
-            colorGreen.b2 = colorBlue.value;
+                if (p != null && p.category().equals(this.category))
+                {
+                    ITrigger t = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
 
-            colorBlue.r1 = colorRed.value;
-            colorBlue.r2 = colorRed.value;
-            colorBlue.g1 = colorGreen.value;
-            colorBlue.g2 = colorGreen.value;
-            colorBlue.b1 = 0;
-            colorBlue.b2 = 255;
-
-            if (!colorRed.selected)
-                colorRed.function.run();
-
-            if (!colorGreen.selected)
-                colorGreen.function.run();
-
-            if (!colorBlue.selected)
-                colorBlue.function.run();
-        }
-    }
-
-    public class TabGlow extends Tab
-    {
-        public TabGlow(ScreenEditorBullet screen, ScreenEditorTanksONable<Bullet>.Tab parent, String name, String category)
-        {
-            super(screen, parent, name, category);
-        }
-
-        public TabGlow(ScreenEditorBullet screen, String name, String category)
-        {
-            super(screen, name, category);
-        }
-
-        public void set()
-        {
-            super.set();
+                    if (p.miscType() != Property.MiscType.colorRGB)
+                    {
+                        this.uiElements.add(t);
+                        for (int i = 1; i < t.getSize(); i++)
+                        {
+                            this.uiElements.add(new EmptySpace());
+                        }
+                    }
+                    else if (t instanceof SelectorColor)
+                        this.colorPicker = (SelectorColor) t;
+                }
+            }
         }
     }
 
@@ -571,14 +476,13 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     {
         Tab appearance = new TabAppearance(this, "Appearance", BulletPropertyCategory.appearance);
 
-        col1 = new TabColorPicker(this, appearance, "", "color", 1);
-        col2 = new TabColorPicker(this, appearance, "", "color", 2);
-        col3 = new TabColorPicker(this, appearance, "Color noise", "color", 3);
+        col1 = new TabColorPicker(this, appearance, "", BulletPropertyCategory.appearanceBaseColor, 1);
+        col2 = new TabColorPicker(this, appearance, "", BulletPropertyCategory.appearanceOutlineColor, 2);
+        col3 = new TabColorPicker(this, appearance, "Color noise", BulletPropertyCategory.appearanceNoiseColor, 3);
 
         new TabFiring(this, "Firing", BulletPropertyCategory.firing);
         new TabTravel(this, "Movement", BulletPropertyCategory.travel);
         new Tab(this, "Impact", BulletPropertyCategory.impact);
-        glow = new TabGlow(this, appearance, "Glow", BulletPropertyCategory.appearanceGlow);
 
         this.iconPrefix = "bulleteditor";
         this.setTab(appearance);

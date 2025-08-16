@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.tankson.Property;
 
@@ -65,7 +66,7 @@ public class TankRemote extends Tank
 	
 	public TankRemote(Tank t)
 	{
-		super(t.name, t.posX, t.posY, t.size, t.colorR, t.colorG, t.colorB);
+		super(t.name, t.posX, t.posY, t.size, t.color.red, t.color.green, t.color.blue);
 		this.angle = t.angle;
 		this.orientation = t.orientation;
 		this.team = t.team;
@@ -80,8 +81,8 @@ public class TankRemote extends Tank
 
 		if (t instanceof TankAIControlled)
 		{
-			((TankAIControlled) t).bulletItem.item.bullet = ((TankAIControlled) t).bullet;
-			((TankAIControlled) t).mineItem.item.mine = ((TankAIControlled) t).mine;
+			((TankAIControlled) t).bulletItem.item.bullet = ((TankAIControlled) t).getBullet();
+			((TankAIControlled) t).mineItem.item.mine = ((TankAIControlled) t).getMine();
 
 			((TankAIControlled) t).bulletItem.item.cooldownBase = Math.min(1, ((TankAIControlled) t).cooldownBase);
 			if (((TankAIControlled) t).cooldownRandom > 0)
@@ -150,11 +151,13 @@ public class TankRemote extends Tank
 
 		double pvx = this.prevKnownVXFinal;
 		double pvy = this.prevKnownVYFinal;
-		double cvx = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-		double cvy = this.getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+		double cvx = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVX) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+		double cvy = em().getAttributeValue(AttributeModifier.velocity, this.currentKnownVY) * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
 		this.posX = cubicInterpolationVelocity(this.prevKnownPosX, pvx, this.currentKnownPosX, cvx, this.timeSinceRefresh, this.interpolationTime);
 		this.posY = cubicInterpolationVelocity(this.prevKnownPosY, pvy, this.currentKnownPosY, cvy, this.timeSinceRefresh, this.interpolationTime);
+//		this.posX = this.currentKnownPosX;
+//		this.posY = this.currentKnownPosY;
 		double frac = Math.min(1, this.timeSinceRefresh / this.interpolationTime);
 		this.vX = (1 - frac) * this.prevKnownVX + frac * this.currentKnownVX;
 		this.vY = (1 - frac) * this.prevKnownVY + frac * this.currentKnownVY;
@@ -162,7 +165,7 @@ public class TankRemote extends Tank
 		this.lastFinalVX = (this.posX - this.lastPosX) / Panel.frameFrequency;
 		this.lastFinalVY = (this.posY - this.lastPosY) / Panel.frameFrequency;
 
-		double angDiff = Movable.angleBetween(this.lastAngle, this.currentAngle);
+		double angDiff = GameObject.angleBetween(this.lastAngle, this.currentAngle);
 		this.angle = this.lastAngle - frac * angDiff;
 		this.pitch = (1 - frac) * this.lastPitch + frac * this.currentPitch;
 
@@ -188,10 +191,10 @@ public class TankRemote extends Tank
 			double dist = Math.sqrt(Math.pow(this.posX - this.lastPosX, 2) + Math.pow(this.posY - this.lastPosY, 2));
 
 			double dir = Math.PI + this.getAngleInDirection(this.lastPosX, this.lastPosY);
-			if (Movable.absoluteAngleBetween(this.orientation, dir) <= Movable.absoluteAngleBetween(this.orientation + Math.PI, dir))
-				this.orientation -= Movable.angleBetween(this.orientation, dir) / 20 * dist;
+			if (GameObject.absoluteAngleBetween(this.orientation, dir) <= GameObject.absoluteAngleBetween(this.orientation + Math.PI, dir))
+				this.orientation -= GameObject.angleBetween(this.orientation, dir) / 20 * dist;
 			else
-				this.orientation -= Movable.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
+				this.orientation -= GameObject.angleBetween(this.orientation + Math.PI, dir) / 20 * dist;
 		}
 	}
 
@@ -213,9 +216,9 @@ public class TankRemote extends Tank
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 						double var = 50;
-						e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+						e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
+						e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
+						e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
 
 						if (Game.enable3d)
 							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
@@ -229,10 +232,14 @@ public class TankRemote extends Tank
 
 			for (int i = 0; i < Game.tile_size * 2 - this.localAge; i++)
 			{
-				Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, (this.size * 2 - i - this.localAge) * 2.55);
+				Drawing.drawing.setColor(this.color, (this.size * 2 - i - this.localAge) * 2.55);
 				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
 			}
 		}
+
+		/*Drawing.drawing.setInterfaceFontSize(24);
+		Drawing.drawing.setColor(0, 0, 0);
+		Drawing.drawing.drawInterfaceText(Drawing.drawing.toInterfaceCoordsX(prevKnownPosX), Drawing.drawing.toInterfaceCoordsY(prevKnownPosY), String.format("%d, %d, %.2f", (int) posX / 50, (int) posY / 50, timeSinceRefresh));*/
 	}
 
 	public static double cubicInterpolationVelocity(double startPos, double startVel, double endPos, double endVel, double curTime, double totalTime)

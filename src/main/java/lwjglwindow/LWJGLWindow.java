@@ -101,6 +101,7 @@ public class LWJGLWindow extends BaseWindow
 		{
 			this.soundsEnabled = false;
 			System.out.println("Failed to enable sounds");
+			this.soundPlayer = new NoSoundPlayer(this);
 			e.printStackTrace();
 		}
 
@@ -133,7 +134,7 @@ public class LWJGLWindow extends BaseWindow
 
 	protected void init()
 	{
-		this.fontRendererDefault = new FontRenderer(this, "/fonts/default/font.png");
+		this.fontRenderer = new FontRenderer(this, "/fonts/default/font.png");
 
 		// Load zh cn font
 		try {
@@ -150,8 +151,7 @@ public class LWJGLWindow extends BaseWindow
 					String chinese_chars = sb.toString();
 					int[] chinese_chars_sizes = new int[chinese_chars.length()];
 					Arrays.fill(chinese_chars_sizes, 8);
-					this.fontRendererDefault.addFont("/fonts/zh_cn/font_zh_cn_" + count + ".png", chinese_chars, chinese_chars_sizes);
-					System.out.println("Loaded font " + count);
+					this.fontRenderer.addFont("/fonts/zh_cn/font_zh_cn_" + count + ".png", chinese_chars, chinese_chars_sizes);
 					count++;
 				}
 			}
@@ -372,18 +372,14 @@ public class LWJGLWindow extends BaseWindow
 		String audio = ALC11.alcGetString(NULL, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
 
 		if (!(audio == null && this.audioDevice == null || (this.audioDevice != null && this.audioDevice.equals(audio))))
-		{
 			this.soundPlayer = new SoundPlayer(this);
-		}
 
 		this.audioDevice = audio;
 
-		SoundPlayer soundPlayer = (SoundPlayer) this.soundPlayer;
+		BaseSoundPlayer soundPlayer = this.soundPlayer;
 
 		if (soundPlayer != null)
-		{
 			soundPlayer.update();
-		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1261,16 +1257,22 @@ public class LWJGLWindow extends BaseWindow
 	public void setGlowBlendFunc()
 	{
 		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+        if (!drawingShadow)
+            this.currentShaderGroup.shaderBase.blendFunc.set(1);
 	}
 
 	public void setLightBlendFunc()
 	{
 		glBlendFunc(GL_DST_COLOR, GL_ONE);
+        if (!drawingShadow)
+            this.currentShaderGroup.shaderBase.blendFunc.set(2);
 	}
 
 	public void setTransparentBlendFunc()
 	{
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if (!drawingShadow)
+            this.currentShaderGroup.shaderBase.blendFunc.set(0);
 	}
 
 	public int createVBO()
@@ -1328,33 +1330,51 @@ public class LWJGLWindow extends BaseWindow
 	}
 
 	@Override
-	public BufferedImage screenshot(String dir) throws IOException
-	{
+	public String screenshot(String dir, boolean async)
+    {
 		glfwGetFramebufferSize(window, w, h);
 
 		int w = this.w[0];
 		int h = this.h[0];
 
-		BufferedImage destination = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		ByteBuffer buffer = BufferUtils.createByteBuffer(w * h * 4);
 
 		glGetError();
 		GL20.glReadBuffer(GL_FRONT);
 		GL20.glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 
-		// adapted from http://forum.lwjgl.org/index.php?topic=6452.0
-		for (int x = destination.getWidth() - 1; x >= 0; x--)
-		{
-			for (int y = destination.getHeight() - 1; y >= 0; y--)
-			{
-				int i = (x + w * y) * 4;
-				destination.setRGB(x, destination.getHeight() - 1 - y, (((buffer.get(i) & 0xFF) & 0x0ff) << 16) | (((buffer.get(i + 1) & 0xFF) & 0x0ff) << 8) | ((buffer.get(i + 2) & 0xFF) & 0x0ff));
-			}
-		}
-
 		File f = new File(dir);
-		ImageIO.write(destination, "png", f);
-		return destination;
+
+		Runnable r = () ->
+		{
+			try
+			{
+				// adapted from http://forum.lwjgl.org/index.php?topic=6452.0
+				BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+
+				for (int x = image.getWidth() - 1; x >= 0; x--)
+				{
+					for (int y = image.getHeight() - 1; y >= 0; y--)
+					{
+						int i = (x + w * y) * 4;
+						image.setRGB(x, image.getHeight() - 1 - y, (((buffer.get(i) & 0xFF) & 0x0ff) << 16) | (((buffer.get(i + 1) & 0xFF) & 0x0ff) << 8) | ((buffer.get(i + 2) & 0xFF) & 0x0ff));
+					}
+				}
+
+				ImageIO.write(image, "png", f);
+			}
+			catch (IOException e)
+			{
+				throw new RuntimeException(e);
+			}
+		};
+
+		if (async)
+			new Thread(r).start();
+		else
+			r.run();
+
+		return f.getPath();
 	}
 
 	public void setForceModelGlow(boolean glow)

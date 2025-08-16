@@ -54,6 +54,8 @@ uniform float scale;
 uniform int lightsCount;
 uniform sampler2D lightsTexture;
 
+uniform int blendFunc;
+
 //uniform bool bonesEnabled;
 //uniform mat4 boneMatrices[128];
 //attribute vec4 bones;

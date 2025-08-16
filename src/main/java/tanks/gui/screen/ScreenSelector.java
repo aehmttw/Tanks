@@ -13,7 +13,7 @@ import tanks.translation.Translation;
 
 import java.util.ArrayList;
 
-public class ScreenSelector extends Screen implements IConditionalOverlayScreen, IDarkScreen
+public class ScreenSelector extends Screen implements IConditionalOverlayScreen, IDarkScreen, IBlankBackgroundScreen
 {
     public Screen screen;
     public Selector selector;

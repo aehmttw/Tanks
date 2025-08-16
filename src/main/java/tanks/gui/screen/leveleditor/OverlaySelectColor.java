@@ -24,6 +24,7 @@ public class OverlaySelectColor extends ScreenLevelEditorOverlay
     {
         super(previous, screenLevelEditor);
 
+        this.musicInstruments = true;
         this.selectorColor = selector;
         int initColor = ((Number) this.selectorColor.getMetadata(screenLevelEditor.mousePlaceable)).intValue();
 

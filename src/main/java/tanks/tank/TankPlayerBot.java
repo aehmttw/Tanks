@@ -4,6 +4,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
+import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.item.*;
@@ -26,22 +27,20 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
     public TankPlayerBot(double x, double y, double angle, Player p)
     {
         super("player", x, y, angle);
-        this.colorR = 0;
-        this.colorG = 150;
-        this.colorB = 255;
+        this.color.set(TankPlayer.default_primary_color);
         this.hasName = true;
         this.player = p;
 
         this.turretAimSpeed *= 2;
 
-        this.bulletItem.networkIndex = 0;
-        this.mineItem.networkIndex = -1;
+        this.bulletItem.networkIndex = -1;
+        this.mineItem.networkIndex = -2;
         this.seekChance *= 5;
 
         this.abilities.add(this.bulletItem);
         this.abilities.add(this.mineItem);
 
-        this.bulletAvoidBehvavior = BulletAvoidBehavior.aggressive_dodge;
+        this.bulletAvoidBehavior = BulletAvoidBehavior.aggressive_dodge;
         this.nameTag.name = p.username;
 
         this.cooldown = 0;
@@ -56,7 +55,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
     @Override
     public void updateStart()
     {
-        double reload = this.getAttributeValue(AttributeModifier.reload, 1);
+        double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
@@ -139,7 +138,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
             }
         }
 
-        int netIndex = 0;
+        int netIndex = -1;
         for (Item.ItemStack<?> i: this.abilities)
         {
             i.networkIndex = netIndex;
@@ -169,7 +168,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
                 mines.add((ItemMine.ItemStackMine) s);
         }
 
-        int netIndex = 0;
+        int netIndex = -1;
         for (Item.ItemStack<?> i: this.abilities)
         {
             i.networkIndex = netIndex;
@@ -201,19 +200,22 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         }
     }
 
-    /*@Override
+    @Override
     public void draw()
     {
         super.draw();
 
-        Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawImage(this.bulletItem.item.icon, this.posX, this.posY, 50, 50, 50);
+//        Drawing.drawing.setColor(255, 255, 255);
+//        Drawing.drawing.drawImage(this.bulletItem.item.icon, this.posX, this.posY, 50, 50, 50);
+//
+//        Drawing.drawing.setFontSize(16);
+//        Drawing.drawing.drawText(this.posX + 25, this.posY + 25, 50, this.bulletItem.stackSize + "");
+//
+//        Drawing.drawing.drawText(this.posX - 25, this.posY + 25, 50, this.player.hotbar.coins + "");
+//
+//        Drawing.drawing.drawText(this.posX, this.posY + 35, 50, this.player.ownedBuilds.size() + "");
 
-        Drawing.drawing.setFontSize(16);
-        Drawing.drawing.drawText(this.posX + 25, this.posY + 25, 50, this.bulletItem.stackSize + "");
-
-        Drawing.drawing.drawText(this.posX - 25, this.posY + 25, 50, this.player.hotbar.coins + "");
-    }*/
+    }
 
     public void setBulletItem(ItemBullet.ItemStackBullet i)
     {
@@ -233,7 +235,8 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         this.cooldownBase = i.item.cooldownBase;
         this.cooldownRandom = 0;
         this.bulletItem = i;
-        this.bullet = i.item.bullet;
+        this.setBullet(i.item.bullet);
+        this.bulletItem.item.cooldownBase = this.cooldownBase;
         i.player = this.player;
     }
 
@@ -241,7 +244,9 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
     {
         this.enableMineLaying = true;
         this.mineItem = i;
-        this.mine = i.item.mine;
+        double cooldown = i.item.cooldownBase;
+        this.setMine(i.item.mine);
+        this.mineItem.item.cooldownBase = cooldown;
         i.player = this.player;
     }
 }

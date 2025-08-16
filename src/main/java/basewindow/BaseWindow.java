@@ -3,7 +3,6 @@ package basewindow;
 import basewindow.transformation.*;
 import lwjglwindow.FontRenderer;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -13,10 +12,11 @@ import java.util.HashMap;
 public abstract class BaseWindow
 {
     public String buildDate = "";
+    public boolean runningFromSource;
     protected ArrayList<String> overrideLocations = new ArrayList<>();
 
     public BaseShapeRenderer shapeRenderer;
-    public FontRenderer fontRendererDefault;
+    public FontRenderer fontRenderer;
 
     public boolean angled = false;
 
@@ -288,7 +288,7 @@ public abstract class BaseWindow
 
     public abstract BaseShaderUtil getShaderUtil(ShaderProgram p);
 
-    public abstract BufferedImage screenshot(String dir) throws IOException;
+    public abstract String screenshot(String dir, boolean async) throws IOException;
 
     public abstract void setForceModelGlow(boolean glow);
 

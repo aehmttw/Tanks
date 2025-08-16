@@ -62,6 +62,7 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         textBox.maxValue = selector.max;
         textBox.checkMaxValue = true;
         textBox.checkMinValue = true;
+        this.musicInstruments = true;
     }
 
     public void update()

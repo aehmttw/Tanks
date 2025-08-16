@@ -1,8 +1,7 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.DefaultItems;
 
 /**
  * A smart, very fast tank which fires rockets
@@ -17,13 +16,13 @@ public class TankBlack extends TankAIControlled
 		this.maxSpeed = 2.0;
 		this.enableDefensiveFiring = true;
 
-		this.setBullet(DefaultBullets.void_rocket);
+		this.setBullet(DefaultItems.void_rocket);
 
 		this.turretAimSpeed = 0.06;
 		this.enablePathfinding = true;
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.strafe;
 		this.avoidanceSeekOpenSpaces = true;
-		this.bulletAvoidBehvavior = BulletAvoidBehavior.back_off;
+		this.bulletAvoidBehavior = BulletAvoidBehavior.back_off;
 
 		this.coinValue = 10;
 

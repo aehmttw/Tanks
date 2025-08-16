@@ -15,6 +15,8 @@ public interface ILocalPlayerTank
 
     double getDrawLifespan();
 
+    double getDrawSpread();
+
     boolean getShowTrace();
 
     void setDrawRanges(double lifespan, double rangeMin, double rangeMax, boolean trace);

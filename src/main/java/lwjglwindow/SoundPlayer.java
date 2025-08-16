@@ -457,6 +457,16 @@ public class SoundPlayer extends BaseSoundPlayer
     double[] kernel;
     public void processAudio(ShortBuffer rawAudioBuffer)
     {
+//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
+//        {
+//            rawAudioBuffer.put(i, (short) (Math.floorDiv(rawAudioBuffer.get(i / 32 * 32), 4096) * 4096));
+//        }
+//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
+//        {
+//            rawAudioBuffer.put(i, (short) rawAudioBuffer.get(i / 32 * 32));
+//        }
+
+
 //        if (kernel == null)
 //        {
 //            kernel = new double[1000];

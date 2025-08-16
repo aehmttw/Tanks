@@ -2,14 +2,13 @@ package basewindow;
 
 public abstract class BaseShapeRenderer
 {
-    public static final byte hide_behind_face = 1;
-    public static final byte hide_front_face = 2;
-    public static final byte hide_low_face = 4;
-    public static final byte hide_high_face = 8;
-    public static final byte hide_left_face = 16;
-    public static final byte hide_right_face = 32;
-    public static final byte hide_all_faces = 63;
-    public static final byte hide_draw_on_top = 64;
+    public static final byte hide_neg_z = 1;
+    public static final byte hide_pos_z = 1 << 1;
+    public static final byte hide_pos_y = 1 << 2;
+    public static final byte hide_neg_y = 1 << 3;
+    public static final byte hide_neg_x = 1 << 4;
+    public static final byte hide_pos_x = 1 << 5;
+    public static final byte hide_all = 63;
 
     public abstract void fillOval(double x, double y, double sX, double sY);
 
@@ -49,7 +48,9 @@ public abstract class BaseShapeRenderer
 
     public abstract void fillRect(double x, double y, double sX, double sY);
 
-    public abstract void fillRect(double x, double y, double sX, double sY, double radius);
+    public abstract void fillRect(double x, double y, double z, double sX, double sY, boolean depthTest);
+
+    public abstract void fillRoundedRect(double x, double y, double sX, double sY, double radius);
 
     public abstract void fillBox(double x, double y, double z, double sX, double sY, double sZ, String texture);
 

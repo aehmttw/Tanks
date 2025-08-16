@@ -56,7 +56,6 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         this.score = a.score;
         this.originalScore = a.score;
 
-        ArrayList<Bonus> bonuses = new ArrayList<>();
         bonuses.add(new Bonus("Tank driver", 5, 255, 255, 40));
         bonuses.add(new Bonus("Arcade player", 5, 40, 40, 255));
         bonuses.add(new Bonus("Participation medal", 5, 255, 40, 40));
@@ -171,19 +170,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         else if (a.kills >= 40)
             bonuses.add(new Bonus("Tank destroyer", 20, 255, 80, 155));
 
-        while (!bonuses.isEmpty())
-        {
-            this.bonuses.add(bonuses.remove((int) (Math.random() * bonuses.size())));
-        }
-
-        Collections.sort(this.bonuses, new Comparator<Bonus>()
-        {
-            @Override
-            public int compare(Bonus o1, Bonus o2)
-            {
-                return o2.value - o1.value;
-            }
-        });
+        this.bonuses.sort((o1, o2) -> o2.value - o1.value);
 
         Game.eventsOut.add(new EventArcadeBonuses(this.bonuses.get(0), this.bonuses.get(1), this.bonuses.get(2)));
     }
@@ -250,7 +237,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                     {
                         Drawing.drawing.setInterfaceFontSize(this.textSize);
                         Bonus b = this.bonuses.get(2 - i);
-                        double size = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
+                        double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
                         addEffect(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4 / 6, size, this.objHeight, Game.effects, 1 + Math.min(b.value, 1000) / 25.0, -1, 0.5, b.red, b.green, b.blue);
                     }
                 }
@@ -275,7 +262,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             for (int j = 0; j < Game.effectMultiplier * Math.min(1000, bonusPoints) / 2; j++)
             {
                 Drawing.drawing.setInterfaceFontSize(this.textSize);
-                double size = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+                double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
                 addEffect(this.centerX, this.centerY + this.objYSpace * 2, size, this.objHeight, Game.effects, 1 + Math.min(bonusPoints, 1000) / 40.0, -1, 0.5, 100 + Math.random() * 155, 100 + Math.random() * 155, 100 + Math.random() * 155);
             }
 
@@ -462,7 +449,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         Drawing.drawing.setInterfaceFontSize(36 * (1 + 0.25 * frac));
         String s = Translation.translate("Score: %d", score);
-        double size = Game.game.window.fontRendererDefault.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
         Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
     }
 

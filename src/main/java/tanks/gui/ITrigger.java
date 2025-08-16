@@ -14,6 +14,10 @@ public interface ITrigger
 
     void setPosition(double x, double y);
 
+    double getPositionX();
+
+    double getPositionY();
+
     default InputBindingGroup getKeybind() { return null; }
 
     default void updateKeybind()
@@ -31,5 +35,13 @@ public interface ITrigger
             if (keybind.doubleValid())
                 doubleClick();
         }
+    }
+
+    /**
+     * @return Size, in number of textboxes, this trigger takes up in a tanksonable editor
+     */
+    default int getSize()
+    {
+        return 1;
     }
 }

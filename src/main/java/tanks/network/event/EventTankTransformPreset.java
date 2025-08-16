@@ -57,12 +57,16 @@ public class EventTankTransformPreset extends PersonalEvent
             t.colorModel = target.colorModel;
             t.turretBaseModel = target.turretBaseModel;
             t.turretModel = target.turretModel;
+
+            t.baseSkin = target.baseSkin;
+            t.colorSkin = target.colorSkin;
+            t.turretBaseSkin = target.turretBaseSkin;
+            t.turretSkin = target.turretSkin;
+
             t.multipleTurrets = target.multipleTurrets;
 
             t.emblem = target.emblem;
-            t.emblemR = target.emblemR;
-            t.emblemG = target.emblemG;
-            t.emblemB = target.emblemB;
+            t.emblemColor.set(target.emblemColor);
 
             t.luminance = target.luminance;
             t.glowIntensity = target.glowIntensity;
@@ -72,8 +76,14 @@ public class EventTankTransformPreset extends PersonalEvent
 
             if (((TankRemote) t).tank instanceof TankAIControlled)
             {
-                ((TankAIControlled) ((TankRemote) t).tank).bullet.shotCount = target.bullet.shotCount;
-                ((TankAIControlled) ((TankRemote) t).tank).bullet.multishotSpread = target.bullet.multishotSpread;
+                ((TankAIControlled) ((TankRemote) t).tank).getBullet().shotCount = target.getBullet().shotCount;
+                ((TankAIControlled) ((TankRemote) t).tank).getBullet().multishotSpread = target.getBullet().multishotSpread;
+                ((TankAIControlled) ((TankRemote) t).tank).bulletItem = target.bulletItem;
+                ((TankAIControlled) ((TankRemote) t).tank).mineItem = target.mineItem;
+
+                ((TankAIControlled) ((TankRemote) t).tank).spawnedTankEntries = target.spawnedTankEntries;
+                ((TankAIControlled) ((TankRemote) t).tank).sightTransformTankField = target.sightTransformTankField;
+                ((TankAIControlled) ((TankRemote) t).tank).healthTransformTankField = target.healthTransformTankField;
             }
 
             t.mandatoryKill = target.mandatoryKill;
@@ -82,7 +92,6 @@ public class EventTankTransformPreset extends PersonalEvent
             t.enableTracks = target.enableTracks;
             t.trackSpacing = target.trackSpacing;
 
-            ((TankAIControlled) ((TankRemote) t).tank).spawnedTankEntries = target.spawnedTankEntries;
 
             ((TankRemote) t).invisible = false;
             ((TankRemote) t).vanished = false;
@@ -91,27 +100,20 @@ public class EventTankTransformPreset extends PersonalEvent
             {
                 Effect e1 = Effect.createNewEffect(t.posX, t.posY, t.posZ + target.size * 0.75, Effect.EffectType.exclamation);
                 e1.size = target.size;
-                e1.colR = t.colorR;
-                e1.colG = t.colorG;
-                e1.colB = t.colorB;
-                e1.glowR = target.colorR;
-                e1.glowG = target.colorG;
-                e1.glowB = target.colorB;
+                e1.colR = t.color.red;
+                e1.colG = t.color.green;
+                e1.colB = t.color.blue;
+                e1.glowR = target.color.red;
+                e1.glowG = target.color.green;
+                e1.glowB = target.color.blue;
                 Game.effects.add(e1);
             }
 
-            t.colorR = target.colorR;
-            t.colorG = target.colorG;
-            t.colorB = target.colorB;
-
-            t.secondaryColorR = target.secondaryColorR;
-            t.secondaryColorG = target.secondaryColorG;
-            t.secondaryColorB = target.secondaryColorB;
+            t.color.set(target.color);
+            t.secondaryColor.set(target.secondaryColor);
 
             t.enableTertiaryColor = target.enableTertiaryColor;
-            t.tertiaryColorR = target.tertiaryColorR;
-            t.tertiaryColorG = target.tertiaryColorG;
-            t.tertiaryColorB = target.tertiaryColorB;
+            t.tertiaryColor.set(target.tertiaryColor);
         }
     }
 

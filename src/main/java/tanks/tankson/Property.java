@@ -23,7 +23,8 @@ public @interface Property
         turretBaseModel,
         turretModel,
         emblem,
-        color,
+        colorRGBA,
+        colorRGB,
         description,
         complexString,
         music,
@@ -31,6 +32,7 @@ public @interface Property
         bulletSound,
         itemIcon,
         name,
-        defaultBuildForbidden
+        defaultBuildForbidden,
+        trails,
     }
 }

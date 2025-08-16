@@ -50,32 +50,20 @@ public class ObstacleBreakable extends ObstacleStackable
     @Override
     public void reactToHit(double bx, double by)
     {
-        this.update = true;
+        this.setUpdate(true);
         double height = this.stackHeight;
         this.fallAnimation = 100;
 
         this.stackHeight = Math.min(this.stackHeight, 1);
 
-        double r = this.stackColorR[0];
-        double g = this.stackColorG[0];
-        double b = this.stackColorB[0];
-
-        this.stackColorR[0] = this.stackColorR[this.stackColorR.length - 1];
-        this.stackColorG[0] = this.stackColorG[this.stackColorR.length - 1];
-        this.stackColorB[0] = this.stackColorB[this.stackColorR.length - 1];
-
-        this.playDestroyAnimation(bx - (this.posX - bx) * 2, by - (this.posY - by) * 2, Game.tile_size);
-
-        this.stackColorR[0] = r;
-        this.stackColorG[0] = g;
-        this.stackColorB[0] = b;
-
-        for (int i = this.stackColorR.length - 1; i > 0; i--)
+        for (int i = 0; i < this.stackColorR.length - 1; i++)
         {
-            this.stackColorR[i] = this.stackColorR[i - 1];
-            this.stackColorG[i] = this.stackColorG[i - 1];
-            this.stackColorB[i] = this.stackColorB[i - 1];
+            this.stackColorR[i] = this.stackColorR[i + 1];
+            this.stackColorG[i] = this.stackColorG[i + 1];
+            this.stackColorB[i] = this.stackColorB[i + 1];
         }
+
+        this.playDestroyAnimation(bx - (this.posX - bx) * 2, by - (this.posY - by) * 2, Game.tile_size * 2);
 
         this.stackHeight = height - 1;
 
@@ -93,7 +81,7 @@ public class ObstacleBreakable extends ObstacleStackable
             Game.redrawObstacles.add(this);
 
         if (this.fallAnimation <= 0)
-            this.update = false;
+            this.setUpdate(false);
     }
 
     @Override
@@ -112,20 +100,9 @@ public class ObstacleBreakable extends ObstacleStackable
         {
             for (int i = 0; i < Math.min(this.stackHeight, default_max_height); i++)
             {
-                int in = default_max_height - 1 - i;
-                drawing.setColor(this.stackColorR[in], this.stackColorG[in], this.stackColorB[in], this.colorA);
+                drawing.setColor(this.stackColorR[i], this.stackColorG[i], this.stackColorB[i], this.colorA);
 
                 byte option = 0;
-
-//                if (Obstacle.draw_size >= Game.tile_size)
-//                {
-//                    if (i > 0)
-//                        option += 1;
-//
-//                    if (i < Math.min(this.stackHeight, Obstacle.default_max_height) - 1)
-//                        option += 2;
-//                }
-
                 double cutoff = -Math.min((i - 1 + stackHeight % 1.0) * Game.tile_size, 0);
 
                 byte o;
@@ -140,8 +117,6 @@ public class ObstacleBreakable extends ObstacleStackable
                     o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size + offset));
                     drawing.fillBox(this, this.posX, this.posY, offset + (i - 1 + stackHeight % 1.0) * Game.tile_size + cutoff, draw_size, draw_size, draw_size - cutoff, o);
                 }
-
-                options[i] = o;
             }
         }
         else
@@ -153,15 +128,6 @@ public class ObstacleBreakable extends ObstacleStackable
         if (Obstacle.draw_size < Game.tile_size)
             return 0;
 
-        return this.stackHeight * Game.tile_size - Math.pow(this.fallAnimation / 100, 2) * Game.tile_size;
-    }
-
-    public void drawTile(double r, double g, double b, double d, double extra)
-    {
-        if (Obstacle.draw_size < Game.tile_size || extra != 0 || this.fallAnimation > 0)
-        {
-            Drawing.drawing.setColor(r, g, b);
-            Drawing.drawing.fillBox(this, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, extra + d * (1 - Obstacle.draw_size / Game.tile_size));
-        }
+        return (this.stackHeight + Math.pow(this.fallAnimation / 100, 2)) * Game.tile_size;
     }
 }

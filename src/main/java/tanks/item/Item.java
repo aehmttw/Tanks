@@ -1,10 +1,7 @@
 package tanks.item;
 
 import tanks.*;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletArc;
-import tanks.bullet.BulletGas;
-import tanks.bullet.DefaultBullets;
+import tanks.bullet.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 import tanks.tankson.*;
@@ -294,62 +291,62 @@ public abstract class Item extends GameObject
 				switch (kind)
 				{
 					case "normal":
-						bullet.bullet = DefaultBullets.basic_bullet.getCopy();
+						bullet.bullet = DefaultItems.basic_bullet.bullet.getCopy();
 						break;
 					case "flamethrower":
-						bullet.bullet = DefaultBullets.flamethrower.getCopy();
+						bullet.bullet = DefaultItems.flamethrower.bullet.getCopy();
 						break;
 					case "laser":
-						bullet.bullet = DefaultBullets.laser.getCopy();
+						bullet.bullet = DefaultItems.laser.bullet.getCopy();
 						break;
 					case "freezing":
-						bullet.bullet = DefaultBullets.freezing_bullet.getCopy();
+						bullet.bullet = DefaultItems.freezing_bullet.bullet.getCopy();
 						break;
 					case "electric":
-						bullet.bullet = DefaultBullets.zap.getCopy();
+						bullet.bullet = DefaultItems.zap.bullet.getCopy();
 						break;
 					case "healing":
-						bullet.bullet = DefaultBullets.healing_ray.getCopy();
+						bullet.bullet = DefaultItems.healing_ray.bullet.getCopy();
 						break;
 					case "arc":
-						bullet.bullet = DefaultBullets.artillery_shell.getCopy();
+						bullet.bullet = DefaultItems.artillery_shell.bullet.getCopy();
 						break;
 					case "explosive":
-						bullet.bullet = DefaultBullets.explosive_bullet.getCopy();
+						bullet.bullet = DefaultItems.explosive_bullet.bullet.getCopy();
 						break;
 					case "boost":
-						bullet.bullet = DefaultBullets.booster_bullet.getCopy();
+						bullet.bullet = DefaultItems.booster_bullet.bullet.getCopy();
 						break;
 					case "air":
-						bullet.bullet = DefaultBullets.air.getCopy();
+						bullet.bullet = DefaultItems.air.bullet.getCopy();
 						break;
 					case "homing":
-						bullet.bullet = DefaultBullets.homing_rocket.getCopy();
+						bullet.bullet = DefaultItems.homing_rocket.bullet.getCopy();
 						break;
 				}
 
 				switch (p[8])
 				{
 					case "none":
-						bullet.bullet.effect = Bullet.BulletEffect.none;
+						bullet.bullet.effect = new BulletEffect();
 						break;
 					case "fire":
-						bullet.bullet.effect = Bullet.BulletEffect.fire;
+						bullet.bullet.effect = BulletEffect.fire.getCopy();
 						break;
 					case "trail":
-						bullet.bullet.effect = Bullet.BulletEffect.trail;
+						bullet.bullet.effect = BulletEffect.trail.getCopy();
 						break;
 					case "dark_fire":
-						bullet.bullet.effect = Bullet.BulletEffect.dark_fire;
+						bullet.bullet.effect = BulletEffect.dark_fire.getCopy();
 						break;
 					case "fire_and_smoke":
-						bullet.bullet.effect = Bullet.BulletEffect.fire_trail;
+						bullet.bullet.effect = BulletEffect.fire_trail.getCopy();
 						break;
 					case "ice":
-						bullet.bullet.effect = Bullet.BulletEffect.ice;
+						bullet.bullet.effect = BulletEffect.ice.getCopy();
 						break;
 					case "ember":
-						bullet.bullet.effect = Bullet.BulletEffect.ember;
+						bullet.bullet.effect = BulletEffect.ember.getCopy();
 						break;
 				}
 
@@ -358,8 +355,8 @@ public abstract class Item extends GameObject
 				if (p[7].equals("arc"))
 				{
 					((BulletArc)bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
-					if (bullet.bullet.effect == Bullet.BulletEffect.none)
-						bullet.bullet.effect = Bullet.BulletEffect.long_trail;
+					if (bullet.bullet.effect.trailEffects.isEmpty() && !bullet.bullet.effect.enableParticles)
+						bullet.bullet.effect = BulletEffect.long_trail.getCopy();
 				}
 
 				if (p[7].equals("electric"))
@@ -387,7 +384,7 @@ public abstract class Item extends GameObject
 
 				bullet.bullet.recoil = Double.parseDouble(p[15]);
 				bullet.bullet.heavy = Boolean.parseBoolean(p[16]);
-				bullet.bullet.pitch /= Bullet.bullet_size / bullet.bullet.size;
+				bullet.bullet.pitch *= Bullet.bullet_size / bullet.bullet.size;
 
 				if (p.length > 17)
 				{

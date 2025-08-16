@@ -568,6 +568,8 @@ You can see your health, available bullets and mines,=你可以查看你的生�
 Now finish off the battle by destroying that gray tank,=现在通过摧毁那辆灰色坦克来完成战斗,
 but watch out - it can move!=但要小心——它可以移动!
 # Multiplayer (多人游戏)
+Players using Steam can invite friends to their party or=使用Steam的玩家可以邀请好友加入其派对
+make their party public to other Steam players.=或将派对设为公开以供其他Steam玩家加入
 To join with an IP address, make sure that everyone is using=要使用IP地址加入游戏
 the same port, and that all players are connected to the same=需确保所有玩家使用相同端口且连接到同一个网络
 network, unless the host is port forwarding.=(除非主机开启了端口转发)

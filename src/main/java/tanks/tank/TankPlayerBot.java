@@ -40,7 +40,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         this.abilities.add(this.bulletItem);
         this.abilities.add(this.mineItem);
 
-        this.bulletAvoidBehvavior = BulletAvoidBehavior.aggressive_dodge;
+        this.bulletAvoidBehavior = BulletAvoidBehavior.aggressive_dodge;
         this.nameTag.name = p.username;
 
         this.cooldown = 0;

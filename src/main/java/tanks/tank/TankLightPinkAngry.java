@@ -31,7 +31,7 @@ public class TankLightPinkAngry extends TankAIControlled
         this.setBullet(DefaultItems.rocket);
         this.getBullet().maxLiveBullets = 0;
 
-        this.bulletAvoidBehvavior = BulletAvoidBehavior.aggressive_dodge;
+        this.bulletAvoidBehavior = BulletAvoidBehavior.aggressive_dodge;
         this.targetEnemySightBehavior = TargetEnemySightBehavior.sidewind;
 
         if (Game.tankTextures)

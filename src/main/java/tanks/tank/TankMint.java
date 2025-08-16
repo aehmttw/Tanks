@@ -29,7 +29,7 @@ public class TankMint extends TankAIControlled
 		this.mineAvoidSensitivity = 1;
 
 		this.avoidanceSeekOpenSpaces = true;
-		this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
+		this.bulletAvoidBehavior = BulletAvoidBehavior.dodge;
 
 		if (Game.tankTextures)
 		{

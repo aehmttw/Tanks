@@ -16,7 +16,7 @@ public class TankDarkGreen extends TankAIControlled
 		this.maxSpeed = 1.5;
 		this.aimAccuracyOffset = 0.1;
 		this.targetEnemySightBehavior = TargetEnemySightBehavior.flee;
-		this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
+		this.bulletAvoidBehavior = BulletAvoidBehavior.dodge;
 
 		this.setBullet(DefaultItems.mini_bullet);
 

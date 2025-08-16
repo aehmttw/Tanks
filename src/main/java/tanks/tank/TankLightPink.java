@@ -1,7 +1,6 @@
 package tanks.tank;
 
 import tanks.Game;
-import tanks.bullet.Bullet;
 
 /**
  * A tank which gets angry on line of sight
@@ -24,7 +23,7 @@ public class TankLightPink extends TankAIControlled
         this.cooldownRandom = 60;
         this.shootAIType = ShootAI.reflect;
         this.avoidanceSeekOpenSpaces = true;
-        this.bulletAvoidBehvavior = BulletAvoidBehavior.dodge;
+        this.bulletAvoidBehavior = BulletAvoidBehavior.dodge;
 
         if (Game.tankTextures)
         {

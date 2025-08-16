@@ -21,7 +21,7 @@ public class TankOrange extends TankAIControlled
 		this.aimAccuracyOffset = 0;
 		this.turnChance = 0.001;
 		this.mineAvoidSensitivity = 1;
-		this.bulletAvoidBehvavior = BulletAvoidBehavior.aggressive_dodge;
+		this.bulletAvoidBehavior = BulletAvoidBehavior.aggressive_dodge;
 		this.avoidanceSeekOpenSpaces = true;
 		this.cooldownBase = 0;
 		this.cooldownRandom = 0;

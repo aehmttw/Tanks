@@ -77,7 +77,7 @@ public class TankAIControlled extends Tank implements ITankField
 			"\n Dodge: move at an angle away from the bullet (more accurate) " +
 			"\n Aggressive dodge: move at an angle toward the bullet " +
 			"\n Back off dodge: back off if there is space behind, dodge otherwise")
-	public BulletAvoidBehavior bulletAvoidBehvavior = BulletAvoidBehavior.intersect;
+	public BulletAvoidBehavior bulletAvoidBehavior = BulletAvoidBehavior.intersect;
 	/** How close the tank needs to get to a mine to avoid it*/
 	@Property(category = movementAvoid, id = "mine_avoid_sensitivity", name = "Mine sight radius", desc = "If the tank is within this fraction of a mine's radius, it will move away from the mine")
 	public double mineAvoidSensitivity = 1.5;
@@ -1554,7 +1554,7 @@ public class TankAIControlled extends Tank implements ITankField
 						Ray r = Ray.newRay(this.posX, this.posY, direction + fleeDirections[dir], 0, this, Game.tile_size);
 						r.size = Game.tile_size * this.hitboxSize - 1;
 
-						boolean b = this.targetEnemy != null && this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge && GameObject.absoluteAngleBetween(fleeDirections[dir] + direction, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY)) > Math.PI * 0.5;
+						boolean b = this.targetEnemy != null && this.bulletAvoidBehavior == BulletAvoidBehavior.aggressive_dodge && GameObject.absoluteAngleBetween(fleeDirections[dir] + direction, this.getAngleInDirection(this.targetEnemy.posX, this.targetEnemy.posY)) > Math.PI * 0.5;
 
 						double dist = r.getDist();
 						d[dir] = dist;
@@ -1594,18 +1594,18 @@ public class TankAIControlled extends Tank implements ITankField
 				{
 					double frac = Math.max(0, 2 - Math.max(m / (Game.tile_size * 2), 1));
 
-					if (this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge || this.bulletAvoidBehvavior == BulletAvoidBehavior.dodge)
+					if (this.bulletAvoidBehavior == BulletAvoidBehavior.aggressive_dodge || this.bulletAvoidBehavior == BulletAvoidBehavior.dodge)
 					{
 						double invert = 1;
 
-						if (this.bulletAvoidBehvavior == BulletAvoidBehavior.aggressive_dodge)
+						if (this.bulletAvoidBehavior == BulletAvoidBehavior.aggressive_dodge)
 							invert = -1;
 
 						this.avoidDirection = direction + Math.PI * 0.5 * (1 - (1 - frac) * invert / 2) * Math.signum(diff);
 					}
-					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off)
+					else if (this.bulletAvoidBehavior == BulletAvoidBehavior.back_off)
 						this.avoidDirection = nearest.getAngleInDirection(this.posX, this.posY);
-					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.back_off_dodge)
+					else if (this.bulletAvoidBehavior == BulletAvoidBehavior.back_off_dodge)
 					{
 						double a = nearest.getAngleInDirection(this.posX, this.posY);
 						Ray r = Ray.newRay(this.posX, this.posY, a, 0, this, Game.tile_size);
@@ -1617,7 +1617,7 @@ public class TankAIControlled extends Tank implements ITankField
 						else
 							this.avoidDirection = a;
 					}
-					else if (this.bulletAvoidBehvavior == BulletAvoidBehavior.intersect)
+					else if (this.bulletAvoidBehavior == BulletAvoidBehavior.intersect)
 					{
 						double targetX = nearestTarget.targetX;
 						double targetY = nearestTarget.targetY;

@@ -24,7 +24,7 @@ public class TankMimic extends TankAIControlled
         this.turretBaseSkin = TankModels.checkerboard;
 
         this.avoidanceSeekOpenSpaces = false;
-        this.bulletAvoidBehvavior = BulletAvoidBehavior.intersect;
+        this.bulletAvoidBehavior = BulletAvoidBehavior.intersect;
 
         this.transformMimic = true;
 

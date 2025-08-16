@@ -22,4 +22,6 @@ public abstract class BaseFontRenderer
     public abstract double getStringSizeX(double sX, String s);
 
     public abstract double getStringSizeY(double sY, String s);
+
+    public abstract void addFont(String imageFile, String chars, int[] charSizes);
 }

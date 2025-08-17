@@ -180,7 +180,8 @@ public class FontRenderer extends BaseFontRenderer
                 }
 
                 i += 12;
-            } else
+            }
+            else
                 curX += (drawChar(curX, y, z, sX, sY, c[i], depth) + 1) * sX * 4;
         }
 
@@ -231,7 +232,8 @@ public class FontRenderer extends BaseFontRenderer
                 }
 
                 i += 12;
-            } else
+            }
+            else
                 curX += (drawChar(curX, y, 0, sX, sY, c[i], false) + 1) * sX * 4;
         }
     }
@@ -251,7 +253,8 @@ public class FontRenderer extends BaseFontRenderer
                     continue;
 
                 i += 12;
-            } else
+            }
+            else
             {
                 FontInfo font = findFontForChar(c[i]);
                 Integer index = font.charIndexMap.get(c[i]);

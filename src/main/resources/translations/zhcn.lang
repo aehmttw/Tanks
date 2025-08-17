@@ -154,8 +154,8 @@ Game version=游戏版本
 Framerate=帧率
 Network latency (if in a party)=网络延迟（如果在组队中）
 Memory usage=内存使用量
-off=关闭
-on=开启
+# off=关闭
+# on=开启
 Multiplayer options=多人游戏选项
 Username=用户名
 Pick a username that players will see in multiplayer=选择一个其他玩家在多人游戏中可以看到的用户名
@@ -281,7 +281,7 @@ Sound options=声音选项
 Sound volume=声音音量
 Music volume=音乐音量
 Game options=游戏选项
-Autostart: =自动启动：
+Autostart: =自动开始：
 When enabled, level will start automatically 4 seconds after they are loaded (if the play button isn't clicked earlier)=启用后,关卡将在加载后4秒自动开始（如果之前没有点击播放按钮）
 Advanced stats: =高级统计：
 Shows more detailed statistics after a crusade ends.=十字军东征结束后显示更详细的统计数据。
@@ -551,6 +551,7 @@ My uploaded creations=我上传的内容
 Play Tanks in new ways!=以新的方式游玩坦克!
 # Fight battles in an order,=按顺序进行战斗,
 # and see how long you can survive!=看看你能坚持多久!
+Back to minigames=返回菜单
 
 # Tutorial (教程)
 Welcome to Tanks!=欢迎来到"坦克:十字军东征"!
@@ -572,12 +573,52 @@ Join by IP=通过 IP 地址加入
 Failed to connect=连接失败
 Random co-op=随机合作关卡
 Random versus=随机对战关卡
+Steam visibility: =Steam可见性：
+Invite Steam friends=邀请Steam好友
+Play:=游玩：
+Level and crusade sharing:=关卡和十字军东征分享：
+Party host=派对主持
+Toggle showing IP address=切换显示IP地址
+# Click here or press T to send a chat message=点击这里或按T发送聊天消息
 
 # Options (设置)
 Window options=窗口选项
 Miscellaneous options=杂项
 Open game folder=打开游戏文件夹
 My profile=我的资料
+
+Layered music: =分层音乐：
+
+Warn before exit: =退出前询问：
+Constrain mouse: =约束鼠标：
+# Window resolution=窗口分辨率
+
+Stats animations: =统计动画：
+Crusade preview: =预览十字军东征：
+Hotbar: =热键栏：
+
+Bot players=电脑玩家数量
+Countdown time=开始倒计时
+Anticheat: =反作弊：
+
+Editor=编辑器
+Camera=摄像机
+Reset controls=重置按键到默认值
+Copy=复制
+Cut=剪切
+Paste=粘贴
+Rotate selection=旋转选择的物品
+Clear tool=删除工具
+Square tool=正方形工具
+Line tool=线形工具
+Circle tool=圆形工具
+Wand tool=手杖工具
+
+Tank textures: =坦克材质：
+X-ray bullets: =透视子弹：
+Max FPS: =最大FPS：
+Shadow quality: =阴影质量：
+Show best run: =显示最佳纪录：
 
 # In game (游戏内界面)
 Start now=立即开始
@@ -601,6 +642,9 @@ Battle failed!=战斗失败!
 # Current battle: =当前战斗：
 # Remaining lives: =剩余生命：
 Start over=从第一关重新开始
+Castle crusade=城堡十字军东征
+Beginner crusade=新手十字军东征
+Create crusade=新建十字军东征
 
 # Items (物品)
 Block=方块
@@ -608,3 +652,8 @@ Basic mine=基础地雷
 Basic bullet=基础子弹
 Rocket=火箭
 Void rocket=虚空火箭
+
+# Profile (个人资料)
+Personalize your tank!=个性化你的坦克!
+Colors: %d=颜色数量：%d
+Reset to default colors=重置为默认颜色

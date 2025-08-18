@@ -208,7 +208,7 @@ Trace aim=追踪瞄准
 Hotbar=热键栏
 Toggle hotbar visibility=切换热键栏可见性
 Item slot %d=物品槽%d
-Deselect item slot=取消选择物品槽
+Deselect item slot=取消选择物品栏
 editor=编辑器
 Editor controls=编辑器控制
 Editor menu=编辑器菜单
@@ -409,7 +409,7 @@ Players in this party: =这个派对中的玩家：
 Play: =玩：
 Versus=对抗
 Fight other players in this party in a randomly generated level=在这个派对中与其他玩家在一个随机生成的关卡中战斗
-Play levels you have created=玩你创建的关卡
+Play levels you have created=游玩你创建的关卡
 Level and crusade sharing: =关卡和十字军东征共享：
 Upload=上传
 Download=下载
@@ -533,6 +533,24 @@ Coins remaining=剩余的硬币
 Return to title=返回标题
 
 # More translations (更多翻译)
+§200100000255weak=§200100000255弱
+§000200000255strong=§000200000255强
+§000200000255default=§000200000255默认
+§200000000255off=§200000000255关闭
+§000200000255on=§000200000255开启
+§255000000255first person=§255000000255第一人称
+§200000000255third person=§200000000255第三人称
+§200100000255angled=§200100000255斜向
+§000100200255bird's-eye=§000100200255鸟瞰
+§200100000255fast=§200100000255快速
+§000100200255fancy=§000100200255花哨
+§200100000255V-Sync=§200100000255垂直同步
+§000100200255unlimited=§000100200255无限制
+§000100200255circular=§000100200255环形
+§200100000255bottom=§200100000255底部
+§200000000255private=§200000000255私有
+§000200000255public=§000200000255公开
+
 # Level Editor (关卡编辑器)
 Exit=退出
 Make a copy=复制关卡
@@ -542,6 +560,9 @@ Save copy=保存副本
 Delete level=删除关卡
 
 # Select Game mode (选择游戏模式)
+Play random levels, crusades, minigames,---the tutorial, or make your own levels or crusades!=玩随机关卡、十字军东征、迷你游戏、---教程，或制作自己的关卡/十字军东征!
+Play, chat, and share levels---and crusades with other players!=游玩、聊天和分享关卡---和其他玩家一起玩十字军东征!
+Publicly share and check out---levels and crusades other players---have made!=公开分享和查看其他玩家制作的关卡---和十字军东征!
 Steam workshop=Steam创意工坊
 Upload crusade=上传十字军东征
 Browse crusades=浏览十字军东征
@@ -549,17 +570,6 @@ My uploaded creations=我上传的内容
 
 # Singleplayer (单人游戏)
 Play Tanks in new ways!=以新的方式游玩坦克!
-# Fight battles in an order,=按顺序进行战斗,
-# and see how long you can survive!=看看你能坚持多久!
-Back to minigames=返回菜单
-
-# Tutorial (教程)
-Welcome to Tanks!=欢迎来到"坦克:十字军东征"!
-You can control the tank in the circle using the keyboard.=你可以使用键盘来控制圆圈中的坦克
-Restart tutorial=重新开始教程
-You can see your health, available bullets and mines,=你可以查看你的生命值、可用的子弹和地雷和剩余敌人数量。
-Now finish off the battle by destroying that gray tank,=现在通过摧毁那辆灰色坦克来完成战斗,
-but watch out - it can move!=但要小心——它可以移动!
 
 # Multiplayer (多人游戏)
 Players using Steam can invite friends to their party or=使用Steam的玩家可以邀请好友加入其派对
@@ -568,8 +578,7 @@ To join with an IP address, make sure that everyone is using=要使用IP地址�
 the same port, and that all players are connected to the same=需确保所有玩家使用相同端口且连接到同一个网络
 network, unless the host is port forwarding.=(除非主机开启了端口转发)
 Join by IP=通过 IP 地址加入
-# You can find this on the=你可以在派对主持人的
-# party host's screen=屏幕上找到这个
+You can find this on the---party host's screen=你可以在派对主持人的屏幕上---找到这个
 Failed to connect=连接失败
 Random co-op=随机合作关卡
 Random versus=随机对战关卡
@@ -580,12 +589,53 @@ Level and crusade sharing:=关卡和十字军东征分享：
 Party host=派对主持
 Toggle showing IP address=切换显示IP地址
 # Click here or press T to send a chat message=点击这里或按T发送聊天消息
+Leave party=离开派对
+Getting your IP Address...=正在获取你的IP地址...
+Your Local IP Address: %s (Port: %d)=你的本地IP地址：%s (端口：%d)
+Fight other players in this party---in a randomly generated level=在随机生成的关卡中---与其他派对成员战斗
+Connect to a network to play with others!=连接到网络以与其他玩家一起游戏!
+Hosting failed:---%s------If you keep getting this error try restarting the game.=主持派对失败：---%s------如果继续出现此错误，请尝试重新启动游戏
+%d players in this party:=%d 个玩家在此派对中：
+Click to unmute %s.---%s is currently muted and can't chat.=点击取消禁言 %s---%s 当前已禁言，无法聊天
+Click to mute %s and prevent them from chatting.---%s is currently not muted.=点击禁言 %s。---%s 当前未禁言。
+Starting Steam party...=正在启动Steam派对...
+Click here or press %s to send a chat message=点击这里或按 %s 发送聊天消息
+Sets port for multiplayer------Make sure all players are using---the same port=设置多人游戏端口---确保所有玩家都使用相同端口
+When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.=当此选项启用时---在主持派对时---其他玩家的位置和---速度将被检查---并在无效时进行更正。------较弱的设置---在更不稳定的连接下---工作更好。
+Disables all friendly fire in the party.---Tanks on the same team will---not damage each other.---Useful for co-op in bigger parties.=在此派对中关闭所有友军攻击---在非常大的派对中合作时有用。
+The wait time in seconds after---all players are ready before---the battle begins.=在所有玩家准备就绪后---等待时间(秒)---开始战斗
+How many extra bot players---to add to parties=设定多少电脑玩家进入派对
+Join steam parties=加入Steam派对
+Browse public parties=查看公开的Steam派对
+
+# Both Multiplayer and Singleplayer (多人游戏和单人游戏)
+Fight battles in an order,---and see how long you can survive!=按顺序进行战斗，看看你能坚持多久!
+
+# My Levels
+Sorting by last modified=按最后修改时间排序
+Sorting by name=按名称排序
+You have no levels=你没有任何关卡
+Create a level with the 'New level' button!=使用'新关卡'按钮创建一个关卡!
+No levels found=没有搜索到任何关卡
+# §127127127255Search=§127127127255搜索...
+Open folder in file manager=在文件管理器中打开文件夹
+
+# Tutorial (教程)
+Welcome to Tanks!=欢迎来到"坦克:十字军东征"!
+You can control the tank in the circle using the keyboard.=你可以使用键盘来控制圆圈中的坦克
+Restart tutorial=重新开始教程
+You can see your health, available bullets and mines,=你可以查看你的生命值、可用的子弹和地雷和剩余敌人数量。
+Now finish off the battle by destroying that gray tank,=现在通过摧毁那辆灰色坦克来完成战斗,
+but watch out - it can move!=但要小心——它可以移动!
 
 # Options (设置)
 Window options=窗口选项
 Miscellaneous options=杂项
 Open game folder=打开游戏文件夹
 My profile=我的资料
+
+Antialiasing will be enabled=抗锯齿将在你下次启动游戏时
+the next time you start the game.=开启
 
 Layered music: =分层音乐：
 
@@ -612,19 +662,85 @@ Clear tool=删除工具
 Square tool=正方形工具
 Line tool=线形工具
 Circle tool=圆形工具
-Wand tool=手杖工具
+Wand tool=魔棒工具
+Take screenshot=截图
+Hide/show pause menu=显示/隐藏暂停菜单
+Toggle automatic zoom=切换自动缩放
+Quick use ability 1=快速使用能力1
+Quick use ability 2=快速使用能力2
+Quick use ability 3=快速使用能力3
+Quick use ability 4=快速使用能力4
+Quick use ability 5=快速使用能力5
+Item slot 1=物品栏1
+Item slot 2=物品栏2
+Item slot 3=物品栏3
+Item slot 4=物品栏4
+Item slot 5=物品栏5
+Item slot 6=物品栏6
+Item slot 7=物品栏7
+Item slot 8=物品栏8
+Item slot 9=物品栏9
+Item slot 10=物品栏10
+Square selection=正方形选择
 
 Tank textures: =坦克材质：
 X-ray bullets: =透视子弹：
-Max FPS: =最大FPS：
-Shadow quality: =阴影质量：
+Shadow quality: %s=阴影质量：%s
 Show best run: =显示最佳纪录：
+Max FPS: %s=最大帧率：%s
+Max FPS: §200100000255V-Sync=最大帧率：§200100000255垂直同步
+Max FPS: §000100200255unlimited=最大帧率：§000100200255无限制
+V-Sync=垂直同步
+Manual limit=自定义
+Unlimited=无限制
+Fancy terrain enables varied block---and ground colors------May impact performance on larger levels=Fancy地形启用了不同的方块和地面颜色------可能会影响较大关卡的性能
+Bullet trails show the paths of bullets------Fancy bullet trails enable some extra particle---effects for certain bullet types=子弹轨迹显示子弹的路径------Fancy 子弹轨迹为某些子弹类型启用了额外的粒子效果
+Glow effects may significantly---impact performance=开启后，发光效果可能会显著影响性能
+3D graphics may impact performance=3D图形可能会较大影响性能
+Enabling 3D ground may impact---performance in large levels=开启后，3D地面可能会较大影响性能
+Changes the angle at which---you view the game field=改变你查看游戏区域的角度
+May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect=可能会在细边缘处修复闪烁---但会影响性能------需要重新启动游戏才能生效
+Adds designs to the built-in tanks---which can help differentiate them=为内置坦克增加设计---这有助于区分它们
+Shows indicators for bullets---hidden behind terrain=显示隐藏在地形后面的子弹
+Shadows are quite graphically intense---and may significantly reduce framerate=阴影在图形上非常强烈---并且可能会大幅降低帧率
+Particle effects may significantly---impact performance=粒子效果可能会大幅影响性能
+Limiting your framerate may---decrease battery consumption=限制你的帧率---可能会减少电池消耗
+Maximum framerate is locked to 60---because of deterministic mode=最大帧率已锁定为60---因为已开启确定性模式
+Limits framerate to your screen's refresh rate------May fix issues with screen tearing=将帧率限制为屏幕刷新率------可能会解决画面撕裂问题
+Disables the framerate limit------May cause issues with inconsistent game speed=禁用帧率限制------可能会导致游戏速度不一致的问题
+Set a manual framerate limit=设置自定义帧率限制
+Maximum framerate: §200100000255V-Sync=最大帧率：§200100000255垂直同步
+Maximum framerate: %s=最大帧率：%s
+Maximum framerate: §000100200255unlimited=最大帧率：§000100200255无限制
+Shadows: =阴影：
+Shadow quality=阴影质量
+Shadow options=阴影设置
+Effect options=效果设置
+
+When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)=启用后，关卡将在加载---4秒后自动开始---(如果在那之前没有点击开始按钮)
+When off, skips directly to the summary tab---of the crusade end stats screen=关闭后直接跳转到十字军东征---结束统计数据屏幕的摘要选项卡
+When enabled, the backgrounds of---the crusade preview and stats---screens display an animation of all---the crusade levels scrolling by.=启用后，十字军东征预览和统计屏幕---的背景会显示所有十字军东征关卡的滚动动画
+Configures the placement of item, health,---and ammunition information on the screen.------In the 'bottom' setting, all this information---will be at the bottom of the screen.------In the 'circular' setting, this information will---either be overlaid on your tank---or placed around your cursor.=配置物品、生命值和弹药信息在屏幕上的位置。------在'底部'设置中，所有这些信息---都将显示在屏幕底部。------在'环形'设置中，此信息将---要么覆盖在您的坦克上---要么围绕您的鼠标光标显示。
+
+When layered music is enabled, different---instruments will be added to the soundtrack---based on criteria such as remaining tank---types or arcade rampage level.--- ---This may cause lag and desynchronization---of music on some devices.=启用分层音乐后---将根据剩余坦克类型---或街机暴走等级等条件---在配乐中逐步加入不同乐器---这可能导致部分设备出现---音乐延迟或不同步
+
+Shows the following information---at the bottom of the screen:------Game version---Framerate---Network latency (if in a party)---Memory usage=在屏幕底部显示以下信息：---游戏版本---帧率---网络延迟(若在一个派对里)---内存占用
+Warn before closing the game---while in an editor=在编辑器中关闭游戏时发出警告
+Disallows your mouse pointer from---leaving the window while playing=禁止鼠标指针---在游戏时离开窗口
+Window resolution=窗口分辨率
+
+Pick a username that players---will see in multiplayer=起一个可以在多人游戏中---被玩家们看到的用户名
+
+When enabled, time spent---in the current level attempt---and crusade will be displayed=启用后---将显示当前关卡---以及整个十字军东征的耗时
+When enabled and playing a built-in---crusade that you've already completed---at least once, the time difference from---your best run's time will show upon---clearing a level.=若启用且游玩已至少通关一次的---内置十字军东征时，在通关某关后---会显示与最佳通关时间的差值
+Deterministic mode changes the random number---generation to be fixed based on a seed, and---the game speed to be locked and independent---of framerate.------This is useful for fair speedruns but may---provide for a less smooth experience.------If your device can't run Tanks at 60 FPS,---use 30 FPS mode to prevent slowdowns.=确定性模式会将随机数的生成固定为基于种子---并将游戏速度锁定为与帧率无关的固定值---这对公平的速通很有用，但可能导致体验不够流畅---若设备无法稳定60帧运行Tanks---请使用30帧模式以避免卡顿
 
 # In game (游戏内界面)
 Start now=立即开始
 # Game menu (游戏菜单)
 Generate new level=生成一个新关卡
 Restart level=重新开始关卡
+Back to minigames=返回小游戏菜单
 # Multiplayer game menu (多人游戏暂停菜单)
 Game menu=暂停菜单
 Close menu=关闭菜单

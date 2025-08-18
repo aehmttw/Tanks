@@ -249,6 +249,15 @@ public class FontRenderer extends BaseFontRenderer
                 continue;
             else if (c[i] == '\u00A7')
             {
+                if (s.length() <= i + 1)
+                    continue;
+
+                if (c[i + 1] == 'r')
+                {
+                    i++;
+                    continue;
+                }
+
                 if (s.length() <= i + 12)
                     continue;
 

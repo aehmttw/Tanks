@@ -113,12 +113,12 @@ public class ScreenOptionsGraphics extends Screen
         if (!Game.shadowsEnabled)
             shadows.setText("Shadows: ", ScreenOptions.offText);
         else
-            shadows.setText("Shadow quality: %s", (Object)("\u00A7000200000255" + Game.shadowQuality));
+            shadows.setText("Shadow quality: ", "\u00A7000200000255" + Game.shadowQuality);
 
         if (!Game.effectsEnabled)
             effects.setText("Particle effects: ", ScreenOptions.offText);
         else if (Game.effectMultiplier < 1)
-            effects.setText("Particle effects: %s", (Object)("\u00A7200100000255" + (int) Math.round(Game.effectMultiplier * 100) + "%"));
+            effects.setText("Particle effects: ", "\u00A7200100000255" + (int) Math.round(Game.effectMultiplier * 100) + "%");
         else
             effects.setText("Particle effects: ", ScreenOptions.onText);
 
@@ -128,15 +128,15 @@ public class ScreenOptionsGraphics extends Screen
             tankTextures.setText(tankTexturesText, ScreenOptions.offText);
 
         if (Game.vsync)
-            maxFPS.setText("Max FPS: \u00A7200100000255V-Sync");
+            maxFPS.setText("Max FPS: ", "\u00A7200100000255V-Sync");
         else if (Game.maxFPS > 0)
-            maxFPS.setText("Max FPS: %s", (Object)("\u00A7000200000255" + Game.maxFPS));
+            maxFPS.setText("Max FPS: ", "\u00A7000200000255" + Game.maxFPS);
         else
-            maxFPS.setText("Max FPS: \u00A7000100200255unlimited");
+            maxFPS.setText("Max FPS: ", "\u00A7000100200255unlimited");
 
         if (Game.deterministicMode)
         {
-            maxFPS.setText("Max FPS: %s", (Object) ("\u00A7000200000255" + 60));
+            maxFPS.setText("Max FPS: %s", "\u00A7000200000255" + 60);
             maxFPS.enabled = false;
             maxFPS.setHoverText("Maximum framerate is locked to 60---because of deterministic mode");
         }

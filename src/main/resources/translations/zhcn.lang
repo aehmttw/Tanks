@@ -551,6 +551,8 @@ Return to title=返回标题
 §200000000255private=§200000000255私有
 §000200000255public=§000200000255公开
 
+Search=搜索...
+
 # Level Editor (关卡编辑器)
 Exit=退出
 Make a copy=复制关卡
@@ -619,6 +621,7 @@ Create a level with the 'New level' button!=使用'新关卡'按钮创建一个�
 No levels found=没有搜索到任何关卡
 # §127127127255Search=§127127127255搜索...
 Open folder in file manager=在文件管理器中打开文件夹
+Last modified---%s ago=最后修改时间---%s 前
 
 # Tutorial (教程)
 Welcome to Tanks!=欢迎来到"坦克:十字军东征"!

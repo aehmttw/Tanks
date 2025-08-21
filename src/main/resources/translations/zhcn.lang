@@ -276,7 +276,7 @@ Notice!=注意!
 Antialiasing will be enabled the next time you start the game=下次启动游戏时将启用抗锯齿
 Antialiasing will be disabled the next time you start the game=下次启动游戏时将禁用抗锯齿
 Fullscreen: =全屏：
-Can also be toggled at any time by pressing %d or %d=也可以随时通过按%d或%d切换
+Can also be toggled at any time---by pressing %s=也可以随时通过按 %s 切换
 Sound options=声音选项
 Sound volume=声音音量
 Music volume=音乐音量
@@ -552,6 +552,7 @@ Return to title=返回标题
 §000200000255public=§000200000255公开
 
 Search=搜索...
+or=或
 
 # Level Editor (关卡编辑器)
 Exit=退出
@@ -590,7 +591,6 @@ Play:=游玩：
 Level and crusade sharing:=关卡和十字军东征分享：
 Party host=派对主持
 Toggle showing IP address=切换显示IP地址
-# Click here or press T to send a chat message=点击这里或按T发送聊天消息
 Leave party=离开派对
 Getting your IP Address...=正在获取你的IP地址...
 Your Local IP Address: %s (Port: %d)=你的本地IP地址：%s (端口：%d)
@@ -619,7 +619,6 @@ Sorting by name=按名称排序
 You have no levels=你没有任何关卡
 Create a level with the 'New level' button!=使用'新关卡'按钮创建一个关卡!
 No levels found=没有搜索到任何关卡
-# §127127127255Search=§127127127255搜索...
 Open folder in file manager=在文件管理器中打开文件夹
 Last modified---%s ago=最后修改时间---%s 前
 
@@ -644,7 +643,7 @@ Layered music: =分层音乐：
 
 Warn before exit: =退出前询问：
 Constrain mouse: =约束鼠标：
-# Window resolution=窗口分辨率
+Window resolution=窗口分辨率
 
 Stats animations: =统计动画：
 Crusade preview: =预览十字军东征：
@@ -778,7 +777,7 @@ Colors: %d=颜色数量：%d
 Reset to default colors=重置为默认颜色
 
 # Workshop
-Online creations=已被上传的创作
+Online creations=已被上传的创作内容
 Share a level you made with the Tanks community!=向Tanks社区分享你创作的关卡!
 Browse levels the Tanks community has created!=浏览Tanks社区已上传的关卡!
 Share a crusade you made with the Tanks community!=向Tanks社区分享你创作的十字军东征!
@@ -795,3 +794,5 @@ Creations deemed inappropriate or offensive may be removed.=若作品被认定�
 Thank you for your understanding.=感谢你的理解。
 The Tanks community looks forward to seeing what you've made!=Tanks社区期待欣赏你的作品!
 Agree and continue=同意并继续
+%s's creations=%s的所有创作内容
+No creations found=没有找到任何创作内容

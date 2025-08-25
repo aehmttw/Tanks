@@ -13,6 +13,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
+import tanks.Game;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -23,9 +24,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -135,7 +134,42 @@ public class LWJGLWindow extends BaseWindow
 
 	protected void init()
 	{
-		this.fontRenderer = new FontRenderer(this, "/font.png");
+		this.fontRenderer = new FontRenderer(this, "/fonts/default/font.png");
+
+		// Load zh cn font
+        try
+        {
+            int count = 1;
+            while (true)
+            {
+                try (InputStream zhCnFontInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".png");
+                     InputStream zhCnTxtInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".txt"))
+                {
+                    if (zhCnFontInputStream == null) break;
+                    if (zhCnTxtInputStream == null)
+                    {
+                        Game.logger.println("Failed to load zh cn font " + count);
+                        continue;
+                    }
+                    Scanner scanner = new Scanner(Objects.requireNonNull(zhCnTxtInputStream), StandardCharsets.UTF_8.name());
+                    StringBuilder sb = new StringBuilder();
+                    while (scanner.hasNextLine())
+                    {
+                        sb.append(scanner.nextLine());
+                    }
+                    String chinese_chars = sb.toString();
+                    int[] chinese_chars_sizes = new int[chinese_chars.length()];
+                    Arrays.fill(chinese_chars_sizes, 8);
+                    this.fontRenderer.addFont("/fonts/zh_cn/font_zh_cn_" + count + ".png", chinese_chars, chinese_chars_sizes);
+                    count++;
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace(Game.logger);
+            e.printStackTrace();
+        }
 
 		GLFWErrorCallback.createPrint(System.err).set();
 

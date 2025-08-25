@@ -6,6 +6,7 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
+import tanks.translation.Translation;
 
 public class SearchBox extends TextBox
 {
@@ -165,7 +166,7 @@ public class SearchBox extends TextBox
 		else
 		{
 			if (this.inputText.length() <= 0)
-				Drawing.drawing.drawInterfaceText(posX, posY, "\u00a7127127127255Search");
+				Drawing.drawing.drawInterfaceText(posX, posY, "\u00a7127127127255" + Translation.translate("Search"));
 			else
 				Drawing.drawing.drawInterfaceText(posX, posY, inputText);
 		}

@@ -116,8 +116,8 @@ public class TextBox implements IDrawable, ITrigger
 	{
 		this(x, y, sX, sY, text, f, defaultText);
 		this.enableHover = true;
-		this.hoverText = hoverText.split("---");
-		this.hoverTextRaw = hoverText;
+        this.hoverTextRaw = Translation.translate(hoverText);
+		this.hoverText = this.hoverTextRaw.split("---");
 	}
 
 	public void draw()

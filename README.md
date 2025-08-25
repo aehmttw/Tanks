@@ -103,3 +103,8 @@ SapphireDrew<br>
 
 ### Special Thanks:
 Everyone from the [Tanks Discord](https://discord.gg/aWPaJD3) who helped with ideas and bugs!
+
+## Font License
+This game uses the [Source Han Sans](https://github.com/adobe-fonts/source-han-sans) typeface ("思源黑体"), licensed under the [SIL Open Font License 1.1](src/main/resources/fonts/zh_cn/OFL.txt).  
+Copyright © 2014-2025 Adobe Systems Incorporated (http://www.adobe.com/), with Reserved Font Name 'Source'.  
+Source is a trademark of Adobe in the United States and/or other countries.

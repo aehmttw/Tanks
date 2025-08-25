@@ -91,36 +91,21 @@ public class ObstacleBreakable extends ObstacleStackable
             return;
 
         Drawing drawing = Drawing.drawing;
-
         drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
 
-        double offset = Math.pow(this.fallAnimation / 100, 2) * Game.tile_size;
-
         if (Game.enable3d)
-        {
-            for (int i = 0; i < Math.min(this.stackHeight, default_max_height); i++)
-            {
-                drawing.setColor(this.stackColorR[i], this.stackColorG[i], this.stackColorB[i], this.colorA);
-
-                byte option = 0;
-                double cutoff = -Math.min((i - 1 + stackHeight % 1.0) * Game.tile_size, 0);
-
-                byte o;
-
-                if (stackHeight % 1 == 0)
-                {
-                    o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size + offset));
-                    drawing.fillBox(this, this.posX, this.posY, offset + i * Game.tile_size, draw_size, draw_size, draw_size, o);
-                }
-                else
-                {
-                    o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size + offset));
-                    drawing.fillBox(this, this.posX, this.posY, offset + (i - 1 + stackHeight % 1.0) * Game.tile_size + cutoff, draw_size, draw_size, draw_size - cutoff, o);
-                }
-            }
-        }
+            drawStacks();
         else
             drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
+    }
+
+    @Override
+    public void drawStacks()
+    {
+        double anim = Math.pow(this.fallAnimation / 100, 2);
+        startHeight += anim;
+        super.drawStacks();
+        startHeight -= anim;
     }
 
     public double getTileHeight()

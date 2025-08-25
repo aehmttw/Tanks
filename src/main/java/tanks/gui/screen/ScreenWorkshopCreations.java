@@ -170,9 +170,9 @@ public class ScreenWorkshopCreations extends Screen
 			else if (d != null)
 			{
 				if (d.getTags().toLowerCase().contains("level"))
-					Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, "Level", false);
+					Drawing.drawing.displayInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, "Level", false);
 				else if (d.getTags().toLowerCase().contains("crusade"))
-					Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, "Crusade", false);
+					Drawing.drawing.displayInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, "Crusade", false);
 			}
 		}
 
@@ -180,7 +180,7 @@ public class ScreenWorkshopCreations extends Screen
 		{
 			Drawing.drawing.setColor(0, 0, 0);
 			Drawing.drawing.setInterfaceFontSize(24);
-			Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "No creations found");
+			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "No creations found");
 		}
 
 		if (Game.steamNetworkHandler.workshop.searchUser == null)

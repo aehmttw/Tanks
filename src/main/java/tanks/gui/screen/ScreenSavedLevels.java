@@ -8,6 +8,7 @@ import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBoxInstant;
 import tanks.gui.screen.leveleditor.OverlayEditorMenu;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.translation.Translation;
 
 public class ScreenSavedLevels extends Screen
 {
@@ -82,7 +83,7 @@ public class ScreenSavedLevels extends Screen
 						Game.screen = new OverlayEditorMenu(s, s);
 					}
 				},
-				(file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+				(file) -> Translation.translate("Last modified---%s ago", Game.timeInterval(file.lastModified(), System.currentTimeMillis())));
 
 		fullSavedLevelsList.drawOpenFileButton = true;
 		fullSavedLevelsList.sortedByTime = sortByTime;
@@ -146,12 +147,12 @@ public class ScreenSavedLevels extends Screen
 
 			if (search.inputText.length() > 0)
 			{
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "No levels found");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "No levels found");
 			}
 			else
 			{
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 30, "You have no levels");
-				Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 30, "Create a level with the 'New level' button!");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 30, "You have no levels");
+				Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + 30, "Create a level with the 'New level' button!");
 			}
 		}
 

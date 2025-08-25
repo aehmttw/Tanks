@@ -70,7 +70,7 @@ public class EventSendOnlineClientDetails extends PersonalEvent implements IOnli
             return;
         }
 
-        if (Game.usernameInvalid(this.username) || this.username.equals(""))
+        if (Game.usernameInvalid(this.username) || this.username.isEmpty())
         {
             s.sendEventAndClose(new EventKick("Invalid username!"));
             return;

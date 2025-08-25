@@ -131,10 +131,10 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyTerrain)
         {
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + this.size / 2, this.posY - this.size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX - this.size / 2, this.posY + this.size / 2));
-            this.height = Math.max(this.height, Game.sampleTerrainGroundHeight(this.posX + this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX - this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX + this.size / 2, this.posY - this.size / 2));
+            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX - this.size / 2, this.posY + this.size / 2));
+            this.height = Math.max(this.height, Game.sampleGroundHeight(this.posX + this.size / 2, this.posY + this.size / 2));
         }
 
         if (Game.enable3d)

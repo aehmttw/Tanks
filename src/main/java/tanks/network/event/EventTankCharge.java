@@ -36,10 +36,7 @@ public class EventTankCharge extends PersonalEvent implements IStackableEvent
         {
             Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 4, Effect.EffectType.charge);
 
-            double var = 50;
-            e.colR = Math.min(255, Math.max(0, t.color.red + Math.random() * var - var / 2));
-            e.colG = Math.min(255, Math.max(0, t.color.green + Math.random() * var - var / 2));
-            e.colB = Math.min(255, Math.max(0, t.color.blue + Math.random() * var - var / 2));
+            e.setColor(t.color);
 
             Game.effects.add(e);
         }

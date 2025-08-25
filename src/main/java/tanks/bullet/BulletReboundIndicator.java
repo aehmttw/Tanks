@@ -51,14 +51,9 @@ public class BulletReboundIndicator extends Movable
         if (Game.effectsEnabled && Panel.frameFrequency * Game.effectMultiplier >= Math.random())
         {
             Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-            double var = 50;
             e.maxAge /= 2;
-            e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
-            e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
-            e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
-            e.glowR = e.colR - this.color2.red;
-            e.glowG = e.colG - this.color2.green;
-            e.glowB = e.colB - this.color2.blue;
+            e.setColorWithNoise(this.color, 50);
+            e.setGlowColor(this.color2);
 
             if (Game.enable3d)
                 e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);

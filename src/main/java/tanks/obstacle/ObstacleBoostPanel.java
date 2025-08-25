@@ -129,11 +129,8 @@ public class ObstacleBoostPanel extends Obstacle
     public void addEffect(double x, double y, double extra)
     {
         Effect e = Effect.createNewEffect(x, y, Game.tile_size / 2, Effect.EffectType.piece);
-        double var = 50;
-
-        e.colR = Math.min(255, Math.max(0, this.colorR + Math.random() * var - var / 2));
-        e.colG = Math.min(255, Math.max(0, this.colorG + Math.random() * var - var / 2));
-        e.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+        e.setColorWithNoise(this.colorR, this.colorG, this.colorB, 50);
+        e.glowColor.set(e.color);
 
         if (Game.enable3d)
             e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() + extra);

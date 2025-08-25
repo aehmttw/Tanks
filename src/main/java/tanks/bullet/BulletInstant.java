@@ -1,5 +1,6 @@
 package tanks.bullet;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
@@ -8,6 +9,7 @@ import tanks.network.event.EventBulletInstantWaypoint;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class BulletInstant extends Bullet
 {
@@ -59,14 +61,12 @@ public class BulletInstant extends Bullet
 			if (this.item.item.cooldownBase <= 0)
 				mul = 0.25;
 
-			for (int i = 0; i < this.size * mul * Game.effectMultiplier; i++)
+			for (int i = 0; i < mul * Game.effectMultiplier; i++)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
 				double var = 50;
 				e.maxAge /= 2;
-				e.colR = Math.min(255, Math.max(0, this.baseColor.red + Math.random() * var - var / 2));
-				e.colG = Math.min(255, Math.max(0, this.baseColor.green + Math.random() * var - var / 2));
-				e.colB = Math.min(255, Math.max(0, this.baseColor.blue + Math.random() * var - var / 2));
+				e.setColorsFromBullet(this, this.baseColor);
 
 				if (Game.enable3d)
 					e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
@@ -153,7 +153,18 @@ public class BulletInstant extends Bullet
 		if (this.hitStun > 0)
 			this.addElectricEffect();
 
-		this.segments.add(new Laser(this.lastX, this.lastY, this.lastZ, this.collisionX, this.collisionY, this.posZ, this.size / 2, this.getAngleInDirection(this.lastX, this.lastY), this.baseColor));
+        Laser l = new Laser(this.lastX, this.lastY, this.lastZ, this.collisionX, this.collisionY, this.posZ, this.size / 2, this.getAngleInDirection(this.lastX, this.lastY), this.baseColor);
+
+        if (this.effect.overrideGlowColor)
+            l.glowColor = this.effect.glowColor;
+
+        l.glowIntensity = this.effect.glowIntensity;
+        l.glows = this.effect.glowIntensity > 0;
+        l.glowSize = this.effect.glowSize;
+        l.glowGlowy = this.effect.glowGlowy;
+        l.luminance = this.effect.luminance;
+
+        this.segments.add(l);
 		this.lastX = this.collisionX;
 		this.lastY = this.collisionY;
 		this.lastZ = this.posZ;
@@ -172,7 +183,7 @@ public class BulletInstant extends Bullet
 		boolean glows = false;
 		double size = 0.25;
 
-		if (Game.fancyBulletTrails)
+		if (Game.bulletTrails)
 		{
 			for (int j = 0; j < 2; j++)
 			{
@@ -309,4 +320,37 @@ public class BulletInstant extends Bullet
 	{
 
 	}
+
+    public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, Random r, Color base, Color turret)
+    {
+        double l = this.effect.drawForInterface(x, width, y, size, effects, this.speed / 3.125, false);
+        double start = x - l / 2;
+
+        if (!this.effect.overrideGlowColor)
+        {
+            if (this.overrideOutlineColor)
+                Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+            else
+                Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+        }
+        else
+            Drawing.drawing.setColor(this.effect.glowColor.red * this.effect.glowIntensity, this.effect.glowColor.green * this.effect.glowIntensity, this.effect.glowColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+
+        Drawing.drawing.fillInterfaceGlow(start, y, size * this.effect.glowSize, size * this.effect.glowSize, !this.effect.glowGlowy);
+
+        if (this.overrideOutlineColor)
+            Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+        else
+            Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+
+        Drawing.drawing.fillInterfaceOval(start, y, size, size);
+
+        if (this.overrideBaseColor)
+            Drawing.drawing.setColor(this.baseColor.red, this.baseColor.green, this.baseColor.blue, 255, this.effect.luminance);
+        else
+            Drawing.drawing.setColor(base.red, base.green, base.blue, 255, this.effect.luminance);
+
+        Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
+
+    }
 }

@@ -215,12 +215,9 @@ public class TankRemote extends Tank
 					for (int i = 0; i < 50 * Game.effectMultiplier; i++)
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
-						double var = 50;
-						e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
+                        e.setColorsFromTank(this);
 
-						if (Game.enable3d)
+                        if (Game.enable3d)
 							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
 						else
 							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);

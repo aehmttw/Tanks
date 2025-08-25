@@ -71,14 +71,8 @@ public class ObstacleMud extends Obstacle
             e1.setPolarMotion(0, 0);
             e2.setPolarMotion(0, 0);
 
-            double var = 20;
-            e1.colR = Math.min(255, Math.max(0, this.colorR - 20 + Math.random() * var - var / 2));
-            e1.colG = Math.min(255, Math.max(0, this.colorG - 20 + Math.random() * var - var / 2));
-            e1.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
-
-            e2.colR = Math.min(255, Math.max(0, this.colorR - 20 + Math.random() * var - var / 2));
-            e2.colG = Math.min(255, Math.max(0, this.colorG - 20 + Math.random() * var - var / 2));
-            e2.colB = Math.min(255, Math.max(0, this.colorB + Math.random() * var - var / 2));
+            e1.setColorWithNoise(this.colorR - 20, this.colorG - 20, this.colorB, 20);
+            e2.setColorWithNoise(this.colorR - 20, this.colorG - 20, this.colorB, 20);
 
             double angle = t.getPolarDirection() + Math.PI / 2;
 

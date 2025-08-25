@@ -102,6 +102,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     protected boolean musicStarted = false;
     protected float pausedMusicPos = 0;
 
+    public double nudgeTimer = 0;
+    public double timeSinceNudge = 0;
+    public static double ready_time_to_nudge = 1000;
+
     public boolean zoomPressed = false;
     public boolean zoomScrolled = false;
 
@@ -140,6 +144,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         }
         ready = true;
     }
+    );
+
+    Button readyNudgeButton = new Button(readyButton.posX - readyButton.sizeX / 2 + readyButton.sizeY / 2, readyButton.posY, 30, 30, "", () ->
+    {
+        timeSinceNudge = 0;
+        Drawing.drawing.playSound("obliterate.ogg");
+        ScreenOverlayChat.addChat("\u00A7255000000255Sent a nudge to players who aren't ready yet!");
+
+        Game.eventsOut.add(new EventNudge(Game.player));
+    }, "Send a nudge to players---who haven't clicked ready!"
     );
 
     Button startNow = new Button(200, Drawing.drawing.interfaceSizeY - 50, 350, 40, "Start now", () ->
@@ -1580,6 +1594,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                         if (this.ready)
                         {
+                            this.timeSinceNudge += Panel.frameFrequency;
                             if (this.readyPanelCounter * 10 >= introMusicEnd)
                             {
                                 if (Game.enableLayeredMusic)
@@ -1654,6 +1669,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     }
 
                     readyButton.update();
+
+                    if (this.timeSinceNudge > ready_time_to_nudge && this.cancelCountdown)
+                        readyNudgeButton.update();
 
                     if (Game.game.input.play.isValid() && readyButton.enabled)
                     {
@@ -2713,6 +2731,27 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if (!playing)
         {
+            for (Movable m: Game.movables)
+            {
+                if ((m instanceof TankPlayable && ScreenPartyHost.readyPlayers.contains(((TankPlayable) m).player)) || m instanceof TankPlayerBot || (m == Game.playerTank && this.ready))
+                {
+                    Drawing.drawing.setColor(0, 255, 0, 255, 1);
+                    Drawing.drawing.drawImage("icons/check.png", m.posX, m.posY, ((Tank) m).size, 50, 50);
+                }
+
+                if (ScreenPartyLobby.isClient && m instanceof TankRemote)
+                {
+                    for (ConnectedPlayer p: ScreenPartyLobby.readyPlayers)
+                    {
+                        if (p.clientId.toString().endsWith(((TankRemote) m).name))
+                        {
+                            Drawing.drawing.setColor(0, 255, 0, 255, 1);
+                            Drawing.drawing.drawImage("icons/check.png", m.posX, m.posY, ((Tank) m).size, 50, 50);
+                        }
+                    }
+                }
+            }
+
             if (Crusade.crusadeMode)
             {
                 if (Level.isDark())
@@ -2911,7 +2950,27 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                     prevReadyNames = readyNamesCount;
 
+                    if (!this.ready && this.cancelCountdown)
+                    {
+                        drawing.setColor(255, 127, 0, 127);
+                        double size = Math.sin(1.25 / 60 * screenAge * Math.PI) * 5 + 50 + nudgeTimer * 10;
+
+                        if (!Game.game.window.drawingShadow)
+                            nudgeTimer = Math.max(nudgeTimer - Panel.frameFrequency, 0);
+
+                        drawing.fillPartialInterfaceOval(readyButton.posX - readyButton.sizeX / 2 + readyButton.sizeY / 2, readyButton.posY, size, size, 0.25, 0.75);
+                        drawing.fillPartialInterfaceOval(readyButton.posX + readyButton.sizeX / 2 - readyButton.sizeY / 2, readyButton.posY, size, size, 0.75, 1.25);
+                        drawing.fillInterfaceRect(readyButton.posX, readyButton.posY, readyButton.sizeX - readyButton.sizeY, size);
+                    }
                     readyButton.draw();
+
+                    readyNudgeButton.fullInfo = true;
+                    readyNudgeButton.image = "icons/honk.png";
+                    readyNudgeButton.imageSizeY = 25;
+                    readyNudgeButton.imageSizeX = 25;
+
+                    if (this.timeSinceNudge > ready_time_to_nudge && cancelCountdown)
+                        readyNudgeButton.draw();
                 }
 
                 if (!this.shopItemButtons.isEmpty() && this.readyButton.enabled)

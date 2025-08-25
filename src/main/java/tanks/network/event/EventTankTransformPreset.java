@@ -100,12 +100,9 @@ public class EventTankTransformPreset extends PersonalEvent
             {
                 Effect e1 = Effect.createNewEffect(t.posX, t.posY, t.posZ + target.size * 0.75, Effect.EffectType.exclamation);
                 e1.size = target.size;
-                e1.colR = t.color.red;
-                e1.colG = t.color.green;
-                e1.colB = t.color.blue;
-                e1.glowR = target.color.red;
-                e1.glowG = target.color.green;
-                e1.glowB = target.color.blue;
+                e1.setColor(t.color);
+                e1.setGlowColor(target.color);
+                e1.glowColor.alpha = 127;
                 Game.effects.add(e1);
             }
 

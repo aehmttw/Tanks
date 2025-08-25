@@ -386,9 +386,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 							Effect e = Effect.createNewEffect(this.posX + j + s / 2 - Game.tile_size / 2, this.posY + k + s / 2 - Game.tile_size / 2, l, effect);
 
-							e.colR = this.colorR;
-							e.colG = this.colorG;
-							e.colB = this.colorB;
+						    e.setColor(this.colorR, this.colorG, this.colorB);
 
 							double dist = GameObject.distanceBetween(this, e);
 							double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);
@@ -413,11 +411,9 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 						Effect e = Effect.createNewEffect(this.posX + j + 5 - Game.tile_size / 2, this.posY + k + 5 - Game.tile_size / 2, effect);
 
-						e.colR = this.colorR;
-						e.colG = this.colorG;
-						e.colB = this.colorB;
+                        e.setColor(this.colorR, this.colorG, this.colorB);
 
-						double dist = GameObject.distanceBetween(this, e);
+                        double dist = GameObject.distanceBetween(this, e);
 						double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
 						double rad = radius - Game.tile_size / 2;
 						e.addPolarMotion(angle, (rad * Math.sqrt(2) - dist) / (rad * 2) + Math.random() * 2);

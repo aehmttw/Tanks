@@ -638,12 +638,8 @@ public class Button implements IDrawable, ITrigger
 		}
 
 		//e.size = 0.5;
-		e.colR = 255;
-		e.colG = 255;
-		e.colB = 255;
-		e.glowR = 255 * 0.25;
-		e.glowG = e.glowR;
-		e.glowB = e.glowR;
+		e.setColor(255, 255, 255);
+        e.setGlowColor(e.color, 127);
 		e.vX /= 2;
 		e.vY /= 2;
 		e.maxAge *= max;

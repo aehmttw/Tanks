@@ -494,12 +494,8 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         }
 
         //e.size = 0.5;
-        e.colR = r;
-        e.colG = g;
-        e.colB = b;
-        e.glowR = r / 4;
-        e.glowG = g / 4;
-        e.glowB = b / 4;
+        e.setColorWithNoise(r, g, b, 50);
+        e.setGlowColor(e.color, 127);
         double v = Math.random() * 0.5 + 0.25;
         e.vX *= v;
         e.vY *= v;

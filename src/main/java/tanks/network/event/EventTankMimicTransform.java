@@ -78,9 +78,7 @@ public class EventTankMimicTransform extends PersonalEvent
                     {
                         Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 4, Effect.EffectType.piece);
                         double var = 50;
-                        e.colR = Math.min(255, Math.max(0, t.color.red + Math.random() * var - var / 2));
-                        e.colG = Math.min(255, Math.max(0, t.color.green + Math.random() * var - var / 2));
-                        e.colB = Math.min(255, Math.max(0, t.color.blue + Math.random() * var - var / 2));
+                        e.setColorsFromTank(t);
 
                         if (Game.enable3d)
                             e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, 1 + Math.random() * t.size / 50.0);

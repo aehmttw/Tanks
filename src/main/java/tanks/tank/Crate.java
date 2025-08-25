@@ -39,17 +39,15 @@ public class Crate extends Movable
         if (Game.enable3d)
         {
             Drawing.drawing.setColor(this.tank.secondaryColor);
-            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size, size, size);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size, size, size, this.tank.baseSkin.base);
 
             Drawing.drawing.setColor(this.tank.color);
-            //Drawing.drawing.drawModel(m, this.posX, this.posY,  this.posZ - 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, 0, 0);
             Drawing.drawing.setColor(this.tank.color.red * 0.6, this.tank.color.green * 0.6, this.tank.color.blue * 0.6);
-            //Drawing.drawing.drawModel(m, this.posX, this.posY + size * 0.5 + 1,  this.posZ + size * 0.4 + 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, 0, Math.PI / 2);
             Drawing.drawing.setColor(this.tank.color.red * 0.8, this.tank.color.green * 0.8, this.tank.color.blue * 0.8);
-            //Drawing.drawing.drawModel(m, this.posX + size * 0.5 + 1, this.posY,  this.posZ + size * 0.4 + 1, size * 0.8, size * 0.8, (size + 2) * 2, 0, Math.PI / 2, 0);
-            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size * 0.8, size * 0.8, size + 2, this.tank.baseSkin.base);
-            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size * 0.8, size + 2, size * 0.8, this.tank.baseSkin.base);
-            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size + 2, size * 0.8, size * 0.8, this.tank.baseSkin.base);
+
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ, size * 0.8, size * 0.8, size + 2, this.tank.colorSkin.base);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size * 0.8, size + 2, size * 0.8, this.tank.colorSkin.base);
+            Drawing.drawing.fillBox(this.posX, this.posY, this.posZ + size * 0.1, size + 2, size * 0.8, size * 0.8, this.tank.colorSkin.base);
 
             if (this.tank.emblem != null)
             {

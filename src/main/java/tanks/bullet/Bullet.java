@@ -1088,30 +1088,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				}
 			}
 
-			if (Game.bulletTrails && Math.random() < frameFrequency * Game.effectMultiplier && Game.effectsEnabled && !this.homingSilent)
-			{
-				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-				double var = 50;
-				e.maxAge /= 2;
-
-				double r1 = 255;
-				double g1 = 120;
-				double b1 = 0;
-
-				e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
-				e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
-				e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
-
-				double v = this.homingSharpness > 0 ? 1 : -1;
-
-				if (Game.enable3d)
-					e.set3dPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, Math.PI * 0.1 * (Math.random() - 0.5), this.size / 50.0 * (12 + Math.random() * 4) * v);
-				else
-					e.setPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, this.size / 50.0 * (12 + Math.random() * 4) * v);
-
-				Game.effects.add(e);
-			}
-
+            this.addHomingParticles();
 			this.homingTargetTime += frameFrequency;
 		}
 
@@ -1121,6 +1098,28 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		this.homingPrevTarget = this.homingTarget;
 
 	}
+
+    public void addHomingParticles()
+    {
+        if (Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled && !this.homingSilent)
+        {
+            Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+            e.setColorsFromBullet(this);
+            e.maxAge /= 2;
+
+            e.setColorWithNoise(255, 120, 0, 50);
+            e.setGlowColor(e.color);
+
+            double v = this.homingSharpness > 0 ? 1 : -1;
+
+            if (Game.enable3d)
+                e.set3dPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, Math.PI * 0.1 * (Math.random() - 0.5), this.size / 50.0 * (12 + Math.random() * 4) * v);
+            else
+                e.setPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, this.size / 50.0 * (12 + Math.random() * 4) * v);
+
+            Game.effects.add(e);
+        }
+    }
 
 	public void applyStun(Movable movable)
 	{
@@ -1139,12 +1138,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 					e.linkedMovable = movable;
 					e.maxAge *= this.hitStun / 100.0;
 					double var = 50;
-					e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
-					e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-					e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-					e.glowR = 0;
-					e.glowG = 128;
-					e.glowB = 128;
+					e.setColor(0, 255, 255);
+                    e.setGlowColor(e.color, 127);
 					Game.effects.add(e);
 				}
 			}
@@ -1335,36 +1330,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 			if (Game.bulletTrails)
 			{
-				while (this.ageFrac >= 1 && Game.effectsEnabled && this.effect.enableParticles)
-				{
-					this.ageFrac -= 1;
-
-					Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-					double var = 50;
-					e.maxAge *= this.effect.particleLifespan;
-
-					double r1 = this.effect.particleColor.red;
-					double g1 = this.effect.particleColor.green;
-					double b1 = this.effect.particleColor.blue;
-
-					e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
-					e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
-					e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
-
-					if (this.effect.particleGlow <= 0)
-						e.enableGlow = false;
-
-					e.glowR = e.colR * (1 - this.effect.particleGlow);
-					e.glowG = e.colG * (1 - this.effect.particleGlow);
-					e.glowB = e.colB * (1 - this.effect.particleGlow);
-
-					if (Game.enable3d)
-						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * this.effect.particleSpeed);
-					else
-						e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * this.effect.particleSpeed);
-
-					Game.effects.add(e);
-				}
+				this.addParticles();
 			}
 		}
 
@@ -1395,6 +1361,33 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			this.collided();
 		}
 	}
+
+    public void addParticles()
+    {
+        while (this.ageFrac >= 1 && Game.effectsEnabled && this.effect.enableParticles)
+        {
+            this.ageFrac -= 1;
+
+            Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+            e.maxAge *= this.effect.particleLifespan;
+
+            e.setColorsFromBullet(this, this.effect.particleColor);
+            e.glowColor.alpha = this.effect.particleGlow * 255;
+
+            if (this.effect.particleGlow <= 0)
+                e.enableGlow = false;
+
+            if (this.effect.overrideGlowColor)
+                e.setGlowColor(this.effect.glowColor, this.effect.particleGlow * 255);
+
+            if (Game.enable3d)
+                e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * this.effect.particleSpeed);
+            else
+                e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0 * this.effect.particleSpeed);
+
+            Game.effects.add(e);
+        }
+    }
 
 	public void updateTrails()
 	{
@@ -1539,13 +1532,14 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (Game.glowEnabled)
 		{
-			if (!this.effect.overrideGlowColor)
-				Drawing.drawing.setColor(this.outlineColor.red * glow, this.outlineColor.green * glow, this.outlineColor.blue * glow, 255, 1);
+            boolean shade = !this.effect.glowGlowy;
+
+            if (!this.effect.overrideGlowColor)
+				Drawing.drawing.setColor(this.outlineColor.red, this.outlineColor.green, this.outlineColor.blue, 255 * glow, shade ? luminance : 1);
 			else
-				Drawing.drawing.setColor(this.effect.glowColor.red * glow, this.effect.glowColor.green * glow, this.effect.glowColor.blue * glow, 255, 1);
+				Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, 255 * glow, shade ? luminance : 1);
 
 			double sizeMul = this.effect.glowSize;
-			boolean shade = !this.effect.glowGlowy;
 
 			if (this.destroyTimer < 60.0)
 			{
@@ -1704,11 +1698,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				for (int i = 0; i < 25 * Game.effectMultiplier; i++)
 				{
 					Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
-					double var = 50;
-
-					e.colR = Math.min(255, Math.max(0, this.outlineColor.red + Math.random() * var - var / 2));
-					e.colG = Math.min(255, Math.max(0, this.outlineColor.green + Math.random() * var - var / 2));
-					e.colB = Math.min(255, Math.max(0, this.outlineColor.blue + Math.random() * var - var / 2));
+					e.setColorsFromBullet(this);
 
 					if (Game.enable3d)
 						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() + 0.5);
@@ -1725,17 +1715,12 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public void addDestroyEffect()
 	{
-		for (int i = 0; i < this.size * 4 * Game.effectMultiplier; i++)
+		for (int i = 0; i < 40 * Game.effectMultiplier; i++)
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-			double var = 50;
 			e.maxAge /= 2;
-			e.colR = Math.min(255, Math.max(0, this.baseColor.red + Math.random() * var - var / 2));
-			e.colG = Math.min(255, Math.max(0, this.baseColor.green + Math.random() * var - var / 2));
-			e.colB = Math.min(255, Math.max(0, this.baseColor.blue + Math.random() * var - var / 2));
-			e.glowR = e.colR - this.outlineColor.red;
-			e.glowG = e.colG - this.outlineColor.green;
-			e.glowB = e.colB - this.outlineColor.blue;
+			e.setColorsFromBullet(this);
+            e.glowColor.alpha /= 2;
 
 			if (Game.enable3d)
 				e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0 * 4);
@@ -1793,19 +1778,19 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (!this.effect.overrideGlowColor)
 		{
 			if (this.overrideOutlineColor)
-				Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+				Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : this.effect.luminance);
 			else
-				Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+				Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : this.effect.luminance);
 		}
 		else
-			Drawing.drawing.setColor(this.effect.glowColor.red * this.effect.glowIntensity, this.effect.glowColor.green * this.effect.glowIntensity, this.effect.glowColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+			Drawing.drawing.setColor(this.effect.glowColor.red * this.effect.glowIntensity, this.effect.glowColor.green * this.effect.glowIntensity, this.effect.glowColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : this.effect.luminance);
 
 		Drawing.drawing.fillInterfaceGlow(start, y, size * this.effect.glowSize, size * this.effect.glowSize, !this.effect.glowGlowy);
 
 		if (this.overrideOutlineColor)
-			Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+			Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.luminance);
 		else
-			Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+			Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.luminance);
 
 		Drawing.drawing.fillInterfaceOval(start, y, size, size);
 

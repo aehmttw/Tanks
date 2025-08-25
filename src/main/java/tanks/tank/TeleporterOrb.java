@@ -318,12 +318,8 @@ public class TeleporterOrb extends Movable
 		if (!Game.effectsEnabled || ScreenGame.finishedQuick)
 			return;
 
-		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.teleporterPiece);
-		double var = 50;
-		
-		e.colR = Math.min(this.tank.color.red, Math.max(0, 255 + Math.random() * var - var / 2));
-		e.colG = Math.min(this.tank.color.green, Math.max(0, 255 + Math.random() * var - var / 2));
-		e.colB = Math.min(this.tank.color.blue, Math.max(0, 255 + Math.random() * var - var / 2));
+		Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
+		e.setColorsFromTank(this.tank);
 		e.drawLevel = 9;
 
 		if (Game.enable3d)

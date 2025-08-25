@@ -25,6 +25,8 @@ public class Player
     public String buildName = "player";
     public HashSet<String> ownedBuilds = new HashSet<>();
 
+    public long lastNudge = 0;
+
     public static final Color default_primary = new Color(0, 150, 255, 255);
     public static final Color default_secondary = new Color(Turret.calculateSecondaryColor(default_primary.red), Turret.calculateSecondaryColor(default_primary.green), Turret.calculateSecondaryColor(default_primary.blue), 255);
     public static final Color default_tertiary = new Color((default_primary.red + default_secondary.red) / 2, (default_primary.green + default_secondary.green) / 2, (default_primary.blue + default_secondary.blue) / 2, 255);

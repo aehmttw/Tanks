@@ -206,7 +206,6 @@ public class ScreenOptions extends Screen
 			f.println("effects=" + Game.effectsEnabled);
 			f.println("effect_multiplier=" + (int) Math.round(Game.effectMultiplier * 100));
 			f.println("bullet_trails=" + Game.bulletTrails);
-			f.println("fancy_bullet_trails=" + Game.fancyBulletTrails);
 			f.println("glow=" + Game.glowEnabled);
 			f.println("3d=" + Game.enable3d);
 			f.println("3d_ground=" + Game.enable3dBg);
@@ -316,9 +315,6 @@ public class ScreenOptions extends Screen
 						break;
 					case "bullet_trails":
 						Game.bulletTrails = Boolean.parseBoolean(optionLine[1]);
-						break;
-					case "fancy_bullet_trails":
-						Game.fancyBulletTrails = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "glow":
 						Game.glowEnabled = Boolean.parseBoolean(optionLine[1]);

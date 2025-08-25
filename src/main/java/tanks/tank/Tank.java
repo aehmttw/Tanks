@@ -499,11 +499,7 @@ public abstract class Tank extends Movable implements ISolidObject
 					for (int i = 0; i < this.size * 2 * Game.effectMultiplier; i++)
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
-						double var = 50;
-
-						e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
+						e.setColorsFromTank(this);
 
 						if (Game.enable3d)
 							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.atan(Math.random()), Math.random() * this.size / 50.0);
@@ -547,11 +543,7 @@ public abstract class Tank extends Movable implements ISolidObject
 		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled && !ScreenGame.finishedQuick)
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
-			double var = 50;
-
-			e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-			e.colG = Math.min(255, Math.max(0, 180 + Math.random() * var - var / 2));
-			e.colB = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
+            e.setColorsFromTank(this);
 
 			if (Game.enable3d)
 				e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random());
@@ -633,12 +625,9 @@ public abstract class Tank extends Movable implements ISolidObject
 					for (int i = 0; i < 50 * Game.effectMultiplier; i++)
 					{
 						Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
-						double var = 50;
-						e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
-						e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
-						e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
+                        e.setColorsFromTank(this);
 
-						if (Game.enable3d)
+                        if (Game.enable3d)
 							e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 50.0);
 						else
 							e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * this.size / 50.0);
@@ -1180,12 +1169,12 @@ public abstract class Tank extends Movable implements ISolidObject
 			if (farthestM != null)
 			{
 				Effect e = Effect.createNewEffect(farthestM.posX, farthestM.posY, 50, Effect.EffectType.explosion);
-				e.colR = 0;
+				e.color.red = 0;
 
 				if (farthestIsInSight)
-					e.colG = 255;
+					e.color.green = 255;
 				else
-					e.colB = 255;
+					e.color.blue = 255;
 
 				e.radius = 100;
 				Game.effects.add(e);

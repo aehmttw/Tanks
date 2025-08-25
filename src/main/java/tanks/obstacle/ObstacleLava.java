@@ -61,18 +61,16 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
                 if (Game.enable3d)
                 {
                     Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, 0, Effect.EffectType.piece);
-                    e.colR = 255;
-                    e.colG = Math.random() * 255;
-                    e.colB = 0;
+                    e.setColor(255, Math.random() * 255, 0);
+                    e.setGlowColor(e.color);
                     e.vZ = Math.random() + 1;
                     Game.addEffects.add(e);
                 }
                 else
                 {
                     Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, Effect.EffectType.piece);
-                    e.colR = 255;
-                    e.colG = Math.random() * 255;
-                    e.colB = 0;
+                    e.setColor(255, Math.random() * 255, 0);
+                    e.setGlowColor(e.color);
                     Game.addEffects.add(e);
                 }
             }

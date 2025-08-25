@@ -57,9 +57,7 @@ public class EventObstacleShrubberyBurn extends PersonalEvent
                 else
                     e = (Effect.createNewEffect(this.posX, this.posY, ((ObstacleShrubbery) o).height, Effect.EffectType.bushBurn));
 
-                e.colR = o.colorR;
-                e.colG = o.colorG;
-                e.colB = o.colorB;
+                e.setColor(o.colorR, o.colorG, o.colorB);
 
                 Game.effects.add(e);
             }

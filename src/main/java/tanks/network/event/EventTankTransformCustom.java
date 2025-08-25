@@ -148,12 +148,7 @@ public class EventTankTransformCustom extends PersonalEvent
             {
                 Effect e1 = Effect.createNewEffect(t.posX, t.posY, t.posZ + this.size * 0.75, Effect.EffectType.exclamation);
                 e1.size = this.size;
-                e1.colR = t.color.red;
-                e1.colG = t.color.green;
-                e1.colB = t.color.blue;
-                e1.glowR = this.color.red;
-                e1.glowG = this.color.green;
-                e1.glowB = this.color.blue;
+                e1.setColorsFromTank(t);
                 Game.effects.add(e1);
             }
             else if (effect == poof)
@@ -163,10 +158,7 @@ public class EventTankTransformCustom extends PersonalEvent
                     for (int i = 0; i < 50 * Game.effectMultiplier; i++)
                     {
                         Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 4, Effect.EffectType.piece);
-                        double var = 50;
-                        e.colR = Math.min(255, Math.max(0, t.color.red + Math.random() * var - var / 2));
-                        e.colG = Math.min(255, Math.max(0, t.color.green + Math.random() * var - var / 2));
-                        e.colB = Math.min(255, Math.max(0, t.color.blue + Math.random() * var - var / 2));
+                        e.setColorsFromTank(t);
 
                         if (Game.enable3d)
                             e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, 1 + Math.random() * t.size / 50.0);

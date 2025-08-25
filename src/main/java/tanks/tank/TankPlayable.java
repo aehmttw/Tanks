@@ -4,6 +4,7 @@ import basewindow.Color;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.Panel;
+import tanks.Player;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
@@ -28,6 +29,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public int selectedPrimaryAbility = 0;
     public int selectedSecondaryAbility = 1;
+
+    public Player player = Game.player;
 
     public String buildName = "player";
 

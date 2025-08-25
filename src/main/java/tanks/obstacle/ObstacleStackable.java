@@ -179,9 +179,7 @@ public class ObstacleStackable extends Obstacle
 
                         Effect e = Effect.createNewEffect(this.posX + j + 5 - Game.tile_size / 2, this.posY + k + 5 - Game.tile_size / 2, effect);
 
-                        e.colR = this.colorR;
-                        e.colG = this.colorG;
-                        e.colB = this.colorB;
+                        e.setColor(this.colorR, this.colorG, this.colorB);
 
                         double dist = Movable.distanceBetween(this, e);
                         double angle = Movable.getPolarDirection(e.posX - posX, e.posY - posY);
@@ -208,10 +206,7 @@ public class ObstacleStackable extends Obstacle
                         continue;
 
                     Effect e = Effect.createNewEffect(x + j + s / 2 - Game.tile_size / 2, y + k + s / 2 - Game.tile_size / 2, l + z, effect);
-
-                    e.colR = r;
-                    e.colG = g;
-                    e.colB = b;
+                    e.setColor(r, g, b);
 
                     double dist = Math.sqrt(Math.pow(posX - x, 2) + Math.pow(posY - y, 2));
                     double angle = (Math.random() - 0.5) * 0.1 + Movable.getPolarDirection(e.posX - posX, e.posY - posY);

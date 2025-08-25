@@ -36,12 +36,7 @@ public class ScreenOptionsGraphics extends Screen
             terrain.setText(terrainText, fastText);
 
         if (Game.bulletTrails)
-        {
-            if (Game.fancyBulletTrails)
-                bulletTrails.setText(trailsText, fancyText);
-            else
-                bulletTrails.setText(trailsText, fastText);
-        }
+            bulletTrails.setText(trailsText, ScreenOptions.onText);
         else
             bulletTrails.setText(trailsText, ScreenOptions.offText);
 
@@ -200,27 +195,14 @@ public class ScreenOptionsGraphics extends Screen
         @Override
         public void run()
         {
-            if (!Game.bulletTrails)
-                Game.bulletTrails = true;
-            else if (!Game.fancyBulletTrails)
-                Game.fancyBulletTrails = true;
-            else
-            {
-                Game.fancyBulletTrails = false;
-                Game.bulletTrails = false;
-            }
+            Game.bulletTrails = !Game.bulletTrails;
 
             if (Game.bulletTrails)
-            {
-                if (Game.fancyBulletTrails)
-                    bulletTrails.setText(trailsText, fancyText);
-                else
-                    bulletTrails.setText(trailsText, fastText);
-            }
+                bulletTrails.setText(trailsText, ScreenOptions.onText);
             else
                 bulletTrails.setText(trailsText, ScreenOptions.offText);
         }
-    }, "Bullet trails show the paths of bullets------Fancy bullet trails enable some extra particle---effects for certain bullet types");
+    }, "Bullet trails show the paths of bullets");
 
     Button glow = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {

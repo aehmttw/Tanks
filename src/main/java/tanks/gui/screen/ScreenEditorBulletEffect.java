@@ -270,24 +270,14 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         if (be.enableParticles && Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled)
         {
             Effect e = Effect.createNewEffect(start, 175, Effect.EffectType.interfacePiece);
-            double var = 50;
             e.maxAge *= be.particleLifespan;
 
-            double r1 = be.particleColor.red;
-            double g1 = be.particleColor.green;
-            double b1 = be.particleColor.blue;
-
-            e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
-            e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
-            e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
+           e.setColorWithNoise(be.particleColor, 50);
 
             if (be.particleGlow <= 0)
                 e.enableGlow = false;
 
-            e.glowR = e.colR * (1 - be.particleGlow);
-            e.glowG = e.colG * (1 - be.particleGlow);
-            e.glowB = e.colB * (1 - be.particleGlow);
-
+            e.setGlowColor(e.color, be.particleGlow * 255);
             e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Bullet.bullet_size / 50.0 * be.particleSpeed);
             e.vX += 3.125;
             particles.add(e);

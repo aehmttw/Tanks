@@ -287,4 +287,67 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
 
         }
     }
+
+    @Override
+    public void addParticles()
+    {
+        double r = Math.random();
+        while (this.ageFrac >= (r * 90 + 10) * Math.max(10, this.age) / this.lifespan && Game.effectsEnabled && this.effect.enableParticles)
+        {
+            this.ageFrac -= (r * 90 + 10) * Math.max(10, this.age) / this.lifespan;
+            r = Math.random();
+
+            double a = Math.random() * Math.PI * 2;
+            double dist = Math.sqrt(Math.random()) * this.size / 2;
+
+            Effect e = Effect.createNewEffect(this.posX + Math.cos(a) * dist, this.posY + Math.sin(a) * dist, this.posZ, Effect.EffectType.piece);
+            e.maxAge *= this.effect.particleLifespan;
+
+            e.setColorsFromBullet(this, this.effect.particleColor);
+            e.size = Bullet.bullet_size;
+            e.glowColor.alpha = this.effect.particleGlow * 255;
+
+            if (this.effect.particleGlow <= 0)
+                e.enableGlow = false;
+
+            if (this.effect.overrideGlowColor)
+                e.setGlowColor(this.effect.glowColor, this.effect.particleGlow * 255);
+
+            if (Game.enable3d)
+                e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * 0.2 * this.effect.particleSpeed);
+            else
+                e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * 0.2 * this.effect.particleSpeed);
+
+            Game.effects.add(e);
+        }
+    }
+
+    @Override
+    public void addHomingParticles()
+    {
+        if (Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier * this.frameDamageMultipler * 0.1 * this.age / this.lifespan && Game.effectsEnabled)
+        {
+            double a = Math.random() * Math.PI * 2;
+            double dist = Math.sqrt(Math.random()) * this.size / 2;
+
+            Effect e = Effect.createNewEffect(this.posX + Math.cos(a) * dist, this.posY + Math.sin(a) * dist, this.posZ, Effect.EffectType.piece);
+            e.maxAge /= 2;
+
+            double r1 = 255;
+            double g1 = 120;
+            double b1 = 0;
+
+            e.setColorWithNoise(r1, g1, b1, 50);
+            e.glowColor.alpha = 127;
+
+            double v = this.homingSharpness > 0 ? 1 : -1;
+
+            if (Game.enable3d)
+                e.set3dPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, Math.PI * 0.1 * (Math.random() - 0.5), 0.2 * (12 + Math.random() * 4) * v);
+            else
+                e.setPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, 0.2 * (12 + Math.random() * 4) * v);
+
+            Game.effects.add(e);
+        }
+    }
 }

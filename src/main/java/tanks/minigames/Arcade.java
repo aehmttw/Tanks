@@ -103,12 +103,11 @@ public class Arcade extends Minigame
             for (String si : items)
             {
                 Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
-                i.item.name = Translation.translate(i.item.name);
-
                 itemNumbers.put(i.item.name, id + 1);
+                itemsMap.put(i.item.name, i);
+                i.item.name = Translation.translate(i.item.name);
                 id++;
 
-                itemsMap.put(i.item.name, i);
             }
 
             tankItemsMap.put("mint", "Rocket");
@@ -144,7 +143,12 @@ public class Arcade extends Minigame
     public void loadLevel()
     {
         super.loadLevel();
-        Game.playerTank.team = Game.playerTeamNoFF;
+
+        for (Movable m: Game.movables)
+        {
+            m.team = Game.playerTeamNoFF;
+        }
+
         Game.currentLevel.synchronizeMusic = true;
     }
 

@@ -45,7 +45,6 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	public static boolean controlStickSnap = false;
 	public static boolean controlStickMobile = true;
 
-	public Player player = Game.player;
 	public static boolean enableDestroyCheat = false;
 
 	public boolean drawTouchCircle = false;

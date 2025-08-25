@@ -114,9 +114,9 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                 double random = Math.random();
                 Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
                 e.maxAge /= 2;
-                e.colR = 255;
-                e.colG = (1 - random) * 155 + Math.random() * 100;
-                e.colB = 0;
+                e.setColor(255, (1 - random) * 155 + Math.random() * 100, 0);
+                e.setGlowColor(e.color);
+                e.glowColor.alpha = 127;
 
                 if (Game.enable3d)
                     e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.asin(Math.random()), random * (this.radius - Game.tile_size / 2) / Game.tile_size * 2);
@@ -134,9 +134,9 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                         double random = Math.random();
                         Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
                         e.maxAge /= 2;
-                        e.colR = (1 - random) * 155 + Math.random() * 100;
-                        e.colG = 0;
-                        e.colB = 255;
+                        e.setColor(255, (1 - random) * 155 + Math.random() * 100, 0);
+                        e.setGlowColor(e.color);
+                        e.glowColor.alpha = 127;
 
                         double m = Math.random() * 4 + 2;
 
@@ -159,9 +159,8 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                         Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.snow);
                         e.posZ += 10;
                         e.maxAge = Math.min(this.knockbackRadius / k1, 100);
-                        e.colR = Math.random() * 128 + 128;
-                        e.colG = e.colR;
-                        e.colB = e.colR;
+                        double col = Math.random() * 128 + 128;
+                        e.setColor(col, col, col);
 
                         if (Game.enable3d)
                             e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI * 0.125, k1);
@@ -208,7 +207,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
         {
             Effect e1 = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.explosion);
             e1.radius = Math.max(this.knockbackRadius, 0);
-            e1.colB = 255;
+            e1.color.blue = 255;
             Game.effects.add(e1);
         }
     }

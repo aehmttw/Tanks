@@ -33,9 +33,8 @@ public class AreaEffectFreeze extends AreaEffect
 				Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.piece);
 				double var = 50;
 				e.fastRemoveOnExit = true;
-				e.colR = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-				e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-				e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
+				e.setColorWithNoise(255, 255, 255, var);
+                e.setGlowColor(e.color);
 
 				if (Game.enable3d)
 					e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * this.size / 200.0);

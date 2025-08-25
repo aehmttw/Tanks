@@ -144,9 +144,7 @@ public class ObstacleShrubbery extends Obstacle
 			else
 				e = Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn);
 
-			e.colR = this.colorR;
-			e.colG = this.colorG;
-			e.colB = this.colorB;
+			e.setColor(this.colorR, this.colorG, this.colorB);
 
 			Game.effects.add(e);
 
@@ -169,9 +167,7 @@ public class ObstacleShrubbery extends Obstacle
 				e.vX = m.vX * (Math.random() * 0.5 + 0.5);
 				e.vY = m.vY * (Math.random() * 0.5 + 0.5);
 				e.vZ = Math.random() * m.getSpeed() / 8;
-				e.colR = this.colorR;
-				e.colG = this.colorG;
-				e.colB = this.colorB;
+				e.setColor(this.colorR, this.colorG, this.colorB);
 				e.enableGlow = false;
 				Game.effects.add(e);
 			}

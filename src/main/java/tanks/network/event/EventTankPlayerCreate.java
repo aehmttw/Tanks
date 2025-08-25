@@ -158,6 +158,8 @@ public class EventTankPlayerCreate extends PersonalEvent
 						c.teamColor.set(255, 255, 255);
 				}
 			}
+
+            t.name = clientIdTarget.toString();
 		}
 
 		t.drawAge = this.drawAge;

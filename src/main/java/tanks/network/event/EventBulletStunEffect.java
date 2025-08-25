@@ -35,12 +35,8 @@ public class EventBulletStunEffect extends PersonalEvent
                 Effect e = Effect.createNewEffect(t.posX, t.posY, Game.tile_size / 4, Effect.EffectType.stun);
                 e.linkedMovable = t;
                 double var = 50;
-                e.colR = Math.min(255, Math.max(0, 0 + Math.random() * var - var / 2));
-                e.colG = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-                e.colB = Math.min(255, Math.max(0, 255 + Math.random() * var - var / 2));
-                e.glowR = 0;
-                e.glowG = 128;
-                e.glowB = 128;
+                e.setColor(0, 255, 255);
+                e.setGlowColor(e.color, 127);
                 e.maxAge *= length;
                 Game.effects.add(e);
             }

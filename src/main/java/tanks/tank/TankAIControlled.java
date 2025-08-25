@@ -778,12 +778,8 @@ public class TankAIControlled extends Tank implements ITankField
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.charge);
 
-			double var = 50;
-			e.colR = Math.min(255, Math.max(0, this.color.red + Math.random() * var - var / 2));
-			e.colG = Math.min(255, Math.max(0, this.color.green + Math.random() * var - var / 2));
-			e.colB = Math.min(255, Math.max(0, this.color.blue + Math.random() * var - var / 2));
-
-			Game.effects.add(e);
+            e.setColorsFromTank(this);
+            Game.effects.add(e);
 		}
 	}
 
@@ -1092,16 +1088,12 @@ public class TankAIControlled extends Tank implements ITankField
 		this.transformRevertTimer = this.sightTransformRevertTime;
 		this.willRevertTransformation = true;
 		this.transform(this.sightTransformTank);
-        this.sightTransformTank.name = "AAAAAAAAAAAAAAAAAAAAAAAAA";
 		Drawing.drawing.playGlobalSound("timer.ogg", 1.25f);
 		Effect e1 = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.sightTransformTank.size * 0.75, Effect.EffectType.exclamation);
 		e1.size = this.sightTransformTank.size;
-		e1.colR = this.color.red;
-		e1.colG = this.color.green;
-		e1.colB = this.color.blue;
-		e1.glowR = this.sightTransformTank.color.red;
-		e1.glowG = this.sightTransformTank.color.green;
-		e1.glowB = this.sightTransformTank.color.blue;
+		e1.setColor(this.color);
+        e1.setGlowColor(this.sightTransformTank.color);
+        e1.glowColor.alpha = 127;
 		Game.effects.add(e1);
 		Game.eventsOut.add(new EventTankTransformPreset(this, true, false));
 	}
@@ -2881,12 +2873,9 @@ public class TankAIControlled extends Tank implements ITankField
 				for (int i = 0; i < 50 * Game.effectMultiplier; i++)
 				{
 					Effect e = Effect.createNewEffect(this.posX, this.posY, this.size / 4, Effect.EffectType.piece);
-					double var = 50;
-					e.colR = Math.min(255, Math.max(0, this.possessingTank.color.red + Math.random() * var - var / 2));
-					e.colG = Math.min(255, Math.max(0, this.possessingTank.color.green + Math.random() * var - var / 2));
-					e.colB = Math.min(255, Math.max(0, this.possessingTank.color.blue + Math.random() * var - var / 2));
+                    e.setColorsFromTank(this);
 
-					if (Game.enable3d)
+                    if (Game.enable3d)
 						e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, 1 + Math.random() * this.size / 50.0);
 					else
 						e.setPolarMotion(Math.random() * 2 * Math.PI, 1 + Math.random() * this.size / 50.0);

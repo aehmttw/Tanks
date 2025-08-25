@@ -107,12 +107,8 @@ public class ObstacleSnow extends Obstacle
             for (int i = 0; i < amt; i++)
             {
                 Effect e = Effect.createNewEffect(m.posX, m.posY, m.posZ, Effect.EffectType.snow);
-                e.colR = this.colorR;
-                e.colG = this.colorG;
-                e.colB = this.colorB;
-                e.glowR = e.colR;
-                e.glowG = e.colG;
-                e.glowB = e.colB;
+                e.setColor(this.colorR, this.colorG, this.colorB);
+                e.setGlowColor(e.color);
                 e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random() * speed / 2);
                 e.vX += m.vX;
                 e.vY += m.vY;

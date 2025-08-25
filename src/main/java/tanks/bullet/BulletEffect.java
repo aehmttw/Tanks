@@ -21,7 +21,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
     @Property(id = "particle_color", name = "Particle color", category = BulletEffectPropertyCategory.particle, miscType = Property.MiscType.colorRGB)
     public Color particleColor = new Color(0, 0, 0, 0);
     @Property(id = "particle_glow", name = "Particle glow", category = BulletEffectPropertyCategory.particle, minValue = 0, maxValue = 1)
-    public double particleGlow = 1;
+    public double particleGlow = 0.5;
     @Property(id = "particle_lifespan", name = "Particle lifespan", category = BulletEffectPropertyCategory.particle, minValue = 0)
     public double particleLifespan = 0.5;
     @Property(id = "particle_speed", name = "Particle speed", category = BulletEffectPropertyCategory.particle, minValue = 0)
@@ -69,7 +69,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         ice.particleColor.red = 128;
         ice.particleColor.green = 255;
         ice.particleColor.blue = 255;
-        ice.particleGlow = 0.25;
+        ice.particleGlow = 0.125;
 
         ember.enableParticles = true;
         ember.particleColor.red = 255;
@@ -81,6 +81,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         fire.particleColor.green = 180;
         fire.particleColor.blue = 64;
         fire.particleLifespan = 0.25;
+        fire.particleGlow = 0.5;
         fire.particleSpeed = 12;
 
         fire_trail.enableParticles = true;
@@ -88,7 +89,14 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         fire_trail.particleColor.green = 180;
         fire_trail.particleColor.blue = 64;
         fire_trail.particleLifespan = 0.25;
+        fire_trail.particleGlow = 0.5;
         fire_trail.particleSpeed = 12;
+        fire_trail.overrideGlowColor = true;
+        fire_trail.glowColor.red = 255;
+        fire_trail.glowColor.green = 180;
+        fire_trail.glowColor.blue = 0;
+        fire_trail.glowIntensity = 0.8;
+        fire_trail.glowSize = 16;
 
         dark_fire.enableParticles = true;
         dark_fire.particleColor.red = 0;
@@ -104,13 +112,6 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         fire.glowColor.blue = 0;
         fire.glowIntensity = 0.8;
         fire.glowSize = 16;
-
-        fire_trail.overrideGlowColor = true;
-        fire_trail.glowColor.red = 255;
-        fire_trail.glowColor.green = 180;
-        fire_trail.glowColor.blue = 0;
-        fire_trail.glowIntensity = 0.8;
-        fire_trail.glowSize = 16;
 
         dark_fire.overrideGlowColor = true;
         dark_fire.glowColor.red = 0;
@@ -166,23 +167,15 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         if (this.enableParticles && Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled)
         {
             Effect e = Effect.createNewEffect(start, y, Effect.EffectType.interfacePiece);
-            double var = 50;
             e.maxAge *= this.particleLifespan;
 
-            double r1 = this.particleColor.red;
-            double g1 = this.particleColor.green;
-            double b1 = this.particleColor.blue;
-
-            e.colR = Math.min(255, Math.max(0, r1 + Math.random() * var - var / 2));
-            e.colG = Math.min(255, Math.max(0, g1 + Math.random() * var - var / 2));
-            e.colB = Math.min(255, Math.max(0, b1 + Math.random() * var - var / 2));
+            e.setColorWithNoise(this.particleColor, 50);
+            e.setGlowColor(this.glowColor);
 
             if (this.particleGlow <= 0)
                 e.enableGlow = false;
 
-            e.glowR = e.colR * (1 - this.particleGlow);
-            e.glowG = e.colG * (1 - this.particleGlow);
-            e.glowB = e.colB * (1 - this.particleGlow);
+            e.glowColor.alpha = 255 * this.particleGlow;
 
             e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Bullet.bullet_size / 50.0 * this.particleSpeed);
             e.vX += 3.125 * l / fullLength;

@@ -85,9 +85,7 @@ public class ScreenOptions extends Screen
 	Button miscOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Miscellaneous options", () -> Game.screen = new ScreenOptionsMisc());
 
 	Button openFolder = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Open game folder", () ->
-	{
-		Game.game.fileManager.openFileManager(Game.homedir + Game.directoryPath);
-	});
+        Game.game.fileManager.openFileManager(Game.homedir + Game.directoryPath));
 
 
 	@Override
@@ -180,7 +178,7 @@ public class ScreenOptions extends Screen
 		}
 		catch (IOException e)
 		{
-			Game.logger.println (new Date().toString() + " (syserr) file permissions are broken! cannot initialize options file.");
+			Game.logger.println (new Date() + " (syserr) file permissions are broken! cannot initialize options file.");
 			System.exit(1);
 		}
 
@@ -254,6 +252,7 @@ public class ScreenOptions extends Screen
 			f.println("disable_party_friendly_fire=" + Game.disablePartyFriendlyFire);
 			f.println("party_countdown=" + Game.partyStartTime);
 			f.println("party_bots=" + Game.botPlayerCount);
+            f.println("first_person_sens=" + (int) (ScreenGame.fcSensitivity * 100));
 			f.println("tank_secondary_color=" + Game.player.enableSecondaryColor);
 			f.println("tank_tertiary_color=" + Game.player.enableTertiaryColor);
 			f.println("tank_red=" + (int) Game.player.color.red);
@@ -489,6 +488,9 @@ public class ScreenOptions extends Screen
 					case "party_bots":
 						Game.botPlayerCount = Integer.parseInt(optionLine[1]);
 						break;
+                    case "first_person_sens":
+						ScreenGame.fcSensitivity = Double.parseDouble(optionLine[1]) / 100;
+						break;
 					case "tank_secondary_color":
 						Game.player.enableSecondaryColor = Boolean.parseBoolean(optionLine[1]);
 						break;
@@ -569,7 +571,7 @@ public class ScreenOptions extends Screen
 		}
 		catch (Exception e)
 		{
-			Game.logger.println (new Date().toString() + " Options file is nonexistent or broken, using default:");
+			Game.logger.println (new Date() + " Options file is nonexistent or broken, using default:");
 			e.printStackTrace(Game.logger);
 			System.err.println("Failed to load options!");
 			e.printStackTrace();

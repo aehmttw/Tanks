@@ -108,6 +108,8 @@ public abstract class BaseWindow
 
     public static final HashMap<Integer, String> keyNames = new HashMap<>();
 
+    public float[] outOfBoundsColor = new float[]{1f, 1f, 1f, 1f};
+
     public BasePlatformHandler platformHandler;
 
     public ModelPart.ShapeDrawer shapeDrawer;
@@ -192,6 +194,14 @@ public abstract class BaseWindow
     public abstract void setColor(double r, double g, double b, double a);
 
     public abstract void setColor(double r, double g, double b);
+
+    public void setOutOfBoundsColor(float r, float g, float b, float a)
+    {
+        outOfBoundsColor[0] = r / 255;
+        outOfBoundsColor[1] = g / 255;
+        outOfBoundsColor[2] = b / 255;
+        outOfBoundsColor[3] = a / 255;
+    }
 
     public abstract void setUpPerspective();
 

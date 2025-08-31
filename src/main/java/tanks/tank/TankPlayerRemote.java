@@ -269,7 +269,6 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         double cooldown2 = i2 == null ? 0 : i2.cooldown;
         double cooldownBase2 = i2 == null ? 0 : i2.item.cooldownBase;
-        System.out.println(cooldown2);
 
         if (lastLiveBullets != lb || mlb != lastMaxLiveBullets || lm != lastLiveMines || mlm != lastMaxLiveMines || didAction)
             Game.eventsOut.add(new EventTankControllerUpdateAmmunition(this.player.clientID, lb, mlb, lm, mlm, cooldown, cooldownBase, cooldown2, cooldownBase2));

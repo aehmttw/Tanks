@@ -2,7 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
+import tanks.gui.*;
 import tanks.hotbar.Hotbar;
 
 public class ScreenOptionsMisc extends Screen
@@ -15,7 +15,7 @@ public class ScreenOptionsMisc extends Screen
     public static final String circularText = "\u00A7000100200255circular";
     public static final String bottomText = "\u00A7200100000255bottom";
 
-    Button autostart = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button autostart = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -30,7 +30,7 @@ public class ScreenOptionsMisc extends Screen
     },
             "When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
-    Button fullStats = new Button(this.centerX, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button fullStats = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -45,7 +45,7 @@ public class ScreenOptionsMisc extends Screen
     },
             "When off, skips directly to the summary tab---of the crusade end stats screen");
 
-    Button previewCrusades = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button previewCrusades = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -60,7 +60,7 @@ public class ScreenOptionsMisc extends Screen
     },
             "When enabled, the backgrounds of---the crusade preview and stats---screens display an animation of all---the crusade levels scrolling by.");
 
-    Button circularHotbar = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button circularHotbar = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -76,6 +76,17 @@ public class ScreenOptionsMisc extends Screen
             "Configures the placement of item, health,---and ammunition information on the screen.------" +
                     "In the 'bottom' setting, all this information---will be at the bottom of the screen.------" +
                     "In the 'circular' setting, this information will---either be overlaid on your tank---or placed around your cursor.");
+
+    TextBoxSlider firstPersonSens = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "First person sensitivity", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (firstPersonSens.inputText.isEmpty())
+                firstPersonSens.inputText = firstPersonSens.previousInputText;
+            ScreenGame.fcSensitivity = Integer.parseInt(firstPersonSens.inputText) / 100.0;
+        }
+    }, ScreenGame.fcSensitivity * 100, 1, 200, 1);
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
@@ -116,6 +127,7 @@ public class ScreenOptionsMisc extends Screen
         fullStats.update();
         previewCrusades.update();
         circularHotbar.update();
+        firstPersonSens.update();
     }
 
     @Override
@@ -128,6 +140,7 @@ public class ScreenOptionsMisc extends Screen
         fullStats.draw();
         autostart.draw();
         circularHotbar.draw();
+        firstPersonSens.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);

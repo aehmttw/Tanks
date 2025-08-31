@@ -3,7 +3,7 @@ package tanks.gui.screen;
 import basewindow.*;
 import basewindow.transformation.*;
 import tanks.*;
-import tanks.bullet.Bullet;
+import tanks.bullet.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
@@ -102,8 +102,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     protected boolean musicStarted = false;
     protected float pausedMusicPos = 0;
 
-    public boolean zoomPressed = false;
-    public boolean zoomScrolled = false;
+    public boolean zoomPressed, zoomScrolled;
+
+    public static boolean fcZoomPressed = false;
+    public static double fcSensitivity = 1f;
+    public static double fcZoom, fcTargetZoom;
+    public double fcZoomLastTap, fcPitch, fcZoomCap;
+    public boolean selectedArcBullet = false;
+    public double fcArcAim;
 
     public boolean playedIntro = false;
 
@@ -564,6 +570,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         this.drawDarkness = false;
         this.drawDebugInternally = true;
 
+        float f = (float) (Level.currentLightIntensity / 255);
+        Game.game.window.setOutOfBoundsColor(f, f, f, 255);
+
         Game.clouds.clear();
 
         if (Game.currentLevel instanceof Minigame && !(Game.currentLevel instanceof Tutorial))
@@ -993,6 +1002,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 }
             }
         }
+
+        if (Game.game.input.perspective.isValid())
+            togglePerspective();
 
         if (Game.game.input.zoom.isPressed() && playing)
         {
@@ -1689,13 +1701,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             playing = true;
             this.age += Panel.frameFrequency;
 
-            if (Game.followingCam)
-            {
-                Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) / 200;
-                Game.game.window.setCursorLocked(true);
-                this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
-                this.prevCursorY = Drawing.drawing.getInterfaceMouseX();
-            }
+            updateFollowingCam();
 
             Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size);
             ArrayList<Team> aliveTeams = new ArrayList<>();
@@ -2122,7 +2128,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         ModAPI.removeMenus.clear();
     }
 
-    public void updateGameField()
+    public static void updateGameField()
     {
         for (Movable m : Game.movables)
             m.preUpdate();
@@ -2464,19 +2470,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public void setPerspective()
     {
-        Game.game.window.clipMultiplier = 100;
-        Game.game.window.clipDistMultiplier = 1;
-
-        if (Game.angledView)
+        if (!Game.game.window.drawingShadow)
         {
-            if (!Game.game.window.drawingShadow)
-            {
-                if (this.playing && (!this.paused || ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && !ScreenGame.finished)
-                    slant = Math.min(1, slant + 0.01 * Panel.frameFrequency);
-                else if (ScreenGame.finished)
-                    slant = Math.max(0, slant - 0.01 * Panel.frameFrequency);
-            }
+            if (Game.angledView && this.playing && (!this.paused || ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && !ScreenGame.finished)
+                slant = Math.min(1, slant + 0.01 * Panel.frameFrequency);
+            else if (!Game.angledView || ScreenGame.finished)
+                slant = Math.max(0, slant - 0.01 * Panel.frameFrequency);
+        }
 
+        if (Game.angledView || slant > 0)
+        {
             this.slantRotation.pitch = this.slant * -Math.PI / 16;
             this.slantTranslation.y = -this.slant * 0.05;
 
@@ -2496,29 +2499,143 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             Game.game.window.clipMultiplier = 1;
             Game.game.window.clipDistMultiplier = 100;
 
+            Tank t = focusedTank();
+
             if (!Game.firstPerson)
             {
-                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((Game.playerTank.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
+                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((t.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
                 Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.1 * frac, 0));
-                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.35 * frac, 0, 0, 0, -1));
+                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.35 * frac + fcPitch, 0, fcPitch * 3, fcPitch * 3, -1));
                 Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0, 0.5 * frac));
             }
             else
             {
-                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((Game.playerTank.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
+                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((t.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
                 Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.1 * frac, 0));
                 Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.5 * frac, 0, 0, 0, -1));
                 Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.0575 * frac, 0.9 * frac));
             }
 
+            if (fcZoom > 0)
+                Game.game.window.transformations.add(new ScaleAboutPoint(Game.game.window, 1, 1, fcZoom + 1, 0, 0, 0));
+
             Game.game.window.loadPerspective();
         }
+    }
+
+    public void updateFollowingCam()
+    {
+        if (!Game.followingCam || Game.playerTank == null || Game.playerTank.destroy)
+            return;
+
+        ItemBar b = Game.player.hotbar.itemBar;
+        selectedArcBullet = b.selected >= 0 && b.selected < ItemBar.item_bar_size && b.slots[b.selected].item instanceof ItemBullet && ((ItemBullet) b.slots[b.selected].item).bullet instanceof BulletArc;
+
+        Game.playerTank.angle += (Drawing.drawing.getInterfaceMouseX() - prevCursorX) * fcSensitivity / 150;
+        Game.game.window.setCursorLocked(true);
+        if (Game.game.input.tilt.isPressed())
+            fcPitch += (Drawing.drawing.getInterfaceMouseY() - this.prevCursorY) * fcSensitivity * 5e-4;
+        else if (selectedArcBullet)
+            fcArcAim += (this.prevCursorY - Drawing.drawing.getInterfaceMouseY()) * (fcSensitivity * 3);
+        fcPitch = Math.max(0, Math.min(0.5, fcPitch));
+        Game.game.window.setCursorPos(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2);
+        updateMousePos();
+
+        if (selectedArcBullet)
+        {
+            Bullet bullet = ((ItemBullet) b.slots[b.selected].item).bullet;
+            fcArcAim = Math.max(bullet.getRangeMin(), Math.min(bullet.getRangeMax() > 0 ? bullet.getRangeMax() : Double.MAX_VALUE, fcArcAim));
+        }
+
+        fcZoomPressed = Game.game.input.fcZoom.isPressed();
+        if (Math.abs(fcTargetZoom - fcZoom) < 0.05)
+            fcZoom = fcTargetZoom;
+        else
+            fcZoom += (fcTargetZoom - fcZoom) / 10;
+
+        if (fcZoomPressed)
+        {
+            if (Game.game.input.fcZoom.isValid())
+            {
+                if (age - fcZoomLastTap < 50)
+                    fcTargetZoom = 0;
+
+                fcZoomLastTap = age;
+                Game.game.input.fcZoom.invalidate();
+            }
+
+            if (Game.game.window.validScrollUp && fcTargetZoom < 0.9)
+            {
+                fcTargetZoom += 0.1;
+                Game.game.window.validScrollUp = false;
+            }
+
+            if (Game.game.window.validScrollDown && fcTargetZoom > -0.9)
+            {
+                fcTargetZoom -= 0.1;
+                Game.game.window.validScrollDown = false;
+            }
+        }
+    }
+
+    private static int perspectiveID = 0;
+
+    public void togglePerspective()
+    {
+        if (Game.game.window.shift)
+            perspectiveID--;
+        else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_CONTROL))
+            perspectiveID = 0;
+        else
+            perspectiveID++;
+
+        perspectiveID = (perspectiveID + 4) % 4;
+
+        switch (perspectiveID)
+        {
+            case 0:
+                Game.angledView = false;
+                Game.followingCam = false;
+                Game.firstPerson = false;
+                break;
+            case 1:
+                Game.angledView = true;
+                Game.followingCam = false;
+                Game.firstPerson = false;
+                break;
+            case 2:
+                Game.angledView = false;
+                Game.followingCam = true;
+                Game.firstPerson = false;
+                break;
+            case 3:
+                Game.angledView = false;
+                Game.followingCam = true;
+                Game.firstPerson = true;
+                break;
+        }
+
+        if (Game.followingCam)
+        {
+            Drawing.drawing.movingCamera = true;
+            Panel.autoZoom = false;
+            Panel.zoomTarget = -1;
+        }
+
+        this.enableMargins = !Game.followingCam;
+        Game.game.input.perspective.invalidate();
+    }
+
+    public void updateMousePos()
+    {
+        this.prevCursorX = Drawing.drawing.getInterfaceMouseX();
+        this.prevCursorY = Drawing.drawing.getInterfaceMouseY();
     }
 
     @Override
     public void draw()
     {
-        this.showDefaultMouse = !(((!this.paused && !this.npcShopScreen) && this.playing && Game.angledView || Game.firstPerson));
+        this.showDefaultMouse = !(!this.paused && !this.npcShopScreen && this.playing && (Game.angledView || Game.followingCam));
 
         this.setPerspective();
 
@@ -2663,7 +2780,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         if (!(paused && screenshotMode) && Game.player.hotbar.enabledItemBar)
             Game.player.hotbar.itemBar.drawOverlay();
 
-        if (!this.showDefaultMouse)
+        if (!this.showDefaultMouse && Game.angledView)
             Panel.panel.drawMouseTarget(true);
 
         Game.game.window.transformations.clear();
@@ -3152,6 +3269,28 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
     }
+
+    public static ScreenGame getInstance()
+    {
+        if (Game.screen instanceof ScreenGame)
+            return (ScreenGame) Game.screen;
+        if (Game.screen instanceof IGameOverlayScreen)
+            return ((IGameOverlayScreen) Game.screen).getGameScreen();
+        return null;
+    }
+
+    public static Tank focusedTank()
+    {
+        ScreenGame g = getInstance();
+        if (g == null || Game.playerTank == null)
+            return Game.playerTank;
+
+        if (Game.playerTank.destroy && g.spectatingTank != null)
+            return g.spectatingTank;
+
+        return Game.playerTank;
+    }
+
 
     public static boolean isUpdatingGame()
     {

@@ -17,7 +17,7 @@ import tanks.translation.Translation;
 
 public class Hotbar
 {
-	public ItemBar itemBar;
+    public ItemBar itemBar;
 	public int coins;
 
 	public boolean enabledAmmunitionBar = true;

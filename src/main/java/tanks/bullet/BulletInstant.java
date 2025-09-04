@@ -323,34 +323,61 @@ public class BulletInstant extends Bullet
 
     public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, Random r, Color base, Color turret)
     {
-        double l = this.effect.drawForInterface(x, width, y, size, effects, this.speed / 3.125, false);
+        double l = 800;
         double start = x - l / 2;
+        base = this.baseColor;
+
+        Drawing.drawing.setColor(base.red, base.green, base.blue, 255, this.effect.luminance);
+        Drawing.drawing.fillInterfaceOval(start, y, size, size);
+        Drawing.drawing.fillInterfaceOval(start + l, y, size, size);
+        Drawing.drawing.fillInterfaceRect(start + l / 2, y, l, size);
 
         if (!this.effect.overrideGlowColor)
+            Drawing.drawing.setColor(base.red, base.green, base.blue, 255* this.effect.glowIntensity, this.effect.glowGlowy ? 1 : 0);
+        else
+            Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, 255 * this.effect.glowIntensity, this.effect.glowGlowy ? 1 : 0);
+
+        double cr = Drawing.drawing.currentColorR;
+        double cg = Drawing.drawing.currentColorG;
+        double cb = Drawing.drawing.currentColorB;
+        double ca = Drawing.drawing.currentColorA;
+        double mul = this.effect.glowSize;
+
+        size /= 2;
+        Game.game.window.shapeRenderer.setBatchMode(true, false, false, this.effect.glowGlowy);
+        for (int i = 10; i < 30; i++)
         {
-            if (this.overrideOutlineColor)
-                Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
-            else
-                Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+            Drawing.drawing.setColor(cr, cg, cb, 0, this.effect.glowGlowy ? 1 : 0);
+            Drawing.drawing.addInterfaceVertex(start + mul * Math.cos(i / 20.0 * Math.PI) * size, y + mul * Math.sin(i / 20.0 * Math.PI) * size, 0);
+            Drawing.drawing.addInterfaceVertex(start + mul * Math.cos((i + 1) / 20.0 * Math.PI) * size, y + mul * Math.sin((i + 1) / 20.0 * Math.PI) * size, 0);
+            Drawing.drawing.setColor(cr, cg, cb, ca, this.effect.glowGlowy ? 1 : 0);
+            Drawing.drawing.addVertex(start, y, 0);
+
+            Drawing.drawing.setColor(cr, cg, cb, 0, 1);
+            Drawing.drawing.addInterfaceVertex(start + l + mul * Math.cos((i + 20) / 20.0 * Math.PI) * size, y + mul * Math.sin((i + 20) / 20.0 * Math.PI) * size, 0);
+            Drawing.drawing.addInterfaceVertex(start + l + mul * Math.cos((i + 21) / 20.0 * Math.PI) * size, y + mul * Math.sin((i + 21) / 20.0 * Math.PI) * size, 0);
+            Drawing.drawing.setColor(cr, cg, cb, ca, this.effect.glowGlowy ? 1 : 0);
+            Drawing.drawing.addVertex(start + l, y, 0);
         }
-        else
-            Drawing.drawing.setColor(this.effect.glowColor.red * this.effect.glowIntensity, this.effect.glowColor.green * this.effect.glowIntensity, this.effect.glowColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+        Game.game.window.shapeRenderer.setBatchMode(false, false, false, this.effect.glowGlowy);
 
-        Drawing.drawing.fillInterfaceGlow(start, y, size * this.effect.glowSize, size * this.effect.glowSize, !this.effect.glowGlowy);
+        Game.game.window.shapeRenderer.setBatchMode(true, true, false, this.effect.glowGlowy);
 
-        if (this.overrideOutlineColor)
-            Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
-        else
-            Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : 0);
+        Drawing.drawing.setColor(cr, cg, cb, 0, this.effect.glowGlowy ? 1 : 0);
+        Drawing.drawing.addInterfaceVertex(start, y + mul * size, 0);
+        Drawing.drawing.addInterfaceVertex(start + l, y + mul * size, 0);
+        Drawing.drawing.setColor(cr, cg, cb, ca, this.effect.glowGlowy ? 1 : 0);
+        Drawing.drawing.addInterfaceVertex(start + l, y, 0);
+        Drawing.drawing.addInterfaceVertex(start, y, 0);
 
-        Drawing.drawing.fillInterfaceOval(start, y, size, size);
+        Drawing.drawing.addInterfaceVertex(start + l, y, 0);
+        Drawing.drawing.addInterfaceVertex(start, y, 0);
+        Drawing.drawing.setColor(cr, cg, cb, 0, this.effect.glowGlowy ? 1 : 0);
+        Drawing.drawing.addInterfaceVertex(start, y - mul * size, 0);
+        Drawing.drawing.addInterfaceVertex(start + l, y - mul * size, 0);
 
-        if (this.overrideBaseColor)
-            Drawing.drawing.setColor(this.baseColor.red, this.baseColor.green, this.baseColor.blue, 255, this.effect.luminance);
-        else
-            Drawing.drawing.setColor(base.red, base.green, base.blue, 255, this.effect.luminance);
 
-        Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
+        Game.game.window.shapeRenderer.setBatchMode(false, true, false, this.effect.glowGlowy);
 
     }
 }

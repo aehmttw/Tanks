@@ -26,25 +26,6 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
         this.index = index;
         this.translate = translate;
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.title);
-        NetworkUtils.writeString(b, this.subtitle);
-        b.writeInt(this.index);
-        b.writeBoolean(this.translate);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.title = NetworkUtils.readString(b);
-        this.subtitle = NetworkUtils.readString(b);
-        this.index = b.readInt();
-        this.translate = b.readBoolean();
-    }
-
     @Override
     public void execute()
     {

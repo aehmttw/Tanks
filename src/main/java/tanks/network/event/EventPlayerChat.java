@@ -30,19 +30,4 @@ public class EventPlayerChat extends PersonalEvent
 		if (this.clientID == null)
 			ScreenPartyLobby.chat.add(0, new ChatMessage(this.username, this.message));
 	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.username);
-		NetworkUtils.writeString(b, this.message);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.username = NetworkUtils.readString(b);
-		this.message = NetworkUtils.readString(b);
-	}
-
 }

@@ -25,20 +25,6 @@ public class EventBulletUpdateTarget extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.bullet);
-        b.writeInt(this.target);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.bullet = b.readInt();
-        this.target = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         Bullet b = Bullet.idMap.get(this.bullet);

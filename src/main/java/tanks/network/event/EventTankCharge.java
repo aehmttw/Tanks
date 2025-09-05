@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Effect;
-import tanks.Game;
+import tanks.*;
 import tanks.tank.Tank;
 
 public class EventTankCharge extends PersonalEvent implements IStackableEvent
@@ -40,21 +38,6 @@ public class EventTankCharge extends PersonalEvent implements IStackableEvent
 
             Game.effects.add(e);
         }
-
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.tank);
-		b.writeDouble(this.charge);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.tank = b.readInt();
-		this.charge = b.readDouble();
 	}
 
 	@Override

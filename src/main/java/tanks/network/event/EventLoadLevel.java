@@ -95,20 +95,4 @@ public class EventLoadLevel extends PersonalEvent
 			Game.screen = new ScreenFailedToLoadLevel("Level is remote!", level, e, new ScreenPartyLobby());
 		}
 	}
-
-	@Override
-	public void write(ByteBuf b)
-	{
-		NetworkUtils.writeString(b, this.level);
-		b.writeDouble(this.startTime);
-		b.writeBoolean(this.disableFriendlyFire);
-	}
-
-	@Override
-	public void read(ByteBuf b)
-	{
-		this.level = NetworkUtils.readString(b);
-		this.startTime = b.readDouble();
-		this.disableFriendlyFire = b.readBoolean();
-	}
 }

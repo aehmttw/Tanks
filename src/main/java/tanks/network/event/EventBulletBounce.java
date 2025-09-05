@@ -24,26 +24,6 @@ public class EventBulletBounce extends PersonalEvent
 		this.vX = b.vX;
 		this.vY = b.vY;
 	}
-	
-	@Override
-	public void write(ByteBuf b)
-	{
-		b.writeInt(this.bullet);
-		b.writeDouble(this.posX);
-		b.writeDouble(this.posY);
-		b.writeDouble(this.vX);
-		b.writeDouble(this.vY);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.bullet = b.readInt();
-		this.posX = b.readDouble();
-		this.posY = b.readDouble();
-		this.vX = b.readDouble();
-		this.vY = b.readDouble();
-	}
 
 	@Override
 	public void execute()

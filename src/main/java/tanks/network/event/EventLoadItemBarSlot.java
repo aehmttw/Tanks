@@ -23,20 +23,6 @@ public class EventLoadItemBarSlot extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, targetID.toString());
-        b.writeInt(this.slot);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.targetID = UUID.fromString(NetworkUtils.readString(b));
-        this.slot = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null && this.targetID.equals(Game.clientID))

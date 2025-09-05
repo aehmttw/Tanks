@@ -65,22 +65,4 @@ public class EventAnnounceConnection extends PersonalEvent
 		}
 	}
 
-	@Override
-	public void read(ByteBuf b)
-	{
-		this.joined = b.readBoolean();
-		this.clientIdTarget = UUID.fromString(NetworkUtils.readString(b));
-		this.name = NetworkUtils.readString(b);
-		this.isBot = b.readBoolean();
-	}
-	
-	@Override
-	public void write(ByteBuf b)
-	{
-		b.writeBoolean(this.joined);
-		NetworkUtils.writeString(b, this.clientIdTarget.toString());
-		NetworkUtils.writeString(b, this.name);
-		b.writeBoolean(this.isBot);
-	}
-
 }

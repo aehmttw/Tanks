@@ -33,22 +33,6 @@ public class EventSetItem extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.playerID.toString());
-        b.writeInt(this.slot);
-        NetworkUtils.writeString(b, this.itemStackString);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.playerID = UUID.fromString(NetworkUtils.readString(b));
-        this.slot = b.readInt();
-        this.itemStackString = NetworkUtils.readString(b);
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null && this.playerID.equals(Game.clientID))

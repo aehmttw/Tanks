@@ -1,11 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleBoostPanel;
+import tanks.obstacle.*;
 import tanks.tank.Tank;
 
 public class EventObstacleBoostPanelEffect extends PersonalEvent
@@ -35,24 +32,6 @@ public class EventObstacleBoostPanelEffect extends PersonalEvent
     public EventObstacleBoostPanelEffect()
     {
 
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeBoolean(this.isTank);
-        b.writeInt(this.networkID);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.isTank = b.readBoolean();
-        this.networkID = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
     }
 
     @Override

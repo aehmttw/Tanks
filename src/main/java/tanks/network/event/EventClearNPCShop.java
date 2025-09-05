@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.TankNPC;
@@ -21,18 +19,6 @@ public class EventClearNPCShop extends PersonalEvent
     public EventClearNPCShop(int id)
     {
         this.id = id;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.id);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
     }
 
     @Override

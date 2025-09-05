@@ -47,26 +47,4 @@ public class EventExplosion extends PersonalEvent
             e.explode();
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeDouble(this.radius);
-        b.writeDouble(this.kbRadius);
-        b.writeDouble(this.damage);
-        b.writeBoolean(this.destroysObstacles);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.radius = b.readDouble();
-        this.kbRadius = b.readDouble();
-        this.damage = b.readDouble();
-        this.destroysObstacles = b.readBoolean();
-    }
 }

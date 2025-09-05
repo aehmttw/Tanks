@@ -39,26 +39,6 @@ public class EventStatusEffectBegin extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeBoolean(this.isTank);
-        b.writeInt(this.networkID);
-        NetworkUtils.writeString(b, this.effect);
-        b.writeDouble(this.age);
-        b.writeDouble(this.warmup);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.isTank = b.readBoolean();
-        this.networkID = b.readInt();
-        this.effect = NetworkUtils.readString(b);
-        this.age = b.readDouble();
-        this.warmup = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         if (clientID != null)

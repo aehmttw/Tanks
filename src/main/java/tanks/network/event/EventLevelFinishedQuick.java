@@ -44,16 +44,4 @@ public class EventLevelFinishedQuick extends PersonalEvent
 
         ScreenGame.finishedQuick = true;
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.winningTeam);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.winningTeam = NetworkUtils.readString(b);
-    }
 }

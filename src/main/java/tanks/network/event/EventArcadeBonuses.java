@@ -37,23 +37,6 @@ public class EventArcadeBonuses extends PersonalEvent
         return new ScreenArcadeBonuses.Bonus(NetworkUtils.readString(b), b.readInt(), b.readDouble(), b.readDouble(), b.readDouble());
     }
 
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        writeBonus(bonus1, b);
-        writeBonus(bonus2, b);
-        writeBonus(bonus3, b);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.bonus1 = readBonus(b);
-        this.bonus2 = readBonus(b);
-        this.bonus3 = readBonus(b);
-    }
-
     @Override
     public void execute()
     {

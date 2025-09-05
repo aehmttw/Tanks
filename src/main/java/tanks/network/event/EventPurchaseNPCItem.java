@@ -24,20 +24,6 @@ public class EventPurchaseNPCItem extends EventPurchaseItem
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        super.write(b);
-        b.writeInt(id);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        super.read(b);
-        this.id = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID != null && Game.screen instanceof ScreenGame)

@@ -37,16 +37,4 @@ public class EventMineRemove extends PersonalEvent
             Mine.idMap.remove(m.networkID);
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.mine);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.mine = b.readInt();
-    }
 }

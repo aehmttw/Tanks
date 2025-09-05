@@ -24,20 +24,6 @@ public class EventUpdateRemainingLives extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, playerID.toString());
-        b.writeInt(lives);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        playerID = UUID.fromString(NetworkUtils.readString(b));
-        lives = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (clientID == null && playerID.equals(Game.clientID))

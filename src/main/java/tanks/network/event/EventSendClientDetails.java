@@ -31,23 +31,6 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		this.clientID = clientID;
 		this.username = username;
 	}
-	
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.version);
-		NetworkUtils.writeString(b, clientID.toString());
-		NetworkUtils.writeString(b, username);
-	}
-	
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.version = b.readInt();
-		this.clientID = UUID.fromString(NetworkUtils.readString(b));
-		this.username = NetworkUtils.readString(b);
-	}
-	
 	@Override
 	public void execute()
 	{

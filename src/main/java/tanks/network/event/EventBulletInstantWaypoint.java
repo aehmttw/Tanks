@@ -22,23 +22,6 @@ public class EventBulletInstantWaypoint extends PersonalEvent
         this.posX = x;
         this.posY = y;
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.bullet);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.bullet = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-    }
-
     @Override
     public void execute()
     {

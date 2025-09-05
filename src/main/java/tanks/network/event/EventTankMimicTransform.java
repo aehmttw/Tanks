@@ -91,18 +91,4 @@ public class EventTankMimicTransform extends PersonalEvent
             }
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeInt(this.target);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.target = b.readInt();
-    }
 }

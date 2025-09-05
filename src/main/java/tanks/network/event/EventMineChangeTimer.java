@@ -32,18 +32,4 @@ public class EventMineChangeTimer extends PersonalEvent
 
         m.timer = countdown;
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.mine);
-        b.writeDouble(this.countdown);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.mine = b.readInt();
-        this.countdown = b.readDouble();
-    }
 }

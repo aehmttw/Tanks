@@ -30,18 +30,4 @@ public class EventTankUpdateVisibility extends PersonalEvent
 			((TankRemote) t).invisible = !visible;
 		}
 	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.tank);
-		b.writeBoolean(this.visible);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.tank = b.readInt();
-		this.visible = b.readBoolean();
-	}
 }

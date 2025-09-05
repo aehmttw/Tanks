@@ -117,36 +117,6 @@ public class EventShootBullet extends PersonalEvent implements IStackableEvent
 		}
 	}
 
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.id);
-		b.writeInt(this.tank);
-		b.writeDouble(this.posX);
-		b.writeDouble(this.posY);
-		b.writeDouble(this.posZ);
-		b.writeDouble(this.vX);
-		b.writeDouble(this.vY);
-		b.writeDouble(this.vZ);
-		b.writeDouble(this.speed);
-		b.writeInt(this.item);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.id = b.readInt();
-		this.tank = b.readInt();
-		this.posX = b.readDouble();
-		this.posY = b.readDouble();
-		this.posZ = b.readDouble();
-		this.vX = b.readDouble();
-		this.vY = b.readDouble();
-		this.vZ = b.readDouble();
-		this.speed = b.readDouble();
-		this.item = b.readInt();
-	}
-
     @Override
     public int getIdentifier()
     {

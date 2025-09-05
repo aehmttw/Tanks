@@ -45,7 +45,8 @@ public class EventBulletReboundIndicator extends PersonalEvent
                 b.readDouble(),
                 b.readDouble(),
                 b.readDouble(),
-                b.readDouble());
+                b.readDouble()
+        );
     }
 
     @Override

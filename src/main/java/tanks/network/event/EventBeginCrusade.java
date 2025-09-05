@@ -12,18 +12,6 @@ public class EventBeginCrusade extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null)

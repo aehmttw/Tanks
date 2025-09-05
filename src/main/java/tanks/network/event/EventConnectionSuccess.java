@@ -21,16 +21,4 @@ public class EventConnectionSuccess extends PersonalEvent
 			Game.eventsOut.add(new EventSendTankColors(Game.player));
 		}
 	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		
-	}
 }

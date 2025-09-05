@@ -46,26 +46,6 @@ public class EventTankUpdateColor extends PersonalEvent implements IStackableEve
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        NetworkUtils.writeColor(b, this.color1);
-        NetworkUtils.writeColor(b, this.color2);
-        NetworkUtils.writeColor(b, this.color3);
-        b.writeBoolean(this.tertiaryColor);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        NetworkUtils.readColor(b, this.color1);
-        NetworkUtils.readColor(b, this.color2);
-        NetworkUtils.readColor(b, this.color3);
-        this.tertiaryColor = b.readBoolean();
-    }
-
-    @Override
     public int getIdentifier()
     {
         return this.tank;

@@ -37,34 +37,6 @@ public class EventDisplayText extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.location);
-        NetworkUtils.writeString(b, this.text);
-        b.writeInt(this.duration);
-        b.writeBoolean(this.afterGameStarted);
-        b.writeBoolean(this.hasItems);
-
-        b.writeDouble(this.colorR);
-        b.writeDouble(this.colorG);
-        b.writeDouble(this.colorB);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.location = NetworkUtils.readString(b);
-        this.text = NetworkUtils.readString(b);
-        this.duration = b.readInt();
-        this.afterGameStarted = b.readBoolean();
-        this.hasItems = b.readBoolean();
-
-        this.colorR = b.readDouble();
-        this.colorG = b.readDouble();
-        this.colorB = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         FixedText t = new FixedText(this.location, this.text, this.afterGameStarted, this.duration, this.colorR, this.colorG, this.colorB);

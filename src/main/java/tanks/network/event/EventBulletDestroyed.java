@@ -49,20 +49,4 @@ public class EventBulletDestroyed extends PersonalEvent
             Bullet.idMap.remove(b.networkID);
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.bullet);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.bullet = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-    }
 }

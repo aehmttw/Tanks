@@ -27,18 +27,6 @@ public class EventPlayerSetBuild extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(build);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        build = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (Game.screen instanceof ScreenGame && Game.currentLevel != null && build >= 0 && build < ((ScreenGame) (Game.screen)).builds.size())

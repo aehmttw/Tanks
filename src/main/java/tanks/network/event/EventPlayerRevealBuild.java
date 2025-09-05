@@ -29,20 +29,6 @@ public class EventPlayerRevealBuild extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(tank);
-        b.writeInt(build);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        tank = b.readInt();
-        build = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null && build >= 0 && build < Game.currentLevel.playerBuilds.size())

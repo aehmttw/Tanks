@@ -73,20 +73,4 @@ public class EventShareCrusade extends PersonalEvent
 			ScreenPartyLobby.sharedCrusades.add(new ScreenPartyHost.SharedCrusade(this.crusade, this.name, this.username));
 		}
 	}
-
-	@Override
-	public void write(ByteBuf b)
-	{
-		NetworkUtils.writeString(b, this.crusade);
-		NetworkUtils.writeString(b, this.name);
-		NetworkUtils.writeString(b, this.username);
-	}
-
-	@Override
-	public void read(ByteBuf b)
-	{
-		this.crusade = NetworkUtils.readString(b);
-		this.name = NetworkUtils.readString(b);
-		this.username = NetworkUtils.readString(b);
-	}
 }

@@ -30,16 +30,4 @@ public class EventPlayerAutoReadyConfirm extends PersonalEvent
                 ((ScreenGame) Game.screen).ready = true;
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, playerID.toString());
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.playerID = UUID.fromString(NetworkUtils.readString(b));
-    }
 }

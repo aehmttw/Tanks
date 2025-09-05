@@ -42,37 +42,6 @@ public class EventTankTeleport extends PersonalEvent
 		this.maxAge = t.maxAge;
 		this.endAge = t.endAge;
 	}
-	
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.tank);
-		b.writeDouble(this.fX);
-		b.writeDouble(this.fY);
-		b.writeDouble(this.iX);
-		b.writeDouble(this.iY);
-		b.writeDouble(this.dX);
-		b.writeDouble(this.dY);
-		b.writeDouble(this.age);
-		b.writeDouble(this.maxAge);
-		b.writeDouble(this.endAge);
-
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.tank = b.readInt();
-		this.fX = b.readDouble();
-		this.fY = b.readDouble();
-		this.iX = b.readDouble();
-		this.iY = b.readDouble();
-		this.dX = b.readDouble();
-		this.dY = b.readDouble();
-		this.age = b.readDouble();
-		this.maxAge = b.readDouble();
-		this.endAge = b.readDouble();
-	}
 
 	@Override
 	public void execute() 

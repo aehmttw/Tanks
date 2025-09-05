@@ -26,22 +26,6 @@ public class EventScoreboardUpdateScore extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(id);
-        NetworkUtils.writeString(b, name);
-        b.writeDouble(value);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
-        this.name = NetworkUtils.readString(b);
-        this.value = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         for (IFixedMenu m : ModAPI.menuGroup)

@@ -69,40 +69,4 @@ public class EventTankCustomCreate extends PersonalEvent
 
 		Game.movables.add(tank);
 	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.name);
-		b.writeDouble(this.posX);
-		b.writeDouble(this.posY);
-		b.writeDouble(this.angle);
-		NetworkUtils.writeString(b, this.team);
-		b.writeDouble(this.size);
-		b.writeDouble(this.turretSize);
-		b.writeDouble(this.turretLength);
-		NetworkUtils.writeColor(b, this.color);
-		b.writeDouble(this.lives);
-		b.writeDouble(this.baseLives);
-
-		b.writeInt(this.id);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.name = NetworkUtils.readString(b);
-		this.posX = b.readDouble();
-		this.posY = b.readDouble();
-		this.angle = b.readDouble();
-		this.team = NetworkUtils.readString(b);
-		this.size = b.readDouble();
-		this.turretSize = b.readDouble();
-		this.turretLength = b.readDouble();
-		NetworkUtils.readColor(b, this.color);
-		this.lives = b.readDouble();
-		this.baseLives = b.readDouble();
-
-		this.id = b.readInt();
-	}
 }

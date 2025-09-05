@@ -37,17 +37,4 @@ public class EventPlayerReady extends PersonalEvent
 			Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
 		}
 	}
-
-	@Override
-	public void write(ByteBuf b)
-	{
-		
-	}
-
-	@Override
-	public void read(ByteBuf b)
-	{
-		
-	}
-
 }

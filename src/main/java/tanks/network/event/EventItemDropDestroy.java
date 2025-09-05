@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.ItemDrop;
 
 public class EventItemDropDestroy extends PersonalEvent
@@ -15,18 +14,6 @@ public class EventItemDropDestroy extends PersonalEvent
     public EventItemDropDestroy(ItemDrop id)
     {
         this.itemDrop = id.networkID;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.itemDrop);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.itemDrop = b.readInt();
     }
 
     @Override

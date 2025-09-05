@@ -35,16 +35,4 @@ public class EventMutePlayer extends PersonalEvent
         }
 	}
 
-	@Override
-	public void write(ByteBuf b) 
-	{
-        b.writeBoolean(this.muted);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.muted = b.readBoolean();
-	}
-
 }

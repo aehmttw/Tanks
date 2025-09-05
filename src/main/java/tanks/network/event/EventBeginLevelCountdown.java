@@ -21,16 +21,4 @@ public class EventBeginLevelCountdown extends PersonalEvent
 			((ScreenGame) Game.screen).cancelCountdown = false;
 		}
 	}
-
-	@Override
-	public void write(ByteBuf b)
-	{
-		
-	}
-
-	@Override
-	public void read(ByteBuf b)
-	{
-		
-	}
 }

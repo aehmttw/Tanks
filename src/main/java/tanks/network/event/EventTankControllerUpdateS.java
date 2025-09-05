@@ -22,20 +22,6 @@ public class EventTankControllerUpdateS extends EventTankUpdate
     }
 
     @Override
-    public void read(ByteBuf b)
-    {
-        super.read(b);
-        this.forced = b.readBoolean();
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        super.write(b);
-        b.writeBoolean(this.forced);
-    }
-
-    @Override
     public void execute()
     {
         Tank t = Tank.idMap.get(this.tank);

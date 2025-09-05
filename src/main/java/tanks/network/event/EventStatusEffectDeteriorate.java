@@ -37,24 +37,6 @@ public class EventStatusEffectDeteriorate extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeBoolean(this.isTank);
-        b.writeInt(this.networkID);
-        NetworkUtils.writeString(b, this.effect);
-        b.writeDouble(this.remainingTime);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.isTank = b.readBoolean();
-        this.networkID = b.readInt();
-        this.effect = NetworkUtils.readString(b);
-        this.remainingTime = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         if (clientID != null)

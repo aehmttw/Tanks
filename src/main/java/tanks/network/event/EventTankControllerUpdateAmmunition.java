@@ -38,34 +38,6 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.clientIdTarget.toString());
-        b.writeInt(this.action1Live);
-        b.writeInt(this.action1Max);
-        b.writeInt(this.action2Live);
-        b.writeInt(this.action2Max);
-        b.writeDouble(this.cooldown);
-        b.writeDouble(this.cooldownBase);
-        b.writeDouble(this.cooldown2);
-        b.writeDouble(this.cooldownBase2);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.clientIdTarget = UUID.fromString(NetworkUtils.readString(b));
-        this.action1Live = b.readInt();
-        this.action1Max = b.readInt();
-        this.action2Live = b.readInt();
-        this.action2Max = b.readInt();
-        this.cooldown = b.readDouble();
-        this.cooldownBase = b.readDouble();
-        this.cooldown2 = b.readDouble();
-        this.cooldownBase2 = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null && clientIdTarget.equals(Game.clientID) && Game.playerTank instanceof TankPlayerController)

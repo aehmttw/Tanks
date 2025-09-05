@@ -113,20 +113,4 @@ public class EventTankTransformPreset extends PersonalEvent
             t.tertiaryColor.set(target.tertiaryColor);
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeBoolean(this.sight);
-        b.writeBoolean(this.revert);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.sight = b.readBoolean();
-        this.revert = b.readBoolean();
-    }
 }

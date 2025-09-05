@@ -1,9 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
+import tanks.*;
 import tanks.minigames.Arcade;
 
 public class EventArcadeHit extends PersonalEvent
@@ -26,26 +23,6 @@ public class EventArcadeHit extends PersonalEvent
     public EventArcadeHit()
     {
 
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(power);
-        b.writeDouble(posX);
-        b.writeDouble(posY);
-        b.writeDouble(posZ);
-        b.writeInt(points);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        power = b.readInt();
-        posX = b.readDouble();
-        posY = b.readDouble();
-        posZ = b.readDouble();
-        points = b.readInt();
     }
 
     @Override

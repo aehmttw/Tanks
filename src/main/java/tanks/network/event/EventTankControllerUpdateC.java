@@ -2,11 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Panel;
-import tanks.hotbar.Hotbar;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerController;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 public class EventTankControllerUpdateC extends PersonalEvent implements IStackableEvent
 {
@@ -20,9 +16,11 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
     public double mY;
     public boolean action1;
     public boolean action2;
-    public boolean[] quickActions = new boolean[TankPlayer.max_abilities];
     public double time;
     public long sysTime = System.currentTimeMillis();
+
+    @NetworkIgnored
+    public boolean[] quickActions = new boolean[TankPlayer.max_abilities];
 
     public EventTankControllerUpdateC()
     {
@@ -48,41 +46,19 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
     @Override
     public void write(ByteBuf b)
     {
-        b.writeInt(this.tank);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeDouble(this.vX);
-        b.writeDouble(this.vY);
-        b.writeDouble(this.angle);
-        b.writeDouble(this.mX);
-        b.writeDouble(this.mY);
-        b.writeBoolean(this.action1);
-        b.writeBoolean(this.action2);
-        for (boolean quickAction : this.quickActions)
-        {
-            b.writeBoolean(quickAction);
-        }
-        b.writeDouble(this.time);
+        super.write(b);
+        b.writeShort(quickActions.length);
+        for (boolean b1: quickActions)
+            b.writeBoolean(b1);
     }
 
     @Override
     public void read(ByteBuf b)
     {
-        this.tank = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.vX = b.readDouble();
-        this.vY = b.readDouble();
-        this.angle = b.readDouble();
-        this.mX = b.readDouble();
-        this.mY = b.readDouble();
-        this.action1 = b.readBoolean();
-        this.action2 = b.readBoolean();
-        for (int i = 0; i < this.quickActions.length; i++)
-        {
-           this.quickActions[i] = b.readBoolean();
-        }
-        this.time = b.readDouble();
+        super.read(b);
+        int len = b.readShort();
+        for (int i = 0; i < len; i++)
+            this.quickActions[i] = b.readBoolean();
     }
 
     @Override
@@ -91,9 +67,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         Tank t = Tank.idMap.get(this.tank);
 
         if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).player.clientID.equals(this.clientID))
-        {
             ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.quickActions, this.time, this.sysTime);
-        }
     }
 
     @Override

@@ -32,24 +32,6 @@ public class EventUpdateTankColors extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.player.toString());
-        NetworkUtils.writeColor(b, this.color1);
-        NetworkUtils.writeColor(b, this.color2);
-        NetworkUtils.writeColor(b, this.color3);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.player = UUID.fromString(NetworkUtils.readString(b));
-        NetworkUtils.readColor(b, this.color1);
-        NetworkUtils.readColor(b, this.color2);
-        NetworkUtils.readColor(b, this.color3);
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null)

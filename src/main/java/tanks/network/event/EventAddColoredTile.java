@@ -38,36 +38,6 @@ public class EventAddColoredTile extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeDouble(this.length);
-        b.writeDouble(this.width);
-        b.writeDouble(this.colorR);
-        b.writeDouble(this.colorG);
-        b.writeDouble(this.colorB);
-        b.writeDouble(this.colorA);
-        b.writeBoolean(this.flashing);
-        b.writeDouble(this.flashSpeedMultiplier);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.length = b.readDouble();
-        this.width = b.readDouble();
-        this.colorR = b.readDouble();
-        this.colorG = b.readDouble();
-        this.colorB = b.readDouble();
-        this.colorA = b.readDouble();
-        this.flashing = b.readBoolean();
-        this.flashSpeedMultiplier = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);

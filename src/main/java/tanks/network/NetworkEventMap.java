@@ -1,5 +1,6 @@
 package tanks.network;
 
+import io.netty.buffer.*;
 import tanks.Game;
 import tanks.network.event.INetworkEvent;
 
@@ -10,7 +11,7 @@ public class NetworkEventMap
 	protected static HashMap<Integer, Class<? extends INetworkEvent>> map1 = new HashMap<>();
 	protected static HashMap<Class<? extends INetworkEvent>, Integer> map2 = new HashMap<>();
 	protected static int id = 0;
-	
+
 	public static void register(Class<? extends INetworkEvent> c)
 	{
 		try
@@ -19,10 +20,25 @@ public class NetworkEventMap
 		}
 		catch (Exception e)
 		{
-			Game.exitToCrash(new RuntimeException("The network event " + c + " does not have a no-parameter constructor. Please give it one."));
+			Game.exitToCrash(new RuntimeException("The network event " + c + " does not have a no-parameter" +
+                " constructor. Please give it one."));
 		}
 
-		map1.put(id, c);
+        ByteBuf b = Unpooled.buffer();
+        INetworkEvent e = null;
+        try
+        {
+            e = c.getConstructor().newInstance();
+            e.write(b);
+            e.read(b);
+        }
+        catch (Exception exc)
+        {
+            if (e == NetworkFieldHandle.testObject && exc.getMessage().contains("Failed to find field handle"))  // uses custom read/write methods
+                throw new RuntimeException(exc);
+        }
+
+        map1.put(id, c);
 		map2.put(c, id);
 		id++;
 	}

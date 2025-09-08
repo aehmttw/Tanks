@@ -29,10 +29,7 @@ import tanks.minigames.ArcadeBeatBlocks;
 import tanks.minigames.ArcadeClassic;
 import tanks.minigames.CastleRampage;
 import tanks.minigames.Minigame;
-import tanks.network.Client;
-import tanks.network.NetworkEventMap;
-import tanks.network.SteamNetworkHandler;
-import tanks.network.SynchronizedList;
+import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
@@ -146,15 +143,15 @@ public class Game
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
 
-    public static final int network_protocol = 60;
+    public static final int network_protocol = 59;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;
 	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
+    public static boolean recordEventData = false;
     public static boolean drawAvoidObjects = false;
     public static boolean recordMovableData = false;
-    public static boolean recordEventData = false;
     public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;
@@ -179,7 +176,7 @@ public class Game
 
 	public static boolean vsync = true;
 	public static int maxFPS = 0;
-	public static int networkRate = 10;
+	public static int networkRate = 20;
 
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
@@ -238,6 +235,7 @@ public class Game
 	public static boolean fancyTerrain = true;
 	public static boolean effectsEnabled = true;
 	public static boolean bulletTrails = true;
+	public static boolean fancyBulletTrails = true;
 	public static boolean glowEnabled = true;
 
 	public static double effectMultiplier = 1;
@@ -345,7 +343,6 @@ public class Game
 
 	public static void registerEvents()
 	{
-        NetworkEventMap.register(EventStackedGroup.class);
 		NetworkEventMap.register(EventSendClientDetails.class);
 		NetworkEventMap.register(EventPing.class);
 		NetworkEventMap.register(EventConnectionSuccess.class);
@@ -384,7 +381,6 @@ public class Game
 		NetworkEventMap.register(EventUpdateEliminatedPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
-        NetworkEventMap.register(EventNudge.class);
 		NetworkEventMap.register(EventTankUpdate.class);
 		NetworkEventMap.register(EventTankControllerUpdateS.class);
 		NetworkEventMap.register(EventTankControllerUpdateC.class);
@@ -443,6 +439,7 @@ public class Game
 		NetworkEventMap.register(EventArcadeFrenzy.class);
 		NetworkEventMap.register(EventArcadeEnd.class);
 		NetworkEventMap.register(EventArcadeBonuses.class);
+        NetworkEventMap.register(EventStackedGroup.class);
 
 		NetworkEventMap.register(EventSendOnlineClientDetails.class);
 		NetworkEventMap.register(EventSilentDisconnect.class);
@@ -466,6 +463,8 @@ public class Game
 		NetworkEventMap.register(EventUploadLevel.class);
 		NetworkEventMap.register(EventSendLevelToDownload.class);
 		NetworkEventMap.register(EventCleanUp.class);
+
+        ModAPI.registerEvents();
 	}
 
 	public static void registerObstacle(Class<? extends Obstacle> obstacle, String name)
@@ -537,6 +536,7 @@ public class Game
 
 		Drawing.initialize();
 		Panel.initialize();
+        NetworkFieldHandle.initialize();
 		Game.exitToTitle();
 
 		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);

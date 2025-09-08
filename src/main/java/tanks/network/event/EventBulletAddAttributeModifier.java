@@ -1,7 +1,7 @@
 package tanks.network.event;
 
+import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
-import tanks.effect.AttributeModifier;
 
 public class EventBulletAddAttributeModifier extends PersonalEvent
 {

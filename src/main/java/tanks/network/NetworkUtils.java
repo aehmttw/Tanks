@@ -41,12 +41,13 @@ public class NetworkUtils
 
     public static void writeUUID(ByteBuf b, UUID u)
     {
-        NetworkUtils.writeString(b, u.toString());
+        NetworkUtils.writeString(b, u == null ? null : u.toString());
     }
 
     public static UUID readUUID(ByteBuf b)
     {
-        return UUID.fromString(Objects.requireNonNull(NetworkUtils.readString(b)));
+        String s = NetworkUtils.readString(b);
+        return s == null ? null : UUID.fromString(s);
     }
 
     public static <T> void writeCollection(ByteBuf b, Collection<T> l, BiConsumer<ByteBuf, T> write)

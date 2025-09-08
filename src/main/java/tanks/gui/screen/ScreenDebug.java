@@ -35,8 +35,7 @@ public class ScreenDebug extends Screen
     public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(
             test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable,
             fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles,
-            drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData,
-            recordEventData
+            drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData, recordEventData
     )), 0, 0, -30);
 
     public Button createToggle(String text, Consumer<Boolean> setter, Producer<Boolean> getter)

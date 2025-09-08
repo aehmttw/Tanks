@@ -13,6 +13,7 @@ public class EventAddNPC extends EventTankCustomCreate
     public String messages = "";
     public String tag;
 
+    @NetworkIgnored
     public ArrayList<Item.ShopItem> shop;
 
     public EventAddNPC()

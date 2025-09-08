@@ -1,8 +1,8 @@
 package tanks.network.event;
 
 import tanks.Movable;
+import tanks.attribute.StatusEffect;
 import tanks.bullet.Bullet;
-import tanks.effect.StatusEffect;
 import tanks.tank.Tank;
 
 public class EventStatusEffectEnd extends PersonalEvent

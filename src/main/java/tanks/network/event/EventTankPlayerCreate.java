@@ -1,24 +1,17 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Player;
-import tanks.Team;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.minigames.Arcade;
-import tanks.minigames.RampageTrial;
+import tanks.*;
+import tanks.gui.screen.*;
+import tanks.minigames.*;
 import tanks.network.ConnectedPlayer;
-import tanks.network.NetworkUtils;
 import tanks.tank.*;
 
 import java.util.UUID;
 
 public class EventTankPlayerCreate extends PersonalEvent
 {
+    @NetworkIgnored
 	public Player player;
 
 	public UUID clientIdTarget;

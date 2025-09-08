@@ -1,10 +1,10 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.network.*;
+import tanks.network.NetworkFieldHandle;
 
 import java.lang.annotation.*;
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.util.*;
 
 public interface INetworkEvent extends IEvent
@@ -14,7 +14,7 @@ public interface INetworkEvent extends IEvent
     {
     }
 
-    HashMap<Class<? extends INetworkEvent>, ArrayList<NetworkFieldHandle>> fields = new HashMap<>();
+    HashMap<Class<? extends INetworkEvent>, ArrayList<NetworkFieldHandle>> classToFields = new HashMap<>();
 
     default void write(ByteBuf b)
     {
@@ -32,12 +32,22 @@ public interface INetworkEvent extends IEvent
 
     default ArrayList<NetworkFieldHandle> getFieldHandles()
     {
-        return fields.computeIfAbsent(getClass(), c ->
+        ArrayList<NetworkFieldHandle> fields = classToFields.computeIfAbsent(getClass(), c ->
         {
             ArrayList<NetworkFieldHandle> handles = new ArrayList<>();
             for (Field f : c.getFields())
-                handles.add(new NetworkFieldHandle(f, this));
+            {
+                if (NetworkFieldHandle.shouldCheckField(f))
+                    handles.add(new NetworkFieldHandle(f));
+            }
             return handles;
         });
+
+        for (NetworkFieldHandle f : fields)
+            f.currentObject = this;
+
+        NetworkFieldHandle.testObject = this;
+
+        return fields;
     }
 }

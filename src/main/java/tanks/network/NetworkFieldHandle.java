@@ -3,26 +3,30 @@ package tanks.network;
 import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 import tanks.*;
+import tanks.network.event.INetworkEvent;
 
 import java.lang.invoke.*;
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.util.*;
 
 public class NetworkFieldHandle
 {
-    private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
+    protected static final MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+    // Used for network field validation upon game only. Do not use for anything else, will cause race conditions
+    public static Object testObject = null;
 
     public static class FieldHandle<T>
     {
-        private final Class<T> castType;
-        private final Function<ByteBuf, ?> read;
-        private final BiConsumer<ByteBuf, T> write;
+        protected final Class<T> castType;
+        protected Function<ByteBuf, ?> read;
+        protected BiConsumer<ByteBuf, T> write;
 
-        private FieldHandle(Class<T> castType, Function<ByteBuf, ?> read, BiConsumer<ByteBuf, T> write)
+        protected FieldHandle(Class<T> castType, Function<ByteBuf, ?> readFunc, BiConsumer<ByteBuf, T> writeFunc)
         {
             this.castType = castType;
-            this.read = read;
-            this.write = write;
+            this.read = readFunc;
+            this.write = writeFunc;
         }
 
         public T read(ByteBuf b)
@@ -51,16 +55,31 @@ public class NetworkFieldHandle
 
     static Map<Class<?>, FieldHandle<?>> sigs = new HashMap<>();
 
+    public static boolean shouldCheckField(Field f)
+    {
+        return !Modifier.isStatic(f.getModifiers()) && !f.isAnnotationPresent(INetworkEvent.NetworkIgnored.class);
+    }
+
+    private static double readDouble(ByteBuf b)
+    {
+        return b.readFloat();
+    }
+
+    private static void writeDouble(ByteBuf b, double d)
+    {
+        b.writeFloat((float) d);
+    }
+
     public static void initialize()
     {
         if (!sigs.isEmpty())
             return;
 
-        FieldHandle.register(int.class, ByteBuf::readInt, ByteBuf::writeInt);
-        FieldHandle.register(long.class, ByteBuf::readLong, ByteBuf::writeLong);
-        FieldHandle.register(float.class, float.class, ByteBuf::readFloat, ByteBuf::writeFloat);
-        FieldHandle.register(double.class, float.class, ByteBuf::readFloat, ByteBuf::writeFloat);   // treat doubles as floats
-        FieldHandle.register(boolean.class, ByteBuf::readBoolean, ByteBuf::writeBoolean);
+        FieldHandle.register(int.class, Integer.class, ByteBuf::readInt, ByteBuf::writeInt);
+        FieldHandle.register(long.class, Long.class, ByteBuf::readLong, ByteBuf::writeLong);
+        FieldHandle.register(float.class, Float.class, ByteBuf::readFloat, ByteBuf::writeFloat);
+        FieldHandle.register(double.class, Double.class, NetworkFieldHandle::readDouble, NetworkFieldHandle::writeDouble);  // treat doubles as floats
+        FieldHandle.register(boolean.class, Boolean.class, ByteBuf::readBoolean, ByteBuf::writeBoolean);
         FieldHandle.register(String.class, NetworkUtils::readString, NetworkUtils::writeString);
         FieldHandle.register(Color.class, NetworkUtils::readColor, NetworkUtils::writeColor);
         FieldHandle.register(UUID.class, NetworkUtils::readUUID, NetworkUtils::writeUUID);
@@ -71,23 +90,24 @@ public class NetworkFieldHandle
         FieldHandle.register(char.class, int.class, ByteBuf::readChar, ByteBuf::writeChar);
     }
 
-    public Object object;
-    private final MethodHandle read, write;
-    private final FieldHandle<?> fieldHandle;
+    public Object currentObject;
 
-    public NetworkFieldHandle(Field field, Object o)
+    protected final MethodHandle read, write;
+    protected final FieldHandle<?> fieldHandle;
+    protected final Field field;
+
+    public NetworkFieldHandle(Field field)
     {
-        initialize();
-        this.object = o;
         try
         {
             this.read = lookup.unreflectGetter(field);
             this.write = lookup.unreflectSetter(field);
-            this.fieldHandle = sigs.get(field.getType());
+            this.fieldHandle = Objects.requireNonNull(sigs.get(field.getType()), "Failed to find field handle for '" + field.getName() + "' of type '" + field.getType() + "' from class '" + field.getDeclaringClass() + "'");
+            this.field = field;
         }
         catch (IllegalAccessException e)
         {
-            throw new RuntimeException(e);
+            throw new RuntimeException(this + ": " + e);
         }
     }
 
@@ -95,11 +115,11 @@ public class NetworkFieldHandle
     {
         try
         {
-            this.write.invoke(this.object, this.fieldHandle.read(b));
+            this.write.invoke(currentObject, this.fieldHandle.read(b));
         }
         catch (Throwable e)
         {
-            throw new RuntimeException(e);
+            throw new RuntimeException(this + ", " + this.fieldHandle.read(b) + ": " + e);
         }
     }
 
@@ -107,11 +127,16 @@ public class NetworkFieldHandle
     {
         try
         {
-            this.fieldHandle.write(b, this.read.invoke(this.object));
+            this.fieldHandle.write(b, this.read.invoke(currentObject));
         }
         catch (Throwable e)
         {
-            throw new RuntimeException(e);
+            throw new RuntimeException(this + ", " + e);
         }
+    }
+
+    public String toString()
+    {
+        return currentObject.getClass().getSimpleName() + ": " + this.field.getName();
     }
 }

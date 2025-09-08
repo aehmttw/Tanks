@@ -13,7 +13,7 @@ public class NetworkFieldHandle
 {
     protected static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-    // Used for network field validation upon game only. Do not use for anything else, will cause race conditions
+    // Used for network field validation upon game launch only. Do not use for anything else, will cause race conditions
     public static Object testObject = null;
 
     public static class FieldHandle<T>
@@ -34,6 +34,7 @@ public class NetworkFieldHandle
             return castType.cast(read.apply(b));
         }
 
+        @SuppressWarnings("unchecked")
         public void write(ByteBuf b, Object t)
         {
             write.accept(b, (T) t);

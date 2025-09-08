@@ -67,16 +67,16 @@ public class NetworkUtils
 	public static Color readColor(ByteBuf b)
 	{
         Color c = new Color();
-		c.red = b.readDouble();
-		c.green = b.readDouble();
-		c.blue = b.readDouble();
+		c.red = b.readShort();
+		c.green = b.readShort();
+		c.blue = b.readShort();
         return c;
 	}
 
 	public static void writeColor(ByteBuf b, Color c)
 	{
-        b.writeDouble(c.red);
-		b.writeDouble(c.green);
-		b.writeDouble(c.blue);
+        b.writeShort((int) c.red);
+		b.writeShort((int) c.green);
+		b.writeShort((int) c.blue);
 	}
 }

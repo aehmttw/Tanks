@@ -1,53 +1,42 @@
 package tanks.network.event;
 
+import basewindow.Color;
 import io.netty.buffer.ByteBuf;
-import tanks.network.NetworkFieldHandle;
+import tanks.network.*;
+import tanks.tankson.ReflectionHandle;
 
 import java.lang.annotation.*;
-import java.lang.reflect.*;
-import java.util.*;
+import java.util.UUID;
 
 public interface INetworkEvent extends IEvent
 {
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface NetworkIgnored
-    {
-    }
+    ReflectionHandle<ByteBuf> handle = new ReflectionHandle<ByteBuf>()
+        .setFieldFilter(f -> !f.isAnnotationPresent(NetworkIgnored.class))
+        .registerTypeHandle(int.class, Integer.class, ByteBuf::readInt, ByteBuf::writeInt)
+        .registerTypeHandle(long.class, Long.class, ByteBuf::readLong, ByteBuf::writeLong)
+        .registerTypeHandle(float.class, Float.class, ByteBuf::readFloat, ByteBuf::writeFloat)
+        .registerTypeHandle(double.class, Double.class, ByteBuf::readDouble, ByteBuf::writeDouble)
+        .registerTypeHandle(boolean.class, Boolean.class, ByteBuf::readBoolean, ByteBuf::writeBoolean)
+        .registerTypeHandle(String.class, NetworkUtils::readString, NetworkUtils::writeString)
+        .registerTypeHandle(Color.class, NetworkUtils::readColor, NetworkUtils::writeColor)
+        .registerTypeHandle(UUID.class, NetworkUtils::readUUID, NetworkUtils::writeUUID);
 
-    HashMap<Class<? extends INetworkEvent>, ArrayList<NetworkFieldHandle>> classToFields = new HashMap<>();
 
     default void write(ByteBuf b)
     {
-        for (NetworkFieldHandle f : getFieldHandles())
-            f.write(b);
+        handle.writeObject(b, this);
     }
 
     default void read(ByteBuf b)
     {
-        for (NetworkFieldHandle f : getFieldHandles())
-            f.read(b);
+        handle.readObject(b, this);
     }
 
     void execute();
 
-    default ArrayList<NetworkFieldHandle> getFieldHandles()
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface NetworkIgnored
     {
-        ArrayList<NetworkFieldHandle> fields = classToFields.computeIfAbsent(getClass(), c ->
-        {
-            ArrayList<NetworkFieldHandle> handles = new ArrayList<>();
-            for (Field f : c.getFields())
-            {
-                if (NetworkFieldHandle.shouldCheckField(f))
-                    handles.add(new NetworkFieldHandle(f));
-            }
-            return handles;
-        });
-
-        for (NetworkFieldHandle f : fields)
-            f.currentObject = this;
-
-        NetworkFieldHandle.testObject = this;
-
-        return fields;
     }
 }

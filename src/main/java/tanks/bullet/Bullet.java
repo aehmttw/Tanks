@@ -708,28 +708,12 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (this.destroy)
 			return;
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-
-			if (!o.checkForObjects)
-				continue;
-
-			double dx = this.posX - o.posX;
-			double dy = this.posY - o.posY;
-
-			double horizontalDist = Math.abs(dx);
-			double verticalDist = Math.abs(dy);
-
-			double s = this.size;
-			if (useCustomWallCollision)
-				s = this.wallCollisionSize;
-
-			double bound = s / 2 + Game.tile_size / 2;
-
-			if (horizontalDist < bound && verticalDist < bound)
-				o.onObjectEntryLocal(this);
-		}
+        double bound = this.size / 2 + Game.tile_size / 2;
+		for (Obstacle o : Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
+        {
+            if (o.checkForObjects)
+                o.onObjectEntryLocal(this);
+        }
 	}
 
 	public void checkCollision()

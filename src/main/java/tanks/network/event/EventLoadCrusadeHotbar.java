@@ -1,9 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
-import tanks.network.NetworkUtils;
 import tanks.translation.Translation;
 
 public class EventLoadCrusadeHotbar extends PersonalEvent
@@ -11,8 +9,8 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
     public String title;
     public String subtitle;
 
-    int index;
-    boolean translate;
+    public int index;
+    public boolean translate;
 
     public EventLoadCrusadeHotbar()
     {
@@ -26,6 +24,7 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
         this.index = index;
         this.translate = translate;
     }
+
     @Override
     public void execute()
     {

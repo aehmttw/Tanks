@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.network.NetworkUtils;
 import tanks.obstacle.Obstacle;
 
 public class EventObstacleDestroy extends PersonalEvent
@@ -10,7 +8,7 @@ public class EventObstacleDestroy extends PersonalEvent
     public double posX;
     public double posY;
 
-    boolean effect;
+    public boolean effect;
     public double effectX;
     public double effectY;
     public double radius;
@@ -45,17 +43,14 @@ public class EventObstacleDestroy extends PersonalEvent
         if (this.clientID != null)
             return;
 
-        for (int i = 0; i < Game.obstacles.size(); i++)
-        {
-            Obstacle o = Game.obstacles.get(i);
+        Obstacle o = Game.getObstacle(posX, posY);
 
-            if (o.posX == this.posX && o.posY == this.posY && o.name.equals(name))
-            {
-                if (effect)
-                    o.playDestroyAnimation(this.effectX, this.effectY, this.radius);
+        if (o.posX != this.posX || o.posY != this.posY || !o.name.equals(name))
+            return;
 
-                Game.removeObstacles.add(o);
-            }
-        }
+        if (effect)
+            o.playDestroyAnimation(this.effectX, this.effectY, this.radius);
+
+        Game.removeObstacles.add(o);
     }
 }

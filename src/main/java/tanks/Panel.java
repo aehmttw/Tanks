@@ -358,17 +358,6 @@ public class Panel
                         prev = stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
 					else
                         Game.eventsIn.get(i).execute();
-
-                    if (Game.recordEventData && prev == null)
-                    {
-                        if (e instanceof EventStackedGroup)
-                        {
-                            for (INetworkEvent e2 : ((EventStackedGroup) e).events)
-                                eventsInCount.addTo(e2.getClass(), 1);
-                        }
-                        else
-                            eventsInCount.addTo(e.getClass(), 1);
-                    }
 				}
 			}
 

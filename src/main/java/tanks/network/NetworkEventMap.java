@@ -14,6 +14,13 @@ public class NetworkEventMap
 
 	public static void register(Class<? extends INetworkEvent> c)
 	{
+        map1.put(id, c);
+        map2.put(c, id);
+        id++;
+
+        if (!Game.debug)
+            return;
+
 		try
 		{
 			c.getConstructor();
@@ -25,7 +32,7 @@ public class NetworkEventMap
 		}
 
         ByteBuf b = Unpooled.buffer();
-        INetworkEvent e = null;
+        INetworkEvent e;
         try
         {
             e = c.getConstructor().newInstance();
@@ -34,13 +41,9 @@ public class NetworkEventMap
         }
         catch (Exception exc)
         {
-            if (e == NetworkFieldHandle.testObject && exc.getMessage().contains("Failed to find field handle"))  // uses custom read/write methods
+            if (exc.getMessage().contains("Failed to find field handle"))  // uses custom read/write methods
                 throw new RuntimeException(exc);
         }
-
-        map1.put(id, c);
-		map2.put(c, id);
-		id++;
 	}
 	
 	public static int get(Class<? extends INetworkEvent> c)
@@ -61,8 +64,6 @@ public class NetworkEventMap
 	public static void print()
 	{
 		for (int i = 0; i < id; i++)
-		{
-			System.out.println(i + " " + NetworkEventMap.get(i));
-		}
+            System.out.println(i + " " + NetworkEventMap.get(i));
 	}
 }

@@ -157,10 +157,15 @@ public class MessageReader
 		if (c == null)
 			throw new Exception("Invalid network event: " + i + " (Previous event: " + NetworkEventMap.get(this.lastID) + ")");
 
-		this.lastID = i;
-
 		INetworkEvent e = c.getConstructor().newInstance();
-		e.read(m);
+        try
+        {
+            e.read(m);
+        }
+        catch (Exception exc)
+        {
+            throw new RuntimeException("Failed to read network event " + c + " (previous event: " + NetworkEventMap.get(this.lastID) + "): " + exc.getMessage());
+        }
 
 		if (e instanceof PersonalEvent)
 		{
@@ -180,6 +185,8 @@ public class MessageReader
 				Game.eventsIn.add(e);
 			}
 		}
+
+        this.lastID = i;
 	}
 
 	public static void updateLastMessageTime()

@@ -52,15 +52,6 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
             Game.steamNetworkHandler.send(steamID.getAccountID(), e, flush ?
                 SteamNetworking.P2PSend.Reliable : SteamNetworking.P2PSend.ReliableWithBuffering);
 
-        if (Game.recordEventData)
-        {
-            if (e instanceof EventStackedGroup)
-                for (INetworkEvent e2 : ((EventStackedGroup) e).events)
-                    Panel.panel.eventsOutCount.addTo(e2.getClass(), 1);
-            else
-                Panel.panel.eventsOutCount.addTo(e.getClass(), 1);
-        }
-
         ByteBuf b = ctx.channel().alloc().buffer();
 
         int eventID = NetworkEventMap.get(e.getClass());
@@ -105,9 +96,8 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
             INetworkEvent prev = null;
             for (INetworkEvent e : this.events)
             {
-                INetworkEvent other = null;
                 if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
-                    other = this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+                    this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
                 else
                 {
                     if (prev != null)
@@ -115,8 +105,6 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
 
                     prev = e;
                 }
-                if (Game.recordEventData && other == null)
-                    Panel.panel.eventsOutCount.addTo(e.getClass(), 1);
             }
 
             long time = System.currentTimeMillis() * Game.networkRate / 1000;

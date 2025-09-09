@@ -149,7 +149,6 @@ public class Game
 	public static boolean showNetworkIDs = false;
 	public static boolean drawAutoZoom = false;
 	public static boolean drawFaces = false;
-    public static boolean recordEventData = false;
     public static boolean drawAvoidObjects = false;
     public static boolean recordMovableData = false;
     public static final boolean cinematic = false;
@@ -536,7 +535,6 @@ public class Game
 
 		Drawing.initialize();
 		Panel.initialize();
-        NetworkFieldHandle.initialize();
 		Game.exitToTitle();
 
 		Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);

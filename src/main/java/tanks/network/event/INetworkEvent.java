@@ -31,7 +31,6 @@ public interface INetworkEvent extends IEvent
         b.writeFloat((float) d);
     }
 
-
     default void write(ByteBuf b)
     {
         handle.writeObject(b, this);

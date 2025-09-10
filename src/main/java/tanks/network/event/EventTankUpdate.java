@@ -5,12 +5,9 @@ import tanks.tank.*;
 public class EventTankUpdate extends PersonalEvent implements IStackableEvent
 {
 	public int tank;
-	public double posX;
-	public double posY;
-	public double vX;
-	public double vY;
-	public double angle;
-	public double pitch;
+    public double posX, posY;
+    public double vX, vY;
+    public double angle, pitch;
 	public long time = System.currentTimeMillis();
 
 

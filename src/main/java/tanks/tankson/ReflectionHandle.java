@@ -19,6 +19,8 @@ public class ReflectionHandle<S>
 
     public Function<Field, Boolean> fieldFilter = f -> true;
 
+    public boolean superclassFields = false;
+
     public void readObject(S stream, Object object)
     {
         for (FieldHandle f : getFieldsInClass(object.getClass()))
@@ -34,7 +36,11 @@ public class ReflectionHandle<S>
     @SuppressWarnings("unchecked")
     public <T> TypeHandle<S, T> getTypeHandle(Class<T> type)
     {
-        return (TypeHandle<S, T>) Objects.requireNonNull(typeHandles.get(type), "Failed to find type handle" +
+        TypeHandle<S, T> h = (TypeHandle<S, T>) typeHandles.get(type);
+        if (h != null)
+            return h;
+
+        throw new MissingHandleException("Failed to find type handle" +
             " for " + type + ". Either register a type handle for it, or modify the fieldFilter to skip" +
             " registering the field.");
     }
@@ -55,11 +61,17 @@ public class ReflectionHandle<S>
         return fieldsInClass.computeIfAbsent(c, k ->
         {
             List<FieldHandle> fields = new ArrayList<>();
-            for (Field f : c.getFields())
+            Class<?> clazz = c;
+
+            do
             {
-                if (shouldCheckField(f))
-                    fields.add(new FieldHandle(f));
-            }
+                for (Field f : clazz.getDeclaredFields())
+                {
+                    if (shouldCheckField(f))
+                        fields.add(new FieldHandle(f));
+                }
+                clazz = clazz.getSuperclass();
+            } while (superclassFields && clazz != null && clazz != Object.class);
             return fields;
         });
     }
@@ -84,6 +96,7 @@ public class ReflectionHandle<S>
         {
             try
             {
+                field.setAccessible(true);
                 this.read = lookup.unreflectGetter(field);
                 this.write = lookup.unreflectSetter(field);
 
@@ -142,6 +155,14 @@ public class ReflectionHandle<S>
         public void write(I stream, Object object)
         {
             write.accept(stream, (T) object);
+        }
+    }
+
+    public static class MissingHandleException extends RuntimeException
+    {
+        public MissingHandleException(String message)
+        {
+            super(message);
         }
     }
 }

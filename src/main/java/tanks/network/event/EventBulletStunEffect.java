@@ -1,13 +1,11 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Effect;
-import tanks.Game;
+import tanks.*;
 import tanks.tank.Tank;
 
 public class EventBulletStunEffect extends PersonalEvent
 {
-    int tank;
+    public int tank;
     public double length;
 
     public EventBulletStunEffect()
@@ -34,7 +32,6 @@ public class EventBulletStunEffect extends PersonalEvent
             {
                 Effect e = Effect.createNewEffect(t.posX, t.posY, Game.tile_size / 4, Effect.EffectType.stun);
                 e.linkedMovable = t;
-                double var = 50;
                 e.setColor(0, 255, 255);
                 e.setGlowColor(e.color, 127);
                 e.maxAge *= length;

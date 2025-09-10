@@ -3,6 +3,7 @@ package tanks.network;
 import io.netty.buffer.*;
 import tanks.Game;
 import tanks.network.event.INetworkEvent;
+import tanks.tankson.ReflectionHandle;
 
 import java.util.HashMap;
 
@@ -38,11 +39,20 @@ public class NetworkEventMap
             e = c.getConstructor().newInstance();
             e.write(b);
             e.read(b);
+            if (b.readableBytes() > 0)
+                throw new IndexOutOfBoundsException("Readable bytes > 0 after read");
         }
-        catch (Exception exc)
+        catch (ReflectionHandle.MissingHandleException exc)
         {
-            if (exc.getMessage().contains("Failed to find field handle"))  // uses custom read/write methods
-                throw new RuntimeException(exc);
+            throw new RuntimeException("Missing handle in " + c.getSimpleName() + ": " + exc.getMessage());
+        }
+        catch (IndexOutOfBoundsException exc)
+        {
+            throw new RuntimeException("Read does not match write in " + c.getSimpleName() + ": " + exc.getMessage());
+        }
+        catch (Exception ignored)
+        {
+
         }
 	}
 	

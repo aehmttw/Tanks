@@ -5,7 +5,7 @@ import tanks.bullet.*;
 import tanks.item.*;
 import tanks.tank.*;
 
-public class EventShootBullet extends PersonalEvent implements IStackableEvent
+public class EventShootBullet extends PersonalEvent
 {
 	public int id;
 	public int tank;
@@ -18,9 +18,7 @@ public class EventShootBullet extends PersonalEvent implements IStackableEvent
 	public double speed;
 	public int item;
 
-    public boolean isStackable;
-
-    public EventShootBullet()
+	public EventShootBullet()
 	{
 		
 	}
@@ -29,7 +27,6 @@ public class EventShootBullet extends PersonalEvent implements IStackableEvent
 	{
 		this.id = b.networkID;
         this.tank = b.tank.networkID;
-        this.isStackable = b.affectedByFrameFrequency;
 		this.posX = b.posX;
 		this.posY = b.posY;
 		this.posZ = b.posZ;
@@ -40,13 +37,7 @@ public class EventShootBullet extends PersonalEvent implements IStackableEvent
 		this.item = b.item.networkIndex;
 	}
 
-    @Override
-    public boolean isStackable()
-    {
-        return isStackable;
-    }
-
-    @Override
+	@Override
 	public void execute() 
 	{
 		if (this.clientID != null)
@@ -115,10 +106,4 @@ public class EventShootBullet extends PersonalEvent implements IStackableEvent
 			e.printStackTrace();
 		}
 	}
-
-    @Override
-    public int getIdentifier()
-    {
-        return tank;
-    }
 }

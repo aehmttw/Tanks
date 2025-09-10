@@ -24,7 +24,7 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
     public MessageReader reader = new MessageReader();
 
     protected long lastStackedEventSend = 0;
-    protected HashMap<Class<? extends INetworkEvent>, EventStackedGroup> groupedEvents = new HashMap<>();
+    protected LinkedHashMap<Class<? extends INetworkEvent>, EventStackedGroup> groupedEvents = new LinkedHashMap<>();
 
     public synchronized void sendEventAndClose(INetworkEvent e)
     {
@@ -75,17 +75,34 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
         ReferenceCountUtil.release(b);
     }
 
+    @SuppressWarnings("unchecked")
     public synchronized void stackEvent(INetworkEvent e)
     {
-        groupedEvents.computeIfAbsent(e.getClass(),
-            k -> new EventStackedGroup(e.getClass())).events.add(e);
+        if (!(e instanceof PersonalEvent) || e instanceof IClientThreadEvent || e instanceof IServerThreadEvent)
+        {
+            sendEvent(e, false);
+            return;
+        }
+
+        groupedEvents.computeIfAbsent(e.getClass(), k ->
+            new EventStackedGroup((Class<? extends PersonalEvent>) e.getClass()))
+            .events.add((PersonalEvent) e);
     }
 
     public synchronized void flushEvents()
     {
+        if (groupedEvents.isEmpty())
+            return;
+
         int i = 0;
         for (EventStackedGroup e : this.groupedEvents.values())
-            sendEvent(e, i++ >= this.groupedEvents.size() - 1);
+        {
+            boolean flush = i++ >= this.groupedEvents.size() - 1;
+            if (e.events.size() == 1)
+                sendEvent(e.events.get(0), flush);
+            else
+                sendEvent(e, flush);
+        }
         groupedEvents.clear();
     }
 
@@ -93,18 +110,12 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
     {
         synchronized (this.events)
         {
-            INetworkEvent prev = null;
             for (INetworkEvent e : this.events)
             {
                 if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
                     this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
                 else
-                {
-                    if (prev != null)
-                        this.stackEvent(e);
-
-                    prev = e;
-                }
+                    this.stackEvent(e);
             }
 
             long time = System.currentTimeMillis() * Game.networkRate / 1000;
@@ -112,20 +123,14 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
             {
                 lastStackedEventSend = time;
 
-                if (prev != null)
-                    this.stackEvent(prev);
-
                 for (IStackableEvent e : this.stackedEvents.values())
                     this.stackEvent(e);
 
                 this.stackedEvents.clear();
-                flushEvents();
             }
-            else if (prev != null)
-                this.stackEvent(prev);
 
             if (steamID == null)
-                this.ctx.flush();
+                flushEvents();
 
             this.events.clear();
         }

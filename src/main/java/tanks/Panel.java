@@ -1,7 +1,7 @@
 package tanks;
 
 import basewindow.InputCodes;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import tanks.extension.Extension;
 import tanks.gui.*;
 import tanks.gui.ScreenElement.*;
@@ -15,7 +15,7 @@ import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class Panel
 {
@@ -90,7 +90,7 @@ public class Panel
 	protected Screen lastDrawnScreen = null;
 
 	public ArrayList<double[]> lights = new ArrayList<>();
-	HashMap<Integer, IStackableEvent> stackedEventsIn = new HashMap<>();
+	public Int2ObjectOpenHashMap<IStackableEvent> stackedEventsIn = new Int2ObjectOpenHashMap<>();
 
 	public LoadingTerrainContinuation continuation = null;
 	public long continuationStartTime = 0;
@@ -100,9 +100,6 @@ public class Panel
 
 	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
 	public String saveScreenshotDir = null;
-
-    public final Object2IntOpenHashMap<Class<? extends INetworkEvent>> eventsInCount = new Object2IntOpenHashMap<>();
-    public final Object2IntOpenHashMap<Class<? extends INetworkEvent>> eventsOutCount = new Object2IntOpenHashMap<>();
 
     public static void initialize()
 	{
@@ -352,22 +349,19 @@ public class Panel
 				if (!(Game.eventsIn.get(i) instanceof IOnlineServerEvent))
 				{
 					INetworkEvent e = Game.eventsIn.get(i);
-                    INetworkEvent prev = null;
 
 					if (e instanceof IStackableEvent)
-                        prev = stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+                        stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
 					else
                         Game.eventsIn.get(i).execute();
 				}
 			}
 
+            for (INetworkEvent e: stackedEventsIn.values())
+                e.execute();
+
 			Game.eventsIn.clear();
 		}
-
-		for (INetworkEvent e: stackedEventsIn.values())
-            e.execute();
-
-		stackedEventsIn.clear();
 
 		if (ScreenPartyHost.isServer)
 		{

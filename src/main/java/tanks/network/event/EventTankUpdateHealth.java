@@ -35,7 +35,7 @@ public class EventTankUpdateHealth extends PersonalEvent
 		double before = t.health;
 		t.health = health;
 
-		if ((int) before != (int) t.health && t.health > 0)
+		if ((int) before != (int) t.health && t.health > 1)
 		{
 			Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
 			e.size = t.size;

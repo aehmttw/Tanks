@@ -35,7 +35,7 @@ public class ReflectionHandle<S>
     public <T> TypeHandle<S, T> getTypeHandle(Class<T> type)
     {
         return (TypeHandle<S, T>) Objects.requireNonNull(typeHandles.get(type), "Failed to find type handle" +
-            " for " + type + ". Either register a type handle for it, or modify #shouldCheckField() to skip" +
+            " for " + type + ". Either register a type handle for it, or modify the fieldFilter to skip" +
             " registering the field.");
     }
 

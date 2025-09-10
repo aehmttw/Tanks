@@ -15,11 +15,21 @@ public interface INetworkEvent extends IEvent
         .registerTypeHandle(int.class, Integer.class, ByteBuf::readInt, ByteBuf::writeInt)
         .registerTypeHandle(long.class, Long.class, ByteBuf::readLong, ByteBuf::writeLong)
         .registerTypeHandle(float.class, Float.class, ByteBuf::readFloat, ByteBuf::writeFloat)
-        .registerTypeHandle(double.class, Double.class, ByteBuf::readDouble, ByteBuf::writeDouble)
+        .registerTypeHandle(double.class, Double.class, INetworkEvent::readDouble, INetworkEvent::writeDouble)
         .registerTypeHandle(boolean.class, Boolean.class, ByteBuf::readBoolean, ByteBuf::writeBoolean)
         .registerTypeHandle(String.class, NetworkUtils::readString, NetworkUtils::writeString)
         .registerTypeHandle(Color.class, NetworkUtils::readColor, NetworkUtils::writeColor)
         .registerTypeHandle(UUID.class, NetworkUtils::readUUID, NetworkUtils::writeUUID);
+
+    static double readDouble(ByteBuf b)
+    {
+        return b.readFloat();
+    }
+
+    static void writeDouble(ByteBuf b, double d)
+    {
+        b.writeFloat((float) d);
+    }
 
 
     default void write(ByteBuf b)

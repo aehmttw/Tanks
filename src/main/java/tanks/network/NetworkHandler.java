@@ -24,41 +24,83 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
     public MessageReader reader = new MessageReader();
 
     protected long lastStackedEventSend = 0;
-    protected LinkedHashMap<Class<? extends INetworkEvent>, EventStackedGroup> groupedEvents = new LinkedHashMap<>();
 
-    public synchronized void sendEventAndClose(INetworkEvent e)
+    public void reply()
     {
-        this.closed = true;
-        if (steamID != null)
-            Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
-        else
-            this.sendEvent(e, true);
+        synchronized (this.events)
+        {
+            INetworkEvent prev = null;
+            for (int i = 0; i < this.events.size(); i++)
+            {
+                INetworkEvent e = this.events.get(i);
 
-        if (ctx != null)
-            ctx.close();
+                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
+                    this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+                else
+                {
+                    if (prev != null)
+                        this.sendEvent(prev,false);
 
-        if (steamID != null)
-            Game.steamNetworkHandler.queueClose(steamID.getAccountID());
+                    prev = e;
+                }
+            }
+
+            long time = System.currentTimeMillis() * Game.networkRate / 1000;
+            if (time != lastStackedEventSend)
+            {
+                lastStackedEventSend = time;
+                int size = this.stackedEvents.size();
+
+                if (prev != null)
+                    this.sendEvent(prev, size == 0);
+
+                for (IStackableEvent e: this.stackedEvents.values())
+                {
+                    size--;
+                    this.sendEvent(e, size <= 0);
+                }
+                this.stackedEvents.clear();
+            }
+            else if (prev != null)
+                this.sendEvent(prev, true);
+
+            if (steamID == null)
+                this.ctx.flush();
+
+            this.events.clear();
+        }
     }
 
     public synchronized void sendEvent(INetworkEvent e)
     {
-        sendEvent(e, true);
+        this.sendEvent(e, true);
     }
+
+    public HashMap<String, Integer> eventFrequencies = new HashMap<>();
 
     public synchronized void sendEvent(INetworkEvent e, boolean flush)
     {
+        eventFrequencies.putIfAbsent(e.getClass().getSimpleName(), 0);
+        eventFrequencies.put(e.getClass().getSimpleName(), eventFrequencies.get(e.getClass().getSimpleName()) + 1);
+
         if (steamID != null)
-            Game.steamNetworkHandler.send(steamID.getAccountID(), e, flush ?
-                SteamNetworking.P2PSend.Reliable : SteamNetworking.P2PSend.ReliableWithBuffering);
+        {
+            SteamNetworking.P2PSend sendType = SteamNetworking.P2PSend.ReliableWithBuffering;
+
+            if (flush)
+                sendType = SteamNetworking.P2PSend.Reliable;
+
+            Game.steamNetworkHandler.send(steamID.getAccountID(), e, sendType);
+            return;
+        }
 
         ByteBuf b = ctx.channel().alloc().buffer();
 
-        int eventID = NetworkEventMap.get(e.getClass());
-        if (eventID == -1)
+        int i = NetworkEventMap.get(e.getClass());
+        if (i == -1)
             throw new RuntimeException("The network event " + e.getClass() + " has not been registered!");
 
-        b.writeShort(eventID);
+        b.writeShort(i);
         e.write(b);
 
         ByteBuf b2 = ctx.channel().alloc().buffer();
@@ -75,81 +117,26 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
         ReferenceCountUtil.release(b);
     }
 
-    @SuppressWarnings("unchecked")
-    public synchronized void stackEvent(INetworkEvent e)
+    public synchronized void sendEventAndClose(INetworkEvent e)
     {
-        if (!(e instanceof PersonalEvent) || e instanceof IClientThreadEvent || e instanceof IServerThreadEvent)
-        {
-            sendEvent(e, false);
-            return;
-        }
+        this.closed = true;
+        if (steamID != null)
+            Game.steamNetworkHandler.send(steamID.getAccountID(), e, SteamNetworking.P2PSend.Reliable);
+        else
+            this.sendEvent(e);
 
-        groupedEvents.computeIfAbsent(e.getClass(),
-            k -> new EventStackedGroup((Class<? extends PersonalEvent>) e.getClass())).events.add((PersonalEvent) e);
-    }
+        if (ctx != null)
+            ctx.close();
 
-    public synchronized void flushEvents()
-    {
-        if (groupedEvents.isEmpty())
-            return;
-
-        int i = 0;
-        for (EventStackedGroup e : this.groupedEvents.values())
-        {
-            boolean flush = i++ >= this.groupedEvents.size() - 1;
-            if (e.events.size() == 1)
-                sendEvent(e.events.get(0), flush);
-            else
-                sendEvent(e, flush);
-        }
-        groupedEvents.clear();
-    }
-
-    public void reply()
-    {
-        synchronized (this.events)
-        {
-            INetworkEvent prev = null;
-            for (INetworkEvent e : this.events)
-            {
-                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
-                    this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
-                else
-                {
-                    if (prev != null)
-                        this.stackEvent(prev);
-
-                    prev = e;
-                }
-            }
-
-            long time = System.currentTimeMillis() * Game.networkRate / 1000;
-            if (time != lastStackedEventSend)
-            {
-                lastStackedEventSend = time;
-
-                if (prev != null)
-                    this.stackEvent(prev);
-
-                for (IStackableEvent e : this.stackedEvents.values())
-                    this.stackEvent(e);
-
-                this.stackedEvents.clear();
-            }
-            else if (prev != null)
-                this.stackEvent(prev);
-
-            if (steamID == null)
-                flushEvents();
-
-            this.events.clear();
-        }
+        if (steamID != null)
+            Game.steamNetworkHandler.queueClose(steamID.getAccountID());
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
     {
         cause.printStackTrace();
+
         ctx.close();
     }
 }

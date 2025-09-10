@@ -131,7 +131,7 @@ public class ServerHandler extends NetworkHandler
         {
             pingReceived = false;
             lastPingSent = System.currentTimeMillis();
-            this.stackEvent(new EventPing(false));
+            this.sendEvent(new EventPing(false));
         }
     }
 }

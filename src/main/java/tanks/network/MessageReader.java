@@ -9,7 +9,7 @@ import tanks.network.event.online.IOnlineServerEvent;
 
 import java.util.UUID;
 
-public class MessageReader 
+public class MessageReader
 {
 	public static final int max_event_size = 104857600;
 
@@ -76,16 +76,16 @@ public class MessageReader
 						return;
 					}
 				}
-				
+
 				reading = true;
 
 				while (queue.readableBytes() >= endpoint)
 				{
 					this.readMessage(s, c, queue, clientID);
 					queue.discardReadBytes();
-					
+
 					reading = false;
-					
+
 					if (queue.readableBytes() >= 4)
 					{
 						endpoint = queue.readInt();
@@ -151,7 +151,7 @@ public class MessageReader
 
 	public synchronized void readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
 	{
-		int i = m.readInt();
+		int i = m.readShort();
 		Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
 
 		if (c == null)
@@ -164,7 +164,7 @@ public class MessageReader
         }
         catch (Exception exc)
         {
-            throw new RuntimeException("Failed to read network event " + c + " (previous event: " + NetworkEventMap.get(this.lastID) + "): " + exc.getMessage());
+            throw new RuntimeException("Failed to read network event " + c + " (previous event: " + NetworkEventMap.get(this.lastID) + "):" + exc.getMessage());
         }
 
 		if (e instanceof PersonalEvent)

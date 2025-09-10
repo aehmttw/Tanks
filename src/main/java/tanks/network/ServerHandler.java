@@ -127,7 +127,6 @@ public class ServerHandler extends NetworkHandler
     public void reply()
     {
         super.reply();
-
         if (pingReceived && System.currentTimeMillis() - lastPingSent > 1000)
         {
             pingReceived = false;

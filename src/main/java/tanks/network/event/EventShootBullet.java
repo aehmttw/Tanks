@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.*;
 import tanks.bullet.*;
 import tanks.item.*;

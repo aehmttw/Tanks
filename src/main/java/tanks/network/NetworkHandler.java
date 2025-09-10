@@ -58,7 +58,7 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
         if (eventID == -1)
             throw new RuntimeException("The network event " + e.getClass() + " has not been registered!");
 
-        b.writeInt(eventID);
+        b.writeShort(eventID);
         e.write(b);
 
         ByteBuf b2 = ctx.channel().alloc().buffer();
@@ -84,9 +84,8 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
             return;
         }
 
-        groupedEvents.computeIfAbsent(e.getClass(), k ->
-            new EventStackedGroup((Class<? extends PersonalEvent>) e.getClass()))
-            .events.add((PersonalEvent) e);
+        groupedEvents.computeIfAbsent(e.getClass(),
+            k -> new EventStackedGroup((Class<? extends PersonalEvent>) e.getClass())).events.add((PersonalEvent) e);
     }
 
     public synchronized void flushEvents()
@@ -110,12 +109,18 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
     {
         synchronized (this.events)
         {
+            INetworkEvent prev = null;
             for (INetworkEvent e : this.events)
             {
                 if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
                     this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
                 else
-                    this.stackEvent(e);
+                {
+                    if (prev != null)
+                        this.stackEvent(prev);
+
+                    prev = e;
+                }
             }
 
             long time = System.currentTimeMillis() * Game.networkRate / 1000;
@@ -123,11 +128,16 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
             {
                 lastStackedEventSend = time;
 
+                if (prev != null)
+                    this.stackEvent(prev);
+
                 for (IStackableEvent e : this.stackedEvents.values())
                     this.stackEvent(e);
 
                 this.stackedEvents.clear();
             }
+            else if (prev != null)
+                this.stackEvent(prev);
 
             if (steamID == null)
                 flushEvents();

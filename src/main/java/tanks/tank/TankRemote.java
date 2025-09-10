@@ -41,7 +41,7 @@ public class TankRemote extends Tank
 	public double currentAngle;
 	public double currentPitch;
 
-	public double timeSinceRefresh = 0;
+	public double timeSinceRefresh = 1;
 
 	public ArrayList<TankAIControlled> parentTransformations = new ArrayList<>();
 

@@ -8,6 +8,8 @@ public class EventTankUpdate extends PersonalEvent implements IStackableEvent
     public double posX, posY;
     public double vX, vY;
     public double angle, pitch;
+
+    @NetworkIgnored
 	public long time = System.currentTimeMillis();
 
 

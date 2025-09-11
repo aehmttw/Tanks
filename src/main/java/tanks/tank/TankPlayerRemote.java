@@ -111,6 +111,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.currentKnownPosY = this.posY;
             this.prevKnownPosX = this.posX;
             this.prevKnownPosY = this.posY;
+            this.lastAngle = this.angle;
+            this.lastPitch = this.pitch;
         }
 
         this.timeSinceRefresh += Panel.frameFrequency;

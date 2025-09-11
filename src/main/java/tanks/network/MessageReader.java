@@ -168,9 +168,7 @@ public class MessageReader
         }
 
 		if (e instanceof PersonalEvent)
-		{
-			((PersonalEvent) e).clientID = clientID;
-		}
+            ((PersonalEvent) e).clientID = clientID;
 
 		if (e instanceof IOnlineServerEvent)
 			s.sendEventAndClose(new EventKick("This is a party, please join parties through the party menu"));

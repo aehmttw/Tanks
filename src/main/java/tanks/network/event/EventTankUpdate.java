@@ -40,7 +40,7 @@ public class EventTankUpdate extends PersonalEvent implements IStackableEvent
 			{
 				TankRemote r = (TankRemote) t;
                 boolean firstFrame = r.lastUpdate == -1;
-				double iTime = Math.min(100, (time - r.lastUpdate) / 10.0);
+				double iTime = Math.min(100, Math.max(0, time - r.lastUpdate) / 10.0);
 
 				r.prevKnownPosX = firstFrame ? this.posX : r.posX;
 				r.prevKnownPosY = firstFrame ? this.posY : r.posY;

@@ -143,7 +143,7 @@ public class Game
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
 
-    public static final int network_protocol = 59;
+    public static final int network_protocol = 60;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;
@@ -234,7 +234,6 @@ public class Game
 	public static boolean fancyTerrain = true;
 	public static boolean effectsEnabled = true;
 	public static boolean bulletTrails = true;
-	public static boolean fancyBulletTrails = true;
 	public static boolean glowEnabled = true;
 
 	public static double effectMultiplier = 1;
@@ -380,6 +379,7 @@ public class Game
 		NetworkEventMap.register(EventUpdateEliminatedPlayers.class);
 		NetworkEventMap.register(EventUpdateRemainingLives.class);
 		NetworkEventMap.register(EventBeginLevelCountdown.class);
+        NetworkEventMap.register(EventNudge.class);
 		NetworkEventMap.register(EventTankUpdate.class);
 		NetworkEventMap.register(EventTankControllerUpdateS.class);
 		NetworkEventMap.register(EventTankControllerUpdateC.class);
@@ -1095,6 +1095,7 @@ public class Game
 	{
 		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
+
 	public static void removeObstacle(Obstacle o)
 	{
 		Drawing.drawing.terrainRenderer.remove(o);

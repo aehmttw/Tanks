@@ -45,7 +45,7 @@ public class EventObstacleDestroy extends PersonalEvent
 
         Obstacle o = Game.getObstacle(posX, posY);
 
-        if (o.posX != this.posX || o.posY != this.posY || !o.name.equals(name))
+        if (o == null || !o.name.equals(name))
             return;
 
         if (effect)

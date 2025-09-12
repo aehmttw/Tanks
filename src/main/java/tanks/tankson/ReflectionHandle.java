@@ -19,7 +19,7 @@ public class ReflectionHandle<S>
 
     public Function<Field, Boolean> fieldFilter = f -> true;
 
-    public boolean superclassFields = false;
+    public boolean superclassFields = true;
 
     public void readObject(S stream, Object object)
     {

@@ -37,6 +37,7 @@ public class EventObstacleDestroy extends PersonalEvent
         this.radius = rad;
         this.name = name;
     }
+
     @Override
     public void execute()
     {
@@ -51,6 +52,6 @@ public class EventObstacleDestroy extends PersonalEvent
         if (effect)
             o.playDestroyAnimation(this.effectX, this.effectY, this.radius);
 
-        Game.removeObstacles.add(o);
+        o.onDestroy(null);
     }
 }

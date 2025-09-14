@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.tank.Mine;
 
 public class EventMineChangeTimer extends PersonalEvent

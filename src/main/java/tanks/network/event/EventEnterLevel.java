@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 
 public class EventEnterLevel extends PersonalEvent

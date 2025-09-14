@@ -1,8 +1,6 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
-import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
 public class EventTankUpdateColor extends PersonalEvent implements IStackableEvent

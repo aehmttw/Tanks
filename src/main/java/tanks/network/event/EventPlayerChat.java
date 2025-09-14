@@ -1,10 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Player;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.NetworkUtils;
 
 public class EventPlayerChat extends PersonalEvent
 {

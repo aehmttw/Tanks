@@ -1,9 +1,9 @@
 package tanks.network;
 
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import tanks.Game;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 
@@ -13,12 +13,10 @@ public class MessageReader
 {
 	public static final int max_event_size = 104857600;
 
-	public static int downstreamBytes;
-	public static int upstreamBytes;
+	public static int downstreamBytes, upstreamBytes;
+	public static int upstreamBytesPerSec, downstreamBytesPerSec;
+    public static Int2IntOpenHashMap eventBytes = new Int2IntOpenHashMap(), eventBytesPerSec = new Int2IntOpenHashMap();
 	public static long lastMessageTime;
-
-	public static int upstreamBytesPerSec;
-	public static int downstreamBytesPerSec;
 
 	public boolean useQueue = true;
 	public ByteBuf queue;
@@ -81,7 +79,7 @@ public class MessageReader
 
 				while (queue.readableBytes() >= endpoint)
 				{
-					this.readMessage(s, c, queue, clientID);
+					int eventID = this.readMessage(s, c, queue, clientID);
 					queue.discardReadBytes();
 
 					reading = false;
@@ -90,6 +88,8 @@ public class MessageReader
 					{
 						endpoint = queue.readInt();
 						downstreamBytes += endpoint + 4;
+                        if (Game.recordEventData)
+                            eventBytes.addTo(eventID, endpoint + 4);
 						updateLastMessageTime();
 
 						if (endpoint > MessageReader.max_event_size)
@@ -149,7 +149,7 @@ public class MessageReader
 		}
 	}
 
-	public synchronized void readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
+	public synchronized int readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
 	{
 		int i = m.readShort();
 		Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
@@ -185,19 +185,26 @@ public class MessageReader
 		}
 
         this.lastID = i;
+        return i;
 	}
 
 	public static void updateLastMessageTime()
 	{
 		long time = System.currentTimeMillis() / 1000;
 
-		if (lastMessageTime < time)
-		{
-			lastMessageTime = time;
-			upstreamBytesPerSec = upstreamBytes;
-			downstreamBytesPerSec = downstreamBytes;
-			upstreamBytes = 0;
-			downstreamBytes = 0;
-		}
-	}
+        if (lastMessageTime >= time)
+            return;
+
+        lastMessageTime = time;
+        upstreamBytesPerSec = upstreamBytes;
+        downstreamBytesPerSec = downstreamBytes;
+        upstreamBytes = 0;
+        downstreamBytes = 0;
+
+        if (Game.recordEventData)
+        {
+            eventBytesPerSec = eventBytes;
+            eventBytes = new Int2IntOpenHashMap();
+        }
+    }
 }

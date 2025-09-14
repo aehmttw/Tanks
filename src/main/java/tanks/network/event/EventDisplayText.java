@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.ModAPI;
+import tanks.*;
 import tanks.gui.FixedText;
-import tanks.network.NetworkUtils;
 
 public class EventDisplayText extends PersonalEvent
 {

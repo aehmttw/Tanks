@@ -15,7 +15,8 @@ import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.ArrayList;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Panel
 {
@@ -833,6 +834,17 @@ public class Panel
 			if (m instanceof TankNPC && ((TankNPC) m).draw)
 				((TankNPC) m).drawMessage();
 		}
+
+        if (Game.recordEventData)
+        {
+            AtomicInteger i = new AtomicInteger();
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.setInterfaceFontSize(16);
+            double y = Drawing.drawing.getInterfaceEdgeY(true) - 20;
+
+            MessageReader.eventBytesPerSec.int2IntEntrySet().stream().sorted(Comparator.comparingInt(Int2IntMap.Entry::getIntValue)).forEach(entry ->
+                Drawing.drawing.displayUncenteredInterfaceText(10, y - i.getAndIncrement() * 20, "%s: %.2f KB/s", NetworkEventMap.get(entry.getIntKey()).getSimpleName(), entry.getIntValue() / 1024.));
+        }
 
 		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 

@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.obstacle.ObstacleColorFlashing;
 
 public class EventAddColoredTile extends PersonalEvent

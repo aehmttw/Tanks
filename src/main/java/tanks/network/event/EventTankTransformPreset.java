@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Effect;
-import tanks.Game;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankRemote;
+import tanks.*;
+import tanks.tank.*;
 
 public class EventTankTransformPreset extends PersonalEvent
 {

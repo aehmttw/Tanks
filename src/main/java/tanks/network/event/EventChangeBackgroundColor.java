@@ -1,9 +1,7 @@
 package tanks.network.event;
 
-import tanks.Game;
-import tanks.Level;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.*;
+import tanks.gui.screen.leveleditor.*;
 
 public class EventChangeBackgroundColor extends PersonalEvent
 {

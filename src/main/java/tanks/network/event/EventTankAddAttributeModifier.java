@@ -1,11 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.attribute.AttributeModifier;
-import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
-public class EventTankAddAttributeModifier extends PersonalEvent
+public class EventTankAddAttributeModifier extends PersonalEvent implements IStackableEvent
 {
     public int tank;
     public String name;
@@ -69,4 +67,14 @@ public class EventTankAddAttributeModifier extends PersonalEvent
         }
     }
 
+    public boolean isStackable()
+    {
+        return unduplicate;
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return name.hashCode() + tank;
+    }
 }

@@ -28,13 +28,14 @@ public class ScreenDebug extends Screen
     Button drawAvoidObjects = createToggle("Draw avoid objects: ", b -> Game.drawAvoidObjects = b, () -> Game.drawAvoidObjects);
     Button disableFixes = createToggle("Disable fixes: ", b -> Game.disableErrorFixing = b, () -> Game.disableErrorFixing);
     Button recordMovableData = createToggle("Record movable data: ", b -> Game.recordMovableData = b, () -> Game.recordMovableData);
+    Button recordEventData = createToggle("Record event data: ", b -> Game.recordEventData = b, () -> Game.recordEventData);
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
 
     public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(
             test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable,
             fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles,
-            drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData
+            drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData, recordEventData
     )), 0, 0, -30);
 
     public Button createToggle(String text, Consumer<Boolean> setter, Producer<Boolean> getter)

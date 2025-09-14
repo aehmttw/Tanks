@@ -1,18 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Level;
-import tanks.Movable;
-import tanks.gui.screen.ScreenFailedToLoadLevel;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.*;
+import tanks.gui.screen.*;
 import tanks.item.Item;
 import tanks.minigames.Minigame;
-import tanks.network.NetworkUtils;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
 
 import java.util.ArrayList;
 

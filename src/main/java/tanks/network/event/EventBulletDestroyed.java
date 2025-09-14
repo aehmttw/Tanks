@@ -1,13 +1,11 @@
 package tanks.network.event;
 
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletInstant;
+import tanks.bullet.*;
 
-public class EventBulletDestroyed extends PersonalEvent
+public class EventBulletDestroyed extends PersonalEvent implements IStackableEvent
 {
-    public int bullet;
-    public double posX;
-    public double posY;
+    public int tank, bullet;
+    public double posX, posY;
 
     public EventBulletDestroyed()
     {
@@ -16,6 +14,7 @@ public class EventBulletDestroyed extends PersonalEvent
 
     public EventBulletDestroyed(Bullet b)
     {
+        this.tank = b.tank.networkID;
         this.bullet = b.networkID;
         this.posX = b.posX;
         this.posY = b.posY;
@@ -42,5 +41,11 @@ public class EventBulletDestroyed extends PersonalEvent
 
         b.destroy = true;
         Bullet.idMap.remove(b.networkID);
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return tank;
     }
 }

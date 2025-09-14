@@ -1,9 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
-import tanks.network.NetworkUtils;
 
 import java.util.UUID;
 

@@ -1,10 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Effect;
-import tanks.Game;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleShrubbery;
+import tanks.*;
+import tanks.obstacle.*;
 
 public class EventObstacleShrubberyBurn extends PersonalEvent
 {

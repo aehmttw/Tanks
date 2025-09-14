@@ -1,10 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.ModAPI;
-import tanks.gui.IFixedMenu;
-import tanks.gui.RemoteScoreboard;
-import tanks.network.NetworkUtils;
+import tanks.gui.*;
 
 public class EventScoreboardUpdateScore extends PersonalEvent
 {

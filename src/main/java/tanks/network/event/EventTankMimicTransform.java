@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Effect;
-import tanks.Game;
+import tanks.*;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 

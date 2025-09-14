@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenPartyCrusadeInterlevel;
-import tanks.network.NetworkUtils;
 
 public class EventReturnToCrusade extends PersonalEvent
 {

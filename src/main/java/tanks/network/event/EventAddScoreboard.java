@@ -5,8 +5,7 @@ import tanks.ModAPI;
 import tanks.gui.RemoteScoreboard;
 import tanks.network.NetworkUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 public class EventAddScoreboard extends PersonalEvent
 {

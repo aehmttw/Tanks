@@ -1,12 +1,8 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Team;
-import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
-import tanks.tank.TankRemote;
+import tanks.*;
+import tanks.tank.*;
 
 public class EventTankCustomCreate extends PersonalEvent
 {

@@ -1,9 +1,7 @@
 package tanks.network.event;
 
-import tanks.Game;
-import tanks.Panel;
-import tanks.gui.screen.ScreenPartyInterlevel;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.*;
+import tanks.gui.screen.*;
 
 public class EventLevelExit extends PersonalEvent
 {	

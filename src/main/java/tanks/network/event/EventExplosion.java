@@ -1,8 +1,7 @@
 package tanks.network.event;
 
 import tanks.Game;
-import tanks.tank.Explosion;
-import tanks.tank.TankAIControlled;
+import tanks.tank.*;
 
 public class EventExplosion extends PersonalEvent
 {

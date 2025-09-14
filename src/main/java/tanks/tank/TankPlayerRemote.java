@@ -475,9 +475,30 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.timeSinceRefresh = 0;
             this.lastUpdateTime = t;
 
-            this.action1 = action1;
-            this.action2 = action2;
-            this.quickActions = quickActions;
+            if (ib != null && ib.item != null && ib.item.cooldownBase < 10)
+            {
+                // continuous shoot
+                this.action1 = action1;
+                this.action2 = action2;
+                this.quickActions = quickActions;
+            }
+            else
+            {
+                if (action1 && !this.disabled)
+                    this.action(false);
+
+                if (action2 && !this.disabled)
+                    this.action(true);
+
+                if (!this.disabled)
+                {
+                    for (int i = 0; i < this.abilities.size(); i++)
+                    {
+                        if (quickActions[i])
+                            this.quickAction(i);
+                    }
+                }
+            }
 
             this.posX = this.prevKnownPosX;
             this.posY = this.prevKnownPosY;

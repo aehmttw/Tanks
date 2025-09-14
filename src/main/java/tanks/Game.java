@@ -151,7 +151,8 @@ public class Game
 	public static boolean drawFaces = false;
     public static boolean drawAvoidObjects = false;
     public static boolean recordMovableData = false;
-    public static boolean recordEventData = false;
+    public static boolean recordEventData = true;      // todo change back to false
+    public static boolean enableLatencyTest = false;
     public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;

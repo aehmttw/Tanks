@@ -5,7 +5,7 @@ import tanks.tank.TankPlayerController;
 
 import java.util.UUID;
 
-public class EventTankControllerUpdateAmmunition extends PersonalEvent
+public class EventTankControllerUpdateAmmunition extends PersonalEvent implements IStackableEvent
 {
     public UUID clientIdTarget;
     public int action1Live;
@@ -50,5 +50,11 @@ public class EventTankControllerUpdateAmmunition extends PersonalEvent
             c.mineCooldownBase = cooldownBase2;
             c.mineCooldown = cooldown2;
         }
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return clientIdTarget.hashCode();
     }
 }

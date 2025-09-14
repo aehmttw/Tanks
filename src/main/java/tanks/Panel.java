@@ -835,7 +835,7 @@ public class Panel
 				((TankNPC) m).drawMessage();
 		}
 
-        if (Game.recordEventData)
+        if (Game.recordEventData && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
         {
             AtomicInteger i = new AtomicInteger();
             Drawing.drawing.setColor(255, 255, 255);

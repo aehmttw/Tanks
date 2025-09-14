@@ -6,6 +6,7 @@ public class EventBulletInstantWaypoint extends PersonalEvent implements IStacka
 {
     public int tank, bullet, targetIndex;
     public double posX, posY;
+    public boolean zeroCooldown;
 
 
     public EventBulletInstantWaypoint()
@@ -17,6 +18,7 @@ public class EventBulletInstantWaypoint extends PersonalEvent implements IStacka
     {
         this.tank = b.tank.networkID;
         this.bullet = b.networkID;
+        this.zeroCooldown = b.item.item.cooldownBase <= 0;
         this.targetIndex = targetIndex;
         this.posX = x;
         this.posY = y;
@@ -33,6 +35,12 @@ public class EventBulletInstantWaypoint extends PersonalEvent implements IStacka
             ((BulletInstant) b).xTargets.add(this.posX);
             ((BulletInstant) b).yTargets.add(this.posY);
         }
+    }
+
+    @Override
+    public boolean isStackable()
+    {
+        return zeroCooldown;
     }
 
     public int getIdentifier()

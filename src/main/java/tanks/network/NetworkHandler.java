@@ -16,7 +16,7 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
     public SteamID steamID;
 
     protected SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
-    protected Int2IntLinkedOpenHashMap stackedEvents = new Int2IntLinkedOpenHashMap();
+    protected Int2ObjectLinkedOpenHashMap<IStackableEvent> stackedEvents = new Int2ObjectLinkedOpenHashMap<>();
 
     public boolean joined = false, closed = false;
 
@@ -26,28 +26,27 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
 
     public void reply()
     {
-        long time = System.currentTimeMillis() * Game.networkRate / 1000;
-        if (time == lastStackedEventSend)
-            return;
-
-        lastStackedEventSend = time;
-
         synchronized (this.events)
         {
-            for (int i = 0; i < this.events.size(); i++)
-            {
-                INetworkEvent e = this.events.get(i);
-                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
-                    stackedEvents.put(IStackableEvent.key((IStackableEvent) e), i);
-            }
-            for (int i = 0; i < this.events.size(); i++)
-            {
-                INetworkEvent e = this.events.get(i);
-                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable()
-                    && stackedEvents.get(IStackableEvent.key((IStackableEvent) e)) != i)
-                    continue;
+            long time = System.currentTimeMillis() * Game.networkRate / 1000;
+            boolean sendStacked = time != lastStackedEventSend;
 
-                this.sendEvent(e, i == this.events.size() - 1);
+            int i = 0;
+            for (INetworkEvent e : this.events)
+            {
+                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
+                    stackedEvents.put(IStackableEvent.key((IStackableEvent) e), (IStackableEvent) e);
+                else
+                    sendEvent(e, i++ >= this.events.size() - 1 && (!sendStacked || stackedEvents.isEmpty()));
+            }
+
+            if (sendStacked)
+            {
+                lastStackedEventSend = time;
+                i = 0;
+                for (IStackableEvent e : stackedEvents.values())
+                    sendEvent(e, i++ >= stackedEvents.size() - 1);
+                stackedEvents.clear();
             }
 
             if (steamID == null)

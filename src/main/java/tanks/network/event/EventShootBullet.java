@@ -7,16 +7,10 @@ import tanks.tank.*;
 
 public class EventShootBullet extends PersonalEvent implements IStackableEvent
 {
-	public int id;
-	public int tank;
-	public double posX;
-	public double posY;
-	public double posZ;
-	public double vX;
-	public double vY;
-	public double vZ;
-	public double speed;
-	public int item;
+	public int id, tank, item;
+	public double posX, posY, posZ;
+	public double vX, vY, vZ, speed;
+    public boolean zeroCooldown;
 
 	public EventShootBullet()
 	{
@@ -27,6 +21,7 @@ public class EventShootBullet extends PersonalEvent implements IStackableEvent
 	{
 		this.id = b.networkID;
         this.tank = b.tank.networkID;
+        this.zeroCooldown = b.item.item.cooldownBase <= 0;
 		this.posX = b.posX;
 		this.posY = b.posY;
 		this.posZ = b.posZ;
@@ -104,6 +99,12 @@ public class EventShootBullet extends PersonalEvent implements IStackableEvent
 			e.printStackTrace();
 		}
 	}
+
+    @Override
+    public boolean isStackable()
+    {
+        return zeroCooldown;
+    }
 
     @Override
     public int getIdentifier()

@@ -71,12 +71,6 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
     }
 
     @Override
-    public boolean isStackable()
-    {
-        return !(action1 || action2);
-    }
-
-    @Override
     public int getIdentifier()
     {
         return tank;

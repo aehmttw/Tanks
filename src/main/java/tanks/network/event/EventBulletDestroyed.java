@@ -6,6 +6,7 @@ public class EventBulletDestroyed extends PersonalEvent implements IStackableEve
 {
     public int tank, bullet;
     public double posX, posY;
+    public boolean zeroCooldown;
 
     public EventBulletDestroyed()
     {
@@ -16,6 +17,7 @@ public class EventBulletDestroyed extends PersonalEvent implements IStackableEve
     {
         this.tank = b.tank.networkID;
         this.bullet = b.networkID;
+        this.zeroCooldown = b.item.item.cooldownBase <= 0;
         this.posX = b.posX;
         this.posY = b.posY;
     }
@@ -41,6 +43,12 @@ public class EventBulletDestroyed extends PersonalEvent implements IStackableEve
 
         b.destroy = true;
         Bullet.idMap.remove(b.networkID);
+    }
+
+    @Override
+    public boolean isStackable()
+    {
+        return zeroCooldown;
     }
 
     @Override

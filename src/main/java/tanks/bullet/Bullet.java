@@ -415,7 +415,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 					Drawing.drawing.playSound("heal2.ogg", pitch, freq);
 				}
 
-				t.em().addAttribute(AttributeModifier.newInstance("healray", AttributeModifier.healray, AttributeModifier.Operation.add, 1.0));
+				t.em().addUnduplicateAttribute(AttributeModifier.newInstance("healray", AttributeModifier.healray, AttributeModifier.Operation.set, t.baseHealth + this.maxExtraHealth - t.health));
 			}
 
 			if (kill)
@@ -1223,7 +1223,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (this.freezing || this.boosting)
 			this.playPopSound = false;
 
-		if (!this.isRemote && ScreenPartyHost.isServer && (this.vX != this.lastOriginalVX || this.vY != this.lastOriginalVY) && !justBounced)
+		if (!this.isRemote && !(this instanceof BulletInstant) && ScreenPartyHost.isServer &&
+            (this.vX != this.lastOriginalVX || this.vY != this.lastOriginalVY) && !justBounced)
 			Game.eventsOut.add(new EventBulletUpdate(this));
 
 		this.justBounced = false;

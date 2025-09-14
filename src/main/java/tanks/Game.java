@@ -368,6 +368,7 @@ public class Game
 		NetworkEventMap.register(EventPurchaseBuild.class);
 		NetworkEventMap.register(EventSetItem.class);
 		NetworkEventMap.register(EventSetItemBarSlot.class);
+        NetworkEventMap.register(EventSetItemCount.class);
 		NetworkEventMap.register(EventLoadItemBarSlot.class);
 		NetworkEventMap.register(EventUpdateTankAbility.class);
 		NetworkEventMap.register(EventUpdateCoins.class);

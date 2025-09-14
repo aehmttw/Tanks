@@ -5,7 +5,7 @@ import tanks.item.*;
 
 import java.util.UUID;
 
-public class EventSetItem extends PersonalEvent
+public class EventSetItem extends PersonalEvent implements IStackableEvent
 {
     public String name;
     public UUID playerID;
@@ -38,5 +38,11 @@ public class EventSetItem extends PersonalEvent
 
             Game.player.hotbar.itemBar.slots[slot] = s;
         }
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return IStackableEvent.f(playerID.hashCode()) + slot;
     }
 }

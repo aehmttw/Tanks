@@ -79,8 +79,8 @@ public class MessageReader
 
 				while (queue.readableBytes() >= endpoint)
 				{
-					int eventID = this.readMessage(s, c, queue, clientID);
-					queue.discardReadBytes();
+                    this.readMessage(s, c, queue, clientID);
+                    queue.discardReadBytes();
 
 					reading = false;
 
@@ -88,8 +88,6 @@ public class MessageReader
 					{
 						endpoint = queue.readInt();
 						downstreamBytes += endpoint + 4;
-                        if (Game.recordEventData)
-                            eventBytes.addTo(eventID, endpoint + 4);
 						updateLastMessageTime();
 
 						if (endpoint > MessageReader.max_event_size)
@@ -149,8 +147,9 @@ public class MessageReader
 		}
 	}
 
-	public synchronized int readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
+	public synchronized void readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
 	{
+        int rb = m.readerIndex();
 		int i = m.readShort();
 		Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
 
@@ -166,6 +165,9 @@ public class MessageReader
         {
             throw new RuntimeException("Failed to read network event " + c + " (previous event: " + NetworkEventMap.get(this.lastID) + "):" + exc.getMessage());
         }
+
+        if (Game.recordEventData)
+            eventBytes.addTo(i, m.readerIndex() - rb);
 
 		if (e instanceof PersonalEvent)
             ((PersonalEvent) e).clientID = clientID;
@@ -185,8 +187,7 @@ public class MessageReader
 		}
 
         this.lastID = i;
-        return i;
-	}
+    }
 
 	public static void updateLastMessageTime()
 	{

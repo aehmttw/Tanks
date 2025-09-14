@@ -406,13 +406,13 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 				float pitch = (float) ((Math.min(t.health, t.baseHealth + this.maxExtraHealth) / (t.baseHealth + this.maxExtraHealth) / 2) + 1f) / 2;
 				if (this.item.item.cooldownBase > 0)
-					Drawing.drawing.playGlobalSound("heal_impact_2.ogg", pitch);
+					Drawing.drawing.playSound("heal_impact_2.ogg", pitch);
 				else
 				{
 					float freq = (float) (this.frameDamageMultipler / 10);
 					if (Game.game.window.touchscreen)
 						freq = 1;
-					Drawing.drawing.playGlobalSound("heal2.ogg", pitch, freq);
+					Drawing.drawing.playSound("heal2.ogg", pitch, freq);
 				}
 
 				t.em().addAttribute(AttributeModifier.newInstance("healray", AttributeModifier.healray, AttributeModifier.Operation.add, 1.0));
@@ -493,7 +493,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			else
 			{
 				if (this.playPopSound && dmg > 0)
-					Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
+					Drawing.drawing.playSound("damage.ogg", (float) (bullet_size / size));
 
 				if (this.boosting)
 				{
@@ -526,7 +526,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			}
 		}
 		else if (this.playPopSound && !this.heavy)
-			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+			Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
 	}
 
 	public void collidedWithObject(Movable o)
@@ -571,7 +571,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	protected void pop()
 	{
 		if (this.playPopSound)
-			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+			Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
 
 		this.destroy = true;
 		this.vX = 0;
@@ -622,8 +622,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (this.playBounceSound && b.playBounceSound)
 		{
-			Drawing.drawing.playGlobalSound("bump.ogg", (float) (bullet_size / size), 0.5f);
-			Drawing.drawing.playGlobalSound("bump.ogg", (float) (bullet_size / b.size), 0.5f);
+			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size), 0.5f);
+			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / b.size), 0.5f);
 		}
 
 		this.addTrail();
@@ -752,7 +752,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 						{
 							Game.removeObstacles.add(o);
 							o.playDestroyAnimation(this.posX, this.posY, Game.tile_size);
-							Drawing.drawing.playGlobalSound("break.ogg");
+							Drawing.drawing.playSound("break.ogg");
 						}
 
 						if (this.heavy)
@@ -956,7 +956,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				this.pop();
 			}
 			else if (this.playBounceSound)
-				Drawing.drawing.playGlobalSound("bounce.ogg", (float) (bullet_size / size));
+				Drawing.drawing.playSound("bounce.ogg", (float) (bullet_size / size));
 
 			if (!destroy)
 			{
@@ -1652,7 +1652,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			if (this.freezing)
 			{
 				Game.movables.add(new AreaEffectFreeze(this.posX, this.posY));
-				Drawing.drawing.playGlobalSound("freeze.ogg");
+				Drawing.drawing.playSound("freeze.ogg");
 			}
 		}
 

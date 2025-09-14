@@ -16,10 +16,9 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
     public SteamID steamID;
 
     protected SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
-    protected Int2IntOpenHashMap stackedEvents = new Int2IntOpenHashMap();
+    protected Int2IntLinkedOpenHashMap stackedEvents = new Int2IntLinkedOpenHashMap();
 
-    public boolean joined = false;
-    public boolean closed = false;
+    public boolean joined = false, closed = false;
 
     public MessageReader reader = new MessageReader();
 
@@ -38,13 +37,14 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
             for (int i = 0; i < this.events.size(); i++)
             {
                 INetworkEvent e = this.events.get(i);
-                if (e instanceof IStackableEvent)
+                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
                     stackedEvents.put(IStackableEvent.key((IStackableEvent) e), i);
             }
             for (int i = 0; i < this.events.size(); i++)
             {
                 INetworkEvent e = this.events.get(i);
-                if (e instanceof IStackableEvent && stackedEvents.get(IStackableEvent.key((IStackableEvent) e)) != i)
+                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable()
+                    && stackedEvents.get(IStackableEvent.key((IStackableEvent) e)) != i)
                     continue;
 
                 this.sendEvent(e, i == this.events.size() - 1);

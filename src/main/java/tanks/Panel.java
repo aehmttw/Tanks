@@ -91,7 +91,7 @@ public class Panel
 	protected Screen lastDrawnScreen = null;
 
 	public ArrayList<double[]> lights = new ArrayList<>();
-    public Int2IntOpenHashMap stackedEventsIn = new Int2IntOpenHashMap();
+    public Int2IntLinkedOpenHashMap stackedEventsIn = new Int2IntLinkedOpenHashMap();
 
 	public LoadingTerrainContinuation continuation = null;
 	public long continuationStartTime = 0;
@@ -352,7 +352,7 @@ public class Panel
                 if (e instanceof IOnlineServerEvent)
                     continue;
 
-                if (e instanceof IStackableEvent)
+                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
                     stackedEventsIn.put(IStackableEvent.key((IStackableEvent) e), i);
             }
 
@@ -362,7 +362,7 @@ public class Panel
                 if (e instanceof IOnlineServerEvent)
                     continue;
 
-                if (e instanceof IStackableEvent && stackedEventsIn.get(IStackableEvent.key((IStackableEvent) e)) != i)
+                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable() && stackedEventsIn.get(IStackableEvent.key((IStackableEvent) e)) != i)
                     continue;
 
                 e.execute();
@@ -842,8 +842,10 @@ public class Panel
             Drawing.drawing.setInterfaceFontSize(16);
             double y = Drawing.drawing.getInterfaceEdgeY(true) - 20;
 
-            MessageReader.eventBytesPerSec.int2IntEntrySet().stream().sorted(Comparator.comparingInt(Int2IntMap.Entry::getIntValue)).forEach(entry ->
-                Drawing.drawing.displayUncenteredInterfaceText(10, y - i.getAndIncrement() * 20, "%s: %.2f KB/s", NetworkEventMap.get(entry.getIntKey()).getSimpleName(), entry.getIntValue() / 1024.));
+            MessageReader.eventBytesPerSec.int2IntEntrySet().stream()
+                .sorted(Comparator.comparingInt(Int2IntMap.Entry::getIntValue))
+                .forEach(entry -> Drawing.drawing.displayUncenteredInterfaceText(10, y - i.getAndIncrement() * 20,
+                    "%s: %.2f KB/s", NetworkEventMap.get(entry.getIntKey()).getSimpleName(), entry.getIntValue() / 1024.));
         }
 
 		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));

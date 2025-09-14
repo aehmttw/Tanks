@@ -75,6 +75,6 @@ public class EventTankAddAttributeModifier extends PersonalEvent implements ISta
     @Override
     public int getIdentifier()
     {
-        return name.hashCode() + tank;
+        return name.hashCode() + IStackableEvent.f(tank);
     }
 }

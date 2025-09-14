@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import basewindow.Color;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import tanks.*;
 import tanks.attribute.*;
 import tanks.gui.*;
@@ -18,8 +19,7 @@ import java.util.*;
 public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
 {
 	public static int currentID = 0;
-	public static ArrayList<Integer> freeIDs = new ArrayList<>();
-	public static HashMap<Integer, Bullet> idMap = new HashMap<>();
+	public static Int2ObjectOpenHashMap<Bullet> idMap = new Int2ObjectOpenHashMap<>();
 
 	public static String bullet_class_name = "bullet";
 
@@ -270,14 +270,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (!this.tank.isRemote)
 		{
-			if (!freeIDs.isEmpty())
-				this.networkID = freeIDs.remove(0);
-			else
-			{
-				this.networkID = currentID;
-				currentID++;
-			}
-
+            this.networkID = currentID++;
 			idMap.put(this.networkID, this);
 		}
 
@@ -1279,12 +1272,11 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (destroy)
 		{
-			if (this.destroyTimer <= 0 && !freeIDs.contains(this.networkID))
+			if (this.destroyTimer <= 0)
 			{
 				if (!this.tank.isRemote)
 					Game.eventsOut.add(new EventBulletDestroyed(this));
 
-				freeIDs.add(this.networkID);
 				idMap.remove(this.networkID);
 
 				if (this.affectsMaxLiveBullets && this.reboundSuccessor == null)
@@ -1431,7 +1423,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	{
 		for (ArrayList<Trail> trail : this.trails)
 		{
-			if (trail.size() > 0)
+			if (!trail.isEmpty())
 			{
 				Trail t = trail.get(0);
 				if (t.spawning)
@@ -1448,7 +1440,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	{
 		Trail old = null;
 
-		if (this.trails[group].size() > 0)
+		if (!this.trails[group].isEmpty())
 			old = this.trails[group].get(0);
 
 		this.trails[group].add(0, t);

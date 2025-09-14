@@ -5,7 +5,7 @@ import tanks.bullet.*;
 import tanks.item.*;
 import tanks.tank.*;
 
-public class EventShootBullet extends PersonalEvent
+public class EventShootBullet extends PersonalEvent implements IStackableEvent
 {
 	public int id;
 	public int tank;
@@ -87,9 +87,7 @@ public class EventShootBullet extends PersonalEvent
 			b.vZ = vZ;
 
 			sb.item.bullet.clonePropertiesTo(b);
-
 			b.speed = speed;
-
 			b.setColorFromTank();
 
 			if (sb.item.cooldownBase <= 0)
@@ -106,4 +104,10 @@ public class EventShootBullet extends PersonalEvent
 			e.printStackTrace();
 		}
 	}
+
+    @Override
+    public int getIdentifier()
+    {
+        return tank;
+    }
 }

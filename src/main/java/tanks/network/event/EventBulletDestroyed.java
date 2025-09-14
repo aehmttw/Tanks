@@ -41,11 +41,6 @@ public class EventBulletDestroyed extends PersonalEvent
         }
 
         b.destroy = true;
-
-        if (!Bullet.freeIDs.contains(b.networkID))
-        {
-            Bullet.freeIDs.add(b.networkID);
-            Bullet.idMap.remove(b.networkID);
-        }
+        Bullet.idMap.remove(b.networkID);
     }
 }

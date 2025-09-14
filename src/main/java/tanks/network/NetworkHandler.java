@@ -4,7 +4,7 @@ import com.codedisaster.steamworks.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.util.ReferenceCountUtil;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.*;
 import tanks.*;
 import tanks.network.event.*;
 
@@ -16,7 +16,7 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
     public SteamID steamID;
 
     protected SynchronizedList<INetworkEvent> events = new SynchronizedList<>();
-    protected Int2ObjectOpenHashMap<IStackableEvent> stackedEvents = new Int2ObjectOpenHashMap<>();
+    protected Int2IntOpenHashMap stackedEvents = new Int2IntOpenHashMap();
 
     public boolean joined = false;
     public boolean closed = false;
@@ -27,42 +27,28 @@ public abstract class NetworkHandler extends ChannelInboundHandlerAdapter
 
     public void reply()
     {
+        long time = System.currentTimeMillis() * Game.networkRate / 1000;
+        if (time == lastStackedEventSend)
+            return;
+
+        lastStackedEventSend = time;
+
         synchronized (this.events)
         {
-            INetworkEvent prev = null;
             for (int i = 0; i < this.events.size(); i++)
             {
                 INetworkEvent e = this.events.get(i);
-
-                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
-                    this.stackedEvents.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
-                else
-                {
-                    if (prev != null)
-                        this.sendEvent(prev,false);
-
-                    prev = e;
-                }
+                if (e instanceof IStackableEvent)
+                    stackedEvents.put(IStackableEvent.key((IStackableEvent) e), i);
             }
-
-            long time = System.currentTimeMillis() * Game.networkRate / 1000;
-            if (time != lastStackedEventSend)
+            for (int i = 0; i < this.events.size(); i++)
             {
-                lastStackedEventSend = time;
-                int size = this.stackedEvents.size();
+                INetworkEvent e = this.events.get(i);
+                if (e instanceof IStackableEvent && stackedEvents.get(IStackableEvent.key((IStackableEvent) e)) != i)
+                    continue;
 
-                if (prev != null)
-                    this.sendEvent(prev, size == 0);
-
-                for (IStackableEvent e: this.stackedEvents.values())
-                {
-                    size--;
-                    this.sendEvent(e, size <= 0);
-                }
-                this.stackedEvents.clear();
+                this.sendEvent(e, i == this.events.size() - 1);
             }
-            else if (prev != null)
-                this.sendEvent(prev, true);
 
             if (steamID == null)
                 this.ctx.flush();

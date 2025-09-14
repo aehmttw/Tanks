@@ -1325,15 +1325,12 @@ public class Game
 	{
 		Tank.currentID = 0;
 		Tank.idMap.clear();
-		Tank.freeIDs.clear();
 
 		Bullet.currentID = 0;
 		Bullet.idMap.clear();
-		Bullet.freeIDs.clear();
 
 		Mine.currentID = 0;
 		Mine.idMap.clear();
-		Mine.freeIDs.clear();
 	}
 
 	public static boolean loadLevel(BaseFile f)

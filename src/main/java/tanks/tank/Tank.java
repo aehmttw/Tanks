@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import basewindow.*;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import tanks.*;
 import tanks.attribute.*;
 import tanks.bullet.Bullet;
@@ -18,8 +19,7 @@ import static tanks.tank.TankPropertyCategory.*;
 public abstract class Tank extends Movable implements ISolidObject
 {
 	public static int currentID = 0;
-	public static ArrayList<Integer> freeIDs = new ArrayList<>();
-	public static HashMap<Integer, Tank> idMap = new HashMap<>();
+	public static Int2ObjectOpenHashMap<Tank> idMap = new Int2ObjectOpenHashMap<>();
 
 	public static Model health_model;
 
@@ -233,22 +233,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		if (idMap.get(this.networkID) == this)
 			idMap.remove(this.networkID);
-
-		if (!freeIDs.contains(this.networkID))
-		{
-			freeIDs.add(this.networkID);
-		}
 	}
 
 	public static int nextFreeNetworkID()
 	{
-		if (!freeIDs.isEmpty())
-			return freeIDs.remove(0);
-		else
-		{
-			currentID++;
-			return currentID - 1;
-		}
+        return currentID++;
 	}
 
 	public void registerNetworkID()

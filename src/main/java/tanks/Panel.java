@@ -1,7 +1,7 @@
 package tanks;
 
 import basewindow.InputCodes;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.*;
 import tanks.extension.Extension;
 import tanks.gui.*;
 import tanks.gui.ScreenElement.*;
@@ -90,7 +90,7 @@ public class Panel
 	protected Screen lastDrawnScreen = null;
 
 	public ArrayList<double[]> lights = new ArrayList<>();
-	public Int2ObjectOpenHashMap<IStackableEvent> stackedEventsIn = new Int2ObjectOpenHashMap<>();
+    public Int2IntOpenHashMap stackedEventsIn = new Int2IntOpenHashMap();
 
 	public LoadingTerrainContinuation continuation = null;
 	public long continuationStartTime = 0;
@@ -344,21 +344,28 @@ public class Panel
 		{
 			stackedEventsIn.clear();
 
+            // order of stacked and nonstacked events is preserved
 			for (int i = 0; i < Game.eventsIn.size(); i++)
 			{
-				if (!(Game.eventsIn.get(i) instanceof IOnlineServerEvent))
-				{
-					INetworkEvent e = Game.eventsIn.get(i);
+                INetworkEvent e = Game.eventsIn.get(i);
+                if (e instanceof IOnlineServerEvent)
+                    continue;
 
-					if (e instanceof IStackableEvent)
-                        stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
-					else
-                        Game.eventsIn.get(i).execute();
-				}
-			}
+                if (e instanceof IStackableEvent)
+                    stackedEventsIn.put(IStackableEvent.key((IStackableEvent) e), i);
+            }
 
-            for (INetworkEvent e: stackedEventsIn.values())
+            for (int i = 0; i < Game.eventsIn.size(); i++)
+            {
+                INetworkEvent e = Game.eventsIn.get(i);
+                if (e instanceof IOnlineServerEvent)
+                    continue;
+
+                if (e instanceof IStackableEvent && stackedEventsIn.get(IStackableEvent.key((IStackableEvent) e)) != i)
+                    continue;
+
                 e.execute();
+            }
 
 			Game.eventsIn.clear();
 		}

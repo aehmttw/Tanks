@@ -3,7 +3,7 @@ package tanks.network.event;
 import tanks.*;
 import tanks.tank.Tank;
 
-public class EventTankUpdateHealth extends PersonalEvent
+public class EventTankUpdateHealth extends PersonalEvent implements IStackableEvent
 {
 	public int tank;
 	public double health;
@@ -35,7 +35,7 @@ public class EventTankUpdateHealth extends PersonalEvent
 		double before = t.health;
 		t.health = health;
 
-		if ((int) before != (int) t.health && t.health > 1)
+		if ((int) before != (int) t.health && t.health >= 1)
 		{
 			Effect e = Effect.createNewEffect(t.posX, t.posY, t.posZ + t.size * 0.75, Effect.EffectType.shield);
 			e.size = t.size;
@@ -49,4 +49,10 @@ public class EventTankUpdateHealth extends PersonalEvent
 			t.vY = 0;
 		}
 	}
+
+    @Override
+    public int getIdentifier()
+    {
+        return tank;
+    }
 }

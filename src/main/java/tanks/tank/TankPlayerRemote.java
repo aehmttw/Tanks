@@ -34,8 +34,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     public long startUpdateTime = -1;
     public double ourTimeOffset = 0;
 
-    public boolean forceMotion = true;
-    public boolean recoil = false;
+    public boolean forceMotion = true, recoil = false;
+    public boolean action1, action2;
+    public boolean[] quickActions = new boolean[TankPlayer.max_abilities];
 
     public static boolean checkMotion = false;
     public static boolean weakTimeCheck = false;
@@ -117,6 +118,20 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         this.timeSinceRefresh += Panel.frameFrequency;
         this.localAge += Panel.frameFrequency;
+
+        if (!this.disabled)
+        {
+            if (this.action1)
+                this.action(false);
+            if (this.action2)
+                this.action(true);
+
+            for (int i = 0; i < this.abilities.size(); i++)
+            {
+                if (quickActions[i])
+                    this.quickAction(i);
+            }
+        }
 
         super.update();
 
@@ -239,7 +254,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         ItemBar b = this.player.hotbar.itemBar;
         ItemBullet.ItemStackBullet ib = null;
         ItemMine.ItemStackMine im = null;
-        Item.ItemStack<?> i2 = null;
+        Item.ItemStack<?> i2;
 
         if (this.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
             ib = (ItemBullet.ItemStackBullet) this.getPrimaryAbility();
@@ -460,20 +475,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.timeSinceRefresh = 0;
             this.lastUpdateTime = t;
 
-            if (action1 && !this.disabled)
-                this.action(false);
-
-            if (action2 && !this.disabled)
-                this.action(true);
-
-            if (!this.disabled)
-            {
-                for (int i = 0; i < this.abilities.size(); i++)
-                {
-                    if (quickActions[i])
-                        this.quickAction(i);
-                }
-            }
+            this.action1 = action1;
+            this.action2 = action2;
+            this.quickActions = quickActions;
 
             this.posX = this.prevKnownPosX;
             this.posY = this.prevKnownPosY;

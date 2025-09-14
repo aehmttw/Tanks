@@ -134,7 +134,6 @@ public class BulletInstant extends Bullet
 			Game.eventsOut.add(new EventBulletDestroyed(this));
 		}
 
-		freeIDs.add(this.networkID);
 		idMap.remove(this.networkID);
 
 		if (this.affectsMaxLiveBullets && this.reboundSuccessor == null && !this.failedRebound)

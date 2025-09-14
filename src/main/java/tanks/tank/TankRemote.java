@@ -241,6 +241,33 @@ public class TankRemote extends Tank
 		Drawing.drawing.drawInterfaceText(Drawing.drawing.toInterfaceCoordsX(prevKnownPosX), Drawing.drawing.toInterfaceCoordsY(prevKnownPosY), String.format("%d, %d, %.2f", (int) posX / 50, (int) posY / 50, timeSinceRefresh));*/
 	}
 
+    public void updatePositions(double x, double y, double vX, double vY, double angle, double pitch)
+    {
+        long time = System.currentTimeMillis();
+        double iTime = Math.min(100, Math.max(0, time - this.lastUpdate) / 10.0);
+
+        this.prevKnownPosX = this.posX;
+        this.prevKnownPosY = this.posY;
+        this.prevKnownVX = this.vX;
+        this.prevKnownVY = this.vY;
+        this.prevKnownVXFinal = this.lastFinalVX;
+        this.prevKnownVYFinal = this.lastFinalVY;
+
+        this.currentKnownPosX = x;
+        this.currentKnownPosY = y;
+        this.currentKnownVX = vX;
+        this.currentKnownVY = vY;
+
+        this.timeSinceRefresh = 0;
+        this.interpolationTime = iTime;
+        this.lastUpdate = time;
+
+        this.lastAngle = this.angle;
+        this.lastPitch = this.pitch;
+        this.currentAngle = angle;
+        this.currentPitch = pitch;
+    }
+
 	public static double cubicInterpolationVelocity(double startPos, double startVel, double endPos, double endVel, double curTime, double totalTime)
 	{
 		double targetPos = endPos + endVel * totalTime;

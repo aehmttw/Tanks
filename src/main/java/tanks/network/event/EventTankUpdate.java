@@ -9,9 +9,6 @@ public class EventTankUpdate extends PersonalEvent implements IStackableEvent
     public double vX, vY;
     public double angle, pitch;
 
-    @NetworkIgnored
-	public long time = System.currentTimeMillis();
-
 
 	public EventTankUpdate()
 	{
@@ -38,29 +35,7 @@ public class EventTankUpdate extends PersonalEvent implements IStackableEvent
 		{
 			if (t instanceof TankRemote)
 			{
-				TankRemote r = (TankRemote) t;
-				double iTime = Math.min(100, Math.max(0, time - r.lastUpdate) / 10.0);
-
-				r.prevKnownPosX = r.posX;
-				r.prevKnownPosY = r.posY;
-				r.prevKnownVX = r.vX;
-				r.prevKnownVY = r.vY;
-				r.prevKnownVXFinal = r.lastFinalVX;
-				r.prevKnownVYFinal = r.lastFinalVY;
-
-				r.currentKnownPosX = this.posX;
-				r.currentKnownPosY = this.posY;
-				r.currentKnownVX = this.vX;
-				r.currentKnownVY = this.vY;
-
-				r.timeSinceRefresh = 0;
-				r.interpolationTime = iTime;
-				r.lastUpdate = time;
-
-				r.lastAngle = r.angle;
-				r.lastPitch = r.pitch;
-				r.currentAngle = this.angle;
-				r.currentPitch = this.pitch;
+				((TankRemote) t).updatePositions(this.posX, this.posY, this.vX, this.vY, this.angle, this.pitch);
 			}
 			else
 			{

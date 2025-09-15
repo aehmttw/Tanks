@@ -1,26 +1,15 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Panel;
 import tanks.tank.*;
 
 public class EventTankControllerUpdateC extends PersonalEvent implements IStackableEvent
 {
-    public int tank;
-    public double posX;
-    public double posY;
-    public double vX;
-    public double vY;
-    public double angle;
-    public double mX;
-    public double mY;
-    public boolean action1;
-    public boolean action2;
+    public int tank, quickActions;
+    public double posX, posY, vX, vY, angle, mX, mY;
+    public boolean action1, action2;
     public double time;
     public long sysTime = System.currentTimeMillis();
-
-    @NetworkIgnored
-    public boolean[] quickActions = new boolean[TankPlayer.max_abilities];
 
     public EventTankControllerUpdateC()
     {
@@ -39,28 +28,12 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         this.angle = t.angle;
         this.action1 = t.action1;
         this.action2 = t.action2;
-        System.arraycopy(t.quickActions, 0, this.quickActions, 0, this.quickActions.length);
         this.time = Panel.frameFrequency;
-    }
 
-    @Override
-    public void write(ByteBuf b)
-    {
-        super.write(b);
-        b.writeShort(quickActions.length);
-        for (boolean b1: quickActions)
-            b.writeBoolean(b1);
+        int i = 0;
+        for (boolean b: t.quickActions)
+            this.quickActions |= (b ? 1 : 0) << i++;
     }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        super.read(b);
-        int len = b.readShort();
-        for (int i = 0; i < len; i++)
-            this.quickActions[i] = b.readBoolean();
-    }
-
     @Override
     public void execute()
     {

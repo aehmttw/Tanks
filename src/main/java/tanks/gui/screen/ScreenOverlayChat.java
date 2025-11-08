@@ -75,7 +75,7 @@ public class ScreenOverlayChat
                     int timeout = chatbox == null ? 10000 : 30000;
 
                     ChatMessage c = chat.get(in);
-                    boolean boxSelected = (chatbox != null && chatbox.selected);
+                    boolean boxSelected = (chatbox != null && chatbox.selected && !(ScreenPartyLobby.isClient && ScreenPartyLobby.muted));
 
                     if (time - c.time <= timeout || boxSelected)
                     {

@@ -476,6 +476,7 @@ public class Level
 
 	public void loadLevel(ILevelPreviewScreen sc)
     {
+        Game.playerTank = null;
 		Game.currentLevel = this;
 		Game.currentLevelString = this.levelString;
 		Chunk.populateChunks(this, true);

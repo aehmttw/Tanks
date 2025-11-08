@@ -267,13 +267,16 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public void checkCollision()
 	{
+        if (this.destroy)
+            return;
+
 		for (Movable m : getCircleCollision(this))
 		{
             if (!(m instanceof Tank))
                 continue;
 
             Tank t = (Tank) m;
-            if (((Tank) m).size <= 0)
+            if (((Tank) m).size <= 0 || m.destroy)
                 continue;
 
             double distSq = GameObject.sqDistBetw(this, t);
@@ -953,7 +956,7 @@ public abstract class Tank extends Movable implements ISolidObject
 			this.explodeOnDestroy.clonePropertiesTo(e);
 			e.explode();
 		}
-	}
+    }
 
 	public boolean damage(double amount, GameObject source)
 	{

@@ -2621,7 +2621,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 }
             }
 
-            if (i == 9 && Game.playerTank.showTouchCircle())
+            if (i == 9 && Game.playerTank != null && Game.playerTank.showTouchCircle())
             {
                 Drawing.drawing.setColor(255, 127, 0, 63);
                 Drawing.drawing.fillInterfaceOval(Drawing.drawing.gameToInterfaceCoordsX(Game.playerTank.posX),
@@ -2629,7 +2629,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     Game.playerTank.getTouchCircleSize(), Game.playerTank.getTouchCircleSize());
             }
 
-            if (i == 9 && !Game.game.window.drawingShadow)
+            if (i == 9 && !Game.game.window.drawingShadow && Game.playerTank != null)
             {
                 if (Level.isDark())
                     Drawing.drawing.setColor(255, 255, 255, 50);

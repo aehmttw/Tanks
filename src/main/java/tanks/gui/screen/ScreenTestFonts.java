@@ -3,11 +3,11 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.gui.TextBox;
 
 public class ScreenTestFonts extends Screen
 {
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTestDebug()
-    );
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTestDebug());
 
     public String boxText = "Draw box: ";
 
@@ -25,6 +25,8 @@ public class ScreenTestFonts extends Screen
         }
     });
 
+    TextBox testBox = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth * 4, this.objHeight * 2, "Test field", () -> {}, "");
+
     public ScreenTestFonts()
     {
         this.music = "menu_options.ogg";
@@ -41,6 +43,8 @@ public class ScreenTestFonts extends Screen
     {
         back.update();
         box.update();
+        testBox.update();
+        testBox.allowAll = true;
     }
 
     @Override
@@ -79,5 +83,6 @@ public class ScreenTestFonts extends Screen
 
         back.draw();
         box.draw();
+        testBox.draw();
     }
 }

@@ -14,9 +14,9 @@ fun getHash(): String {
 
 val lwjglVersion = "3.3.3"
 val lwjglNatives = listOf(
-    //"natives-freebsd",
+//    "natives-freebsd",
     "natives-linux-arm32", "natives-linux-arm64", 
-	//"natives-linux-ppc64le", "natives-linux-riscv64", 
+//	"natives-linux-ppc64le", "natives-linux-riscv64",
 	"natives-linux",
     "natives-macos", "natives-macos-arm64",
     "natives-windows-x86", "natives-windows", "natives-windows-arm64",
@@ -25,9 +25,6 @@ val lwjglNatives = listOf(
 repositories {
     mavenCentral()
     mavenLocal()
-    maven {
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
 }
 
 dependencies {
@@ -53,8 +50,12 @@ dependencies {
     api(libs.org.l33tlabs.twl.pngdecoder)
     implementation("io.netty:netty-all:4.1.94.Final")
     implementation("it.unimi.dsi:fastutil-core:8.5.16")
-    api("com.code-disaster.steamworks4j:steamworks4j:1.10.0-SNAPSHOT")
-    api("com.code-disaster.steamworks4j:steamworks4j-lwjgl3:1.10.0-SNAPSHOT")
+
+    //Steamworks4j (Use files in libs folder until version 10 is available on mavenCentral
+    implementation(files("libs/steamworks4j-1.10.0-SNAPSHOT.jar"))
+    implementation(files("libs/steamworks4j-lwjgl3-1.10.0-SNAPSHOT.jar"))
+//    api("com.code-disaster.steamworks4j:steamworks4j:1.10.0-SNAPSHOT")
+//    api("com.code-disaster.steamworks4j:steamworks4j-lwjgl3:1.10.0-SNAPSHOT")
 }
 
 group = "com.aehmttw"

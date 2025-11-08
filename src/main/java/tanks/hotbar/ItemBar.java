@@ -190,7 +190,7 @@ public class ItemBar
 
 		if (this.player != Game.player)
         {
-            if (i != slots[selected])
+            if (destroy)
                 Game.eventsOut.add(new EventSetItem(this.player, this.selected, this.slots[this.selected]));
             else
                 Game.eventsOut.add(new EventSetItemCount(this.slots[this.selected].stackSize, this.player.clientID, this.selected));

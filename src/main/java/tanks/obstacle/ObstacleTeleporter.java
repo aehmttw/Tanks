@@ -146,7 +146,7 @@ public class ObstacleTeleporter extends Obstacle
 			{
                 Movable m = Game.movables.get(i);
 
-				if (m instanceof Tank && ((Tank) m).currentlyTargetable && GameObject.distanceBetween(this, m) < ((Tank) m).size)
+				if (m instanceof Tank && ((Tank) m).currentlyTargetable && GameObject.distanceBetween(this, m) < ((Tank) m).size && !m.destroy)
 				{
 					t = (Tank) m;
 

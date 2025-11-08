@@ -51,7 +51,6 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         this.playPopSound = false;
         this.playBounceSound = false;
         this.externalBulletCollision = false;
-        this.destroyBullets = false;
         this.canMultiDamage = true;
         this.canBeCanceled = false;
         this.effect.trailEffects.clear();
@@ -63,6 +62,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
     {
         if (this.age <= 0)
         {
+            this.destroyBullets = this.bulletCollision && this.bulletHitKnockback == 0;
             this.startSize = this.size;
             double colorRandom = Math.random();
             this.startColor.red = this.baseColor.red + colorRandom * this.noise.red;

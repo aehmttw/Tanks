@@ -650,14 +650,15 @@ public class Arcade extends Minigame
     @Override
     public void drawHotbar()
     {
-        if (!Hotbar.circular)
+        if (!Hotbar.circular || !(Game.playerTank != null && !Game.playerTank.destroy))
             this.drawChainTimer();
     }
 
     @Override
     public void drawCircleHotbar()
     {
-        this.drawChainTimerCircle();
+        if (Game.playerTank != null && !Game.playerTank.destroy)
+            this.drawChainTimerCircle();
     }
 
     public void spawnTank()
@@ -814,17 +815,21 @@ public class Arcade extends Minigame
 
     public void drawChainTimer()
     {
+        double pc = Game.player.hotbar.percentHidden;
+        if (Hotbar.circular)
+            pc = 0;
+
         double pulse = 5 * (1 - Math.min(1, (age - lastHit) / 25));
         if (chain < 2)
             pulse = 1;
 
         if (Level.isDark())
-            Drawing.drawing.setColor(255, 255, 255, 128 * (100 - Game.player.hotbar.percentHidden) / 100.0 * chainOpacity);
+            Drawing.drawing.setColor(255, 255, 255, 128 * (100 - pc) / 100.0 * chainOpacity);
         else
-            Drawing.drawing.setColor(0, 0, 0, 128 * (100 - Game.player.hotbar.percentHidden) / 100.0 * chainOpacity);
+            Drawing.drawing.setColor(0, 0, 0, 128 * (100 - pc) / 100.0 * chainOpacity);
 
         int x = (int) ((Drawing.drawing.interfaceSizeX / 2));
-        int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 100 + Game.player.hotbar.percentHidden - Game.player.hotbar.verticalOffset);
+        int y = (int) (Drawing.drawing.getInterfaceEdgeY(true) - 100 + pc - Game.player.hotbar.verticalOffset + (Hotbar.circular ? 50 : 0));
 
         double c = 0.5 - Math.min(max_power * 3, chain) / 30.0;
         if (c < 0)
@@ -845,13 +850,13 @@ public class Arcade extends Minigame
         if (chain > 0)
         {
             double xo = Hotbar.bar_width * (1 - chainOpacity) / 2;
-            Drawing.drawing.setColor(col[0], col[1], col[2], chainOpacity * (100 - Game.player.hotbar.percentHidden) * 2.55);
+            Drawing.drawing.setColor(col[0], col[1], col[2], chainOpacity * (100 - pc) * 2.55);
             Drawing.drawing.fillInterfaceProgressRect(x, y, Hotbar.bar_width * chainOpacity + pulse, 5 + pulse, Math.max(0, 1 - (this.age - lh) / rampage_duration));
 
-            Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
+            Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, (100 - pc) * 2.55 * chainOpacity);
             Drawing.drawing.fillInterfaceOval(x + xo - Hotbar.bar_width / 2 - pulse / 2, y, 18 + pulse, 18 + pulse);
             Drawing.drawing.setInterfaceFontSize(12 + pulse);
-            Drawing.drawing.setColor(255, 255, 255, (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
+            Drawing.drawing.setColor(255, 255, 255, (100 - pc) * 2.55 * chainOpacity);
             Drawing.drawing.drawInterfaceText(x + xo - Hotbar.bar_width / 2 - pulse / 2, y, chain + "");
         }
 
@@ -860,17 +865,17 @@ public class Arcade extends Minigame
             double mul = (1 + 0.5 * (1 - Math.min(1, (age - frenzyTime) / 25.0)));
 
             Drawing.drawing.setInterfaceFontSize(15 * mul);
-            Drawing.drawing.setColor(255 / 2.0, 180 / 2.0, 0, 2.55 * (100 - Game.player.hotbar.percentHidden));
+            Drawing.drawing.setColor(255 / 2.0, 180 / 2.0, 0, 2.55 * (100 - pc));
             Drawing.drawing.displayInterfaceText(x + 2, y + 2, "Tank frenzy!");
-            Drawing.drawing.setColor(255, 180, 0, 2.55 * (100 - Game.player.hotbar.percentHidden));
+            Drawing.drawing.setColor(255, 180, 0, 2.55 * (100 - pc));
             Drawing.drawing.displayInterfaceText(x, y, "Tank frenzy!");
         }
 
         double mul = (1 + 0.5 * (1 - Math.min(1, (age - lastRampage) / 25)));
         Drawing.drawing.setInterfaceFontSize(24 * mul);
-        Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
+        Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, (100 - pc) * 2.55 * chainOpacity);
         Drawing.drawing.drawInterfaceText(x + 2, y + 2 - 17, getRampageTitle());
-        Drawing.drawing.setColor(Math.min(255, col[0]), Math.min(255, col[1]), Math.min(255, col[2]), (100 - Game.player.hotbar.percentHidden) * 2.55 * chainOpacity);
+        Drawing.drawing.setColor(Math.min(255, col[0]), Math.min(255, col[1]), Math.min(255, col[2]), (100 - pc) * 2.55 * chainOpacity);
         Drawing.drawing.drawInterfaceText(x, y - 17, getRampageTitle());
     }
 

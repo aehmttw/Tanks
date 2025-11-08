@@ -12,6 +12,7 @@ import tanks.minigames.Arcade;
 import tanks.network.ServerHandler;
 import tanks.network.event.EventSetItem;
 import tanks.network.event.EventSetItemBarSlot;
+import tanks.network.event.EventSetItemCount;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 
@@ -192,7 +193,12 @@ public class ItemBar
 		}
 
 		if (this.player != Game.player)
-			Game.eventsOut.add(new EventSetItem(this.player, this.selected, this.slots[this.selected]));
+        {
+            if (destroy)
+                Game.eventsOut.add(new EventSetItem(this.player, this.selected, this.slots[this.selected]));
+            else
+                Game.eventsOut.add(new EventSetItemCount(this.player, this.selected, this.slots[this.selected].stackSize));
+        }
 
 		if (destroy && Game.currentLevel instanceof Arcade)
 		{
@@ -494,6 +500,9 @@ public class ItemBar
 
 	public void drawCircle()
 	{
+        if (Game.game.window.drawingShadow)
+            return;
+
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 

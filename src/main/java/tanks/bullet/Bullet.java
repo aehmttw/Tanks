@@ -643,7 +643,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		{
 			if (this.bulletHitKnockback == 0 && b.bulletHitKnockback == 0)
 			{
-				this.pop();
+                if (!(this instanceof BulletGas))
+    				this.pop();
 				if (this.destroyBullets)
 					b.pop();
 			}

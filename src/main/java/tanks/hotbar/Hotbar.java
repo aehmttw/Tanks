@@ -457,7 +457,16 @@ public class Hotbar
 
 	public void drawCircle()
 	{
-		if (Game.playerTank == null || Game.game.window.drawingShadow)
+        this.itemBar.drawCircle();
+
+        if (this.enabledAmmunitionBar)
+        {
+            drawBullets();
+            drawMines();
+            drawShields();
+        }
+
+        if (Game.playerTank == null || Game.game.window.drawingShadow)
 			return;
 
         Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
@@ -474,8 +483,6 @@ public class Hotbar
 		double healthSize = 120;
 
 		double thickness = 10;
-
-		this.itemBar.drawCircle();
 
 		if (this.enabledHealthBar)
 		{
@@ -520,13 +527,6 @@ public class Hotbar
 				Drawing.drawing.setColor(255, 255, 255, 255 * opacity, 255);
 				Drawing.drawing.drawText(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, z,  shields + "", false);
 			}
-		}
-
-		if (this.enabledAmmunitionBar)
-		{
-			drawBullets();
-			drawMines();
-			drawShields();
 		}
 
         if (Game.currentLevel instanceof Minigame)

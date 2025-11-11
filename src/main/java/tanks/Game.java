@@ -1,51 +1,29 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFileManager;
-import basewindow.BaseWindow;
-import basewindow.ShaderGroup;
+import basewindow.*;
 import com.codedisaster.steamworks.SteamMatchmaking;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.bullet.*;
-import tanks.extension.Extension;
-import tanks.extension.ExtensionRegistry;
-import tanks.generator.LevelGenerator;
-import tanks.generator.LevelGeneratorRandom;
-import tanks.gui.Button;
-import tanks.gui.ChatFilter;
-import tanks.gui.input.InputBindingGroup;
-import tanks.gui.input.InputBindings;
+import tanks.extension.*;
+import tanks.generator.*;
+import tanks.gui.*;
+import tanks.gui.input.*;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.OverlayEditorMenu;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.*;
 import tanks.gui.screen.leveleditor.selector.*;
-import tanks.hotbar.Hotbar;
-import tanks.hotbar.ItemBar;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.item.ItemShield;
-import tanks.minigames.ArcadeBeatBlocks;
-import tanks.minigames.ArcadeClassic;
-import tanks.minigames.CastleRampage;
-import tanks.minigames.Minigame;
-import tanks.network.Client;
-import tanks.network.NetworkEventMap;
-import tanks.network.SteamNetworkHandler;
-import tanks.network.SynchronizedList;
+import tanks.gui.screen.leveleditor.selector.SelectorColor;
+import tanks.hotbar.*;
+import tanks.item.*;
+import tanks.minigames.*;
+import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
-import tanks.rendering.ShaderGroundIntro;
-import tanks.rendering.ShaderGroundOutOfBounds;
-import tanks.rendering.ShaderTracks;
+import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 public class Game
@@ -218,6 +196,7 @@ public class Game
 	public static boolean invulnerable = false;
 
 	public static boolean warnBeforeClosing = true;
+    public static boolean pauseOnLostFocus = true;
 
 	public static String crashMessage = "Why would this game ever even crash anyway?";
 	public static String crashLine = "What, did you think I was a bad programmer? smh";

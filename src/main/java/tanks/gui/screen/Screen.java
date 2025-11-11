@@ -165,7 +165,12 @@ public abstract class Screen implements IBatchRenderableObject
 
 	}
 
-	public static class FlashingTile implements IBatchRenderableObject
+    public void onFocusChange(boolean isFocused)
+    {
+
+    }
+
+    public static class FlashingTile implements IBatchRenderableObject
 	{
 		public boolean redrawn = false;
 		public int posX;

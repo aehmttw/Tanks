@@ -2093,6 +2093,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         }
     }
 
+    @Override
+    public void onFocusChange(boolean isFocused)
+    {
+        if (!isFocused && Game.pauseOnLostFocus)
+            this.pause();
+    }
+
     public static void handleRemovals()
     {
         for (Movable m : Game.removeMovables)

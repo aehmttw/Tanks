@@ -32,6 +32,7 @@ public class DebugKeybinds
                     "\u00A7255127000255K\u00A7r -> log pressed keys to console \n " +
                     "\u00A7255127000255D\u00A7r -> clear the chat \n " +
                     "\u00A7255127000255A\u00A7r -> reload terrain renderer \n " +
+                    "\u00A7255127000255P\u00A7r -> toggle pause on lost focus \n " +
                     "\u00A7255127000255T\u00A7r -> reload shader \n " +
                     "\u00A7255127000255.\u00A7r -> perform a GC \n " +
                     "\u00A7255127000255Hold\u00A7r -> show tile coordinates \n " +
@@ -60,6 +61,14 @@ public class DebugKeybinds
                 Chunk.populateChunks(Chunk.defaultLevel);
             notifications.add(new ScreenElement.Notification(Game.currentLevel != null ? "Reloaded tiles with current level" :
                     "Reloaded tiles with default level", 800));
+        }
+
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_P))
+        {
+            Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_P);
+            Game.pauseOnLostFocus = !Game.pauseOnLostFocus;
+            notifications.add(new ScreenElement.Notification("Pause on lost focus: \u00a7255127000255"
+                    + (Game.pauseOnLostFocus ? "enabled" : "disabled"), 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_G))

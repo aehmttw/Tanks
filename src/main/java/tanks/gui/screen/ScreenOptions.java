@@ -239,6 +239,7 @@ public class ScreenOptions extends Screen
 			f.println("deterministic=" + Game.deterministicMode);
 			f.println("deterministic_30fps=" + Game.deterministic30Fps);
 			f.println("warn_before_closing=" + Game.warnBeforeClosing);
+            f.println("pause_on_lost_focus=" + Game.pauseOnLostFocus);
 			f.println("info_bar=" + Drawing.drawing.enableStats);
 			f.println("port=" + Game.port);
 			f.println("last_party=" + Game.lastParty);
@@ -399,6 +400,9 @@ public class ScreenOptions extends Screen
 						break;
 					case "warn_before_closing":
 						Game.warnBeforeClosing = Boolean.parseBoolean(optionLine[1]);
+						break;
+                    case "pause_on_lost_focus":
+						Game.pauseOnLostFocus = Boolean.parseBoolean(optionLine[1]);
 						break;
 					case "perspective":
 						ScreenOptionsGraphics.viewNo = Integer.parseInt(optionLine[1]);

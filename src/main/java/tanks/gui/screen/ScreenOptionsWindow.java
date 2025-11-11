@@ -16,7 +16,7 @@ public class ScreenOptionsWindow extends Screen
 
     Button fullscreen = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "", () -> Game.game.window.setFullscreen(!Game.game.window.fullscreen), Translation.translate("Can also be toggled at any time---by pressing %s", Game.game.input.fullscreen.getInputs()));
 
-    Button pauseOnLostFocus = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", () -> Game.pauseOnLostFocus = !Game.pauseOnLostFocus, Translation.translate("Pauses the game when the---window loses focus"), new Runnable()
+    Button pauseOnLostFocus = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -24,7 +24,7 @@ public class ScreenOptionsWindow extends Screen
             Game.pauseOnLostFocus = !Game.pauseOnLostFocus;
             pauseOnLostFocus.setText("Pause on lost focus: ", Game.pauseOnLostFocus ? ScreenOptions.onText : ScreenOptions.offText);
         }
-    });
+    }, Translation.translate("Pauses the game when the---window loses focus"));
 
     Button showStats = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {

@@ -97,6 +97,8 @@ public class Panel
 
 	public double timeSinceBotUpdate;
 
+    public boolean lastFocused = true;
+
 	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
 	public String saveScreenshotDir = null;
 
@@ -622,6 +624,12 @@ public class Panel
 			Game.game.input.fullscreen.invalidate();
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
 		}
+
+        if (Game.game.window.focused != lastFocused)
+        {
+            lastFocused = Game.game.window.focused;
+            Game.screen.onFocusChange(Game.game.window.focused);
+        }
 
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.update();

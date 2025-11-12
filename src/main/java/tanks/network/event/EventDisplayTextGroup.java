@@ -5,8 +5,7 @@ import tanks.ModAPI;
 import tanks.gui.FixedTextGroup;
 import tanks.network.NetworkUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class EventDisplayTextGroup extends PersonalEvent
 {

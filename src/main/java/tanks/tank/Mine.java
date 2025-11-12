@@ -1,17 +1,13 @@
 package tanks.tank;
 
 import basewindow.Color;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import tanks.*;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
+import tanks.gui.*;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemMine;
-import tanks.network.event.EventMineChangeTimer;
-import tanks.network.event.EventMineRemove;
+import tanks.network.event.*;
 import tanks.tankson.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 @TanksONable("mine")
 public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITanksONEditable
@@ -52,8 +48,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public int networkID = -1;
 
     public static int currentID = 0;
-    public static ArrayList<Integer> freeIDs = new ArrayList<>();
-    public static HashMap<Integer, Mine> idMap = new HashMap<>();
+    public static Int2ObjectOpenHashMap<Mine> idMap = new Int2ObjectOpenHashMap<>();
 
     public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
 
@@ -92,14 +87,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
         if (!ScreenPartyLobby.isClient)
         {
-            if (freeIDs.size() > 0)
-                this.networkID = freeIDs.remove(0);
-            else
-            {
-                this.networkID = currentID;
-                currentID++;
-            }
-
+            this.networkID = currentID++;
             idMap.put(this.networkID, this);
         }
 
@@ -233,7 +221,6 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
         if (!ScreenPartyLobby.isClient)
         {
-            freeIDs.add(this.networkID);
             idMap.remove(this.networkID);
 
             Explosion e = new Explosion(this);

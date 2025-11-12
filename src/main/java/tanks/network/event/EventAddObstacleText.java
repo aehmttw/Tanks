@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.network.NetworkUtils;
 import tanks.obstacle.ObstacleText;
 
 public class EventAddObstacleText extends PersonalEvent
@@ -36,38 +34,6 @@ public class EventAddObstacleText extends PersonalEvent
         this.colorB = colorB;
 
         this.duration = duration;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.id);
-
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        NetworkUtils.writeString(b, text);
-
-        b.writeDouble(this.colorR);
-        b.writeDouble(this.colorG);
-        b.writeDouble(this.colorB);
-
-        b.writeLong(duration);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        id = b.readInt();
-
-        posX = b.readDouble();
-        posY = b.readDouble();
-        text = NetworkUtils.readString(b);
-
-        colorR = b.readDouble();
-        colorG = b.readDouble();
-        colorB = b.readDouble();
-
-        duration = b.readLong();
     }
 
     @Override

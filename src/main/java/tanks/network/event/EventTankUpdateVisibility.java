@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.tank.Tank;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
 
 public class EventTankUpdateVisibility extends PersonalEvent
 {
@@ -29,19 +27,5 @@ public class EventTankUpdateVisibility extends PersonalEvent
 		{
 			((TankRemote) t).invisible = !visible;
 		}
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.tank);
-		b.writeBoolean(this.visible);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.tank = b.readInt();
-		this.visible = b.readBoolean();
 	}
 }

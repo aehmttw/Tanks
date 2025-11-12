@@ -1,24 +1,17 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Player;
-import tanks.Team;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.minigames.Arcade;
-import tanks.minigames.RampageTrial;
+import tanks.*;
+import tanks.gui.screen.*;
+import tanks.minigames.*;
 import tanks.network.ConnectedPlayer;
-import tanks.network.NetworkUtils;
 import tanks.tank.*;
 
 import java.util.UUID;
 
 public class EventTankPlayerCreate extends PersonalEvent
 {
+    @NetworkIgnored
 	public Player player;
 
 	public UUID clientIdTarget;
@@ -181,41 +174,5 @@ public class EventTankPlayerCreate extends PersonalEvent
 
 		if (t instanceof TankPlayable)
 			((TankPlayable) t).saveColors();
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.clientIdTarget.toString());
-		NetworkUtils.writeString(b, this.username);
-		b.writeDouble(this.posX);
-		b.writeDouble(this.posY);
-		b.writeDouble(this.angle);
-		NetworkUtils.writeString(b, this.team);
-		b.writeInt(this.networkID);
-
-		NetworkUtils.writeColor(b, this.color);
-		NetworkUtils.writeColor(b, this.color2);
-		NetworkUtils.writeColor(b, this.color3);
-
-		b.writeDouble(this.drawAge);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.clientIdTarget = UUID.fromString(NetworkUtils.readString(b));
-		this.username = NetworkUtils.readString(b);
-		this.posX = b.readDouble();
-		this.posY = b.readDouble();
-		this.angle = b.readDouble();
-		this.team = NetworkUtils.readString(b);
-		this.networkID = b.readInt();
-
-		NetworkUtils.readColor(b, this.color);
-		NetworkUtils.readColor(b, this.color2);
-		NetworkUtils.readColor(b, this.color3);
-
-		this.drawAge = b.readDouble();
 	}
 }

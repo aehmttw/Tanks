@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import basewindow.Color;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import tanks.*;
 import tanks.attribute.*;
 import tanks.gui.*;
@@ -18,8 +19,7 @@ import java.util.*;
 public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
 {
 	public static int currentID = 0;
-	public static ArrayList<Integer> freeIDs = new ArrayList<>();
-	public static HashMap<Integer, Bullet> idMap = new HashMap<>();
+	public static Int2ObjectOpenHashMap<Bullet> idMap = new Int2ObjectOpenHashMap<>();
 
 	public static String bullet_class_name = "bullet";
 
@@ -270,14 +270,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (!this.tank.isRemote)
 		{
-			if (!freeIDs.isEmpty())
-				this.networkID = freeIDs.remove(0);
-			else
-			{
-				this.networkID = currentID;
-				currentID++;
-			}
-
+            this.networkID = currentID++;
 			idMap.put(this.networkID, this);
 		}
 
@@ -413,16 +406,16 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 				float pitch = (float) ((Math.min(t.health, t.baseHealth + this.maxExtraHealth) / (t.baseHealth + this.maxExtraHealth) / 2) + 1f) / 2;
 				if (this.item.item.cooldownBase > 0)
-					Drawing.drawing.playGlobalSound("heal_impact_2.ogg", pitch);
+					Drawing.drawing.playSound("heal_impact_2.ogg", pitch);
 				else
 				{
 					float freq = (float) (this.frameDamageMultipler / 10);
 					if (Game.game.window.touchscreen)
 						freq = 1;
-					Drawing.drawing.playGlobalSound("heal2.ogg", pitch, freq);
+					Drawing.drawing.playSound("heal2.ogg", pitch, freq);
 				}
 
-				t.em().addAttribute(AttributeModifier.newInstance("healray", AttributeModifier.healray, AttributeModifier.Operation.add, 1.0));
+				t.em().addUnduplicateAttribute(AttributeModifier.newInstance("healray", AttributeModifier.healray, AttributeModifier.Operation.set, t.baseHealth + this.maxExtraHealth - t.health));
 			}
 
 			if (kill)
@@ -500,7 +493,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			else
 			{
 				if (this.playPopSound && dmg > 0)
-					Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
+					Drawing.drawing.playSound("damage.ogg", (float) (bullet_size / size));
 
 				if (this.boosting)
 				{
@@ -533,7 +526,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			}
 		}
 		else if (this.playPopSound && !this.heavy)
-			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+			Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
 	}
 
 	public void collidedWithObject(Movable o)
@@ -578,7 +571,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	protected void pop()
 	{
 		if (this.playPopSound)
-			Drawing.drawing.playGlobalSound("bullet_explode.ogg", (float) (bullet_size / size));
+			Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
 
 		this.destroy = true;
 		this.vX = 0;
@@ -629,8 +622,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (this.playBounceSound && b.playBounceSound)
 		{
-			Drawing.drawing.playGlobalSound("bump.ogg", (float) (bullet_size / size), 0.5f);
-			Drawing.drawing.playGlobalSound("bump.ogg", (float) (bullet_size / b.size), 0.5f);
+			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size), 0.5f);
+			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / b.size), 0.5f);
 		}
 
 		this.addTrail();
@@ -709,28 +702,12 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (this.destroy)
 			return;
 
-		for (int i = 0; i < Game.obstacles.size(); i++)
-		{
-			Obstacle o = Game.obstacles.get(i);
-
-			if (!o.checkForObjects)
-				continue;
-
-			double dx = this.posX - o.posX;
-			double dy = this.posY - o.posY;
-
-			double horizontalDist = Math.abs(dx);
-			double verticalDist = Math.abs(dy);
-
-			double s = this.size;
-			if (useCustomWallCollision)
-				s = this.wallCollisionSize;
-
-			double bound = s / 2 + Game.tile_size / 2;
-
-			if (horizontalDist < bound && verticalDist < bound)
-				o.onObjectEntryLocal(this);
-		}
+        double bound = this.size / 2 + Game.tile_size / 2;
+		for (Obstacle o : Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
+        {
+            if (o.checkForObjects)
+                o.onObjectEntryLocal(this);
+        }
 	}
 
 	public void checkCollision()
@@ -776,7 +753,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 						{
 							Game.removeObstacles.add(o);
 							o.playDestroyAnimation(this.posX, this.posY, Game.tile_size);
-							Drawing.drawing.playGlobalSound("break.ogg");
+							Drawing.drawing.playSound("break.ogg");
 						}
 
 						if (this.heavy)
@@ -980,7 +957,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				this.pop();
 			}
 			else if (this.playBounceSound)
-				Drawing.drawing.playGlobalSound("bounce.ogg", (float) (bullet_size / size));
+				Drawing.drawing.playSound("bounce.ogg", (float) (bullet_size / size));
 
 			if (!destroy)
 			{
@@ -1247,7 +1224,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		if (this.freezing || this.boosting)
 			this.playPopSound = false;
 
-		if (!this.isRemote && ScreenPartyHost.isServer && (this.vX != this.lastOriginalVX || this.vY != this.lastOriginalVY) && !justBounced)
+		if (!this.isRemote && !(this instanceof BulletInstant) && ScreenPartyHost.isServer &&
+            (this.vX != this.lastOriginalVX || this.vY != this.lastOriginalVY) && !justBounced)
 			Game.eventsOut.add(new EventBulletUpdate(this));
 
 		this.justBounced = false;
@@ -1296,12 +1274,11 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (destroy)
 		{
-			if (this.destroyTimer <= 0 && !freeIDs.contains(this.networkID))
+			if (this.destroyTimer <= 0)
 			{
 				if (!this.tank.isRemote)
 					Game.eventsOut.add(new EventBulletDestroyed(this));
 
-				freeIDs.add(this.networkID);
 				idMap.remove(this.networkID);
 
 				if (this.affectsMaxLiveBullets && this.reboundSuccessor == null)
@@ -1448,7 +1425,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	{
 		for (ArrayList<Trail> trail : this.trails)
 		{
-			if (trail.size() > 0)
+			if (!trail.isEmpty())
 			{
 				Trail t = trail.get(0);
 				if (t.spawning)
@@ -1465,7 +1442,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	{
 		Trail old = null;
 
-		if (this.trails[group].size() > 0)
+		if (!this.trails[group].isEmpty())
 			old = this.trails[group].get(0);
 
 		this.trails[group].add(0, t);
@@ -1677,7 +1654,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			if (this.freezing)
 			{
 				Game.movables.add(new AreaEffectFreeze(this.posX, this.posY));
-				Drawing.drawing.playGlobalSound("freeze.ogg");
+				Drawing.drawing.playSound("freeze.ogg");
 			}
 		}
 

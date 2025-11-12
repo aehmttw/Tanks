@@ -1,10 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.ItemDrop;
+import tanks.*;
 import tanks.item.Item;
-import tanks.network.NetworkUtils;
 
 public class EventItemDrop extends PersonalEvent
 {
@@ -24,25 +21,6 @@ public class EventItemDrop extends PersonalEvent
         this.id = id.networkID;
         this.posX = id.posX;
         this.posY = id.posY;
-    }
-
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.id);
-        NetworkUtils.writeString(b, item);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
-        this.item = NetworkUtils.readString(b);
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
     }
 
     @Override

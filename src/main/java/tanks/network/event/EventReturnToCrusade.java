@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenPartyCrusadeInterlevel;
-import tanks.network.NetworkUtils;
 
 public class EventReturnToCrusade extends PersonalEvent
 {
@@ -58,23 +54,5 @@ public class EventReturnToCrusade extends PersonalEvent
 
 			System.gc();
 		}
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, msg1);
-		NetworkUtils.writeString(b, msg2);
-		b.writeBoolean(win);
-		b.writeBoolean(lose);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		msg1 = NetworkUtils.readString(b);
-		msg2 = NetworkUtils.readString(b);
-		win = b.readBoolean();
-		lose = b.readBoolean();
 	}
 }

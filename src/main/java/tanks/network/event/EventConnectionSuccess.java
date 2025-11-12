@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyLobby;
 
@@ -20,17 +19,5 @@ public class EventConnectionSuccess extends PersonalEvent
 
 			Game.eventsOut.add(new EventSendTankColors(Game.player));
 		}
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		
 	}
 }

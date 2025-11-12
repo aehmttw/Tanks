@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import basewindow.Color;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
@@ -15,8 +16,8 @@ public class BulletInstant extends Bullet
 {
 	public static String bullet_class_name = "laser";
 
-	public ArrayList<Double> xTargets = new ArrayList<>();
-	public ArrayList<Double> yTargets = new ArrayList<>();
+	public DoubleArrayList xTargets = new DoubleArrayList();
+	public DoubleArrayList yTargets = new DoubleArrayList();
 
 	public ArrayList<Laser> segments = new ArrayList<>();
 
@@ -64,8 +65,7 @@ public class BulletInstant extends Bullet
 			for (int i = 0; i < mul * Game.effectMultiplier; i++)
 			{
 				Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
-				double var = 50;
-				e.maxAge /= 2;
+                e.maxAge /= 2;
 				e.setColorsFromBullet(this, this.baseColor);
 
 				if (Game.enable3d)
@@ -127,14 +127,11 @@ public class BulletInstant extends Bullet
 			this.saveTarget();
 
 			for (int i = 0; i < this.xTargets.size(); i++)
-			{
-				Game.eventsOut.add(new EventBulletInstantWaypoint(this, this.xTargets.get(i), this.yTargets.get(i)));
-			}
+                Game.eventsOut.add(new EventBulletInstantWaypoint(this, this.xTargets.getDouble(i), this.yTargets.getDouble(i), i));
 
 			Game.eventsOut.add(new EventBulletDestroyed(this));
 		}
 
-		freeIDs.add(this.networkID);
 		idMap.remove(this.networkID);
 
 		if (this.affectsMaxLiveBullets && this.reboundSuccessor == null && !this.failedRebound)
@@ -234,10 +231,10 @@ public class BulletInstant extends Bullet
 	{
 		for (int i = 0; i < xTargets.size() - 1; i++)
 		{
-			double iX = xTargets.get(i);
-			double iY = yTargets.get(i);
-			double dX = xTargets.get(i + 1) - iX;
-			double dY = yTargets.get(i + 1) - iY;
+			double iX = xTargets.getDouble(i);
+			double iY = yTargets.getDouble(i);
+			double dX = xTargets.getDouble(i + 1) - iX;
+			double dY = yTargets.getDouble(i + 1) - iY;
 
 			this.posX = iX + dX;
 			this.posY = iY + dY;

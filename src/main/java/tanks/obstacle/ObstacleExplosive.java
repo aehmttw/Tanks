@@ -72,11 +72,16 @@ public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
     @Override
     public void onDestroy(Movable m)
     {
+        if (ScreenPartyLobby.isClient)
+        {
+            Game.removeObstacles.add(this);
+            return;
+        }
+
         if (this.trigger != Game.dummyTank)
             return;
 
-        if (!ScreenPartyLobby.isClient)
-            this.setUpdate(true);
+        this.setUpdate(true);
 
         if (m instanceof Explosion)
         {
@@ -106,8 +111,8 @@ public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
 
         e.explode();
 
-        Game.removeObstacles.add(this);
         Game.eventsOut.add(new EventObstacleDestroy(this.posX, this.posY, this.name));
+        Game.removeObstacles.add(this);
     }
 
     @Override

@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
-import tanks.network.NetworkUtils;
 
 public class EventPlaySound extends PersonalEvent
 {
@@ -23,25 +21,9 @@ public class EventPlaySound extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.sound);
-        b.writeFloat(this.pitch);
-        b.writeFloat(this.volume);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.sound = NetworkUtils.readString(b);
-        this.pitch = b.readFloat();
-        this.volume = b.readFloat();
-    }
-
-    @Override
     public void execute()
     {
-        if (this.clientID == null && !this.sound.equals(""))
+        if (this.clientID == null && !this.sound.isEmpty())
         {
             try
             {

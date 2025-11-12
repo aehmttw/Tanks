@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Effect;
-import tanks.Game;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankRemote;
+import tanks.*;
+import tanks.tank.*;
 
 public class EventTankTransformPreset extends PersonalEvent
 {
@@ -112,21 +108,5 @@ public class EventTankTransformPreset extends PersonalEvent
             t.enableTertiaryColor = target.enableTertiaryColor;
             t.tertiaryColor.set(target.tertiaryColor);
         }
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeBoolean(this.sight);
-        b.writeBoolean(this.revert);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.sight = b.readBoolean();
-        this.revert = b.readBoolean();
     }
 }

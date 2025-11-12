@@ -1,14 +1,9 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Player;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenOverlayChat;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.NetworkUtils;
-import tanks.network.ServerHandler;
+import tanks.*;
+import tanks.gui.screen.*;
+import tanks.network.*;
 import tanks.translation.Translation;
 
 public class EventNudge extends PersonalEvent

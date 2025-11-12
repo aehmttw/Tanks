@@ -3,18 +3,12 @@ package tanks.hotbar;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.item.Item;
-import tanks.item.ItemEmpty;
+import tanks.gui.screen.*;
+import tanks.item.*;
 import tanks.minigames.Arcade;
 import tanks.network.ServerHandler;
-import tanks.network.event.EventSetItem;
-import tanks.network.event.EventSetItemBarSlot;
-import tanks.network.event.EventSetItemCount;
-import tanks.tank.TankPlayable;
-import tanks.tank.TankPlayer;
+import tanks.network.event.*;
+import tanks.tank.*;
 
 public class ItemBar
 {
@@ -175,16 +169,18 @@ public class ItemBar
 		if (selected == -1 || selected >= hotbarSlots)
 			return false;
 
-		if (slots[selected].isEmpty)
+        Item.ItemStack<?> i = slots[selected];
+
+		if (i.isEmpty)
 			return false;
 
-		if (slots[selected].item.rightClick != rightClick)
+		if (i.item.rightClick != rightClick)
 			return false;
 
-		slots[selected].attemptUse();
+		i.attemptUse();
 
 		boolean destroy = false;
-		if (slots[selected].destroy)
+		if (i.destroy)
 		{
 			destroy = true;
 			slots[selected] = new ItemEmpty.ItemStackEmpty();
@@ -197,7 +193,7 @@ public class ItemBar
             if (destroy)
                 Game.eventsOut.add(new EventSetItem(this.player, this.selected, this.slots[this.selected]));
             else
-                Game.eventsOut.add(new EventSetItemCount(this.player, this.selected, this.slots[this.selected].stackSize));
+                Game.eventsOut.add(new EventSetItemCount(this.slots[this.selected].stackSize, this.player.clientID, this.selected));
         }
 
 		if (destroy && Game.currentLevel instanceof Arcade)
@@ -500,9 +496,6 @@ public class ItemBar
 
 	public void drawCircle()
 	{
-        if (Game.game.window.drawingShadow)
-            return;
-
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();
 

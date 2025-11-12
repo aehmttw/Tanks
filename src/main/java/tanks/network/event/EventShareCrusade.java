@@ -1,14 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.ChatMessage;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.NetworkUtils;
+import tanks.gui.screen.*;
 import tanks.network.ServerHandler;
 
 public class EventShareCrusade extends PersonalEvent
@@ -72,21 +66,5 @@ public class EventShareCrusade extends PersonalEvent
 		{
 			ScreenPartyLobby.sharedCrusades.add(new ScreenPartyHost.SharedCrusade(this.crusade, this.name, this.username));
 		}
-	}
-
-	@Override
-	public void write(ByteBuf b)
-	{
-		NetworkUtils.writeString(b, this.crusade);
-		NetworkUtils.writeString(b, this.name);
-		NetworkUtils.writeString(b, this.username);
-	}
-
-	@Override
-	public void read(ByteBuf b)
-	{
-		this.crusade = NetworkUtils.readString(b);
-		this.name = NetworkUtils.readString(b);
-		this.username = NetworkUtils.readString(b);
 	}
 }

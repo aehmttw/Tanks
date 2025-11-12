@@ -1,13 +1,11 @@
 package tanks.network;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import tanks.Game;
 
 import java.util.UUID;
 
@@ -38,6 +36,8 @@ public class Client
                 @Override
                 public void initChannel(SocketChannel ch)
                 {
+                    if (Game.enableLatencyTest)
+                        ch.pipeline().addFirst(new TCPLatencyHandler(50, 10));
                 	handler = new ClientHandler(online, connectionID);
                     ch.pipeline().addLast(handler);
                 }

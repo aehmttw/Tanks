@@ -3,8 +3,9 @@ package tanks.obstacle;
 import basewindow.*;
 import it.unimi.dsi.fastutil.objects.*;
 import tanks.*;
+import tanks.network.event.EventObstacleDestroy;
 import tanks.rendering.ShaderObstacle;
-import tanks.tank.IAvoidObject;
+import tanks.tank.*;
 
 public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
 {
@@ -343,6 +344,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	public void onDestroy(Movable source)
 	{
 		Game.removeObstacles.add(this);
+        Game.eventsOut.add(new EventObstacleDestroy(posX, posY, name, this.posX, this.posY, source instanceof Explosion ? ((Explosion) source).radius + Game.tile_size / 2 : 0));
 	}
 
     private static final ObjectArrayList<Obstacle> obstaclesCache = new ObjectArrayList<>();

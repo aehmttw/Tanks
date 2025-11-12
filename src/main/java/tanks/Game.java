@@ -29,10 +29,7 @@ import tanks.minigames.ArcadeBeatBlocks;
 import tanks.minigames.ArcadeClassic;
 import tanks.minigames.CastleRampage;
 import tanks.minigames.Minigame;
-import tanks.network.Client;
-import tanks.network.NetworkEventMap;
-import tanks.network.SteamNetworkHandler;
-import tanks.network.SynchronizedList;
+import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
@@ -154,6 +151,8 @@ public class Game
 	public static boolean drawFaces = false;
     public static boolean drawAvoidObjects = false;
     public static boolean recordMovableData = false;
+    public static boolean recordEventData = false;
+    public static boolean enableLatencyTest = false;
     public static final boolean cinematic = false;
 
 	public static long steamLobbyInvite = -1;
@@ -178,7 +177,7 @@ public class Game
 
 	public static boolean vsync = true;
 	public static int maxFPS = 0;
-	public static int networkRate = 60;
+	public static int networkRate = 20;
 
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
@@ -369,8 +368,8 @@ public class Game
 		NetworkEventMap.register(EventPurchaseItem.class);
 		NetworkEventMap.register(EventPurchaseBuild.class);
 		NetworkEventMap.register(EventSetItem.class);
+		NetworkEventMap.register(EventSetItemBarSlot.class);
         NetworkEventMap.register(EventSetItemCount.class);
-        NetworkEventMap.register(EventSetItemBarSlot.class);
 		NetworkEventMap.register(EventLoadItemBarSlot.class);
 		NetworkEventMap.register(EventUpdateTankAbility.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
@@ -465,6 +464,8 @@ public class Game
 		NetworkEventMap.register(EventUploadLevel.class);
 		NetworkEventMap.register(EventSendLevelToDownload.class);
 		NetworkEventMap.register(EventCleanUp.class);
+
+        ModAPI.registerEvents();
 	}
 
 	public static void registerObstacle(Class<? extends Obstacle> obstacle, String name)
@@ -607,7 +608,7 @@ public class Game
 
 		registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
-//		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
+		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
 
 		registerMetadataSelector(SelectorStackHeight.selector_name, SelectorStackHeight.class);
@@ -1097,6 +1098,7 @@ public class Game
 	{
 		return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
 	}
+
 	public static void removeObstacle(Obstacle o)
 	{
 		Drawing.drawing.terrainRenderer.remove(o);
@@ -1326,15 +1328,12 @@ public class Game
 	{
 		Tank.currentID = 0;
 		Tank.idMap.clear();
-		Tank.freeIDs.clear();
 
 		Bullet.currentID = 0;
 		Bullet.idMap.clear();
-		Bullet.freeIDs.clear();
 
 		Mine.currentID = 0;
 		Mine.idMap.clear();
-		Mine.freeIDs.clear();
 	}
 
 	public static boolean loadLevel(BaseFile f)

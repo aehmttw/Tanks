@@ -2757,7 +2757,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 }
             }
 
-            if (Crusade.crusadeMode)
+            if (Crusade.crusadeMode && Crusade.currentCrusade != null /* lag */)
             {
                 if (Level.isDark())
                     Drawing.drawing.setColor(255, 255, 255, 127);

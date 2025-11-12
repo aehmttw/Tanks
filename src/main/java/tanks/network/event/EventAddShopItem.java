@@ -1,12 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.Item;
-import tanks.item.ItemRemote;
-import tanks.network.NetworkUtils;
+import tanks.item.*;
 
 public class EventAddShopItem extends PersonalEvent
 {
@@ -28,26 +25,6 @@ public class EventAddShopItem extends PersonalEvent
         this.description = desc;
         this.price = price;
         this.icon = icon;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(item);
-        NetworkUtils.writeString(b, name);
-        NetworkUtils.writeString(b, description);
-        b.writeInt(price);
-        NetworkUtils.writeString(b, icon);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        item = b.readInt();
-        name = NetworkUtils.readString(b);
-        description = NetworkUtils.readString(b);
-        price = b.readInt();
-        icon = NetworkUtils.readString(b);
     }
 
     @Override

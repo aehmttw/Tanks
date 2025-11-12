@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.tank.Mine;
 
 public class EventMineChangeTimer extends PersonalEvent
@@ -31,19 +30,5 @@ public class EventMineChangeTimer extends PersonalEvent
             return;
 
         m.timer = countdown;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.mine);
-        b.writeDouble(this.countdown);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.mine = b.readInt();
-        this.countdown = b.readDouble();
     }
 }

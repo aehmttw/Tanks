@@ -1,10 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.ModAPI;
-import tanks.gui.IFixedMenu;
-import tanks.gui.RemoteScoreboard;
-import tanks.network.NetworkUtils;
+import tanks.gui.*;
 
 public class EventChangeScoreboardAttribute extends PersonalEvent
 {
@@ -22,22 +19,6 @@ public class EventChangeScoreboardAttribute extends PersonalEvent
         this.id = id;
         this.attributeName = attributeName;
         this.value = value;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.id);
-        NetworkUtils.writeString(b, this.attributeName);
-        b.writeDouble(this.value);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
-        this.attributeName = NetworkUtils.readString(b);
-        this.value = b.readDouble();
     }
 
     @Override

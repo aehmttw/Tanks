@@ -1,8 +1,7 @@
 package tanks.network.event.online;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenOnline;
 import tanks.network.NetworkUtils;
 import tanks.network.event.PersonalEvent;

@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Panel;
-import tanks.gui.screen.ScreenPartyInterlevel;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.NetworkUtils;
+import tanks.*;
+import tanks.gui.screen.*;
 
 public class EventLevelExit extends PersonalEvent
 {	
@@ -45,17 +41,5 @@ public class EventLevelExit extends PersonalEvent
 		ScreenPartyLobby.includedPlayers.clear();
 
 		System.gc();
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.winningTeam);
-	}
-
-	@Override
-	public void read(ByteBuf b)
-	{
-		this.winningTeam = NetworkUtils.readString(b);
 	}
 }

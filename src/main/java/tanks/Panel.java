@@ -268,8 +268,6 @@ public class Panel
 			Game.game.window.setWindowTitle("Tanks" + lastWindowTitle);
 		}
 
-		Game.prevScreen = Game.screen;
-
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{
 			started = true;
@@ -625,7 +623,7 @@ public class Panel
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
 		}
 
-        if (Game.game.window.focused != lastFocused)
+        if (Game.game.window.focused != lastFocused || Game.screen != Game.prevScreen)
         {
             lastFocused = Game.game.window.focused;
             Game.screen.onFocusChange(Game.game.window.focused);
@@ -675,6 +673,8 @@ public class Panel
 
 		if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 			Game.eventsOut.clear();
+
+        Game.prevScreen = Game.screen;
 	}
 
 	public void playScreenMusic(long fadeTime)

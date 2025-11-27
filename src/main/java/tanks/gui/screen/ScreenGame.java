@@ -2096,7 +2096,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     @Override
     public void onFocusChange(boolean isFocused)
     {
-        if (!isFocused && Game.pauseOnLostFocus)
+        if (!isFocused && Game.pauseOnLostFocus && !paused && !shopScreen && !npcShopScreen)
             this.pause();
     }
 

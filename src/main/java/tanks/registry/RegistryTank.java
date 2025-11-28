@@ -129,17 +129,12 @@ public class RegistryTank
 	}
 
 	public TankEntry getEntry(String name)
-	{		
-		for (int i = 0; i < tankEntries.size(); i++)
-		{
-			TankEntry r = tankEntries.get(i);
-
-			if (r.name.equals(name))
-			{
-				return r;
-			}
-		}
-
+	{
+        for (TankEntry r : tankEntries)
+        {
+            if (r.name.equals(name))
+                return r;
+        }
 		return TankEntry.getUnknownEntry(name);
 	}
 

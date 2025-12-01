@@ -380,8 +380,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 					t.tookRecoil = true;
 				}
 
-				if (this.damage <= 0 && this.playBounceSound)
-					Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size));
+				if (this.damage <= 0)
+					playBumpSound();
 
 				if (t instanceof TankPlayerRemote)
 					Game.eventsOut.add(new EventTankControllerAddVelocity(t, vX * mul, vY * mul, t.tookRecoil));
@@ -525,9 +525,32 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				}
 			}
 		}
-		else if (this.playPopSound && !this.heavy)
-			Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
+		else if (!this.heavy)
+			playPopSound();
 	}
+
+    public void playBounceSound()
+    {
+        if (this.playBounceSound)
+			Drawing.drawing.playSound("bounce.ogg", (float) (bullet_size / size));
+    }
+
+    public void playBumpSound()
+    {
+        playBumpSound(1f);
+    }
+
+    public void playBumpSound(float volume)
+    {
+        if (this.playBounceSound)
+			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size), volume);
+    }
+
+    public void playPopSound()
+    {
+        if (this.playPopSound)
+			Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
+    }
 
 	public void collidedWithObject(Movable o)
 	{
@@ -620,11 +643,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		Game.eventsOut.add(new EventBulletBounce(this));
 		Game.eventsOut.add(new EventBulletBounce(b));
 
-		if (this.playBounceSound && b.playBounceSound)
-		{
-			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size), 0.5f);
-			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / b.size), 0.5f);
-		}
+        playBumpSound(0.5f);
+        b.playBumpSound(0.5f);
 
 		this.addTrail();
 		b.addTrail();
@@ -1289,9 +1309,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			}
 
 			if (this.destroyTimer <= 0 && Game.effectsEnabled)
-			{
-				this.addDestroyEffect();
-			}
+                this.addDestroyEffect();
 
 			this.destroyTimer += frameFrequency;
 			this.vX = 0;
@@ -1652,10 +1670,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			}
 
 			if (this.freezing)
-			{
-				Game.movables.add(new AreaEffectFreeze(this.posX, this.posY));
-				Drawing.drawing.playSound("freeze.ogg");
-			}
+                Game.movables.add(new AreaEffectFreeze(this.posX, this.posY));
 		}
 
 		if (this.boosting)

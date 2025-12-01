@@ -80,6 +80,9 @@ public class AreaEffectFreeze extends AreaEffect
 	@Override
 	public void update()
 	{
+        if (this.age <= 0)
+            Drawing.drawing.playSound("freeze.ogg");
+
 		if (ScreenGame.finishedQuick && this.age < 400)
 			this.age = 400;
 

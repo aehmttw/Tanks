@@ -41,6 +41,8 @@ public class EventBulletDestroyed extends PersonalEvent implements IStackableEve
             b.posY = posY;
         }
 
+        b.playPopSound();
+
         b.destroy = true;
         Bullet.idMap.remove(b.networkID);
     }

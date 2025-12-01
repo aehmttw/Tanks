@@ -28,17 +28,18 @@ public class EventBulletBounce extends PersonalEvent
 	public void execute()
 	{
 		Bullet b = Bullet.idMap.get(this.bullet);
-		
-		if (b != null && this.clientID == null)
-		{
-			b.posX = this.posX;
-			b.posY = this.posY;
-			b.vX = this.vX;
-			b.vY = this.vY;
-			b.collisionX = this.posX;
-			b.collisionY = this.posY;
-			b.addTrail();
-		}
-	}
 
+        if (b == null || this.clientID != null)
+            return;
+
+        b.posX = this.posX;
+        b.posY = this.posY;
+        b.vX = this.vX;
+        b.vY = this.vY;
+        b.collisionX = this.posX;
+        b.collisionY = this.posY;
+        b.addTrail();
+
+        b.playBumpSound();
+    }
 }

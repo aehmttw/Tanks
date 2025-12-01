@@ -198,6 +198,7 @@ public class Game
 	public static boolean invulnerable = false;
 
 	public static boolean warnBeforeClosing = true;
+    public static boolean pauseOnLostFocus = true;
 
 	public static String crashMessage = "Why would this game ever even crash anyway?";
 	public static String crashLine = "What, did you think I was a bad programmer? smh";

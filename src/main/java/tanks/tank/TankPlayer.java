@@ -648,7 +648,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
-		if (m.item.networkIndex > 0)
+		if (m.item.networkIndex >= 0)
 		{
 			Integer num = 0;
 			if (Game.currentLevel != null)
@@ -656,7 +656,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			m.item.networkIndex = num == null ? 0 : num;
 		}
 
-		Game.eventsOut.add(new EventLayMine(m));
+        Game.eventsOut.add(new EventLayMine(m));
 		Game.avoidObjects.add(m);
 		Game.movables.add(m);
 	}

@@ -174,6 +174,8 @@ public class ChatBox extends TextBox
         this.selected = true;
         this.inputText = "";
 
+        Game.game.window.pressedKeys.clear();
+        Game.game.window.validPressedKeys.clear();
         Game.game.window.getRawTextKeys().clear();
         Drawing.drawing.playSound("bounce.ogg", 0.5f, 0.7f);
         Drawing.drawing.playVibration("click");

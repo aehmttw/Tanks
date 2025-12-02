@@ -1,23 +1,15 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFileManager;
-import basewindow.BaseWindow;
-import basewindow.ShaderGroup;
+import basewindow.*;
 import com.codedisaster.steamworks.SteamMatchmaking;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.bullet.*;
-import tanks.extension.Extension;
-import tanks.extension.ExtensionRegistry;
-import tanks.generator.LevelGenerator;
-import tanks.generator.LevelGeneratorRandom;
-import tanks.gui.Button;
-import tanks.gui.ChatFilter;
-import tanks.gui.input.InputBindingGroup;
-import tanks.gui.input.InputBindings;
+import tanks.extension.*;
+import tanks.generator.*;
+import tanks.gui.*;
+import tanks.gui.input.*;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.OverlayEditorMenu;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.*;
 import tanks.gui.screen.leveleditor.selector.*;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
@@ -29,20 +21,18 @@ import tanks.minigames.ArcadeBeatBlocks;
 import tanks.minigames.ArcadeClassic;
 import tanks.minigames.CastleRampage;
 import tanks.minigames.Minigame;
-import tanks.network.*;
+import tanks.network.Client;
+import tanks.network.NetworkEventMap;
+import tanks.network.SteamNetworkHandler;
+import tanks.network.SynchronizedList;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
-import tanks.rendering.ShaderGroundIntro;
-import tanks.rendering.ShaderGroundOutOfBounds;
-import tanks.rendering.ShaderTracks;
+import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 public class Game
@@ -142,6 +132,8 @@ public class Game
 	//Remember to change the version in android's build.gradle and ios's robovm.properties
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
+
+    public static boolean customDir = false;
 
     public static final int network_protocol = 60;
 	public static boolean debug = false;
@@ -294,26 +286,10 @@ public class Game
 
 	public static String directoryPath = "/.tanks";
 
-	public static final String logPath = directoryPath + "/logfile.txt";
-	public static final String extensionRegistryPath = directoryPath + "/extensions.txt";
-	public static final String optionsPath = directoryPath + "/options.txt";
-	public static final String controlsPath = directoryPath + "/controls.txt";
-	public static final String tutorialPath = directoryPath + "/tutorial.txt";
-	public static final String uuidPath = directoryPath + "/uuid";
-	public static final String levelDir = directoryPath + "/levels";
-	//public static final String modLevelDir = directoryPath + "/modlevels/";
-	public static final String crusadeDir = directoryPath + "/crusades";
-	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
-	public static final String itemDir = directoryPath + "/items";
-    public static final String bulletEffectsDir = directoryPath + "/bullet_effects";
-    public static final String tankDir = directoryPath + "/tanks";
-	public static final String buildDir = directoryPath + "/builds";
-	public static final String extensionDir = directoryPath + "/extensions/";
-	public static final String crashesPath = directoryPath + "/crashes/";
-	public static final String screenshotsPath = directoryPath + "/screenshots/";
-
-	public static final String resourcesPath = directoryPath + "/resources/";
-	public static final String languagesPath = resourcesPath + "languages/";
+    // initialized in initScript()
+	public static String logPath, extensionRegistryPath, optionsPath, controlsPath, tutorialPath, uuidPath, levelDir;
+	public static String crusadeDir, savedCrusadePath, itemDir, bulletEffectsDir;
+    public static String tankDir, buildDir, extensionDir, crashesPath, screenshotsPath, resourcesPath, languagesPath;
 
 	public static float soundVolume = 1f;
 	public static float musicVolume = 0.5f;
@@ -620,14 +596,37 @@ public class Game
 		registerMetadataSelector(SelectorColor.selector_name, SelectorColor.class);
 		registerMetadataSelector(SelectorColorAndNoise.selector_name, SelectorColorAndNoise.class);
 
-		homedir = System.getProperty("user.home");
-
-		if (Game.framework == Framework.libgdx)
+		if (Game.framework == Framework.libgdx || Game.customDir)
 			homedir = "";
+        else
+            homedir = System.getProperty("user.home");
+
+        logPath = directoryPath + "/logfile.txt";
+        extensionRegistryPath = directoryPath + "/extensions.txt";
+        optionsPath = directoryPath + "/options.txt";
+        controlsPath = directoryPath + "/controls.txt";
+        tutorialPath = directoryPath + "/tutorial.txt";
+        uuidPath = directoryPath + "/uuid";
+        levelDir = directoryPath + "/levels";
+//        modLevelDir = directoryPath + "/modlevels/";
+        crusadeDir = directoryPath + "/crusades";
+        savedCrusadePath = directoryPath + "/crusades/progress/";
+        itemDir = directoryPath + "/items";
+        bulletEffectsDir = directoryPath + "/bullet_effects";
+        tankDir = directoryPath + "/tanks";
+        buildDir = directoryPath + "/builds";
+        extensionDir = directoryPath + "/extensions/";
+        crashesPath = directoryPath + "/crashes/";
+        screenshotsPath = directoryPath + "/screenshots/";
+        resourcesPath = directoryPath + "/resources/";
+        languagesPath = resourcesPath + "languages/";
 
 		BaseFile directoryFile = game.fileManager.getFile(homedir + directoryPath);
 		if (!directoryFile.exists() && Game.framework != Framework.libgdx)
 		{
+            if (Game.customDir)
+                throw new RuntimeException("Custom directory does not exist: " + homedir + directoryPath);
+
 			directoryFile.mkdirs();
 			try
 			{
@@ -636,6 +635,7 @@ public class Game
 			}
 			catch (IOException e)
 			{
+                System.err.println("Failed to create logfile: " + homedir + logPath);
 				e.printStackTrace();
 				System.exit(1);
 			}

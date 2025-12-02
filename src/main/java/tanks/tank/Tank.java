@@ -993,29 +993,34 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.checkHit(owner, source);
 
-		double hf = this.health % 1.0;
-		if (hf == 0)
-			hf = 1;
+        addDamageEffect(prev);
 
-		double hf2 = prev % 1.0;
-		if (hf2 == 0)
-			hf2 = 1;
-
-		int h = (int) (this.health - hf);
-		int h2 = (int) (prev - hf2);
-
-		if (h >= 0 && h2 != h)
-		{
-			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
-			e.size = this.size;
-			e.radius = h;
-			Game.effects.add(e);
-		}
-
-		return this.health <= 0;
+        return this.health <= 0;
 	}
 
-	public void checkHit(Tank owner, GameObject source)
+    public void addDamageEffect(double prev)
+    {
+        double hf = this.health % 1.0;
+        if (hf == 0)
+            hf = 1;
+
+        double hf2 = prev % 1.0;
+        if (hf2 == 0)
+            hf2 = 1;
+
+        int h = (int) (this.health - hf);
+        int h2 = (int) (prev - hf2);
+
+        if (h >= 0 && h2 != h)
+        {
+            Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
+            e.size = this.size;
+            e.radius = h;
+            Game.effects.add(e);
+        }
+    }
+
+    public void checkHit(Tank owner, GameObject source)
 	{
 		if (Crusade.crusadeMode && Crusade.currentCrusade != null && !ScreenPartyLobby.isClient)
 		{

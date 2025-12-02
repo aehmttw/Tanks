@@ -492,10 +492,10 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			}
 			else
 			{
-				if (this.playPopSound && dmg > 0)
-					Drawing.drawing.playSound("damage.ogg", (float) (bullet_size / size));
+                if (dmg > 0)
+                    playDamageSound();
 
-				if (this.boosting)
+                if (this.boosting)
 				{
 					EffectManager tem = t.getEffectManager();
 					AttributeModifier c = AttributeModifier.newInstance("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3);
@@ -529,10 +529,16 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			playPopSound();
 	}
 
+    public void playDamageSound()
+    {
+        if (this.playPopSound)
+            Drawing.drawing.playGlobalSound("damage.ogg", (float) (bullet_size / size));
+    }
+
     public void playBounceSound()
     {
         if (this.playBounceSound)
-			Drawing.drawing.playSound("bounce.ogg", (float) (bullet_size / size));
+			playPitchedSound("bounce.ogg");
     }
 
     public void playBumpSound()
@@ -543,13 +549,23 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     public void playBumpSound(float volume)
     {
         if (this.playBounceSound)
-			Drawing.drawing.playSound("bump.ogg", (float) (bullet_size / size), volume);
+			playPitchedSound("bump.ogg", volume);
     }
 
     public void playPopSound()
     {
         if (this.playPopSound)
-			Drawing.drawing.playSound("bullet_explode.ogg", (float) (bullet_size / size));
+            playPitchedSound("bullet_explode.ogg");
+    }
+
+    public void playPitchedSound(String sound)
+    {
+        playPitchedSound(sound, 1f);
+    }
+
+    public void playPitchedSound(String sound, float volume)
+    {
+        Drawing.drawing.playSound(sound, (float) (bullet_size / size), volume);
     }
 
 	public void collidedWithObject(Movable o)
@@ -728,7 +744,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
             if (o.checkForObjects)
                 o.onObjectEntryLocal(this);
         }
-	}
+    }
 
 	public void checkCollision()
 	{
@@ -976,8 +992,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 				this.collidedWithNothing();
 				this.pop();
 			}
-			else if (this.playBounceSound)
-				Drawing.drawing.playSound("bounce.ogg", (float) (bullet_size / size));
+			else
+                this.playBounceSound();
 
 			if (!destroy)
 			{

@@ -40,6 +40,6 @@ public class EventBulletBounce extends PersonalEvent
         b.collisionY = this.posY;
         b.addTrail();
 
-        b.playBumpSound();
+        b.playBounceSound();
     }
 }

@@ -26,7 +26,7 @@ public abstract class Item extends GameObject
 	public String name = System.currentTimeMillis() + "";
 
 	@Property(id = "icon", name = "Icon", miscType = Property.MiscType.itemIcon)
-	public String icon = "item.png";
+	public ItemIcon icon = new ItemIcon("item", "item.png");
 
 	@Property(id = "cooldown", name = "Cooldown", desc = "Minimum time between uses of this item \n \n 1 time unit = 0.01 seconds")
 	public double cooldownBase = 20;
@@ -281,7 +281,7 @@ public abstract class Item extends GameObject
 
 			Item i = Game.registryItem.getEntry(p[6]).getItem();
 			i.name = name;
-			i.icon = image;
+			i.icon = Game.registryItemIcon.getItemIcon(image.replace(".png", ""));
 			ItemStack<?> is = i.getStack(pl);
 			if (i instanceof ItemBullet)
 			{

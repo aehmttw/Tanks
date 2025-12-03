@@ -113,7 +113,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
                         Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
                         file.stopReading();
 
-                        b.image = i.item.icon;
+                        b.itemIcon = i.item.icon;
                         b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
                         b.imageSizeX = b.sizeY;
                         b.imageSizeY = b.sizeY;
@@ -150,7 +150,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
                 b.translated = false;
 
-                b.image = i.item.icon;
+                b.itemIcon = i.item.icon;
                 b.imageXOffset = -b.sizeX / 2 + b.sizeY / 2 + 10;
                 b.imageSizeX = b.sizeY;
                 b.imageSizeY = b.sizeY;

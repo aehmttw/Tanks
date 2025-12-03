@@ -149,7 +149,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
                 Game.screen = s;
             });
 
-            b.image = items.get(j).item.icon;
+            b.itemIcon = items.get(j).item.icon;
             b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
             b.imageSizeX = b.sizeY;
             b.imageSizeY = b.sizeY;

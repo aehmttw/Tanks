@@ -21,10 +21,7 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.selector.*;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.item.ItemShield;
+import tanks.item.*;
 import tanks.minigames.ArcadeBeatBlocks;
 import tanks.minigames.ArcadeClassic;
 import tanks.minigames.CastleRampage;
@@ -263,6 +260,7 @@ public class Game
 	public static RegistryGenerator registryGenerator = new RegistryGenerator();
 	public static RegistryModelTank registryModelTank = new RegistryModelTank();
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
+    public static RegistryItemIcon registryItemIcon = new RegistryItemIcon();
 	public static RegistryMetadataSelectors registryMetadataSelectors = new RegistryMetadataSelectors();
 
 	public HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
@@ -364,8 +362,6 @@ public class Game
 		NetworkEventMap.register(EventShowCrusadeStats.class);
 		NetworkEventMap.register(EventLoadCrusadeHotbar.class);
 		NetworkEventMap.register(EventSetupHotbar.class);
-		NetworkEventMap.register(EventAddShopItem.class);
-		NetworkEventMap.register(EventSortShopButtons.class);
 		NetworkEventMap.register(EventPurchaseItem.class);
 		NetworkEventMap.register(EventPurchaseBuild.class);
 		NetworkEventMap.register(EventSetItem.class);

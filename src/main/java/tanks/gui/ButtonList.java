@@ -203,9 +203,9 @@ public class ButtonList
             buttons.get(i).sizeX = this.buttonWidth;
             buttons.get(i).sizeY = this.buttonHeight;
             buttons.get(i).translated = this.translate;
-            buttons.get(i).imageR = this.imageR;
-            buttons.get(i).imageG = this.imageG;
-            buttons.get(i).imageB = this.imageB;
+            buttons.get(i).imageColor.red = this.imageR;
+            buttons.get(i).imageColor.green = this.imageG;
+            buttons.get(i).imageColor.blue = this.imageB;
 
             if (hideText)
                 buttons.get(i).text = "";

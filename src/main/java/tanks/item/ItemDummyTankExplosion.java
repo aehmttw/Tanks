@@ -13,7 +13,7 @@ public class ItemDummyTankExplosion extends Item
     public ItemDummyTankExplosion()
     {
         this.name = "Tank explosion";
-        this.icon = "tankeditor/last_stand.png";
+        this.icon = new ItemIcon("last_stand", "tankeditor/last_stand.png");
         this.supportsHits = true;
     }
 

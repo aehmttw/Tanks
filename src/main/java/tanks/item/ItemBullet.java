@@ -19,7 +19,7 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
 	{
 		this.rightClick = false;
 		this.supportsHits = true;
-		this.icon = "bullet_normal.png";
+		this.icon = DefaultItemIcons.bullet_normal.getCopy();
 	}
 
 	public ItemBullet(Bullet b)

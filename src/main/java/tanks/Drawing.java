@@ -4,6 +4,7 @@ import basewindow.*;
 import basewindow.transformation.AxisRotation;
 import tanks.gui.*;
 import tanks.gui.screen.ScreenGame;
+import tanks.item.ItemIcon;
 import tanks.network.event.EventPlaySound;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
@@ -1061,6 +1062,11 @@ public class Drawing
 
 		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
+
+    public void drawInterfaceImage(ItemIcon img, double x, double y, double sizeX, double sizeY)
+    {
+        img.drawInterfaceImage(x, y, sizeX, sizeY);
+    }
 
 	public void drawInterfaceImage(String img, double x, double y, double sizeX, double sizeY)
 	{

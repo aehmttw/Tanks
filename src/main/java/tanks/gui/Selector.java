@@ -6,6 +6,7 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenSelector;
+import tanks.item.ItemIcon;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class Selector implements IDrawable, ITrigger
     public String[] sounds;
     public String[] images;
     public IModel[] models;
+    public ItemIcon[] itemIcons;
 
     public boolean quick = false;
 
@@ -365,8 +367,6 @@ public class Selector implements IDrawable, ITrigger
     {
         this.resetLayout();
         ScreenSelector s = new ScreenSelector(this, Game.screen);
-        s.images = this.images;
-        s.models = this.models;
         s.buttonList.manualDarkMode = this.manualDarkMode;
 
         if (this.images != null)

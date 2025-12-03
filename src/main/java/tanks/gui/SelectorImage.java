@@ -151,14 +151,9 @@ public class SelectorImage extends Selector
         Button.addEffect(posX - sizeX / 2 + sizeY * 7 / 8, posY - sizeY * 3 / 8, this.sizeY * 1.5, this.sizeY * 1.5, this.glowEffects);
     }
 
-    @Override
-    public void setScreen()
+    public ScreenSelector getSelectorScreen()
     {
-        this.resetLayout();
-
         ScreenSelector s = new ScreenSelector(this, Game.screen);
-        s.images = this.images;
-        s.models = this.models;
         s.buttonList.imageR = this.imageR;
         s.buttonList.imageG = this.imageG;
         s.buttonList.imageB = this.imageB;
@@ -179,6 +174,13 @@ public class SelectorImage extends Selector
         s.buttonList.columns = 10;
         s.buttonList.sortButtons();
         s.drawBehindScreen = this.drawBehindScreen;
-        Game.screen = s;
+        return s;
+    }
+
+    @Override
+    public void setScreen()
+    {
+        this.resetLayout();
+        Game.screen = getSelectorScreen();
     }
 }

@@ -6,8 +6,10 @@ import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.item.DefaultItemIcons;
 import tanks.item.Item;
 import tanks.item.ItemEmpty;
+import tanks.item.ItemIcon;
 import tanks.minigames.Arcade;
 import tanks.network.ServerHandler;
 import tanks.network.event.EventSetItem;
@@ -50,7 +52,7 @@ public class ItemBar
 
 	public double selectedTimer = 0;
 	public String selectedText = "";
-	public String selectedIcon = null;
+	public ItemIcon selectedIcon = null;
 
 	public int selected = -1;
 
@@ -607,20 +609,20 @@ public class ItemBar
 			if (Game.playerTank != null && !Game.playerTank.destroy)
 			{
 				double a = 1;
-				String icon = this.selectedIcon;
+				ItemIcon icon = this.selectedIcon;
 
 				if (this.selectedIcon == null)
 				{
 					a = 0.5;
-					icon = "noitem.png";
+					icon = DefaultItemIcons.no_item;
 				}
 
 				Drawing.drawing.setColor(255, 255, 255, Math.min(1, 2 - (this.timeSinceSwitch) / 100.0) * 255 * a);
 
 				if (Game.enable3d)
-					Drawing.drawing.drawImage(icon, Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size, Game.tile_size, Game.tile_size);
+					icon.drawImage(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size, Game.tile_size, Game.tile_size);
 				else
-					Drawing.drawing.drawImage(icon, Game.playerTank.posX, Game.playerTank.posY, Game.tile_size, Game.tile_size);
+					icon.drawImage(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size, Game.tile_size);
 			}
 		}
 	}

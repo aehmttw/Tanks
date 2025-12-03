@@ -666,7 +666,7 @@ public class TankAIControlled extends Tank implements ITankField
 	}
 
 	/** Prepare to fire a bullet*/
-	public void shoot()
+	public void shoot(boolean deflecting)
 	{
 		if (this.suicidal)
 			return;
@@ -722,7 +722,11 @@ public class TankAIControlled extends Tank implements ITankField
 					if (this.targetEnemy instanceof Tank)
 						extra += ((Tank) this.targetEnemy).size / 2;
 
-					boolean inRange = (range <= 0) || (GameObject.distanceBetween(this, this.targetEnemy) <= range + extra);
+                    Movable target = this.targetEnemy;
+                    if (deflecting)
+                        target = this.nearestBulletDeflect;
+
+					boolean inRange = (range <= 0) || (GameObject.distanceBetween(this, target) <= range + extra);
 					if (!inRange)
 						return;
 
@@ -1793,7 +1797,7 @@ public class TankAIControlled extends Tank implements ITankField
 				if (!(m == null) && !Team.isAllied(m, this) && m instanceof Tank && !((Tank) m).hidden)
 				{
 					this.distance = Movable.distanceBetween(this, m);
-					this.shoot();
+					this.shoot(false);
 				}
 			}
 		}
@@ -1820,7 +1824,7 @@ public class TankAIControlled extends Tank implements ITankField
 		Bullet b = this.getBullet();
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
-			if (b instanceof BulletInstant)
+            if (b instanceof BulletInstant)
 				this.aimAngle = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY);
 			else
 			{
@@ -2030,8 +2034,11 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 
 		if (GameObject.absoluteAngleBetween(this.angle, this.aimAngle) <= this.aimThreshold)
-			if ((arc && this.targetEnemy != null) || (m != null && m.equals(this.targetEnemy) || (this.avoidTimer > 0 && this.disableOffset && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy)))
-				this.shoot();
+        {
+            boolean deflecting = (this.avoidTimer > 0 && this.disableOffset && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy);
+            if ((arc && this.targetEnemy != null) || (m != null && m.equals(this.targetEnemy) || deflecting))
+                this.shoot(deflecting);
+        }
 	}
 
 	public void updateTurretReflect()
@@ -2045,13 +2052,16 @@ public class TankAIControlled extends Tank implements ITankField
 
 		this.search();
 
+        boolean deflecting = false;
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
 			if (b instanceof BulletInstant)
 			{
 				this.aimAngle = this.getAngleInDirection(this.nearestBulletDeflect.posX, this.nearestBulletDeflect.posY);
 				this.aim = true;
-			}
+                this.disableOffset = true;
+                deflecting = true;
+            }
 			else
 			{
 				double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / b.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / b.speed * this.nearestBulletDeflect.vY);
@@ -2065,15 +2075,16 @@ public class TankAIControlled extends Tank implements ITankField
 					{
 						this.aimAngle = d;
 						this.aim = true;
-					}
+                        this.disableOffset = true;
+                        deflecting = true;
+                    }
 				}
 			}
 
-			this.disableOffset = true;
 		}
 
 		if (aim && (this.hasTarget || (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy)))
-			this.updateAimingTurret();
+			this.updateAimingTurret(deflecting);
 		else if (currentlySeeking && this.seekPause <= 0)
 			this.updateSeekingTurret();
 		else
@@ -2204,12 +2215,12 @@ public class TankAIControlled extends Tank implements ITankField
 			this.handleSightTransformation();
 	}
 
-	public void updateAimingTurret()
+	public void updateAimingTurret(boolean deflecting)
 	{
 		if (GameObject.absoluteAngleBetween(this.angle, this.aimAngle) < this.turretAimSpeed * Panel.frameFrequency)
 		{
 			this.angle = this.aimAngle;
-			this.shoot();
+			this.shoot(deflecting);
 		}
 		else
 		{

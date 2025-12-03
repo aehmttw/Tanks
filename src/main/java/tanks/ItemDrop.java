@@ -116,14 +116,13 @@ public class ItemDrop extends Movable
                 Drawing.drawing.setColor(255 * i / 8.0, 255 * i / 8.0, 255 * i / 8.0, 255, 0.5);
                 Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height + i, size, size);
             }
-
-            Drawing.drawing.drawImage(this.item.item.icon, px, py, pz, s / 2, s / 2);
+            this.item.item.icon.drawImage(px, py, pz,s / 2, s / 2);
         }
         else
         {
             Drawing.drawing.setColor(255, 255, 255, 255, 0.5);
             Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height, size, size);
-            Drawing.drawing.drawImage(this.item.item.icon, px, py, s / 2, s / 2);
+            this.item.item.icon.drawImage(px, py, s / 2, s / 2);
         }
 
         if (Game.showNetworkIDs)

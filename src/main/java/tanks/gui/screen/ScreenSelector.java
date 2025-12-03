@@ -9,6 +9,8 @@ import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
+import tanks.gui.SelectorItemIcon;
+import tanks.item.ItemIcon;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -18,14 +20,14 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
     public Screen screen;
     public Selector selector;
 
-    public String[] images;
     public boolean drawImages = false;
-
-    public IModel[] models;
     public boolean drawModels = false;
+    public boolean drawItemIcons = false;
 
     public boolean drawBehindScreen = false;
     public int oldOption;
+
+    public ScreenOverlayIconColors iconColors;
 
     public String title;
 
@@ -69,6 +71,9 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
 
         ArrayList<Button> buttons = new ArrayList<>();
 
+        if (s instanceof SelectorItemIcon)
+            iconColors = new ScreenOverlayIconColors(this, (SelectorItemIcon) s, this.objYSpace * 2.75);
+
         for (int i = 0; i < selector.options.length; i++)
         {
             String n = selector.options[i];
@@ -100,6 +105,14 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
                     Drawing.drawing.removeSyncedMusic(selector.options[selector.selectedOption], 500);
                     selector.function.run();
                 }
+
+                if (selector instanceof SelectorItemIcon)
+                {
+                    ((SelectorItemIcon) selector).selectedIcon = selector.itemIcons[selector.selectedOption];
+
+                    if (iconColors != null)
+                        iconColors.refreshButtons();
+                }
             }
             );
 
@@ -109,7 +122,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             buttons.add(b);
         }
 
-        buttonList = new ButtonList(buttons, 0, 0, -30);
+        buttonList = new ButtonList(buttons, 0, 0, s instanceof SelectorItemIcon ? -90 : -30);
         buttonList.translate = selector.translate;
 
         if (selector.quick)
@@ -131,18 +144,21 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             Button b = buttonList.buttons.get(i);
             b.enabled = i != selector.selectedOption || selector.quick;
 
-            if (drawImages || drawModels)
+            if (drawImages || drawModels || drawItemIcons)
             {
                 if (drawImages)
                 {
                     b.image = selector.options[i];
 
-                    if (images != null)
+                    if (selector.images != null)
                         b.image = selector.images[i];
                 }
 
-                if (drawModels && models != null)
+                if (drawModels && selector.models != null)
                     b.model = selector.models[i];
+
+                if (drawItemIcons && selector.itemIcons != null)
+                    b.itemIcon = selector.itemIcons[i];
 
                 b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
                 b.imageSizeX = b.sizeY;
@@ -157,7 +173,8 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             }
         }
 
-        buttonList.update();
+        if (!(iconColors != null && iconColors.colorSelector != null))
+            buttonList.update();
 
         quit.update();
 
@@ -178,6 +195,9 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             Game.game.window.validPressedKeys.remove((Integer) InputCodes.KEY_ENTER);
             quit.function.run();
         }
+
+        if (iconColors != null)
+            iconColors.update();
     }
 
     @Override
@@ -194,18 +214,24 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             this.drawDefaultBackground();
         }
 
-        buttonList.draw();
-
         quit.draw();
 
-        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        if (!(iconColors != null && iconColors.colorSelector != null))
+        {
+            buttonList.draw();
 
-        if (Level.isDark() || Panel.darkness > 64)
-            Drawing.drawing.setColor(255, 255, 255);
-        else
-            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, this.title);
+            if (Level.isDark() || Panel.darkness > 64)
+                Drawing.drawing.setColor(255, 255, 255);
+            else
+                Drawing.drawing.setColor(0, 0, 0);
+
+            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, this.title);
+        }
+
+        if (iconColors != null)
+            iconColors.draw();
     }
 
     @Override

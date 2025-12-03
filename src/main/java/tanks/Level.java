@@ -437,7 +437,6 @@ public class Level
 
 			this.startingCoins = 0;
 			this.startingItems = new ArrayList<>();
-			this.shop = new ArrayList<>();
 		}
 	}
 

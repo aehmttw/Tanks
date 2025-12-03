@@ -43,6 +43,14 @@ public class Tanks
                 relaunch = false;
             if (arg.equals("no_steam"))
                 Game.disableSteam = true;
+            if (arg.matches("userdir=.*"))
+            {
+                if (arg.contains("'"))
+                    throw new RuntimeException("Surround your directory path in double quotes, not single quotes! Faulty argument: " + arg);
+
+                Game.directoryPath = arg.split("=")[1];
+                Game.customDir = true;
+            }
 
             if (i < args.length - 1 && args[i].equals("+connect_lobby"))
                 Game.steamLobbyInvite = Long.parseLong(args[i + 1]);

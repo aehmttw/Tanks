@@ -15,6 +15,7 @@ public class TankBlue extends TankAIControlled
 		this.enableMovement = false;
 		this.enableMineLaying = false;
 		this.enablePredictiveFiring = false;
+        this.friction += 0.15;
 
 		this.setBullet(DefaultItems.zap);
 		this.getBullet().recoil = 0;

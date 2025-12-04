@@ -19,6 +19,7 @@ public class TankMustard extends TankAIControlled
         this.enableMovement = false;
         this.enableMineLaying = false;
         this.enablePredictiveFiring = true;
+        this.friction += 0.15;
 
         this.setBullet(DefaultItems.artillery_shell);
         this.getBullet().recoil = 0;

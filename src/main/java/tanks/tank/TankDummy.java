@@ -15,6 +15,7 @@ public class TankDummy extends TankAIControlled
 		this.getBullet().maxLiveBullets = 0;
 		this.turretIdleSpeed = 0;
 		this.enableLookingAtTargetEnemy = false;
+        this.friction += 0.15;
 
 		if (Game.tankTextures)
 		{

@@ -23,6 +23,7 @@ public class TankBrown extends TankAIControlled
 		this.turretIdleTimerRandom = 500;
 		this.enableLookingAtTargetEnemy = false;
 		this.aimAccuracyOffset = 0;
+        this.friction += 0.15;
 
 		if (Game.tankTextures)
 		{

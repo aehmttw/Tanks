@@ -14,11 +14,6 @@ public abstract class Item extends GameObject
 {
 	public static final String item_class_name = "item";
 
-	public static ArrayList<String> icons = new ArrayList<>(Arrays.asList("item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
-			"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png", "bullet_air.png", "bullet_homing.png",
-			"mine.png",
-			"shield.png", "shield_gold.png"));
-
 	// Items like bullets and mines can hit enemies, so this will be shown on the stats screen
 	public boolean supportsHits = false;
 
@@ -281,7 +276,7 @@ public abstract class Item extends GameObject
 
 			Item i = Game.registryItem.getEntry(p[6]).getItem();
 			i.name = name;
-			i.icon = Game.registryItemIcon.getItemIcon(image.replace(".png", ""));
+			i.icon = Game.registryItemIcon.getItemIcon(image.replace(".png", "")).getCopy();
 			ItemStack<?> is = i.getStack(pl);
 			if (i instanceof ItemBullet)
 			{

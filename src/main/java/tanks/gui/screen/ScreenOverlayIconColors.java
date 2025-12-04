@@ -71,6 +71,7 @@ public class ScreenOverlayIconColors
             b2 = new Button(0, 0, 45, 45, "", () ->
             {
                 selector.selectedIcon.resetColors();
+                colorSelector.updateColors();
             }, "Reset colors to default");
             b2.imageSizeX = 45;
             b2.imageSizeY = 45;

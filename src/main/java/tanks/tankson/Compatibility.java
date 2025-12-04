@@ -111,7 +111,7 @@ public class Compatibility
         compatibility_table.put("icon", (owner, a) ->
         {
             String i = ((String) a).replace(".png", "");
-            return Game.registryItemIcon.getItemIcon(i);
+            return Game.registryItemIcon.getItemIcon(i).getCopy();
         });
 
         unused_table.put("luminance", (owner, value) ->

@@ -2,6 +2,8 @@ package tanks.tankson;
 
 import basewindow.Color;
 import tanks.Game;
+import tanks.item.ItemBullet;
+import tanks.item.ItemIcon;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -53,7 +55,11 @@ public interface ICopyable<T>
         {
             Object v = f.get(this);
             if (v instanceof ICopyable)
+            {
+                if (m instanceof ItemIcon)
+                    System.out.println("cloning item icon " + this.getClass());
                 f.set(m, ((ICopyable<?>) v).getCopy());
+            }
             else if (v instanceof Color)
                 ((Color)f.get(m)).set((Color) v);
             else if (v instanceof ArrayList)
@@ -69,9 +75,13 @@ public interface ICopyable<T>
                 }
             }
             else
+            {
+                if (m instanceof ItemIcon)
+                    System.out.println("NOT! cloning item icon " + this.getClass());
                 f.set(m, v);
+            }
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored) {}
     }
 
     /**

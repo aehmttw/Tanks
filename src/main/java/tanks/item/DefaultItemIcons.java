@@ -2,7 +2,6 @@ package tanks.item;
 
 import basewindow.Color;
 import tanks.bullet.BulletEffect;
-import tanks.bullet.DefaultItems;
 import tanks.tank.TankPlayer;
 
 public class DefaultItemIcons

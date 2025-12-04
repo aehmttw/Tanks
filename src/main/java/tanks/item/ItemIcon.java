@@ -3,6 +3,7 @@ package tanks.item;
 import basewindow.Color;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 import tanks.tankson.TanksONable;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @TanksONable("item_icon")
-public class ItemIcon
+public class ItemIcon implements ICopyable<ItemIcon>
 {
     public int registryIndex = -1;
 
@@ -92,9 +93,9 @@ public class ItemIcon
         Drawing.drawing.setColor(255, 255, 255, a);
     }
 
-    public ItemIcon getCopy()
+    @Override
+    public ItemIcon clonePropertiesTo(ItemIcon i1)
     {
-        ItemIcon i1 = new ItemIcon();
         i1.idName = idName;
         i1.baseName = baseName;
         i1.registryIndex = registryIndex;
@@ -105,6 +106,8 @@ public class ItemIcon
             for (Color c: this.colors)
                 i1.colors.add(new Color().set(c));
         }
+        else
+            i1.colors = null;
 
         if (alphas != null)
             i1.alphas = new ArrayList<>(alphas);
@@ -112,14 +115,21 @@ public class ItemIcon
         return i1;
     }
 
+    @Override
+    public ItemIcon getCopy()
+    {
+        ItemIcon i1 = new ItemIcon();
+        return clonePropertiesTo(i1);
+    }
+
     public void resetColors()
     {
         if (this.colors != null)
         {
-            this.colors = new ArrayList<>();
-            for (Color c: Game.registryItemIcon.getItemIcon(this.idName).colors)
+            ArrayList<Color> others = Game.registryItemIcon.getItemIcon(this.idName).colors;
+            for (int i = 0; i < this.colors.size(); i++)
             {
-                this.colors.add(new Color().set(c));
+                this.colors.get(i).set(others.get(i));
             }
         }
     }

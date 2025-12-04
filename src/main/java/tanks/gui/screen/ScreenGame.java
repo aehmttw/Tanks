@@ -360,6 +360,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Level level = new Level(Game.currentLevelString);
         level.loadLevel(ScreenInterlevel.fromQuickPlay);
         Game.screen = (Screen) ScreenInterlevel.fromQuickPlay;
+        Chunk.populateChunks(level, true);
 
         ScreenInterlevel.fromSavedLevels = false;
         ScreenInterlevel.fromMinigames = false;

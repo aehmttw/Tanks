@@ -10,6 +10,7 @@ import tanks.bullet.BulletEffect;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
+import tanks.item.ItemIcon;
 import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
 import tanks.tankson.*;
@@ -525,21 +526,25 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             }
             else if (p.miscType() == Property.MiscType.itemIcon)
             {
-                ArrayList<String> icons = new ArrayList<>(Arrays.asList("item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
-                        "bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_block.png", "bullet_explosive.png", "bullet_boost.png", "bullet_air.png", "bullet_homing.png",
-                        "mine.png",
-                        "shield.png", "shield_gold.png"));
-                String[] iconsArray = new String[icons.size()];
-                icons.toArray(iconsArray);
-
-                SelectorImage t = new SelectorImage(0, 0, this.objWidth, this.objHeight, p.name(), iconsArray, () -> {});
-                t.drawImages = true;
-                t.selectedOption = icons.indexOf(f.get());
+                SelectorItemIcon t = new SelectorItemIcon(0, 0, this.objWidth, this.objHeight, p.name(), Game.registryItemIcon.itemIcons.values(), () -> {});
+                t.selectedOption = ((ItemIcon) f.get()).registryIndex;
+                t.selectedIcon = (ItemIcon) f.get();
+                t.itemIcons[t.selectedOption] = t.selectedIcon;
 
                 t.function = () ->
                 {
                     Object old = f.get();
-                    f.cast().set(icons.get(t.selectedOption));
+
+                    ItemIcon n = t.itemIcons[t.selectedOption].getCopy();
+
+                    for (ItemIcon ii: t.itemIcons)
+                    {
+                        ii.resetColors();
+                    }
+
+                    t.itemIcons[t.selectedOption] = n;
+                    f.cast().set(n);
+                    t.selectedIcon = n;
                     validateChangedProperty(f, p, old);
                 };
 
@@ -979,7 +984,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 else
                 {
                     if (Item.ItemStack.class.isAssignableFrom(p.getType()))
-                        b.image = ((Item.ItemStack<?>) p.get()).item.icon;
+                        b.itemIcon = ((Item.ItemStack<?>) p.get()).item.icon;
 
                     b.optionText = Game.formatString(o.getName());
                 }
@@ -1011,7 +1016,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 b.imageXOffset = -b.sizeX / 2 + b.sizeY;
                 b.imageSizeX = 40;
                 b.imageSizeY = 40;
-                b.image = ((Item.ItemStack<?>) p.get()).item.icon;
+                b.itemIcon = ((Item.ItemStack<?>) p.get()).item.icon;
             }
 
             b.optionText = Game.formatString(o.getName());

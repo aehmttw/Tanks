@@ -217,7 +217,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
 
             Crusade c = sc.crusade;
             this.text = c.crusadeShopItems.get(ii).itemStack.item.name;
-            this.image = c.crusadeShopItems.get(ii).itemStack.item.icon;
+            this.itemIcon = c.crusadeShopItems.get(ii).itemStack.item.icon;
             this.imageXOffset = - this.sizeX / 2 + this.sizeY / 2 + 10;
             this.imageSizeX = this.sizeY;
             this.imageSizeY = this.sizeY;

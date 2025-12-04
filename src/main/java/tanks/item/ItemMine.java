@@ -17,7 +17,7 @@ public class ItemMine extends Item implements ICopyable<ItemMine>
     {
         this.rightClick = true;
         this.supportsHits = true;
-        this.icon = "mine.png";
+        this.icon = DefaultItemIcons.mine.getCopy();
     }
 
     public ItemMine(Mine m)

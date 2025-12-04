@@ -203,8 +203,8 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
         if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
         {
-            levelName.posY += 20;
-            download.posY += 20;
+            levelName.posY += 40;
+            download.posY += 40;
             back.posY += 40;
         }
         else if (ScreenPartyHost.isServer && !fromInterlevel)

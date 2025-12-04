@@ -19,7 +19,7 @@ public class ItemShield extends Item implements ICopyable<ItemShield>
     public ItemShield()
     {
         this.rightClick = true;
-        this.icon = "shield.png";
+        this.icon = DefaultItemIcons.shield.getCopy();
     }
 
     @Override

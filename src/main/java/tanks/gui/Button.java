@@ -1,5 +1,6 @@
 package tanks.gui;
 
+import basewindow.Color;
 import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
@@ -7,6 +8,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.*;
+import tanks.item.ItemIcon;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -74,16 +76,15 @@ public class Button implements IDrawable, ITrigger
 	public double textOffsetX = 0;
 	public double textOffsetY = 0;
 
-	public double imageR = 255;
-	public double imageG = 255;
-	public double imageB = 255;
+	public Color imageColor = new Color(255, 255, 255);
 	public boolean drawImageShadow = false;
 
 	public boolean silent = false;
 
 	public boolean fullInfo = false;
 
-	public String image = null;
+    public ItemIcon itemIcon = null;
+    public String image = null;
 	public IModel model = null;
     public HashMap<String, Object> miscData = new HashMap<>();
 	public double imageSizeX = 0;
@@ -275,7 +276,19 @@ public class Button implements IDrawable, ITrigger
 			drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2 - ox, this.posY + this.sizeY * 0.325, this.subtext, true);
 		}
 
-		if (this.image != null)
+        if (this.itemIcon != null)
+        {
+            if (this.drawImageShadow)
+            {
+                drawing.setColor(127, 127, 127);
+                drawing.drawInterfaceImage(itemIcon, this.posX + this.imageXOffset + 1.5, this.posY + this.imageYOffset + 1.5, this.imageSizeX, this.imageSizeY);
+            }
+
+            drawing.setColor(this.imageColor);
+            drawing.drawInterfaceImage(itemIcon, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX, this.imageSizeY);
+
+        }
+		else if (this.image != null)
 		{
 			if (this.drawImageShadow)
 			{
@@ -283,7 +296,7 @@ public class Button implements IDrawable, ITrigger
 				drawing.drawInterfaceImage(image, this.posX + this.imageXOffset + 1.5, this.posY + this.imageYOffset + 1.5, this.imageSizeX, this.imageSizeY);
 			}
 
-			drawing.setColor(this.imageR, this.imageG, this.imageB);
+			drawing.setColor(this.imageColor);
 			drawing.drawInterfaceImage(image, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX, this.imageSizeY);
 		}
 

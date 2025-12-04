@@ -13,7 +13,7 @@ public class ItemDummyBlockExplosion extends Item
     public ItemDummyBlockExplosion()
     {
         this.name = "Block explosion";
-        this.icon = "block_explosion.png";
+        this.icon = new ItemIcon("block_explosion", "block_explosion.png");
         this.supportsHits = true;
     }
 

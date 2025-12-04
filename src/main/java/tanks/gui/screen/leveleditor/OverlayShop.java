@@ -178,7 +178,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
                 }
             });
 
-            b.image = items.get(j).itemStack.item.icon;
+            b.itemIcon = items.get(j).itemStack.item.icon;
             b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
             b.imageSizeX = b.sizeY;
             b.imageSizeY = b.sizeY;

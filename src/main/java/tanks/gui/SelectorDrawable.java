@@ -149,6 +149,12 @@ public class SelectorDrawable extends Button
             Drawing.drawing.drawInterfaceImage(this.image, this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
         }
 
+        if (this.itemIcon != null)
+        {
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.drawInterfaceImage(this.itemIcon, this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
+        }
+
         if (this.multiTanks.size() > 1)
         {
             double start = -this.sizeX / 2 + this.sizeY / 2 + 30;

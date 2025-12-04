@@ -807,11 +807,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             Button b = new Button(0, 0, 350, 40, item.itemStack.item.name, () ->
             {
-                int pr = shop.get(j).price;
-                if (Game.player.hotbar.coins >= pr)
+                if (ScreenPartyLobby.isClient)
+                    Game.eventsOut.add(new EventPurchaseItem(j));
+                else
                 {
-                    if (Game.player.hotbar.itemBar.addItem(shop.get(j).itemStack))
-                        Game.player.hotbar.coins -= pr;
+                    int pr = shop.get(j).price;
+                    if (Game.player.hotbar.coins >= pr)
+                    {
+                        if (Game.player.hotbar.itemBar.addItem(shop.get(j).itemStack))
+                            Game.player.hotbar.coins -= pr;
+                    }
                 }
             }
             );
@@ -826,13 +831,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 b.setSubtext("%d coins", p);
 
             this.shopItemButtons.add(b);
-
-            Game.eventsOut.add(new EventAddShopItem(i, item.itemStack.item.name, b.rawSubtext, p, item.itemStack.item.icon));
         }
 
         this.initializeShopList();
-
-        Game.eventsOut.add(new EventSortShopButtons());
     }
 
     public void initBuilds(ArrayList<TankPlayer.ShopTankBuild> builds)
@@ -1921,7 +1922,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     {
                         if (e.maxAge > 100)
                         {
-                            e.age = 0;
+                            e.age = e.age / e.maxAge * 100;
                             e.maxAge = 100;
                         }
                     }

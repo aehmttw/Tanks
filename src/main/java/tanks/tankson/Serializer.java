@@ -11,6 +11,7 @@ import tanks.tank.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 public final class Serializer
@@ -340,6 +341,11 @@ public final class Serializer
             case "bullet_effect":
                 o = new BulletEffect();
                 break;
+            case "item_icon":
+                o = Game.registryItemIcon.getItemIcon((String) m.get("id")).getCopy();
+                if (o == null)
+                    throw new RuntimeException("Couldn't find item icon for " + m.get("id"));
+                break;
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
@@ -369,6 +375,7 @@ public final class Serializer
                     }
                     else if (o2 instanceof ArrayList)
                     {
+                        ParameterizedType pt = (ParameterizedType) f.getGenericType();
                         ArrayList arr = (ArrayList) m.get(getid(f));
                         if (!arr.isEmpty() && (arr.get(0) instanceof Map))
                         {
@@ -379,8 +386,21 @@ public final class Serializer
                             }
                             f.set(o, o3s);
                         }
+                        else if (pt.getActualTypeArguments()[0] == Color.class)
+                        {
+                            ArrayList<Color> colors = new ArrayList<>();
+                            ArrayList<ArrayList<Double>> els = (ArrayList<ArrayList<Double>>) m.get(getid(f));
+                            for (ArrayList<Double> o4: els)
+                            {
+                                Color c = new Color(o4.get(0), o4.get(1), o4.get(2), (o4.size() >= 4) ? o4.get(3) : 255);
+                                colors.add(c);
+                            }
+                            f.set(o, colors);
+                        }
                         else
                             f.set(o, m.get(getid(f)));
+
+
                     }
                     else if (o2 instanceof Color)
                     {
@@ -402,7 +422,7 @@ public final class Serializer
                 }
                 catch (Exception e)
                 {
-                    System.out.println(f + " " + getid(f));
+                    System.err.println(f + " " + getid(f));
                     throw new RuntimeException(e);
                 }
             }

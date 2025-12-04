@@ -12,7 +12,6 @@ import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.Item;
-import tanks.network.event.EventAddNPCShopItem;
 import tanks.network.event.EventClearNPCShop;
 import tanks.network.event.EventPurchaseNPCItem;
 import tanks.network.event.EventSortNPCShopButtons;
@@ -126,7 +125,7 @@ public class TankNPC extends TankDummy
                 Game.game.window.pressedButtons.remove(InputCodes.MOUSE_BUTTON_1);
             });
 
-            b.image = item.itemStack.item.icon;
+            //b.image = item.itemStack.item.icon;
             b.imageXOffset = -145;
             b.imageSizeX = 30;
             b.imageSizeY = 30;
@@ -134,7 +133,7 @@ public class TankNPC extends TankDummy
 
             shopItemButtons.add(b);
 
-            Game.eventsOut.add(new EventAddNPCShopItem(i, item.itemStack.item.name, price, item.price, item.itemStack.item.icon, this.networkID));
+            //Game.eventsOut.add(new EventAddNPCShopItem(i, item.itemStack.item.name, price, item.price, item.itemStack.item.icon, this.networkID));
         }
 
         this.npcShopList = new ButtonList(shopItemButtons, 0, 0, (int) shopOffset, -30);

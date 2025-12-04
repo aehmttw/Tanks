@@ -7,6 +7,7 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
 import tanks.bullet.BulletGas;
 import tanks.item.ItemBullet;
+import tanks.item.ItemIcon;
 import tanks.item.ItemMine;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
@@ -105,6 +106,12 @@ public class Compatibility
                 default:
                     return new BulletEffect();
             }
+        });
+
+        compatibility_table.put("icon", (owner, a) ->
+        {
+            String i = ((String) a).replace(".png", "");
+            return Game.registryItemIcon.getItemIcon(i).getCopy();
         });
 
         unused_table.put("luminance", (owner, value) ->

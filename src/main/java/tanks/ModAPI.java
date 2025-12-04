@@ -30,7 +30,6 @@ public class ModAPI
         NetworkEventMap.register(EventAddColoredTile.class);
         NetworkEventMap.register(EventAddFixedShape.class);
         NetworkEventMap.register(EventAddNPC.class);
-        NetworkEventMap.register(EventAddNPCShopItem.class);
         NetworkEventMap.register(EventAddObstacle.class);
         NetworkEventMap.register(EventAddObstacleText.class);
         NetworkEventMap.register(EventAddScoreboard.class);

@@ -115,7 +115,13 @@ public class ItemIcon
     public void resetColors()
     {
         if (this.colors != null)
-            this.colors = new ArrayList<>(Game.registryItemIcon.getItemIcon(this.idName).colors);
+        {
+            this.colors = new ArrayList<>();
+            for (Color c: Game.registryItemIcon.getItemIcon(this.idName).colors)
+            {
+                this.colors.add(new Color().set(c));
+            }
+        }
     }
 
     // Registers the item icon into the game's registry

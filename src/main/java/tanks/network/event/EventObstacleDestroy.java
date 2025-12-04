@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.network.NetworkUtils;
 import tanks.obstacle.Obstacle;
 
 public class EventObstacleDestroy extends PersonalEvent
@@ -10,7 +8,7 @@ public class EventObstacleDestroy extends PersonalEvent
     public double posX;
     public double posY;
 
-    boolean effect;
+    public boolean effect;
     public double effectX;
     public double effectY;
     public double radius;
@@ -41,46 +39,19 @@ public class EventObstacleDestroy extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeBoolean(this.effect);
-        b.writeDouble(this.effectX);
-        b.writeDouble(this.effectY);
-        b.writeDouble(this.radius);
-        NetworkUtils.writeString(b, this.name);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.effect = b.readBoolean();
-        this.effectX = b.readDouble();
-        this.effectY = b.readDouble();
-        this.radius = b.readDouble();
-        this.name = NetworkUtils.readString(b);
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID != null)
             return;
 
-        for (int i = 0; i < Game.obstacles.size(); i++)
-        {
-            Obstacle o = Game.obstacles.get(i);
+        Obstacle o = Game.getObstacle(posX, posY);
 
-            if (o.posX == this.posX && o.posY == this.posY && o.name.equals(name))
-            {
-                if (effect)
-                    o.playDestroyAnimation(this.effectX, this.effectY, this.radius);
+        if (o == null || !o.name.equals(name))
+            return;
 
-                Game.removeObstacles.add(o);
-            }
-        }
+        if (effect)
+            o.playDestroyAnimation(this.effectX, this.effectY, this.radius);
+
+        o.onDestroy(null);
     }
 }

@@ -504,7 +504,6 @@ public class Level
 			Game.eventsOut.add(new EventLoadLevel(this));
 
 		Tank.currentID = 0;
-		Tank.freeIDs.clear();
 
 		ScreenGame.finishedQuick = false;
 
@@ -760,7 +759,7 @@ public class Level
 			}
 
 			s.teams = this.teamsList;
-			if (s.teams.size() > 0)
+			if (!s.teams.isEmpty())
 			{
 				s.currentMetadata.put(SelectorTeam.player_selector_name, s.teams.get(0));
 				s.currentMetadata.put(SelectorTeam.selector_name, s.teams.get(Math.min(s.teams.size() - 1, 1)));

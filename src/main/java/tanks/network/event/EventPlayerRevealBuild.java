@@ -1,16 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Player;
-import tanks.gui.screen.ScreenGame;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayable;
-import tanks.tank.TankPlayerRemote;
-import tanks.tank.TankRemote;
-
-import java.util.UUID;
+import tanks.*;
+import tanks.tank.*;
 
 public class EventPlayerRevealBuild extends PersonalEvent
 {
@@ -26,20 +17,6 @@ public class EventPlayerRevealBuild extends PersonalEvent
     {
         this.tank = tank;
         this.build = build;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(tank);
-        b.writeInt(build);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        tank = b.readInt();
-        build = b.readInt();
     }
 
     @Override

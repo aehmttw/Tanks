@@ -4,12 +4,9 @@ import tanks.gui.IFixedMenu;
 import tanks.network.NetworkEventMap;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
-import tanks.tank.TankModels;
-import tanks.tank.TankNPC;
+import tanks.tank.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 public class ModAPI
 {
@@ -28,9 +25,8 @@ public class ModAPI
 
     }
 
-    public static void setUp()
+    public static void registerEvents()
     {
-        registerMods();
         NetworkEventMap.register(EventAddColoredTile.class);
         NetworkEventMap.register(EventAddFixedShape.class);
         NetworkEventMap.register(EventAddNPC.class);
@@ -44,6 +40,11 @@ public class ModAPI
         NetworkEventMap.register(EventDisplayTextGroup.class);
         NetworkEventMap.register(EventPurchaseNPCItem.class);
         NetworkEventMap.register(EventScoreboardUpdateScore.class);
+    }
+
+    public static void setUp()
+    {
+        registerMods();
     }
 
     public static void addObject(Object o)

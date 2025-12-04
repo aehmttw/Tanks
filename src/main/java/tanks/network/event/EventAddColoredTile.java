@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.obstacle.ObstacleColorFlashing;
 
 public class EventAddColoredTile extends PersonalEvent
@@ -35,36 +33,6 @@ public class EventAddColoredTile extends PersonalEvent
         this.colorA = a;
         this.flashing = flashing;
         this.flashSpeedMultiplier = flashSpeedMultiplier;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeDouble(this.length);
-        b.writeDouble(this.width);
-        b.writeDouble(this.colorR);
-        b.writeDouble(this.colorG);
-        b.writeDouble(this.colorB);
-        b.writeDouble(this.colorA);
-        b.writeBoolean(this.flashing);
-        b.writeDouble(this.flashSpeedMultiplier);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.length = b.readDouble();
-        this.width = b.readDouble();
-        this.colorR = b.readDouble();
-        this.colorG = b.readDouble();
-        this.colorB = b.readDouble();
-        this.colorA = b.readDouble();
-        this.flashing = b.readBoolean();
-        this.flashSpeedMultiplier = b.readDouble();
     }
 
     @Override

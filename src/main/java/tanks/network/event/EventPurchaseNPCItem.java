@@ -1,12 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.tank.TankNPC;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 public class EventPurchaseNPCItem extends EventPurchaseItem
 {
@@ -21,20 +17,6 @@ public class EventPurchaseNPCItem extends EventPurchaseItem
     {
         super(item);
         this.id = id;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        super.write(b);
-        b.writeInt(id);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        super.read(b);
-        this.id = b.readInt();
     }
 
     @Override

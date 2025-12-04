@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.ScreenGame;
@@ -10,18 +9,6 @@ import java.util.ArrayList;
 public class EventClearShop extends PersonalEvent
 {
     public EventClearShop()
-    {
-
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
     {
 
     }

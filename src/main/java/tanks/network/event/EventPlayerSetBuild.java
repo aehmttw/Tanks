@@ -1,16 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Player;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.Server;
+import tanks.*;
+import tanks.gui.screen.*;
 import tanks.network.ServerHandler;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerController;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 public class EventPlayerSetBuild extends PersonalEvent
 {
@@ -24,18 +17,6 @@ public class EventPlayerSetBuild extends PersonalEvent
     public EventPlayerSetBuild(int build)
     {
         this.build = build;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(build);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        build = b.readInt();
     }
 
     @Override

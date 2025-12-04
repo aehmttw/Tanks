@@ -1,12 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.Player;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.network.ConnectedPlayer;
-import tanks.network.NetworkUtils;
 
 import java.util.ArrayList;
 
@@ -25,7 +21,7 @@ public class EventUpdateEliminatedPlayers extends PersonalEvent
 		for (ConnectedPlayer p: players)
 			s.append(p.clientId).append(",");
 
-		if (players.size() == 0)
+		if (players.isEmpty())
 			eliminatedPlayers = "";
 		else
 			eliminatedPlayers = s.substring(0, s.length() - 1);
@@ -49,17 +45,4 @@ public class EventUpdateEliminatedPlayers extends PersonalEvent
 			}
 		}
 	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.eliminatedPlayers);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.eliminatedPlayers = NetworkUtils.readString(b);
-	}
-
 }

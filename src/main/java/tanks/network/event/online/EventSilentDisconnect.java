@@ -2,8 +2,7 @@ package tanks.network.event.online;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.gui.screen.ScreenPlayMultiplayer;
+import tanks.gui.screen.*;
 import tanks.network.Client;
 import tanks.network.event.PersonalEvent;
 

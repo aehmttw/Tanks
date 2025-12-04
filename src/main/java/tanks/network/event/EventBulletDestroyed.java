@@ -1,14 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletInstant;
+import tanks.bullet.*;
 
-public class EventBulletDestroyed extends PersonalEvent
+public class EventBulletDestroyed extends PersonalEvent implements IStackableEvent
 {
-    public int bullet;
-    public double posX;
-    public double posY;
+    public int tank, bullet;
+    public double posX, posY;
+    public boolean zeroCooldown;
 
     public EventBulletDestroyed()
     {
@@ -17,7 +15,9 @@ public class EventBulletDestroyed extends PersonalEvent
 
     public EventBulletDestroyed(Bullet b)
     {
+        this.tank = b.tank.networkID;
         this.bullet = b.networkID;
+        this.zeroCooldown = b.item.item.cooldownBase <= 0;
         this.posX = b.posX;
         this.posY = b.posY;
     }
@@ -41,28 +41,21 @@ public class EventBulletDestroyed extends PersonalEvent
             b.posY = posY;
         }
 
+        b.playPopSound();
+
         b.destroy = true;
-
-        if (!Bullet.freeIDs.contains(b.networkID))
-        {
-            Bullet.freeIDs.add(b.networkID);
-            Bullet.idMap.remove(b.networkID);
-        }
+        Bullet.idMap.remove(b.networkID);
     }
 
     @Override
-    public void write(ByteBuf b)
+    public boolean isStackable()
     {
-        b.writeInt(this.bullet);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
+        return zeroCooldown;
     }
 
     @Override
-    public void read(ByteBuf b)
+    public int getIdentifier()
     {
-        this.bullet = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
+        return tank;
     }
 }

@@ -1,7 +1,5 @@
 package tanks.bullet;
 
-import basewindow.transformation.Scale;
-import basewindow.transformation.Transformation;
 import tanks.*;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletBounce;
@@ -104,7 +102,7 @@ public class BulletAirStrike extends Bullet
                 }
 
                 this.addTrail(true);
-                Drawing.drawing.playSound("bounce.ogg", (float) (Bullet.bullet_size / this.size));
+                this.playBounceSound();
                 Game.eventsOut.add(new EventBulletBounce(this));
             }
         }

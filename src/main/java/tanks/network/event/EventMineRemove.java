@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.tank.Mine;
 
@@ -30,23 +29,6 @@ public class EventMineRemove extends PersonalEvent
             return;
 
         Game.removeMovables.add(m);
-
-        if (!Mine.freeIDs.contains(m.networkID))
-        {
-            Mine.freeIDs.add(m.networkID);
-            Mine.idMap.remove(m.networkID);
-        }
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.mine);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.mine = b.readInt();
+        Mine.idMap.remove(m.networkID);
     }
 }

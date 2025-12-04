@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.network.ClientHandler;
-import tanks.network.ServerHandler;
+import tanks.network.*;
 
 public class EventPing extends PersonalEvent implements IServerThreadEvent, IClientThreadEvent
 {
@@ -16,18 +14,6 @@ public class EventPing extends PersonalEvent implements IServerThreadEvent, ICli
     public EventPing(boolean second)
     {
         this.second = second;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeBoolean(second);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        second = b.readBoolean();
     }
 
     @Override

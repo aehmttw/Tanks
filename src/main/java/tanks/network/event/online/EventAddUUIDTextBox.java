@@ -1,11 +1,9 @@
 package tanks.network.event.online;
 
 import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.UUIDTextBox;
-import tanks.gui.screen.ScreenOnline;
-import tanks.gui.screen.ScreenOnlineWaiting;
+import tanks.gui.screen.*;
 import tanks.network.NetworkUtils;
 
 public class EventAddUUIDTextBox extends EventAddTextBox

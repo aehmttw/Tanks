@@ -1,14 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.CrusadePlayer;
-import tanks.Player;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.NetworkUtils;
+import tanks.*;
+import tanks.gui.screen.ScreenPartyHost;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 public class EventShowCrusadeStats extends PersonalEvent
 {
@@ -19,7 +14,7 @@ public class EventShowCrusadeStats extends PersonalEvent
 
     public EventShowCrusadeStats()
     {
-        if (ScreenPartyLobby.isClient)
+        if (!ScreenPartyHost.isServer)
             return;
 
         this.name = Crusade.currentCrusade.name;
@@ -95,23 +90,5 @@ public class EventShowCrusadeStats extends PersonalEvent
 
             Crusade.currentCrusade.crusadePlayers.put(cp.player, cp);
         }
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.name);
-        NetworkUtils.writeString(b, this.levels);
-        NetworkUtils.writeString(b, this.stats);
-        NetworkUtils.writeString(b, this.crusade);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.name = NetworkUtils.readString(b);
-        this.levels = NetworkUtils.readString(b);
-        this.stats = NetworkUtils.readString(b);
-        this.crusade = NetworkUtils.readString(b);
     }
 }

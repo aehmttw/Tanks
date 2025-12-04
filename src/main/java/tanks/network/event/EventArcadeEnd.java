@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.minigames.Arcade;
 
@@ -16,18 +15,6 @@ public class EventArcadeEnd extends PersonalEvent
     public EventArcadeEnd()
     {
 
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeBoolean(win);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        win = b.readBoolean();
     }
 
     @Override

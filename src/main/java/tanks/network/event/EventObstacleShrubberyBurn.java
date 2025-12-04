@@ -1,10 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Effect;
-import tanks.Game;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleShrubbery;
+import tanks.*;
+import tanks.obstacle.*;
 
 public class EventObstacleShrubberyBurn extends PersonalEvent
 {
@@ -20,20 +17,6 @@ public class EventObstacleShrubberyBurn extends PersonalEvent
     {
         this.posX = x;
         this.posY = y;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
     }
 
     @Override

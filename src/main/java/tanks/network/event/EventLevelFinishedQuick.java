@@ -1,12 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
-import tanks.gui.screen.Screen;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.network.NetworkUtils;
 
 public class EventLevelFinishedQuick extends PersonalEvent
 {
@@ -43,17 +38,5 @@ public class EventLevelFinishedQuick extends PersonalEvent
         }
 
         ScreenGame.finishedQuick = true;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.winningTeam);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.winningTeam = NetworkUtils.readString(b);
     }
 }

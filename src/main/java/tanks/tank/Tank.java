@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import basewindow.*;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import tanks.*;
 import tanks.attribute.*;
 import tanks.bullet.Bullet;
@@ -18,8 +19,7 @@ import static tanks.tank.TankPropertyCategory.*;
 public abstract class Tank extends Movable implements ISolidObject
 {
 	public static int currentID = 0;
-	public static ArrayList<Integer> freeIDs = new ArrayList<>();
-	public static HashMap<Integer, Tank> idMap = new HashMap<>();
+	public static Int2ObjectOpenHashMap<Tank> idMap = new Int2ObjectOpenHashMap<>();
 
 	public static Model health_model;
 
@@ -234,22 +234,11 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		if (idMap.get(this.networkID) == this)
 			idMap.remove(this.networkID);
-
-		if (!freeIDs.contains(this.networkID))
-		{
-			freeIDs.add(this.networkID);
-		}
 	}
 
 	public static int nextFreeNetworkID()
 	{
-		if (!freeIDs.isEmpty())
-			return freeIDs.remove(0);
-		else
-		{
-			currentID++;
-			return currentID - 1;
-		}
+        return currentID++;
 	}
 
 	public void registerNetworkID()
@@ -1005,29 +994,34 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		this.checkHit(owner, source);
 
-		double hf = this.health % 1.0;
-		if (hf == 0)
-			hf = 1;
+        addDamageEffect(prev);
 
-		double hf2 = prev % 1.0;
-		if (hf2 == 0)
-			hf2 = 1;
-
-		int h = (int) (this.health - hf);
-		int h2 = (int) (prev - hf2);
-
-		if (h >= 0 && h2 != h)
-		{
-			Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
-			e.size = this.size;
-			e.radius = h;
-			Game.effects.add(e);
-		}
-
-		return this.health <= 0;
+        return this.health <= 0;
 	}
 
-	public void checkHit(Tank owner, GameObject source)
+    public void addDamageEffect(double prev)
+    {
+        double hf = this.health % 1.0;
+        if (hf == 0)
+            hf = 1;
+
+        double hf2 = prev % 1.0;
+        if (hf2 == 0)
+            hf2 = 1;
+
+        int h = (int) (this.health - hf);
+        int h2 = (int) (prev - hf2);
+
+        if (h >= 0 && h2 != h)
+        {
+            Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ + this.size * 0.75, Effect.EffectType.shield);
+            e.size = this.size;
+            e.radius = h;
+            Game.effects.add(e);
+        }
+    }
+
+    public void checkHit(Tank owner, GameObject source)
 	{
 		if (Crusade.crusadeMode && Crusade.currentCrusade != null && !ScreenPartyLobby.isClient)
 		{

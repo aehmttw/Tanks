@@ -1,31 +1,17 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Panel;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletInstant;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankRemote;
+import tanks.*;
+import tanks.bullet.*;
+import tanks.item.*;
+import tanks.tank.*;
 
-public class EventShootBullet extends PersonalEvent
+public class EventShootBullet extends PersonalEvent implements IStackableEvent
 {
-	public int id;
-	public int tank;
-	public double posX;
-	public double posY;
-	public double posZ;
-	public double vX;
-	public double vY;
-	public double vZ;
-	public double speed;
-	public int item;
-	
+	public int id, tank, item;
+	public double posX, posY, posZ;
+	public double vX, vY, vZ, speed;
+    public boolean zeroCooldown;
+
 	public EventShootBullet()
 	{
 		
@@ -35,6 +21,7 @@ public class EventShootBullet extends PersonalEvent
 	{
 		this.id = b.networkID;
         this.tank = b.tank.networkID;
+        this.zeroCooldown = b.item.item.cooldownBase <= 0;
 		this.posX = b.posX;
 		this.posY = b.posY;
 		this.posZ = b.posZ;
@@ -95,9 +82,7 @@ public class EventShootBullet extends PersonalEvent
 			b.vZ = vZ;
 
 			sb.item.bullet.clonePropertiesTo(b);
-
 			b.speed = speed;
-
 			b.setColorFromTank();
 
 			if (sb.item.cooldownBase <= 0)
@@ -115,33 +100,15 @@ public class EventShootBullet extends PersonalEvent
 		}
 	}
 
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.id);
-		b.writeInt(this.tank);
-		b.writeDouble(this.posX);
-		b.writeDouble(this.posY);
-		b.writeDouble(this.posZ);
-		b.writeDouble(this.vX);
-		b.writeDouble(this.vY);
-		b.writeDouble(this.vZ);
-		b.writeDouble(this.speed);
-		b.writeInt(this.item);
-	}
+    @Override
+    public boolean isStackable()
+    {
+        return zeroCooldown;
+    }
 
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.id = b.readInt();
-		this.tank = b.readInt();
-		this.posX = b.readDouble();
-		this.posY = b.readDouble();
-		this.posZ = b.readDouble();
-		this.vX = b.readDouble();
-		this.vY = b.readDouble();
-		this.vZ = b.readDouble();
-		this.speed = b.readDouble();
-		this.item = b.readInt();
-	}
+    @Override
+    public int getIdentifier()
+    {
+        return tank;
+    }
 }

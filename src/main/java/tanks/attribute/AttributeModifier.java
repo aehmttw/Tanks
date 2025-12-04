@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AttributeModifier
 {
-	public enum Operation {add, multiply}
+	public enum Operation {add, multiply, set}
 
 	// Object recycling system
 	private static final Queue<AttributeModifier> recycleQueue = new ConcurrentLinkedQueue<>();
@@ -174,10 +174,11 @@ public class AttributeModifier
 
 		if (this.effect == Operation.add)
 			return in + val;
-		else if (this.effect == Operation.multiply)
+		if (this.effect == Operation.multiply)
 			return in * (val + 1);
-		else
-			return in;
+        if (this.effect == Operation.set)
+            return val;
+        return in;
 	}
 
 	@Override

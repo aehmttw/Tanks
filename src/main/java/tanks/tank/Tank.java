@@ -46,6 +46,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean invulnerable = false;
 	public boolean currentlyTargetable = true;
+    public boolean teleporting = false;
 	public double invulnerabilityTimer = 0;
 
 	public boolean disabled = false;

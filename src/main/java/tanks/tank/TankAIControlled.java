@@ -2681,7 +2681,7 @@ public class TankAIControlled extends Tank implements ITankField
 				this.transformRevertTimer = this.sightTransformRevertTime;
 		}
 
-		if (this.transformRevertTimer <= 0 && this.currentlyTargetable)
+		if (this.transformRevertTimer <= 0 && !this.teleporting)
 		{
 			Game.removeMovables.add(this.sightTransformTank);
 			Tank.idMap.put(this.networkID, this);
@@ -3702,8 +3702,8 @@ public class TankAIControlled extends Tank implements ITankField
 
 	@Override
 	public void setBufferCooldown(Item.ItemStack<?> stack, double value)
-	{
-		this.bulletItem.cooldown = Math.max(this.bulletItem.cooldown, value);
-		this.mineItem.cooldown = Math.max(this.mineItem.cooldown, value);
-	}
+    {
+        this.bulletItem.cooldown = Math.max(this.bulletItem.cooldown, value);
+        this.mineItem.cooldown = Math.max(this.mineItem.cooldown, value);
+    }
 }

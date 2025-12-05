@@ -274,9 +274,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             a.undo();
             redoActions.add(a);
             redoLength = undoActions.size();
-
-            if (a instanceof EditorAction.ActionPaste)
-                break;
         }
 
     }, () -> undoActions.isEmpty(), "Undo (%s)", Game.game.input.editorUndo
@@ -316,9 +313,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             a.redo();
             undoActions.add(a);
             redoLength = undoActions.size();
-
-            if (a instanceof EditorAction.ActionPaste)
-                break;
         }
     }, () -> redoActions.isEmpty(), "Redo (%s)", Game.game.input.editorRedo
     )

@@ -147,7 +147,7 @@ public class Game
 
     public static boolean customDir = false;
 
-    public static final int network_protocol = 60;
+    public static final int network_protocol = 61;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;

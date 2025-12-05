@@ -11,6 +11,8 @@ public class EventExplosion extends PersonalEvent
     public double posY;
     public double radius;
     public double kbRadius;
+    public double stunRadius;
+    public double stunTime;
     public boolean destroysObstacles;
     public double damage;
 
@@ -26,6 +28,8 @@ public class EventExplosion extends PersonalEvent
         this.radius = e.radius;
         this.kbRadius = e.knockbackRadius;
         this.damage = e.damage;
+        this.stunRadius = e.stunRadius;
+        this.stunTime = e.stunTime;
 
         if (e.tankKnockback == 0 && e.bulletKnockback == 0)
             this.kbRadius = 0;
@@ -44,6 +48,8 @@ public class EventExplosion extends PersonalEvent
                 e.tankKnockback = 1;
 
             e.knockbackRadius = this.kbRadius;
+            e.stunTime = this.stunTime;
+            e.stunRadius = this.stunRadius;
             e.explode();
         }
     }
@@ -57,6 +63,8 @@ public class EventExplosion extends PersonalEvent
         b.writeDouble(this.kbRadius);
         b.writeDouble(this.damage);
         b.writeBoolean(this.destroysObstacles);
+        b.writeDouble(this.stunRadius);
+        b.writeDouble(this.stunTime);
     }
 
     @Override
@@ -68,5 +76,7 @@ public class EventExplosion extends PersonalEvent
         this.kbRadius = b.readDouble();
         this.damage = b.readDouble();
         this.destroysObstacles = b.readBoolean();
+        this.stunRadius = b.readDouble();
+        this.stunTime = b.readDouble();
     }
 }

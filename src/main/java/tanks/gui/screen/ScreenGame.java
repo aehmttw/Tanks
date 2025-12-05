@@ -2667,6 +2667,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 Game.playerTank.drawSpinny(Game.playerTank.invulnerabilityTimer);
             }
 
+            if (i == 1 && !Game.enable3d)
+                Drawing.drawing.trackRenderer.draw();
+
             drawables[i].clear();
         }
 

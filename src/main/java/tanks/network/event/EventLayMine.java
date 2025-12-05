@@ -75,7 +75,7 @@ public class EventLayMine extends PersonalEvent
 
 			Mine m = new Mine(this.posX, this.posY, sm.item.mine.timer, t, sm);
 			m.networkID = id;
-			m.size = sm.item.mine.size;
+			sm.item.mine.clonePropertiesTo(m);
 			Game.movables.add(m);
 
 			Mine.idMap.put(id, m);

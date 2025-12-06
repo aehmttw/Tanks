@@ -108,11 +108,21 @@ public class ObstacleBoostPanel extends Obstacle
     @Override
     public void draw()
     {
-        Drawing.drawing.setColor(255, this.brightness, 0, (this.posX / Game.tile_size + this.posY / Game.tile_size) % 255);
         if (!Game.enable3d)
+        {
+            double offset = 0;
+
+            if (Game.fancyTerrain)
+                offset = Math.sin((this.posX + this.posY + System.currentTimeMillis() / 50.0) / 10) * 40 + 40;
+
+            Drawing.drawing.setColor(this.colorR - offset / 2, Math.min(this.colorG - offset + this.brightness, 255), this.colorB + this.brightness, 255, 1.0);
             Drawing.drawing.fillRect(this, this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
+        }
         else
+        {
+            Drawing.drawing.setColor(255, this.brightness, 0, (this.posX / Game.tile_size + this.posY / Game.tile_size) % 255);
             Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);
+        }
     }
 
     public void update()

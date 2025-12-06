@@ -129,7 +129,7 @@ public abstract class Screen implements IBatchRenderableObject
 		else
 			Drawing.drawing.terrainRenderer.draw();
 
-        if (!(this instanceof ScreenGame))
+        if (!(this instanceof ScreenGame && !Game.enable3d))
 		    Drawing.drawing.trackRenderer.draw();
 
 		if (this.drawDarkness && drawBgRect)

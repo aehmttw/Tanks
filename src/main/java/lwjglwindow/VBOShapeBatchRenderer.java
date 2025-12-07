@@ -246,7 +246,6 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
         Rotation.transform(window, -pitch, -roll, -yaw);
         Scale.transform(window, sX, sY, sZ);
-
         this.batchDraw();
 
         glPopMatrix();

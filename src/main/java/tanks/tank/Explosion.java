@@ -2,6 +2,7 @@ package tanks.tank;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
+import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
 import tanks.gui.ChatMessage;
 import tanks.gui.IFixedMenu;
@@ -44,6 +45,12 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
 
     @Property(id = "tank_knockback", name = "Tank knockback", desc = "The amount of knockback done to tanks, scaled by tank size and distance from explosion")
     public double tankKnockback = 0;
+
+    @Property(id = "stun_radius", name = "Stun radius", desc = "All tanks within this distance of the explosion will be stunned \n \n 1 tile = 50 units")
+    public double stunRadius = Mine.mine_radius * 2;
+
+    @Property(id = "stun_time", name = "Stun time", desc = "How long to stun tanks caught in this explosion for \n \n 1 time unit = 0.01 seconds")
+    public double stunTime = 0;
 
     public Explosion(double x, double y, double radius, double damage, boolean destroysObstacles, Tank tank, Item.ItemStack<?> item)
     {
@@ -107,8 +114,24 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
         else
             Drawing.drawing.playSound("suck.ogg", (float) (Mine.mine_radius / r));
 
+        if (this.stunTime > 0)
+            Drawing.drawing.playSound("explosion_electric.ogg", (float) (Mine.mine_radius / r));
+
         if (Game.effectsEnabled)
         {
+            if (this.stunTime > 0)
+            {
+                for (int i = 0; i < 150 * Game.effectMultiplier; i++)
+                {
+                    Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 4, Effect.EffectType.stun);
+                    e.maxAge *= this.stunTime / 100.0;
+                    e.distance = this.stunRadius + Math.random() * 20 - 10;
+                    e.setColor(0, 255, 255);
+                    e.setGlowColor(e.color, 127);
+                    Game.effects.add(e);
+                }
+            }
+
             for (int j = 0; j < Math.min(800, 200 * this.radius / 125) * Game.effectMultiplier; j++)
             {
                 double random = Math.random();
@@ -183,6 +206,10 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                 handleExplosionDamage(m);
             for (Movable m: getMovablesInExplosion(posX, posY, knockbackRadius))
                 handleExplosionKb(m, Movable.sqDistBetw(m.posX, m.posY, posX, posY));
+
+            if (this.stunTime > 0)
+                for (Movable m: getMovablesInExplosion(posX, posY, stunRadius))
+                    handleExplosionStun(m);
         }
 
         if (this.destroysObstacles && !ScreenPartyLobby.isClient)
@@ -315,6 +342,33 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
 
             if (t instanceof TankPlayerRemote)
                 Game.eventsOut.add(new EventTankControllerAddVelocity(t, t.vX - vX, t.vY - vY, t.tookRecoil));
+        }
+    }
+
+    public void handleExplosionStun(Movable movable)
+    {
+        if (movable instanceof Tank)
+        {
+            AttributeModifier a = AttributeModifier.newInstance(AttributeModifier.velocity, AttributeModifier.Operation.multiply, -1);
+            a.duration = this.stunTime;
+            movable.em().addAttribute(a);
+            if (!this.tank.isRemote)
+            {
+                Game.eventsOut.add(new EventBulletStunEffect((Tank) movable, this.stunTime / 100.0));
+
+                if (Game.effectsEnabled)
+                {
+                    for (int i = 0; i < 25 * Game.effectMultiplier; i++)
+                    {
+                        Effect e = Effect.createNewEffect(movable.posX, movable.posY, Game.tile_size / 4, Effect.EffectType.stun);
+                        e.linkedMovable = movable;
+                        e.maxAge *= this.stunTime / 100.0;
+                        e.setColor(0, 255, 255);
+                        e.setGlowColor(e.color, 127);
+                        Game.effects.add(e);
+                    }
+                }
+            }
         }
     }
 

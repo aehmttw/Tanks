@@ -16,6 +16,7 @@ public class TankPink extends TankAIControlled
 		this.cooldownRandom = 60;
 		this.cooldownBase = 120;
 		this.turretAimSpeed = 0.02;
+        this.friction += 0.15;
 
 		this.setBullet(DefaultItems.sniper_rocket);
 		this.getBullet().maxLiveBullets = 2;

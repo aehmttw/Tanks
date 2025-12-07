@@ -286,8 +286,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
             double ourSize = this.size;
             double theirSize = t.size;
-            double ourMass = ourSize * ourSize;
-            double theirMass = theirSize * theirSize;
+            double ourMass = ourSize * ourSize * (1.0 / (1.000000001 - this.friction));
+            double theirMass = theirSize * theirSize * (1.0 / (1.000000001 - t.friction));
 
             double dx = t.posX - this.posX;
             double dy = t.posY - this.posY;

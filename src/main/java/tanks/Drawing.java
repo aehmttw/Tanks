@@ -466,7 +466,7 @@ public class Drawing
 
 	public void fillRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
 	{
-		terrainRenderer.addBox(o, x - sizeX / 2, y - sizeY / 2, 0, sizeX, sizeY, 1, (byte) 61, false);
+        this.fillRect(x, y, sizeX, sizeY);
 	}
 
 	public void fillRect(double x, double y, double z, double sizeX, double sizeY, boolean depthTest)

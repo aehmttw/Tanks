@@ -360,6 +360,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Level level = new Level(Game.currentLevelString);
         level.loadLevel(ScreenInterlevel.fromQuickPlay);
         Game.screen = (Screen) ScreenInterlevel.fromQuickPlay;
+        Chunk.populateChunks(level, true);
 
         ScreenInterlevel.fromSavedLevels = false;
         ScreenInterlevel.fromMinigames = false;
@@ -2665,6 +2666,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             {
                 Game.playerTank.drawSpinny(Game.playerTank.invulnerabilityTimer);
             }
+
+            if (i == 1 && !Game.enable3d)
+                Drawing.drawing.trackRenderer.draw();
 
             drawables[i].clear();
         }

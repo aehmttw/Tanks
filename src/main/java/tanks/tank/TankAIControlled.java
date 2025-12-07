@@ -621,9 +621,6 @@ public class TankAIControlled extends Tank implements ITankField
 					this.updateMotionAI();
 				else
 				{
-					this.vX *= Math.pow(1 - Math.min(1, 0.15 * this.frictionModifier), Panel.frameFrequency);
-					this.vY *= Math.pow(1 - Math.min(1, 0.15 * this.frictionModifier), Panel.frameFrequency);
-
 					if (this.enableDefensiveFiring && useRaysThisFrame)
 						this.checkForBulletThreats();
 				}

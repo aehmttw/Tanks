@@ -541,6 +541,23 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements\n"
                     }
             );
+
+            new Changelog("v1.6.f", new String[]
+                    {
+                            "*What's new in Tanks v1.6.f:\n\n" +
+                                    "Added bullet effect and trail editor\n" +
+                                    "Item icons can now be recolored\n" +
+                                    "Mines can now be recolored\n" +
+                                    "Added option for bullets to destroy blocks on impact\n" +
+                                    "Added ability for explosions to stun tanks\n" +
+                                    "The party host can now mute player chat for players\n" +
+                                    "Added ability to nudge players in a party to click 'ready'\n" +
+                                    "Added indicator for ready players on top of their tanks\n" +
+                                    "New emblems and skins added, made by the Tanks community!\n" +
+                                    "Lots of major behind-the-scenes refactoring\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
         }
     }
 }

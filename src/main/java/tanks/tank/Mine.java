@@ -21,7 +21,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     @Property(id = "timer", name = "Fuse length", desc = "The mine will explode this much time after it is placed \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
     public double timer = 1000;
 
-    @Property(id = "size", name = "Size")
+    @Property(id = "size", name = "Size", category = MinePropertyCategory.mine)
     public double size = mine_size;
 
     public double outlineColorR;

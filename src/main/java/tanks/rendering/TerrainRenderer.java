@@ -508,9 +508,9 @@ public class TerrainRenderer
             if (in)
             {
                 if (s.shader instanceof RendererShader)
-                    s.renderer.settings(((RendererShader) s.shader).depthTest, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask);
+                    s.renderer.settings(((RendererShader) s.shader).depthTest && Game.enable3d, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask && Game.enable3d);
                 else
-                    s.renderer.settings(true, false, true);
+                    s.renderer.settings(Game.enable3d, false, Game.enable3d);
 
                 double x1 = Drawing.drawing.gameToAbsoluteX(x, 0);
                 double y1 = Drawing.drawing.gameToAbsoluteY(y, 0);

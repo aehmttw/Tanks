@@ -1,9 +1,11 @@
 package basewindow;
 
+import tanks.Game;
+
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Scanner;
 
 public class ComputerFileManager extends BaseFileManager
 {
@@ -16,28 +18,31 @@ public class ComputerFileManager extends BaseFileManager
     @Override
     public ArrayList<String> getInternalFileContents(String file)
     {
-        try
+        ArrayList<String> al = new ArrayList<>();
+
+        try (InputStream st = this.getResource(file))
         {
-            InputStream st = this.getResource(file);
-
             if (st == null)
-                return null;
-
-            Scanner s = new Scanner(new InputStreamReader(st));
-            ArrayList<String> al = new ArrayList<>();
-
-            while (s.hasNext())
             {
-                al.add(s.nextLine());
+                Game.logger.println("Resource not exists: " + file);
+                return al;
             }
 
-            s.close();
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(st, StandardCharsets.UTF_8));
+
+            String line;
+            while ((line = reader.readLine()) != null)
+            {
+                al.add(line);
+            }
+
             return al;
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            return null;
+            return al;
         }
     }
 

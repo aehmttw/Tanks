@@ -1,5 +1,7 @@
 package basewindow;
 
+import lwjglwindow.FontRenderer;
+
 public abstract class BaseFontRenderer
 {
     public boolean drawBox = false;
@@ -23,5 +25,13 @@ public abstract class BaseFontRenderer
 
     public abstract double getStringSizeY(double sY, String s);
 
-    public abstract void addFont(String imageFile, String chars, int[] charSizes);
+    public abstract void addFont(String id, String imageFile, String chars, int[] charSizes);
+
+    public abstract void addFont(String id, String imageFile, String chars, int[] charSizes, int hSpace);
+
+    public abstract void setDefaultFont(String id, String imageFile, String chars, int[] charSizes, int hSpace);
+
+    public abstract FontRenderer.FontInfo getFontById(String id);
+
+    public abstract boolean hasFontId(String id);
 }

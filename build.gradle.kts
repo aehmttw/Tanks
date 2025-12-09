@@ -56,6 +56,8 @@ dependencies {
     implementation(files("libs/steamworks4j-lwjgl3-1.10.0-SNAPSHOT.jar"))
 //    api("com.code-disaster.steamworks4j:steamworks4j:1.10.0-SNAPSHOT")
 //    api("com.code-disaster.steamworks4j:steamworks4j-lwjgl3:1.10.0-SNAPSHOT")
+
+    implementation("com.google.code.gson:gson:2.13.2") // Used for handling JSON
 }
 
 group = "com.aehmttw"

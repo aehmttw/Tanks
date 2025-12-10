@@ -30,8 +30,4 @@ public abstract class BaseFontRenderer
     public abstract void addFont(String id, String imageFile, String chars, int[] charSizes, int hSpace);
 
     public abstract void setDefaultFont(String id, String imageFile, String chars, int[] charSizes, int hSpace);
-
-    public abstract FontRenderer.FontInfo getFontById(String id);
-
-    public abstract boolean hasFontId(String id);
 }

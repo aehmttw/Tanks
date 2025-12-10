@@ -104,7 +104,6 @@ public class FontRenderer extends BaseFontRenderer
      * @param id The font ID.
      * @return The FontInfo, or null if not found.
      */
-    @Override
     public FontInfo getFontById(String id)
     {
         return fontById.get(id);
@@ -116,7 +115,6 @@ public class FontRenderer extends BaseFontRenderer
      * @param id The font ID.
      * @return true if the font exists.
      */
-    @Override
     public boolean hasFontId(String id)
     {
         return fontById.containsKey(id);

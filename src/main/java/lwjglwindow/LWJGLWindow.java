@@ -3,6 +3,11 @@ package lwjglwindow;
 import basewindow.*;
 import basewindow.transformation.Matrix4;
 import basewindow.transformation.Transformation;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.BufferUtils;
@@ -14,6 +19,7 @@ import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 import tanks.Game;
+import utils.GsonUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -134,42 +140,9 @@ public class LWJGLWindow extends BaseWindow
 
 	protected void init()
 	{
-		this.fontRenderer = new FontRenderer(this, "/fonts/default/font.png");
+		this.fontRenderer = new FontRenderer(this);
 
-		// Load zh cn font
-        try
-        {
-            int count = 1;
-            while (true)
-            {
-                try (InputStream zhCnFontInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".png");
-                     InputStream zhCnTxtInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".txt"))
-                {
-                    if (zhCnFontInputStream == null) break;
-                    if (zhCnTxtInputStream == null)
-                    {
-                        Game.logger.println("Failed to load zh cn font " + count);
-                        continue;
-                    }
-                    Scanner scanner = new Scanner(Objects.requireNonNull(zhCnTxtInputStream), StandardCharsets.UTF_8.name());
-                    StringBuilder sb = new StringBuilder();
-                    while (scanner.hasNextLine())
-                    {
-                        sb.append(scanner.nextLine());
-                    }
-                    String chinese_chars = sb.toString();
-                    int[] chinese_chars_sizes = new int[chinese_chars.length()];
-                    Arrays.fill(chinese_chars_sizes, 8);
-                    this.fontRenderer.addFont("/fonts/zh_cn/font_zh_cn_" + count + ".png", chinese_chars, chinese_chars_sizes);
-                    count++;
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace(Game.logger);
-            e.printStackTrace();
-        }
+        loadFonts();
 
 		GLFWErrorCallback.createPrint(System.err).set();
 
@@ -261,6 +234,195 @@ public class LWJGLWindow extends BaseWindow
 
 		glfwShowWindow(window);
 	}
+
+    private void loadFonts() {
+        try (InputStream fontConfigInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/config.json"))
+        {
+            if (fontConfigInputStream != null)
+            {
+                Gson gson = GsonUtils.GSON;
+                JsonReader fontConfigJsonReader = new JsonReader(new InputStreamReader(fontConfigInputStream));
+                JsonObject fontConfig = gson.fromJson(fontConfigJsonReader, JsonObject.class);
+
+                JsonObject fontFiles = fontConfig.getAsJsonObject("font_files");
+                if (fontFiles == null)
+                {
+                    Game.logger.println("font config is corrupted. (cannot found font_files object)");
+                    return;
+                }
+
+                if (fontFiles.has("default"))
+                {
+                    loadDefaultFont("default", fontFiles.getAsJsonObject("default"));
+                }
+                else
+                {
+                    Game.logger.println("font config error: 'default' font is required!");
+                    return;
+                }
+
+                for (Map.Entry<String, JsonElement> entry : fontFiles.entrySet())
+                {
+                    String fontId = entry.getKey();
+                    if ("default".equals(fontId))
+                        continue;
+
+                    if (!(entry.getValue() instanceof JsonObject))
+                    {
+                        Game.logger.println("font config warn: font_files['" + fontId + "'] should be JsonObject");
+                        continue;
+                    }
+
+                    loadSingleFont(fontId, (JsonObject) entry.getValue());
+                }
+            }
+            else
+            {
+                Game.logger.println("Couldn't find font config file, this may be a fault");
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace(Game.logger);
+            e.printStackTrace();
+        }
+    }
+
+    private void loadDefaultFont(String fontId, JsonObject fontFileObj) {
+        String path = fontFileObj.get("path").getAsString();
+        if (path == null)
+        {
+            Game.logger.println("font config error: default font doesn't have 'path' element!");
+            return;
+        }
+
+        Game.logger.println("Loading default font from \"" + path + "\"...");
+
+        JsonArray chars = fontFileObj.getAsJsonArray("chars");
+        if (chars == null)
+        {
+            Game.logger.println("font config error: default font doesn't have 'chars' element!");
+            return;
+        }
+
+        StringBuilder finalCharsString = new StringBuilder();
+        for (JsonElement element : chars)
+        {
+            finalCharsString.append(element.getAsString());
+        }
+
+        if (!fontFileObj.has("char_size_type"))
+        {
+            Game.logger.println("font config error: char_size_type not exists in default font!");
+            return;
+        }
+
+        String charSizeType = fontFileObj.get("char_size_type").getAsString();
+        int[] charSizeArray = new int[finalCharsString.length()];
+
+        if ("fixed".equals(charSizeType))
+        {
+            if (!fontFileObj.has("char_size"))
+            {
+                Game.logger.println("font config error: char_size_type is \"fixed\", but could not found \"char_size\" in default font");
+                return;
+            }
+
+            int charSize = fontFileObj.get("char_size").getAsInt();
+            Arrays.fill(charSizeArray, charSize);
+        }
+        else if ("array".equals(charSizeType))
+        {
+            if (!fontFileObj.has("char_size_array"))
+            {
+                Game.logger.println("font config error: char_size_type is \"array\", but could not found \"char_size_array\" in default font");
+                return;
+            }
+
+            JsonArray charSizeArrayJson = fontFileObj.getAsJsonArray("char_size_array");
+            for (int j = 0; j < charSizeArrayJson.size(); j++)
+            {
+                charSizeArray[j] = charSizeArrayJson.get(j).getAsInt();
+            }
+        }
+        else
+        {
+            Game.logger.println("font config error: unknown char_size_type '" + charSizeType + "' in default font");
+            return;
+        }
+
+        int hSpace = (fontFileObj.has("h_space") ? fontFileObj.get("h_space").getAsInt() : 2);
+
+        fontRenderer.setDefaultFont(fontId, path, finalCharsString.toString(), charSizeArray, hSpace);
+    }
+
+    private void loadSingleFont(String fontId, JsonObject fontFileObj) {
+        String path = fontFileObj.get("path").getAsString();
+        if (path == null)
+        {
+            Game.logger.println("font config warn: font '" + fontId + "' doesn't have 'path' element, skip...");
+            return;
+        }
+
+        Game.logger.println("Loading font \"" + fontId + "\" from \"" + path + "\"...");
+
+        JsonArray chars = fontFileObj.getAsJsonArray("chars");
+        if (chars == null)
+        {
+            Game.logger.println("font config warn: font '" + fontId + "' doesn't have 'chars' element, skip...");
+            return;
+        }
+
+        StringBuilder finalCharsString = new StringBuilder();
+        for (JsonElement element : chars)
+        {
+            finalCharsString.append(element.getAsString());
+        }
+
+        if (!fontFileObj.has("char_size_type"))
+        {
+            Game.logger.println("font config warn: char_size_type not exists in font '" + fontId + "', skip...");
+            return;
+        }
+
+        String charSizeType = fontFileObj.get("char_size_type").getAsString();
+        int[] charSizeArray = new int[finalCharsString.length()];
+
+        if ("fixed".equals(charSizeType))
+        {
+            if (!fontFileObj.has("char_size"))
+            {
+                Game.logger.println("font config warn: char_size_type is \"fixed\", but could not found \"char_size\" in font '" + fontId + "'");
+                return;
+            }
+
+            int charSize = fontFileObj.get("char_size").getAsInt();
+            Arrays.fill(charSizeArray, charSize);
+        }
+        else if ("array".equals(charSizeType))
+        {
+            if (!fontFileObj.has("char_size_array"))
+            {
+                Game.logger.println("font config warn: char_size_type is \"array\", but could not found \"char_size_array\" in font '" + fontId + "'");
+                return;
+            }
+
+            JsonArray charSizeArrayJson = fontFileObj.getAsJsonArray("char_size_array");
+            for (int j = 0; j < charSizeArrayJson.size(); j++)
+            {
+                charSizeArray[j] = charSizeArrayJson.get(j).getAsInt();
+            }
+        }
+        else
+        {
+            Game.logger.println("font config warn: unknown char_size_type '" + charSizeType + "' in font '" + fontId + "', skip...");
+            return;
+        }
+
+        int hSpace = (fontFileObj.has("h_space") ? fontFileObj.get("h_space").getAsInt() : 2);
+
+        fontRenderer.addFont(fontId, path, finalCharsString.toString(), charSizeArray, hSpace);
+    }
 
 	protected static String getLogInfo(int obj)
 	{

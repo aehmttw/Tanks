@@ -5,6 +5,8 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.network.NetworkEventMap;
+import tanks.network.event.INetworkEvent;
 import tanks.obstacle.*;
 import tanks.rendering.TerrainRenderer;
 import tanks.tank.*;
@@ -30,10 +32,12 @@ public class DebugKeybinds
                     "\u00A7255127000255B\u00A7r -> draw collision boxes \n " +
                     "\u00A7255127000255V\u00A7r -> reload tiles \n " +
                     "\u00A7255127000255K\u00A7r -> log pressed keys to console \n " +
+                    "\u00A7255127000255Shift + K\u00A7r -> log network event mappings to console \n " +
                     "\u00A7255127000255D\u00A7r -> clear the chat \n " +
                     "\u00A7255127000255A\u00A7r -> reload terrain renderer \n " +
                     "\u00A7255127000255T\u00A7r -> reload shader \n " +
                     "\u00A7255127000255.\u00A7r -> perform a GC \n " +
+                    "\u00A7255127000255,\u00A7r -> clear network event fields \n " +
                     "\u00A7255127000255Hold\u00A7r -> show tile coordinates \n " +
                     "\u00A7255127000255Hold + S\u00A7r -> show mouse coordinates \n " +
                     "\u00A7255127000255Hold + Shift + S\u00A7r -> show offset mouse coordinates and scales \n " +
@@ -73,12 +77,21 @@ public class DebugKeybinds
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_K))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_K);
-            Function<List<Integer>, List<String>> func = l -> l.stream().map(Game.game.window::getKeyText).collect(Collectors.toList());
-            System.out.println("Game.screen = " + Game.screen.getClass().getSimpleName());
-            System.out.println("pressedKeys: " + func.apply(Game.game.window.pressedKeys));
-            System.out.println("validPressedKeys: " + func.apply(Game.game.window.validPressedKeys));
-            System.out.println("textPressedKeys: " + func.apply(Game.game.window.textPressedKeys));
-            notifications.add(new ScreenElement.Notification("Pressed keys have been logged to the console", 800));
+            if (!Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_SHIFT))
+            {
+                Function<List<Integer>, List<String>> func = l -> l.stream().map(Game.game.window::getKeyText).collect(Collectors.toList());
+                System.out.println("Game.screen = " + Game.screen.getClass().getSimpleName());
+                System.out.println("pressedKeys: " + func.apply(Game.game.window.pressedKeys));
+                System.out.println("validPressedKeys: " + func.apply(Game.game.window.validPressedKeys));
+                System.out.println("textPressedKeys: " + func.apply(Game.game.window.textPressedKeys));
+                notifications.add(new ScreenElement.Notification("Pressed keys have been logged to the console", 800));
+            }
+            else
+            {
+                System.out.println("Network event mappings:");
+                NetworkEventMap.print();
+                notifications.add(new ScreenElement.Notification("Network event mappings have been logged to the console", 800));
+            }
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_D))
@@ -99,6 +112,13 @@ public class DebugKeybinds
                 }
                 notifications.add(new ScreenElement.Notification("Chat cleared", 800));
             }
+        }
+
+        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_COMMA))
+        {
+            Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_COMMA);
+            INetworkEvent.handle.fieldsInClass.clear();
+            notifications.add(new ScreenElement.Notification("Cleared network event fields", 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_A))

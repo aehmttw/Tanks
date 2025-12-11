@@ -1,10 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
+import tanks.item.*;
 import tanks.tank.*;
 
 public class EventLayMine extends PersonalEvent
@@ -67,7 +64,11 @@ public class EventLayMine extends PersonalEvent
 				if (t2 instanceof TankAIControlled)
 					sm = ((TankAIControlled) ((TankRemote) t).tank).mineItem;
 				else if (t2 instanceof TankPlayer)
-					sm = ((ItemMine.ItemStackMine)(((TankPlayer) t2).abilities.get(-this.item - 1)));
+                {
+                    int id = -item - 1;
+                    if (id >= 0 && id < ((TankPlayer) t2).abilities.size())
+                        sm = ((ItemMine.ItemStackMine) (((TankPlayer) t2).abilities.get(id)));
+                }
 			}
 
 			if (sm == null)
@@ -80,25 +81,5 @@ public class EventLayMine extends PersonalEvent
 
 			Mine.idMap.put(id, m);
 		}
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.id);
-		b.writeInt(this.tank);
-		b.writeDouble(this.posX);
-		b.writeDouble(this.posY);
-		b.writeInt(this.item);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.id = b.readInt();
-		this.tank = b.readInt();
-		this.posX = b.readDouble();
-		this.posY = b.readDouble();
-		this.item = b.readInt();
 	}
 }

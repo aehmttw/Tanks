@@ -198,7 +198,7 @@ public abstract class Item extends GameObject
 		{
 			if (this.usable(t) && !this.destroy)
 			{
-				use(t);
+                use(t);
 				return true;
 			}
 

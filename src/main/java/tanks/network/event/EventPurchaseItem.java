@@ -1,9 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.TankPlayerRemote;
 
@@ -19,18 +16,6 @@ public class EventPurchaseItem extends PersonalEvent
     public EventPurchaseItem(int item)
     {
         this.item = item;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(item);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        item = b.readInt();
     }
 
     @Override

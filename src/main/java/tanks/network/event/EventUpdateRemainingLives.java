@@ -1,9 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Player;
-import tanks.network.NetworkUtils;
+import tanks.*;
 
 import java.util.UUID;
 
@@ -21,20 +18,6 @@ public class EventUpdateRemainingLives extends PersonalEvent
     public EventUpdateRemainingLives()
     {
 
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, playerID.toString());
-        b.writeInt(lives);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        playerID = UUID.fromString(NetworkUtils.readString(b));
-        lives = b.readInt();
     }
 
     @Override

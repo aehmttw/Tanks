@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
-import tanks.network.NetworkUtils;
 
 public class EventAddFixedShape extends PersonalEvent
 {
@@ -42,34 +40,6 @@ public class EventAddFixedShape extends PersonalEvent
         this.colorB = b;
 
         this.centered = centered;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.type);
-        b.writeInt(this.posX);
-        b.writeInt(this.posY);
-
-        b.writeInt(this.colorR);
-        b.writeInt(this.colorG);
-        b.writeInt(this.colorB);
-
-        b.writeBoolean(this.centered);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.type = NetworkUtils.readString(b);
-        this.posX = b.readInt();
-        this.posY = b.readInt();
-
-        this.colorR = b.readInt();
-        this.colorG = b.readInt();
-        this.colorB = b.readInt();
-
-        this.centered = b.readBoolean();
     }
 
     @Override

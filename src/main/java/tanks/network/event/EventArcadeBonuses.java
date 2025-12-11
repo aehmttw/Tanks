@@ -23,6 +23,22 @@ public class EventArcadeBonuses extends PersonalEvent
         this.bonus3 = b3;
     }
 
+    @Override
+    public void write(ByteBuf b)
+    {
+        writeBonus(bonus1, b);
+        writeBonus(bonus2, b);
+        writeBonus(bonus3, b);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        bonus1 = readBonus(b);
+        bonus2 = readBonus(b);
+        bonus3 = readBonus(b);
+    }
+
     public void writeBonus(ScreenArcadeBonuses.Bonus bonus, ByteBuf b)
     {
         NetworkUtils.writeString(b, bonus.name);
@@ -35,23 +51,6 @@ public class EventArcadeBonuses extends PersonalEvent
     public ScreenArcadeBonuses.Bonus readBonus(ByteBuf b)
     {
         return new ScreenArcadeBonuses.Bonus(NetworkUtils.readString(b), b.readInt(), b.readDouble(), b.readDouble(), b.readDouble());
-    }
-
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        writeBonus(bonus1, b);
-        writeBonus(bonus2, b);
-        writeBonus(bonus3, b);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.bonus1 = readBonus(b);
-        this.bonus2 = readBonus(b);
-        this.bonus3 = readBonus(b);
     }
 
     @Override

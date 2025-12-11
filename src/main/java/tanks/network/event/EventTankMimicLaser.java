@@ -1,9 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.GameObject;
-import tanks.Movable;
+import tanks.*;
 import tanks.bullet.Laser;
 import tanks.tank.Tank;
 
@@ -51,22 +48,6 @@ public class EventTankMimicLaser extends PersonalEvent implements IStackableEven
             laser.tank2 = t2;
             Game.movables.add(laser);
         }
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeInt(this.tank2);
-        b.writeDouble(this.range);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.tank2 = b.readInt();
-        this.range = b.readDouble();
     }
 
     @Override

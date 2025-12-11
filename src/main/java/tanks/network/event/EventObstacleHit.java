@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.obstacle.Obstacle;
@@ -25,26 +24,6 @@ public class EventObstacleHit extends PersonalEvent
 
         this.bulletX = b.posX;
         this.bulletY = b.posY;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-
-        b.writeDouble(this.bulletX);
-        b.writeDouble(this.bulletY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-
-        this.bulletX = b.readDouble();
-        this.bulletY = b.readDouble();
     }
 
     @Override

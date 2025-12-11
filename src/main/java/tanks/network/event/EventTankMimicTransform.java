@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Effect;
-import tanks.Game;
+import tanks.*;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
@@ -90,19 +88,5 @@ public class EventTankMimicTransform extends PersonalEvent
                 }
             }
         }
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeInt(this.target);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.target = b.readInt();
     }
 }

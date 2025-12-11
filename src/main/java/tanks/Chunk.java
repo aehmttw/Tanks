@@ -320,7 +320,21 @@ public class Chunk
      */
     public static ObjectArrayList<Chunk> getChunksInRadius(double x1, double y1, double radius)
     {
-        return getChunksInRadius((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), radius / Game.tile_size);
+        chunkCache.clear();
+        for (Chunk chunk : chunkList)
+        {
+            double distX = Math.abs(Chunk.chunkToGame(chunk.chunkX) - x1);
+            double distY = Math.abs(Chunk.chunkToGame(chunk.chunkY) - y1);
+            double size = Chunk.chunkToGame(Chunk.chunkSize);
+
+            boolean inRange = distX <= size / 2 + radius && distY <= size / 2 + radius;
+            boolean closeEnough = distX <= size / 2 && distY <= size / 2;
+            boolean cornerInRange = Math.pow(distX - size, 2) + Math.pow(distY - size, 2) <= Math.pow(radius, 2);
+
+            if (inRange && (closeEnough || cornerInRange))
+                chunkCache.add(chunk);
+        }
+        return chunkCache;
     }
 
     /**
@@ -328,15 +342,7 @@ public class Chunk
      */
     public static ObjectArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
     {
-        chunkCache.clear();
-        double x1 = (double) tx1 / chunkSize, y1 = (double) ty1 / chunkSize, cRad = Math.ceil(radius / chunkSize) + 1;
-        for (Chunk chunk : chunkList)
-        {
-            if ((chunk.chunkX - x1) * (chunk.chunkX - x1) +
-                (chunk.chunkY - y1) * (chunk.chunkY - y1) <= cRad * cRad)
-                chunkCache.add(chunk);
-        }
-        return chunkCache;
+        return getChunksInRadius((tx1 + 0.5) * Game.tile_size, (ty1 + 0.5) * Game.tile_size, radius);
     }
 
     public static Tile setTileColor(Level l, Random r, Tile t)

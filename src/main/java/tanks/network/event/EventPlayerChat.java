@@ -1,10 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Player;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.NetworkUtils;
 
 public class EventPlayerChat extends PersonalEvent
 {
@@ -30,19 +28,4 @@ public class EventPlayerChat extends PersonalEvent
 		if (this.clientID == null)
 			ScreenPartyLobby.chat.add(0, new ChatMessage(this.username, this.message));
 	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.username);
-		NetworkUtils.writeString(b, this.message);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.username = NetworkUtils.readString(b);
-		this.message = NetworkUtils.readString(b);
-	}
-
 }

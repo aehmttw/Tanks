@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.InputCodes;
+import it.unimi.dsi.fastutil.ints.*;
 import tanks.extension.Extension;
 import tanks.gui.*;
 import tanks.gui.ScreenElement.*;
@@ -15,6 +16,7 @@ import tanks.rendering.*;
 import tanks.tank.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Panel
 {
@@ -89,7 +91,7 @@ public class Panel
 	protected Screen lastDrawnScreen = null;
 
 	public ArrayList<double[]> lights = new ArrayList<>();
-	HashMap<Integer, IStackableEvent> stackedEventsIn = new HashMap<>();
+    public Int2IntLinkedOpenHashMap stackedEventsIn = new Int2IntLinkedOpenHashMap();
 
 	public LoadingTerrainContinuation continuation = null;
 	public long continuationStartTime = 0;
@@ -100,7 +102,7 @@ public class Panel
 	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
 	public String saveScreenshotDir = null;
 
-	public static void initialize()
+    public static void initialize()
 	{
 		if (!initialized)
 			panel = new Panel();
@@ -343,26 +345,31 @@ public class Panel
 		{
 			stackedEventsIn.clear();
 
+            // order of stacked and nonstacked events is preserved
 			for (int i = 0; i < Game.eventsIn.size(); i++)
 			{
-				if (!(Game.eventsIn.get(i) instanceof IOnlineServerEvent))
-				{
-					INetworkEvent e = Game.eventsIn.get(i);
+                INetworkEvent e = Game.eventsIn.get(i);
+                if (e instanceof IOnlineServerEvent)
+                    continue;
 
-					if (e instanceof IStackableEvent)
-						stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
-					else
-						Game.eventsIn.get(i).execute();
-				}
-			}
+                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable())
+                    stackedEventsIn.put(IStackableEvent.key((IStackableEvent) e), i);
+            }
+
+            for (int i = 0; i < Game.eventsIn.size(); i++)
+            {
+                INetworkEvent e = Game.eventsIn.get(i);
+                if (e instanceof IOnlineServerEvent)
+                    continue;
+
+                if (e instanceof IStackableEvent && ((IStackableEvent) e).isStackable() && stackedEventsIn.get(IStackableEvent.key((IStackableEvent) e)) != i)
+                    continue;
+
+                e.execute();
+            }
 
 			Game.eventsIn.clear();
 		}
-
-		for (INetworkEvent e: stackedEventsIn.values())
-            e.execute();
-
-		stackedEventsIn.clear();
 
 		if (ScreenPartyHost.isServer)
 		{
@@ -827,6 +834,19 @@ public class Panel
 			if (m instanceof TankNPC && ((TankNPC) m).draw)
 				((TankNPC) m).drawMessage();
 		}
+
+        if (Game.recordEventData && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
+        {
+            AtomicInteger i = new AtomicInteger();
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.setInterfaceFontSize(16);
+            double y = Drawing.drawing.getInterfaceEdgeY(true) - 20;
+
+            MessageReader.eventBytesPerSec.int2IntEntrySet().stream()
+                .sorted(Comparator.comparingInt(Int2IntMap.Entry::getIntValue))
+                .forEach(entry -> Drawing.drawing.displayUncenteredInterfaceText(10, y - i.getAndIncrement() * 20,
+                    "%s: %.2f KB/s", NetworkEventMap.get(entry.getIntKey()).getSimpleName(), entry.getIntValue() / 1024.));
+        }
 
 		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 

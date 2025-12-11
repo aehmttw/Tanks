@@ -1,11 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.ChatMessage;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.NetworkUtils;
+import tanks.gui.screen.*;
 import tanks.network.ServerHandler;
 
 public class EventChat extends PersonalEvent
@@ -49,20 +46,8 @@ public class EventChat extends PersonalEvent
 				}
 			}
 		}
+    }
 
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.message);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.message = NetworkUtils.readString(b);
-	}
 
 	public static boolean isStringValid(String s)
 	{

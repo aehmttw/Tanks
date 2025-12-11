@@ -1,16 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.ChatMessage;
-import tanks.gui.screen.IPartyGameScreen;
-import tanks.gui.screen.ScreenConnecting;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.ConnectedPlayer;
-import tanks.network.NetworkUtils;
-import tanks.network.ServerHandler;
+import tanks.gui.screen.*;
+import tanks.network.*;
 
 import java.util.UUID;
 
@@ -31,23 +24,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 		this.clientID = clientID;
 		this.username = username;
 	}
-	
-	@Override
-	public void write(ByteBuf b) 
-	{
-		b.writeInt(this.version);
-		NetworkUtils.writeString(b, clientID.toString());
-		NetworkUtils.writeString(b, username);
-	}
-	
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.version = b.readInt();
-		this.clientID = UUID.fromString(NetworkUtils.readString(b));
-		this.username = NetworkUtils.readString(b);
-	}
-	
+
 	@Override
 	public void execute()
 	{

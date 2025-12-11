@@ -1,19 +1,13 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.tank.Tank;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
 
 public class EventTankUpdate extends PersonalEvent implements IStackableEvent
 {
 	public int tank;
-	public double posX;
-	public double posY;
-	public double vX;
-	public double vY;
-	public double angle;
-	public double pitch;
-	public long time = System.currentTimeMillis();
+    public double posX, posY;
+    public double vX, vY;
+    public double angle, pitch;
 
 
 	public EventTankUpdate()
@@ -31,30 +25,6 @@ public class EventTankUpdate extends PersonalEvent implements IStackableEvent
 		this.angle = t.angle;
 		this.pitch = t.pitch;
 	}
-	
-	@Override
-	public void write(ByteBuf b)
-	{
-		b.writeInt(this.tank);
-		b.writeDouble(this.posX);
-		b.writeDouble(this.posY);
-		b.writeDouble(this.vX);
-		b.writeDouble(this.vY);
-		b.writeDouble(this.angle);
-		b.writeDouble(this.pitch);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.tank = b.readInt();
-		this.posX = b.readDouble();
-		this.posY = b.readDouble();
-		this.vX = b.readDouble();
-		this.vY = b.readDouble();
-		this.angle = b.readDouble();
-		this.pitch = b.readDouble();
-	}
 
 	@Override
 	public void execute()
@@ -65,29 +35,7 @@ public class EventTankUpdate extends PersonalEvent implements IStackableEvent
 		{
 			if (t instanceof TankRemote)
 			{
-				TankRemote r = (TankRemote) t;
-				double iTime = Math.min(100, (time - r.lastUpdate) / 10.0);
-
-				r.prevKnownPosX = r.posX;
-				r.prevKnownPosY = r.posY;
-				r.prevKnownVX = r.vX;
-				r.prevKnownVY = r.vY;
-				r.prevKnownVXFinal = r.lastFinalVX;
-				r.prevKnownVYFinal = r.lastFinalVY;
-
-				r.currentKnownPosX = this.posX;
-				r.currentKnownPosY = this.posY;
-				r.currentKnownVX = this.vX;
-				r.currentKnownVY = this.vY;
-
-				r.timeSinceRefresh = 0;
-				r.interpolationTime = iTime;
-				r.lastUpdate = time;
-
-				r.lastAngle = r.angle;
-				r.lastPitch = r.pitch;
-				r.currentAngle = this.angle;
-				r.currentPitch = this.pitch;
+				((TankRemote) t).updatePositions(this.posX, this.posY, this.vX, this.vY, this.angle, this.pitch);
 			}
 			else
 			{

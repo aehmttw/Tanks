@@ -1,10 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
-import tanks.network.NetworkUtils;
 
 import java.util.ArrayList;
 
@@ -46,18 +44,6 @@ public class EventUpdateReadyPlayers extends PersonalEvent
 				}
 			}
 		}
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.readyPlayers);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.readyPlayers = NetworkUtils.readString(b);
 	}
 
 }

@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 
 public class EventEnterLevel extends PersonalEvent
@@ -25,17 +23,5 @@ public class EventEnterLevel extends PersonalEvent
 
 			Crusade.currentCrusade = null;
 		}
-	}
-
-	@Override
-	public void write(ByteBuf b)
-	{
-		
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		
 	}
 }

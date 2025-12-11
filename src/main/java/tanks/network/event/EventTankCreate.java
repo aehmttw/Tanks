@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Team;
-import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
-import tanks.tank.TankRemote;
+import tanks.*;
+import tanks.tank.*;
 
 public class EventTankCreate extends PersonalEvent
 {
@@ -57,29 +53,5 @@ public class EventTankCreate extends PersonalEvent
 		t.drawAge = drawAge;
 				
 		Game.movables.add(new TankRemote(t));
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.type);
-		b.writeDouble(this.posX);
-		b.writeDouble(this.posY);
-		b.writeDouble(this.angle);
-		NetworkUtils.writeString(b, this.team);
-		b.writeInt(this.id);
-		b.writeDouble(this.drawAge);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.type = NetworkUtils.readString(b);
-		this.posX = b.readDouble();
-		this.posY = b.readDouble();
-		this.angle = b.readDouble();
-		this.team = NetworkUtils.readString(b);
-		this.id = b.readInt();
-		this.drawAge = b.readDouble();
 	}
 }

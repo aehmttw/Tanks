@@ -1,7 +1,9 @@
 package tanks.network;
 
+import io.netty.buffer.*;
 import tanks.Game;
 import tanks.network.event.INetworkEvent;
+import tanks.tankson.ReflectionHandle;
 
 import java.util.HashMap;
 
@@ -10,21 +12,48 @@ public class NetworkEventMap
 	protected static HashMap<Integer, Class<? extends INetworkEvent>> map1 = new HashMap<>();
 	protected static HashMap<Class<? extends INetworkEvent>, Integer> map2 = new HashMap<>();
 	protected static int id = 0;
-	
+
 	public static void register(Class<? extends INetworkEvent> c)
 	{
+        map1.put(id, c);
+        map2.put(c, id);
+        id++;
+
+        if (!Game.debug)
+            return;
+
 		try
 		{
 			c.getConstructor();
 		}
 		catch (Exception e)
 		{
-			Game.exitToCrash(new RuntimeException("The network event " + c + " does not have a no-parameter constructor. Please give it one."));
+			Game.exitToCrash(new RuntimeException("The network event " + c + " does not have a no-parameter" +
+                " constructor. Please give it one."));
 		}
 
-		map1.put(id, c);
-		map2.put(c, id);
-		id++;
+        ByteBuf b = Unpooled.buffer();
+        INetworkEvent e;
+        try
+        {
+            e = c.getConstructor().newInstance();
+            e.write(b);
+            e.read(b);
+            if (b.readableBytes() > 0)
+                throw new IndexOutOfBoundsException("Readable bytes > 0 after read");
+        }
+        catch (ReflectionHandle.MissingHandleException exc)
+        {
+            throw new RuntimeException("Missing handle in " + c.getSimpleName() + ": " + exc.getMessage());
+        }
+        catch (IndexOutOfBoundsException exc)
+        {
+            throw new RuntimeException("Read does not match write in " + c.getSimpleName() + ": " + exc.getMessage());
+        }
+        catch (Exception ignored)
+        {
+
+        }
 	}
 	
 	public static int get(Class<? extends INetworkEvent> c)
@@ -45,8 +74,6 @@ public class NetworkEventMap
 	public static void print()
 	{
 		for (int i = 0; i < id; i++)
-		{
-			System.out.println(i + " " + NetworkEventMap.get(i));
-		}
+            System.out.println(i + " " + NetworkEventMap.get(i));
 	}
 }

@@ -1,10 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.network.NetworkUtils;
 import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleStackable;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -26,24 +23,6 @@ public class EventAddObstacle extends PersonalEvent
         this.posX = o.posX;
         this.posY = o.posY;
         this.metadata = o.getMetadata();
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.name);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        NetworkUtils.writeString(b, metadata);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.name = NetworkUtils.readString(b);
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.metadata = NetworkUtils.readString(b);
     }
 
     @Override

@@ -1,9 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
-import tanks.network.NetworkUtils;
 
 public class EventBulletAddAttributeModifier extends PersonalEvent
 {
@@ -40,38 +38,6 @@ public class EventBulletAddAttributeModifier extends PersonalEvent
         this.expired = m.expired;
 
         this.unduplicate = unduplicate;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.bullet);
-        NetworkUtils.writeString(b, this.name);
-        b.writeDouble(this.duration);
-        b.writeDouble(this.deteriorationAge);
-        b.writeDouble(this.warmupAge);
-        b.writeDouble(this.value);
-        NetworkUtils.writeString(b, this.effect);
-        b.writeDouble(this.age);
-        NetworkUtils.writeString(b, this.type);
-        b.writeBoolean(this.expired);
-        b.writeBoolean(this.unduplicate);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.bullet = b.readInt();
-        this.name = NetworkUtils.readString(b);
-        this.duration = b.readDouble();
-        this.deteriorationAge = b.readDouble();
-        this.warmupAge = b.readDouble();
-        this.value = b.readDouble();
-        this.effect = NetworkUtils.readString(b);
-        this.age = b.readDouble();
-        this.type = NetworkUtils.readString(b);
-        this.expired = b.readBoolean();
-        this.unduplicate = b.readBoolean();
     }
 
     @Override

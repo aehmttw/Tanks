@@ -34,8 +34,9 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     public long startUpdateTime = -1;
     public double ourTimeOffset = 0;
 
-    public boolean forceMotion = true;
-    public boolean recoil = false;
+    public boolean forceMotion = true, recoil = false;
+    public boolean action1, action2;
+    public int quickActions;
 
     public static boolean checkMotion = false;
     public static boolean weakTimeCheck = false;
@@ -111,10 +112,26 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.currentKnownPosY = this.posY;
             this.prevKnownPosX = this.posX;
             this.prevKnownPosY = this.posY;
+            this.lastAngle = this.angle;
+            this.lastPitch = this.pitch;
         }
 
         this.timeSinceRefresh += Panel.frameFrequency;
         this.localAge += Panel.frameFrequency;
+
+        if (!this.disabled)
+        {
+            if (this.action1)
+                this.action(false);
+            if (this.action2)
+                this.action(true);
+
+            for (int i = 0; i < this.abilities.size(); i++)
+            {
+                if ((quickActions >> i) % 2 == 1)
+                    this.quickAction(i);
+            }
+        }
 
         super.update();
 
@@ -237,7 +254,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         ItemBar b = this.player.hotbar.itemBar;
         ItemBullet.ItemStackBullet ib = null;
         ItemMine.ItemStackMine im = null;
-        Item.ItemStack<?> i2 = null;
+        Item.ItemStack<?> i2;
 
         if (this.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
             ib = (ItemBullet.ItemStackBullet) this.getPrimaryAbility();
@@ -279,7 +296,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         lastMaxLiveMines = mlm;
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions, double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, int quickActions, double time, long receiveTime)
     {
         if (this.destroy)
             return;
@@ -458,18 +475,28 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.timeSinceRefresh = 0;
             this.lastUpdateTime = t;
 
-            if (action1 && !this.disabled)
-                this.action(false);
-
-            if (action2 && !this.disabled)
-                this.action(true);
-
-            if (!this.disabled)
+            if (ib != null && ib.item != null && ib.item.cooldownBase < 10)
             {
-                for (int i = 0; i < this.abilities.size(); i++)
+                // continuous shoot
+                this.action1 = action1;
+                this.action2 = action2;
+                this.quickActions = quickActions;
+            }
+            else
+            {
+                if (action1 && !this.disabled)
+                    this.action(false);
+
+                if (action2 && !this.disabled)
+                    this.action(true);
+
+                if (!this.disabled)
                 {
-                    if (quickActions[i])
-                        this.quickAction(i);
+                    for (int i = 0; i < this.abilities.size(); i++)
+                    {
+                        if ((quickActions >> i) % 2 == 1)
+                            this.quickAction(i);
+                    }
                 }
             }
 

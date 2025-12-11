@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.tank.TankNPC;
 
 public class EventSortNPCShopButtons extends PersonalEvent
@@ -18,16 +16,6 @@ public class EventSortNPCShopButtons extends PersonalEvent
         this.id = id;
     }
 
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.id);
-    }
-
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
-    }
-
     public void execute()
     {
         for (Movable m : Game.movables)
@@ -38,6 +26,5 @@ public class EventSortNPCShopButtons extends PersonalEvent
                 break;
             }
         }
-
     }
 }

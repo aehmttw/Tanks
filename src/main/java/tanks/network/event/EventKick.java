@@ -1,11 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.gui.screen.ScreenKicked;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.network.Client;
-import tanks.network.NetworkUtils;
 
 public class EventKick extends PersonalEvent
 {	
@@ -34,17 +31,5 @@ public class EventKick extends PersonalEvent
 			if (!(Game.screen instanceof ScreenKicked))
 				Game.screen = new ScreenKicked(reason);
 		}
-	}
-
-	@Override
-	public void write(ByteBuf b)
-	{
-		NetworkUtils.writeString(b, this.reason);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.reason = NetworkUtils.readString(b);
 	}
 }

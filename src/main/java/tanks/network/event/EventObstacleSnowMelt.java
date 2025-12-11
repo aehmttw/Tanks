@@ -1,9 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleSnow;
+import tanks.obstacle.*;
 
 public class EventObstacleSnowMelt extends PersonalEvent implements IStackableEvent
 {
@@ -21,22 +19,6 @@ public class EventObstacleSnowMelt extends PersonalEvent implements IStackableEv
         this.posX = x;
         this.posY = y;
         this.depth = depth;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeDouble(this.depth);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.depth = b.readDouble();
     }
 
     @Override

@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Player;
-import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.NetworkUtils;
 
 public class EventMutePlayer extends PersonalEvent
 {
@@ -33,18 +29,6 @@ public class EventMutePlayer extends PersonalEvent
 
             ScreenPartyLobby.muted = muted;
         }
-	}
-
-	@Override
-	public void write(ByteBuf b) 
-	{
-        b.writeBoolean(this.muted);
-	}
-
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.muted = b.readBoolean();
 	}
 
 }

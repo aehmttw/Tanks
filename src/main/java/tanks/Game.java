@@ -27,6 +27,7 @@ import tanks.item.ItemMine;
 import tanks.item.ItemShield;
 import tanks.minigames.ArcadeBeatBlocks;
 import tanks.minigames.ArcadeClassic;
+import tanks.minigames.controlpoint.ControlPoint;
 import tanks.minigames.Minigame;
 import tanks.network.Client;
 import tanks.network.NetworkEventMap;
@@ -426,6 +427,7 @@ public class Game
 		NetworkEventMap.register(EventArcadeFrenzy.class);
 		NetworkEventMap.register(EventArcadeEnd.class);
 		NetworkEventMap.register(EventArcadeBonuses.class);
+        NetworkEventMap.register(EventControlPointCaptureProgressUpdate.class);
 
 		NetworkEventMap.register(EventSendOnlineClientDetails.class);
 		NetworkEventMap.register(EventSilentDisconnect.class);
@@ -593,6 +595,7 @@ public class Game
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
 //		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
+        registerMinigame(ControlPoint.class, "Control point", "Fight for control points with your teammates!");
 
 		registerMetadataSelector(SelectorStackHeight.selector_name, SelectorStackHeight.class);
 		registerMetadataSelector(SelectorGroupID.selector_name, SelectorGroupID.class);

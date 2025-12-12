@@ -294,8 +294,7 @@ public class ControlPoint extends Minigame
                 {
                     Drawing.drawing.setColor(255, 160, 160);
                     msg = "RED CONTROLLED";
-                }
-                else
+                } else
                 {
                     Drawing.drawing.setColor(160, 200, 255);
                     msg = "BLUE CONTROLLED";
@@ -404,7 +403,8 @@ public class ControlPoint extends Minigame
             {
                 for (Movable movable : Game.movables)
                 {
-                    if (movable instanceof Tank && movable.team.equals(teamRed)) {
+                    if (movable instanceof Tank && movable.team.equals(teamRed))
+                    {
                         Tank tank = (Tank) movable;
                         tank.health = 0;
                         Game.eventsOut.add(new EventTankUpdateHealth(tank));
@@ -415,7 +415,8 @@ public class ControlPoint extends Minigame
             {
                 for (Movable movable : Game.movables)
                 {
-                    if (movable instanceof Tank && movable.team.equals(teamBlue)) {
+                    if (movable instanceof Tank && movable.team.equals(teamBlue))
+                    {
                         Tank tank = (Tank) movable;
                         tank.health = 0;
                         Game.eventsOut.add(new EventTankUpdateHealth(tank));
@@ -447,17 +448,21 @@ public class ControlPoint extends Minigame
     private static int gameCount = 0;
 
     @Override
-    public Team customTeamAssignment(int playerIndex, int totalPlayers, Team defaultTeam) {
-        if (teamRed == null || teamBlue == null) {
+    public Team customTeamAssignment(int playerIndex, int totalPlayers, Team defaultTeam)
+    {
+        if (teamRed == null || teamBlue == null)
+        {
             teamRed = teamsMap.get("red");
             teamBlue = teamsMap.get("blue");
         }
 
-        if (teamRed == null || teamBlue == null) {
+        if (teamRed == null || teamBlue == null)
+        {
             return defaultTeam;
         }
 
-        if (playerIndex == 0) {
+        if (playerIndex == 0)
+        {
             gameCount++;
         }
 
@@ -465,9 +470,11 @@ public class ControlPoint extends Minigame
 
         boolean isEvenIndex = (playerIndex % 2 == 0);
 
-        if (useEvenRed) {
+        if (useEvenRed)
+        {
             return isEvenIndex ? teamRed : teamBlue;
-        } else {
+        } else
+        {
             return isEvenIndex ? teamBlue : teamRed;
         }
     }

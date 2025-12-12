@@ -80,8 +80,7 @@ public class GamePoint
                             captureProgress = -1.0;
                         }
                     }
-                }
-                else if (redTankCount < blueTankCount)
+                } else if (redTankCount < blueTankCount)
                 {
                     if (captureProgress < 1.0)
                     {
@@ -97,8 +96,7 @@ public class GamePoint
                 if (captureProgress <= -1.0)
                 {
                     newControlling = teamRed;
-                }
-                else if (captureProgress >= 1.0)
+                } else if (captureProgress >= 1.0)
                 {
                     newControlling = teamBlue;
                 }
@@ -113,12 +111,10 @@ public class GamePoint
         if (captureProgress <= -1.0)
         {
             newControlling = teamRed;
-        }
-        else if (captureProgress >= 1.0)
+        } else if (captureProgress >= 1.0)
         {
             newControlling = teamBlue;
-        }
-        else
+        } else
         {
             newControlling = null;
         }
@@ -127,8 +123,8 @@ public class GamePoint
         {
             boolean controlChanged =
                 oldControlling == null && newControlling != null
-                || oldControlling != null && newControlling == null
-                || oldControlling != null && !oldControlling.equals(newControlling);
+                    || oldControlling != null && newControlling == null
+                    || oldControlling != null && !oldControlling.equals(newControlling);
 
             if (controlChanged && newControlling != null &&
                 newControlling.equals(Game.player.tank.team))

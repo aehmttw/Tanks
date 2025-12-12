@@ -1,13 +1,13 @@
 package tanks.minigames;
 
-import tanks.Game;
-import tanks.Level;
-import tanks.ModAPI;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.*;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
+
+import java.util.ArrayList;
 
 public abstract class Minigame extends Level
 {
@@ -152,6 +152,36 @@ public abstract class Minigame extends Level
     public void onBulletFire(Bullet b)
     {
 
+    }
+
+    /**
+     * Override this to customize team assignment for players.
+     * Called during level load for each player.
+     * Call before setUp!
+     *
+     * @param playerIndex The index of the player being assigned (0, 1, 2, ...)
+     * @param totalPlayers Total number of players
+     * @param defaultTeam The team assigned by default spawn point logic
+     * @return The team this player should be assigned to, or null to use defaultTeam
+     */
+    public Team customTeamAssignment(int playerIndex, int totalPlayers, Team defaultTeam)
+    {
+        return defaultTeam;
+    }
+
+    /**
+     * Override this to customize spawn point selection for a player.
+     * Called after team assignment.
+     * Call before setUp!
+     *
+     * @param player The player being spawned
+     * @param team The team assigned to this player
+     * @param availableSpawns List of available spawn indices for this team
+     * @return The spawn point index to use, or -1 to use random selection
+     */
+    public int customSpawnSelection(Player player, Team team, ArrayList<Integer> availableSpawns)
+    {
+        return -1;
     }
 
     /**

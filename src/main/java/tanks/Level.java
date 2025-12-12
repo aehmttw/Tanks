@@ -9,6 +9,7 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.Item;
+import tanks.minigames.Minigame;
 import tanks.network.event.EventEnterLevel;
 import tanks.network.event.EventLoadLevel;
 import tanks.network.event.EventTankRemove;
@@ -682,6 +683,39 @@ public class Level
 				double y = this.playerSpawnsY.get(spawn);
 				double angle = this.playerSpawnsAngle.get(spawn);
 				Team team = this.playerSpawnsTeam.get(spawn);
+
+                if (this instanceof Minigame)
+                {
+                    Team customTeam = ((Minigame) this).customTeamAssignment(i, playerCount, team);
+                    if (customTeam != null)
+                        team = customTeam;
+
+                    if (customTeam != null && customTeam != this.playerSpawnsTeam.get(spawn))
+                    {
+                        ArrayList<Integer> teamSpawns = new ArrayList<>();
+                        for (int j = 0; j < this.playerSpawnsTeam.size(); j++)
+                        {
+                            if (this.playerSpawnsTeam.get(j).equals(team))
+                                teamSpawns.add(j);
+                        }
+
+                        if (!teamSpawns.isEmpty())
+                        {
+                            int customSpawn = ((Minigame) this).customSpawnSelection(
+                                this.includedPlayers.get(i), team, teamSpawns
+                            );
+
+                            if (customSpawn >= 0 && customSpawn < teamSpawns.size())
+                                spawn = teamSpawns.get(customSpawn);
+                            else
+                                spawn = teamSpawns.get((int) (Math.random() * teamSpawns.size()));
+
+                            x = this.playerSpawnsX.get(spawn);
+                            y = this.playerSpawnsY.get(spawn);
+                            angle = this.playerSpawnsAngle.get(spawn);
+                        }
+                    }
+                }
 
 				if (ScreenPartyHost.isServer)
 					Game.addPlayerTank(this.includedPlayers.get(i), x, y, angle, team);

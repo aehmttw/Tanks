@@ -1,14 +1,17 @@
 package tanks.tank;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.TextWithStyling;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.*;
+import tanks.obstacle.Face;
+import tanks.obstacle.ISolidObject;
+import tanks.obstacle.Obstacle;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 public class Ray extends GameObject
@@ -40,7 +43,8 @@ public class Ray extends GameObject
     public Tank tank, targetTank;
     public double targetTankSizeMul;
 
-    public DoubleArrayList bounceX = new DoubleArrayList(), bounceY = new DoubleArrayList();
+    public ArrayList<Double> bounceX = new ArrayList<>();
+    public ArrayList<Double> bounceY = new ArrayList<>();
     public double targetX, targetY;
     public boolean acquiredTarget = false;
 
@@ -128,7 +132,7 @@ public class Ray extends GameObject
         return this;
     }
 
-    private static final ObjectArrayList<Chunk> errorChunkCache = new ObjectArrayList<>();
+    private static final ArrayList<Chunk> errorChunkCache = new ArrayList<>();
 
     public static ErrorHandler<GameObject, Collection<Chunk>> ghostFaceHandler = new ErrorHandler<GameObject, Collection<Chunk>>(50, 2)
     {
@@ -395,10 +399,10 @@ public class Ray extends GameObject
 
         for (int i = 1; i < bounceX.size(); i++)
         {
-            double prevX = bounceX.getDouble(i - 1);
-            double prevY = bounceY.getDouble(i - 1);
-            double dx = bounceX.getDouble(i) - prevX;
-            double dy = bounceY.getDouble(i) - prevY;
+            double prevX = bounceX.get(i - 1);
+            double prevY = bounceY.get(i - 1);
+            double dx = bounceX.get(i) - prevX;
+            double dy = bounceY.get(i) - prevY;
             double steps = (Math.sqrt((Math.pow(dx, 2) + Math.pow(dy, 2)) / (1 + Math.pow(this.vX, 2) + Math.pow(this.vY, 2))) / Math.max(this.size, 2) * 10 + 1);
 
             if (dotted)
@@ -686,7 +690,7 @@ public class Ray extends GameObject
         return (ignoreTanks && f.owner instanceof Tank) || (ignoreBullets && f.owner instanceof Bullet);
     }
 
-    private static final ObjectArrayList<DebugText> debugTexts = new ObjectArrayList<>();
+    private static final ArrayList<DebugText> debugTexts = new ArrayList<>();
 
     private static class DebugText
     {
@@ -761,7 +765,7 @@ public class Ray extends GameObject
     {
         double dist = 0;
         for (int i = 0; i < this.bounceX.size() - 1; i++)
-            dist += Math.pow(this.bounceX.getDouble(i + 1) - this.bounceX.getDouble(i), 2) + Math.pow(this.bounceY.getDouble(i + 1) - this.bounceY.getDouble(i), 2);
+            dist += Math.pow(this.bounceX.get(i + 1) - this.bounceX.get(i), 2) + Math.pow(this.bounceY.get(i + 1) - this.bounceY.get(i), 2);
 
         if (this.bounces >= 0)
             dist += Chunk.chunkToGame(maxChunkCheck);

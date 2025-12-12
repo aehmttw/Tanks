@@ -4,7 +4,6 @@ import basewindow.Color;
 import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.*;
@@ -166,7 +165,7 @@ public class Button implements IDrawable, ITrigger
 	{
 		private static final Runnable emptyFunction = () -> {};
 
-		public Boolean2ObjectFunction<String> getText = b -> b ? ScreenOptions.onText : ScreenOptions.offText;
+		public Function<Boolean, String> getText = b -> b ? ScreenOptions.onText : ScreenOptions.offText;
 		public Consumer<Boolean> setter;
 		public Producer<Boolean> getter;
 
@@ -207,7 +206,7 @@ public class Button implements IDrawable, ITrigger
 			setText(originalText, getter.produce() ? ScreenOptions.onText : ScreenOptions.offText);
 		}
 
-		public Toggle setCustomText(Boolean2ObjectFunction<String> getText)
+		public Toggle setCustomText(Function<Boolean, String> getText)
 		{
 			this.getText = getText;
 			return this;

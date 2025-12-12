@@ -5,7 +5,6 @@ import basewindow.BaseFileManager;
 import basewindow.BaseWindow;
 import basewindow.ShaderGroup;
 import com.codedisaster.steamworks.SteamMatchmaking;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -63,9 +62,9 @@ public class Game
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
-	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
+	public static HashSet<IAvoidObject> avoidObjects = new HashSet<>();
 	public static ArrayList<Obstacle> checkObstaclesToUpdate = new ArrayList<>();
-	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
+	public static HashSet<Obstacle> obstaclesToUpdate = new HashSet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
     public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();

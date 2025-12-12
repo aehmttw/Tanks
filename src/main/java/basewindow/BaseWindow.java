@@ -91,7 +91,11 @@ public abstract class BaseWindow
     public double yOffset = 0;
     public double zOffset = 0;
 
-    public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1) /*, new Shear(this, 0, 0, 0, 0, 0, -0.75) */};
+    public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1),
+//            new ScaleAboutPoint(this, 1,  Math.sqrt(0.5), 1, 0.5, 0.5, 0.5),
+//            new RotationAboutPoint(this, 0, 0, Math.PI / 4, 0.5, 0.5, 0.5),
+//            new Shear(this, 0, 0, 0, 0, Math.sqrt(0.5), -Math.sqrt(0.5)),
+    };
     public Transformation[] lightBaseTransformation = new Transformation[]{new ScaleAboutPoint(this, 0.8, 0.8, 0.8, 0.5, 0.5, 0.5), new Shear(this, 0, 0, 0, 0, 0.5, 0.5)};
     public double[] lightVec = new double[]{-0.66666666, 0.66666666, -0.33333333};
 

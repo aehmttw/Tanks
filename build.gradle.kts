@@ -49,7 +49,7 @@ dependencies {
     // Your other existing dependencies
     api(libs.org.l33tlabs.twl.pngdecoder)
     implementation("io.netty:netty-all:4.1.94.Final")
-    implementation("it.unimi.dsi:fastutil-core:8.5.16")
+//    implementation("it.unimi.dsi:fastutil-core:8.5.16")
 
     //Steamworks4j (Use files in libs folder until version 10 is available on mavenCentral
     implementation(files("libs/steamworks4j-1.10.0-SNAPSHOT.jar"))

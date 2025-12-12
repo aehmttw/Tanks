@@ -1,6 +1,5 @@
 package tanks.tank;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
@@ -17,10 +16,12 @@ import tanks.tankson.ITanksONEditable;
 import tanks.tankson.Property;
 import tanks.tankson.TanksONable;
 
+import java.util.ArrayList;
+
 @TanksONable("explosion")
 public class Explosion extends Movable implements ICopyable<Explosion>, ITanksONEditable
 {
-    private static final ObjectArrayList<Movable> movablesCache = new ObjectArrayList<>();
+    private static final ArrayList<Movable> movablesCache = new ArrayList<>();
 
     @Property(id = "damage", name = "Damage", desc = "The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double damage = 2;
@@ -89,7 +90,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
         super(0, 0);
     }
 
-    public static ObjectArrayList<Movable> getMovablesInExplosion(double posX, double posY, double radius)
+    public static ArrayList<Movable> getMovablesInExplosion(double posX, double posY, double radius)
     {
         movablesCache.clear();
         for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))

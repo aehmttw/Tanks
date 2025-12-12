@@ -2158,6 +2158,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
 
             m.update();
+//            m.randomize();
             m.postUpdate();
 
             if (Double.isNaN(m.posX) || Double.isNaN(m.posY))

@@ -1,7 +1,6 @@
 package tanks;
 
 import basewindow.*;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
@@ -228,7 +227,7 @@ public class DebugKeybinds
             }
             else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_2))
             {
-                ObjectSet<Movable> v = Movable.getMovablesInRadius(mx, my, 50);
+                HashSet<Movable> v = Movable.getMovablesInRadius(mx, my, 50);
                 if (!v.isEmpty())
                     text += " M: " + v.stream().iterator().next().getMetadata();
             }

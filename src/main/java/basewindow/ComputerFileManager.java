@@ -1,6 +1,7 @@
 package basewindow;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
@@ -23,7 +24,7 @@ public class ComputerFileManager extends BaseFileManager
             if (st == null)
                 return null;
 
-            Scanner s = new Scanner(new InputStreamReader(st));
+            Scanner s = new Scanner(new InputStreamReader(st, StandardCharsets.UTF_8));
             ArrayList<String> al = new ArrayList<>();
 
             while (s.hasNext())

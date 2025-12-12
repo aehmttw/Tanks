@@ -1,6 +1,5 @@
 package tanks;
 
-import it.unimi.dsi.fastutil.objects.*;
 import tanks.attribute.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
 {
-	public ObjectArraySet<Chunk> prevChunks = new ObjectArraySet<>();
+	public HashSet<Chunk> prevChunks = new HashSet<>();
 	private EffectManager em;
 
 	public double lastPosX, lastPosY, lastPosZ = 0;
@@ -99,7 +98,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     public void refreshFacesAndChunks()
     {
-        ObjectArrayList<Chunk> cache = getTouchingChunks();
+        ArrayList<Chunk> cache = getTouchingChunks();
         recordData("refreshFaces");
 
         for (Chunk c : prevChunks)
@@ -138,7 +137,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 		c.removeMovable(this);
 	}
 
-    public ObjectArrayList<Chunk> getCurrentChunks()
+    public ArrayList<Chunk> getCurrentChunks()
     {
         double bound = getSize() / 2;
         return Chunk.getChunksInRange(
@@ -149,7 +148,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         );
     }
 
-    public ObjectArrayList<Chunk> getTouchingChunks()
+    public ArrayList<Chunk> getTouchingChunks()
 	{
 		return getCurrentChunks();
 	}
@@ -350,9 +349,9 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 	}
 
 	/** Field to cache the movable array for reuse */
-	private static final ObjectSet<Movable> movableOut = new ObjectArraySet<>();
+	private static final HashSet<Movable> movableOut = new HashSet<>();
 
-    public static ObjectSet<Movable> getCircleCollision(GameObject self)
+    public static HashSet<Movable> getCircleCollision(GameObject self)
     {
         movableOut.clear();
         double x = self.posX, y = self.posY;
@@ -366,7 +365,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         return movableOut;
     }
 
-    public static ObjectSet<Movable> getSquareCollision(GameObject self)
+    public static HashSet<Movable> getSquareCollision(GameObject self)
     {
         movableOut.clear();
         double bound = self.getSize() / 2 + Game.tile_size / 2;
@@ -386,7 +385,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	/** Expects all pixel coordinates.
 	 * @return all the movables within the specified range */
-	public static ObjectSet<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
+	public static HashSet<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
 	{
 		movableOut.clear();
         for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
@@ -399,7 +398,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
 	/** Expects all pixel coordinates.
 	 * @return all the movables within a certain radius of the position */
-	public static ObjectSet<Movable> getMovablesInRadius(double posX, double posY, double radius)
+	public static HashSet<Movable> getMovablesInRadius(double posX, double posY, double radius)
 	{
 		movableOut.clear();
         for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
@@ -502,7 +501,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     {
         public String name;
         public double posX, posY, lastPosX, lastPosY, size;
-        public ObjectArrayList<Chunk> touchedChunks, prevChunks;
+        public ArrayList<Chunk> touchedChunks, prevChunks;
 
         public DebugData(Movable b, String name)
         {
@@ -512,8 +511,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
             lastPosX = b.lastPosX;
             lastPosY = b.lastPosY;
             size = b.getSize();
-            touchedChunks = new ObjectArrayList<>(b.getTouchingChunks());
-            prevChunks = new ObjectArrayList<>(b.prevChunks);
+            touchedChunks = new ArrayList<>(b.getTouchingChunks());
+            prevChunks = new ArrayList<>(b.prevChunks);
         }
     }
 

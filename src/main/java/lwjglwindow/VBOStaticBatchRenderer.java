@@ -6,12 +6,12 @@ import basewindow.ShaderGroup;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.lwjgl.BufferUtils;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -41,7 +41,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
     public int vertVBO, colVBO = -1, texVBO = -1, normVBO = -1;
 
     // Parallel arrays with ID map
-    public Object2IntOpenHashMap<ShaderGroup.Attribute> attributeToId = new Object2IntOpenHashMap<>();
+    public HashMap<ShaderGroup.Attribute, Integer> attributeToId = new HashMap<>();
     public ArrayList<AttributeProperty> attributeProperties = new ArrayList<>();
 
     protected int vertexCount;
@@ -178,7 +178,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 
     public void setAttribute(ShaderGroup.Attribute a, float... floats)
     {
-        int attributeId = this.attributeToId.getInt(a);
+        int attributeId = this.attributeToId.get(a);
         AttributeProperty prop = this.attributeProperties.get(attributeId);
         int index = 0;
         for (float f: floats)
@@ -249,7 +249,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 
         for (ShaderGroup.Attribute a: this.shader.attributes)
         {
-            int attributeId = this.attributeToId.getInt(a);
+            int attributeId = this.attributeToId.get(a);
             AttributeProperty prop = this.attributeProperties.get(attributeId);
             this.shader.setCustomBuffer(a, prop.vboId, a.count);
         }

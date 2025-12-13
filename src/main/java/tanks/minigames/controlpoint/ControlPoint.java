@@ -234,9 +234,7 @@ public class ControlPoint extends Minigame
     @Override
     public void draw()
     {
-        super.draw();
-
-        if (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).screenshotMode)
+        if (Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing)
             return;
 
         double barWidth = 260.0;
@@ -249,7 +247,7 @@ public class ControlPoint extends Minigame
             double cx = p.getCenterX();
             double cy = p.getCenterY();
 
-            Drawing.drawing.setColor(255, 255, 255, 255);
+            Drawing.drawing.setColor(255, 255, 255, 220);
             double textX = Drawing.drawing.gameToInterfaceCoordsX(cx);
             double textY = Drawing.drawing.gameToInterfaceCoordsY(cy) - 30;
             Drawing.drawing.setInterfaceFontSize(24);

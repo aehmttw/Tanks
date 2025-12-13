@@ -595,7 +595,7 @@ public class Game
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
 //		registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //		registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
-        registerMinigame(ControlPoint.class, "Control point", "Fight for control points with your teammates!");
+        registerMinigame(ControlPoint.class, "Control point", "Fight for control points with your teammates!------Only support multiplayer");
 
 		registerMetadataSelector(SelectorStackHeight.selector_name, SelectorStackHeight.class);
 		registerMetadataSelector(SelectorGroupID.selector_name, SelectorGroupID.class);

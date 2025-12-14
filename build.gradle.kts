@@ -64,6 +64,19 @@ rootProject.file("src/main/resources/hash.txt").writeText(getHash())
 description = "Tanks"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
+// Force UTF-8 everywhere
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test>().configureEach {
+    systemProperty("file.encoding", "UTF-8")
+}
+
+tasks.withType<JavaExec>().configureEach {
+    jvmArgs("-Dfile.encoding=UTF-8")
+}
+
 tasks.jar {
     archiveBaseName.set("Tanks")
     archiveVersion.set("${version}-${getHash()}")

@@ -1446,6 +1446,7 @@ public class Game
 		level.loadLevel();
 	}
 
+    /** Please use {@link #version Game.version} instead. */
     public static String readVersionFromFile()
     {
         try
@@ -1458,6 +1459,7 @@ public class Game
         }
     }
 
+    /** Please use {@link BaseWindow#buildDate Game.game.window.buildDate} instead. */
 	public static String readHashFromFile()
 	{
 		try

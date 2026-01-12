@@ -4,15 +4,10 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Player;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletArc;
-import tanks.bullet.BulletGas;
-import tanks.bullet.BulletPropertyCategory;
+import tanks.bullet.*;
 import tanks.gui.*;
-import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.registry.RegistryBullet;
-import tanks.tank.Tank;
 import tanks.tank.Turret;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
@@ -53,7 +48,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public ScreenEditorBullet(Pointer<Bullet> bullet, Screen screen)
     {
         super(bullet, screen);
-        bulletTypes.images = Game.registryBullet.getImageNames();
+        bulletTypes.itemIcons = Game.registryBullet.getIcons();
         for (int i = 0; i < Game.registryBullet.bulletEntries.size(); i++)
         {
             RegistryBullet.BulletEntry e = Game.registryBullet.bulletEntries.get(i);
@@ -130,7 +125,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 {
                     ITrigger el = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
 
-                    if ((p.id().equals("range") || p.id().equals("lifespan")) && target.get() instanceof BulletArc)
+                    if ((p.id().equals("range") || p.id().equals("lifespan")) && (target.get() instanceof BulletArc || target.get() instanceof BulletAirStrike))
                         continue;
 
                     this.uiElements.add(el);

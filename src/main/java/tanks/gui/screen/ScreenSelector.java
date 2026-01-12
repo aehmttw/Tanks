@@ -1,6 +1,5 @@
 package tanks.gui.screen;
 
-import basewindow.IModel;
 import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
@@ -10,7 +9,6 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.SelectorItemIcon;
-import tanks.item.ItemIcon;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;

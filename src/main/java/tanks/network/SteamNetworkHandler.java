@@ -1,6 +1,5 @@
 package tanks.network;
 
-import basewindow.BaseFile;
 import com.codedisaster.steamworks.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -9,7 +8,6 @@ import tanks.gui.Button;
 import tanks.gui.screen.*;
 import tanks.network.event.INetworkEvent;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

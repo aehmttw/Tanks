@@ -4,7 +4,9 @@ import tanks.*;
 import tanks.attribute.StatusEffect;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.event.*;
+import tanks.network.event.EventAirdropTank;
+import tanks.network.event.EventArcadeHit;
+import tanks.network.event.EventArcadeRampage;
 import tanks.tank.*;
 import tanks.translation.Translation;
 

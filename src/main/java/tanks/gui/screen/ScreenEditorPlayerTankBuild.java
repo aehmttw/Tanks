@@ -1,14 +1,19 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.*;
-import tanks.bullet.Bullet;
+import tanks.Consumer;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
 import tanks.gui.*;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
+import tanks.item.ItemIcon;
 import tanks.registry.RegistryItem;
 import tanks.tank.*;
-import tanks.tankson.*;
+import tanks.tankson.ArrayListIndexPointer;
+import tanks.tankson.FieldPointer;
+import tanks.tankson.Pointer;
+import tanks.tankson.Property;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -656,13 +661,13 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             this.rows += 1;
 
             String[] itemNames = new String[Game.registryItem.itemEntries.size()];
-            String[] itemImages = new String[Game.registryItem.itemEntries.size()];
+            ItemIcon[] itemImages = new ItemIcon[Game.registryItem.itemEntries.size()];
 
             for (int i = 0; i < Game.registryItem.itemEntries.size(); i++)
             {
                 RegistryItem.ItemEntry r = Game.registryItem.getEntry(i);
                 itemNames[i] = r.name;
-                itemImages[i] = r.image;
+                itemImages[i] = r.icon;
             }
 
             itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
@@ -687,7 +692,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 Game.screen = new ScreenAddSavedItem(screen, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
             });
 
-            itemSelector.images = itemImages;
+            itemSelector.itemIcons = itemImages;
             itemSelector.quick = true;
         }
 

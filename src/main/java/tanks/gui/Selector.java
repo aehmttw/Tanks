@@ -216,6 +216,12 @@ public class Selector implements IDrawable, ITrigger
             Drawing.drawing.drawInterfaceImage(images[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
         }
 
+        if (itemIcons != null)
+        {
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.drawInterfaceImage(itemIcons[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
+        }
+
         if (models != null)
         {
             Drawing.drawing.setColor(255, 255, 255);
@@ -374,6 +380,9 @@ public class Selector implements IDrawable, ITrigger
 
         if (this.models != null)
             s.drawModels = true;
+
+        if (this.itemIcons != null)
+            s.drawItemIcons = true;
 
         s.drawBehindScreen = this.drawBehindScreen;
         Game.screen = s;

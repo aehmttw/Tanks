@@ -606,10 +606,11 @@ public class Chunk
 
         public void sort()
         {
-            topFaces.sort(null);
-            bottomFaces.sort(Comparator.reverseOrder());
-            leftFaces.sort(null);
-            rightFaces.sort(Comparator.reverseOrder());
+            // Do not replace with <list>.sort(). This breaks the iOS compiler.
+            Collections.sort(topFaces);
+            Collections.sort(bottomFaces, Collections.reverseOrder());
+            Collections.sort(leftFaces);
+            Collections.sort(rightFaces, Collections.reverseOrder());
 
             for (int i = 0; i < 4; i++)
             {

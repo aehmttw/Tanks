@@ -67,7 +67,7 @@ public abstract class BaseWindow
     public boolean showMouseOnLaunch;
 
     public boolean touchscreen = false;
-    public boolean showKeyboard = false;
+    public boolean showKeyboard = true;
     public double keyboardOffset = 0;
     public double keyboardFraction = 1;
 

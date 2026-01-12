@@ -13,7 +13,6 @@ import tanks.gui.Button;
 import tanks.gui.EmptySpace;
 import tanks.gui.ITrigger;
 import tanks.gui.SelectorColor;
-import tanks.item.Item;
 import tanks.tank.Turret;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.FieldPointer;

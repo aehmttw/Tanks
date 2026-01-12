@@ -1,6 +1,5 @@
 package tanks.gui;
 
-import tanks.Game;
 import tanks.gui.screen.ScreenSelector;
 import tanks.item.ItemIcon;
 

@@ -3,12 +3,10 @@ package tanks.gui.screen.leveleditor;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.gui.TextBox;
 import tanks.gui.TextBoxSlider;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.leveleditor.selector.SelectorColor;
-import tanks.gui.screen.leveleditor.selector.SelectorNumber;
 
 public class OverlaySelectColor extends ScreenLevelEditorOverlay
 {

@@ -243,44 +243,33 @@ public class FontRenderer extends BaseFontRenderer
         double w = 0;
         char[] c = s.toCharArray();
 
-        try
+        for (int i = 0; i < c.length; i++)
         {
-            for (int i = 0; i < c.length; i++)
+            if (c[i] == '\u00C2')
+                continue;
+            else if (c[i] == '\u00A7')
             {
-                if (c[i] == '\u00C2')
+                if (s.length() <= i + 1)
                     continue;
-                else if (c[i] == '\u00A7')
+
+                if (c[i + 1] == 'r')
                 {
-                    if (s.length() <= i + 1)
-                        continue;
-
-                    if (c[i + 1] == 'r')
-                    {
-                        i++;
-                        continue;
-                    }
-
-                    if (s.length() <= i + 12)
-                        continue;
-
-                    i += 12;
+                    i++;
+                    continue;
                 }
-                else
-                {
-                    FontInfo font = findFontForChar(c[i]);
-                    Integer index = font.charIndexMap.get(c[i]);
-                    if (index == null) index = font.charIndexMap.getOrDefault('?', 31);
-                    w += (font.charSizes[index] + 1) * sX * 4;
-                }
+
+                if (s.length() <= i + 12)
+                    continue;
+
+                i += 12;
             }
-        }
-        catch (Exception e)
-        {
-            for (int i = 0; i < c.length; i++)
+            else
             {
-                System.out.print("(" + (int) c[i] + ")[" + c[i]  + "], ");
+                FontInfo font = findFontForChar(c[i]);
+                Integer index = font.charIndexMap.get(c[i]);
+                if (index == null) index = font.charIndexMap.getOrDefault('?', 31);
+                w += (font.charSizes[index] + 1) * sX * 4;
             }
-            System.out.println();
         }
 
         return Math.max(w - sX * 4, 0);

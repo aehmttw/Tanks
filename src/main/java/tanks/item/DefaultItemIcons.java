@@ -31,7 +31,7 @@ public class DefaultItemIcons
                     new Color(0, 0, 0, 0),
                     new Color(0, 0, 0, 0),
                     new Color(0, 0, 0, 0),
-                    new Color(255, 0, 0),
+                    new Color(255, 0, 0, 180),
                     new Color(255, 255, 0),
                     new Color(255, 0, 0),
                     new Color(255, 220, 0)},
@@ -43,7 +43,7 @@ public class DefaultItemIcons
                     new Color(0, 0, 0, 0),
                     new Color(255, 100, 0),
                     new Color(255, 160, 0),
-                    new Color(255, 0, 0),
+                    new Color(255, 0, 0, 180),
                     new Color(255, 255, 0),
                     new Color(255, 0, 0),
                     new Color(255, 220, 0)},
@@ -55,7 +55,7 @@ public class DefaultItemIcons
                     BulletEffect.fire_trail.trailEffects.get(0).frontColor,
                     new Color(0, 0, 0, 0),
                     new Color(0, 0, 0, 0),
-                    new Color(255, 0, 0),
+                    new Color(255, 0, 0, 180),
                     new Color(255, 255, 0),
                     new Color(255, 0, 0),
                     new Color(255, 220, 0)},
@@ -141,6 +141,15 @@ public class DefaultItemIcons
                     new Color(200, 200, 200),
                     new Color(200, 200, 255)},
             new Boolean[]{true, true}).register();
+
+    public static ItemIcon bullet_air_strike = new ItemIcon("bullet_air_strike", "bullet_air_strike",
+            new Color[]{
+                    BulletEffect.fire_trail.trailEffects.get(0).frontColor,
+                    new Color(255, 0, 0, 180),
+                    new Color(255, 255, 0),
+                    new Color(255, 0, 0),
+                    new Color(255, 220, 0)},
+            new Boolean[]{true, true, true, true, false, false}).register();
 
     public static ItemIcon mine = new ItemIcon("mine", "mine",
             new Color[]{

@@ -6,7 +6,6 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
 import tanks.bullet.Trail;
 import tanks.item.Item;
-import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
 
 import java.lang.annotation.Annotation;

@@ -1,6 +1,7 @@
 package tanks.obstacle;
 
-import basewindow.*;
+import basewindow.IBatchRenderableObject;
+import basewindow.ShaderGroup;
 import tanks.*;
 import tanks.rendering.ShaderObstacle;
 import tanks.tank.IAvoidObject;
@@ -445,7 +446,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	 * @return all the obstacles within a certain radius of the position */
 	public static ArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
 	{
-		obstacleOut.clear();
+        obstacleOut.clear();
 		for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
 			for (Obstacle o : c.obstacles)
                 if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)

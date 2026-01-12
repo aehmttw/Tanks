@@ -23,6 +23,8 @@ public class CrusadePlayer
     public CrusadePlayer(Player p)
     {
         this.player = p;
+        this.currentBuild = p.buildName;
+        this.ownedBuilds.add(this.currentBuild);
         this.itemBar = new ItemBar(p);
     }
 

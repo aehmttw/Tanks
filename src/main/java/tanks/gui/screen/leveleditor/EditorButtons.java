@@ -7,7 +7,6 @@ import tanks.Panel;
 import tanks.ToBooleanFunction;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -148,6 +147,9 @@ public class EditorButtons
 
     public void setPositionAndParams(ArrayList<EditorButton> arr, int pos, double h, double v)
     {
+        boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >=
+                Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
+
         if (pos == 1 || pos == 3)
             h = -h;
 
@@ -169,16 +171,33 @@ public class EditorButtons
 
         EditorButton prev = null;
 
+        int shown = 0;
+        int limit = 3;
+        if (pos == 0)
+            limit = 5;
+        else if (pos == 3)
+            limit = 4;
+        EditorButton[] prevShown = new EditorButton[limit];
         for (int i = 0; i < arr.size(); i++)
         {
+            double extraX = 0;
+            double extraY = 0;
+
+            if (Game.game.window.touchscreen && vertical && shown % limit == 0)
+            {
+                extraX = v;
+                extraY = -v * limit;
+
+                if (pos == 1)
+                    extraX = -extraX;
+
+//                if (pos == 3)
+//                    extraY = -extraY;
+            }
+
             EditorButton b = arr.get(i);
             if ((v != 0 ? v : h) < 0)
                 b = arr.get(arr.size() - i - 1);
-
-            if (i > 0 && prev != null)
-                b.setPosition(prev.posX + h, prev.posY + v);
-            else
-                b.setPosition(xs[pos], ys[pos]);
 
             b.fullInfo = true;
             b.sizeX = b.sizeY = 70 * editor.controlsSizeMultiplier;
@@ -186,8 +205,22 @@ public class EditorButtons
             b.imageSizeY = b.baseImageSY * editor.controlsSizeMultiplier;
 
             b.shown = b.shownFunc.apply();
+
+            if (i > 0 && prev != null)
+                b.setPosition(prev.posX + h + extraX, prev.posY + v + extraY);
+            else
+                b.setPosition(xs[pos], ys[pos]);
+
+            EditorButton ps = prevShown[shown % limit];
+            if (ps != null && !ps.subMenuButtons.isEmpty() && Game.game.window.touchscreen && vertical)
+                b.posX = ps.subMenuButtons.get(ps.subMenuButtons.size() - 1).posX + v;
+
             if (b.shown)
+            {
                 prev = b;
+                prevShown[shown % limit] = b;
+                shown++;
+            }
         }
     }
 
@@ -257,6 +290,22 @@ public class EditorButtons
             this.shownFunc = shownFunc;
             this.location = location;
 
+            if (Game.game.window.touchscreen && this.location != null)
+            {
+                Runnable f1 = this.function;
+                this.function = () ->
+                {
+                    f1.run();
+                    if (Game.screen instanceof ScreenLevelEditor)
+                    {
+                        if (((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this && !this.enabled)
+                            ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton = null;
+                        else
+                            ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton = this;
+                    }
+                };
+            }
+
             if (location != null)
                 location.add(this);
         }
@@ -312,13 +361,19 @@ public class EditorButtons
                     {
                         y = posY + (sizeY + 10) * (i + 1) - (totalSize - s);
                         if (y <= posY)
+                        {
+                            b.setPosition(posX, posY);
                             continue;
+                        }
                     }
                     else
                     {
                         x = posX + (sizeX + 10) * (i + 1) - (totalSize - s);
                         if (x <= posX)
+                        {
+                            b.setPosition(posX, posY);
                             continue;
+                        }
                     }
 
                     b.enableHover = !b.hoverTextRaw.isEmpty() && percentage == 1;
@@ -417,7 +472,7 @@ public class EditorButtons
         @Override
         public void onClick()
         {
-            if (this.enabled)
+            if (this.enabled || this.disabledClick)
                 super.onClick();
 
             Game.game.window.pressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
@@ -442,8 +497,11 @@ public class EditorButtons
             if (keybind == null)
                 return;
 
-            if (this.selected && ((this.subButtonsAsOptions && !this.enabled) || (!this.subButtonsAsOptions && this.enabled)))
-                hoverTime = 25;
+            int ht = Game.game.window.touchscreen ? 1 : 25;
+
+            if (((this.selected && ! Game.game.window.touchscreen) || (Game.screen instanceof ScreenLevelEditor && ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this))
+                    && ((this.subButtonsAsOptions && !this.enabled) || (!this.subButtonsAsOptions && this.enabled)))
+                hoverTime = ht;
             else if (this.hoverTime > 0)
             {
                 double totalSize = (sizeX + 10) * (subMenuButtons.size() + 1) - 10;
@@ -476,14 +534,17 @@ public class EditorButtons
 
                 if (!(this.subButtonsAsOptions || this.enabled))
                     hoverTime = 0;
-                else if (mx >= startX && mx <= endX && my >= startY && my <= endY)
-                    hoverTime = 25;
+                else if ((Game.screen instanceof ScreenLevelEditor && ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this)
+                        || (!Game.game.window.touchscreen && mx >= startX && mx <= endX && my >= startY && my <= endY))
+                    hoverTime = ht;
                 else
                     hoverTime = Math.max(0, this.hoverTime - Panel.frameFrequency);
             }
 
             boolean prev = showSubButtons;
+
             showSubButtons = hoverTime > 0;
+
             if (showSubButtons != prev)
                 menuOpenAge = age;
         }
@@ -517,6 +578,21 @@ public class EditorButtons
         public EditorButton addSubButtons(EditorButton... buttons)
         {
             Collections.addAll(subMenuButtons, buttons);
+
+            for (EditorButton b: buttons)
+            {
+                if (Game.game.window.touchscreen)
+                {
+                    Runnable r = b.function;
+                    b.function = () ->
+                    {
+                        r.run();
+                        if (Game.screen instanceof ScreenLevelEditor)
+                            ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton = this;
+                    };
+                }
+            }
+
             return this;
         }
 

@@ -1,7 +1,5 @@
 package tanks.tankson;
 
-import tanks.gui.input.InputBindingGroup;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

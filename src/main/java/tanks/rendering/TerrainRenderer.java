@@ -96,7 +96,10 @@ public class TerrainRenderer
 
     public HashMap<Integer, RegionRenderer> getRenderers(Class<? extends ShaderGroup> s)
     {
-        return renderers.computeIfAbsent(s, k -> new HashMap<>());
+        // Do not use ComputeIfAbsent. This breaks the iOS compiler.
+        if (!renderers.containsKey(s))
+            renderers.put(s, new HashMap<>());
+        return renderers.get(s);
     }
 
     public RegionRenderer getRenderer(IBatchRenderableObject o, double x, double y, boolean outOfBounds)

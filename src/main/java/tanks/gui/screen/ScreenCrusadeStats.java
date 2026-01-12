@@ -6,14 +6,11 @@ import tanks.gui.Button;
 import tanks.gui.Selector;
 import tanks.gui.SpeedrunTimer;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
 import tanks.item.ItemDummyBlockExplosion;
-import tanks.item.ItemMine;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 
 import java.util.ArrayList;

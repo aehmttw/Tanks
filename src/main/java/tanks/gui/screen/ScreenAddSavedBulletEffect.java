@@ -7,8 +7,6 @@ import tanks.bullet.BulletEffect;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBoxInstant;
-import tanks.item.Item;
-import tanks.translation.Translation;
 
 import java.util.ArrayList;
 

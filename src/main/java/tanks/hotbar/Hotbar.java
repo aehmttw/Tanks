@@ -457,6 +457,13 @@ public class Hotbar
 
 	public void drawCircle()
 	{
+        if (Game.playerTank == null || Game.game.window.drawingShadow)
+			return;
+
+        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
+        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);
+        Game.game.window.loadPerspective();
+
         this.itemBar.drawCircle();
 
         if (this.enabledAmmunitionBar)
@@ -465,13 +472,6 @@ public class Hotbar
             drawMines();
             drawShields();
         }
-
-        if (Game.playerTank == null || Game.game.window.drawingShadow)
-			return;
-
-        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);
-        Game.game.window.loadPerspective();
 
 		double mx = Drawing.drawing.getInterfaceMouseX();
 		double my = Drawing.drawing.getInterfaceMouseY();

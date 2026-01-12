@@ -148,6 +148,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
                 this.allItems.buttons.add(b);
 
+                b.setSubtext("Built-in");
                 b.translated = false;
 
                 b.itemIcon = i.item.icon;

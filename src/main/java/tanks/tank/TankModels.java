@@ -5,7 +5,6 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.registry.RegistryModelTank;
 import tanks.tankson.Serializable;
-import tanks.tankson.TanksONable;
 
 import java.util.ArrayList;
 

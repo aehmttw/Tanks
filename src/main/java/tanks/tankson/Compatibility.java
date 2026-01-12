@@ -2,12 +2,12 @@ package tanks.tankson;
 
 import basewindow.Color;
 import tanks.BiConsumer;
+import tanks.BiFunction;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
 import tanks.bullet.BulletGas;
 import tanks.item.ItemBullet;
-import tanks.item.ItemIcon;
 import tanks.item.ItemMine;
 import tanks.tank.Mine;
 import tanks.tank.Tank;
@@ -17,7 +17,6 @@ import tanks.tank.TankModels;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 public class Compatibility
 {

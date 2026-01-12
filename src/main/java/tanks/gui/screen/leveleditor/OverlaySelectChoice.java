@@ -2,11 +2,11 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.leveleditor.selector.SelectorChoice;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.Screen;
+import tanks.gui.screen.leveleditor.selector.SelectorChoice;
 
 import java.util.ArrayList;
 
@@ -135,5 +135,11 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
         }
 
         back.draw();
+    }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.setUnscaledLayoutParameters();
     }
 }

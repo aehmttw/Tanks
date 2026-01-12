@@ -30,7 +30,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
     public String[] reorderFail = new String[]{"The default player tank build must be free!"};
 
-    public Button reorder = new Button(this.centerX - this.objXSpace, this.centerY + 240, 350, 40, "Reorder", new Runnable()
+    public Button reorder = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "Reorder", new Runnable()
     {
         @Override
         public void run()

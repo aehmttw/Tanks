@@ -1,11 +1,11 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
 import tanks.bullet.DefaultItems;
-import tanks.attribute.AttributeModifier;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
@@ -512,7 +512,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (Game.bulletLocked || this.destroy)
             return;
 
-        int a = right ? selectedSecondaryAbility : selectedPrimaryAbility;
+        int a = right ? player.hotbar.itemBar.selectedSecondaryAbility : player.hotbar.itemBar.selectedPrimaryAbility;
 
         if (this.player.hotbar.itemBar.getSelectedAction(right) != this.lastItem && this.bufferCooldown > 0)
             return;
@@ -529,7 +529,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             s.networkIndex = -a - 1;
             if (s.attemptUse(this))
             {
-                Game.eventsOut.add(new EventUpdateTankAbility(this.player, right ? this.selectedSecondaryAbility : this.selectedPrimaryAbility));
+                Game.eventsOut.add(new EventUpdateTankAbility(this.player, right ? player.hotbar.itemBar.selectedSecondaryAbility : player.hotbar.itemBar.selectedPrimaryAbility));
                 this.didAction = true;
             }
         }

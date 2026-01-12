@@ -1,10 +1,15 @@
 package tanks.gui.screen;
 
-import tanks.*;
-import tanks.gui.*;
+import tanks.Consumer;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Producer;
+import tanks.gui.Button;
+import tanks.gui.ButtonList;
 import tanks.tank.TankPlayer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ScreenDebug extends Screen
 {

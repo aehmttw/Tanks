@@ -1,13 +1,19 @@
 package tanks;
 
-import tanks.attribute.*;
+import tanks.attribute.AttributeModifier;
+import tanks.attribute.EffectManager;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
-import tanks.tank.*;
-import tanks.tankson.*;
+import tanks.tank.IAvoidObject;
+import tanks.tank.NameTag;
+import tanks.tankson.MetadataProperty;
+import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
@@ -460,6 +466,9 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         @Override
         public Collection<Movable> containsErrors(Movable ignored)
         {
+            if (Game.framework == Game.Framework.libgdx)
+                return noErrorReturnValue();
+
             // compute symmetric difference (A xor B)
             Set<Movable> result = getDisjointMovables();
             return result.isEmpty() ? noErrorReturnValue() : result;

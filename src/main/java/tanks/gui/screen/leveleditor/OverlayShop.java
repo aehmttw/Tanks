@@ -11,6 +11,7 @@ import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenAddSavedItem;
 import tanks.gui.screen.ScreenEditorShopItem;
 import tanks.item.Item;
+import tanks.item.ItemIcon;
 import tanks.registry.RegistryItem;
 import tanks.tankson.MonitoredArrayListIndexPointer;
 
@@ -50,13 +51,13 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
         this.load();
 
         String[] itemNames = new String[Game.registryItem.itemEntries.size()];
-        String[] itemImages = new String[Game.registryItem.itemEntries.size()];
+        ItemIcon[] itemImages = new ItemIcon[Game.registryItem.itemEntries.size()];
 
         for (int i = 0; i < Game.registryItem.itemEntries.size(); i++)
         {
             RegistryItem.ItemEntry r = Game.registryItem.getEntry(i);
             itemNames[i] = r.name;
-            itemImages[i] = r.image;
+            itemImages[i] = r.icon;
         }
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
@@ -79,7 +80,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
             Game.screen = new ScreenAddSavedItem(this, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
         });
 
-        itemSelector.images = itemImages;
+        itemSelector.itemIcons = itemImages;
         itemSelector.quick = true;
     }
 

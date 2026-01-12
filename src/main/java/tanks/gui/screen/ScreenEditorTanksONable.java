@@ -13,11 +13,17 @@ import tanks.item.Item;
 import tanks.item.ItemIcon;
 import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
-import tanks.tankson.*;
+import tanks.tankson.FieldPointer;
+import tanks.tankson.ITanksONEditable;
+import tanks.tankson.Pointer;
+import tanks.tankson.Property;
 import tanks.translation.Translation;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlankBackgroundScreen, IScreenWithCompletion
 {

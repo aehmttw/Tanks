@@ -55,8 +55,10 @@ public class ItemBar
 	public ItemIcon selectedIcon = null;
 
 	public int selected = -1;
+    public int selectedPrimaryAbility = 0;
+    public int selectedSecondaryAbility = 1;
 
-	public double age;
+    public double age;
 
 	public boolean showItems = false;
 	public double timeSinceSwitch = Double.MAX_VALUE;
@@ -321,7 +323,7 @@ public class ItemBar
 
 		this.selected = (this.selected == index ? -1 : index);
 
-		int items = this.showItems ? item_bar_size : 0;
+        int items = this.showItems ? item_bar_size : 0;
 		if (index < items)
 		{
 			if (this.selected < 0)
@@ -351,9 +353,9 @@ public class ItemBar
 			}
 
 			if (s.item.rightClick)
-				p.selectedSecondaryAbility = index - items;
+                this.selectedSecondaryAbility = index - items;
 			else
-				p.selectedPrimaryAbility = index - items;
+                this.selectedPrimaryAbility = index - items;
 		}
 		else
 			return;
@@ -404,12 +406,12 @@ public class ItemBar
 
 			if (i == selected)
 				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, (100 - this.player.hotbar.percentHidden) * 2.55);
-			else if (i - items == p.selectedPrimaryAbility && p.selectedPrimaryAbility >= 0)
+			else if (i - items == this.selectedPrimaryAbility && this.selectedPrimaryAbility >= 0)
 			{
 				double a = (selected >= 0 && selected < hotbarSlots && !(slots[selected].item instanceof ItemEmpty) && !slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotPrimarySelectedR + eb, slotPrimarySelectedG + eb, slotPrimarySelectedB + eb, (100 - this.player.hotbar.percentHidden) * 1.27 * a);
 			}
-			else if (i - items == p.selectedSecondaryAbility && p.selectedSecondaryAbility >= 0)
+			else if (i - items == this.selectedSecondaryAbility && this.selectedSecondaryAbility >= 0)
 			{
 				double a = (selected >= 0 && selected < hotbarSlots && !(slots[selected].item instanceof ItemEmpty) && slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotSecondarySelectedR + eb, slotSecondarySelectedG + eb, slotSecondarySelectedB + eb, (100 - this.player.hotbar.percentHidden) * 1.27 * a);
@@ -538,12 +540,12 @@ public class ItemBar
 
 			if (i == selected)
 				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, opacity * 255);
-			else if (i - items == p.selectedPrimaryAbility && p.selectedPrimaryAbility >= 0)
+			else if (i - items == this.selectedPrimaryAbility && this.selectedPrimaryAbility >= 0)
 			{
 				double a = (selected >= 0 && selected < hotbarSlots && !(slots[selected].item instanceof ItemEmpty) && !slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotPrimarySelectedR + eb, slotPrimarySelectedG + eb, slotPrimarySelectedB + eb, opacity * 127 * a);
 			}
-			else if (i - items == p.selectedSecondaryAbility && p.selectedSecondaryAbility >= 0)
+			else if (i - items == this.selectedSecondaryAbility && this.selectedSecondaryAbility >= 0)
 			{
 				double a = (selected >= 0 && selected < hotbarSlots && !(slots[selected].item instanceof ItemEmpty) && slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotSecondarySelectedR + eb, slotSecondarySelectedG + eb, slotSecondarySelectedB + eb, opacity * 127 * a);

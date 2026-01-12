@@ -2,7 +2,6 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Panel;
-import tanks.hotbar.Hotbar;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerController;

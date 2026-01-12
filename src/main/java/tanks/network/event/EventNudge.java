@@ -43,10 +43,7 @@ public class EventNudge extends PersonalEvent
                 {
                     if (System.currentTimeMillis() - p.lastNudge < ScreenGame.ready_time_to_nudge * 9)
                     {
-                        for (int i = 0; i < 1000; i++)
-                        {
-                            serverHandler.sendEvent(new EventPlaySound("obliterate.ogg", 1, 1));
-                        }
+                        serverHandler.sendEvent(new EventPlaySound("obliterate.ogg", 1, 1));
                         serverHandler.sendEventAndClose(new EventKick("Don't exploit the nudge system!"));
                         return;
                     }

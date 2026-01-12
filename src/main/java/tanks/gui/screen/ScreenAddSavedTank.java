@@ -1,11 +1,16 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.*;
+import tanks.BiConsumer;
+import tanks.Drawing;
+import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
-import tanks.tank.*;
+import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
+import tanks.tank.TankPlayer;
+import tanks.tank.TankPurple;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;

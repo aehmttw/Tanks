@@ -1,9 +1,12 @@
 package tanks.obstacle;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Panel;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
-import tanks.rendering.*;
+import tanks.rendering.ShaderBeatBlocks;
+import tanks.rendering.ShaderGroundObstacleBeatBlock;
 import tanks.tankson.MetadataProperty;
 
 public class ObstacleBeatBlock extends ObstacleStackable

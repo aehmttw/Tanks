@@ -2,7 +2,6 @@ package tanks.gui.screen;
 
 import tanks.tank.Mine;
 import tanks.tank.MinePropertyCategory;
-import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 
 public class ScreenEditorMine extends ScreenEditorTanksONable<Mine>

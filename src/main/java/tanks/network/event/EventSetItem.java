@@ -4,9 +4,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
 import tanks.item.ItemEmpty;
-import tanks.item.ItemRemote;
 import tanks.network.NetworkUtils;
 
 import java.util.UUID;

@@ -1,12 +1,20 @@
 package tanks;
 
-import basewindow.*;
-import tanks.gui.*;
-import tanks.gui.screen.*;
+import basewindow.BaseWindow;
+import basewindow.InputCodes;
+import basewindow.ShaderGroup;
+import tanks.gui.ChatMessage;
+import tanks.gui.ScreenElement;
+import tanks.gui.screen.ScreenCrusadeDetails;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.obstacle.*;
+import tanks.obstacle.Face;
+import tanks.obstacle.Obstacle;
 import tanks.rendering.TerrainRenderer;
-import tanks.tank.*;
+import tanks.tank.IAvoidObject;
+import tanks.tank.Mine;
+import tanks.tank.Ray;
 
 import java.util.*;
 import java.util.stream.Collectors;

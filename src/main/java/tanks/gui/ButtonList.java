@@ -393,8 +393,16 @@ public class ButtonList
         return s;
     }
 
+    // Do not replace this with a filter, it will break the iOS compiler.
     public void filter(String s)
     {
-        buttons.removeIf(b -> !b.text.toLowerCase().contains(s.toLowerCase()));
+        for (int i = 0; i < this.buttons.size(); i++)
+        {
+            if (!buttons.get(i).text.toLowerCase().contains(s.toLowerCase()))
+            {
+                buttons.remove(i);
+                i--;
+            }
+        }
     }
 }

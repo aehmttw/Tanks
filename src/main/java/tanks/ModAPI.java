@@ -5,7 +5,6 @@ import tanks.network.NetworkEventMap;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
-import tanks.tank.TankModels;
 import tanks.tank.TankNPC;
 
 import java.util.ArrayList;

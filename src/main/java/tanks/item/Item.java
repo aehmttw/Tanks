@@ -6,9 +6,6 @@ import tanks.tank.Tank;
 import tanks.tank.TankPlayerRemote;
 import tanks.tankson.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 @TanksONable("item")
 public abstract class Item extends GameObject
 {

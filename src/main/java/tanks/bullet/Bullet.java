@@ -2,17 +2,29 @@ package tanks.bullet;
 
 import basewindow.Color;
 import tanks.*;
-import tanks.attribute.*;
-import tanks.gui.*;
-import tanks.gui.screen.*;
+import tanks.attribute.AttributeModifier;
+import tanks.attribute.EffectManager;
+import tanks.attribute.StatusEffect;
+import tanks.gui.ChatMessage;
+import tanks.gui.IFixedMenu;
+import tanks.gui.Scoreboard;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
-import tanks.obstacle.*;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
-import tanks.tankson.*;
+import tanks.tankson.ICopyable;
+import tanks.tankson.ITanksONEditable;
+import tanks.tankson.Property;
+import tanks.tankson.TanksONable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 @TanksONable("bullet")
 public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
@@ -62,7 +74,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	public double opacityMultiplier = 1;
 
 	@Property(id = "effect", name = "Effect", desc = "Defines the bullet's trail, glow, and particle effects", category = BulletPropertyCategory.appearance)
-	public BulletEffect effect = BulletEffect.trail.getCopy();
+	public BulletEffect effect;
 
 	public double iPosZ;
 	public boolean autoZ = true;
@@ -234,6 +246,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	public Bullet()
 	{
 		super(0, 0);
+        this.effect = BulletEffect.trail.getCopy();
 		this.isTemplate = true;
 		this.typeName = bullet_class_name;
 	}
@@ -241,7 +254,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 	public Bullet(double x, double y, Tank t, boolean affectsMaxLiveBullets, ItemBullet.ItemStackBullet item)
 	{
 		super(x, y);
-		this.typeName = bullet_class_name;
+        this.effect = BulletEffect.trail.getCopy();
+        this.typeName = bullet_class_name;
 
 		this.isTemplate = false;
 

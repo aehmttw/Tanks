@@ -24,7 +24,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
         };
     });
 
-    public Button reorder = new Button(this.centerX - 380, this.centerY + 300, this.objWidth, this.objHeight, "Reorder teams", new Runnable()
+    public Button reorder = new Button(this.centerX - 380, this.centerY + 300, 350, 40, "Reorder teams", new Runnable()
     {
         @Override
         public void run()
@@ -103,4 +103,5 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
         this.selector.setChoice(editor, editor.mousePlaceable, this.selector.selectedIndex);
         super.escape();
     }
+
 }

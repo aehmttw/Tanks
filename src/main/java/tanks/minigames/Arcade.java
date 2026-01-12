@@ -1,8 +1,8 @@
 package tanks.minigames;
 
 import tanks.*;
-import tanks.bullet.Bullet;
 import tanks.attribute.StatusEffect;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.IDarkScreen;
 import tanks.gui.screen.ScreenArcadeBonuses;
 import tanks.gui.screen.ScreenGame;

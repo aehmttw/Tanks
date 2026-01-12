@@ -143,7 +143,10 @@ public class ChatBox extends TextBox
 		}
 
         if (justSelectedByKeybind && !justSel)
+        {
+            Game.game.window.getRawTextKeys().clear();
             justSelectedByKeybind = false;
+        }
 	}
 
 	public boolean checkMouse(double mx, double my, boolean isPressedDown)

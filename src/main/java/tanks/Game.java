@@ -1001,6 +1001,9 @@ public class Game
 		Game.eventsIn.clear();
 		Game.eventsOut.clear();
 
+        if (Game.steamNetworkHandler.initialized)
+            Game.steamNetworkHandler.leaveParty();
+
 		cleanUp();
 
 		Game.crashMessage = e.toString();

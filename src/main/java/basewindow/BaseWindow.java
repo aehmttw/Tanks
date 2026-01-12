@@ -1,6 +1,7 @@
 package basewindow;
 
 import basewindow.transformation.*;
+import tanks.Game;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,6 +92,7 @@ public abstract class BaseWindow
     public double yOffset = 0;
     public double zOffset = 0;
 
+
     public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1),
 //            new ScaleAboutPoint(this, 1,  Math.sqrt(0.5), 1, 0.5, 0.5, 0.5),
 //            new RotationAboutPoint(this, 0, 0, Math.PI / 4, 0.5, 0.5, 0.5),
@@ -175,6 +177,10 @@ public abstract class BaseWindow
         lastFrame = time;
 
         frameFrequency = Math.max(0, (time - lastFrameTime) / 10000000.0);
+//        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_F8))
+//        {
+//            frameFrequency *= 5;
+//        }
     }
 
     public abstract void run();

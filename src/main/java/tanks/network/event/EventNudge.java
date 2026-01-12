@@ -39,7 +39,7 @@ public class EventNudge extends PersonalEvent
             for (ServerHandler serverHandler: ScreenPartyHost.server.connections)
             {
                 Player p = serverHandler.player;
-                if (p.clientID.equals(this.clientID))
+                if (p.clientID != null && p.clientID.equals(this.clientID))
                 {
                     if (System.currentTimeMillis() - p.lastNudge < ScreenGame.ready_time_to_nudge * 9)
                     {

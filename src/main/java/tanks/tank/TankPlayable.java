@@ -362,14 +362,4 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
         this.tertiaryColor.set(savedColors[2]);
         this.emblemColor.set(savedColors[3]);
     }
-
-    @Override
-    public void draw()
-    {
-        super.draw();
-        Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.setFontSize(24);
-        Drawing.drawing.drawText(this.posX, this.posY, 50, this.player.hotbar.itemBar.selectedPrimaryAbility + "");
-    }
-
 }

@@ -15,6 +15,8 @@ import tanks.tank.TankPlayerController;
 import tanks.tank.Turret;
 import tanks.translation.Translation;
 
+import java.text.DecimalFormat;
+
 public class Hotbar
 {
 	public ItemBar itemBar;
@@ -65,6 +67,8 @@ public class Hotbar
 	public double circlePersistenceVisibility = 0;
 
 	public static boolean circular = true;
+
+    final DecimalFormat decimal_format = new DecimalFormat("0.0##");
 
 	public Hotbar(Player p)
 	{
@@ -983,7 +987,7 @@ public class Hotbar
 
 			Drawing.drawing.setColor(0, 0, 0, opacity1 * 255, 255);
 			Drawing.drawing.setFontSize(6 * ms);
-			Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY - 9, z, Game.playerTank.health + "", false);
+			Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY - 9, z, decimal_format.format(Game.playerTank.health), false);
 			Drawing.drawing.fillRect(Game.playerTank.posX, Game.playerTank.posY - 2, z, 20, 2, false);
 			Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY + 5, z, "" + (Game.playerTank.baseHealth + s.item.max), false);
 

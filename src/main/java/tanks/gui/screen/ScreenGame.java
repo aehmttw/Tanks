@@ -3006,7 +3006,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                         readyNudgeButton.draw();
                 }
 
-                if (!this.shopItemButtons.isEmpty() && this.readyButton.enabled)
+                if (!this.shopItemButtons.isEmpty() && this.readyButton.enabled && !(Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).hideShop))
                 {
                     enterShop.enableHover = newItemsNotification;
                     enterShop.fullInfo = true;
@@ -3016,7 +3016,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                         drawExclamation(enterShop);
                 }
 
-                if (this.playerBuildButtons.size() > 1 && readyButton.enabled)
+                if (this.playerBuildButtons.size() > 1 && readyButton.enabled && !(Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).hideShop))
                 {
                     viewBuilds.enableHover = newBuildsNotification;
                     viewBuilds.fullInfo = true;

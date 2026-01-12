@@ -8,14 +8,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
 import tanks.Crusade;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
+import tanks.gui.ChatBox;
 import tanks.gui.screen.ScreenOverlayOnline;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.event.EventKick;
-import tanks.network.event.EventSendClientDetails;
-import tanks.network.event.INetworkEvent;
-import tanks.network.event.IStackableEvent;
+import tanks.network.event.*;
 import tanks.network.event.online.EventSendOnlineClientDetails;
 
 import java.util.HashMap;
@@ -80,7 +79,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 
         ScreenPartyLobby.muted = false;
 		ScreenPartyLobby.isClient = true;
-	}
+        ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () -> Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText)));
+    }
 
     public void close()
 	{

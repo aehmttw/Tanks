@@ -90,6 +90,7 @@ public class Arcade extends Minigame
         this.introMusic = "arcade/battle_intro.ogg";
         this.disableFriendlyFire = true;
         this.removeMusicWhenDead = true;
+        this.hideShop = true;
 
         if (Game.deterministicMode)
             this.random = new Random(0);

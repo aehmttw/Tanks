@@ -153,7 +153,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
     public void editTank(int index)
     {
-        Pointer<TankPlayer.ShopTankBuild> p = new ArrayListIndexPointer<>(editor.level.playerBuilds, index);
+        Pointer<TankPlayer.ShopTankBuild> p = new ArrayListIndexPointer<>(TankPlayer.ShopTankBuild.class, editor.level.playerBuilds, index);
         ScreenEditorPlayerTankBuild s = new ScreenEditorPlayerTankBuild(p, this);
 
         if (editor.level.playerBuilds.size() == 1)
@@ -222,7 +222,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     public Pointer<TankPlayer.ShopTankBuild> addTank(TankPlayer.ShopTankBuild t, boolean select)
     {
         this.editor.level.playerBuilds.add(t);
-        return new ArrayListIndexPointer<>(this.editor.level.playerBuilds, this.editor.level.playerBuilds.size() - 1).cast();
+        return new ArrayListIndexPointer<>(TankPlayer.ShopTankBuild.class, this.editor.level.playerBuilds, this.editor.level.playerBuilds.size() - 1);
     }
 
     @Override

@@ -128,7 +128,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
     public Pointer<TankPlayer.ShopTankBuild> addTank(TankPlayer.ShopTankBuild t, boolean select)
     {
         this.crusade.crusadeShopBuilds.add(new TankPlayer.CrusadeShopTankBuild(t));
-        return new ArrayListIndexPointer<>(this.crusade.crusadeShopBuilds, this.crusade.crusadeShopBuilds.size() - 1).cast();
+        return new ArrayListIndexPointer<>(TankPlayer.CrusadeShopTankBuild.class, this.crusade.crusadeShopBuilds, this.crusade.crusadeShopBuilds.size() - 1).cast();
     }
 
     @Override
@@ -206,7 +206,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             {
                 try
                 {
-                    ScreenEditorCrusadeShopItem s = new ScreenEditorCrusadeShopItem(new MonitoredArrayListIndexPointer<>(sc.crusade.crusadeShopItems, ii, false, sc::refreshButtons), Game.screen);
+                    ScreenEditorCrusadeShopItem s = new ScreenEditorCrusadeShopItem(new MonitoredArrayListIndexPointer<>(Item.CrusadeShopItem.class, sc.crusade.crusadeShopItems, ii, false, sc::refreshButtons), Game.screen);
                     s.onComplete = sc::refreshButtons;
                     Game.screen = s;
                 }
@@ -247,7 +247,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
         {
             super(0, 0, 350, 40, "", () ->
             {
-                ScreenEditorPlayerTankBuild<TankPlayer.CrusadeShopTankBuild> s = new ScreenEditorPlayerTankBuild<TankPlayer.CrusadeShopTankBuild>(new MonitoredArrayListIndexPointer<>(sc.crusade.crusadeShopBuilds, ii, false, sc::refreshButtons), Game.screen);
+                ScreenEditorPlayerTankBuild<TankPlayer.CrusadeShopTankBuild> s = new ScreenEditorPlayerTankBuild<TankPlayer.CrusadeShopTankBuild>(new MonitoredArrayListIndexPointer<>(TankPlayer.CrusadeShopTankBuild.class, sc.crusade.crusadeShopBuilds, ii, false, sc::refreshButtons), Game.screen);
                 s.onComplete = sc::refreshButtons;
                 Game.screen = s;
             });
@@ -322,7 +322,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
                 try
                 {
                     this.crusade.crusadeShopItems.add(new Item.CrusadeShopItem(i));
-                    ScreenEditorCrusadeShopItem s = new ScreenEditorCrusadeShopItem(new MonitoredArrayListIndexPointer<Item.CrusadeShopItem>(crusade.crusadeShopItems, crusade.crusadeShopItems.size() - 1, false, this::refreshButtons), this);
+                    ScreenEditorCrusadeShopItem s = new ScreenEditorCrusadeShopItem(new MonitoredArrayListIndexPointer<Item.CrusadeShopItem>(Item.CrusadeShopItem.class, crusade.crusadeShopItems, crusade.crusadeShopItems.size() - 1, false, this::refreshButtons), this);
                     s.onComplete = this::refreshButtons;
                     Game.screen = s;
                 }

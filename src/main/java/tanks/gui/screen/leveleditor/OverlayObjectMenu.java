@@ -90,7 +90,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     public Button editTank = new Button(0, 0, 40, 40, "", () ->
     {
         TankAIControlled t = editor.level.customTanks.get(editor.tankNum - Game.registryTank.tankEntries.size());
-        Pointer<TankAIControlled> p = new ArrayListIndexPointer<>(editor.level.customTanks, editor.tankNum - Game.registryTank.tankEntries.size());
+        Pointer<TankAIControlled> p = new ArrayListIndexPointer<>(TankAIControlled.class, editor.level.customTanks, editor.tankNum - Game.registryTank.tankEntries.size());
         ScreenEditorTank s = new ScreenEditorTank(p, this);
         s.onComplete = () ->
         {
@@ -539,7 +539,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.editor.setMousePlaceable();
         }
 
-        return new ArrayListIndexPointer<>(this.editor.level.customTanks, this.editor.level.customTanks.size() - 1);
+        return new ArrayListIndexPointer<>(TankAIControlled.class, this.editor.level.customTanks, this.editor.level.customTanks.size() - 1);
     }
 
     @Override

@@ -678,7 +678,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                     i.stackSize = 0;
                     target.get().abilities.add(i);
 
-                    ScreenEditorItem s = new ScreenEditorItem(new ArrayListIndexPointer<>(target.get().abilities, target.get().abilities.size() - 1), screen);
+                    ScreenEditorItem s = new ScreenEditorItem(new ArrayListIndexPointer<>((Class<Item.ItemStack<?>>)(Class<?>) Item.ItemStack.class, target.get().abilities, target.get().abilities.size() - 1), screen);
                     s.onComplete = () ->
                     {
                         uiElements.clear();
@@ -719,7 +719,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                     @Override public double minValue() { return 0; }
                     @Override public double maxValue() { return 0; }
                 };
-                SelectorDrawable s = (SelectorDrawable) getUIElementForField(new ArrayListIndexPointer<>(t.abilities, i), p);
+                SelectorDrawable s = (SelectorDrawable) getUIElementForField(new ArrayListIndexPointer<>((Class<Item.ItemStack<?>>)(Class<?>) Item.ItemStack.class, t.abilities, i), p);
                 s.sizeX *= 1.5;
                 s.imageXOffset = - s.sizeX / 2 + s.sizeY / 2;
                 this.uiElements.add(s);

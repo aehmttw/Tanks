@@ -259,7 +259,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         }
         , "Select (%s)", Game.game.input.editorSelect
     )
-        .addSubButtons(new EditorButton("wand.png", 40, 40, () ->
+        .addSubButtons(new EditorButton("wand_contiguous.png", 40, 40, () ->
             {
                 this.setMode(EditorMode.select);
                 selectTool = SelectTool.wand_contiguous;

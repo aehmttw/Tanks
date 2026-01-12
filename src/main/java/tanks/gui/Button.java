@@ -268,13 +268,6 @@ public class Button implements IDrawable, ITrigger
 
 		drawing.drawInterfaceText(posX + this.textOffsetX, posY + this.textOffsetY, t);
 
-		if (this.subtext != null)
-		{
-			double ox = this.enableHover ? this.sizeY / 2 : 0;
-			drawing.setInterfaceFontSize(12);
-			drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2 - ox, this.posY + this.sizeY * 0.325, this.subtext, true);
-		}
-
         if (this.itemIcon != null)
         {
             if (this.drawImageShadow)
@@ -287,7 +280,8 @@ public class Button implements IDrawable, ITrigger
             drawing.drawInterfaceImage(itemIcon, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX, this.imageSizeY);
 
         }
-		else if (this.image != null)
+
+        if (this.image != null)
 		{
 			if (this.drawImageShadow)
 			{
@@ -304,6 +298,14 @@ public class Button implements IDrawable, ITrigger
 			Drawing.drawing.setColor(127, 180, 255);
 			drawing.drawInterfaceModel2D(model, this.posX + this.imageXOffset, this.posY + this.imageYOffset, 0,this.imageSizeX * 0.75, this.imageSizeY * 0.75, this.imageSizeY * 0.75);
 		}
+
+        if (this.subtext != null)
+        {
+            drawing.setColor(this.textColR, this.textColG, this.textColB);
+            double ox = (this.enableHover && !this.fullInfo) ? this.sizeY / 2 : 0;
+            drawing.setInterfaceFontSize(12);
+            drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2 - ox, this.posY + this.sizeY * 0.325, this.subtext, true);
+        }
 
 		if (this.fontSize < 0)
 			Drawing.drawing.setInterfaceFontSize(this.sizeY * 0.6);

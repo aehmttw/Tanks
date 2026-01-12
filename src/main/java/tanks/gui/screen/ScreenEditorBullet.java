@@ -29,6 +29,8 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public Button col2Button;
     public Button col3Button;
 
+    public ScreenEditorItem screenEditorItem;
+
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
     {
         Game.screen = new ScreenAddSavedItem(this, (b) ->
@@ -70,7 +72,6 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             }
         };
 
-//        bullet.get().initTrails();
         this.title = "Edit %s";
         this.objName = "bullet";
     }
@@ -511,5 +512,14 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             this.load.draw();
             this.save.draw();
         }
+    }
+
+    @Override
+    public void validateChangedProperty(Pointer<?> f, Property p, Object oldValue)
+    {
+        if (this.screenEditorItem != null)
+            this.screenEditorItem.validateChangedProperty(f, p, oldValue);
+        else
+            super.validateChangedProperty(f, p, oldValue);
     }
 }

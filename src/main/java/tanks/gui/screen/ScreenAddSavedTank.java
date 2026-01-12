@@ -338,7 +338,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                         TankAIControlled t1 = Game.currentLevel.customTanks.get(i);
                         if (t1.name.equals(tt.name))
                         {
-                            duplicate = new ArrayListIndexPointer<>(Game.currentLevel.customTanks, i);
+                            duplicate = new ArrayListIndexPointer<>(TankAIControlled.class, Game.currentLevel.customTanks, i);
                             break;
                         }
                     }

@@ -3,9 +3,12 @@ package tanks.gui.screen;
 import tanks.tank.Mine;
 import tanks.tank.MinePropertyCategory;
 import tanks.tankson.Pointer;
+import tanks.tankson.Property;
 
 public class ScreenEditorMine extends ScreenEditorTanksONable<Mine>
 {
+    public ScreenEditorItem screenEditorItem;
+
     public ScreenEditorMine(Pointer<Mine> mine, Screen screen)
     {
         super(mine, screen);
@@ -35,5 +38,14 @@ public class ScreenEditorMine extends ScreenEditorTanksONable<Mine>
 
         this.topLevelButtons.get(1).imageSizeX *= 0.8;
         this.topLevelButtons.get(1).imageSizeY *= 0.8;
+    }
+
+    @Override
+    public void validateChangedProperty(Pointer<?> f, Property p, Object oldValue)
+    {
+        if (this.screenEditorItem != null)
+            this.screenEditorItem.validateChangedProperty(f, p, oldValue);
+        else
+            super.validateChangedProperty(f, p, oldValue);
     }
 }

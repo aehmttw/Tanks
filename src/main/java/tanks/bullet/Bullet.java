@@ -1116,13 +1116,13 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public void addHomingParticles()
     {
-        if (Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled && !this.homingSilent)
+        if (Game.bulletTrails && Math.random() < Panel.frameFrequency * Game.effectMultiplier && Game.effectsEnabled && !this.homingSilent && this.effect.enableHomingParticles)
         {
             Effect e = Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.piece);
             e.setColorsFromBullet(this);
             e.maxAge /= 2;
 
-            e.setColorWithNoise(255, 120, 0, 50);
+            e.setColorWithNoise(this.effect.homingParticleColor, 50);
             e.setGlowColor(e.color);
 
             double v = this.homingSharpness > 0 ? 1 : -1;

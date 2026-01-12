@@ -1,6 +1,7 @@
 package tanks.gui;
 
 import tanks.gui.screen.ScreenSelector;
+import tanks.item.Item;
 import tanks.item.ItemIcon;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Collection;
 public class SelectorItemIcon extends SelectorImage
 {
     public ItemIcon selectedIcon;
+    public Item itemBeingEdited;
 
     public SelectorItemIcon(double x, double y, double sX, double sY, String text, Collection<ItemIcon> o, Runnable f)
     {
@@ -67,6 +69,28 @@ public class SelectorItemIcon extends SelectorImage
     {
         ScreenSelector s = super.getSelectorScreen();
         s.drawItemIcons = true;
+        s.beforeItems = 1;
+        s.itemBeingEdited = this.itemBeingEdited;
+        s.defaultIcon = this.itemBeingEdited.getAutomaticIcon();
+
+        Button b1 = new Button(0, 0, s.objWidth, s.objHeight, "", () ->
+        {
+            ItemIcon ii = this.itemBeingEdited.getAutomaticIcon();
+            ((SelectorItemIcon) (s.selector)).selectedIcon = ii;
+            this.itemBeingEdited.autoIcon = true;
+
+            s.selector.selectedOption = ii.registryIndex;
+            s.selector.itemIcons[ii.registryIndex] = ii;
+
+            if (s.iconColors != null)
+                s.iconColors.refreshButtons();
+        }, "Automatically pick an icon for this item---based on what the item might look---like when used ingame.");
+        b1.itemIcon = s.defaultIcon;
+        b1.setSubtext("Auto");
+        b1.fullInfo = true;
+        s.buttonList.buttons.add(0, b1);
+        s.buttonList.sortButtons();
+
         return s;
     }
 

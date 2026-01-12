@@ -537,11 +537,13 @@ public class TextBox implements IDrawable, ITrigger
 		{
 			if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_C))
 			{
+                Game.game.window.textPressedKeys.remove((Integer) InputCodes.KEY_V);
 				this.copy();
 			}
 
 			if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_V))
 			{
+                Game.game.window.textPressedKeys.remove((Integer) InputCodes.KEY_V);
 				this.paste();
 			}
 
@@ -699,7 +701,6 @@ public class TextBox implements IDrawable, ITrigger
 
 	public void copy()
 	{
-		Game.game.window.textPressedKeys.clear();
 		Game.game.window.textValidPressedKeys.clear();
 		Game.game.window.getRawTextKeys().clear();
 
@@ -708,7 +709,6 @@ public class TextBox implements IDrawable, ITrigger
 
 	public void paste()
 	{
-		Game.game.window.textPressedKeys.clear();
 		Game.game.window.textValidPressedKeys.clear();
 		Game.game.window.getRawTextKeys().clear();
 

@@ -97,6 +97,7 @@ Lancelot<br>
 Parth Iyer (ghostlypi)<br>
 brodiscool0902 on Discord<br>
 Blimpdxmk2<br>
+NekoSora<br>
 
 ### Supporters:
 SapphireDrew<br>

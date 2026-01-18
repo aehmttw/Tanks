@@ -1,27 +1,21 @@
 package lwjglwindow;
 
 import basewindow.*;
-import basewindow.transformation.Matrix4;
-import basewindow.transformation.Transformation;
+import basewindow.transformation.*;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWImage;
-import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.*;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.*;
+import tanks.Game;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
+import java.nio.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -147,7 +141,7 @@ public class LWJGLWindow extends BaseWindow
                     if (zhCnFontInputStream == null) break;
                     if (zhCnTxtInputStream == null)
                     {
-                        System.err.println("Failed to load zh cn font " + count);
+                        Game.logger.println("Failed to load zh cn font " + count);
                         continue;
                     }
                     Scanner scanner = new Scanner(Objects.requireNonNull(zhCnTxtInputStream), StandardCharsets.UTF_8.name());
@@ -166,6 +160,7 @@ public class LWJGLWindow extends BaseWindow
         }
         catch (IOException e)
         {
+            e.printStackTrace(Game.logger);
             e.printStackTrace();
         }
 
@@ -238,6 +233,18 @@ public class LWJGLWindow extends BaseWindow
 				validPressedButtons.remove((Integer) button);
 			}
 		});
+
+        glfwSetDropCallback(window, (windowHandle, count, names) ->
+        {
+            List<String> droppedFiles = new ArrayList<>(count);
+            for (int i = 0; i < count; i++) {
+                long namePtr = MemoryUtil.memGetAddress(names + ((long) i * Pointer.POINTER_SIZE));
+                String fileName = MemoryUtil.memUTF8(namePtr);
+                droppedFiles.add(fileName);
+            }
+
+            windowHandler.onFilesDropped(droppedFiles.toArray(new String[0]));
+        });
 
 		try (MemoryStack stack = stackPush())
 		{
@@ -765,7 +772,7 @@ public class LWJGLWindow extends BaseWindow
 		if (this.drawingShadow)
 			glOrtho(0, absoluteWidth, absoluteHeight, 0, -absoluteDepth, absoluteDepth);
 		else
-//			glOrtho(-absoluteWidth / 2, absoluteWidth / 2, absoluteHeight / 2, -absoluteHeight / 2, -absoluteDepth * m, absoluteDepth * m);
+//			glOrtho(-absoluteWidth / 2, absoluteWidth / 2, absoluteHeight / 2, -absoluteHeight / 2, -absoluteDepth, absoluteDepth);
 			glFrustum(
 					-absoluteWidth / (absoluteDepth * 2.0) * m,
 					absoluteWidth / (absoluteDepth * 2.0) * m,

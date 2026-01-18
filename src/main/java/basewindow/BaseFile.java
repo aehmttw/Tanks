@@ -13,6 +13,8 @@ public abstract class BaseFile
         this.path = path;
     }
 
+    public abstract String read();
+
     public abstract boolean exists();
 
     public abstract boolean create() throws IOException;
@@ -40,4 +42,8 @@ public abstract class BaseFile
     public abstract void mkdirs();
 
     public abstract long lastModified();
+
+    public abstract boolean moveTo(String s);
+
+    public abstract boolean moveTo(String s, boolean override);
 }

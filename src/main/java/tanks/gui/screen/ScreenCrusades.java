@@ -17,10 +17,9 @@ public class ScreenCrusades extends Screen
 	public static int page = 0;
 	public static boolean sortByTime = false;
 
-	public SavedFilesList fullCrusadesList;
-	public SavedFilesList crusadesList;
+	public SavedFilesList fullCrusadesList, crusadesList;
 
-	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4.6, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
 	{
 		@Override
 		public void run()
@@ -31,7 +30,7 @@ public class ScreenCrusades extends Screen
 		}
 	}, "");
 
-	Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4, this.objHeight, this.objHeight, "", new Runnable()
+	Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4.6, this.objHeight, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -221,6 +220,19 @@ public class ScreenCrusades extends Screen
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "Crusades");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5.35, "Crusades");
+
+        Drawing.drawing.setInterfaceFontSize(16);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Drag and drop levels here to import them");
+	}
+
+	@Override
+	public void onFilesDropped(String... filePaths)
+	{
+		ScreenSavedLevels.importLevels(filePaths, Game.crusadeDir, "crusade", s -> new Crusade(s, "test"), () ->
+		{
+			fullCrusadesList.refresh();
+			createNewCrusadesList();
+		}, "... Maybe they were levels?");
 	}
 }

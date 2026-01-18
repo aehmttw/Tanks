@@ -254,6 +254,9 @@ public class SteamNetworkHandler
 
 					int bytesReceived = packetReadBuffer.getInt();
 
+                    if (bytesReceived < 0)
+                        continue;
+
 					byte[] bytes = new byte[bytesReceived];
 					packetReadBuffer.get(bytes);
 					readBuf.writeInt(bytesReceived);

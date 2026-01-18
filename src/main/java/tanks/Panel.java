@@ -12,6 +12,7 @@ import tanks.item.Item;
 import tanks.network.Client;
 import tanks.network.MessageReader;
 import tanks.network.NetworkEventMap;
+import tanks.network.ServerHandler;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
@@ -351,21 +352,37 @@ public class Panel
 			for (int i = 0; i < Game.eventsIn.size(); i++)
 			{
 				if (!(Game.eventsIn.get(i) instanceof IOnlineServerEvent))
-				{
-					INetworkEvent e = Game.eventsIn.get(i);
+                {
+                    INetworkEvent e = Game.eventsIn.get(i);
 
-					if (e instanceof IStackableEvent)
-						stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
-					else
-						Game.eventsIn.get(i).execute();
-				}
+                    try
+                    {
+                        if (e instanceof IStackableEvent)
+                            stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+                        else
+                            Game.eventsIn.get(i).execute();
+                    }
+                    catch (Exception ex)
+                    {
+                        handleEventError(e, ex);
+                    }
+                }
 			}
 
 			Game.eventsIn.clear();
 		}
 
 		for (INetworkEvent e: stackedEventsIn.values())
-            e.execute();
+        {
+            try
+            {
+                e.execute();
+            }
+            catch (Exception ex)
+            {
+                handleEventError(e, ex);
+            }
+        }
 
 		stackedEventsIn.clear();
 
@@ -673,6 +690,34 @@ public class Panel
 		if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 			Game.eventsOut.clear();
 	}
+
+    public void handleEventError(INetworkEvent e, Exception ex)
+    {
+        System.err.println("A network exception has occurred: " + ex.toString());
+        ex.printStackTrace();
+
+        if (e instanceof PersonalEvent)
+        {
+            EventKick ev = new EventKick("A network exception has occurred: " + ex.toString());
+            ev.clientID = null;
+
+            if (((PersonalEvent) e).clientID == null)
+            {
+                Game.eventsIn.add(ev);
+
+                Client.handler.close();
+                ScreenPartyLobby.connections.clear();
+            }
+            else if (ScreenPartyHost.isServer)
+            {
+                for (ServerHandler sh: ScreenPartyHost.server.connections)
+                {
+                    if (sh.clientID.equals(((PersonalEvent) e).clientID))
+                        sh.sendEventAndClose(ev);
+                }
+            }
+        }
+    }
 
 	public void playScreenMusic(long fadeTime)
 	{

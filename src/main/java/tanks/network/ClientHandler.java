@@ -79,7 +79,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 
         ScreenPartyLobby.muted = false;
 		ScreenPartyLobby.isClient = true;
-        ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () -> Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText)));
     }
 
     public void close()

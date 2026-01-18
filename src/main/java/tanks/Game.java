@@ -1429,22 +1429,30 @@ public class Game
 		level.loadLevel();
 	}
 
-	public static String readVersionFromFile()
-	{
-		ArrayList<String> version = Game.game.fileManager.getInternalFileContents("/version.txt");
-		if (version == null)
-			return "-1.-1.-1";
-		else
-			return version.get(0);
-	}
+    /** Please use {@link #version Game.version} instead. */
+    public static String readVersionFromFile()
+    {
+        try
+        {
+            return Game.game.fileManager.getInternalFileContents("/version.txt").get(0);
+        }
+        catch (Exception e)
+        {
+            return "Unknown";
+        }
+    }
 
+    /** Please use {@link BaseWindow#buildDate Game.game.window.buildDate} instead. */
 	public static String readHashFromFile()
 	{
-		ArrayList<String> hash = Game.game.fileManager.getInternalFileContents("/hash.txt");
-		if (hash == null)
-			return "";
-		else
-			return hash.get(0);
+		try
+        {
+            return Game.game.fileManager.getInternalFileContents("/hash.txt").get(0);
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
 	}
 
 	public static boolean isOrdered(double a, double b, double c)

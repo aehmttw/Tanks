@@ -678,7 +678,7 @@ public class Chunk
 
         public double groundHeight()
         {
-            return obstacle() != null ? obstacle().getGroundHeight() : depth;
+            return obstacle() != null && obstacle().replaceTiles ? obstacle().getGroundHeight() : depth;
         }
 
         public boolean tankSolid()

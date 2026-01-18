@@ -407,6 +407,8 @@ public class LWJGLWindow extends BaseWindow
 		absoluteMouseX = mx[0];
 		absoluteMouseY = my[0];
 
+        focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
+
 		if (constrainMouse)
 		{
 			if (absoluteMouseX < 0)

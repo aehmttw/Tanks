@@ -1,46 +1,28 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFileManager;
-import basewindow.BaseWindow;
-import basewindow.ShaderGroup;
+import basewindow.*;
 import com.codedisaster.steamworks.SteamMatchmaking;
 import tanks.bullet.*;
-import tanks.extension.Extension;
-import tanks.extension.ExtensionRegistry;
-import tanks.generator.LevelGenerator;
-import tanks.generator.LevelGeneratorRandom;
-import tanks.gui.Button;
-import tanks.gui.ChatFilter;
-import tanks.gui.input.InputBindingGroup;
-import tanks.gui.input.InputBindings;
+import tanks.extension.*;
+import tanks.generator.*;
+import tanks.gui.*;
+import tanks.gui.input.*;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.OverlayEditorMenu;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.*;
 import tanks.gui.screen.leveleditor.selector.*;
-import tanks.hotbar.Hotbar;
-import tanks.hotbar.ItemBar;
+import tanks.gui.screen.leveleditor.selector.SelectorColor;
+import tanks.hotbar.*;
 import tanks.item.*;
-import tanks.minigames.ArcadeBeatBlocks;
-import tanks.minigames.ArcadeClassic;
-import tanks.minigames.Minigame;
-import tanks.network.Client;
-import tanks.network.NetworkEventMap;
-import tanks.network.SteamNetworkHandler;
-import tanks.network.SynchronizedList;
+import tanks.minigames.*;
+import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
-import tanks.rendering.ShaderGroundIntro;
-import tanks.rendering.ShaderGroundOutOfBounds;
-import tanks.rendering.ShaderTracks;
+import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 public class Game
@@ -213,6 +195,7 @@ public class Game
 	public static boolean invulnerable = false;
 
 	public static boolean warnBeforeClosing = true;
+    public static boolean pauseOnLostFocus = true;
 
 	public static String crashMessage = "Why would this game ever even crash anyway?";
 	public static String crashLine = "What, did you think I was a bad programmer? smh";
@@ -331,6 +314,7 @@ public class Game
 		NetworkEventMap.register(EventAnnounceConnection.class);
 		NetworkEventMap.register(EventChat.class);
 		NetworkEventMap.register(EventPlayerChat.class);
+        NetworkEventMap.register(EventChatClear.class);
         NetworkEventMap.register(EventMutePlayer.class);
         NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
@@ -1445,22 +1429,30 @@ public class Game
 		level.loadLevel();
 	}
 
-	public static String readVersionFromFile()
-	{
-		ArrayList<String> version = Game.game.fileManager.getInternalFileContents("/version.txt");
-		if (version == null)
-			return "-1.-1.-1";
-		else
-			return version.get(0);
-	}
+    /** Please use {@link #version Game.version} instead. */
+    public static String readVersionFromFile()
+    {
+        try
+        {
+            return Game.game.fileManager.getInternalFileContents("/version.txt").get(0);
+        }
+        catch (Exception e)
+        {
+            return "Unknown";
+        }
+    }
 
+    /** Please use {@link BaseWindow#buildDate Game.game.window.buildDate} instead. */
 	public static String readHashFromFile()
 	{
-		ArrayList<String> hash = Game.game.fileManager.getInternalFileContents("/hash.txt");
-		if (hash == null)
-			return "";
-		else
-			return hash.get(0);
+		try
+        {
+            return Game.game.fileManager.getInternalFileContents("/hash.txt").get(0);
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
 	}
 
 	public static boolean isOrdered(double a, double b, double c)

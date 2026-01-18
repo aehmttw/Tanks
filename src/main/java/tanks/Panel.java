@@ -103,6 +103,8 @@ public class Panel
 
 	public double timeSinceBotUpdate;
 
+    public boolean lastFocused = true;
+
 	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
 	public String saveScreenshotDir = null;
 
@@ -271,8 +273,6 @@ public class Panel
 			lastWindowTitle = Game.screen.windowTitle;
 			Game.game.window.setWindowTitle("Tanks" + lastWindowTitle);
 		}
-
-		Game.prevScreen = Game.screen;
 
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{
@@ -645,6 +645,12 @@ public class Panel
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
 		}
 
+        if (Game.game.window.focused != lastFocused || Game.screen != Game.prevScreen)
+        {
+            lastFocused = Game.game.window.focused;
+            Game.screen.onFocusChange(Game.game.window.focused);
+        }
+
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.update();
 
@@ -689,6 +695,8 @@ public class Panel
 
 		if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 			Game.eventsOut.clear();
+
+        Game.prevScreen = Game.screen;
 	}
 
     public void handleEventError(INetworkEvent e, Exception ex)

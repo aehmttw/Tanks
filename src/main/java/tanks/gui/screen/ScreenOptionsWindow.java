@@ -16,7 +16,17 @@ public class ScreenOptionsWindow extends Screen
 
     Button fullscreen = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "", () -> Game.game.window.setFullscreen(!Game.game.window.fullscreen), Translation.translate("Can also be toggled at any time---by pressing %s", Game.game.input.fullscreen.getInputs()));
 
-    Button showStats = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
+    Button pauseOnLostFocus = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.pauseOnLostFocus = !Game.pauseOnLostFocus;
+            pauseOnLostFocus.setText("Pause on lost focus: ", Game.pauseOnLostFocus ? ScreenOptions.onText : ScreenOptions.offText);
+        }
+    }, Translation.translate("Pauses the game when the---window loses focus"));
+
+    Button showStats = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -37,7 +47,7 @@ public class ScreenOptionsWindow extends Screen
                     "Network latency (if in a party)---" +
                     "Memory usage");
 
-    Button confirmClose = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "", new Runnable()
+    Button confirmClose = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -52,7 +62,7 @@ public class ScreenOptionsWindow extends Screen
     },
             "Warn before closing the game---while in an editor");
 
-    Button constrainMouse = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
+    Button constrainMouse = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
        {
            @Override
            public void run()
@@ -121,6 +131,8 @@ public class ScreenOptionsWindow extends Screen
             constrainMouse.setText(constrainMouseText, ScreenOptions.onText);
         else
             constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
+
+        pauseOnLostFocus.setText("Pause on lost focus: ", Game.pauseOnLostFocus ? ScreenOptions.onText : ScreenOptions.offText);
     }
 
 
@@ -131,6 +143,7 @@ public class ScreenOptionsWindow extends Screen
         fullscreen.update();
         width.update();
         height.update();
+        pauseOnLostFocus.update();
         showStats.update();
         confirmClose.update();
         constrainMouse.update();
@@ -157,8 +170,8 @@ public class ScreenOptionsWindow extends Screen
             fullscreen.setText(fullscreenText, ScreenOptions.onText);
 
         fullscreen.draw();
-
         showStats.draw();
+        pauseOnLostFocus.draw();
         confirmClose.draw();
         constrainMouse.draw();
 

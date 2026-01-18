@@ -15,6 +15,7 @@ import tanks.hotbar.*;
 import tanks.item.*;
 import tanks.minigames.*;
 import tanks.network.*;
+import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;

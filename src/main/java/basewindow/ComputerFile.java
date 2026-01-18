@@ -1,11 +1,7 @@
 package basewindow;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 
 public class ComputerFile extends BaseFile
@@ -20,6 +16,24 @@ public class ComputerFile extends BaseFile
     {
         super(path);
         file = new File(path);
+    }
+
+    @Override
+    public String read()
+    {
+        try
+        {
+            StringBuilder s = new StringBuilder();
+            scanner = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = scanner.readLine()) != null)
+                s.append(line).append("\n");
+            return s.toString();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -52,7 +66,7 @@ public class ComputerFile extends BaseFile
         DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(this.path));
         ArrayList<String> files = new ArrayList<>();
 
-        for (Path p: ds)
+        for (Path p : ds)
             files.add(p.toString());
 
         ds.close();
@@ -63,7 +77,7 @@ public class ComputerFile extends BaseFile
     @Override
     public void startReading() throws FileNotFoundException
     {
-        scanner = new BufferedReader( new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
+        scanner = new BufferedReader(new FileReader(file));
     }
 
     @Override
@@ -124,5 +138,39 @@ public class ComputerFile extends BaseFile
     public long lastModified()
     {
         return file.lastModified();
+    }
+
+    @Override
+    public boolean moveTo(String targetDir)
+    {
+        return moveTo(targetDir, false);
+    }
+
+    @Override
+    public boolean moveTo(String targetDir, boolean override)
+    {
+        Path source = file.toPath();
+        Path destinationDir = Paths.get(targetDir);
+        // Build the target file path with the same filename
+        Path target = destinationDir.resolve(source.getFileName());
+
+        try
+        {
+            if (!override && Files.exists(target))
+                return false;
+
+            if (override)
+                Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+            else
+                Files.move(source, target);
+
+            return true;
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

@@ -166,6 +166,16 @@ public abstract class Screen implements IBatchRenderableObject
 
 	}
 
+    public void onFocusChange(boolean focused)
+    {
+
+    }
+
+    public void onFilesDropped(String... filePaths)
+    {
+
+    }
+
 	public static class FlashingTile implements IBatchRenderableObject
 	{
 		public boolean redrawn = false;

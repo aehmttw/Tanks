@@ -6,6 +6,8 @@
 .classpath
 .settings
 .DS_Store
+.lwjgl
+out
 qodana.yaml
 /.vscode
 Tanks.jar

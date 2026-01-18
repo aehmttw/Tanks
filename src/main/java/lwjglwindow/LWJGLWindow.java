@@ -12,7 +12,7 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.*;
 import tanks.Game;
 
 import javax.imageio.ImageIO;
@@ -240,6 +240,18 @@ public class LWJGLWindow extends BaseWindow
 				validPressedButtons.remove((Integer) button);
 			}
 		});
+
+        glfwSetDropCallback(window, (windowHandle, count, names) ->
+        {
+            List<String> droppedFiles = new ArrayList<>(count);
+            for (int i = 0; i < count; i++) {
+                long namePtr = MemoryUtil.memGetAddress(names + ((long) i * Pointer.POINTER_SIZE));
+                String fileName = MemoryUtil.memUTF8(namePtr);
+                droppedFiles.add(fileName);
+            }
+
+            windowHandler.onFilesDropped(droppedFiles.toArray(new String[0]));
+        });
 
 		try (MemoryStack stack = stackPush())
 		{

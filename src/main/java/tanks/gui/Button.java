@@ -1,12 +1,13 @@
 package tanks.gui;
 
+import basewindow.Color;
 import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.*;
+import tanks.item.ItemIcon;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -74,16 +75,15 @@ public class Button implements IDrawable, ITrigger
 	public double textOffsetX = 0;
 	public double textOffsetY = 0;
 
-	public double imageR = 255;
-	public double imageG = 255;
-	public double imageB = 255;
+	public Color imageColor = new Color(255, 255, 255);
 	public boolean drawImageShadow = false;
 
 	public boolean silent = false;
 
 	public boolean fullInfo = false;
 
-	public String image = null;
+    public ItemIcon itemIcon = null;
+    public String image = null;
 	public IModel model = null;
     public HashMap<String, Object> miscData = new HashMap<>();
 	public double imageSizeX = 0;
@@ -165,7 +165,7 @@ public class Button implements IDrawable, ITrigger
 	{
 		private static final Runnable emptyFunction = () -> {};
 
-		public Boolean2ObjectFunction<String> getText = b -> b ? ScreenOptions.onText : ScreenOptions.offText;
+		public Function<Boolean, String> getText = b -> b ? ScreenOptions.onText : ScreenOptions.offText;
 		public Consumer<Boolean> setter;
 		public Producer<Boolean> getter;
 
@@ -206,7 +206,7 @@ public class Button implements IDrawable, ITrigger
 			setText(originalText, getter.produce() ? ScreenOptions.onText : ScreenOptions.offText);
 		}
 
-		public Toggle setCustomText(Boolean2ObjectFunction<String> getText)
+		public Toggle setCustomText(Function<Boolean, String> getText)
 		{
 			this.getText = getText;
 			return this;
@@ -268,14 +268,20 @@ public class Button implements IDrawable, ITrigger
 
 		drawing.drawInterfaceText(posX + this.textOffsetX, posY + this.textOffsetY, t);
 
-		if (this.subtext != null)
-		{
-			double ox = this.enableHover ? this.sizeY / 2 : 0;
-			drawing.setInterfaceFontSize(12);
-			drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2 - ox, this.posY + this.sizeY * 0.325, this.subtext, true);
-		}
+        if (this.itemIcon != null)
+        {
+            if (this.drawImageShadow)
+            {
+                drawing.setColor(127, 127, 127);
+                drawing.drawInterfaceImage(itemIcon, this.posX + this.imageXOffset + 1.5, this.posY + this.imageYOffset + 1.5, this.imageSizeX, this.imageSizeY);
+            }
 
-		if (this.image != null)
+            drawing.setColor(this.imageColor);
+            drawing.drawInterfaceImage(itemIcon, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX, this.imageSizeY);
+
+        }
+
+        if (this.image != null)
 		{
 			if (this.drawImageShadow)
 			{
@@ -283,7 +289,7 @@ public class Button implements IDrawable, ITrigger
 				drawing.drawInterfaceImage(image, this.posX + this.imageXOffset + 1.5, this.posY + this.imageYOffset + 1.5, this.imageSizeX, this.imageSizeY);
 			}
 
-			drawing.setColor(this.imageR, this.imageG, this.imageB);
+			drawing.setColor(this.imageColor);
 			drawing.drawInterfaceImage(image, this.posX + this.imageXOffset, this.posY + this.imageYOffset, this.imageSizeX, this.imageSizeY);
 		}
 
@@ -292,6 +298,14 @@ public class Button implements IDrawable, ITrigger
 			Drawing.drawing.setColor(127, 180, 255);
 			drawing.drawInterfaceModel2D(model, this.posX + this.imageXOffset, this.posY + this.imageYOffset, 0,this.imageSizeX * 0.75, this.imageSizeY * 0.75, this.imageSizeY * 0.75);
 		}
+
+        if (this.subtext != null)
+        {
+            drawing.setColor(this.textColR, this.textColG, this.textColB);
+            double ox = (this.enableHover && !this.fullInfo) ? this.sizeY / 2 : 0;
+            drawing.setInterfaceFontSize(12);
+            drawing.drawInterfaceText(this.posX + sizeX / 2 - sizeY / 2 - ox, this.posY + this.sizeY * 0.325, this.subtext, true);
+        }
 
 		if (this.fontSize < 0)
 			Drawing.drawing.setInterfaceFontSize(this.sizeY * 0.6);

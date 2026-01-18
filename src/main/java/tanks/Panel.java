@@ -3,18 +3,23 @@ package tanks;
 import basewindow.InputCodes;
 import tanks.extension.Extension;
 import tanks.gui.*;
-import tanks.gui.ScreenElement.*;
+import tanks.gui.ScreenElement.CenterMessage;
+import tanks.gui.ScreenElement.Notification;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.*;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
-import tanks.network.*;
+import tanks.network.Client;
+import tanks.network.MessageReader;
+import tanks.network.NetworkEventMap;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Panel
 {
@@ -155,7 +160,7 @@ public class Panel
 		}
 
 		double scale = 1;
-		if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
+		if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Math.min(Game.game.window.pointHeight, Game.game.window.pointWidth) <= 500)
 		{
 			scale = 1.25;
 
@@ -429,7 +434,7 @@ public class Panel
 					{
 						if (m instanceof TankPlayable)
 						{
-							int build = -1;
+                            int build = -1;
 							for (int i = 0; i < s.builds.size(); i++)
 							{
 								TankPlayable t = s.builds.get(i);
@@ -782,6 +787,12 @@ public class Panel
 		{
 			try
 			{
+                if (Game.screen.interfaceScaleZoomOverride > 0)
+                    Drawing.drawing.interfaceScaleZoom = Game.screen.interfaceScaleZoomOverride;
+                else
+                    Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
+                Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
+
 				Game.screen.draw();
 				this.continuation = null;
 				this.continuationMusic = false;

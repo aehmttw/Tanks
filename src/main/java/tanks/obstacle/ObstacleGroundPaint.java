@@ -1,7 +1,8 @@
 package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
 import tanks.gui.screen.leveleditor.selector.SelectorColorAndNoise;
 import tanks.rendering.ShaderGroundColor;
 import tanks.tankson.MetadataProperty;

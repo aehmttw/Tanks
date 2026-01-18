@@ -5,10 +5,7 @@ import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
-
-import java.util.UUID;
 
 public class EventSendTankColors extends PersonalEvent
 {

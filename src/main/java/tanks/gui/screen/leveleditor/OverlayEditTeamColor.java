@@ -6,7 +6,6 @@ import tanks.gui.Button;
 import tanks.gui.TextBoxSlider;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenOptions;
-import tanks.tank.TankDummy;
 import tanks.tank.TankPlayer;
 
 public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
@@ -164,5 +163,11 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, "Team color: %s", this.team.name);
+    }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.setUnscaledLayoutParameters();
     }
 }

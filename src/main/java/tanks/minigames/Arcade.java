@@ -1,8 +1,8 @@
 package tanks.minigames;
 
 import tanks.*;
-import tanks.bullet.Bullet;
 import tanks.attribute.StatusEffect;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.IDarkScreen;
 import tanks.gui.screen.ScreenArcadeBonuses;
 import tanks.gui.screen.ScreenGame;
@@ -90,6 +90,7 @@ public class Arcade extends Minigame
         this.introMusic = "arcade/battle_intro.ogg";
         this.disableFriendlyFire = true;
         this.removeMusicWhenDead = true;
+        this.hideShop = true;
 
         if (Game.deterministicMode)
             this.random = new Random(0);

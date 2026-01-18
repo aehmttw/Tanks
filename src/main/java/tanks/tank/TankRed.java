@@ -17,8 +17,9 @@ public class TankRed extends TankAIControlled
 		this.enablePredictiveFiring = false;
 		this.turretAimSpeed = 0.02;
 		this.enableLookingAtTargetEnemy = false;
+        this.friction += 0.15;
 
-		this.cooldownBase = 100;
+        this.cooldownBase = 100;
 		this.aimAccuracyOffset = 0;
 
 		this.cooldownSpeedup = 0.25;

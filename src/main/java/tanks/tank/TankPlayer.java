@@ -4,11 +4,11 @@ import basewindow.Color;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
 import tanks.*;
+import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
-import tanks.attribute.AttributeModifier;
 import tanks.gui.Button;
 import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
@@ -573,7 +573,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 				return;
 		}
 
-		int a = right ? selectedSecondaryAbility : selectedPrimaryAbility;
+		int a = right ? this.player.hotbar.itemBar.selectedSecondaryAbility : this.player.hotbar.itemBar.selectedPrimaryAbility;
 		Item.ItemStack<?> s = right ? this.getSecondaryAbility() : this.getPrimaryAbility();
 		if (s != null)
 		{
@@ -648,7 +648,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
 		Drawing.drawing.playGlobalSound("lay_mine.ogg", (float) (Mine.mine_size / m.size));
 
-		if (m.item.networkIndex > 0)
+		if (m.item.networkIndex >= 0)
 		{
 			Integer num = 0;
 			if (Game.currentLevel != null)
@@ -656,7 +656,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 			m.item.networkIndex = num == null ? 0 : num;
 		}
 
-		Game.eventsOut.add(new EventLayMine(m));
+        Game.eventsOut.add(new EventLayMine(m));
 		Game.avoidObjects.add(m);
 		Game.movables.add(m);
 	}

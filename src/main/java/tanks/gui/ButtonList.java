@@ -203,9 +203,9 @@ public class ButtonList
             buttons.get(i).sizeX = this.buttonWidth;
             buttons.get(i).sizeY = this.buttonHeight;
             buttons.get(i).translated = this.translate;
-            buttons.get(i).imageR = this.imageR;
-            buttons.get(i).imageG = this.imageG;
-            buttons.get(i).imageB = this.imageB;
+            buttons.get(i).imageColor.red = this.imageR;
+            buttons.get(i).imageColor.green = this.imageG;
+            buttons.get(i).imageColor.blue = this.imageB;
 
             if (hideText)
                 buttons.get(i).text = "";
@@ -393,8 +393,16 @@ public class ButtonList
         return s;
     }
 
+    // Do not replace this with a filter, it will break the iOS compiler.
     public void filter(String s)
     {
-        buttons.removeIf(b -> !b.text.toLowerCase().contains(s.toLowerCase()));
+        for (int i = 0; i < this.buttons.size(); i++)
+        {
+            if (!buttons.get(i).text.toLowerCase().contains(s.toLowerCase()))
+            {
+                buttons.remove(i);
+                i--;
+            }
+        }
     }
 }

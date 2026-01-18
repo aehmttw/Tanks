@@ -2,7 +2,6 @@ package tanks;
 
 import basewindow.*;
 import com.codedisaster.steamworks.SteamMatchmaking;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.bullet.*;
 import tanks.extension.*;
 import tanks.generator.*;
@@ -16,7 +15,6 @@ import tanks.hotbar.*;
 import tanks.item.*;
 import tanks.minigames.*;
 import tanks.network.*;
-import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
@@ -42,12 +40,14 @@ public class Game
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
-	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
+	public static HashSet<IAvoidObject> avoidObjects = new HashSet<>();
 	public static ArrayList<Obstacle> checkObstaclesToUpdate = new ArrayList<>();
-	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
+	public static HashSet<Obstacle> obstaclesToUpdate = new HashSet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
     public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
+    public static ArrayList<Player> botPlayers = new ArrayList<>();
+    public static int botPlayerCount = 0;
 
     /**
      * Tracks are only added to the end and removed from the beginning since they always have the same max age.
@@ -56,10 +56,6 @@ public class Game
 	 * lifespan value, and if it goes below zero, remove that track and repeat with the remainder of time elapsed.
      */
     public static Queue<Effect> tracks = new LinkedList<>();
-
-
-    public static ArrayList<Player> botPlayers = new ArrayList<>();
-	public static int botPlayerCount = 0;
 
 	/**
 	 * Obstacles that need to change how they look next frame
@@ -124,7 +120,9 @@ public class Game
 	//Versioning has moved to version.txt
 	public static String version = "Tanks v-1.-1.-1";
 
-    public static final int network_protocol = 60;
+    public static boolean customDir = false;
+
+    public static final int network_protocol = 62;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;
@@ -242,6 +240,7 @@ public class Game
 	public static RegistryGenerator registryGenerator = new RegistryGenerator();
 	public static RegistryModelTank registryModelTank = new RegistryModelTank();
 	public static RegistryMinigame registryMinigame = new RegistryMinigame();
+    public static RegistryItemIcon registryItemIcon = new RegistryItemIcon();
 	public static RegistryMetadataSelectors registryMetadataSelectors = new RegistryMetadataSelectors();
 
 	public HashMap<Class<? extends ShaderGroup>, ShaderGroup> shaderInstances = new HashMap<>();
@@ -274,26 +273,10 @@ public class Game
 
 	public static String directoryPath = "/.tanks";
 
-	public static final String logPath = directoryPath + "/logfile.txt";
-	public static final String extensionRegistryPath = directoryPath + "/extensions.txt";
-	public static final String optionsPath = directoryPath + "/options.txt";
-	public static final String controlsPath = directoryPath + "/controls.txt";
-	public static final String tutorialPath = directoryPath + "/tutorial.txt";
-	public static final String uuidPath = directoryPath + "/uuid";
-	public static final String levelDir = directoryPath + "/levels";
-	//public static final String modLevelDir = directoryPath + "/modlevels/";
-	public static final String crusadeDir = directoryPath + "/crusades";
-	public static final String savedCrusadePath = directoryPath + "/crusades/progress/";
-	public static final String itemDir = directoryPath + "/items";
-    public static final String bulletEffectsDir = directoryPath + "/bullet_effects";
-    public static final String tankDir = directoryPath + "/tanks";
-	public static final String buildDir = directoryPath + "/builds";
-	public static final String extensionDir = directoryPath + "/extensions/";
-	public static final String crashesPath = directoryPath + "/crashes/";
-	public static final String screenshotsPath = directoryPath + "/screenshots/";
-
-	public static final String resourcesPath = directoryPath + "/resources/";
-	public static final String languagesPath = resourcesPath + "languages/";
+    // initialized in initScript()
+	public static String logPath, extensionRegistryPath, optionsPath, controlsPath, tutorialPath, uuidPath, levelDir;
+	public static String crusadeDir, savedCrusadePath, itemDir, bulletEffectsDir;
+    public static String tankDir, buildDir, extensionDir, crashesPath, screenshotsPath, resourcesPath, languagesPath;
 
 	public static float soundVolume = 1f;
 	public static float musicVolume = 0.5f;
@@ -330,6 +313,7 @@ public class Game
 		NetworkEventMap.register(EventAnnounceConnection.class);
 		NetworkEventMap.register(EventChat.class);
 		NetworkEventMap.register(EventPlayerChat.class);
+        NetworkEventMap.register(EventChatClear.class);
         NetworkEventMap.register(EventMutePlayer.class);
         NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
@@ -343,14 +327,12 @@ public class Game
 		NetworkEventMap.register(EventShowCrusadeStats.class);
 		NetworkEventMap.register(EventLoadCrusadeHotbar.class);
 		NetworkEventMap.register(EventSetupHotbar.class);
-		NetworkEventMap.register(EventAddShopItem.class);
-		NetworkEventMap.register(EventSortShopButtons.class);
 		NetworkEventMap.register(EventPurchaseItem.class);
 		NetworkEventMap.register(EventPurchaseBuild.class);
 		NetworkEventMap.register(EventSetItem.class);
         NetworkEventMap.register(EventSetItemCount.class);
         NetworkEventMap.register(EventSetItemBarSlot.class);
-		NetworkEventMap.register(EventLoadItemBarSlot.class);
+        NetworkEventMap.register(EventSetSelectedItems.class);
 		NetworkEventMap.register(EventUpdateTankAbility.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
 		NetworkEventMap.register(EventPlayerReady.class);
@@ -464,14 +446,14 @@ public class Game
 			new RegistryTank.TankEntry(Game.registryTank, tank, name, weight, isBoss);
 	}
 
-	public static void registerBullet(Class<? extends Bullet> bullet, String name, String icon)
+	public static void registerBullet(Class<? extends Bullet> bullet, String name, ItemIcon icon)
 	{
 		new RegistryBullet.BulletEntry(Game.registryBullet, bullet, name, icon);
 	}
 
-	public static void registerItem(Class<? extends Item> item, String name, String image)
+	public static void registerItem(Class<? extends Item> item, String name, ItemIcon icon)
 	{
-		new RegistryItem.ItemEntry(Game.registryItem, item, name, image);
+		new RegistryItem.ItemEntry(Game.registryItem, item, name, icon);
 	}
 
 	public static void registerGenerator(Class<? extends LevelGenerator> generator, String name)
@@ -526,7 +508,7 @@ public class Game
 		registerEvents();
 		DefaultItems.initialize();
 
-		registerObstacle(ObstacleStackable.class, "normal");
+        registerObstacle(ObstacleStackable.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
 		registerObstacle(ObstacleHole.class, "hole");
 		registerObstacle(ObstacleBouncy.class, "bouncy");
@@ -573,16 +555,16 @@ public class Game
 		registerTank(TankLightPink.class, "lightpink", 1.0 / 10);
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
-		registerBullet(Bullet.class, Bullet.bullet_class_name, "bullet_normal.png");
-		registerBullet(BulletInstant.class, BulletInstant.bullet_class_name, "bullet_laser.png");
-		registerBullet(BulletGas.class, BulletGas.bullet_class_name, "bullet_flame.png");
-		registerBullet(BulletArc.class, BulletArc.bullet_class_name, "bullet_arc.png");
-		registerBullet(BulletBlock.class, BulletBlock.bullet_class_name, "bullet_block.png");
-		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_class_name, "bullet_fire.png");
+		registerBullet(Bullet.class, Bullet.bullet_class_name, DefaultItemIcons.bullet_normal.getCopy());
+		registerBullet(BulletInstant.class, BulletInstant.bullet_class_name, DefaultItemIcons.bullet_laser.getCopy());
+		registerBullet(BulletGas.class, BulletGas.bullet_class_name, DefaultItemIcons.bullet_flame.getCopy());
+		registerBullet(BulletArc.class, BulletArc.bullet_class_name, DefaultItemIcons.bullet_arc.getCopy());
+		registerBullet(BulletBlock.class, BulletBlock.bullet_class_name, DefaultItemIcons.bullet_block.getCopy());
+		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_class_name, DefaultItemIcons.bullet_air_strike.getCopy());
 
-		registerItem(ItemBullet.class, ItemBullet.item_class_name, "bullet_normal.png");
-		registerItem(ItemMine.class, ItemMine.item_class_name, "mine.png");
-		registerItem(ItemShield.class, ItemShield.item_class_name, "shield.png");
+		registerItem(ItemBullet.class, ItemBullet.item_class_name, DefaultItemIcons.bullet_normal.getCopy());
+		registerItem(ItemMine.class, ItemMine.item_class_name, DefaultItemIcons.mine.getCopy());
+		registerItem(ItemShield.class, ItemShield.item_class_name, DefaultItemIcons.shield.getCopy());
 
 		registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
@@ -598,14 +580,37 @@ public class Game
 		registerMetadataSelector(SelectorColor.selector_name, SelectorColor.class);
 		registerMetadataSelector(SelectorColorAndNoise.selector_name, SelectorColorAndNoise.class);
 
-		homedir = System.getProperty("user.home");
-
-		if (Game.framework == Framework.libgdx)
+		if (Game.framework == Framework.libgdx || Game.customDir)
 			homedir = "";
+        else
+            homedir = System.getProperty("user.home");
+
+        logPath = directoryPath + "/logfile.txt";
+        extensionRegistryPath = directoryPath + "/extensions.txt";
+        optionsPath = directoryPath + "/options.txt";
+        controlsPath = directoryPath + "/controls.txt";
+        tutorialPath = directoryPath + "/tutorial.txt";
+        uuidPath = directoryPath + "/uuid";
+        levelDir = directoryPath + "/levels";
+//        modLevelDir = directoryPath + "/modlevels/";
+        crusadeDir = directoryPath + "/crusades";
+        savedCrusadePath = directoryPath + "/crusades/progress/";
+        itemDir = directoryPath + "/items";
+        bulletEffectsDir = directoryPath + "/bullet_effects";
+        tankDir = directoryPath + "/tanks";
+        buildDir = directoryPath + "/builds";
+        extensionDir = directoryPath + "/extensions/";
+        crashesPath = directoryPath + "/crashes/";
+        screenshotsPath = directoryPath + "/screenshots/";
+        resourcesPath = directoryPath + "/resources/";
+        languagesPath = resourcesPath + "languages/";
 
 		BaseFile directoryFile = game.fileManager.getFile(homedir + directoryPath);
 		if (!directoryFile.exists() && Game.framework != Framework.libgdx)
 		{
+            if (Game.customDir)
+                throw new RuntimeException("Custom directory does not exist: " + homedir + directoryPath);
+
 			directoryFile.mkdirs();
 			try
 			{
@@ -614,6 +619,7 @@ public class Game
 			}
 			catch (IOException e)
 			{
+                System.err.println("Failed to create logfile: " + homedir + logPath);
 				e.printStackTrace();
 				System.exit(1);
 			}
@@ -953,6 +959,8 @@ public class Game
 		if (Game.game.runningCallbacks)
 			Game.game.callbackException = e;
 
+        e.printStackTrace();
+
 		throw new GameCrashedException(e);
 	}
 
@@ -975,6 +983,9 @@ public class Game
 
 		Game.eventsIn.clear();
 		Game.eventsOut.clear();
+
+        if (Game.steamNetworkHandler.initialized)
+            Game.steamNetworkHandler.leaveParty();
 
 		cleanUp();
 

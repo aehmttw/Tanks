@@ -2,10 +2,7 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.Player;
 import tanks.network.NetworkUtils;
-
-import java.util.UUID;
 
 public class EventPurchaseBuild extends PersonalEvent
 {

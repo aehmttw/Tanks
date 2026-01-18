@@ -1,7 +1,9 @@
 package tanks.registry;
 
+import tanks.item.DefaultItemIcons;
 import tanks.item.Item;
 import tanks.item.ItemEmpty;
+import tanks.item.ItemIcon;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -14,13 +16,13 @@ public class RegistryItem
 	{
 		public final Class<? extends Item> item;
 		public final String name;
-		public final String image;
+		public final ItemIcon icon;
 
-		public ItemEntry(RegistryItem r, Class<? extends Item> item, String name, String image)
+		public ItemEntry(RegistryItem r, Class<? extends Item> item, String name, ItemIcon icon)
 		{
 			this.item = item;
 			this.name = name;
-			this.image = image;
+			this.icon = icon;
 			r.itemEntries.add(this);
 		}
 
@@ -28,14 +30,14 @@ public class RegistryItem
 		{
 			this.item = ItemEmpty.class;
 			this.name = "unknown";
-			this.image = "item.png";
+			this.icon = DefaultItemIcons.item.getCopy();
 		}
 
 		protected ItemEntry(String name)
 		{
 			this.item = ItemEmpty.class;
 			this.name = name;
-			this.image = "item.png";
+			this.icon = DefaultItemIcons.item.getCopy();
 		}
 
 		public Item getItem()

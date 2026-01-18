@@ -41,7 +41,7 @@ public class EventPurchaseItem extends PersonalEvent
             ScreenGame s = (ScreenGame) Game.screen;
             for (int i = 0; i < Game.players.size(); i++)
             {
-                if (Game.players.get(i).clientID.equals(this.clientID))
+                if (Game.players.get(i).clientID.equals(this.clientID) && this.item >= 0 && this.item < s.shop.size())
                 {
                     Player p = Game.players.get(i);
                     int pr = s.shop.get(this.item).price;

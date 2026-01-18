@@ -1,6 +1,7 @@
 package basewindow;
 
 import basewindow.transformation.*;
+import tanks.Game;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +55,7 @@ public abstract class BaseWindow
     public boolean showMouseOnLaunch;
 
     public boolean touchscreen = false;
-    public boolean showKeyboard = false;
+    public boolean showKeyboard = true;
     public double keyboardOffset = 0;
     public double keyboardFraction = 1;
 
@@ -78,7 +79,12 @@ public abstract class BaseWindow
     public double yOffset = 0;
     public double zOffset = 0;
 
-    public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1) /*, new Shear(this, 0, 0, 0, 0, 0, -0.75) */};
+
+    public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1),
+//            new ScaleAboutPoint(this, 1,  Math.sqrt(0.5), 1, 0.5, 0.5, 0.5),
+//            new RotationAboutPoint(this, 0, 0, Math.PI / 4, 0.5, 0.5, 0.5),
+//            new Shear(this, 0, 0, 0, 0, Math.sqrt(0.5), -Math.sqrt(0.5)),
+    };
     public Transformation[] lightBaseTransformation = new Transformation[]{new ScaleAboutPoint(this, 0.8, 0.8, 0.8, 0.5, 0.5, 0.5), new Shear(this, 0, 0, 0, 0, 0.5, 0.5)};
     public double[] lightVec = new double[]{-0.66666666, 0.66666666, -0.33333333};
 
@@ -158,6 +164,10 @@ public abstract class BaseWindow
         lastFrame = time;
 
         frameFrequency = Math.max(0, (time - lastFrameTime) / 10000000.0);
+//        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_F8))
+//        {
+//            frameFrequency *= 5;
+//        }
     }
 
     public abstract void run();

@@ -6,8 +6,12 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
-import tanks.gui.screen.*;
+import tanks.gui.screen.IConditionalOverlayScreen;
+import tanks.gui.screen.Screen;
+import tanks.gui.screen.ScreenAddSavedItem;
+import tanks.gui.screen.ScreenEditorItem;
 import tanks.item.Item;
+import tanks.item.ItemIcon;
 import tanks.registry.RegistryItem;
 import tanks.tankson.MonitoredArrayListIndexPointer;
 
@@ -47,13 +51,13 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
         this.load();
 
         String[] itemNames = new String[Game.registryItem.itemEntries.size()];
-        String[] itemImages = new String[Game.registryItem.itemEntries.size()];
+        ItemIcon[] itemImages = new ItemIcon[Game.registryItem.itemEntries.size()];
 
         for (int i = 0; i < Game.registryItem.itemEntries.size(); i++)
         {
             RegistryItem.ItemEntry r = Game.registryItem.getEntry(i);
             itemNames[i] = r.name;
-            itemImages[i] = r.image;
+            itemImages[i] = r.icon;
         }
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
@@ -61,7 +65,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
             Consumer<Item.ItemStack<?>> addItem = (Item.ItemStack<?> i) ->
             {
                 screenLevelEditor.level.startingItems.add(i);
-                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.startingItems, screenLevelEditor.level.startingItems.size() - 1, false, this::refreshItems), this);
+                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>((Class<Item.ItemStack<?>>)(Class<?>) Item.ItemStack.class, screenLevelEditor.level.startingItems, screenLevelEditor.level.startingItems.size() - 1, false, this::refreshItems), this);
                 s.onComplete = this::refreshItems;
                 Game.screen = s;
             };
@@ -69,7 +73,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
             Game.screen = new ScreenAddSavedItem(this, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
         });
 
-        itemSelector.images = itemImages;
+        itemSelector.itemIcons = itemImages;
         itemSelector.quick = true;
     }
 
@@ -144,12 +148,12 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
 
             Button b = new Button(0, 0, 350, 40, items.get(i).item.name, () ->
             {
-                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>(editor.level.startingItems, j, false, this::refreshItems), Game.screen);
+                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>((Class<Item.ItemStack<?>>)(Class<?>) Item.ItemStack.class, editor.level.startingItems, j, false, this::refreshItems), Game.screen);
                 s.onComplete = this::refreshItems;
                 Game.screen = s;
             });
 
-            b.image = items.get(j).item.icon;
+            b.itemIcon = items.get(j).item.icon;
             b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
             b.imageSizeX = b.sizeY;
             b.imageSizeY = b.sizeY;

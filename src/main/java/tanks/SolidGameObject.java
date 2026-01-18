@@ -1,11 +1,13 @@
 package tanks;
 
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import tanks.obstacle.*;
+import tanks.obstacle.Face;
+import tanks.obstacle.ISolidObject;
+
+import java.util.HashSet;
 
 public abstract class SolidGameObject extends GameObject implements ISolidObject
 {
-    public static ObjectArraySet<SolidGameObject> addFacesToChunks = new ObjectArraySet<>();
+    public static HashSet<SolidGameObject> addFacesToChunks = new HashSet<>();
 
     public Face[] faces;
     private boolean lastEnableCollision = false;

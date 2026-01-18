@@ -63,6 +63,11 @@ public class ScreenCrashed extends Screen
 		this.chatroom.imageSizeY = imgsize;
 		this.chatroom.imageXOffset = 150 * this.chatroom.sizeX / 350;
 
+        this.openFolder.image = "icons/folder.png";
+        this.openFolder.imageSizeX = imgsize;
+        this.openFolder.imageSizeY = imgsize;
+        this.openFolder.imageXOffset = -150 * this.chatroom.sizeX / 350;
+
 		Game.game.window.transformations.clear();
 		Game.game.window.loadPerspective();
 	}
@@ -71,7 +76,7 @@ public class ScreenCrashed extends Screen
 
 	Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 160, this.objWidth, this.objHeight, "Return to title", Game::exitToTitle);
 
-	Button chatroom = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Get help on Discord", () ->
+	Button chatroom = new Button(Drawing.drawing.interfaceSizeX / 2 + 380, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Get help on Discord", () ->
 	{
 		try
 		{
@@ -84,12 +89,19 @@ public class ScreenCrashed extends Screen
 	}
 	);
 
+    Button openFolder = new Button(Drawing.drawing.interfaceSizeX / 2 - 380, Drawing.drawing.interfaceSizeY - 100, this.objWidth, this.objHeight, "Crash report folder", () ->
+    {
+        Game.game.fileManager.openFileManager(Game.homedir + Game.crashesPath);
+    }
+    );
+
 	@Override
 	public void update()
 	{
 		this.quit.update();
 		this.exit.update();
 		this.chatroom.update();
+        this.openFolder.update();
 	}
 
 	@Override
@@ -156,6 +168,7 @@ public class ScreenCrashed extends Screen
 		this.quit.draw();
 		this.exit.draw();
 		this.chatroom.draw();
+        this.openFolder.draw();
 	}
 
 }

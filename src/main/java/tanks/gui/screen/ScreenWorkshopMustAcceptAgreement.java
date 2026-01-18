@@ -1,12 +1,9 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.Button;
 
 import java.net.URL;
-import java.util.ArrayList;
 
 public class ScreenWorkshopMustAcceptAgreement extends ScreenWorkshopActionResult
 {

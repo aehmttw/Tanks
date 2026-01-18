@@ -6,6 +6,7 @@ import basewindow.InputPoint;
 import tanks.*;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenSelector;
+import tanks.item.ItemIcon;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class Selector implements IDrawable, ITrigger
     public String[] sounds;
     public String[] images;
     public IModel[] models;
+    public ItemIcon[] itemIcons;
 
     public boolean quick = false;
 
@@ -214,6 +216,12 @@ public class Selector implements IDrawable, ITrigger
             Drawing.drawing.drawInterfaceImage(images[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
         }
 
+        if (itemIcons != null)
+        {
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.drawInterfaceImage(itemIcons[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
+        }
+
         if (models != null)
         {
             Drawing.drawing.setColor(255, 255, 255);
@@ -365,8 +373,6 @@ public class Selector implements IDrawable, ITrigger
     {
         this.resetLayout();
         ScreenSelector s = new ScreenSelector(this, Game.screen);
-        s.images = this.images;
-        s.models = this.models;
         s.buttonList.manualDarkMode = this.manualDarkMode;
 
         if (this.images != null)
@@ -374,6 +380,9 @@ public class Selector implements IDrawable, ITrigger
 
         if (this.models != null)
             s.drawModels = true;
+
+        if (this.itemIcons != null)
+            s.drawItemIcons = true;
 
         s.drawBehindScreen = this.drawBehindScreen;
         Game.screen = s;

@@ -1,10 +1,12 @@
 package tanks.obstacle;
 
-import basewindow.*;
-import it.unimi.dsi.fastutil.objects.*;
+import basewindow.IBatchRenderableObject;
+import basewindow.ShaderGroup;
 import tanks.*;
 import tanks.rendering.ShaderObstacle;
 import tanks.tank.IAvoidObject;
+
+import java.util.ArrayList;
 
 public abstract class Obstacle extends SolidGameObject implements IDrawableForInterface, IDrawableWithGlow, IBatchRenderableObject
 {
@@ -345,9 +347,9 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 		Game.removeObstacles.add(this);
 	}
 
-    private static final ObjectArrayList<Obstacle> obstaclesCache = new ObjectArrayList<>();
+    private static final ArrayList<Obstacle> obstaclesCache = new ArrayList<>();
 
-	public ObjectArrayList<Obstacle> getNeighbors()
+	public ArrayList<Obstacle> getNeighbors()
 	{
 		obstaclesCache.clear();
 		for (int i = 0; i < 4; i++)
@@ -426,11 +428,11 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 	}
 
 	/** Field to cache the obstacle array for reuse */
-	private static final ObjectArrayList<Obstacle> obstacleOut = new ObjectArrayList<>();
+	private static final ArrayList<Obstacle> obstacleOut = new ArrayList<>();
 
 	/** Expects all pixel coordinates.
 	 * @return all the obstacles within the specified range */
-	public static ObjectArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
+	public static ArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
 	{
 		obstacleOut.clear();
 		for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
@@ -442,9 +444,9 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
 	/** Expects all pixel coordinates.
 	 * @return all the obstacles within a certain radius of the position */
-	public static ObjectArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
+	public static ArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
 	{
-		obstacleOut.clear();
+        obstacleOut.clear();
 		for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
 			for (Obstacle o : c.obstacles)
                 if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)

@@ -3,14 +3,9 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Movable;
-import tanks.Player;
-import tanks.gui.screen.ScreenGame;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayable;
-import tanks.tank.TankPlayerRemote;
 import tanks.tank.TankRemote;
-
-import java.util.UUID;
 
 public class EventPlayerRevealBuild extends PersonalEvent
 {
@@ -45,7 +40,7 @@ public class EventPlayerRevealBuild extends PersonalEvent
     @Override
     public void execute()
     {
-        if (this.clientID == null && build >= 0 && build < Game.currentLevel.playerBuilds.size())
+        if (this.clientID == null && build >= 0 && Game.currentLevel != null && build < Game.currentLevel.playerBuilds.size())
         {
             for (Movable m: Game.movables)
             {

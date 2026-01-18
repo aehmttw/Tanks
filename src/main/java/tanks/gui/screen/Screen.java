@@ -129,7 +129,8 @@ public abstract class Screen implements IBatchRenderableObject
 		else
 			Drawing.drawing.terrainRenderer.draw();
 
-		Drawing.drawing.trackRenderer.draw();
+        if (!(this instanceof ScreenGame && !Game.enable3d))
+		    Drawing.drawing.trackRenderer.draw();
 
 		if (this.drawDarkness && drawBgRect)
 		{
@@ -159,6 +160,17 @@ public abstract class Screen implements IBatchRenderableObject
 	{
 
 	}
+
+    public void setUnscaledLayoutParameters()
+    {
+        this.objWidth = 350;
+        this.objHeight = 40;
+        this.objXSpace = 380;
+        this.objYSpace = 60;
+
+        this.textSize = this.objHeight * 0.6;
+        this.titleSize = this.textSize * 1.25;
+    }
 
 	public void onAttemptClose()
 	{

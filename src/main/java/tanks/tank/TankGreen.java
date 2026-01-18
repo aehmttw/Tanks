@@ -1,6 +1,6 @@
 package tanks.tank;
 
-import tanks.*;
+import tanks.Game;
 import tanks.bullet.DefaultItems;
 
 /**
@@ -18,6 +18,7 @@ public class TankGreen extends TankAIControlled
 		this.turretAimSpeed = 0.03;
 		this.turretIdleSpeed = 0.01;
 		this.turretIdleTimerRandom = 250;
+        this.friction += 0.15;
 
 		this.setBullet(DefaultItems.sniper_rocket);
 		this.getBullet().recoil = 0;

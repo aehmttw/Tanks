@@ -2,7 +2,9 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import com.codedisaster.steamworks.SteamMatchmaking;
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.hotbar.Hotbar;
 import tanks.tank.TankPlayer;
@@ -36,9 +38,9 @@ public class ScreenOptions extends Screen
 		}
 
 		this.openFolder.image = "icons/folder.png";
-		this.openFolder.imageSizeX = 30;
-		this.openFolder.imageSizeY = 30;
-		this.openFolder.imageXOffset = -145;
+		this.openFolder.imageSizeX = this.objHeight * 0.75;
+		this.openFolder.imageSizeY = this.objHeight * 0.75;
+		this.openFolder.imageXOffset = -this.objWidth / 2 + openFolder.imageSizeX;
 	}
 
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
@@ -547,8 +549,11 @@ public class ScreenOptions extends Screen
 
 			f.stopReading();
 
-			if (Game.framework == Game.Framework.libgdx)
-				Panel.showMouseTarget = false;
+            if (Game.framework == Game.Framework.libgdx)
+            {
+                Hotbar.circular = false;
+                Panel.showMouseTarget = false;
+            }
 
 			if (!Game.soundsEnabled)
 				Game.soundVolume = 0;

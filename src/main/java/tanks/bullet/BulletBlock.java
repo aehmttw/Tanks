@@ -269,7 +269,6 @@ public class BulletBlock extends BulletArc
 
         Drawing.drawing.setColor(this.outlineColor);
 
-        // todo 2d
         if (Game.enable3d)
         {
             double frac2 = time / this.initialTime;

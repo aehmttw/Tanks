@@ -1,11 +1,16 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.*;
+import tanks.BiConsumer;
+import tanks.Drawing;
+import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
-import tanks.tank.*;
+import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
+import tanks.tank.TankPlayer;
+import tanks.tank.TankPurple;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
@@ -333,7 +338,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                         TankAIControlled t1 = Game.currentLevel.customTanks.get(i);
                         if (t1.name.equals(tt.name))
                         {
-                            duplicate = new ArrayListIndexPointer<>(Game.currentLevel.customTanks, i);
+                            duplicate = new ArrayListIndexPointer<>(TankAIControlled.class, Game.currentLevel.customTanks, i);
                             break;
                         }
                     }

@@ -1,8 +1,8 @@
 package tanks.item;
 
 import tanks.*;
-import tanks.bullet.Bullet;
 import tanks.attribute.AttributeModifier;
+import tanks.bullet.Bullet;
 import tanks.minigames.Minigame;
 import tanks.tank.Tank;
 import tanks.tankson.ICopyable;
@@ -13,13 +13,14 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
 	public static final String item_class_name = "bullet";
 
 	@Property(id="bullet", category = "none")
-	public Bullet bullet = new Bullet();
+	public Bullet bullet;
 
 	public ItemBullet()
 	{
 		this.rightClick = false;
 		this.supportsHits = true;
-		this.icon = "bullet_normal.png";
+		this.icon = DefaultItemIcons.bullet_normal.getCopy();
+        this.bullet = new Bullet();
 	}
 
 	public ItemBullet(Bullet b)

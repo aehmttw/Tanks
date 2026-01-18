@@ -2,7 +2,6 @@ package tanks.gui.screen.leveleditor.selector;
 
 import tanks.Game;
 import tanks.GameObject;
-import tanks.gui.screen.leveleditor.OverlaySelectColor;
 import tanks.gui.screen.leveleditor.OverlaySelectColorAndNoise;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 

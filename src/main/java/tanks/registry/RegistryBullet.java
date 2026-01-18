@@ -1,6 +1,8 @@
 package tanks.registry;
 
 import tanks.bullet.Bullet;
+import tanks.item.DefaultItemIcons;
+import tanks.item.ItemIcon;
 
 import java.util.ArrayList;
 
@@ -12,13 +14,13 @@ public class RegistryBullet
 	{
 		public final Class<? extends Bullet> bullet;
 		public final String name;
-		public final String image;
+		public final ItemIcon icon;
 
-		public BulletEntry(RegistryBullet r, Class<? extends Bullet> bullet, String name, String icon)
+		public BulletEntry(RegistryBullet r, Class<? extends Bullet> bullet, String name, ItemIcon icon)
 		{
 			this.bullet = bullet;
 			this.name = name;
-			this.image = icon;
+			this.icon = icon;
 
 			r.bulletEntries.add(this);
 		}
@@ -27,14 +29,14 @@ public class RegistryBullet
 		{
 			this.bullet = Bullet.class;
 			this.name = "unknown";
-			this.image = "item.png";
+			this.icon = DefaultItemIcons.item.getCopy();
 		}
 
 		protected BulletEntry(String name)
 		{
 			this.bullet = Bullet.class;
 			this.name = name;
-			this.image = "item.png";
+			this.icon = DefaultItemIcons.item.getCopy();
 		}
 
 		public static BulletEntry getUnknownEntry()
@@ -60,13 +62,13 @@ public class RegistryBullet
 		return entries;
 	}
 
-	public String[] getImageNames()
+	public ItemIcon[] getIcons()
 	{
-		String[] entries = new String[this.bulletEntries.size()];
+		ItemIcon[] entries = new ItemIcon[this.bulletEntries.size()];
 
 		for (int i = 0; i < this.bulletEntries.size(); i++)
 		{
-			entries[i] = this.bulletEntries.get(i).image;
+			entries[i] = this.bulletEntries.get(i).icon;
 		}
 
 		return entries;

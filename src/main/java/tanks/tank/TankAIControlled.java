@@ -2,12 +2,15 @@ package tanks.tank;
 
 import basewindow.Color;
 import tanks.*;
-import tanks.bullet.*;
 import tanks.attribute.AttributeModifier;
+import tanks.bullet.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.*;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemMine;
 import tanks.network.event.*;
-import tanks.obstacle.*;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tankson.*;
 
@@ -237,6 +240,9 @@ public class TankAIControlled extends Tank implements ITankField
 	/** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets*/
 	@Property(category = firingBehavior, id = "aim_ignore_destructible", name = "Through walls", desc = "When enabled, will shoot at destructible blocks if the target is hiding behind them. This is useful for tanks with explosive bullets.")
 	public boolean aimIgnoreDestructible = false;
+
+    @Property(category = firingBehavior, id = "ignore_range", name = "Ignore range limits", desc = "When enabled, will still try to shoot bullets when target enemies are outside of the bullet's range. This is useful for tanks with block bullets, since the blocks can form a barricade.")
+    public boolean ignoreRange = false;
 
 	/** Number of bullets in bullet fan*/
 	@Property(category = firingPattern, id = "shot_round_count", minValue = 1.0, name = "Shots per round", desc = "Number of bullets to fire per round")
@@ -621,9 +627,6 @@ public class TankAIControlled extends Tank implements ITankField
 					this.updateMotionAI();
 				else
 				{
-					this.vX *= Math.pow(1 - Math.min(1, 0.15 * this.frictionModifier), Panel.frameFrequency);
-					this.vY *= Math.pow(1 - Math.min(1, 0.15 * this.frictionModifier), Panel.frameFrequency);
-
 					if (this.enableDefensiveFiring && useRaysThisFrame)
 						this.checkForBulletThreats();
 				}
@@ -666,7 +669,7 @@ public class TankAIControlled extends Tank implements ITankField
 	}
 
 	/** Prepare to fire a bullet*/
-	public void shoot()
+	public void shoot(boolean deflecting)
 	{
 		if (this.suicidal)
 			return;
@@ -682,7 +685,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		Bullet b = this.getBullet();
 
-		boolean arc = this.getBullet() instanceof BulletArc;
+		boolean arc = this.getBullet() instanceof BulletArc || this.getBullet() instanceof BulletAirStrike;
 
 		if ((this.bulletItem.liveBullets < b.maxLiveBullets || b.maxLiveBullets <= 0) && !this.disabled && !this.destroy)
 		{
@@ -700,7 +703,7 @@ public class TankAIControlled extends Tank implements ITankField
 				else if (lifeRange <= 0)
 					range = limitRange;
 
-				if (arc && (this.distance <= range || range <= 0))
+				if (arc && (this.distance <= range || range <= 0 || ignoreRange))
 				{
 					if (this.shotRoundCount <= 1)
 						this.bulletItem.attemptUse(this);
@@ -722,7 +725,11 @@ public class TankAIControlled extends Tank implements ITankField
 					if (this.targetEnemy instanceof Tank)
 						extra += ((Tank) this.targetEnemy).size / 2;
 
-					boolean inRange = (range <= 0) || (GameObject.distanceBetween(this, this.targetEnemy) <= range + extra);
+                    Movable target = this.targetEnemy;
+                    if (deflecting)
+                        target = this.nearestBulletDeflect;
+
+					boolean inRange = (range <= 0) || (GameObject.distanceBetween(this, target) <= range + extra) || ignoreRange;
 					if (!inRange)
 						return;
 
@@ -1793,7 +1800,7 @@ public class TankAIControlled extends Tank implements ITankField
 				if (!(m == null) && !Team.isAllied(m, this) && m instanceof Tank && !((Tank) m).hidden)
 				{
 					this.distance = Movable.distanceBetween(this, m);
-					this.shoot();
+					this.shoot(false);
 				}
 			}
 		}
@@ -1820,7 +1827,7 @@ public class TankAIControlled extends Tank implements ITankField
 		Bullet b = this.getBullet();
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
-			if (b instanceof BulletInstant)
+            if (b instanceof BulletInstant)
 				this.aimAngle = this.getAngleInDirection(nearestBulletDeflect.posX, nearestBulletDeflect.posY);
 			else
 			{
@@ -2030,8 +2037,11 @@ public class TankAIControlled extends Tank implements ITankField
 		}
 
 		if (GameObject.absoluteAngleBetween(this.angle, this.aimAngle) <= this.aimThreshold)
-			if ((arc && this.targetEnemy != null) || (m != null && m.equals(this.targetEnemy) || (this.avoidTimer > 0 && this.disableOffset && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy)))
-				this.shoot();
+        {
+            boolean deflecting = (this.avoidTimer > 0 && this.disableOffset && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy);
+            if ((arc && this.targetEnemy != null) || (m != null && m.equals(this.targetEnemy) || deflecting))
+                this.shoot(deflecting);
+        }
 	}
 
 	public void updateTurretReflect()
@@ -2045,13 +2055,16 @@ public class TankAIControlled extends Tank implements ITankField
 
 		this.search();
 
+        boolean deflecting = false;
 		if (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy && (this.enableMovement || this.nearestBulletDeflectDist <= this.bulletThreatCount * Math.max(Math.max(this.cooldownBase, this.bulletItem.item.cooldownBase), 50) * 1.5))
 		{
 			if (b instanceof BulletInstant)
 			{
 				this.aimAngle = this.getAngleInDirection(this.nearestBulletDeflect.posX, this.nearestBulletDeflect.posY);
 				this.aim = true;
-			}
+                this.disableOffset = true;
+                deflecting = true;
+            }
 			else
 			{
 				double a = this.nearestBulletDeflect.getAngleInDirection(this.posX + Game.tile_size / b.speed * this.nearestBulletDeflect.vX, this.posY + Game.tile_size / b.speed * this.nearestBulletDeflect.vY);
@@ -2065,15 +2078,16 @@ public class TankAIControlled extends Tank implements ITankField
 					{
 						this.aimAngle = d;
 						this.aim = true;
-					}
+                        this.disableOffset = true;
+                        deflecting = true;
+                    }
 				}
 			}
 
-			this.disableOffset = true;
 		}
 
 		if (aim && (this.hasTarget || (this.avoidTimer > 0 && this.enableDefensiveFiring && this.nearestBulletDeflect != null && !this.nearestBulletDeflect.destroy)))
-			this.updateAimingTurret();
+			this.updateAimingTurret(deflecting);
 		else if (currentlySeeking && this.seekPause <= 0)
 			this.updateSeekingTurret();
 		else
@@ -2204,12 +2218,12 @@ public class TankAIControlled extends Tank implements ITankField
 			this.handleSightTransformation();
 	}
 
-	public void updateAimingTurret()
+	public void updateAimingTurret(boolean deflecting)
 	{
 		if (GameObject.absoluteAngleBetween(this.angle, this.aimAngle) < this.turretAimSpeed * Panel.frameFrequency)
 		{
 			this.angle = this.aimAngle;
-			this.shoot();
+			this.shoot(deflecting);
 		}
 		else
 		{
@@ -2670,7 +2684,7 @@ public class TankAIControlled extends Tank implements ITankField
 				this.transformRevertTimer = this.sightTransformRevertTime;
 		}
 
-		if (this.transformRevertTimer <= 0 && this.currentlyTargetable)
+		if (this.transformRevertTimer <= 0 && !this.teleporting)
 		{
 			Game.removeMovables.add(this.sightTransformTank);
 			Tank.idMap.put(this.networkID, this);
@@ -3691,8 +3705,8 @@ public class TankAIControlled extends Tank implements ITankField
 
 	@Override
 	public void setBufferCooldown(Item.ItemStack<?> stack, double value)
-	{
-		this.bulletItem.cooldown = Math.max(this.bulletItem.cooldown, value);
-		this.mineItem.cooldown = Math.max(this.mineItem.cooldown, value);
-	}
+    {
+        this.bulletItem.cooldown = Math.max(this.bulletItem.cooldown, value);
+        this.mineItem.cooldown = Math.max(this.mineItem.cooldown, value);
+    }
 }

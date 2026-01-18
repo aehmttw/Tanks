@@ -17,6 +17,7 @@ bump.ogg
 destroy.ogg
 ding.ogg
 explosion.ogg
+explosion_electric.ogg
 freeze.ogg
 hiss.ogg
 hit_chain.ogg

@@ -4,15 +4,10 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Player;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletArc;
-import tanks.bullet.BulletGas;
-import tanks.bullet.BulletPropertyCategory;
+import tanks.bullet.*;
 import tanks.gui.*;
-import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.registry.RegistryBullet;
-import tanks.tank.Tank;
 import tanks.tank.Turret;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
@@ -34,6 +29,8 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public Button col2Button;
     public Button col3Button;
 
+    public ScreenEditorItem screenEditorItem;
+
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
     {
         Game.screen = new ScreenAddSavedItem(this, (b) ->
@@ -53,7 +50,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     public ScreenEditorBullet(Pointer<Bullet> bullet, Screen screen)
     {
         super(bullet, screen);
-        bulletTypes.images = Game.registryBullet.getImageNames();
+        bulletTypes.itemIcons = Game.registryBullet.getIcons();
         for (int i = 0; i < Game.registryBullet.bulletEntries.size(); i++)
         {
             RegistryBullet.BulletEntry e = Game.registryBullet.bulletEntries.get(i);
@@ -75,7 +72,6 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             }
         };
 
-//        bullet.get().initTrails();
         this.title = "Edit %s";
         this.objName = "bullet";
     }
@@ -130,7 +126,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 {
                     ITrigger el = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
 
-                    if ((p.id().equals("range") || p.id().equals("lifespan")) && target.get() instanceof BulletArc)
+                    if ((p.id().equals("range") || p.id().equals("lifespan")) && (target.get() instanceof BulletArc || target.get() instanceof BulletAirStrike))
                         continue;
 
                     this.uiElements.add(el);
@@ -516,5 +512,14 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             this.load.draw();
             this.save.draw();
         }
+    }
+
+    @Override
+    public void validateChangedProperty(Pointer<?> f, Property p, Object oldValue)
+    {
+        if (this.screenEditorItem != null)
+            this.screenEditorItem.validateChangedProperty(f, p, oldValue);
+        else
+            super.validateChangedProperty(f, p, oldValue);
     }
 }

@@ -1,6 +1,9 @@
 package tanks.item;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Effect;
+import tanks.Game;
+import tanks.Player;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.tank.Tank;
 import tanks.tankson.ICopyable;
@@ -19,7 +22,7 @@ public class ItemShield extends Item implements ICopyable<ItemShield>
     public ItemShield()
     {
         this.rightClick = true;
-        this.icon = "shield.png";
+        this.icon = DefaultItemIcons.shield.getCopy();
     }
 
     @Override

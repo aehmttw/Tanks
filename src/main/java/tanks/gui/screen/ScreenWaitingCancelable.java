@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 import tanks.gui.Button;
 
 public class ScreenWaitingCancelable extends ScreenWaiting

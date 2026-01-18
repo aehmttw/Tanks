@@ -1,6 +1,9 @@
 package tanks.gui.screen;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.Level;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.event.EventShareLevel;

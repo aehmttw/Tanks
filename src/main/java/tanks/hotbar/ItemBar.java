@@ -6,8 +6,10 @@ import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
+import tanks.item.DefaultItemIcons;
 import tanks.item.Item;
 import tanks.item.ItemEmpty;
+import tanks.item.ItemIcon;
 import tanks.minigames.Arcade;
 import tanks.network.ServerHandler;
 import tanks.network.event.EventSetItem;
@@ -50,11 +52,13 @@ public class ItemBar
 
 	public double selectedTimer = 0;
 	public String selectedText = "";
-	public String selectedIcon = null;
+	public ItemIcon selectedIcon = null;
 
 	public int selected = -1;
+    public int selectedPrimaryAbility = 0;
+    public int selectedSecondaryAbility = 1;
 
-	public double age;
+    public double age;
 
 	public boolean showItems = false;
 	public double timeSinceSwitch = Double.MAX_VALUE;
@@ -319,7 +323,7 @@ public class ItemBar
 
 		this.selected = (this.selected == index ? -1 : index);
 
-		int items = this.showItems ? item_bar_size : 0;
+        int items = this.showItems ? item_bar_size : 0;
 		if (index < items)
 		{
 			if (this.selected < 0)
@@ -349,9 +353,9 @@ public class ItemBar
 			}
 
 			if (s.item.rightClick)
-				p.selectedSecondaryAbility = index - items;
+                this.selectedSecondaryAbility = index - items;
 			else
-				p.selectedPrimaryAbility = index - items;
+                this.selectedPrimaryAbility = index - items;
 		}
 		else
 			return;
@@ -402,12 +406,12 @@ public class ItemBar
 
 			if (i == selected)
 				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, (100 - this.player.hotbar.percentHidden) * 2.55);
-			else if (i - items == p.selectedPrimaryAbility && p.selectedPrimaryAbility >= 0)
+			else if (i - items == this.selectedPrimaryAbility && this.selectedPrimaryAbility >= 0)
 			{
 				double a = (selected >= 0 && selected < hotbarSlots && !(slots[selected].item instanceof ItemEmpty) && !slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotPrimarySelectedR + eb, slotPrimarySelectedG + eb, slotPrimarySelectedB + eb, (100 - this.player.hotbar.percentHidden) * 1.27 * a);
 			}
-			else if (i - items == p.selectedSecondaryAbility && p.selectedSecondaryAbility >= 0)
+			else if (i - items == this.selectedSecondaryAbility && this.selectedSecondaryAbility >= 0)
 			{
 				double a = (selected >= 0 && selected < hotbarSlots && !(slots[selected].item instanceof ItemEmpty) && slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotSecondarySelectedR + eb, slotSecondarySelectedG + eb, slotSecondarySelectedB + eb, (100 - this.player.hotbar.percentHidden) * 1.27 * a);
@@ -536,12 +540,12 @@ public class ItemBar
 
 			if (i == selected)
 				Drawing.drawing.setColor(slotSelectedR, slotSelectedG, slotSelectedB, opacity * 255);
-			else if (i - items == p.selectedPrimaryAbility && p.selectedPrimaryAbility >= 0)
+			else if (i - items == this.selectedPrimaryAbility && this.selectedPrimaryAbility >= 0)
 			{
 				double a = (selected >= 0 && selected < hotbarSlots && !(slots[selected].item instanceof ItemEmpty) && !slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotPrimarySelectedR + eb, slotPrimarySelectedG + eb, slotPrimarySelectedB + eb, opacity * 127 * a);
 			}
-			else if (i - items == p.selectedSecondaryAbility && p.selectedSecondaryAbility >= 0)
+			else if (i - items == this.selectedSecondaryAbility && this.selectedSecondaryAbility >= 0)
 			{
 				double a = (selected >= 0 && selected < hotbarSlots && !(slots[selected].item instanceof ItemEmpty) && slots[selected].item.rightClick) ? 0.5 : 1;
 				Drawing.drawing.setColor(slotSecondarySelectedR + eb, slotSecondarySelectedG + eb, slotSecondarySelectedB + eb, opacity * 127 * a);
@@ -607,20 +611,20 @@ public class ItemBar
 			if (Game.playerTank != null && !Game.playerTank.destroy)
 			{
 				double a = 1;
-				String icon = this.selectedIcon;
+				ItemIcon icon = this.selectedIcon;
 
 				if (this.selectedIcon == null)
 				{
 					a = 0.5;
-					icon = "noitem.png";
+					icon = DefaultItemIcons.no_item;
 				}
 
 				Drawing.drawing.setColor(255, 255, 255, Math.min(1, 2 - (this.timeSinceSwitch) / 100.0) * 255 * a);
 
 				if (Game.enable3d)
-					Drawing.drawing.drawImage(icon, Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size, Game.tile_size, Game.tile_size);
+					icon.drawImage(Game.playerTank.posX, Game.playerTank.posY, Game.playerTank.size, Game.tile_size, Game.tile_size);
 				else
-					Drawing.drawing.drawImage(icon, Game.playerTank.posX, Game.playerTank.posY, Game.tile_size, Game.tile_size);
+					icon.drawImage(Game.playerTank.posX, Game.playerTank.posY, Game.tile_size, Game.tile_size);
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 package tanks.gui.screen;
 
 import tanks.*;
-import tanks.gui.*;
+import tanks.gui.Button;
 import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
@@ -408,7 +408,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		{
 			Game.effects.get(i).drawGlow();
 		}
-	}
+    }
 
 	@Override
 	public void draw()

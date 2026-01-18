@@ -1,7 +1,11 @@
 package tanks.obstacle;
 
-import tanks.*;
-import tanks.tank.*;
+import tanks.Chunk;
+import tanks.Direction;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
 
 public class Face implements Comparable<Face>
 {
@@ -57,31 +61,32 @@ public class Face implements Comparable<Face>
         Drawing d = Drawing.drawing;
         for (Chunk c : Chunk.chunkList)
         {
+            Drawing.drawing.setFontSize(5);
             for (Face f : c.faces.topFaces)
             {
                 if (shouldHide(f)) continue;
-                d.setColor(150, 50, 50);
+                d.setColor(150, 50, 50, f.solidTank ? 127 : 64);
                 d.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
             }
 
             for (Face f : c.faces.bottomFaces)
             {
                 if (shouldHide(f)) continue;
-                d.setColor(255, 50, 50);
+                d.setColor(255, 50, 50, f.solidTank ? 127 : 64);
                 d.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
             }
 
             for (Face f : c.faces.leftFaces)
             {
                 if (shouldHide(f)) continue;
-                d.setColor(50, 50, 150);
+                d.setColor(50, 50, 150, f.solidTank ? 127 : 64);
                 d.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
             }
 
             for (Face f : c.faces.rightFaces)
             {
                 if (shouldHide(f)) continue;
-                d.setColor(50, 50, 255);
+                d.setColor(50, 50, 255, f.solidTank ? 127 : 64);
                 d.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
             }
         }
@@ -147,12 +152,12 @@ public class Face implements Comparable<Face>
         }
     }
 
-    public String toString()
-    {
-        String ownerName = this.owner instanceof Obstacle ? ((Obstacle) this.owner).name : this.owner instanceof Tank ? ((Tank) this.owner).name : this.owner != null ? this.owner.getClass().getSimpleName() : "null";
-        if (this.direction.isNonZeroY())
-            return String.format("%.1f-%.1f %.1f  %s", this.startX, this.endX, this.startY, ownerName);
-        else
-            return String.format("%.1f %.1f-%.1f  %s", this.startX, this.startY, this.endY, ownerName);
-    }
+//    public String toString()
+//    {
+//        String ownerName = this.owner instanceof Obstacle ? ((Obstacle) this.owner).name : this.owner instanceof Tank ? ((Tank) this.owner).name : this.owner != null ? this.owner.getClass().getSimpleName() : "null";
+//        if (this.direction.isNonZeroY())
+//            return String.format("%.1f-%.1f %.1f  %s", this.startX, this.endX, this.startY, ownerName);
+//        else
+//            return String.format("%.1f %.1f-%.1f  %s", this.startX, this.startY, this.endY, ownerName);
+//    }
 }

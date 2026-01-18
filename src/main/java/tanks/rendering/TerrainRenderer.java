@@ -1,7 +1,6 @@
 package tanks.rendering;
 
 import basewindow.*;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import tanks.Chunk;
 import tanks.Direction;
 import tanks.Drawing;
@@ -16,9 +15,9 @@ public class TerrainRenderer
 {
     public static final int section_size = 2000;
 
-    protected final HashMap<Class<? extends ShaderGroup>, Int2ObjectOpenHashMap<RegionRenderer>> renderers = new HashMap<>();
+    protected final HashMap<Class<? extends ShaderGroup>, HashMap<Integer, RegionRenderer>> renderers = new HashMap<>();
     protected final HashMap<IBatchRenderableObject, RegionRenderer> renderersByObj = new HashMap<>();
-    protected final Int2ObjectOpenHashMap<RegionRenderer> outOfBoundsRenderers = new Int2ObjectOpenHashMap<>();
+    protected final HashMap<Integer, RegionRenderer> outOfBoundsRenderers = new HashMap<>();
 
     public boolean staged = false;
 
@@ -95,15 +94,18 @@ public class TerrainRenderer
         }
     }
 
-    public Int2ObjectOpenHashMap<RegionRenderer> getRenderers(Class<? extends ShaderGroup> s)
+    public HashMap<Integer, RegionRenderer> getRenderers(Class<? extends ShaderGroup> s)
     {
-        return renderers.computeIfAbsent(s, k -> new Int2ObjectOpenHashMap<>());
+        // Do not use ComputeIfAbsent. This breaks the iOS compiler.
+        if (!renderers.containsKey(s))
+            renderers.put(s, new HashMap<>());
+        return renderers.get(s);
     }
 
     public RegionRenderer getRenderer(IBatchRenderableObject o, double x, double y, boolean outOfBounds)
     {
         RegionRenderer s = null;
-        Int2ObjectOpenHashMap<RegionRenderer> renderers = this.outOfBoundsRenderers;
+        HashMap<Integer, RegionRenderer> renderers = this.outOfBoundsRenderers;
 
         Class<? extends ShaderGroup> sg = ShaderGroup.class;
 
@@ -476,7 +478,7 @@ public class TerrainRenderer
 
     public void reset()
     {
-        for (Int2ObjectOpenHashMap<RegionRenderer> h : this.renderers.values())
+        for (HashMap<Integer, RegionRenderer> h : this.renderers.values())
             for (RegionRenderer r : h.values())
                 r.renderer.free();
 
@@ -490,7 +492,7 @@ public class TerrainRenderer
         this.stagedCount = 0;
     }
 
-    public void drawMap(Int2ObjectOpenHashMap<RegionRenderer> renderers, int xOffset, int yOffset)
+    public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
         for (RegionRenderer s : renderers.values())
         {
@@ -508,9 +510,9 @@ public class TerrainRenderer
             if (in)
             {
                 if (s.shader instanceof RendererShader)
-                    s.renderer.settings(((RendererShader) s.shader).depthTest, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask);
+                    s.renderer.settings(((RendererShader) s.shader).depthTest && Game.enable3d, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask && Game.enable3d);
                 else
-                    s.renderer.settings(true, false, true);
+                    s.renderer.settings(Game.enable3d, false, Game.enable3d);
 
                 double x1 = Drawing.drawing.gameToAbsoluteX(x, 0);
                 double y1 = Drawing.drawing.gameToAbsoluteY(y, 0);

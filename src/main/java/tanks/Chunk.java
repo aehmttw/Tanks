@@ -1,12 +1,11 @@
 package tanks;
 
 import basewindow.IBatchRenderableObject;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.*;
-import tanks.obstacle.*;
+import tanks.obstacle.Face;
+import tanks.obstacle.ISolidObject;
+import tanks.obstacle.Obstacle;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("UnusedReturnValue")
 public class Chunk
@@ -16,18 +15,18 @@ public class Chunk
     public static final Chunk zeroChunk = new Chunk();
     public static boolean debug = false;
 
-    public static Int2ObjectOpenHashMap<Chunk> chunkMap = new Int2ObjectOpenHashMap<>();
-    public static ObjectArrayList<Chunk> chunkList = new ObjectArrayList<>();
-    private static final ObjectArrayList<Chunk> chunkCache = new ObjectArrayList<>();
+    public static HashMap<Integer, Chunk> chunkMap = new HashMap<>();
+    public static ArrayList<Chunk> chunkList = new ArrayList<>();
+    private static final ArrayList<Chunk> chunkCache = new ArrayList<>();
     public static int chunkSize = 8;
 
-    private static final ObjectArraySet<Chunk> dirtyChunks = new ObjectArraySet<>();
+    private static final HashSet<Chunk> dirtyChunks = new HashSet<>();
 
     public final Level level;
     public final int chunkX, chunkY;
     public Face[] borderFaces = new Face[4];
-    public final ObjectOpenHashSet<Obstacle> obstacles = new ObjectOpenHashSet<>();
-    public final ObjectOpenHashSet<Movable> movables = new ObjectOpenHashSet<>();
+    public final HashSet<Obstacle> obstacles = new HashSet<>();
+    public final HashSet<Movable> movables = new HashSet<>();
 
     /**
      * Stores faces of Movables, which are updated every frame
@@ -68,7 +67,7 @@ public class Chunk
      *
      * @return the chunks within the range
      */
-    public static ObjectArrayList<Chunk> iterateOutwards(int tileX, int tileY, int maxChunks)
+    public static ArrayList<Chunk> iterateOutwards(int tileX, int tileY, int maxChunks)
     {
         chunkCache.clear();
         queue.clear();
@@ -78,11 +77,11 @@ public class Chunk
 
         if (start != null)
         {
-            queue.enqueue(start);
+            queue.add(start);
 
             while (!queue.isEmpty())
             {
-                Chunk c = queue.dequeue();
+                Chunk c = queue.remove();
                 for (int i = 0; i < 4; i++)
                 {
                     int newX = c.chunkX + Direction.X[i];
@@ -91,7 +90,7 @@ public class Chunk
                     if (next != null && start.manhattanDist(next) < maxChunks && visited.add(next))
                     {
                         chunkCache.add(next);
-                        queue.enqueue(next);
+                        queue.add(next);
                     }
                 }
             }
@@ -138,13 +137,13 @@ public class Chunk
      *
      * @return the chunks within the range
      */
-    public static ObjectArrayList<Chunk> iterateOutwards(double posX, double posY, int maxChunks)
+    public static ArrayList<Chunk> iterateOutwards(double posX, double posY, int maxChunks)
     {
         return iterateOutwards((int) (posX / Game.tile_size), (int) (posY / Game.tile_size), maxChunks);
     }
 
-    static ObjectArrayFIFOQueue<Chunk> queue = new ObjectArrayFIFOQueue<>();
-    static ObjectOpenHashSet<Chunk> visited = new ObjectOpenHashSet<>();
+    static Queue<Chunk> queue = new LinkedList<>();
+    static HashSet<Chunk> visited = new HashSet<>();
 
     public static double chunkToGame(double chunkPos)
     {
@@ -222,13 +221,13 @@ public class Chunk
         faces.removeFaces(o);
     }
 
-    public static ObjectArrayList<Chunk> getChunksInRange(double x1, double y1, double x2, double y2)
+    public static ArrayList<Chunk> getChunksInRange(double x1, double y1, double x2, double y2)
     {
         return getChunksInRange((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size),
             (int) (x2 / Game.tile_size), (int) (y2 / Game.tile_size));
     }
 
-    public static ObjectArrayList<Chunk> getChunksInRange(int tx1, int ty1, int tx2, int ty2)
+    public static ArrayList<Chunk> getChunksInRange(int tx1, int ty1, int tx2, int ty2)
     {
         int x1 = tx1 / chunkSize, y1 = ty1 / chunkSize, x2 = tx2 / chunkSize, y2 = ty2 / chunkSize;
         chunkCache.clear();
@@ -318,7 +317,7 @@ public class Chunk
     /**
      * Expects all pixel coordinates.
      */
-    public static ObjectArrayList<Chunk> getChunksInRadius(double x1, double y1, double radius)
+    public static ArrayList<Chunk> getChunksInRadius(double x1, double y1, double radius)
     {
         return getChunksInRadius((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), radius / Game.tile_size);
     }
@@ -326,7 +325,7 @@ public class Chunk
     /**
      * Expects all tile coordinates.
      */
-    public static ObjectArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
+    public static ArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
     {
         chunkCache.clear();
         double x1 = (double) tx1 / chunkSize, y1 = (double) ty1 / chunkSize, cRad = Math.ceil(radius / chunkSize) + 1;
@@ -460,9 +459,9 @@ public class Chunk
         }
 
         Drawing.drawing.setColor(255, 255, 255);
-        for (Movable m : Game.movables)
-            Drawing.drawing.drawText(m.posX, m.posY, m.getCurrentChunks().stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
-                .collect(Collectors.joining(", ")));
+//        for (Movable m : Game.movables)
+//            Drawing.drawing.drawText(m.posX, m.posY, m.getCurrentChunks().stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
+//                .collect(Collectors.joining(", ")));
     }
 
     /**
@@ -557,19 +556,19 @@ public class Chunk
         /**
          * dynamic x, static y
          */
-        public final ObjectArrayList<Face> topFaces = new ObjectArrayList<>();
+        public final ArrayList<Face> topFaces = new ArrayList<>();
         /**
          * dynamic x, static y
          */
-        public final ObjectArrayList<Face> bottomFaces = new ObjectArrayList<>();
+        public final ArrayList<Face> bottomFaces = new ArrayList<>();
         /**
          * static x, dynamic y
          */
-        public final ObjectArrayList<Face> leftFaces = new ObjectArrayList<>();
+        public final ArrayList<Face> leftFaces = new ArrayList<>();
         /**
          * static x, dynamic y
          */
-        public final ObjectArrayList<Face> rightFaces = new ObjectArrayList<>();
+        public final ArrayList<Face> rightFaces = new ArrayList<>();
 
         public FaceList(Chunk chunk)
         {
@@ -607,14 +606,15 @@ public class Chunk
 
         public void sort()
         {
-            topFaces.unstableSort(null);
-            bottomFaces.unstableSort(Comparator.reverseOrder());
-            leftFaces.unstableSort(null);
-            rightFaces.unstableSort(Comparator.reverseOrder());
+            // Do not replace with <list>.sort(). This breaks the iOS compiler.
+            Collections.sort(topFaces);
+            Collections.sort(bottomFaces, Collections.reverseOrder());
+            Collections.sort(leftFaces);
+            Collections.sort(rightFaces, Collections.reverseOrder());
 
             for (int i = 0; i < 4; i++)
             {
-                ObjectArrayList<Face> f = getSide(i);
+                ArrayList<Face> f = getSide(i);
                 for (int j = 1; j < f.size(); j++)
                 {
                     if (f.get(j) == null || f.get(j).equals(f.get(j - 1)))
@@ -623,7 +623,7 @@ public class Chunk
             }
         }
 
-        public ObjectArrayList<Face> getSide(int side)
+        public ArrayList<Face> getSide(int side)
         {
             switch (side)
             {

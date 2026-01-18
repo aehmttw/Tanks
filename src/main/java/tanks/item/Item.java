@@ -1,23 +1,18 @@
 package tanks.item;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.bullet.*;
+import tanks.tank.Mine;
 import tanks.tank.Tank;
+import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 import tanks.tankson.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 @TanksONable("item")
 public abstract class Item extends GameObject
 {
 	public static final String item_class_name = "item";
-
-	public static ArrayList<String> icons = new ArrayList<>(Arrays.asList("item.png", "bullet_normal.png", "bullet_mini.png", "bullet_large.png", "bullet_fire.png", "bullet_fire_trail.png", "bullet_dark_fire.png", "bullet_flame.png",
-			"bullet_laser.png", "bullet_healing.png", "bullet_electric.png", "bullet_freeze.png", "bullet_arc.png", "bullet_explosive.png", "bullet_boost.png", "bullet_air.png", "bullet_homing.png",
-			"mine.png",
-			"shield.png", "shield_gold.png"));
 
 	// Items like bullets and mines can hit enemies, so this will be shown on the stats screen
 	public boolean supportsHits = false;
@@ -26,7 +21,10 @@ public abstract class Item extends GameObject
 	public String name = System.currentTimeMillis() + "";
 
 	@Property(id = "icon", name = "Icon", miscType = Property.MiscType.itemIcon)
-	public String icon = "item.png";
+	public ItemIcon icon = new ItemIcon("item", "item.png");
+
+    @Property(id = "auto_icon", name = "", category = "none")
+    public boolean autoIcon = false;
 
 	@Property(id = "cooldown", name = "Cooldown", desc = "Minimum time between uses of this item \n \n 1 time unit = 0.01 seconds")
 	public double cooldownBase = 20;
@@ -263,6 +261,10 @@ public abstract class Item extends GameObject
 
 			ItemStack<?> i = (ItemStack<?>) Serializer.fromTanksON(s);
 			i.player = p;
+
+            if (i.item.autoIcon)
+                i.item.setAutomaticIcon();
+
 			return i;
 		}
 
@@ -281,7 +283,7 @@ public abstract class Item extends GameObject
 
 			Item i = Game.registryItem.getEntry(p[6]).getItem();
 			i.name = name;
-			i.icon = image;
+			i.icon = Game.registryItemIcon.getItemIcon(image.replace(".png", "")).getCopy();
 			ItemStack<?> is = i.getStack(pl);
 			if (i instanceof ItemBullet)
 			{
@@ -434,6 +436,203 @@ public abstract class Item extends GameObject
 
 	public abstract ItemStack<?> getStack(Player p);
 
+    public void setAutomaticIcon()
+    {
+        this.autoIcon = true;
+        this.icon = this.getAutomaticIcon();
+    }
+
+    public ItemIcon getAutomaticIcon()
+    {
+        if (this instanceof ItemShield)
+            return DefaultItemIcons.shield.getCopy();
+        else if (this instanceof ItemMine)
+        {
+            Mine m = ((ItemMine) this).mine;
+            ItemIcon ii = DefaultItemIcons.mine.getCopy();
+            ii.colors.get(2).set(m.initialColor.red * 0.85 + m.finalColor.red * 0.15, m.initialColor.green * 0.85 + m.finalColor.green * 0.15, m.initialColor.blue * 0.85 + m.finalColor.blue * 0.15);
+            return ii;
+        }
+        else if (this instanceof ItemBullet)
+        {
+            Bullet b = ((ItemBullet) this).bullet;
+            Color primary = new Color().set(TankPlayer.default_primary_color);
+            Color secondary = new Color().set(TankPlayer.default_secondary_color);
+
+            if (b.overrideBaseColor)
+                primary.set(b.baseColor);
+
+            if (b.overrideOutlineColor)
+                secondary.set(b.outlineColor);
+
+            if (b.hitExplosion != null)
+            {
+                primary.set(255, 255, 0);
+                secondary.set(255, 0, 0);
+            }
+
+            double straightTrailWidth = 0;
+            Color straightTrail = new Color(0, 0, 0, 0);
+            Color fireTrailStart = new Color(0, 0, 0, 0);
+            Color fireTrailEnd = new Color(0, 0, 0, 0);
+
+            Color homing1 = null;
+            Color homing2 = null;
+
+            for (Trail t: b.effect.trailEffects)
+            {
+                if (t.frontWidth >= t.backWidth)
+                {
+                    if (t.frontColor.alpha >= 0.25)
+                    {
+                        straightTrail.set(t.frontColor);
+                        straightTrailWidth = t.frontWidth;
+                    }
+                }
+                else
+                {
+                    fireTrailStart.set(t.frontColor);
+                    fireTrailEnd.set(t.backColor);
+                    fireTrailStart.alpha = 255;
+                    fireTrailEnd.alpha = 180;
+                }
+            }
+
+            if (b.effect.enableHomingParticles && b.homingSharpness != 0)
+            {
+                homing1 = new Color().set(b.effect.homingParticleColor);
+                homing2 = new Color().set(b.effect.homingParticleColor);
+                homing1.red = Math.max(0, homing1.red - 20);
+                homing1.green = Math.max(0, homing1.green - 20);
+                homing1.blue = Math.max(0, homing1.blue - 20);
+                homing2.red = Math.min(255, homing2.red + 20);
+                homing2.green = Math.min(255, homing2.green + 20);
+                homing2.blue = Math.min(255, homing2.blue + 20);
+            }
+
+            if (b instanceof BulletArc)
+            {
+                ItemIcon ii = b instanceof BulletBlock ? DefaultItemIcons.bullet_block.getCopy() : DefaultItemIcons.bullet_arc.getCopy();
+                ii.colors.get(0).set(straightTrail);
+                ii.colors.get(1).set(secondary);
+                ii.colors.get(2).set(primary);
+                return ii;
+            }
+            else if (b instanceof BulletGas)
+            {
+                ItemIcon ii;
+                if (b.accuracySpread > 0)
+                    ii = DefaultItemIcons.bullet_air.getCopy();
+                else
+                    ii = DefaultItemIcons.bullet_flame.getCopy();
+
+                Color noise = ((BulletGas) b).noise;
+                ii.colors.get(0).set(secondary.red + noise.red / 2, secondary.green + noise.green / 2, secondary.blue + noise.blue / 2);
+                ii.colors.get(1).set(primary.red + noise.red / 2, primary.green + noise.green / 2, primary.blue + noise.blue / 2);
+                return ii;
+            }
+            else if (b instanceof BulletInstant)
+            {
+                ItemIcon ii;
+                if (b.hitStun > 0)
+                {
+                    ii = DefaultItemIcons.bullet_electric.getCopy();
+                    ii.colors.get(0).set(primary);
+                    ii.colors.get(1).set(secondary.red * 0.635 + primary.red * 0.365, secondary.green * 0.635 + primary.green * 0.365, secondary.blue * 0.635 + primary.blue * 0.365);
+                }
+                else if (b.damage >= 0)
+                {
+                    ii = DefaultItemIcons.bullet_laser.getCopy();
+                    ii.colors.get(0).set(primary);
+                    ii.colors.get(1).set(secondary.red * 0.2 + primary.red * 0.8, secondary.green * 0.2 + primary.green * 0.8, secondary.blue * 0.2 + primary.blue * 0.8);
+                    ii.colors.get(2).set(secondary.red * 0.4 + primary.red * 0.6, secondary.green * 0.4 + primary.green * 0.6, secondary.blue * 0.4 + primary.blue * 0.6);
+                }
+                else
+                {
+                    ii = DefaultItemIcons.bullet_healing.getCopy();
+                    ii.colors.get(0).set(primary);
+                    ii.colors.get(1).set(secondary.red * 0.6 + primary.red * 0.4, secondary.green * 0.6 + primary.green * 0.4, secondary.blue * 0.6 + primary.blue * 0.4);
+                    ii.colors.get(2).set(secondary.red * 0.8 + primary.red * 0.2, secondary.green * 0.8 + primary.green * 0.2, secondary.blue * 0.8 + primary.blue * 0.2);
+                }
+                return ii;
+            }
+            else if (b instanceof BulletAirStrike)
+            {
+                ItemIcon ii = DefaultItemIcons.bullet_air_strike.getCopy();
+                ii.colors.get(0).set(straightTrail);
+                ii.colors.get(1).set(fireTrailEnd);
+                ii.colors.get(2).set(fireTrailStart);
+                ii.colors.get(3).set(fireTrailEnd.red, fireTrailEnd.green, fireTrailEnd.blue);
+                ii.colors.get(4).set(fireTrailEnd.red * 0.15 + fireTrailStart.red * 0.85, fireTrailEnd.green * 0.15 + fireTrailStart.green * 0.85, fireTrailEnd.blue * 0.15 + fireTrailStart.blue * 0.85);
+
+                return ii;
+            }
+            else if (b.freezing)
+            {
+                ItemIcon ii = DefaultItemIcons.bullet_freeze.getCopy();
+                ii.colors.get(1).set(secondary);
+                return ii;
+            }
+            else if (b.boosting)
+            {
+                ItemIcon ii = DefaultItemIcons.bullet_boost.getCopy();
+                ii.colors.get(0).set(secondary);
+                return ii;
+            }
+            else if (b.size < 8)
+            {
+                return DefaultItemIcons.bullet_mini.getCopy();
+            }
+            else if (b.size > 20)
+            {
+                ItemIcon ii = DefaultItemIcons.bullet_large.getCopy();
+                ii.colors.get(0).set(secondary);
+                ii.colors.get(1).set(primary);
+                return ii;
+            }
+            else if (homing1 != null || fireTrailStart.alpha > 0)
+            {
+                ItemIcon ii;
+                if (homing1 != null)
+                    ii = DefaultItemIcons.bullet_homing.getCopy();
+                else if (straightTrailWidth > 1.5)
+                    ii = DefaultItemIcons.bullet_fire_trail.getCopy();
+                else if (fireTrailStart.red + fireTrailStart.green + fireTrailStart.blue < 100)
+                    ii = DefaultItemIcons.bullet_dark_fire.getCopy();
+                else
+                    ii = DefaultItemIcons.bullet_fire.getCopy();
+
+                ii.colors.get(0).set(0, 0, 0, 0);
+                if (straightTrailWidth <= 1.5)
+                    ii.colors.get(0).set(straightTrail);
+                else
+                    ii.colors.get(1).set(straightTrail);
+
+                if (homing1 != null)
+                {
+                    ii.colors.get(2).set(homing1);
+                    ii.colors.get(3).set(homing2);
+                }
+
+                ii.colors.get(4).set(fireTrailEnd);
+                ii.colors.get(5).set(fireTrailStart);
+                ii.colors.get(6).set(fireTrailEnd.red, fireTrailEnd.green, fireTrailEnd.blue);
+                ii.colors.get(7).set(fireTrailEnd.red * 0.15 + fireTrailStart.red * 0.85, fireTrailEnd.green * 0.15 + fireTrailStart.green * 0.85, fireTrailEnd.blue * 0.15 + fireTrailStart.blue * 0.85);
+                return ii;
+            }
+            else
+            {
+                ItemIcon ii = DefaultItemIcons.bullet_normal.getCopy();
+                ii.colors.get(0).set(straightTrail);
+                ii.colors.get(1).set(secondary);
+                ii.colors.get(2).set(primary);
+                return ii;
+            }
+        }
+        else
+            return DefaultItemIcons.item.getCopy();
+    }
+
 	public String toString()
 	{
 //		try
@@ -472,6 +671,6 @@ public abstract class Item extends GameObject
 
 	public static Item fromString(String s)
 	{
-		return (Item) Serializer.fromTanksON(s);
+        return (Item) Serializer.fromTanksON(s);
 	}
 }

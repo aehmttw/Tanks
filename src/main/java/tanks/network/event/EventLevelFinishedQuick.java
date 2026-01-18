@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.NetworkUtils;
 

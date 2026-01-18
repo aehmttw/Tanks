@@ -2,6 +2,7 @@ package tanks.tankson;
 
 import basewindow.Color;
 import tanks.BiConsumer;
+import tanks.BiFunction;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
@@ -16,7 +17,6 @@ import tanks.tank.TankModels;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 public class Compatibility
 {
@@ -105,6 +105,12 @@ public class Compatibility
                 default:
                     return new BulletEffect();
             }
+        });
+
+        compatibility_table.put("icon", (owner, a) ->
+        {
+            String i = ((String) a).replace(".png", "");
+            return Game.registryItemIcon.getItemIcon(i).getCopy();
         });
 
         unused_table.put("luminance", (owner, value) ->

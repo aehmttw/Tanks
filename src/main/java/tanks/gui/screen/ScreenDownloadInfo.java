@@ -3,7 +3,6 @@ package tanks.gui.screen;
 import com.codedisaster.steamworks.SteamUGC;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Panel;
 
 public class ScreenDownloadInfo extends Screen
 {

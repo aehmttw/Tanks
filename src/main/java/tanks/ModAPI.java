@@ -5,7 +5,6 @@ import tanks.network.NetworkEventMap;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
-import tanks.tank.TankModels;
 import tanks.tank.TankNPC;
 
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ public class ModAPI
         NetworkEventMap.register(EventAddColoredTile.class);
         NetworkEventMap.register(EventAddFixedShape.class);
         NetworkEventMap.register(EventAddNPC.class);
-        NetworkEventMap.register(EventAddNPCShopItem.class);
         NetworkEventMap.register(EventAddObstacle.class);
         NetworkEventMap.register(EventAddObstacleText.class);
         NetworkEventMap.register(EventAddScoreboard.class);

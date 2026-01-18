@@ -7,7 +7,6 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
-import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;

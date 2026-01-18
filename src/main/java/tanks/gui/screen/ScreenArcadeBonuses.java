@@ -9,7 +9,9 @@ import tanks.minigames.Arcade;
 import tanks.network.event.EventArcadeBonuses;
 import tanks.translation.Translation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
 
 public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 {
@@ -425,7 +427,8 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 }
             }
 
-            removeFireworks.forEach(spawnedFireworks::remove);
+            for (Firework f: removeFireworks)
+                spawnedFireworks.remove(f);
         }
     }
 

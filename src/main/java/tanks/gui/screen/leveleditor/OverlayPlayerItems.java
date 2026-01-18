@@ -51,7 +51,11 @@ public class OverlayPlayerItems extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.drawPopup(this.centerX, this.centerY - 20, 800, 550);
+        int sX = (int) (800 * this.objWidth / 350);
+        int sY = (int) Math.min(700, 550 * this.objHeight / 40);
+
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY - (Drawing.drawing.interfaceScaleZoom <= 1 ? 20 : 0), sX, sY);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

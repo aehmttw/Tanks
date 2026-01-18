@@ -6,8 +6,6 @@ import tanks.Team;
 import tanks.gui.screen.leveleditor.OverlayEditTeam;
 import tanks.gui.screen.leveleditor.OverlaySelectTeam;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.tank.Tank;
-import tanks.translation.Translation;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -1,6 +1,7 @@
 package basewindow;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,7 +63,7 @@ public class ComputerFile extends BaseFile
     @Override
     public void startReading() throws FileNotFoundException
     {
-        scanner = new BufferedReader(new FileReader(file));
+        scanner = new BufferedReader( new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
     }
 
     @Override

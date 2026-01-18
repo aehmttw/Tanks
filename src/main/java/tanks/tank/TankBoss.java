@@ -17,6 +17,7 @@ public class TankBoss extends TankAIControlled
 		this.cooldownRandom = 200;
 		this.cooldownBase = 100;
 		this.aimAccuracyOffset = 0;
+        this.friction += 0.15;
 
 		this.setBullet(DefaultItems.mega_bullet);
 		this.getBullet().maxLiveBullets = 4;

@@ -1,17 +1,31 @@
 package tanks.tank;
 
-import basewindow.*;
+import basewindow.Color;
+import basewindow.Model;
 import tanks.*;
-import tanks.attribute.*;
+import tanks.attribute.AttributeModifier;
+import tanks.attribute.EffectManager;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.*;
+import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
-import tanks.item.*;
-import tanks.network.event.*;
-import tanks.obstacle.*;
-import tanks.tankson.*;
+import tanks.item.Item;
+import tanks.item.ItemDummyTankExplosion;
+import tanks.network.event.EventTankAddAttributeModifier;
+import tanks.network.event.EventTankUpdate;
+import tanks.network.event.EventTankUpdateHealth;
+import tanks.network.event.EventTankUpdateVisibility;
+import tanks.obstacle.ISolidObject;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
+import tanks.tankson.MetadataProperty;
+import tanks.tankson.Property;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
 
 import static tanks.tank.TankPropertyCategory.*;
 
@@ -46,6 +60,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 	public boolean invulnerable = false;
 	public boolean currentlyTargetable = true;
+    public boolean teleporting = false;
 	public double invulnerabilityTimer = 0;
 
 	public boolean disabled = false;
@@ -296,8 +311,8 @@ public abstract class Tank extends Movable implements ISolidObject
 
             double ourSize = this.size;
             double theirSize = t.size;
-            double ourMass = ourSize * ourSize;
-            double theirMass = theirSize * theirSize;
+            double ourMass = ourSize * ourSize * (1.0 / (1.000000001 - this.friction));
+            double theirMass = theirSize * theirSize * (1.0 / (1.000000001 - t.friction));
 
             double dx = t.posX - this.posX;
             double dy = t.posY - this.posY;
@@ -885,7 +900,7 @@ public abstract class Tank extends Movable implements ISolidObject
 	{
 		this.nameTag.oy = this.size / 7 * 5;
 		this.nameTag.oz = this.size / 2;
-		this.showName = this.hasName && !this.hidden && !this.invisible;
+		this.showName = this.hasName && !this.hidden && this.currentlyVisible;
 
 
 		if (this.currentlyVisible || this.destroy)

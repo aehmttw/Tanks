@@ -13,7 +13,6 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
-import tanks.Game;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -148,7 +147,7 @@ public class LWJGLWindow extends BaseWindow
                     if (zhCnFontInputStream == null) break;
                     if (zhCnTxtInputStream == null)
                     {
-                        Game.logger.println("Failed to load zh cn font " + count);
+                        System.err.println("Failed to load zh cn font " + count);
                         continue;
                     }
                     Scanner scanner = new Scanner(Objects.requireNonNull(zhCnTxtInputStream), StandardCharsets.UTF_8.name());
@@ -167,7 +166,6 @@ public class LWJGLWindow extends BaseWindow
         }
         catch (IOException e)
         {
-            e.printStackTrace(Game.logger);
             e.printStackTrace();
         }
 
@@ -767,8 +765,7 @@ public class LWJGLWindow extends BaseWindow
 		if (this.drawingShadow)
 			glOrtho(0, absoluteWidth, absoluteHeight, 0, -absoluteDepth, absoluteDepth);
 		else
-//			glOrtho(-absoluteWidth / 2 / 1.37, absoluteWidth / 2 / 1.37, absoluteHeight / 2, -absoluteHeight / 2, -absoluteDepth, absoluteDepth);
-
+//			glOrtho(-absoluteWidth / 2, absoluteWidth / 2, absoluteHeight / 2, -absoluteHeight / 2, -absoluteDepth * m, absoluteDepth * m);
 			glFrustum(
 					-absoluteWidth / (absoluteDepth * 2.0) * m,
 					absoluteWidth / (absoluteDepth * 2.0) * m,

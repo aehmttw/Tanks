@@ -2,15 +2,19 @@ package tanks;
 
 import basewindow.*;
 import basewindow.transformation.AxisRotation;
-import tanks.gui.*;
+import tanks.gui.Button;
+import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
+import tanks.item.ItemIcon;
 import tanks.network.event.EventPlaySound;
 import tanks.obstacle.Obstacle;
-import tanks.rendering.*;
+import tanks.rendering.TerrainRenderer;
+import tanks.rendering.TrackRenderer;
 import tanks.tank.TankPlayer;
 import tanks.translation.Translation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Drawing
 {
@@ -465,7 +469,7 @@ public class Drawing
 
 	public void fillRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
 	{
-		terrainRenderer.addBox(o, x - sizeX / 2, y - sizeY / 2, 0, sizeX, sizeY, 1, (byte) 61, false);
+        this.fillRect(x, y, sizeX, sizeY);
 	}
 
 	public void fillRect(double x, double y, double z, double sizeX, double sizeY, boolean depthTest)
@@ -1061,6 +1065,11 @@ public class Drawing
 
 		Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
 	}
+
+    public void drawInterfaceImage(ItemIcon img, double x, double y, double sizeX, double sizeY)
+    {
+        img.drawInterfaceImage(x, y, sizeX, sizeY);
+    }
 
 	public void drawInterfaceImage(String img, double x, double y, double sizeX, double sizeY)
 	{

@@ -9,7 +9,10 @@ import tanks.item.Item;
 import tanks.item.ItemDummyBlockExplosion;
 import tanks.network.event.EventObstacleDestroy;
 import tanks.rendering.ShaderExplosive;
-import tanks.tank.*;
+import tanks.tank.Explosion;
+import tanks.tank.IAvoidObject;
+import tanks.tank.Mine;
+import tanks.tank.Tank;
 
 public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
 {
@@ -65,7 +68,8 @@ public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
             else
                 this.trigger = (Tank) m;
 
-            this.explode();
+            this.setUpdate(true);
+            this.timer = 0;
         }
     }
 

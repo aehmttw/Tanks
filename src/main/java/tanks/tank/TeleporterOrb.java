@@ -1,9 +1,9 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.attribute.AttributeModifier;
 import tanks.bullet.Trail;
 import tanks.bullet.Trail3D;
-import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.event.EventTankTeleport;
 
@@ -52,6 +52,7 @@ public class TeleporterOrb extends Movable
 		this.drawLevel = 9;
 		t.invulnerable = true;
 		t.currentlyTargetable = false;
+        t.teleporting = true;
 		this.fX = x;
 		this.fY = y;
 		this.iX = iX;
@@ -123,6 +124,7 @@ public class TeleporterOrb extends Movable
 			Game.removeMovables.add(this);
 			this.tank.invulnerable = false;
 			this.tank.currentlyTargetable = this.tank.targetable;
+            this.tank.teleporting = false;
 			this.tank.inControlOfMotion = true;
 			this.tank.positionLock = false;
 

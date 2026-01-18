@@ -43,7 +43,7 @@ public class ScreenPopupWarning extends Screen
     {
         previous.draw();
 
-        Drawing.drawing.setColor(0, 0, 0, 200);
+        Drawing.drawing.setColor(0, 0, 0, 164);
         Drawing.drawing.drawPopup(this.centerX, this.centerY, this.objXSpace * 2.5, this.objYSpace * 10);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - objYSpace * 3, title);

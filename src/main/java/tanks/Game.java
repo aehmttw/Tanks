@@ -331,6 +331,7 @@ public class Game
 		NetworkEventMap.register(EventAnnounceConnection.class);
 		NetworkEventMap.register(EventChat.class);
 		NetworkEventMap.register(EventPlayerChat.class);
+        NetworkEventMap.register(EventChatClear.class);
         NetworkEventMap.register(EventMutePlayer.class);
         NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);

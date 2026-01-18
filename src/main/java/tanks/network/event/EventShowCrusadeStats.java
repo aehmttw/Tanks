@@ -85,8 +85,8 @@ public class EventShowCrusadeStats extends PersonalEvent
             String[] parts3 = parts1[1].split("/");
             Player.parseStringIntHashMap(cp.tankKills, parts3[0]);
             Player.parseStringIntHashMap(cp.tankDeaths, parts3[1]);
-            Player.parseStringIntHashMap(cp.itemUses, parts3[2]);
-            Player.parseStringIntHashMap(cp.itemHits, parts3[3]);
+            Player.parseStringDoubleHashMap(cp.itemUses, parts3[2]);
+            Player.parseStringDoubleHashMap(cp.itemHits, parts3[3]);
 
             cp.coins = Integer.parseInt(parts3[4]);
             cp.player.remainingLives = Integer.parseInt(parts3[5]);

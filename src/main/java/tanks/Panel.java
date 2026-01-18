@@ -145,8 +145,6 @@ public class Panel
 		Drawing.drawing.terrainRenderer = new TerrainRenderer();
 		Drawing.drawing.trackRenderer = new TrackRenderer();
 
-		ModAPI.setUp();
-
 		Game.resetTiles();
 
 		if (Game.game.fullscreen)
@@ -338,12 +336,6 @@ public class Panel
 
 		if (this.continuation != null)
 			return;
-
-		if (Game.screen instanceof ScreenGame)
-		{
-			for (IFixedMenu menu : ModAPI.menuGroup)
-				menu.update();
-		}
 
 		synchronized (Game.eventsIn)
 		{
@@ -878,18 +870,6 @@ public class Panel
 				Drawing.drawing.setColor(255, 255, 255);
 				Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
 			}
-		}
-
-		if (Game.screen instanceof ScreenGame)
-		{
-			for (IFixedMenu menu : ModAPI.menuGroup)
-				menu.draw();
-		}
-
-		for (Movable m : Game.movables)
-		{
-			if (m instanceof TankNPC && ((TankNPC) m).draw)
-				((TankNPC) m).drawMessage();
 		}
 
 		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));

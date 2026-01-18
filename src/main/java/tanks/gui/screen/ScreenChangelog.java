@@ -558,6 +558,16 @@ public class ScreenChangelog extends Screen
                                     "Bug fixes and other minor improvements\n"
                     }
             );
+
+
+            new Changelog("v1.6.g", new String[]
+                    {
+                            "*What's new in Tanks v1.6.g:\n\n" +
+                                    "Added automatic item icon picking\n" +
+                                    "Adjusted some font characters\n" +
+                                    "Bug fixes and other minor improvements\n"
+                    }
+            );
         }
     }
 }

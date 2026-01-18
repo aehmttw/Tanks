@@ -102,8 +102,8 @@ public class Player
 
             if (f.hasNextLine())
             {
-                parseStringIntHashMap(cp.itemUses, f.nextLine());
-                parseStringIntHashMap(cp.itemHits, f.nextLine());
+                parseStringDoubleHashMap(cp.itemUses, f.nextLine());
+                parseStringDoubleHashMap(cp.itemHits, f.nextLine());
             }
 
             if (f.hasNextLine())
@@ -175,6 +175,20 @@ public class Player
 
             String[] sec = s.split("=");
             map.put(sec[0], Integer.parseInt(sec[1]));
+        }
+    }
+
+    public static void parseStringDoubleHashMap(HashMap<String, Double> map, String str)
+    {
+        String[] parts = str.replace("{", "").replace("}", "").split(", ");
+
+        for (String s: parts)
+        {
+            if (s.length() <= 0)
+                continue;
+
+            String[] sec = s.split("=");
+            map.put(sec[0], Double.parseDouble(sec[1]));
         }
     }
 

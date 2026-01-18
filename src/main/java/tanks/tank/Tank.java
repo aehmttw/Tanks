@@ -1060,9 +1060,9 @@ public abstract class Tank extends Movable implements ISolidObject
 				if (cp != null && (source instanceof Bullet || source instanceof Explosion))
 				{
 					if (source instanceof Bullet)
-						cp.addItemHit(((Bullet) source).item);
+						cp.addItemHit(((Bullet) source).item, ((Bullet) source).frameDamageMultipler);
 					else
-						cp.addItemHit(((Explosion) source).item);
+						cp.addItemHit(((Explosion) source).item, 1);
 				}
 			}
 

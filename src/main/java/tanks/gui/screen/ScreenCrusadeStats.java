@@ -430,8 +430,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void addItem(Item i)
     {
-        int uses = this.player.getItemUses(i.name);
-        int hits = this.player.getItemHits(i.name);
+        double uses = this.player.getItemUses(i.name);
+        double hits = this.player.getItemHits(i.name);
 
         if (uses > 0 || hits > 0)
             this.items.add(new ItemEntry(i, uses, hits));
@@ -1660,14 +1660,14 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     public static class ItemEntry extends Entry
     {
         public Item item;
-        public int uses;
-        public int hits;
+        public double uses;
+        public double hits;
 
         public double useRank;
         public double hitRank;
         public double accuracyRank;
 
-        public ItemEntry(Item i, int uses, int hits)
+        public ItemEntry(Item i, double uses, double hits)
         {
             this.item = i;
             this.uses = uses;
@@ -1698,7 +1698,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, "-");
             }
             else
-                drawStatistic(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, this.uses + "", 1 - this.useRank, 255, 255, 255, 255 * age / maxAge, 24);
+                drawStatistic(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, (int) this.uses + "", 1 - this.useRank, 255, 255, 255, 255 * age / maxAge, 24);
 
             if (!this.item.supportsHits)
             {
@@ -1706,7 +1706,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_3, this.yPos, "-");
             }
             else
-                drawStatistic(this.getXOffset() + Game.screen.centerX + items_3, this.yPos, this.hits + "", 1 - this.hitRank, 255, 255, 255, 255 * age / maxAge, 24);
+                drawStatistic(this.getXOffset() + Game.screen.centerX + items_3, this.yPos, (int) this.hits + "", 1 - this.hitRank, 255, 255, 255, 255 * age / maxAge, 24);
 
             if (this.uses <= 0 || !this.item.supportsHits)
             {
@@ -1714,7 +1714,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_4, this.yPos, "-");
             }
             else
-                drawStatistic(this.getXOffset() + Game.screen.centerX + items_4, this.yPos, (this.hits * 1000 / this.uses) / 10.0 + "%", 1 - this.accuracyRank, 255, 255, 255, 255 * age / maxAge, 24);
+                drawStatistic(this.getXOffset() + Game.screen.centerX + items_4, this.yPos, ((int) this.hits * 1000 / (int) this.uses) / 10.0 + "%", 1 - this.accuracyRank, 255, 255, 255, 255 * age / maxAge, 24);
         }
     }
 

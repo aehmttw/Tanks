@@ -2,7 +2,6 @@ package tanks.minigames;
 
 import tanks.Game;
 import tanks.Level;
-import tanks.ModAPI;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.*;
 import tanks.tank.Tank;
@@ -50,7 +49,6 @@ public abstract class Minigame extends Level
     @Override
     public void loadLevel()
     {
-        ModAPI.menuGroup.clear();
         ScreenInterlevel.fromMinigames = true;
 
         super.loadLevel();

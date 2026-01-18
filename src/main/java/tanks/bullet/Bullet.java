@@ -6,8 +6,6 @@ import tanks.attribute.AttributeModifier;
 import tanks.attribute.EffectManager;
 import tanks.attribute.StatusEffect;
 import tanks.gui.ChatMessage;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -453,21 +451,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 						String message = ((Minigame) Game.currentLevel).generateKillMessage(t, this.tank, true);
 						ScreenPartyHost.chat.add(0, new ChatMessage(message));
 						Game.eventsOut.add(new EventChat(message));
-					}
-
-					for (IFixedMenu m : ModAPI.menuGroup)
-					{
-						if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.kills))
-						{
-							if (!((Scoreboard) m).teams.isEmpty())
-								((Scoreboard) m).addTeamScore(this.tank.team, 1);
-
-							else if (this.tank instanceof TankPlayer && !((Scoreboard) m).players.isEmpty())
-								((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
-
-							else if (this.tank instanceof TankPlayerRemote && !((Scoreboard) m).players.isEmpty())
-								((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-						}
 					}
 				}
 

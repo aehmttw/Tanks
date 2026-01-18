@@ -4,8 +4,6 @@ import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
 import tanks.gui.ChatMessage;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -256,21 +254,6 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                     if (Game.currentLevel instanceof Minigame)
                     {
                         ((Minigame) Game.currentLevel).onKill(this.tank, t);
-
-                        for (IFixedMenu menu : ModAPI.menuGroup)
-                        {
-                            if (menu instanceof Scoreboard && ((Scoreboard) menu).objectiveType.equals(Scoreboard.objectiveTypes.kills))
-                            {
-                                if (!((Scoreboard) menu).teams.isEmpty())
-                                    ((Scoreboard) menu).addTeamScore(this.tank.team, 1);
-
-                                else if (this.tank instanceof TankPlayer && !((Scoreboard) menu).players.isEmpty())
-                                    ((Scoreboard) menu).addPlayerScore(((TankPlayer) this.tank).player, 1);
-
-                                else if (this.tank instanceof TankPlayerRemote && !((Scoreboard) menu).players.isEmpty())
-                                    ((Scoreboard) menu).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-                            }
-                        }
 
                         if (((Minigame) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
                         {

@@ -10,9 +10,7 @@ import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
 import tanks.bullet.BulletGas;
 import tanks.gui.Button;
-import tanks.gui.IFixedMenu;
 import tanks.gui.Joystick;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -667,17 +665,6 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 	{
 		if (Crusade.crusadeMode)
 			this.player.remainingLives--;
-
-		for (IFixedMenu m : ModAPI.menuGroup)
-		{
-			if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.deaths))
-			{
-				if (((Scoreboard) m).players.isEmpty())
-					((Scoreboard) m).addTeamScore(this.team, 1);
-				else
-					((Scoreboard) m).addPlayerScore(this.player, 1);
-			}
-		}
 
 		if (Game.screen instanceof ScreenGame && !ScreenPartyLobby.isClient)
 		{

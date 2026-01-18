@@ -105,7 +105,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public double shrubberyScale = 0.25;
 
     public ScreenInfo overlay = null;
-    public Minimap minimap = new Minimap();
 
     public HashSet<String> prevTankMusics = new HashSet<>();
     public HashSet<String> tankMusics = new HashSet<>();
@@ -598,10 +597,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             back.setText("Back to minigames");
         }
         else
-        {
             ScreenInterlevel.fromMinigames = false;
-            ModAPI.menuGroup.clear();
-        }
 
         Game.startTime = Game.currentLevel.startTime;
         ScreenGame.lastTimePassed = 0;
@@ -1086,7 +1082,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Movable.movableSyncHandler.checkForErrors(null);
 
         Game.player.hotbar.update();
-        minimap.update();
 
         String prevMusic = this.music;
         this.music = null;
@@ -2137,7 +2132,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         Game.movables.removeAll(Game.removeMovables);
         Game.clouds.removeAll(Game.removeClouds);
-        ModAPI.menuGroup.removeAll(ModAPI.removeMenus);
 
         for (Obstacle o : Game.removeObstacles)
             Game.removeObstacle(o);
@@ -2168,7 +2162,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Game.removeObstacles.clear();
         Game.removeEffects.clear();
         Game.removeClouds.clear();
-        ModAPI.removeMenus.clear();
     }
 
     public void updateGameField()
@@ -3084,8 +3077,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             if (((Game.showSpeedrunTimer || Game.showBestTime) && !(paused && screenshotMode) && !(Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).hideSpeedrunTimer)) || (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).forceSpeedrunTimer))
                 SpeedrunTimer.draw();
-
-            minimap.draw();
         }
 
         if (Game.deterministicMode && !ScreenPartyLobby.isClient)

@@ -3,18 +3,24 @@ package tanks;
 import basewindow.InputCodes;
 import tanks.extension.Extension;
 import tanks.gui.*;
-import tanks.gui.ScreenElement.*;
+import tanks.gui.ScreenElement.CenterMessage;
+import tanks.gui.ScreenElement.Notification;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.*;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
-import tanks.network.*;
+import tanks.network.Client;
+import tanks.network.MessageReader;
+import tanks.network.NetworkEventMap;
+import tanks.network.ServerHandler;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Panel
 {
@@ -97,6 +103,8 @@ public class Panel
 
 	public double timeSinceBotUpdate;
 
+    public boolean lastFocused = true;
+
 	/** Set to a directory to have the game screenshot the next frame and save it to that directory */
 	public String saveScreenshotDir = null;
 
@@ -153,7 +161,7 @@ public class Panel
 		}
 
 		double scale = 1;
-		if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Game.game.window.pointHeight <= 500)
+		if (Game.game.window.touchscreen && Game.game.window.pointHeight > 0 && Math.min(Game.game.window.pointHeight, Game.game.window.pointWidth) <= 500)
 		{
 			scale = 1.25;
 
@@ -266,8 +274,6 @@ public class Panel
 			Game.game.window.setWindowTitle("Tanks" + lastWindowTitle);
 		}
 
-		Game.prevScreen = Game.screen;
-
 		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
 		{
 			started = true;
@@ -346,21 +352,37 @@ public class Panel
 			for (int i = 0; i < Game.eventsIn.size(); i++)
 			{
 				if (!(Game.eventsIn.get(i) instanceof IOnlineServerEvent))
-				{
-					INetworkEvent e = Game.eventsIn.get(i);
+                {
+                    INetworkEvent e = Game.eventsIn.get(i);
 
-					if (e instanceof IStackableEvent)
-						stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
-					else
-						Game.eventsIn.get(i).execute();
-				}
+                    try
+                    {
+                        if (e instanceof IStackableEvent)
+                            stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+                        else
+                            Game.eventsIn.get(i).execute();
+                    }
+                    catch (Exception ex)
+                    {
+                        handleEventError(e, ex);
+                    }
+                }
 			}
 
 			Game.eventsIn.clear();
 		}
 
 		for (INetworkEvent e: stackedEventsIn.values())
-            e.execute();
+        {
+            try
+            {
+                e.execute();
+            }
+            catch (Exception ex)
+            {
+                handleEventError(e, ex);
+            }
+        }
 
 		stackedEventsIn.clear();
 
@@ -429,7 +451,7 @@ public class Panel
 					{
 						if (m instanceof TankPlayable)
 						{
-							int build = -1;
+                            int build = -1;
 							for (int i = 0; i < s.builds.size(); i++)
 							{
 								TankPlayable t = s.builds.get(i);
@@ -623,6 +645,12 @@ public class Panel
 			Game.game.window.setFullscreen(!Game.game.window.fullscreen);
 		}
 
+        if (Game.game.window.focused != lastFocused || Game.screen != Game.prevScreen)
+        {
+            lastFocused = Game.game.window.focused;
+            Game.screen.onFocusChange(Game.game.window.focused);
+        }
+
 		if (Game.steamNetworkHandler.initialized)
 			Game.steamNetworkHandler.update();
 
@@ -667,7 +695,37 @@ public class Panel
 
 		if (!ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
 			Game.eventsOut.clear();
+
+        Game.prevScreen = Game.screen;
 	}
+
+    public void handleEventError(INetworkEvent e, Exception ex)
+    {
+        System.err.println("A network exception has occurred: " + ex.toString());
+        ex.printStackTrace();
+
+        if (e instanceof PersonalEvent)
+        {
+            EventKick ev = new EventKick("A network exception has occurred: " + ex.toString());
+            ev.clientID = null;
+
+            if (((PersonalEvent) e).clientID == null)
+            {
+                Game.eventsIn.add(ev);
+
+                Client.handler.close();
+                ScreenPartyLobby.connections.clear();
+            }
+            else if (ScreenPartyHost.isServer)
+            {
+                for (ServerHandler sh: ScreenPartyHost.server.connections)
+                {
+                    if (sh.clientID.equals(((PersonalEvent) e).clientID))
+                        sh.sendEventAndClose(ev);
+                }
+            }
+        }
+    }
 
 	public void playScreenMusic(long fadeTime)
 	{
@@ -774,6 +832,12 @@ public class Panel
 		{
 			try
 			{
+                if (Game.screen.interfaceScaleZoomOverride > 0)
+                    Drawing.drawing.interfaceScaleZoom = Game.screen.interfaceScaleZoomOverride;
+                else
+                    Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
+                Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
+
 				Game.screen.draw();
 				this.continuation = null;
 				this.continuationMusic = false;

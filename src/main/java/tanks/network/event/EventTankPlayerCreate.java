@@ -106,7 +106,6 @@ public class EventTankPlayerCreate extends PersonalEvent
 				t2.player = new Player(clientIdTarget, "");
 				setColor(t2);
 				t2.saveColors();
-				Game.currentLevel.playerBuilds.get(0).clonePropertiesTo(t2);
 				t = new TankRemote(t2);
 			}
 			else
@@ -126,13 +125,12 @@ public class EventTankPlayerCreate extends PersonalEvent
 		if (t instanceof TankPlayable)
 		{
 			setColor(t);
-			Game.currentLevel.playerBuilds.get(0).clonePropertiesTo((TankPlayable) t);
+
+            if (clientIdTarget.equals(Game.clientID))
+			    Game.currentLevel.playerBuilds.get(0).clonePropertiesTo((TankPlayable) t);
 		}
 		else if (t instanceof TankPlayerBot)
-		{
 			setColor(t);
-			Game.currentLevel.playerBuilds.get(0).clonePropertiesTo((TankPlayerBot) t);
-		}
 
 		if (team.equals("**"))
 			t.team = Game.playerTeam;

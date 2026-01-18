@@ -73,10 +73,10 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
     public ScreenAddSavedItem(Screen previousScreen, Consumer<Item.ItemStack<?>> onComplete, String itemName)
     {
-        this(previousScreen, onComplete, itemName, Item.class);
+        this(previousScreen, onComplete, itemName, Item.ItemStack.class);
     }
 
-    public ScreenAddSavedItem(Screen previousScreen, Consumer<Item.ItemStack<?>> onComplete, String itemName, Class<? extends Item> itemClass)
+    public ScreenAddSavedItem(Screen previousScreen, Consumer<Item.ItemStack<?>> onComplete, String itemName, Class itemClass)
     {
         super(350, 40, 380, 60);
 
@@ -118,7 +118,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
                         b.imageSizeX = b.sizeY;
                         b.imageSizeY = b.sizeY;
 
-                        if (!itemClass.isAssignableFrom(i.item.getClass()))
+                        if (!itemClass.isAssignableFrom(i.getClass()) && !itemClass.isAssignableFrom(i.item.getClass()))
                             b.text = null;
                     }
                     catch (Exception e)
@@ -134,7 +134,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
             Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
             i.item.name = Translation.translate(i.item.name);
 
-            if (itemClass.isAssignableFrom(i.item.getClass()))
+            if (itemClass.isAssignableFrom(i.getClass()) || itemClass.isAssignableFrom(i.item.getClass()))
             {
                 builtInItemsCount++;
 
@@ -148,6 +148,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
                 this.allItems.buttons.add(b);
 
+                b.setSubtext("Built-in");
                 b.translated = false;
 
                 b.itemIcon = i.item.icon;

@@ -1,6 +1,7 @@
 package basewindow;
 
 import basewindow.transformation.*;
+import tanks.Game;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,31 +19,18 @@ public abstract class BaseWindow
     public BaseFontRenderer fontRenderer;
 
     public boolean angled = false;
+    public double pointWidth = -1, pointHeight = -1;
 
-    public double pointWidth = -1;
-    public double pointHeight = -1;
-
-    public double absoluteWidth;
-    public double absoluteHeight;
-    public double absoluteDepth;
-
-    public double clipMultiplier = 100;
-    public double clipDistMultiplier = 1;
+    public double absoluteWidth, absoluteHeight, absoluteDepth;
+    public double clipMultiplier = 100, clipDistMultiplier = 1;
 
     public boolean hasResized;
 
-    public double absoluteMouseX;
-    public double absoluteMouseY;
-
+    public double absoluteMouseX, absoluteMouseY;
     public boolean constrainMouse;
 
-    public double colorR;
-    public double colorG;
-    public double colorB;
-    public double colorA;
-    public double glow;
-
-    public boolean fullscreen;
+    public double colorR, colorG, colorB, colorA, glow;
+    public boolean fullscreen, focused;
 
     public HashMap<Integer, InputPoint> touchPoints = new HashMap<>();
 
@@ -67,7 +55,7 @@ public abstract class BaseWindow
     public boolean showMouseOnLaunch;
 
     public boolean touchscreen = false;
-    public boolean showKeyboard = false;
+    public boolean showKeyboard = true;
     public double keyboardOffset = 0;
     public double keyboardFraction = 1;
 
@@ -91,7 +79,12 @@ public abstract class BaseWindow
     public double yOffset = 0;
     public double zOffset = 0;
 
-    public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1) /*, new Shear(this, 0, 0, 0, 0, 0, -0.75) */};
+
+    public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1),
+//            new ScaleAboutPoint(this, 1,  Math.sqrt(0.5), 1, 0.5, 0.5, 0.5),
+//            new RotationAboutPoint(this, 0, 0, Math.PI / 4, 0.5, 0.5, 0.5),
+//            new Shear(this, 0, 0, 0, 0, Math.sqrt(0.5), -Math.sqrt(0.5)),
+    };
     public Transformation[] lightBaseTransformation = new Transformation[]{new ScaleAboutPoint(this, 0.8, 0.8, 0.8, 0.5, 0.5, 0.5), new Shear(this, 0, 0, 0, 0, 0.5, 0.5)};
     public double[] lightVec = new double[]{-0.66666666, 0.66666666, -0.33333333};
 
@@ -171,6 +164,10 @@ public abstract class BaseWindow
         lastFrame = time;
 
         frameFrequency = Math.max(0, (time - lastFrameTime) / 10000000.0);
+//        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_F8))
+//        {
+//            frameFrequency *= 5;
+//        }
     }
 
     public abstract void run();

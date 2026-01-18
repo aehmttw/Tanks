@@ -61,5 +61,8 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
             ((ScreenGame)(Game.screen)).title = this.title;
 
         ((ScreenGame)(Game.screen)).subtitle = this.subtitle;
+
+        if (Game.playerTank != null)
+            Game.playerTank.updateAbilities();
     }
 }

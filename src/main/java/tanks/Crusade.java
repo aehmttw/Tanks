@@ -253,14 +253,21 @@ public class Crusade
 		}
 	}
 
+    public void setupPlayer(Player p)
+    {
+        p.hotbar.itemBar = new ItemBar(p);
+        p.hotbar.coins = 0;
+        p.ownedBuilds = new HashSet<>();
+        p.ownedBuilds.add(this.crusadeShopBuilds.get(0).name);
+        p.remainingLives = startingLives;
+        crusadePlayers.put(p, new CrusadePlayer(p));
+    }
+
 	public void begin()
 	{
 		for (int i = 0; i < Game.players.size(); i++)
 		{
-			Game.players.get(i).hotbar.itemBar = new ItemBar(Game.players.get(i));
-			Game.players.get(i).hotbar.coins = 0;
-			Game.players.get(i).ownedBuilds = new HashSet<>();
-			Game.players.get(i).remainingLives = startingLives;
+			setupPlayer(Game.players.get(i));
 		}
 
 		currentLevel = 0;
@@ -274,8 +281,6 @@ public class Crusade
 		this.timePassed = 0;
 		this.started = true;
 		this.crusadePlayers.clear();
-
-        this.crusadePlayers.put(Game.player, new CrusadePlayer(Game.player));
 
         this.loadLevel();
 	}
@@ -305,9 +310,7 @@ public class Crusade
 			}
 
 			if (player.buildName == null || !availableBuilds.contains(player.buildName))
-			{
 				player.buildName = this.crusadeShopBuilds.get(0).name;
-			}
 		}
 
 		for (Player player : Game.players)
@@ -369,16 +372,6 @@ public class Crusade
 
 			player.hotbar.itemBar.showItems = true;
 
-			if (player != Game.player)
-			{
-				Game.eventsOut.add(new EventUpdateCoins(player));
-
-				for (int in = 0; in < player.hotbar.itemBar.slots.length; in++)
-					Game.eventsOut.add(new EventSetItem(player, in, player.hotbar.itemBar.slots[in]));
-
-				Game.eventsOut.add(new EventLoadItemBarSlot(player.clientID, player.hotbar.itemBar.selected));
-			}
-
 			if (player.hotbar.enabledItemBar)
 			{
 				for (Item.ItemStack<?> item: player.hotbar.itemBar.slots)
@@ -394,31 +387,15 @@ public class Crusade
 		}
 
 		if (ScreenPartyHost.isServer)
-		{
-			for (ServerHandler h : ScreenPartyHost.server.connections)
-			{
-				if (h.player != null)
-				{
-					for (String s : h.player.ownedBuilds)
-					{
-						h.queueEvent(new EventPurchaseBuild(s));
-					}
-
-					for (int n = 0; n < builds.size(); n++)
-					{
-						TankPlayer.ShopTankBuild s = builds.get(n);
-						if (s.name.equals(h.player.buildName))
-							h.queueEvent(new EventPlayerSetBuild(n));
-					}
-				}
-			}
-		}
+			Level.broadcastBuilds(builds);
 
 		for (Movable m: Game.movables)
 		{
 			if (m instanceof TankPlayerRemote)
 				((TankPlayerRemote) m).buildName = ((TankPlayerRemote) m).player.buildName;
-		}
+            else if (m instanceof TankPlayable)
+                ((TankPlayable) m).buildName = ((TankPlayable) m).player.buildName;
+        }
 
 		if (Game.playerTank != null)
 		{
@@ -429,6 +406,26 @@ public class Crusade
 					s.clonePropertiesTo(Game.playerTank);
 			}
 		}
+
+        if (ScreenPartyHost.isServer)
+        {
+            for (ServerHandler sh : ScreenPartyHost.server.connections)
+            {
+                if (sh.player != null)
+                {
+                    sh.queueEvent(new EventUpdateCoins(sh.player));
+
+                    for (int in = 0; in < sh.player.hotbar.itemBar.slots.length; in++)
+                        sh.queueEvent(new EventSetItem(sh.player, in, sh.player.hotbar.itemBar.slots[in]));
+
+                    Game.eventsOut.add(new EventSetSelectedItems(sh.player.hotbar.itemBar.selected, sh.player.hotbar.itemBar.selectedPrimaryAbility, sh.player.hotbar.itemBar.selectedSecondaryAbility));
+                }
+            }
+        }
+
+        int sel = Game.player.hotbar.itemBar.selected;
+        Game.player.hotbar.itemBar.setItem(-1);
+        Game.player.hotbar.itemBar.setItem(sel);
 
 		this.disconnectedPlayers.clear();
 

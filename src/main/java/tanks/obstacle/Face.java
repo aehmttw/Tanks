@@ -1,7 +1,11 @@
 package tanks.obstacle;
 
-import tanks.*;
-import tanks.tank.*;
+import tanks.Chunk;
+import tanks.Direction;
+import tanks.Drawing;
+import tanks.Game;
+import tanks.tank.Tank;
+import tanks.tank.TankAIControlled;
 
 public class Face implements Comparable<Face>
 {

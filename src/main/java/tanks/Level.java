@@ -9,19 +9,14 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.Item;
-import tanks.network.event.EventEnterLevel;
-import tanks.network.event.EventLoadLevel;
-import tanks.network.event.EventTankRemove;
-import tanks.network.event.INetworkEvent;
+import tanks.network.ServerHandler;
+import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBeatBlock;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Random;
+import java.util.*;
 
 public class Level
 {
@@ -136,7 +131,11 @@ public class Level
 
 		for (String s: blocks)
 		{
-			if (s.startsWith("items\n"))
+            if (s.isEmpty())
+            {
+                // do nothing
+            }
+			else if (s.startsWith("items\n"))
 			{
 				s = s.substring("items\n".length());
 				ArrayList<String> objects = getJsonObjects(s);
@@ -702,6 +701,7 @@ public class Level
 					build.clonePropertiesTo(tank);
 					Game.playerTank = tank;
 					Game.player.buildName = tank.buildName;
+                    Game.playerTank.health = tank.baseHealth;
 					tank.team = team;
 					tank.registerNetworkID();
 					Game.movables.add(tank);
@@ -769,9 +769,73 @@ public class Level
 
         this.reloadTiles();
 
-		if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
+        if (!Crusade.crusadeMode && ScreenPartyHost.isServer)
+            broadcastBuilds(this.playerBuilds);
+
+        if (Game.playerTank != null && ScreenPartyHost.isServer)
+            Game.playerTank.updateAbilities();
+
+        if (!remote && sc == null || (sc instanceof ScreenLevelEditor))
 			Game.eventsOut.add(new EventEnterLevel());
 	}
+
+    public static void broadcastBuilds(ArrayList<TankPlayer.ShopTankBuild> builds)
+    {
+        for (ServerHandler h : ScreenPartyHost.server.connections)
+        {
+            if (h.player != null)
+            {
+                for (String s : h.player.ownedBuilds)
+                {
+                    h.queueEvent(new EventPurchaseBuild(s));
+                }
+
+                for (int n = 0; n < builds.size(); n++)
+                {
+                    TankPlayer.ShopTankBuild s = builds.get(n);
+                    if (s.name.equals(h.player.buildName) || !Crusade.crusadeMode)
+                    {
+                        h.queueEvent(new EventPlayerSetBuild(n));
+
+                        for (ServerHandler h1 : ScreenPartyHost.server.connections)
+                        {
+                            if (h1.player != null && Team.isAllied(h1.player.tank, h.player.tank))
+                                h1.queueEvent(new EventPlayerRevealBuild(h.player.tank.networkID, n));
+                        }
+
+                        if (Team.isAllied(Game.playerTank, h.player.tank) && h.player.tank instanceof TankPlayable)
+                        {
+                            s.clonePropertiesTo((TankPlayable) h.player.tank);
+                            h.player.tank.health = s.baseHealth;
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (Game.playerTank != null)
+        {
+            for (int i = 0; i < builds.size(); i++)
+            {
+                TankPlayer.ShopTankBuild s = builds.get(i);
+                if (s.name.equals(Game.player.buildName) || !Crusade.crusadeMode)
+                {
+                    s.clonePropertiesTo(Game.playerTank);
+                    Game.playerTank.health = s.baseHealth;
+                    Game.player.buildName = s.name;
+
+                    for (ServerHandler h1 : ScreenPartyHost.server.connections)
+                    {
+                        if (h1.player != null && Team.isAllied(h1.player.tank, Game.playerTank))
+                            h1.queueEvent(new EventPlayerRevealBuild(Game.playerTank.networkID, i));
+                    }
+                    break;
+                }
+            }
+        }
+    }
 
 	public boolean isSolidTank(int x, int y)
 	{
@@ -819,10 +883,15 @@ public class Level
 
 	public void addLevelBorders()
 	{
-		Chunk.getChunksInRange(0, 0, sizeX, 0).forEach(chunk -> chunk.addBorderFace(Direction.up, this));
-		Chunk.getChunksInRange(sizeX, 0, sizeX, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.right, this));
-		Chunk.getChunksInRange(0, sizeY, sizeX, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.down, this));
-		Chunk.getChunksInRange(0, 0, 0, sizeY).forEach(chunk -> chunk.addBorderFace(Direction.left, this));
+        // Do not use forEach. This breaks the iOS compiler.
+		for (Chunk c: Chunk.getChunksInRange(0, 0, sizeX, 0))
+            c.addBorderFace(Direction.up, this);
+        for (Chunk c: Chunk.getChunksInRange(sizeX, 0, sizeX, sizeY))
+            c.addBorderFace(Direction.right, this);
+        for (Chunk c: Chunk.getChunksInRange(0, sizeY, sizeX, sizeY))
+            c.addBorderFace(Direction.down, this);
+        for (Chunk c: Chunk.getChunksInRange(0, 0, 0, sizeY))
+            c.addBorderFace(Direction.left, this);
 	}
 
 	public static class Tile

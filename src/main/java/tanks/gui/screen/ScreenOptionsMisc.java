@@ -104,8 +104,8 @@ public class ScreenOptionsMisc extends Screen
         else
             circularHotbar.setText(hotbarText, bottomText);
 
-//        if (Game.framework == Game.Framework.libgdx)
-//            previewCrusades.enabled = false;
+        if (Game.game.window.touchscreen)
+            circularHotbar.enabled = false;
     }
 
     @Override

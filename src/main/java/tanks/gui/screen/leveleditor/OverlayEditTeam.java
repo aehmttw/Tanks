@@ -146,4 +146,10 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
             Drawing.drawing.setColor(team.teamColor);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, this.team.name);
     }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.setUnscaledLayoutParameters();
+    }
 }

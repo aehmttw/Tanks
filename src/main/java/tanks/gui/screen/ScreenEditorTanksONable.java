@@ -13,11 +13,17 @@ import tanks.item.Item;
 import tanks.item.ItemIcon;
 import tanks.registry.RegistryModelTank;
 import tanks.tank.*;
-import tanks.tankson.*;
+import tanks.tankson.FieldPointer;
+import tanks.tankson.ITanksONEditable;
+import tanks.tankson.Pointer;
+import tanks.tankson.Property;
 import tanks.translation.Translation;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 
 public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlankBackgroundScreen, IScreenWithCompletion
 {
@@ -530,6 +536,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 t.selectedOption = ((ItemIcon) f.get()).registryIndex;
                 t.selectedIcon = (ItemIcon) f.get();
                 t.itemIcons[t.selectedOption] = t.selectedIcon;
+                if (target.get() instanceof Item.ItemStack)
+                    t.itemBeingEdited = ((Item.ItemStack<?>) target.get()).item;
 
                 t.function = () ->
                 {
@@ -918,7 +926,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
     public void validateChangedProperty(Pointer<?> f, Property p, Object oldValue)
     {
-
+        if (this.prevScreen instanceof ScreenEditorTanksONable)
+            ((ScreenEditorTanksONable<?>) this.prevScreen).validateChangedProperty(f, p, oldValue);
     }
 
     public SelectorDrawable getTanksONSelector(Pointer<ITanksONEditable> p, String name, String desc)

@@ -1,11 +1,10 @@
 package tanks.bullet;
 
-import basewindow.transformation.Scale;
-import basewindow.transformation.Transformation;
 import tanks.*;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletBounce;
 import tanks.tank.Tank;
+import tanks.tankson.Property;
 
 import java.util.ArrayList;
 
@@ -17,6 +16,15 @@ public class BulletAirStrike extends Bullet
     public ArrayList<Double> pastPosY = new ArrayList<>();
     public ArrayList<Double> pastPosZ = new ArrayList<>();
     public ArrayList<Double> pastTime = new ArrayList<>();
+
+    @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing, desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
+    public double minRange = 0;
+
+    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,  desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
+    public double maxRange = 0;
+
+    @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands. Larger values are less accurate. \n \n 1 tile = 50 units")
+    public double accuracySpreadCircle = 0;
 
     public double initialX;
     public double initialY;
@@ -60,8 +68,6 @@ public class BulletAirStrike extends Bullet
     {
         if (this.age <= 0)
         {
-            this.vX = 0;
-            this.vY = 0;
             this.initialX = this.posX;
             this.initialY = this.posY;
         }
@@ -112,6 +118,8 @@ public class BulletAirStrike extends Bullet
         if (this.posZ > 1100)
         {
             this.vZ = -0.1;
+            this.vX = 0;
+            this.vY = 0;
             this.posZ -= (this.posZ - 1100) * 2;
             this.stopTrails();
 
@@ -172,8 +180,34 @@ public class BulletAirStrike extends Bullet
     {
         this.vX = 0;
         this.vY = 0;
-        this.finalX = x;
-        this.finalY = y;
+        this.addPolarMotion(Math.random() * Math.PI * 2, Math.random());
+
+        double dx = x - this.posX;
+        double dy = y - this.posY;
+
+        double dist = Math.sqrt(dx * dx + dy * dy);
+        double iDist = dist;
+
+        if (iDist == 0)
+        {
+            dx = 1;
+            dy = 0;
+            iDist = 1;
+        }
+
+        if (dist < minRange && minRange > 0)
+            dist = minRange;
+        else if (dist > maxRange && maxRange > 0)
+            dist = maxRange;
+
+        dx = dx * dist / iDist;
+        dy = dy * dist / iDist;
+
+        double randAngle = Math.random() * Math.PI * 2;
+        double randDist = Math.random() * this.accuracySpreadCircle;
+
+        this.finalX = this.posX + dx + randDist * Math.cos(randAngle);
+        this.finalY = this.posY + dy + randDist * Math.sin(randAngle);
     }
 
     public void drawTrace(double ix, double iy, double fx, double fy)
@@ -182,6 +216,24 @@ public class BulletAirStrike extends Bullet
 
         double dx = fx - ix;
         double dy = fy - iy;
+
+        double dist = Math.sqrt(dx * dx + dy * dy);
+        double iDist = dist;
+
+        if (iDist == 0)
+        {
+            dx = 1;
+            dy = 0;
+            iDist = 1;
+        }
+
+        if (dist < minRange && minRange > 0)
+            dist = minRange;
+        else if (dist > maxRange && maxRange > 0)
+            dist = maxRange;
+
+        dx = dx * dist / iDist;
+        dy = dy * dist / iDist;
 
         while (posZ < 1100)
         {
@@ -194,6 +246,13 @@ public class BulletAirStrike extends Bullet
 
             posZ += this.size * 1.5;
         }
+
+        for (int i = 1; i <= this.bounces + 1; i++)
+        {
+            Effect e = Effect.createNewEffect(ix + dx * i, iy + dy * i, Effect.EffectType.circleMarker);
+            e.size = this.accuracySpreadCircle * i;
+            Game.effects.add(e);
+        }
     }
 
     @Override
@@ -202,5 +261,17 @@ public class BulletAirStrike extends Bullet
         Bullet b = super.rebound(m);
         b.posZ = Game.tile_size / 2 + 1;
         return b;
+    }
+
+    @Override
+    public double getRangeMin()
+    {
+        return this.minRange;
+    }
+
+    @Override
+    public double getRangeMax()
+    {
+        return this.maxRange;
     }
 }

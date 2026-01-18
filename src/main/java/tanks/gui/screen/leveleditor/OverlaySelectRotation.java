@@ -3,10 +3,10 @@ package tanks.gui.screen.leveleditor;
 import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.gui.Button;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.Screen;
+import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.obstacle.Obstacle;
 
 public class OverlaySelectRotation extends ScreenLevelEditorOverlay
@@ -107,7 +107,7 @@ public class OverlaySelectRotation extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 128);
-        Drawing.drawing.drawPopup(centerX, centerY - 15,550, 420);
+        Drawing.drawing.drawPopup(centerX, centerY - 15,550 * this.objHeight / 40, 420 * this.objWidth / 350);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

@@ -6,8 +6,6 @@ import tanks.Movable;
 import tanks.Panel;
 import tanks.obstacle.Obstacle;
 
-import java.util.Random;
-
 public class Crate extends Movable
 {
     public Tank tank;

@@ -17,6 +17,7 @@ public class ChatBox extends TextBox
 	public String defaultTextColor = "\u00A7127127127255";
 
 	public boolean persistent = true;
+    public boolean justSelectedByKeybind = false;
 
 	public ChatBox(double x, double y, double sX, double sY, InputBindingGroup input, Runnable f)
 	{
@@ -100,10 +101,13 @@ public class ChatBox extends TextBox
 			}
 		}
 
+        boolean justSel = false;
         // Check for selection keybind
 		if (!this.selected && this.input.isValid() && Panel.selectedTextBox == null)
 		{
 			this.input.invalidate();
+            this.justSelectedByKeybind = true;
+            justSel = true;
             this.onSelect();
         }
 
@@ -128,7 +132,7 @@ public class ChatBox extends TextBox
 		}
 
         // Handle typing
-		if (this.selected)
+		if (this.selected && !justSelectedByKeybind)
 		{
 			double frac = Math.max(0, Math.round(Drawing.drawing.interfaceScale * (this.posY + 30) + Math.max(0, Panel.windowHeight - Drawing.drawing.statsHeight
 					- Drawing.drawing.interfaceSizeY * Drawing.drawing.interfaceScale) / 2) - Game.game.window.absoluteHeight * Game.game.window.keyboardFraction)
@@ -137,6 +141,12 @@ public class ChatBox extends TextBox
 			Game.game.window.showKeyboard = true;
 			this.checkKeys();
 		}
+
+        if (justSelectedByKeybind && !justSel)
+        {
+            Game.game.window.getRawTextKeys().clear();
+            justSelectedByKeybind = false;
+        }
 	}
 
 	public boolean checkMouse(double mx, double my, boolean isPressedDown)

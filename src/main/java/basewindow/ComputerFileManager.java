@@ -23,13 +23,9 @@ public class ComputerFileManager extends BaseFileManager
         try (InputStream st = this.getResource(file))
         {
             if (st == null)
-            {
-                Game.logger.println("Resource not exists: " + file);
                 return al;
-            }
 
-            BufferedReader reader = new BufferedReader(
-                new InputStreamReader(st, StandardCharsets.UTF_8));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(st, StandardCharsets.UTF_8));
 
             String line;
             while ((line = reader.readLine()) != null)

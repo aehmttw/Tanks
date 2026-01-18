@@ -151,37 +151,59 @@ public class MessageReader
 	}
 
 	public synchronized void readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
-	{
-		int i = m.readInt();
-		Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
+    {
+        int i = m.readInt();
+        Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
 
-		if (c == null)
-			throw new Exception("Invalid network event: " + i + " (Previous event: " + NetworkEventMap.get(this.lastID) + ")");
+        if (c == null)
+            throw new Exception("Invalid network event: " + i + " (Previous event: " + NetworkEventMap.get(this.lastID) + ")");
 
-		this.lastID = i;
+        this.lastID = i;
 
-		INetworkEvent e = c.getConstructor().newInstance();
-		e.read(m);
+        try
+        {
+            INetworkEvent e = c.getConstructor().newInstance();
+            e.read(m);
 
-		if (e instanceof PersonalEvent)
-		{
-			((PersonalEvent) e).clientID = clientID;
-		}
 
-		if (e instanceof IOnlineServerEvent)
-			s.sendEventAndClose(new EventKick("This is a party, please join parties through the party menu"));
-		else if (e instanceof IServerThreadEvent && s != null)
-			((IServerThreadEvent) e).execute(s);
-		else if (e instanceof IClientThreadEvent && ch != null)
-			((IClientThreadEvent) e).execute(ch);
-		else
-		{
-			synchronized (Game.eventsIn)
-			{
-				Game.eventsIn.add(e);
-			}
-		}
-	}
+            if (e instanceof PersonalEvent)
+                ((PersonalEvent) e).clientID = clientID;
+
+            if (e instanceof IOnlineServerEvent && s != null)
+                s.sendEventAndClose(new EventKick("This is a party, please join parties through the party menu"));
+            else if (e instanceof IServerThreadEvent && s != null)
+                ((IServerThreadEvent) e).execute(s);
+            else if (e instanceof IClientThreadEvent && ch != null)
+                ((IClientThreadEvent) e).execute(ch);
+            else
+            {
+                if (ScreenPartyHost.isServer && s.clientID == null)
+                    s.sendEventAndClose(new EventKick("Invalid event received. Must send EventSendClientDetails first."));
+
+                synchronized (Game.eventsIn)
+                {
+                    Game.eventsIn.add(e);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            System.err.println("A network exception has occurred:");
+            e.printStackTrace();
+
+            if (s != null)
+                s.sendEventAndClose(new EventKick("A network exception has occurred: " + e.toString()));
+            else if (ch != null)
+            {
+                EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
+                ev.clientID = null;
+                Game.eventsIn.add(ev);
+
+                Client.handler.close();
+                ScreenPartyLobby.connections.clear();
+            }
+        }
+    }
 
 	public static void updateLastMessageTime()
 	{

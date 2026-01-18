@@ -1,10 +1,10 @@
 package tanks.obstacle;
 
 import tanks.*;
-import tanks.bullet.Bullet;
 import tanks.attribute.AttributeModifier;
 import tanks.attribute.EffectManager;
 import tanks.attribute.StatusEffect;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.event.EventObstacleBoostPanelEffect;

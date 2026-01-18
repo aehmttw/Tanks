@@ -57,7 +57,7 @@ public class ScreenOverlayIconColors
                     Button b = new Button(0, 0, 45, 45, "", () ->
                     {
                         this.colorSelector = new SelectorColor(selectorScreen.centerX + selectorScreen.objXSpace / 2, selectorScreen.centerY - selectorScreen.objYSpace * 3, selectorScreen.objWidth, selectorScreen.objHeight, "Layer",
-                                selectorScreen.objYSpace * 1.5, selector.selectedIcon.colors.get(finalI), selector.selectedIcon.alphas.get(finalI));
+                                selectorScreen.objYSpace * 1.5, selector.selectedIcon.colors.get(finalI), selector.selectedIcon.alphas.get(finalI), () -> {selector.itemBeingEdited.autoIcon = false;});
                         this.selectedLayer = c2;
                     });
                     b.imageSizeX = 45;
@@ -71,8 +71,10 @@ public class ScreenOverlayIconColors
             b2 = new Button(0, 0, 45, 45, "", () ->
             {
                 selector.selectedIcon.resetColors();
+                selector.itemBeingEdited.autoIcon = false;
                 if (colorSelector != null)
                     colorSelector.updateColors();
+                setButtonColors();
             }, "Reset colors to default");
             b2.imageSizeX = 45;
             b2.imageSizeY = 45;
@@ -97,14 +99,20 @@ public class ScreenOverlayIconColors
 
         if (selector.selectedIcon.colors != null)
         {
-            int c = 1;
-            for (int i = 0; i < selector.selectedIcon.colors.size(); i++)
+            this.setButtonColors();
+        }
+    }
+
+    public void setButtonColors()
+    {
+        colorButtons.buttons.get(0).itemIcon = selector.selectedIcon;
+        int c = 1;
+        for (int i = 0; i < selector.selectedIcon.colors.size(); i++)
+        {
+            if (selector.selectedIcon.alphas.get(i) || selector.selectedIcon.colors.get(i).alpha >= 255)
             {
-                if (selector.selectedIcon.alphas.get(i) || selector.selectedIcon.colors.get(i).alpha >= 255)
-                {
-                    colorButtons.get(c).imageColor = selector.selectedIcon.colors.get(i);
-                    c++;
-                }
+                colorButtons.buttons.get(c).imageColor = selector.selectedIcon.colors.get(i);
+                c++;
             }
         }
     }
@@ -178,8 +186,6 @@ public class ScreenOverlayIconColors
 
             Drawing.drawing.fillRect((last.posX + this.colorButtons.buttons.get(this.colorButtons.buttons.size() - 2).posX) / 2,
                     first.posY, 2, first.sizeY);
-
-
 
         }
     }

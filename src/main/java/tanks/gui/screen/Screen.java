@@ -161,22 +161,28 @@ public abstract class Screen implements IBatchRenderableObject
 
 	}
 
+    public void setUnscaledLayoutParameters()
+    {
+        this.objWidth = 350;
+        this.objHeight = 40;
+        this.objXSpace = 380;
+        this.objYSpace = 60;
+
+        this.textSize = this.objHeight * 0.6;
+        this.titleSize = this.textSize * 1.25;
+    }
+
 	public void onAttemptClose()
 	{
 
 	}
 
-    public void onFocusChange(boolean focused)
+    public void onFocusChange(boolean isFocused)
     {
 
     }
 
-    public void onFilesDropped(String... filePaths)
-    {
-
-    }
-
-	public static class FlashingTile implements IBatchRenderableObject
+    public static class FlashingTile implements IBatchRenderableObject
 	{
 		public boolean redrawn = false;
 		public int posX;

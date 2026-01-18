@@ -1,50 +1,28 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFileManager;
-import basewindow.BaseWindow;
-import basewindow.ShaderGroup;
+import basewindow.*;
 import com.codedisaster.steamworks.SteamMatchmaking;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import tanks.bullet.*;
-import tanks.extension.Extension;
-import tanks.extension.ExtensionRegistry;
-import tanks.generator.LevelGenerator;
-import tanks.generator.LevelGeneratorRandom;
-import tanks.gui.Button;
-import tanks.gui.ChatFilter;
-import tanks.gui.input.InputBindingGroup;
-import tanks.gui.input.InputBindings;
+import tanks.extension.*;
+import tanks.generator.*;
+import tanks.gui.*;
+import tanks.gui.input.*;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.OverlayEditorMenu;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.*;
 import tanks.gui.screen.leveleditor.selector.*;
-import tanks.hotbar.Hotbar;
-import tanks.hotbar.ItemBar;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.item.ItemShield;
-import tanks.minigames.ArcadeBeatBlocks;
-import tanks.minigames.ArcadeClassic;
-import tanks.minigames.Minigame;
-import tanks.network.Client;
-import tanks.network.NetworkEventMap;
-import tanks.network.SteamNetworkHandler;
-import tanks.network.SynchronizedList;
+import tanks.gui.screen.leveleditor.selector.SelectorColor;
+import tanks.hotbar.*;
+import tanks.item.*;
+import tanks.minigames.*;
+import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
-import tanks.rendering.ShaderGroundIntro;
-import tanks.rendering.ShaderGroundOutOfBounds;
-import tanks.rendering.ShaderTracks;
+import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
 
 public class Game
@@ -63,12 +41,14 @@ public class Game
 
 	public static ArrayList<Movable> movables = new ArrayList<>();
 	public static ArrayList<Obstacle> obstacles = new ArrayList<>();
-	public static ObjectArraySet<IAvoidObject> avoidObjects = new ObjectArraySet<>();
+	public static HashSet<IAvoidObject> avoidObjects = new HashSet<>();
 	public static ArrayList<Obstacle> checkObstaclesToUpdate = new ArrayList<>();
-	public static ObjectArraySet<Obstacle> obstaclesToUpdate = new ObjectArraySet<>();
+	public static HashSet<Obstacle> obstaclesToUpdate = new HashSet<>();
 	public static ArrayList<Effect> effects = new ArrayList<>();
     public static ArrayList<Cloud> clouds = new ArrayList<>();
 	public static SynchronizedList<Player> players = new SynchronizedList<>();
+    public static ArrayList<Player> botPlayers = new ArrayList<>();
+    public static int botPlayerCount = 0;
 
     /**
      * Tracks are only added to the end and removed from the beginning since they always have the same max age.
@@ -77,10 +57,6 @@ public class Game
 	 * lifespan value, and if it goes below zero, remove that track and repeat with the remainder of time elapsed.
      */
     public static Queue<Effect> tracks = new LinkedList<>();
-
-
-    public static ArrayList<Player> botPlayers = new ArrayList<>();
-	public static int botPlayerCount = 0;
 
 	/**
 	 * Obstacles that need to change how they look next frame
@@ -147,7 +123,7 @@ public class Game
 
     public static boolean customDir = false;
 
-    public static final int network_protocol = 61;
+    public static final int network_protocol = 62;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;
@@ -219,6 +195,7 @@ public class Game
 	public static boolean invulnerable = false;
 
 	public static boolean warnBeforeClosing = true;
+    public static boolean pauseOnLostFocus = true;
 
 	public static String crashMessage = "Why would this game ever even crash anyway?";
 	public static String crashLine = "What, did you think I was a bad programmer? smh";
@@ -337,6 +314,7 @@ public class Game
 		NetworkEventMap.register(EventAnnounceConnection.class);
 		NetworkEventMap.register(EventChat.class);
 		NetworkEventMap.register(EventPlayerChat.class);
+        NetworkEventMap.register(EventChatClear.class);
         NetworkEventMap.register(EventMutePlayer.class);
         NetworkEventMap.register(EventLoadLevel.class);
 		NetworkEventMap.register(EventEnterLevel.class);
@@ -355,7 +333,7 @@ public class Game
 		NetworkEventMap.register(EventSetItem.class);
         NetworkEventMap.register(EventSetItemCount.class);
         NetworkEventMap.register(EventSetItemBarSlot.class);
-		NetworkEventMap.register(EventLoadItemBarSlot.class);
+        NetworkEventMap.register(EventSetSelectedItems.class);
 		NetworkEventMap.register(EventUpdateTankAbility.class);
 		NetworkEventMap.register(EventUpdateCoins.class);
 		NetworkEventMap.register(EventPlayerReady.class);
@@ -469,14 +447,14 @@ public class Game
 			new RegistryTank.TankEntry(Game.registryTank, tank, name, weight, isBoss);
 	}
 
-	public static void registerBullet(Class<? extends Bullet> bullet, String name, String icon)
+	public static void registerBullet(Class<? extends Bullet> bullet, String name, ItemIcon icon)
 	{
 		new RegistryBullet.BulletEntry(Game.registryBullet, bullet, name, icon);
 	}
 
-	public static void registerItem(Class<? extends Item> item, String name, String image)
+	public static void registerItem(Class<? extends Item> item, String name, ItemIcon icon)
 	{
-		new RegistryItem.ItemEntry(Game.registryItem, item, name, image);
+		new RegistryItem.ItemEntry(Game.registryItem, item, name, icon);
 	}
 
 	public static void registerGenerator(Class<? extends LevelGenerator> generator, String name)
@@ -531,7 +509,7 @@ public class Game
 		registerEvents();
 		DefaultItems.initialize();
 
-		registerObstacle(ObstacleStackable.class, "normal");
+        registerObstacle(ObstacleStackable.class, "normal");
 		registerObstacle(ObstacleIndestructible.class, "hard");
 		registerObstacle(ObstacleHole.class, "hole");
 		registerObstacle(ObstacleBouncy.class, "bouncy");
@@ -578,16 +556,16 @@ public class Game
 		registerTank(TankLightPink.class, "lightpink", 1.0 / 10);
 		registerTank(TankBoss.class, "boss", 1.0 / 40, true);
 
-		registerBullet(Bullet.class, Bullet.bullet_class_name, "bullet_normal.png");
-		registerBullet(BulletInstant.class, BulletInstant.bullet_class_name, "bullet_laser.png");
-		registerBullet(BulletGas.class, BulletGas.bullet_class_name, "bullet_flame.png");
-		registerBullet(BulletArc.class, BulletArc.bullet_class_name, "bullet_arc.png");
-		registerBullet(BulletBlock.class, BulletBlock.bullet_class_name, "bullet_block.png");
-		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_class_name, "bullet_fire.png");
+		registerBullet(Bullet.class, Bullet.bullet_class_name, DefaultItemIcons.bullet_normal.getCopy());
+		registerBullet(BulletInstant.class, BulletInstant.bullet_class_name, DefaultItemIcons.bullet_laser.getCopy());
+		registerBullet(BulletGas.class, BulletGas.bullet_class_name, DefaultItemIcons.bullet_flame.getCopy());
+		registerBullet(BulletArc.class, BulletArc.bullet_class_name, DefaultItemIcons.bullet_arc.getCopy());
+		registerBullet(BulletBlock.class, BulletBlock.bullet_class_name, DefaultItemIcons.bullet_block.getCopy());
+		registerBullet(BulletAirStrike.class, BulletAirStrike.bullet_class_name, DefaultItemIcons.bullet_air_strike.getCopy());
 
-		registerItem(ItemBullet.class, ItemBullet.item_class_name, "bullet_normal.png");
-		registerItem(ItemMine.class, ItemMine.item_class_name, "mine.png");
-		registerItem(ItemShield.class, ItemShield.item_class_name, "shield.png");
+		registerItem(ItemBullet.class, ItemBullet.item_class_name, DefaultItemIcons.bullet_normal.getCopy());
+		registerItem(ItemMine.class, ItemMine.item_class_name, DefaultItemIcons.mine.getCopy());
+		registerItem(ItemShield.class, ItemShield.item_class_name, DefaultItemIcons.shield.getCopy());
 
 		registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
 		registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
@@ -982,6 +960,8 @@ public class Game
 		if (Game.game.runningCallbacks)
 			Game.game.callbackException = e;
 
+        e.printStackTrace();
+
 		throw new GameCrashedException(e);
 	}
 
@@ -1004,6 +984,9 @@ public class Game
 
 		Game.eventsIn.clear();
 		Game.eventsOut.clear();
+
+        if (Game.steamNetworkHandler.initialized)
+            Game.steamNetworkHandler.leaveParty();
 
 		cleanUp();
 
@@ -1446,22 +1429,30 @@ public class Game
 		level.loadLevel();
 	}
 
-	public static String readVersionFromFile()
-	{
-		ArrayList<String> version = Game.game.fileManager.getInternalFileContents("/version.txt");
-		if (version == null)
-			return "-1.-1.-1";
-		else
-			return version.get(0);
-	}
+    /** Please use {@link #version Game.version} instead. */
+    public static String readVersionFromFile()
+    {
+        try
+        {
+            return Game.game.fileManager.getInternalFileContents("/version.txt").get(0);
+        }
+        catch (Exception e)
+        {
+            return "Unknown";
+        }
+    }
 
+    /** Please use {@link BaseWindow#buildDate Game.game.window.buildDate} instead. */
 	public static String readHashFromFile()
 	{
-		ArrayList<String> hash = Game.game.fileManager.getInternalFileContents("/hash.txt");
-		if (hash == null)
-			return "";
-		else
-			return hash.get(0);
+		try
+        {
+            return Game.game.fileManager.getInternalFileContents("/hash.txt").get(0);
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
 	}
 
 	public static boolean isOrdered(double a, double b, double c)

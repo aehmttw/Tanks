@@ -23,6 +23,9 @@ public class EventEnterLevel extends PersonalEvent
 			if (Game.autoReady)
 				Game.eventsOut.add(new EventPlayerAutoReady());
 
+            if (Game.playerTank != null)
+                Game.playerTank.updateAbilities();
+
 			Crusade.currentCrusade = null;
 		}
 	}

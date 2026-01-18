@@ -5,7 +5,6 @@ import tanks.Drawing;
 import tanks.tank.TankModels;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class RegistryModelTank

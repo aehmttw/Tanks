@@ -1,15 +1,22 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.*;
+import tanks.Drawing;
+import tanks.Effect;
+import tanks.Game;
+import tanks.Level;
 import tanks.bullet.Bullet;
 import tanks.gui.*;
 import tanks.tank.*;
-import tanks.tankson.*;
+import tanks.tankson.FieldPointer;
+import tanks.tankson.Pointer;
+import tanks.tankson.Property;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 
 public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 {

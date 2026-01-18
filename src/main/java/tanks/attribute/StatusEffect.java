@@ -93,7 +93,7 @@ public class StatusEffect
 
         private Instance() {}
 
-        public StatusEffect.Instance set(StatusEffect effect, double age, double warmupAge, double deteriorationAge, double maxAge)
+        public Instance set(StatusEffect effect, double age, double warmupAge, double deteriorationAge, double maxAge)
         {
             this.effect = effect;
             this.age = age;

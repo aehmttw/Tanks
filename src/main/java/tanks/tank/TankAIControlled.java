@@ -2,12 +2,15 @@ package tanks.tank;
 
 import basewindow.Color;
 import tanks.*;
-import tanks.bullet.*;
 import tanks.attribute.AttributeModifier;
+import tanks.bullet.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.*;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemMine;
 import tanks.network.event.*;
-import tanks.obstacle.*;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleTeleporter;
 import tanks.registry.RegistryTank;
 import tanks.tankson.*;
 
@@ -237,6 +240,9 @@ public class TankAIControlled extends Tank implements ITankField
 	/** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets*/
 	@Property(category = firingBehavior, id = "aim_ignore_destructible", name = "Through walls", desc = "When enabled, will shoot at destructible blocks if the target is hiding behind them. This is useful for tanks with explosive bullets.")
 	public boolean aimIgnoreDestructible = false;
+
+    @Property(category = firingBehavior, id = "ignore_range", name = "Ignore range limits", desc = "When enabled, will still try to shoot bullets when target enemies are outside of the bullet's range. This is useful for tanks with block bullets, since the blocks can form a barricade.")
+    public boolean ignoreRange = false;
 
 	/** Number of bullets in bullet fan*/
 	@Property(category = firingPattern, id = "shot_round_count", minValue = 1.0, name = "Shots per round", desc = "Number of bullets to fire per round")
@@ -679,7 +685,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 		Bullet b = this.getBullet();
 
-		boolean arc = this.getBullet() instanceof BulletArc;
+		boolean arc = this.getBullet() instanceof BulletArc || this.getBullet() instanceof BulletAirStrike;
 
 		if ((this.bulletItem.liveBullets < b.maxLiveBullets || b.maxLiveBullets <= 0) && !this.disabled && !this.destroy)
 		{
@@ -697,7 +703,7 @@ public class TankAIControlled extends Tank implements ITankField
 				else if (lifeRange <= 0)
 					range = limitRange;
 
-				if (arc && (this.distance <= range || range <= 0))
+				if (arc && (this.distance <= range || range <= 0 || ignoreRange))
 				{
 					if (this.shotRoundCount <= 1)
 						this.bulletItem.attemptUse(this);
@@ -723,7 +729,7 @@ public class TankAIControlled extends Tank implements ITankField
                     if (deflecting)
                         target = this.nearestBulletDeflect;
 
-					boolean inRange = (range <= 0) || (GameObject.distanceBetween(this, target) <= range + extra);
+					boolean inRange = (range <= 0) || (GameObject.distanceBetween(this, target) <= range + extra) || ignoreRange;
 					if (!inRange)
 						return;
 

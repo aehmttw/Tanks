@@ -1,8 +1,8 @@
 package tanks.obstacle;
 
 import tanks.*;
-import tanks.bullet.Bullet;
 import tanks.attribute.StatusEffect;
+import tanks.bullet.Bullet;
 import tanks.gui.screen.*;
 import tanks.network.event.EventObstacleSnowMelt;
 import tanks.rendering.ShaderSnow;

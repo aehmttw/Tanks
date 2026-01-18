@@ -3,7 +3,6 @@ package tanks.network.event;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.tank.*;
 

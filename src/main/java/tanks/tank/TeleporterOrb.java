@@ -1,9 +1,9 @@
 package tanks.tank;
 
 import tanks.*;
+import tanks.attribute.AttributeModifier;
 import tanks.bullet.Trail;
 import tanks.bullet.Trail3D;
-import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.event.EventTankTeleport;
 

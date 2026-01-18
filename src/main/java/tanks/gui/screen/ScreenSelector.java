@@ -1,6 +1,5 @@
 package tanks.gui.screen;
 
-import basewindow.IModel;
 import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
@@ -10,6 +9,7 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.Selector;
 import tanks.gui.SelectorItemIcon;
+import tanks.item.Item;
 import tanks.item.ItemIcon;
 import tanks.translation.Translation;
 
@@ -27,9 +27,14 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
     public boolean drawBehindScreen = false;
     public int oldOption;
 
+    public int beforeItems = 0;
+
     public ScreenOverlayIconColors iconColors;
 
     public String title;
+
+    public Item itemBeingEdited;
+    public ItemIcon defaultIcon;
 
     Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Ok", new Runnable()
     {
@@ -112,6 +117,9 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
 
                     if (iconColors != null)
                         iconColors.refreshButtons();
+
+                    if (itemBeingEdited != null)
+                        itemBeingEdited.autoIcon = false;
                 }
             }
             );
@@ -142,7 +150,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
         for (int i = 0; i < buttonList.buttons.size(); i++)
         {
             Button b = buttonList.buttons.get(i);
-            b.enabled = i != selector.selectedOption || selector.quick;
+            b.enabled = (i - beforeItems) != selector.selectedOption || selector.quick;
 
             if (drawImages || drawModels || drawItemIcons)
             {
@@ -157,12 +165,21 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
                 if (drawModels && selector.models != null)
                     b.model = selector.models[i];
 
-                if (drawItemIcons && selector.itemIcons != null)
-                    b.itemIcon = selector.itemIcons[i];
-
                 b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+                b.imageYOffset = 0;
                 b.imageSizeX = b.sizeY;
                 b.imageSizeY = b.sizeY;
+
+                if (drawItemIcons && selector.itemIcons != null)
+                {
+                    if (i >= beforeItems)
+                        b.itemIcon = selector.itemIcons[i - beforeItems];
+                    else
+                    {
+                        b.image = "icons/wand.png";
+                        b.enabled = itemBeingEdited != null && !itemBeingEdited.autoIcon;
+                    }
+                }
 
                 if (b.sizeX == b.sizeY)
                 {

@@ -1,7 +1,6 @@
 package tanks.generator;
 
 import tanks.Game;
-import tanks.gui.screen.ScreenPartyHost;
 import tanks.item.Item;
 import tanks.translation.Translation;
 

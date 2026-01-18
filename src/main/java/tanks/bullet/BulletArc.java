@@ -1,6 +1,9 @@
 package tanks.bullet;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.Effect;
+import tanks.Game;
+import tanks.Panel;
 import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;

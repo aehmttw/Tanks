@@ -2,13 +2,8 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.Player;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
-import tanks.obstacle.ObstacleTeleporter;
-import tanks.tank.Turret;
-
-import java.util.UUID;
 
 public class ScreenParty extends Screen
 {

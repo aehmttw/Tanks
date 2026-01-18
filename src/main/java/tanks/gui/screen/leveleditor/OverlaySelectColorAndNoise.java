@@ -26,13 +26,13 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
     
     public String dichromaticText = "Dichromatic: %s";
     
-    public Button dichromaticToggle = new Button(this.centerX, this.centerY + this.objYSpace * 2, 350, 40, "", () ->
+    public Button dichromaticToggle = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", () ->
     {
         this.dichromatic = !this.dichromatic;
         this.setColor();
     }, "If disabled, the RGB components of noise---will be added separately, leading to---more color variation.------If enabled, they will be added---proportionally to their noise values.");
 
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, 350, 40, "Done", this::escape);
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Done", this::escape);
 
     public OverlaySelectColorAndNoise(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorColorAndNoise selector)
     {
@@ -170,9 +170,9 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
     {
         super.draw();
 
-        int sX = 800;
-        int sY = 600;
-        int w = 20;
+        int sX = (int) (800 * this.objWidth / 350);
+        int sY = (int) Math.min(700, 600 * this.objHeight / 40);
+        int w = (int) (20 * this.objWidth / 350);
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(this.centerX, this.centerY, sX, sY);

@@ -56,11 +56,11 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     }
     );
 
-    public Button playerItems = new Button(this.centerX - this.objXSpace / 2, this.centerY + 120, 350, 40, "Player items",
+    public Button playerItems = new Button(this.centerX - 190, this.centerY + 120, 350, 40, "Player items",
             () -> Game.screen = new OverlayPlayerItems(Game.screen, editor),
             "Adjust items which players start---with or which can be bought in the shop");
 
-    public Button playerBuilds = new Button(this.centerX + this.objXSpace / 2, this.centerY + 120, 350, 40, "Player builds",
+    public Button playerBuilds = new Button(this.centerX + 190, this.centerY + 120, 350, 40, "Player builds",
             () -> Game.screen = new OverlayPlayerBuilds(Game.screen, editor),
             "Adjust or create new configurations---of stats for player tanks");
 
@@ -90,7 +90,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     public Button editTank = new Button(0, 0, 40, 40, "", () ->
     {
         TankAIControlled t = editor.level.customTanks.get(editor.tankNum - Game.registryTank.tankEntries.size());
-        Pointer<TankAIControlled> p = new ArrayListIndexPointer<>(editor.level.customTanks, editor.tankNum - Game.registryTank.tankEntries.size());
+        Pointer<TankAIControlled> p = new ArrayListIndexPointer<>(TankAIControlled.class, editor.level.customTanks, editor.tankNum - Game.registryTank.tankEntries.size());
         ScreenEditorTank s = new ScreenEditorTank(p, this);
         s.onComplete = () ->
         {
@@ -520,11 +520,12 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             return;
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY - 300, 1120, 60);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY - 330, 1200, 50);
 
-        Drawing.drawing.setInterfaceFontSize(24);
+        String s = text.replace("---", " ");
+        Drawing.drawing.setBoundedInterfaceFontSize(24, 1150, s);
         Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 300, text.replace("---", " "));
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 330, s);
     }
 
     @Override
@@ -538,7 +539,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.editor.setMousePlaceable();
         }
 
-        return new ArrayListIndexPointer<>(this.editor.level.customTanks, this.editor.level.customTanks.size() - 1);
+        return new ArrayListIndexPointer<>(TankAIControlled.class, this.editor.level.customTanks, this.editor.level.customTanks.size() - 1);
     }
 
     @Override

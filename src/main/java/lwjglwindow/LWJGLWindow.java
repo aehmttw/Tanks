@@ -12,7 +12,7 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
-import org.lwjgl.system.*;
+import org.lwjgl.system.MemoryStack;
 import tanks.Game;
 
 import javax.imageio.ImageIO;
@@ -420,6 +420,8 @@ public class LWJGLWindow extends BaseWindow
 		glfwGetCursorPos(window, mx, my);
 		absoluteMouseX = mx[0];
 		absoluteMouseY = my[0];
+
+        focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
 
 		if (constrainMouse)
 		{

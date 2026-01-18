@@ -4,8 +4,8 @@ import basewindow.Color;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
-import tanks.bullet.Bullet;
 import tanks.attribute.AttributeModifier;
+import tanks.bullet.Bullet;
 import tanks.item.ItemBullet;
 
 public class Turret extends Movable

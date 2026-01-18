@@ -2,16 +2,19 @@ package tanks;
 
 import basewindow.*;
 import basewindow.transformation.AxisRotation;
-import tanks.gui.*;
+import tanks.gui.Button;
+import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemIcon;
 import tanks.network.event.EventPlaySound;
 import tanks.obstacle.Obstacle;
-import tanks.rendering.*;
+import tanks.rendering.TerrainRenderer;
+import tanks.rendering.TrackRenderer;
 import tanks.tank.TankPlayer;
 import tanks.translation.Translation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Drawing
 {

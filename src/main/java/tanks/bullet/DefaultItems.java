@@ -10,35 +10,62 @@ import tanks.translation.Translation;
 
 public class DefaultItems
 {
-    public static ItemBullet basic_bullet = new ItemBullet();
-    public static ItemBullet mini_bullet = new ItemBullet();
-    public static ItemBullet mega_bullet = new ItemBullet();
-    public static ItemBullet rocket = new ItemBullet();
-    public static ItemBullet sniper_rocket = new ItemBullet();
-    public static ItemBullet void_rocket = new ItemBullet();
-    public static ItemBullet homing_rocket = new ItemBullet();
-    public static ItemBullet freezing_bullet = new ItemBullet();
-    public static ItemBullet booster_bullet = new ItemBullet();
-    public static ItemBullet explosive_bullet = new ItemBullet();
+    public static ItemBullet basic_bullet;
+    public static ItemBullet mini_bullet;
+    public static ItemBullet mega_bullet;
+    public static ItemBullet rocket;
+    public static ItemBullet sniper_rocket;
+    public static ItemBullet void_rocket;
+    public static ItemBullet homing_rocket;
+    public static ItemBullet freezing_bullet;
+    public static ItemBullet booster_bullet;
+    public static ItemBullet explosive_bullet;
+    public static ItemBullet air_strike;
 
-    public static ItemBullet laser = new ItemBullet();
-    public static ItemBullet zap = new ItemBullet();
-    public static ItemBullet healing_ray = new ItemBullet();
+    public static ItemBullet laser;
+    public static ItemBullet zap;
+    public static ItemBullet healing_ray;
 
-    public static ItemBullet flamethrower = new ItemBullet();
-    public static ItemBullet air = new ItemBullet();
+    public static ItemBullet flamethrower;
+    public static ItemBullet air;
 
-    public static ItemBullet artillery_shell = new ItemBullet();
+    public static ItemBullet artillery_shell;
 
-    public static ItemMine basic_mine = new ItemMine();
+    public static ItemMine basic_mine;
 
-    public static ItemShield shield = new ItemShield();
+    public static ItemShield shield;
 
     public static void initialize()
     {
+        basic_bullet = new ItemBullet();
+        mini_bullet = new ItemBullet();
+        mega_bullet = new ItemBullet();
+        rocket = new ItemBullet();
+        sniper_rocket = new ItemBullet();
+        void_rocket = new ItemBullet();
+        homing_rocket = new ItemBullet();
+        freezing_bullet = new ItemBullet();
+        booster_bullet = new ItemBullet();
+        explosive_bullet = new ItemBullet();
+
+        laser = new ItemBullet();
+        zap = new ItemBullet();
+        healing_ray = new ItemBullet();
+
+        flamethrower = new ItemBullet();
+        air = new ItemBullet();
+
+        artillery_shell = new ItemBullet();
+
+        air_strike = new ItemBullet();
+
+        basic_mine = new ItemMine();
+
+        shield = new ItemShield();
+
         basic_bullet.bullet = new Bullet();
         basic_bullet.name = Translation.translate("Basic bullet");
-        basic_bullet.icon = DefaultItemIcons.bullet_normal;
+        basic_bullet.setAutomaticIcon();
 
         mini_bullet.bullet = new Bullet();
         mini_bullet.bullet.size /= 2;
@@ -48,7 +75,7 @@ public class DefaultItems
         mini_bullet.bullet.damage /= 8;
         mini_bullet.bullet.maxLiveBullets = 8;
         mini_bullet.name = Translation.translate("Mini bullet");
-        mini_bullet.icon = DefaultItemIcons.bullet_mini;
+        mini_bullet.setAutomaticIcon();
         mini_bullet.cooldownBase = 5;
 
         mega_bullet.bullet = new Bullet();
@@ -57,25 +84,28 @@ public class DefaultItems
         mega_bullet.bullet.bounces = 3;
         mega_bullet.bullet.maxLiveBullets = 3;
         mega_bullet.bullet.heavy = true;
+        mega_bullet.cooldownBase = 100;
         mega_bullet.name = Translation.translate("Mega bullet");
-        mega_bullet.icon = DefaultItemIcons.bullet_large;
+        mega_bullet.setAutomaticIcon();
 
         rocket.bullet = new Bullet();
         rocket.bullet.speed *= 2;
         rocket.bullet.bounces = 0;
         rocket.bullet.maxLiveBullets = 3;
+        rocket.cooldownBase = 75;
         rocket.bullet.effect = BulletEffect.fire.getCopy();
         rocket.name = Translation.translate("Rocket");
-        rocket.icon = DefaultItemIcons.bullet_fire;
+        rocket.setAutomaticIcon();
 
         sniper_rocket.bullet = new Bullet();
         sniper_rocket.bullet.speed *= 2;
         sniper_rocket.bullet.bounces = 2;
         sniper_rocket.bullet.maxLiveBullets = 4;
+        sniper_rocket.cooldownBase = 50;
         sniper_rocket.bullet.effect =  BulletEffect.fire_trail.getCopy();
         sniper_rocket.bullet.shotSound = "shoot_power.ogg";
         sniper_rocket.name = Translation.translate("Sniper rocket");
-        sniper_rocket.icon = DefaultItemIcons.bullet_fire;
+        sniper_rocket.setAutomaticIcon();
 
         void_rocket.bullet = new Bullet();
         void_rocket.bullet.speed *= 2;
@@ -83,7 +113,7 @@ public class DefaultItems
         void_rocket.bullet.maxLiveBullets = 5;
         void_rocket.bullet.effect =  BulletEffect.dark_fire.getCopy();
         void_rocket.name = Translation.translate("Void rocket");
-        void_rocket.icon = DefaultItemIcons.bullet_dark_fire;
+        void_rocket.setAutomaticIcon();
 
         homing_rocket.bullet = new Bullet();
         homing_rocket.bullet.speed *= 2;
@@ -91,8 +121,9 @@ public class DefaultItems
         homing_rocket.bullet.maxLiveBullets = 3;
         homing_rocket.bullet.effect =  BulletEffect.fire.getCopy();
         homing_rocket.bullet.homingSharpness = 1.0 / 5.5;
+        homing_rocket.cooldownBase = 100;
         homing_rocket.name = Translation.translate("Homing rocket");
-        homing_rocket.icon = DefaultItemIcons.bullet_homing;
+        homing_rocket.setAutomaticIcon();
 
         freezing_bullet.bullet = new Bullet();
         freezing_bullet.bullet.maxLiveBullets = 2;
@@ -102,8 +133,9 @@ public class DefaultItems
         freezing_bullet.bullet.freezing = true;
         freezing_bullet.bullet.overrideOutlineColor = true;
         freezing_bullet.bullet.outlineColor.set(255, 255, 255);
+        freezing_bullet.cooldownBase = 100;
         freezing_bullet.name = Translation.translate("Freezing bullet");
-        freezing_bullet.icon = DefaultItemIcons.bullet_freeze;
+        freezing_bullet.setAutomaticIcon();
 
         booster_bullet.bullet = new Bullet();
         booster_bullet.bullet.maxLiveBullets = 5;
@@ -115,7 +147,7 @@ public class DefaultItems
         booster_bullet.bullet.overrideOutlineColor = true;
         booster_bullet.bullet.outlineColor.set(255, 180, 0);
         booster_bullet.name = Translation.translate("Booster");
-        booster_bullet.icon = DefaultItemIcons.bullet_boost;
+        booster_bullet.setAutomaticIcon();
         
         explosive_bullet.bullet = new Bullet();
         explosive_bullet.bullet.maxLiveBullets = 2;
@@ -124,8 +156,9 @@ public class DefaultItems
         explosive_bullet.bullet.size = 20;
         explosive_bullet.bullet.pitch /= 2;
         explosive_bullet.bullet.hitExplosion = new Explosion();
+        explosive_bullet.cooldownBase = 75;
         explosive_bullet.name = Translation.translate("Explosive bullet");
-        explosive_bullet.icon = DefaultItemIcons.bullet_explosive;
+        explosive_bullet.setAutomaticIcon();
 
         laser.bullet = new BulletInstant();
         laser.bullet.maxLiveBullets = 1;
@@ -135,8 +168,9 @@ public class DefaultItems
         laser.bullet.overrideOutlineColor = true;
         laser.bullet.outlineColor.set(255, 200, 200);
         laser.bullet.shotSound = "laser.ogg";
+        laser.cooldownBase = 100;
         laser.name = Translation.translate("Laser");
-        laser.icon = DefaultItemIcons.bullet_laser;
+        laser.setAutomaticIcon();
 
         zap.bullet = new BulletInstant();
         zap.bullet.maxLiveBullets = 1;
@@ -149,8 +183,9 @@ public class DefaultItems
         zap.bullet.overrideOutlineColor = true;
         zap.bullet.outlineColor.set(200, 255, 255);
         zap.bullet.shotSound = "laser.ogg";
+        zap.cooldownBase = 50;
         zap.name = Translation.translate("Zap");
-        zap.icon = DefaultItemIcons.bullet_electric;
+        zap.setAutomaticIcon();
 
         healing_ray.bullet = new BulletInstant();
         healing_ray.bullet.maxLiveBullets = 1;
@@ -164,7 +199,7 @@ public class DefaultItems
         healing_ray.bullet.soundVolume = 0;
         healing_ray.bullet.recoil = 0;
         healing_ray.name = Translation.translate("Healing ray");
-        healing_ray.icon = DefaultItemIcons.bullet_healing;
+        healing_ray.setAutomaticIcon();
         healing_ray.cooldownBase = 0;
 
         BulletGas f = new BulletGas();
@@ -186,7 +221,7 @@ public class DefaultItems
         flamethrower.bullet.lifespan = 100;
         f.endSize = Bullet.bullet_size * 10;
         flamethrower.name = Translation.translate("Flamethrower");
-        flamethrower.icon = DefaultItemIcons.bullet_flame;
+        flamethrower.setAutomaticIcon();
         flamethrower.cooldownBase = 0;
 
         BulletGas a = new BulletGas();
@@ -217,7 +252,7 @@ public class DefaultItems
         a.heavy = true;
         a.recoil = 0;
         air.name = Translation.translate("Air");
-        air.icon = DefaultItemIcons.bullet_air;
+        air.setAutomaticIcon();
         air.cooldownBase = 0;
 
         BulletArc c = new BulletArc();
@@ -230,14 +265,22 @@ public class DefaultItems
         c.effect = BulletEffect.long_trail.getCopy();
         c.shotSound = "arc.ogg";
         artillery_shell.name = Translation.translate("Artillery shell");
-        artillery_shell.icon = DefaultItemIcons.bullet_arc;
+        artillery_shell.setAutomaticIcon();
+
+        air_strike.bullet = new BulletAirStrike();
+        air_strike.bullet.speed *= 2;
+        air_strike.bullet.bounces = 0;
+        air_strike.bullet.maxLiveBullets = 5;
+        air_strike.bullet.effect = BulletEffect.fire.getCopy();
+        air_strike.name = Translation.translate("Air strike");
+        air_strike.setAutomaticIcon();
 
         basic_mine.mine = new Mine();
         basic_mine.name = Translation.translate("Basic mine");
         basic_mine.cooldownBase = 50;
-        basic_mine.icon = DefaultItemIcons.mine;
+        basic_mine.setAutomaticIcon();
 
         shield.name = Translation.translate("Shield");
-        shield.icon = DefaultItemIcons.shield;
+        shield.setAutomaticIcon();
     }
 }

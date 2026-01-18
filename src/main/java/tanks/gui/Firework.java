@@ -392,8 +392,16 @@ public class Firework extends Movable
 				limit /= 2;
 
 			int points = 20;
+
 			int trailLength = 10;
 			double trailTimeLength = 20;
+
+            if (Game.framework == Game.Framework.libgdx)
+            {
+                points = 8;
+                limit /= 4;
+                trailLength = 5;
+            }
 
 			BaseShapeBatchRenderer r = Game.game.window.createStaticBatchRenderer(shader, true, null, false, limit * points * 3);
 			r.addAttribute(shader.offset);

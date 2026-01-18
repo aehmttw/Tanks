@@ -31,7 +31,7 @@ public class DefaultItemIcons
                     new Color(0, 0, 0, 0),
                     new Color(0, 0, 0, 0),
                     new Color(0, 0, 0, 0),
-                    new Color(255, 0, 0),
+                    new Color(255, 0, 0, 180),
                     new Color(255, 255, 0),
                     new Color(255, 0, 0),
                     new Color(255, 220, 0)},
@@ -43,7 +43,7 @@ public class DefaultItemIcons
                     new Color(0, 0, 0, 0),
                     new Color(255, 100, 0),
                     new Color(255, 160, 0),
-                    new Color(255, 0, 0),
+                    new Color(255, 0, 0, 180),
                     new Color(255, 255, 0),
                     new Color(255, 0, 0),
                     new Color(255, 220, 0)},
@@ -55,7 +55,7 @@ public class DefaultItemIcons
                     BulletEffect.fire_trail.trailEffects.get(0).frontColor,
                     new Color(0, 0, 0, 0),
                     new Color(0, 0, 0, 0),
-                    new Color(255, 0, 0),
+                    new Color(255, 0, 0, 180),
                     new Color(255, 255, 0),
                     new Color(255, 0, 0),
                     new Color(255, 220, 0)},
@@ -67,10 +67,10 @@ public class DefaultItemIcons
                     new Color(0, 0, 0, 0),
                     new Color(0, 0, 0, 0),
                     new Color(0, 0, 0, 0),
-                    new Color(64, 0, 128),
+                    new Color(64, 0, 128, 180),
                     new Color(0, 0, 0),
-                    new Color(0, 0, 0),
-                    new Color(32, 0, 64)},
+                    new Color(54, 0, 108),
+                    new Color(0, 0, 0)},
             new Boolean[]{true, true, false, false, true, false, false, false}).register();
 
     public static ItemIcon bullet_flame = new ItemIcon("bullet_flame", "bullet_flame",
@@ -132,15 +132,24 @@ public class DefaultItemIcons
 
     public static ItemIcon bullet_boost = new ItemIcon("bullet_boost", "bullet_boost",
             new Color[]{
-                    new Color(255, 235, 18),
-                    new Color(255, 182, 7)},
+                    new Color(255, 182, 7),
+                    new Color(255, 235, 18)},
             new Boolean[]{false, false}).register();
 
     public static ItemIcon bullet_air = new ItemIcon("bullet_air", "bullet_air",
             new Color[]{
-                    new Color(200, 200, 200),
-                    new Color(200, 200, 255)},
+                    new Color(147, 169, 183),
+                    new Color(207, 217, 223)},
             new Boolean[]{true, true}).register();
+
+    public static ItemIcon bullet_air_strike = new ItemIcon("bullet_air_strike", "bullet_air_strike",
+            new Color[]{
+                    BulletEffect.fire.trailEffects.get(0).frontColor,
+                    new Color(255, 0, 0, 180),
+                    new Color(255, 255, 0),
+                    new Color(255, 0, 0),
+                    new Color(255, 220, 0)},
+            new Boolean[]{true, true, true, true, false, false}).register();
 
     public static ItemIcon mine = new ItemIcon("mine", "mine",
             new Color[]{

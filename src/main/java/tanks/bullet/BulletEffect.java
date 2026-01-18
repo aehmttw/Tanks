@@ -40,6 +40,11 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
     @Property(id = "glow_color", name = "Aura color", category = BulletEffectPropertyCategory.glow, miscType = Property.MiscType.colorRGB)
     public Color glowColor = new Color(0, 0, 0, 0);
 
+    @Property(id = "homing_particles", name = "Enable homing particles", category = BulletEffectPropertyCategory.particleHoming, desc = "When enabled, the bullet will display particles when it is homing towards a target.")
+    public boolean enableHomingParticles = true;
+    @Property(id = "homing_particle_color", name = "Particle color", category = BulletEffectPropertyCategory.particleHoming, miscType = Property.MiscType.colorRGB)
+    public Color homingParticleColor = new Color(255, 120, 0, 255);
+
     public static BulletEffect none = new BulletEffect();
     public static BulletEffect trail = new BulletEffect();
     public static BulletEffect long_trail = new BulletEffect();
@@ -63,7 +68,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         fire_trail.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
 
         dark_fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
-        dark_fire.trailEffects.add(new Trail(0, 5, 1, 5, 64, 0, 128, 255, 0, 0, 0, 0, false, 1, true, true));
+        dark_fire.trailEffects.add(new Trail(0, 5, 1, 5, 0, 0, 0, 255, 64, 0, 128, 0, false, 1, true, true));
 
         ice.enableParticles = true;
         ice.particleColor.red = 128;

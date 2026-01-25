@@ -33,6 +33,7 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
                     ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(new Crusade.CrusadeLevel(name, null), this, previous);
                     if (Game.loadLevel(file, s))
                     {
+                        s.level.buildOverrides.addAll(Game.currentLevel.playerBuilds);
                         s.level.levelString = Game.currentLevel.levelString;
                         s.level.tanks.addAll(Game.currentLevel.customTanks);
                         Game.screen = s;

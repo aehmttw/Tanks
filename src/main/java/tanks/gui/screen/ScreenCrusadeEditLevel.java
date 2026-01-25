@@ -9,6 +9,7 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankAIControlled;
+import tanks.tank.TankPlayer;
 import tanks.tank.TankSpawnMarker;
 
 import java.io.IOException;
@@ -28,6 +29,10 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     public boolean saveMenu = false;
     public boolean removeMenu = false;
     public boolean saved = false;
+
+    public boolean forceBuildsOnAdd = false;
+
+    String[] customBuildsDesc = new String[]{"This level replaces the crusade shop's", "player builds with custom ones"};
 
     public TextBox levelName;
 
@@ -68,8 +73,11 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         public void run()
         {
             previous2.crusade.levels.add(insertionIndex, level);
-            previous2.refreshButtons();
 
+            if (!forceBuildsOnAdd && !edit)
+                level.buildOverrides.clear();
+
+            previous2.refreshButtons();
             Game.cleanUp();
 
             Game.screen = previous2;
@@ -92,6 +100,25 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             Game.screen = s;
         }
     });
+
+    public String forceBuildsText = "Replace builds: ";
+    public Button forceBuilds = new Button(200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            forceBuildsOnAdd = !forceBuildsOnAdd;
+            updateForceBuildsText();
+        }
+    }, "When enabled, only the player tank builds---included in the level itself may be---used for this level in the crusade,---as opposed to the crusade's shop builds.");
+
+    public void updateForceBuildsText()
+    {
+        if (forceBuildsOnAdd)
+            forceBuilds.setText(forceBuildsText, ScreenOptions.onText);
+        else
+            forceBuilds.setText(forceBuildsText, ScreenOptions.offText);
+    }
 
     public Button prev = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Previous", new Runnable()
     {
@@ -135,6 +162,14 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                             ls = ls + tanks;
                         }
                         file.println(ls);
+                        if (!level.buildOverrides.isEmpty())
+                        {
+                            file.println("builds\n");
+                            for (TankPlayer.ShopTankBuild b: level.buildOverrides)
+                            {
+                                file.println(b.toString() + "\n");
+                            }
+                        }
                         file.stopWriting();
                         success = true;
                     }
@@ -234,6 +269,8 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         this.prev.imageSizeX = 25;
         this.prev.imageSizeY = 25;
         this.prev.imageXOffset = 145;
+
+        updateForceBuildsText();
     }
 
     public void updateSaveButton()
@@ -307,7 +344,10 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                 }
             }
             else
+            {
                 this.back.update();
+                this.forceBuilds.update();
+            }
 
             if (Game.game.input.editorPause.isValid())
             {
@@ -404,9 +444,15 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                 this.remove.draw();
                 this.next.draw();
                 this.prev.draw();
+
+                if (!this.level.buildOverrides.isEmpty())
+                    Drawing.drawing.drawTooltip(customBuildsDesc, saveLevel.posX - this.objWidth / 2, saveLevel.posY - this.objYSpace * 1.5);
             }
             else
+            {
+                this.forceBuilds.draw();
                 this.back.draw();
+            }
         }
     }
 

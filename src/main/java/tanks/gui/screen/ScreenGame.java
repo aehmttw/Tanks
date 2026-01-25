@@ -1546,7 +1546,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                             else if (p == 0)
                                 b.setText("Free!");
                             else if (p == 1)
-                                b.setText("%s1 coin", prefix);
+                                b.setText("%s1 coin", (Object) prefix);
                             else
                                 b.setText("%s%d coins", prefix, p);
 

@@ -38,6 +38,7 @@ public class Crusade
 		public String levelName;
 		public String levelString;
 		public ArrayList<TankAIControlled> tanks;
+        public ArrayList<TankPlayer.ShopTankBuild> buildOverrides = new ArrayList<>();
 
 		public CrusadeLevel(String name, String lvl)
 		{
@@ -58,7 +59,7 @@ public class Crusade
 	public ArrayList<Item.CrusadeShopItem> crusadeShopItems = new ArrayList<>();
 	public ArrayList<TankPlayer.CrusadeShopTankBuild> crusadeShopBuilds = new ArrayList<>();
 
-	public String name = "";
+    public String name = "";
 	public String fileName = "";
 
 	public boolean internal = false;
@@ -182,6 +183,9 @@ public class Crusade
 				case "builds":
 					parsing = 4;
 					break;
+                case "build_overrides":
+                    parsing = 5;
+                    break;
 				default:
 					if (parsing == 0)
 					{
@@ -226,6 +230,13 @@ public class Crusade
 						TankPlayer.CrusadeShopTankBuild t = TankPlayer.CrusadeShopTankBuild.fromString(s);
 						this.crusadeShopBuilds.add(t);
 					}
+                    else if (parsing == 5)
+                    {
+                        int d = s.indexOf(" ");
+                        int lvl = Integer.parseInt(s.substring(0, d));
+                        TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(s.substring(d + 1));
+                        this.levels.get(lvl).buildOverrides.add(t);
+                    }
 					break;
 			}
 
@@ -310,7 +321,12 @@ public class Crusade
 			}
 
 			if (player.buildName == null || !availableBuilds.contains(player.buildName))
-				player.buildName = this.crusadeShopBuilds.get(0).name;
+            {
+                if (levels.get(this.currentLevel).buildOverrides.isEmpty())
+                    player.buildName = this.crusadeShopBuilds.get(0).name;
+                else
+                    player.buildName = levels.get(this.currentLevel).buildOverrides.get(0).name;
+            }
 		}
 
 		for (Player player : Game.players)
@@ -544,14 +560,21 @@ public class Crusade
 
 	public ArrayList<TankPlayer.ShopTankBuild> getBuildsShop()
 	{
+        ArrayList<TankPlayer.ShopTankBuild> overrides = this.levels.get(this.currentLevel).buildOverrides;
+
 		ArrayList<TankPlayer.ShopTankBuild> shop = new ArrayList<>();
 
-		for (int i = 0; i < this.crusadeShopBuilds.size(); i++)
-		{
-			TankPlayer.CrusadeShopTankBuild item = this.crusadeShopBuilds.get(i);
-			if (item.levelUnlock <= this.currentLevel)
-				shop.add(item);
-		}
+        if (overrides.isEmpty())
+        {
+            for (int i = 0; i < this.crusadeShopBuilds.size(); i++)
+            {
+                TankPlayer.CrusadeShopTankBuild item = this.crusadeShopBuilds.get(i);
+                if (item.levelUnlock <= this.currentLevel)
+                    shop.add(item);
+            }
+        }
+        else
+            return new ArrayList<>(overrides);
 
 		return shop;
 	}

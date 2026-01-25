@@ -160,7 +160,8 @@ public class Game
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
-	public static boolean xrayBullets = true;
+    public static boolean orthographicView = false;
+    public static boolean xrayBullets = true;
 	public static boolean showPathfinding = false;
 	public static boolean showUpdatingObstacles = false;
 	public static boolean immutableFaces = false;

@@ -99,6 +99,8 @@ public class InputBindings
     public InputBindingGroup editorFlipVert = new InputBindingGroup("editor.flipVert", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_J));
     public InputBindingGroup editorRotateClockwise = new InputBindingGroup("editor.rotateClockwise", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_K), new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_R));
 
+    public InputBindingGroup editorChangePerspective = new InputBindingGroup("editor.changePerspective", new InputBinding(InputBinding.InputType.keyboard, InputCodes.KEY_U));
+
     public void save()
     {
         try

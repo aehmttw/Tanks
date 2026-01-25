@@ -266,6 +266,8 @@ public class Panel
 
 		firstFrame = false;
 
+        Game.game.window.orthographic = Game.orthographicView;
+
 		if (Game.screen == Game.prevScreen && !Game.screen.windowTitle.equals(lastWindowTitle))
 		{
 			lastWindowTitle = Game.screen.windowTitle;

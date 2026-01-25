@@ -61,6 +61,7 @@ public class BulletAirStrike extends Bullet
         this.autoZ = false;
         this.showDefaultTrace = false;
         this.revertSpeed = false;
+        this.canDeflect = false;
     }
 
     @Override
@@ -134,7 +135,7 @@ public class BulletAirStrike extends Bullet
 
             this.addTrail(true);
             Drawing.drawing.playSound("beep.ogg", 1.25f);
-            Drawing.drawing.playSound("accel.ogg", (float) (Math.sqrt(this.speed) * 0.4));
+            Drawing.drawing.playSound("air_whistle.ogg", (float) (Math.sqrt(this.speed) * 1.6));
         }
 
         double mul = 1;

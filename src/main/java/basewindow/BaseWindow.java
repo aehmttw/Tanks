@@ -69,6 +69,7 @@ public abstract class BaseWindow
     public IUpdater updater;
     public IWindowHandler windowHandler;
 
+    public boolean orthographic = false;
     public ArrayList<Transformation> transformations = new ArrayList<>();
 
     public double yaw = 0;

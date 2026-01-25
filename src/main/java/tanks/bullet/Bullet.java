@@ -237,6 +237,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public final boolean isTemplate;
 
+    // Whether this bullet class can deflect other bullets (things like arc and air strike can't)
+    public boolean canDeflect = true;
+
 	/**
 	 * Do not use if you plan to place this bullet in the game field. Only for templates.
 	 * Use another constructor if you want to add the bullet to the game field.

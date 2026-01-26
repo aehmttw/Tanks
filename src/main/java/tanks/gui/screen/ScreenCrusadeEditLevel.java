@@ -414,8 +414,9 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                     break;
 
                 Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
-                Drawing.drawing.setInterfaceFontSize(this.textSize);
-                Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, (insertionIndex - i) + ". " + previous2.crusade.levels.get(insertionIndex - i - 1).levelName.replace("_", " "));
+                String t = (insertionIndex - i) + ". " + previous2.crusade.levels.get(insertionIndex - i - 1).levelName.replace("_", " ");
+                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+                Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, t);
             }
 
             for (int i = 0; i < 7; i++)
@@ -424,16 +425,18 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                     break;
 
                 Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
-                Drawing.drawing.setInterfaceFontSize(this.textSize);
-                Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, (insertionIndex + i + 2) + ". " + previous2.crusade.levels.get(insertionIndex + i).levelName.replace("_", " "));
+                String t = (insertionIndex + i + 2) + ". " + previous2.crusade.levels.get(insertionIndex + i).levelName.replace("_", " ");
+                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+                Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, t);
             }
 
             Drawing.drawing.setColor(0, 0, 0, 127);
             Drawing.drawing.fillInterfaceRect(prev.posX, Drawing.drawing.interfaceSizeY / 2 - 60, 380, 40);
 
-            Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.setColor(255, 255, 255);
-            Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - 60, (insertionIndex + 1) + ". " + level.levelName.replace("_", " "));
+            String t = (insertionIndex + 1) + ". " + level.levelName.replace("_", " ");
+            Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+            Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - 60, t);
 
             this.index.draw();
             this.add.draw();

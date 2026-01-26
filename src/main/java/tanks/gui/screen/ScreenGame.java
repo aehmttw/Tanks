@@ -35,7 +35,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public boolean savedRemainingTanks = false;
 
     public boolean shopScreen = false;
-    public boolean npcShopScreen = false;
     public boolean buildsScreen = false;
 
     public double slant = 0;
@@ -556,7 +555,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     Button exitShop = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300 + shopOffset, 350, 40, "Exit shop", () ->
     {
         shopScreen = false;
-        npcShopScreen = false;
         buildsScreen = false;
     }
 
@@ -567,8 +565,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public ButtonList shopList;
     public ButtonList playerBuildsList;
-
-    public ButtonList npcShopList = new ButtonList(new ArrayList<>(), 0, 0, (int) shopOffset, -30);
 
     public ScreenGame()
     {
@@ -1279,10 +1275,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if (Game.game.input.pause.isValid())
         {
-            if (shopScreen || npcShopScreen || buildsScreen)
+            if (shopScreen || buildsScreen)
             {
                 shopScreen = false;
-                npcShopScreen = false;
                 buildsScreen = false;
             }
             else
@@ -1326,16 +1321,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 Drawing.drawing.playSound("level_start.ogg");
 
             Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size + Panel.frameFrequency);
-        }
-
-        if (npcShopScreen)
-        {
-            Game.player.hotbar.hidden = false;
-            Game.player.hotbar.hideTimer = 100;
-
-            this.exitShop.update();
-
-            this.npcShopList.update();
         }
 
         if (paused)
@@ -2115,7 +2100,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     @Override
     public void onFocusChange(boolean isFocused)
     {
-        if (!isFocused && Game.pauseOnLostFocus && !paused && !shopScreen && !buildsScreen && !npcShopScreen)
+        if (!isFocused && Game.pauseOnLostFocus && !paused && !shopScreen && !buildsScreen)
             this.pause();
     }
 
@@ -2561,7 +2546,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     @Override
     public void draw()
     {
-        this.showDefaultMouse = !(((!this.paused && !this.npcShopScreen) && this.playing && Game.angledView || Game.firstPerson));
+        this.showDefaultMouse = !(((!this.paused) && this.playing && Game.angledView || Game.firstPerson));
 
         this.setPerspective();
 
@@ -2734,25 +2719,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         }
 
-        if (npcShopScreen)
-        {
-            Drawing.drawing.setColor(127, 178, 228, 64);
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
-
-            Drawing.drawing.setInterfaceFontSize(this.titleSize);
-
-            if (Level.isDark())
-                Drawing.drawing.setColor(255, 255, 255);
-            else
-                Drawing.drawing.setColor(0, 0, 0);
-
-            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 210 + shopOffset, "Shop");
-
-            this.exitShop.draw();
-
-            this.npcShopList.draw();
-        }
-
         if (isVersus && ((Game.playerTank != null && Game.playerTank.destroy) || finishedQuick))
             this.showRankings = true;
 
@@ -2766,7 +2732,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         {
             for (Movable m: Game.movables)
             {
-                if ((m instanceof TankPlayable && ScreenPartyHost.readyPlayers.contains(((TankPlayable) m).player)) || m instanceof TankPlayerBot || (m == Game.playerTank && this.ready))
+                if ((m instanceof TankPlayable && ScreenPartyHost.readyPlayers.contains(((TankPlayable) m).player)) || m instanceof TankPlayerBot || (m == Game.playerTank && this.ready) || !this.cancelCountdown)
                 {
                     Drawing.drawing.setColor(0, 255, 0, 255, 1);
                     Drawing.drawing.drawImage("icons/check.png", m.posX, m.posY, ((Tank) m).size, 50, 50);
@@ -2860,6 +2826,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                         b.draw();
                         Drawing.drawing.setColor(255, 255, 255);
                         Drawing.drawing.drawInterfaceImage(this.shop.get(i).itemStack.item.icon, b.posX - 135, b.posY, 40, 40);
+                        Drawing.drawing.setColor(0, 0, 0);
+                        Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
+                        int ss = this.shop.get(i).itemStack.stackSize;
+
+                        if (ss > 0)
+                            Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY, b.posY + b.sizeY * 0.325, "x" + ss, false);
                     }
                 }
             }
@@ -3290,7 +3262,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         drawing.setColor(255, 127, 0);
         drawing.fillInterfaceOval(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY, b.sizeY * 3 / 4, b.sizeY * 3 / 4);
         drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2 + 0.5, b.posY, "!");
+        Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY, "!");
     }
 
     @Override

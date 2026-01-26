@@ -810,6 +810,13 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             {
                 SelectorDrawable d = ((SelectorDrawable) this.uiElements.get(i));
 
+                Item.ItemStack<?> a = target.get().abilities.get(i);
+                Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.setInterfaceFontSize(textSize / 2);
+                int ss = a.stackSize;
+                if (ss > 0)
+                    Drawing.drawing.drawInterfaceText(d.posX - d.sizeX / 2 + d.sizeY, d.posY + d.sizeY * 0.225, "x" + ss, false);
+
                 Button b = this.deleteButtons.get(i);
                 b.posX = d.posX - screen.objXSpace * 0.85;
                 b.posY = d.posY - screen.objHeight / 4;

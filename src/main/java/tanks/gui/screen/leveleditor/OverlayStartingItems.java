@@ -127,6 +127,17 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
         this.back.draw();
         this.addItem.draw();
 
+        for (int i = Math.min((this.startingItemsList.page + 1) * this.startingItemsList.rows * this.startingItemsList.columns, startingItemsList.buttons.size()) - 1; i >= this.startingItemsList.page * this.startingItemsList.rows * this.startingItemsList.columns; i--)
+        {
+            Button b = this.startingItemsList.buttons.get(i);
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
+            int ss = editor.level.startingItems.get(i).stackSize;
+
+            if (ss > 0)
+                Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY, b.posY + b.sizeY * 0.325, "x" + ss, false);
+        }
+
         if (this.startingItemsList.reorder)
             this.reorderItems.setText("Stop reordering");
         else

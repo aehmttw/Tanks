@@ -113,26 +113,29 @@ public class ScreenWorkshopCreations extends Screen
 		{
 			for (int i: Game.steamNetworkHandler.workshop.publishedFiles.keySet())
 			{
-				Button b = this.creations.buttons.get(i);
-				if (!b.enabled)
-				{
-					b.enabled = true;
-					SteamUGCDetails d = Game.steamNetworkHandler.workshop.publishedFiles.get(i);
-					b.text = d.getTitle();
-					b.setSubtext("\u00A7000200000255+%d \u00A7200000000255-%d", d.getVotesUp(), d.getVotesDown());
-					ArrayList<String> desc = Drawing.drawing.wrapText(d.getDescription(), 300, 12);
-					if (!d.getDescription().isEmpty())
-					{
-						b.enableHover = true;
-						b.hoverText = new String[desc.size()];
-						desc.toArray(b.hoverText);
-					}
-					b.function = () ->
-					{
-						Game.screen = new ScreenWaitingCancelable("Downloading...");
-						Game.steamNetworkHandler.workshop.download(d);
-					};
-				}
+                if (this.creations.buttons.size() > i)
+                {
+                    Button b = this.creations.buttons.get(i);
+                    if (!b.enabled)
+                    {
+                        b.enabled = true;
+                        SteamUGCDetails d = Game.steamNetworkHandler.workshop.publishedFiles.get(i);
+                        b.text = d.getTitle();
+                        b.setSubtext("\u00A7000200000255+%d \u00A7200000000255-%d", d.getVotesUp(), d.getVotesDown());
+                        ArrayList<String> desc = Drawing.drawing.wrapText(d.getDescription(), 300, 12);
+                        if (!d.getDescription().isEmpty())
+                        {
+                            b.enableHover = true;
+                            b.hoverText = new String[desc.size()];
+                            desc.toArray(b.hoverText);
+                        }
+                        b.function = () ->
+                        {
+                            Game.screen = new ScreenWaitingCancelable("Downloading...");
+                            Game.steamNetworkHandler.workshop.download(d);
+                        };
+                    }
+                }
 			}
 
 			this.lastLoadedLevels = Game.steamNetworkHandler.workshop.publishedFiles.size();
@@ -172,9 +175,9 @@ public class ScreenWorkshopCreations extends Screen
 			else if (d != null)
 			{
 				if (d.getTags().toLowerCase().contains("level"))
-					Drawing.drawing.displayInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, "Level", false);
+					Drawing.drawing.displayInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, false, "Level");
 				else if (d.getTags().toLowerCase().contains("crusade"))
-					Drawing.drawing.displayInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, "Crusade", false);
+					Drawing.drawing.displayInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, false, "Crusade");
 			}
 		}
 

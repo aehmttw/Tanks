@@ -1219,7 +1219,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
             if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
             {
-                if (selectedTiles[x][y] && (validLeft || validRight) && !(currentPlaceable == Placeable.playerTank && this.movePlayer))
+                if (selectedTiles[x][y] && (validLeft || validRight) && !(currentPlaceable == Placeable.playerTank && this.movePlayer && validLeft))
                 {
                     double ox = mousePlaceable.posX;
                     double oy = mousePlaceable.posY;
@@ -1347,6 +1347,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             }
             else if (tool == BuildTool.circle)
             {
+                lx++;
+                hx++;
+                ly++;
+                hy++;
+
                 for (double t = 0; t < Math.PI * 2; t += Math.PI / Math.max(width, length) / 2)
                 {
                     int x = (int) (lx + Math.cos(t) * 0.5 * width + width / 2);
@@ -1355,7 +1360,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                     if (y == hy) y--;
 
                     s.xys.add(new XY(x, y));
-
                 }
             }
             else if (tool == BuildTool.line)

@@ -167,17 +167,6 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
 //        search.update();
         deleteMode.update();
 
-        for (Effect e: this.particles)
-        {
-            e.update();
-
-            if (e.age > e.maxAge)
-                removeParticles.add(e);
-        }
-
-        particles.removeAll(removeParticles);
-        removeParticles.clear();
-
         if (deleting)
         {
             for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows * effects.columns; i--)
@@ -228,16 +217,10 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
 //        search.draw();
         deleteMode.draw();
 
-        for (Effect e: this.particles)
-            e.draw();
-
-        for (Effect e: this.particles)
-            e.drawGlow();
-
         for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows * effects.columns; i--)
         {
             Button b = effects.buttons.get(i);
-            ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size, this.particles, 1, true);
+            ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size, this.particles, this.removeParticles, 1, true);
         }
 
         if (deleting)

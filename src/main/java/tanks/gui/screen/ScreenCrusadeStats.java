@@ -392,11 +392,22 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void addItems()
     {
-        for (TankPlayer.ShopTankBuild b: crusade.getBuildsShop())
+        for (TankPlayer.ShopTankBuild b: crusade.crusadeShopBuilds)
         {
             for (Item.ItemStack<?> i: b.abilities)
             {
                 this.addItem(i.item);
+            }
+        }
+
+        for (Crusade.CrusadeLevel cl: crusade.levels)
+        {
+            for (TankPlayer.ShopTankBuild b : cl.buildOverrides)
+            {
+                for (Item.ItemStack<?> i : b.abilities)
+                {
+                    this.addItem(i.item);
+                }
             }
         }
 

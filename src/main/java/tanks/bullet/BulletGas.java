@@ -198,7 +198,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
     }
 
     @Override
-    public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, Random r, Color base, Color turret)
+    public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, ArrayList<Effect> removeEffects, Random r, Color base, Color turret)
     {
         double speed = this.speed;
         double life = Math.min(this.lifespan, 200);

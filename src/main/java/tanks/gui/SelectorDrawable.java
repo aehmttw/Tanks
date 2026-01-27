@@ -174,30 +174,7 @@ public class SelectorDrawable extends Button
         else if (this.bulletEffect != null)
         {
             if (!Game.game.window.drawingShadow)
-            {
-                for (Effect e : this.effects)
-                {
-                    e.update();
-
-                    if (e.age > e.maxAge)
-                        removeEffects.add(e);
-                }
-
-                effects.removeAll(removeEffects);
-                removeEffects.clear();
-
-                for (Effect f : this.effects)
-                {
-                    f.draw();
-                }
-
-                for (Effect f : this.effects)
-                {
-                    f.drawGlow();
-                }
-            }
-
-            this.bulletEffect.drawForInterface(this.posX, this.sizeX * 0.8, this.posY, Bullet.bullet_size, this.effects);
+                this.bulletEffect.drawForInterface(this.posX, this.sizeX * 0.8, this.posY, Bullet.bullet_size, this.effects, this.removeEffects);
         }
     }
 

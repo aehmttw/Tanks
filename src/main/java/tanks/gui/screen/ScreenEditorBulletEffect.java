@@ -5,14 +5,12 @@ import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletEffect;
-import tanks.bullet.BulletEffectPropertyCategory;
-import tanks.bullet.Trail;
+import tanks.bullet.*;
 import tanks.gui.Button;
 import tanks.gui.EmptySpace;
 import tanks.gui.ITrigger;
 import tanks.gui.SelectorColor;
+import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
 import tanks.tankson.*;
 import tanks.translation.Translation;
@@ -338,12 +336,16 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
             Effect e = Effect.createNewEffect(start, 175, Effect.EffectType.interfacePiece);
             e.maxAge *= be.particleLifespan;
 
-           e.setColorWithNoise(be.particleColor, 50);
+            e.setColorsFromBullet(DefaultItems.basic_bullet.bullet, be.particleColor);
+            e.glowColor.alpha = be.particleGlow * 255;
+            e.size = 0;
 
             if (be.particleGlow <= 0)
                 e.enableGlow = false;
 
-            e.setGlowColor(e.color, be.particleGlow * 255);
+            if (be.overrideGlowColor)
+                e.setGlowColor(be.glowColor, be.particleGlow * 255);
+
             e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Bullet.bullet_size / 50.0 * be.particleSpeed);
             e.vX += 3.125;
             particles.add(e);
@@ -369,6 +371,11 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         double y = 175;
         BulletEffect e = this.target.get();
 
+        for (Trail t : e.trailEffects)
+        {
+            t.drawForInterface(start, end, y, Bullet.bullet_size, trailLength);
+        }
+
         for (Effect f: this.particles)
         {
             f.draw();
@@ -377,11 +384,6 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         for (Effect f: this.particles)
         {
             f.drawGlow();
-        }
-
-        for (Trail t : e.trailEffects)
-        {
-            t.drawForInterface(start, end, y, Bullet.bullet_size, trailLength);
         }
 
         if (!e.overrideGlowColor)

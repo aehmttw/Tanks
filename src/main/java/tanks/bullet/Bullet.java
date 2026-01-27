@@ -388,7 +388,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (!ScreenGame.finishedQuick && t.getDamageMultiplier(this) > 0)
 		{
-			if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && this.tankHitKnockback != 0)
+			if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && this.tankHitKnockback != 0 && t.friction < 1)
 			{
 				double mul = Game.tile_size * Game.tile_size / Math.max(1, Math.pow(t.size, 2)) * this.tankHitKnockback * this.frameDamageMultipler;
 				t.vX += vX * mul;
@@ -1006,7 +1006,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		for (Movable m: Game.movables)
 		{
-			if (m instanceof Tank && (Team.isAllied(this, m) != this.isHarmful()) && !m.destroy)
+			if (m instanceof Tank && (Team.isAllied(this.tank, m) != this.isHarmful()) && !m.destroy)
 			{
 				Tank t = (Tank) m;
 				double d = GameObject.distanceBetween(this, m);
@@ -1771,9 +1771,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		return Game.formatString(this.typeName);
 	}
 
-	public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, Random r, Color base, Color turret)
+	public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, ArrayList<Effect> removeEffects, Random r, Color base, Color turret)
 	{
-		double l = this.effect.drawForInterface(x, width, y, size, effects, this.speed / 3.125, false);
+		double l = this.effect.drawForInterface(x, width, y, size, effects, removeEffects, this.speed / 3.125, false);
 		double start = x - l / 2;
 
 		if (!this.effect.overrideGlowColor)
@@ -1801,6 +1801,5 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			Drawing.drawing.setColor(base.red, base.green, base.blue, 255, this.effect.luminance);
 
 		Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
-
 	}
 }

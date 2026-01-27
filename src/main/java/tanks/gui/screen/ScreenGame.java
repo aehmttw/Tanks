@@ -2732,7 +2732,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         {
             for (Movable m: Game.movables)
             {
-                if ((m instanceof TankPlayable && ScreenPartyHost.readyPlayers.contains(((TankPlayable) m).player)) || m instanceof TankPlayerBot || (m == Game.playerTank && this.ready) || !this.cancelCountdown)
+                if ((m instanceof TankPlayable && (ScreenPartyHost.readyPlayers.contains(((TankPlayable) m).player) || (!this.cancelCountdown && ScreenPartyLobby.isClient))) || m instanceof TankPlayerBot || (m == Game.playerTank && (this.ready || (!this.cancelCountdown && ScreenPartyHost.isServer)) ))
                 {
                     Drawing.drawing.setColor(0, 255, 0, 255, 1);
                     Drawing.drawing.drawImage("icons/check.png", m.posX, m.posY, ((Tank) m).size, 50, 50);

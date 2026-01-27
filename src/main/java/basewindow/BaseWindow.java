@@ -165,6 +165,7 @@ public abstract class BaseWindow
         lastFrame = time;
 
         frameFrequency = Math.max(0, (time - lastFrameTime) / 10000000.0);
+
 //        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_F8))
 //        {
 //            frameFrequency *= 5;

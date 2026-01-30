@@ -213,8 +213,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 	public synchronized void sendEvent(INetworkEvent e, boolean flush)
 	{
-		eventFrequencies.putIfAbsent(e.getClass().getSimpleName(), 0);
-		eventFrequencies.put(e.getClass().getSimpleName(), eventFrequencies.get(e.getClass().getSimpleName()) + 1);
+        String n = e.getClass().getSimpleName();
+        if (!eventFrequencies.containsKey(n))
+    		eventFrequencies.put(n, 0);
+
+		eventFrequencies.put(n, eventFrequencies.get(n) + 1);
 
 		if (steamID != null)
 		{

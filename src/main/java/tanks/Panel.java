@@ -284,7 +284,15 @@ public class Panel
 		}
 
 		if (!started)
-			this.startTime = System.currentTimeMillis();
+        {
+            this.startTime = System.currentTimeMillis();
+
+            if (Game.cinematic)
+            {
+                Game.screen = new ScreenIntro();
+                return;
+            }
+        }
 
 		int maxFps = Game.maxFPS;
 		if (Game.deterministicMode && Game.deterministic30Fps)

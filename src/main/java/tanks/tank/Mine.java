@@ -278,7 +278,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
     public static void drawRange2D(double posX, double posY, double size, boolean inverted)
     {
-        int faces = (int) (size + 5);
+        int faces = Math.min((int) (size + 5), 10000);
         double r = Drawing.drawing.currentColorR;
         double g = Drawing.drawing.currentColorG;
         double b = Drawing.drawing.currentColorB;

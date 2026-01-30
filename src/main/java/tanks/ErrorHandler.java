@@ -50,7 +50,10 @@ public abstract class ErrorHandler<K, V>
             return;
         }
 
-        int count = errorCounts.getOrDefault(obj, 0) + 1;
+        Integer i = errorCounts.get(obj);
+        if (i == null)
+            i = 0;
+        int count = i + 1;
         errorCounts.put(obj, count);
         if (count >= triggerCount)
         {

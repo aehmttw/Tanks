@@ -17,6 +17,7 @@ import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -472,8 +473,8 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
         setIcon(toggleBuilds, showBuilds);
 
         this.buttons.buttons.clear();
-        this.crusade.crusadeShopItems.sort(Comparator.comparingInt(o -> o.levelUnlock));
-        this.crusade.crusadeShopBuilds.sort(Comparator.comparingInt(o -> o.levelUnlock));
+        Collections.sort(this.crusade.crusadeShopItems, Comparator.comparingInt(o -> o.levelUnlock));
+        Collections.sort(this.crusade.crusadeShopBuilds, Comparator.comparingInt(o -> o.levelUnlock));
 
         int j = 0;
         int k = 1;

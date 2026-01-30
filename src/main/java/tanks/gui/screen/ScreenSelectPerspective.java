@@ -91,7 +91,7 @@ public class ScreenSelectPerspective extends Screen implements ILevelPreviewScre
         Game.followingCam = ScreenOptionsGraphics.viewNo >= 3;
         Game.firstPerson = ScreenOptionsGraphics.viewNo == 4;
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < viewOptions.buttons.size(); i++)
         {
             viewOptions.buttons.get(i).enabled = ScreenOptionsGraphics.viewNo != i;
         }

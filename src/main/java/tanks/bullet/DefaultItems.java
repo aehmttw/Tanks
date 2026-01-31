@@ -1,6 +1,5 @@
 package tanks.bullet;
 
-import tanks.item.DefaultItemIcons;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.item.ItemShield;

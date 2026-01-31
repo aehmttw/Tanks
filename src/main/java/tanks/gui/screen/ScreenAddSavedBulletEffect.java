@@ -23,9 +23,6 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
     public boolean removeNow = false;
     public int builtInEffectsCount = 0;
 
-    public ArrayList<Effect> particles = new ArrayList<>();
-    public ArrayList<Effect> removeParticles = new ArrayList<>();
-
     public Consumer<BulletEffect> onComplete;
 
     SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
@@ -103,6 +100,8 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
                         file.startReading();
                         b.miscData.put("effect", BulletEffect.fromString(file.nextLine()));
                         b.miscData.put("name", b.text);
+                        b.miscData.put("particles", new ArrayList<>());
+                        b.miscData.put("removeParticles", new ArrayList<>());
                         b.text = "";
                         file.stopReading();
                     }
@@ -130,6 +129,8 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
 
             b.translated = false;
             b.miscData.put("effect", i);
+            b.miscData.put("particles", new ArrayList<>());
+            b.miscData.put("removeParticles", new ArrayList<>());
         }
 
         delete.textOffsetY = -2.5;
@@ -200,9 +201,6 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
             }
         }
 
-        if (page != effects.page)
-            this.particles.clear();
-
         page = effects.page;
     }
 
@@ -219,8 +217,11 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
 
         for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows * effects.columns; i--)
         {
-            Button b = effects.buttons.get(i);
-            ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size, this.particles, this.removeParticles, 1, true);
+            if (!Game.game.window.drawingShadow)
+            {
+                Button b = effects.buttons.get(i);
+                ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size, (ArrayList<Effect>) b.miscData.get("particles"), (ArrayList<Effect>) b.miscData.get("removeParticles"), 1, true);
+            }
         }
 
         if (deleting)

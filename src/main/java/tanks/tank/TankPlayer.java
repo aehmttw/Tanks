@@ -294,9 +294,9 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		boolean hideShootStick = false;
 		int hotbarSlots = (this.player.hotbar.itemBar.showItems ? ItemBar.item_bar_size : 0);
 
-		if (h.enabledItemBar && h.itemBar.selected >= 0 && h.itemBar.selected < hotbarSlots)
+		if (h.enabledItemBar)
 		{
-			Item.ItemStack<?> i = h.itemBar.slots[h.itemBar.selected];
+			Item.ItemStack<?> i = h.itemBar.getSelectedAction(false);
 
 			if (i.item instanceof ItemBullet)
 				hideShootStick = ((ItemBullet) i.item).bullet instanceof BulletArc || ((ItemBullet) i.item).bullet instanceof BulletAirStrike;

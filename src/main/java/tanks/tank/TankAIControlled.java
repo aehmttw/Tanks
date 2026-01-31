@@ -38,7 +38,7 @@ public class TankAIControlled extends Tank implements ITankField
 
 	/** The mine a tank uses. If you want to change this, make sure to use setMine() because it also updates the mineItem. */
 	@Property(category = mines, id = "mine", name = "Mine")
-	public ItemMine.ItemStackMine mineItem = new ItemMine.ItemStackMine(null, DefaultItems.basic_mine.getCopy(), -1);
+	public ItemMine.ItemStackMine mineItem = new ItemMine.ItemStackMine(null, DefaultItems.basic_mine.getCopy(), 0);
 
 	@Property(category = movementGeneral, id = "enable_movement", name = "Can move")
 	public boolean enableMovement = true;
@@ -2190,7 +2190,7 @@ public class TankAIControlled extends Tank implements ITankField
 			target = ray2.getTarget();
 		}
 
-		if (inRange && ((Tank) target).currentlyTargetable && ((target != null && target.equals(this.targetEnemy)) || (target instanceof Tank && !((Tank) target).hidden && !Team.isAllied(target, this))))
+		if (target instanceof Tank && inRange && ((Tank) target).currentlyTargetable && (target.equals(this.targetEnemy) || !((Tank) target).hidden && !Team.isAllied(target, this)))
 		{
 			this.targetEnemy = target;
 			this.lockedAngle = searchAngle;

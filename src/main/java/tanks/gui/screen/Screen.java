@@ -158,7 +158,7 @@ public abstract class Screen implements IBatchRenderableObject
 
 	public void setupLayoutParameters()
 	{
-
+        resetLayout();
 	}
 
     public void setUnscaledLayoutParameters()
@@ -172,7 +172,16 @@ public abstract class Screen implements IBatchRenderableObject
         this.titleSize = this.textSize * 1.25;
     }
 
-	public void onAttemptClose()
+    public void resetLayout()
+    {
+        Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
+        Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX / Drawing.drawing.interfaceScaleZoom;
+        Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY / Drawing.drawing.interfaceScaleZoom;
+        this.centerX = Drawing.drawing.interfaceSizeX / 2;
+        this.centerY = Drawing.drawing.interfaceSizeY / 2;
+    }
+
+    public void onAttemptClose()
 	{
 
 	}

@@ -2,7 +2,6 @@ package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.Movable;
 import tanks.Player;
 import tanks.Team;
 import tanks.gui.screen.ScreenGame;

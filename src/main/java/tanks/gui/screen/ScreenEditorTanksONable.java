@@ -87,17 +87,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
     public void setupLayoutParameters()
     {
         this.interfaceScaleZoomOverride = 1;
+        Drawing.drawing.interfaceScaleZoom = 1;
         centerX = Drawing.drawing.baseInterfaceSizeX / 2;
         centerY = Drawing.drawing.baseInterfaceSizeY / 2;
         Drawing.drawing.interfaceSizeX = Drawing.drawing.baseInterfaceSizeX;
         Drawing.drawing.interfaceSizeY = Drawing.drawing.baseInterfaceSizeY;
-    }
-
-    public void resetLayout()
-    {
-        Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
-        Drawing.drawing.interfaceSizeX = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceScaleZoom;
-        Drawing.drawing.interfaceSizeY = Drawing.drawing.interfaceSizeY / Drawing.drawing.interfaceScaleZoom;
     }
 
     public ScreenEditorTanksONable(Pointer<T> t, Screen screen)

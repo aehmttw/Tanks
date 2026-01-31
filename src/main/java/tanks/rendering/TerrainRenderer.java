@@ -767,7 +767,7 @@ public class TerrainRenderer
 
         long start = System.currentTimeMillis();
         int x = stagedCount / Game.currentSizeY;
-        for (; x < Game.currentSizeX && (!allowPartialLoading || System.currentTimeMillis() - start < 50); x++)
+        for (; x < Game.currentSizeX && (!allowPartialLoading || System.currentTimeMillis() - start < (this.hasContinuationed ? 50 : 250)); x++)
         {
             for (int y = 0; y < Game.currentSizeY; y++)
                 drawTile(x, y);
@@ -792,7 +792,7 @@ public class TerrainRenderer
             Obstacle o = Game.obstacles.get(oi);
             drawObstacle(o);
 
-            if (System.currentTimeMillis() - startTime > (this.hasContinuationed ? 50 : 100) && allowPartialLoading)
+            if (System.currentTimeMillis() - startTime > (this.hasContinuationed ? 50 : 250) && allowPartialLoading)
             {
                 oi++;
                 break;

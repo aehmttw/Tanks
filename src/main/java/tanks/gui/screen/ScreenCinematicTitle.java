@@ -5,8 +5,6 @@ import tanks.bullet.Bullet;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
 
-import java.util.UUID;
-
 public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundScreen
 {
     double t = 0;

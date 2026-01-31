@@ -72,6 +72,11 @@ public class ScreenSelectPerspective extends Screen implements ILevelPreviewScre
         }
 
         viewOptions = new ButtonList(buttons, 0, 0, 0);
+        viewOptions.buttonHeight = this.objHeight;
+        viewOptions.buttonWidth = this.objWidth;
+        viewOptions.buttonYSpace = this.objYSpace;
+        viewOptions.buttonXSpace = this.objXSpace;
+        viewOptions.sortButtons();
     }
 
     @Override

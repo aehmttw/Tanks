@@ -165,12 +165,18 @@ public class Ray extends GameObject
         @Override
         public void handleError(GameObject obj, Collection<Chunk> info)
         {
-            System.err.printf("-----Ray collision face owner error-----%n" +
-                    "%s not in %s%n",
-                gameObjectString(obj),
-                info.stream().map(Chunk::toString)
-                .collect(Collectors.joining(", "))
-            );
+            if (Game.framework != Game.Framework.libgdx)
+            {
+                System.err.printf("-----Ray collision face owner error-----%n" +
+                                "%s not in %s%n",
+                        gameObjectString(obj),
+                        info.stream().map(Chunk::toString)
+                                .collect(Collectors.joining(", "))
+                );
+            }
+            else
+                System.err.println("ray collision face owner error");
+
             if (!Game.disableErrorFixing && Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
         }

@@ -477,18 +477,23 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         @Override
         public void handleError(Movable ignored, Collection<Movable> info)
         {
-            System.err.println("-----Movable sync error-----\n" + info.stream().map(m ->
-                {
-                    boolean inGameMovables = Game.movables.contains(m);
-                    return String.format("%s: %sGame.movables, %s",
-                        gameObjectString(m),
-                        inGameMovables ? "*" : "!",
-                        Chunk.chunkList.stream().filter(c -> c.movables.contains(m) != inGameMovables)
-                            .map(c -> (c.movables.contains(m) ? "*" : "!") + c)
-                            .collect(Collectors.joining(", "))
-                    );
-                }
-            ).collect(Collectors.joining("\n")));
+            if (Game.framework != Game.Framework.libgdx)
+            {
+                System.err.println("-----Movable sync error-----\n" + info.stream().map(m ->
+                        {
+                            boolean inGameMovables = Game.movables.contains(m);
+                            return String.format("%s: %sGame.movables, %s",
+                                    gameObjectString(m),
+                                    inGameMovables ? "*" : "!",
+                                    Chunk.chunkList.stream().filter(c -> c.movables.contains(m) != inGameMovables)
+                                            .map(c -> (c.movables.contains(m) ? "*" : "!") + c)
+                                            .collect(Collectors.joining(", "))
+                            );
+                        }
+                ).collect(Collectors.joining("\n")));
+            }
+            else
+                System.err.println("movable sync error");
             if (!Game.disableErrorFixing && Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
         }

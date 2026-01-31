@@ -10,9 +10,11 @@ import tanks.gui.Button;
 import tanks.gui.EmptySpace;
 import tanks.gui.ITrigger;
 import tanks.gui.SelectorColor;
-import tanks.tank.TankPlayer;
 import tanks.tank.Turret;
-import tanks.tankson.*;
+import tanks.tankson.ArrayListIndexPointer;
+import tanks.tankson.FieldPointer;
+import tanks.tankson.Pointer;
+import tanks.tankson.Property;
 import tanks.translation.Translation;
 
 import java.io.IOException;
@@ -33,9 +35,10 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
             Game.screen = new ScreenAddSavedBulletEffect(this, (b) ->
             {
+                Game.screen = this;
+                this.setupLayoutParameters();
                 this.setTarget(b);
                 trailTab.setupTrails();
-                Game.screen = this;
             })
     );
 

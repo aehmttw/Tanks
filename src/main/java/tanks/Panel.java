@@ -2,9 +2,12 @@ package tanks;
 
 import basewindow.InputCodes;
 import tanks.extension.Extension;
-import tanks.gui.*;
+import tanks.gui.Button;
+import tanks.gui.Firework;
 import tanks.gui.ScreenElement.CenterMessage;
 import tanks.gui.ScreenElement.Notification;
+import tanks.gui.ScreenIntro;
+import tanks.gui.TextBox;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -841,6 +844,7 @@ public class Panel
                 Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 
 				Game.screen.draw();
+
 				this.continuation = null;
 				this.continuationMusic = false;
 			}
@@ -857,10 +861,10 @@ public class Panel
 				}
 				this.continuation = c;
 
-				Drawing.drawing.setColor(174, 92, 16);
+				Drawing.drawing.setColor(235, 207, 166);
 				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
-				Drawing.drawing.setColor(255, 255, 255);
+				Drawing.drawing.setColor(0, 0, 0);
 				Drawing.drawing.setInterfaceFontSize(24);
 				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
@@ -875,9 +879,9 @@ public class Panel
 						Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left", Game.timeInterval(0, (long) time + 1000, true));
 				}
 
-				Drawing.drawing.setColor(0, 0, 0);
-				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
 				Drawing.drawing.setColor(255, 255, 255);
+				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
+				Drawing.drawing.setColor(0, 0, 0, 127);
 				Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
 			}
 		}

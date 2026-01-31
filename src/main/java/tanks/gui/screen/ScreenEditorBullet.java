@@ -35,8 +35,9 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     {
         Game.screen = new ScreenAddSavedItem(this, (b) ->
         {
-            this.setTarget(((ItemBullet) b.item).bullet);
             Game.screen = this;
+            this.setupLayoutParameters();
+            this.setTarget(((ItemBullet) b.item).bullet);
         }, "Bullet", ItemBullet.class);
     }
     );
@@ -64,6 +65,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             {
                 Bullet b = Game.registryBullet.bulletEntries.get(bulletTypes.selectedOption).bullet.newInstance();
                 target.get().clonePropertiesTo(b);
+                this.setupLayoutParameters();
                 setTarget(b);
             }
             catch (Exception e)

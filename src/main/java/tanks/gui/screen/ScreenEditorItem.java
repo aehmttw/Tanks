@@ -1,17 +1,15 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import basewindow.Color;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
-import tanks.bullet.*;
 import tanks.gui.Button;
 import tanks.gui.ITrigger;
 import tanks.gui.SelectorItemIcon;
-import tanks.item.*;
-import tanks.tank.Mine;
-import tanks.tank.TankPlayer;
+import tanks.item.Item;
+import tanks.item.ItemBullet;
+import tanks.item.ItemMine;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
@@ -40,8 +38,9 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 b.maxStackSize = 0;
             }
 
-            this.setTarget(b);
             Game.screen = this;
+            this.setupLayoutParameters();
+            this.setTarget(b);
         }, "My", this.target.getType());
     }
     );

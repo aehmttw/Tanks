@@ -250,6 +250,9 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         {
             this.objectEditorScreen.draw();
 
+            if (Game.screen instanceof ScreenInfo)
+                return;
+
             if (this.objectEditorScreen.currentTab == null)
             {
                 Drawing.drawing.setInterfaceFontSize(this.titleSize);
@@ -267,6 +270,9 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         }
         else
             super.draw();
+
+        if (Game.screen instanceof ScreenInfo)
+            return;
 
         if (this.showLoadFromTemplate)
             load.draw();

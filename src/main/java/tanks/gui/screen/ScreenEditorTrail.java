@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import tanks.Drawing;
+import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.Trail;
 import tanks.tankson.Pointer;
@@ -47,6 +48,9 @@ public class ScreenEditorTrail extends ScreenEditorTanksONable<Trail>
     public void draw()
     {
         super.draw();
+
+        if (Game.screen instanceof ScreenInfo)
+            return;
 
         double max = 0;
         for (Trail t: this.allTrails)

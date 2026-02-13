@@ -4,7 +4,10 @@ import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.gui.ButtonList;
 import tanks.gui.TextBox;
+
+import java.util.ArrayList;
 
 public class ScreenCrusadeOptions extends Screen
 {
@@ -107,6 +110,11 @@ public class ScreenCrusadeOptions extends Screen
         bonusLifeFrequency.minValue = 1;
         bonusLifeFrequency.checkMinValue = true;
         bonusLifeFrequency.maxChars = 9;
+
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+        {
+            this.titleOffset = -210;
+        }
     }
 
     @Override

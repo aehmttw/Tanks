@@ -211,11 +211,9 @@ public class SoundPlayer extends BaseSoundPlayer
         prevMusic = currentMusic;
         currentMusic = sourcePointer;
         currentVolume = volume;
-
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
-        alSourcef(sourcePointer, AL_LOOPING, loop);
+        alSourcei(sourcePointer, AL_LOOPING, loop);
         alSourcef(sourcePointer, AL_GAIN, volume);
-
         if (continueID != null && continueID.equals(this.musicID))
         {
             alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, alGetSourcef(prevMusic, EXTOffset.AL_SEC_OFFSET));
@@ -269,7 +267,7 @@ public class SoundPlayer extends BaseSoundPlayer
         }
 
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
-        alSourcef(sourcePointer, AL_LOOPING, loop);
+        alSourcei(sourcePointer, AL_LOOPING, loop);
         alSourcef(sourcePointer, AL_PITCH, musicSpeed);
         float pos = alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET);
         alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, pos);

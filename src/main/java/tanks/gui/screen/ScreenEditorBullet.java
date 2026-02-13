@@ -463,6 +463,9 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     {
         super.draw();
 
+        if (Game.screen instanceof ScreenInfo)
+            return;
+
         if (this.target.get() != null)
             this.bulletTypes.draw();
 

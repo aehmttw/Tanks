@@ -365,6 +365,9 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
 
         super.draw();
 
+        if (Game.screen instanceof ScreenInfo)
+            return;
+
         if (this.message != null)
             return;
 
@@ -500,6 +503,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
 
         public void setupTrails()
         {
+            screen.setupLayoutParameters();
             this.trails = screen.target.get().trailEffects;
             this.buttons.clear();
             for (int i = 0; i < this.trails.size(); i++)

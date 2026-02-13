@@ -12,7 +12,10 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
+import org.lwjgl.sdl.*;
 import org.lwjgl.system.MemoryStack;
+import tanks.Panel;
+import tanks.gui.ScreenElement;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -89,6 +92,7 @@ public class LWJGLWindow extends BaseWindow
 	{
 		super(name, x, y, z, u, d, w, vsync, showMouse);
 
+        this.controllers = new Controller(this);
 		this.audioDevice = ALC11.alcGetString(NULL, ALC11.ALC_DEFAULT_ALL_DEVICES_SPECIFIER);
 
 		try
@@ -225,9 +229,13 @@ public class LWJGLWindow extends BaseWindow
 				this.validScrollDown = true;
 		});
 
+
 		glfwSetMouseButtonCallback(window, (window, button, action, mods) ->
 		{
-			if (action == GLFW_PRESS)
+            controllers.resetGyro = true;
+            stickEnabled = false;
+
+            if (action == GLFW_PRESS)
 			{
 				pressedButtons.add(button);
 				validPressedButtons.add(button);
@@ -238,6 +246,17 @@ public class LWJGLWindow extends BaseWindow
 				validPressedButtons.remove((Integer) button);
 			}
 		});
+
+        long t = System.currentTimeMillis();
+        SDLHints.SDL_SetHint(SDLHints.SDL_HINT_JOYSTICK_HIDAPI_JOY_CONS, "1");
+        SDLHints.SDL_SetHint(SDLHints.SDL_HINT_JOYSTICK_HIDAPI_COMBINE_JOY_CONS, "0");
+        SDLHints.SDL_SetHint(SDLHints.SDL_HINT_JOYSTICK_HIDAPI_JOYCON_HOME_LED, "1");
+
+        if (!SDLInit.SDL_Init(SDLInit.SDL_INIT_GAMEPAD | SDLInit.SDL_INIT_SENSOR))
+        {
+            System.err.println("Failed to init SDL gamepad shit");
+        }
+        System.out.println(System.currentTimeMillis() - t);
 
 		try (MemoryStack stack = stackPush())
 		{
@@ -404,8 +423,13 @@ public class LWJGLWindow extends BaseWindow
 			absoluteHeight = h[0];
 
 		glfwGetCursorPos(window, mx, my);
-		absoluteMouseX = mx[0];
-		absoluteMouseY = my[0];
+        if (!stickEnabled)
+        {
+            absoluteMouseX = mx[0];
+            absoluteMouseY = my[0];
+        }
+
+        controllers.updateJoysticks();
 
         focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
 
@@ -458,6 +482,34 @@ public class LWJGLWindow extends BaseWindow
 
 		return shouldClose;
 	}
+
+//        for (int i = GLFW_JOYSTICK_1; i <= GLFW_JOYSTICK_LAST; i++)
+//        {
+//            if (glfwJoystickPresent(i))
+//            {
+//                System.out.println("--- " + i + " " + glfwGetJoystickName(i) + " ---");
+//                FloatBuffer fb = glfwGetJoystickAxes(i);
+//                System.out.println("Axes");
+//                while (fb.hasRemaining())
+//                {
+//                    System.out.print(fb.get() + " ");
+//                }
+//                ByteBuffer bb = glfwGetJoystickButtons(i);
+//                System.out.println("\nButtons");
+//                while (bb.hasRemaining())
+//                {
+//                    System.out.print(bb.get() + " ");
+//                }
+//                ByteBuffer bb2 = glfwGetJoystickHats(i);
+//                System.out.println("\nHats");
+//                while (bb2.hasRemaining())
+//                {
+//                    System.out.print(bb2.get() + " ");
+//                }
+//                System.out.println();
+//            }
+//        }
+//    }
 
 	public void setShowCursor(boolean show)
 	{

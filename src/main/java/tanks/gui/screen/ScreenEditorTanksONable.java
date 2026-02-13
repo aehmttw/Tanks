@@ -1171,6 +1171,9 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
         this.drawDefaultBackground();
 
+        if (Game.screen instanceof ScreenInfo)
+            return;
+
         create.setText("Create new %s", (Object) objName);
 
         if (showDeleteObj)

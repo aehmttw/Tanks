@@ -241,6 +241,14 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 					a = controlStick.inputAngle;
 			}
 
+            if (a < 0 && Game.game.window.stickEnabled)
+            {
+                intensity = Math.sqrt(Game.game.window.stickX * Game.game.window.stickX + Game.game.window.stickY * Game.game.window.stickY);
+
+                if (intensity >= 0.2)
+                    a = Math.atan2(Game.game.window.stickY, Game.game.window.stickX) + Math.PI * 2;
+            }
+
 			if (a >= 0 && intensity >= 0.2)
 			{
 				if (Game.followingCam)
@@ -298,7 +306,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		{
 			Item.ItemStack<?> i = h.itemBar.getSelectedAction(false);
 
-			if (i.item instanceof ItemBullet)
+			if (i != null && i.item instanceof ItemBullet)
 				hideShootStick = ((ItemBullet) i.item).bullet instanceof BulletArc || ((ItemBullet) i.item).bullet instanceof BulletAirStrike;
 		}
 

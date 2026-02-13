@@ -75,9 +75,6 @@ public class ScreenIntro extends Screen
         Panel.panel.introMusicEnd = System.currentTimeMillis() + Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/intro_length.txt").get(0));
         Panel.panel.introMusicEnd -= 40;
 
-        if (Game.framework == Game.Framework.libgdx)
-            Panel.panel.introMusicEnd -= 100;
-
         if (!tutorialFile.exists())
             Drawing.drawing.playSound("battle_intro.ogg", 1.0f, true);
         else

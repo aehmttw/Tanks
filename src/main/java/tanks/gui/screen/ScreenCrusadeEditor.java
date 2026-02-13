@@ -346,6 +346,12 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
         {
             this.buttons = new ButtonList(new ArrayList<>(), 0, 0, 0);
             this.titleOffset = -210;
+            this.toggleLevels.posY = Drawing.drawing.interfaceSizeY / 2 + titleOffset;
+            this.toggleItems.posY = toggleLevels.posY;
+            this.toggleBuilds.posY = toggleLevels.posY;
+            this.addLevel.posY = toggleLevels.posY;
+            this.addItem.posY = toggleLevels.posY;
+            this.addBuild.posY = toggleLevels.posY;
 
             this.buttons.controlsYOffset = -30;
         }
@@ -473,8 +479,8 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
         setIcon(toggleBuilds, showBuilds);
 
         this.buttons.buttons.clear();
-        Collections.sort(this.crusade.crusadeShopItems, Comparator.comparingInt(o -> o.levelUnlock));
-        Collections.sort(this.crusade.crusadeShopBuilds, Comparator.comparingInt(o -> o.levelUnlock));
+        Collections.sort(this.crusade.crusadeShopItems, (o1, o2) -> o1.levelUnlock - o2.levelUnlock);
+        Collections.sort(this.crusade.crusadeShopBuilds, (o1, o2) -> o1.levelUnlock - o2.levelUnlock);
 
         int j = 0;
         int k = 1;

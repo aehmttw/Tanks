@@ -1,6 +1,7 @@
 package basewindow;
 
 import basewindow.transformation.*;
+import lwjglwindow.Controller;
 import tanks.Game;
 
 import java.io.IOException;
@@ -47,6 +48,8 @@ public abstract class BaseWindow
 
     public boolean validScrollUp;
     public boolean validScrollDown;
+
+    public Controller controllers;
 
     public String os = "";
     public boolean mac = false;
@@ -114,6 +117,10 @@ public abstract class BaseWindow
     public ShaderGroup currentShaderGroup;
 
     public ShaderProgram currentShader;
+
+    public boolean stickEnabled = false;
+    public double stickX;
+    public double stickY;
 
     // capsLock and numLock do not work on mac (glfw limitation) :(
     public boolean shift = false;

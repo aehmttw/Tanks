@@ -164,7 +164,6 @@ public class SavedFilesList extends ButtonList
     {
         this.openFolder.posX = Drawing.drawing.interfaceSizeX / 2 + this.xOffset + this.objXSpace / 2 * 1.35;
         this.openFolder.posY = Drawing.drawing.interfaceSizeY / 2 + this.yOffset - this.objYSpace * 3.5;
-
         if (this.drawOpenFileButton)
             this.openFolder.update();
 
@@ -175,7 +174,7 @@ public class SavedFilesList extends ButtonList
     public void draw()
     {
         this.openFolder.posX = Drawing.drawing.interfaceSizeX / 2 + this.xOffset + this.objXSpace / 2 * 1.35;
-        this.openFolder.posY = Drawing.drawing.interfaceSizeY / 2 + this.yOffset - this.objYSpace * 4.1;
+        this.openFolder.posY = Drawing.drawing.interfaceSizeY / 2 + this.yOffset - this.objYSpace * 3.5;
 
         super.draw();
 

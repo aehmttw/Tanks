@@ -48,6 +48,7 @@ public class ButtonList
     public double buttonYSpace = 60;
 
     public boolean shiftWhenNoPages = true;
+    public double noPageOffY = 0;
 
     public double imageR = 255;
     public double imageG = 255;
@@ -175,7 +176,7 @@ public class ButtonList
         this.first.imageSizeY = 20;
         this.first.imageXOffset = 0;
 
-        double oy = shiftWhenNoPages && (this.buttons.size() <= rows * columns) ? 30 : 0;
+        this.noPageOffY = shiftWhenNoPages && (this.buttons.size() <= rows * columns) ? 30 : 0;
 
         for (int i = 0; i < buttons.size(); i++)
         {
@@ -198,7 +199,7 @@ public class ButtonList
 
             double offset = -this.buttonXSpace / 2 * (cols - 1);
 
-            buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (r - (rs - 1) / 2.0) * this.buttonYSpace + oy;
+            buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (r - (rs - 1) / 2.0) * this.buttonYSpace + this.noPageOffY;
             buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + c * this.buttonXSpace + xOffset;
             buttons.get(i).sizeX = this.buttonWidth;
             buttons.get(i).sizeY = this.buttonHeight;

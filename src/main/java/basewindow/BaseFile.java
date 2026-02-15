@@ -46,4 +46,6 @@ public abstract class BaseFile
     public abstract boolean moveTo(String s);
 
     public abstract boolean moveTo(String s, boolean override);
+
+    public abstract String getName();
 }

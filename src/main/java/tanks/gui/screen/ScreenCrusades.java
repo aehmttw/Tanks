@@ -4,8 +4,10 @@ import basewindow.BaseFile;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
+import tanks.gui.ScreenElement;
 import tanks.gui.SearchBoxInstant;
 import tanks.translation.Translation;
 
@@ -19,7 +21,7 @@ public class ScreenCrusades extends Screen
 
 	public SavedFilesList fullCrusadesList, crusadesList;
 
-	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4.6, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
 	{
 		@Override
 		public void run()
@@ -30,7 +32,7 @@ public class ScreenCrusades extends Screen
 		}
 	}, "");
 
-	Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4.6, this.objHeight, this.objHeight, "", new Runnable()
+	Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4, this.objHeight, this.objHeight, "", new Runnable()
 	{
 		@Override
 		public void run()
@@ -103,12 +105,7 @@ public class ScreenCrusades extends Screen
 				},
 				(file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
-
-		addCrusade("adventure_crusade", "Meet all the enemies in---the main crusade of Tanks!");
-		addCrusade("classic_crusade", "A retro crusade featuring---levels made long ago...");
-		addCrusade("castle_crusade", "Invade, defend, and demolish---10 vast castles crawling with---some of the most difficult tanks!");
-		addCrusade("beginner_crusade", "An easy crusade serving as---good practice for beginners!");
-
+		addDefaultCrusades();
 		fullCrusadesList.drawOpenFileButton = true;
 		fullCrusadesList.sortedByTime = sortByTime;
 		fullCrusadesList.sort(sortByTime);
@@ -121,6 +118,14 @@ public class ScreenCrusades extends Screen
 
 		createNewCrusadesList();
 	}
+
+    public void addDefaultCrusades()
+    {
+        addCrusade("adventure_crusade", "Meet all the enemies in---the main crusade of Tanks!");
+        addCrusade("classic_crusade", "A retro crusade featuring---levels made long ago...");
+        addCrusade("castle_crusade", "Invade, defend, and demolish---10 vast castles crawling with---some of the most difficult tanks!");
+        addCrusade("beginner_crusade", "An easy crusade serving as---good practice for beginners!");
+    }
 
 	public void addCrusade(String name, String desc)
 	{
@@ -220,12 +225,12 @@ public class ScreenCrusades extends Screen
 
 		Drawing.drawing.setInterfaceFontSize(this.titleSize);
 		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5.35, "Crusades");
+		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "Crusades");
 
         if (Game.framework == Game.Framework.lwjgl)
         {
             Drawing.drawing.setInterfaceFontSize(16);
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Drag and drop crusades here to import them");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.75 + crusadesList.noPageOffY, "Drag and drop crusades here to import them");
         }
 	}
 
@@ -235,7 +240,9 @@ public class ScreenCrusades extends Screen
 		ScreenSavedLevels.importLevels(filePaths, Game.crusadeDir, "crusade", s -> new Crusade(s, "test"), () ->
 		{
 			fullCrusadesList.refresh();
+            addDefaultCrusades();
+            fullCrusadesList.sort(sortByTime);
 			createNewCrusadesList();
-		}, "... Maybe they were levels?");
+		}, "... Your file(s) might be something else, like levels or items.");
 	}
 }

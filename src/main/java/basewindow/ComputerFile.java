@@ -173,4 +173,10 @@ public class ComputerFile extends BaseFile
             return false;
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return file.getName();
+    }
 }

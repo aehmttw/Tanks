@@ -6,6 +6,7 @@ import tanks.gui.*;
 import tanks.gui.screen.leveleditor.*;
 import tanks.translation.Translation;
 
+import javax.management.Notification;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,7 @@ public class ScreenSavedLevels extends Screen
 
     Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer());
 
-    SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4.6, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+    SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
     {
         @Override
         public void run()
@@ -33,7 +34,7 @@ public class ScreenSavedLevels extends Screen
         }
     }, "");
 
-    Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4.6, this.objHeight, this.objHeight, "", new Runnable()
+    Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4, this.objHeight, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -163,13 +164,14 @@ public class ScreenSavedLevels extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5.35, "My levels");
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "My levels");
 
         if (Game.framework == Game.Framework.lwjgl)
         {
             Drawing.drawing.setInterfaceFontSize(16);
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Drag and drop levels here to import them");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.75 + savedLevelsList.noPageOffY, "Drag and drop levels here to import them");
         }
+
     }
 
     /**
@@ -188,14 +190,28 @@ public class ScreenSavedLevels extends Screen
      */
     public static void importLevels(String[] filePaths, String dir, String levelType, Consumer<String> validation, Runnable onComplete, String failedMessage)
     {
+        Screen s = Game.screen;
         new Thread(() ->
         {
             List<String> paths = Arrays.stream(filePaths).filter(path -> path.endsWith(".tanks")).collect(Collectors.toList());
-            if (paths.isEmpty()) return;
+            if (paths.isEmpty())
+                return;
 
-            ArrayList<ComputerFile> existing = new ArrayList<>(), failed = new ArrayList<>();
+            Game.screen = new ScreenImportingFiles(s);
+
+            ArrayList<ComputerFile> existing = new ArrayList<>();
+            ArrayList<ComputerFile> failed = new ArrayList<>();
+            ArrayList<ComputerFile> success = new ArrayList<>();
+
+            ScreenImportingFiles.cancelable = true;
+            ScreenImportingFiles.canceled = false;
+
+            ScreenImportingFiles.numberTotal = paths.size();
+            int i = 0;
             for (String path : paths)
             {
+                i++;
+                ScreenImportingFiles.numberCompleted = i;
                 ComputerFile file = (ComputerFile) Game.game.fileManager.getFile(path);
                 try
                 {
@@ -212,29 +228,48 @@ public class ScreenSavedLevels extends Screen
                     continue;
                 }
 
-                if (!file.moveTo(Game.homedir + dir))
+                if (Game.game.fileManager.getFile(Game.homedir + dir + "/" + file.getName()).exists())
                     existing.add(file);
+                else
+                    success.add(file);
+
+                if (ScreenImportingFiles.canceled)
+                {
+                    Game.screen = s;
+                    Panel.forceRefreshMusic = true;
+                    return;
+                }
             }
+
+            ScreenImportingFiles.cancelable = false;
+
+            for (ComputerFile c: success)
+                c.moveTo(Game.homedir + dir);
 
             if (!existing.isEmpty())
             {
-                Game.screen = new ScreenPopupWarning(Game.screen,
-                    getNumberString(existing.size(), "file") + " already exist" + (existing.size() == 1 ? "s" : "") + "!",
-                    existing.stream().limit(10).map(f -> f.file.getName()).collect(Collectors.joining(", ")),
+                Game.screen = new ScreenPopupWarning(s,
+                    getNumberString(existing.size(), "file") + Translation.translate(" already exist" + (existing.size() == 1 ? "s" : "") + "!"),
+                    existing.stream().limit(existing.size() == 11 ? 11 : 10).map(f -> f.file.getName()).collect(Collectors.joining(", ")) +
+                            ((existing.size() > 11) ? (Translation.translate(", and %d others", (existing.size() - 10))) : ""),
                     () ->
                     {
                         existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
-                        Panel.notifications.add(new ScreenElement.Notification("Imported " + getNumberString(paths.size(), levelType)));
+                        Panel.notifications.add(new ScreenElement.Notification(Translation.translate("Imported %s", getNumberString(paths.size(), levelType))));
                         onComplete.run();
                     })
                     .setContinueText("Replace all").setCancelText("Skip");
             }
+            else
+                Game.screen = s;
 
-            int successful = paths.size() - existing.size() - failed.size();
+            Panel.forceRefreshMusic = true;
+
+            int successful = success.size();
             if (successful > 0)
-                Panel.notifications.add(new ScreenElement.Notification("Imported " + getNumberString(successful, levelType)));
+                Panel.notifications.add(new ScreenElement.Notification(Translation.translate("Imported %s", getNumberString(successful, levelType))));
             if (!failed.isEmpty())
-                Panel.notifications.add(new ScreenElement.Notification(getNumberString(failed.size(), levelType) + (failed.size() > 1 ? " are" : " is") + " corrupted and have been skipped" + failedMessage));
+                Panel.notifications.add(new ScreenElement.Notification(getNumberString(failed.size(), levelType) + " " + Translation.translate((failed.size() > 1 ? "are" : "is") + " corrupted and have been skipped") + Translation.translate(failedMessage)));
 
             onComplete.run();
         }).start();
@@ -254,6 +289,6 @@ public class ScreenSavedLevels extends Screen
         {
             fullSavedLevelsList.refresh();
             createNewLevelsList();
-        }, "... Maybe they were crusades?");
+        }, "... Your file(s) might be something else, like crusades or items.");
     }
 }

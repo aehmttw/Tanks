@@ -6,8 +6,6 @@ import tanks.attribute.AttributeModifier;
 import tanks.attribute.EffectManager;
 import tanks.attribute.StatusEffect;
 import tanks.gui.ChatMessage;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -239,6 +237,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 	public final boolean isTemplate;
 
+    // Whether this bullet class can deflect other bullets (things like arc and air strike can't)
+    public boolean canDeflect = true;
+
 	/**
 	 * Do not use if you plan to place this bullet in the game field. Only for templates.
 	 * Use another constructor if you want to add the bullet to the game field.
@@ -387,7 +388,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		if (!ScreenGame.finishedQuick && t.getDamageMultiplier(this) > 0)
 		{
-			if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && this.tankHitKnockback != 0)
+			if (!(Team.isAllied(this, t) && !this.team.friendlyFire) && this.tankHitKnockback != 0 && t.friction < 1)
 			{
 				double mul = Game.tile_size * Game.tile_size / Math.max(1, Math.pow(t.size, 2)) * this.tankHitKnockback * this.frameDamageMultipler;
 				t.vX += vX * mul;
@@ -453,21 +454,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 						String message = ((Minigame) Game.currentLevel).generateKillMessage(t, this.tank, true);
 						ScreenPartyHost.chat.add(0, new ChatMessage(message));
 						Game.eventsOut.add(new EventChat(message));
-					}
-
-					for (IFixedMenu m : ModAPI.menuGroup)
-					{
-						if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.kills))
-						{
-							if (!((Scoreboard) m).teams.isEmpty())
-								((Scoreboard) m).addTeamScore(this.tank.team, 1);
-
-							else if (this.tank instanceof TankPlayer && !((Scoreboard) m).players.isEmpty())
-								((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
-
-							else if (this.tank instanceof TankPlayerRemote && !((Scoreboard) m).players.isEmpty())
-								((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-						}
 					}
 				}
 
@@ -1020,7 +1006,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		for (Movable m: Game.movables)
 		{
-			if (m instanceof Tank && (Team.isAllied(this, m) != this.isHarmful()) && !m.destroy)
+			if (m instanceof Tank && (Team.isAllied(this.tank, m) != this.isHarmful()) && !m.destroy)
 			{
 				Tank t = (Tank) m;
 				double d = GameObject.distanceBetween(this, m);
@@ -1785,9 +1771,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 		return Game.formatString(this.typeName);
 	}
 
-	public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, Random r, Color base, Color turret)
+	public void drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, ArrayList<Effect> removeEffects, Random r, Color base, Color turret)
 	{
-		double l = this.effect.drawForInterface(x, width, y, size, effects, this.speed / 3.125, false);
+		double l = this.effect.drawForInterface(x, width, y, size, effects, removeEffects, this.speed / 3.125, false);
 		double start = x - l / 2;
 
 		if (!this.effect.overrideGlowColor)
@@ -1815,6 +1801,5 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 			Drawing.drawing.setColor(base.red, base.green, base.blue, 255, this.effect.luminance);
 
 		Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
-
 	}
 }

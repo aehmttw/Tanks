@@ -26,6 +26,10 @@ public class SteamNetworkHandler
 	public SteamResult lobbyHostStatus = null;
 	protected int lastPlayerCount = -1;
 
+    public static boolean showPublicPartyCount = true;
+    public int publicPartyCount = 0;
+    public long lastPartyRequest = 0;
+
 	protected HashMap<Integer, Long> toClose = new HashMap<>();
 
 	public HashMap<Integer, ServerHandler> serverHandlersBySteamID = new HashMap<>();
@@ -111,39 +115,65 @@ public class SteamNetworkHandler
 		@Override
 		public void onLobbyMatchList(int lobbiesMatching)
 		{
-			ArrayList<Button> buttons = new ArrayList<>();
-			for (int i = 0; i < lobbiesMatching; i++)
-			{
-				SteamID lobby = matchmaking.getLobbyByIndex(i);
-				String playerCount = matchmaking.getLobbyData(lobby, "players");
-				String host = matchmaking.getLobbyData(lobby, "host");
-				String country = new Locale("en", matchmaking.getLobbyData(lobby, "country")).getDisplayCountry();
-				Button b = new Button(0, 0, 350, 40, "", () ->
-				{
-					String s1 = joinPartyScreen.ip.inputText;
-					joinPartyScreen.ip.inputText = "lobby:" + lobby;
-					joinPartyScreen.join.function.run();
-					joinPartyScreen.ip.inputText = s1;
-					Game.lastOfflineScreen = new ScreenJoinParty();
-				});
-				b.text = host;
-				if (playerCount.equals("1"))
-					b.setSubtext("%s - %s player", country, playerCount);
-				else
-					b.setSubtext("%s - %s players", country, playerCount);
-
-				buttons.add(b);
-			}
+            publicPartyCount = lobbiesMatching;
 
 			if (Game.screen instanceof ScreenWaitingLobbyList)
-				Game.screen = new ScreenJoinSteamLobby(joinPartyScreen, buttons);
+            {
+                ArrayList<Button> buttons = new ArrayList<>();
+                for (int i = 0; i < lobbiesMatching; i++)
+                {
+                    SteamID lobby = matchmaking.getLobbyByIndex(i);
+                    String playerCount = matchmaking.getLobbyData(lobby, "players");
+                    String host = matchmaking.getLobbyData(lobby, "host");
+                    String country = new Locale("en", matchmaking.getLobbyData(lobby, "country")).getDisplayCountry();
+                    Button b = new Button(0, 0, 350, 40, "", () ->
+                    {
+                        String s1 = joinPartyScreen.ip.inputText;
+                        joinPartyScreen.ip.inputText = "lobby:" + lobby;
+                        joinPartyScreen.join.function.run();
+                        joinPartyScreen.ip.inputText = s1;
+                        Game.lastOfflineScreen = new ScreenJoinParty();
+                    });
+                    b.text = host;
+                    if (playerCount.equals("1"))
+                        b.setSubtext("%s - %s player", country, playerCount);
+                    else
+                        b.setSubtext("%s - %s players", country, playerCount);
+
+                    buttons.add(b);
+                }
+
+                Game.screen = new ScreenJoinSteamLobby(joinPartyScreen, buttons);
+            }
 		}
 	};
+
+    public void addPartyCountSubtext(Button b)
+    {
+        if (initialized && showPublicPartyCount)
+        {
+            if (System.currentTimeMillis() - lastPartyRequest > 60000)
+            {
+                lastPartyRequest = System.currentTimeMillis();
+                this.matchmaking.addRequestLobbyListDistanceFilter(SteamMatchmaking.LobbyDistanceFilter.Worldwide);
+                this.matchmaking.requestLobbyList();
+            }
+
+            if (publicPartyCount > 0)
+            {
+                if (publicPartyCount > 1)
+                    b.setSubtext("%d parties", publicPartyCount);
+                else
+                    b.setSubtext("%d party", publicPartyCount);
+            }
+        }
+    }
 
 	protected SteamUserCallback userCallback = new SteamUserCallback()
 	{
 
 	};
+
 
 	protected void registerInterfaces()
 	{
@@ -470,6 +500,7 @@ public class SteamNetworkHandler
 
 			this.initialized = true;
 			this.friends.updateFriends();
+            this.requestLobbies(null);
 
 			return true;
 		}

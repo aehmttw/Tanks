@@ -35,8 +35,9 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     {
         Game.screen = new ScreenAddSavedItem(this, (b) ->
         {
-            this.setTarget(((ItemBullet) b.item).bullet);
             Game.screen = this;
+            this.setupLayoutParameters();
+            this.setTarget(((ItemBullet) b.item).bullet);
         }, "Bullet", ItemBullet.class);
     }
     );
@@ -64,6 +65,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             {
                 Bullet b = Game.registryBullet.bulletEntries.get(bulletTypes.selectedOption).bullet.newInstance();
                 target.get().clonePropertiesTo(b);
+                this.setupLayoutParameters();
                 setTarget(b);
             }
             catch (Exception e)
@@ -243,30 +245,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             Bullet bullet = screen.target.get();
 
             if (!Game.game.window.drawingShadow)
-            {
-                for (Effect e : this.effects)
-                {
-                    e.update();
-
-                    if (e.age > e.maxAge)
-                        removeEffects.add(e);
-                }
-
-                effects.removeAll(removeEffects);
-                removeEffects.clear();
-
-                for (Effect f : this.effects)
-                {
-                    f.draw();
-                }
-
-                for (Effect f : this.effects)
-                {
-                    f.drawGlow();
-                }
-            }
-
-            bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, rand, Player.default_primary, Player.default_secondary);
+                bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, Player.default_primary, Player.default_secondary);
 
             super.drawUIElements();
 
@@ -403,29 +382,9 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             Bullet bullet = screen.target.get();
             if (!Game.game.window.drawingShadow)
             {
-                for (Effect e : this.effects)
-                {
-                    e.update();
-
-                    if (e.age > e.maxAge)
-                        removeEffects.add(e);
-                }
-
-                effects.removeAll(removeEffects);
-                removeEffects.clear();
-
-                for (Effect f : this.effects)
-                {
-                    f.draw();
-                }
-
-                for (Effect f : this.effects)
-                {
-                    f.drawGlow();
-                }
+                bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, Player.default_primary, Player.default_secondary);
             }
 
-            bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, rand, Player.default_primary, Player.default_secondary);
             super.draw();
 
         }

@@ -109,7 +109,7 @@ public class Tanks
                     else if (f.exists())
                     {
                         String hash = Game.readHashFromFile();
-                        if (!hash.equals(""))
+                        if (!hash.equals("") && !hash.equals("release"))
                             Game.game.window.buildDate = "Build hash: " + hash;
                     }
                 }

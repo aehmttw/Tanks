@@ -5,6 +5,8 @@ import com.codedisaster.steamworks.SteamFriendsCallback;
 import com.codedisaster.steamworks.SteamID;
 import tanks.Drawing;
 import tanks.Game;
+import tanks.Panel;
+import tanks.gui.ScreenElement;
 import tanks.gui.screen.ScreenOverlayChat;
 import tanks.translation.Translation;
 
@@ -25,9 +27,8 @@ public class FriendsMixin
 		public void onGameLobbyJoinRequested(SteamID steamIDLobby, SteamID steamIDFriend)
 		{
 			Game.steamLobbyInvite = Long.parseLong(steamIDLobby.toString(), 16);
-			Drawing.drawing.playSound("join.ogg", 2f);
-			ScreenOverlayChat.addChat(Translation.translate("\u00A7000200000255Head over to the 'Join a party' menu under 'Multiplayer' to join the party you were invited to!"));
-		}
+            Panel.notifications.add(new ScreenElement.Notification("Head over to the 'Join a party' menu under 'Multiplayer' to join the party you were invited to!", 2000, 400));
+        }
 
 		@Override
 		public void onPersonaStateChange(SteamID steamID, SteamFriends.PersonaChange change)

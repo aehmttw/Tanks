@@ -127,12 +127,12 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         dark_fire.glowSize = 6;
     }
 
-    public double drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects)
+    public double drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, ArrayList<Effect> removeEffects)
     {
-        return drawForInterface(x, width, y, size, effects, 1, true);
+        return drawForInterface(x, width, y, size, effects, removeEffects, 1, true);
     }
 
-    public double drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, double stretch, boolean bullet)
+    public double drawForInterface(double x, double width, double y, double size, ArrayList<Effect> effects, ArrayList<Effect> removeEffects, double stretch, boolean bullet)
     {
         double max = 0;
 
@@ -152,6 +152,27 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         for (Trail t : this.trailEffects)
         {
             t.drawForInterface(start, end, y, size, max);
+        }
+
+        for (Effect e : effects)
+        {
+            e.update();
+
+            if (e.age > e.maxAge)
+                removeEffects.add(e);
+        }
+
+        effects.removeAll(removeEffects);
+        removeEffects.clear();
+
+        for (Effect f : effects)
+        {
+            f.draw();
+        }
+
+        for (Effect f : effects)
+        {
+            f.drawGlow();
         }
 
         if (bullet)
@@ -174,13 +195,15 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
             Effect e = Effect.createNewEffect(start, y, Effect.EffectType.interfacePiece);
             e.maxAge *= this.particleLifespan;
 
-            e.setColorWithNoise(this.particleColor, 50);
-            e.setGlowColor(this.glowColor);
+            e.setColorsFromBullet(DefaultItems.basic_bullet.bullet, this.particleColor);
+            e.glowColor.alpha = this.particleGlow * 255;
+            e.size = 0;
 
             if (this.particleGlow <= 0)
                 e.enableGlow = false;
 
-            e.glowColor.alpha = 255 * this.particleGlow;
+            if (this.overrideGlowColor)
+                e.setGlowColor(this.glowColor, this.particleGlow * 255);
 
             e.setPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Bullet.bullet_size / 50.0 * this.particleSpeed);
             e.vX += 3.125 * l / fullLength;

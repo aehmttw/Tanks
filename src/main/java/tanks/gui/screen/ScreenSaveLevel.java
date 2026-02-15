@@ -172,6 +172,11 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
     }, "View level page on Steam");
 
+    public Button favorite = new Button(Drawing.drawing.interfaceSizeX - 395, Drawing.drawing.interfaceSizeY - 200, this.objHeight, this.objHeight, "", () ->
+    {
+        Game.steamNetworkHandler.workshop.workshop.addItemToFavorites((int) ScreenInviteSteamFriends.game_id, workshopDetails.getPublishedFileID());
+    }, "");
+
     public ScreenSaveLevel(String name, String level, Screen s)
     {
         this(name, level, s, false);

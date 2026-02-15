@@ -188,7 +188,7 @@ public abstract class Item extends GameObject
 			this.cooldown = this.item.cooldownBase;
 
 			if (Crusade.crusadeMode && Crusade.currentCrusade != null && this.player != null)
-				Crusade.currentCrusade.getCrusadePlayer(this.player).addItemUse(this);
+				Crusade.currentCrusade.getCrusadePlayer(this.player).addItemUse(this, 1);
 		}
 
 

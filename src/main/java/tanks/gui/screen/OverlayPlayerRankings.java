@@ -48,7 +48,11 @@ public class OverlayPlayerRankings
         double height = (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale;
         double width = Math.min(time / delay, 1) * 400 - (minFrac * 300);
 
-        double x = Drawing.drawing.interfaceSizeX + 200 - width + extraWidth - minFrac * 150;
+        double mobileMargin = Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+        if (Game.game.window.touchscreen)
+            mobileMargin += 65;
+
+        double x = Drawing.drawing.interfaceSizeX + 200 - width + extraWidth - minFrac * 150 - mobileMargin;
         if (Drawing.drawing.getInterfaceMouseX() > x - width / 2 || !initialAddDone)
         {
             minimized = false;
@@ -56,8 +60,8 @@ public class OverlayPlayerRankings
         }
 
         Drawing.drawing.setColor(0, 0, 0, Math.max(0, 127 * Math.min(1, (time * 10) / 200) * Math.min(s / 25, 1)));
-        Drawing.drawing.fillInterfaceRect(x, Drawing.drawing.interfaceSizeY / 2,
-                width, height);
+        Drawing.drawing.fillInterfaceRect(x + mobileMargin / 2, Drawing.drawing.interfaceSizeY / 2,
+                width + mobileMargin, height);
 
         double c = time - delay - 15;
 

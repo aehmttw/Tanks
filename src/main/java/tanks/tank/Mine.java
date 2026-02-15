@@ -2,8 +2,6 @@ package tanks.tank;
 
 import basewindow.Color;
 import tanks.*;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemMine;
 import tanks.network.event.EventMineChangeTimer;
@@ -101,21 +99,6 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
             }
 
             idMap.put(this.networkID, this);
-        }
-
-        for (IFixedMenu m : ModAPI.menuGroup)
-        {
-            if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.mines_placed))
-            {
-                if (((Scoreboard) m).players.isEmpty())
-                    ((Scoreboard) m).addTeamScore(this.team, 1);
-
-                else if (this.tank instanceof TankPlayer)
-                    ((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
-
-                else if (this.tank instanceof TankPlayerRemote)
-                    ((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-            }
         }
     }
 
@@ -295,7 +278,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
     public static void drawRange2D(double posX, double posY, double size, boolean inverted)
     {
-        int faces = (int) (size + 5);
+        int faces = Math.min((int) (size + 5), 10000);
         double r = Drawing.drawing.currentColorR;
         double g = Drawing.drawing.currentColorG;
         double b = Drawing.drawing.currentColorB;

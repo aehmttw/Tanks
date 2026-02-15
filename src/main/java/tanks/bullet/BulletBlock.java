@@ -290,7 +290,6 @@ public class BulletBlock extends BulletArc
             pitch *= frac4;
             yaw = yaw * frac4 + this.finalAngle * (1 - frac4);
 
-//        System.out.println(pitch);
             rotations[0].angle = -yaw;
             rotations[1].angle = -pitch;
             Drawing.drawing.drawModel(block, this.posX, this.posY, this.posZ, size, size, size, rotations);

@@ -113,6 +113,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
     public double zoom = 1;
     public int validZoomFingers = 0;
 
+    public boolean invertOrthographic = false;
+
     public HashSet<String> prevTankMusics = new HashSet<>();
     public HashSet<String> tankMusics = new HashSet<>();
     public HashSet<String> overlayMusics = new HashSet<>();
@@ -220,6 +222,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         () -> setMode(EditorMode.camera),
         () -> this.currentMode == EditorMode.camera
         , "Adjust camera (%s)", Game.game.input.editorCamera
+    );
+
+    EditorButton togglePerspective = new EditorButton(buttons.topRight, "perspective.png", 50, 50,
+            () -> { this.invertOrthographic = !this.invertOrthographic; },
+            () -> false,
+            "Change perspective (%s)", Game.game.input.editorChangePerspective
     );
 
     EditorButton select = new EditorButton(buttons.topLeft, "select.png", 40, 40,
@@ -620,6 +628,17 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             }
         }
 
+
+        if (!Game.enable3d)
+            this.buttons.topRight.remove(this.togglePerspective);
+        else
+        {
+            if (Game.orthographicView != this.invertOrthographic)
+                this.togglePerspective.image = "icons/orthographic.png";
+            else
+                this.togglePerspective.image = "icons/perspective.png";
+        }
+
         this.buttons.bottomRight.removeAll(this.shortcutButtons);
 
         if (this.currentMode == EditorMode.build)
@@ -663,6 +682,12 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         {
             Game.game.input.editorSelect.invalidate();
             this.setMode(this.previousMode);
+        }
+
+        if (Game.game.input.editorChangePerspective.isValid())
+        {
+            Game.game.input.editorChangePerspective.invalidate();
+            this.invertOrthographic = !this.invertOrthographic;
         }
 
         this.buttons.refreshButtons();
@@ -1194,7 +1219,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
             if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY)
             {
-                if (selectedTiles[x][y] && (validLeft || validRight) && !(currentPlaceable == Placeable.playerTank && this.movePlayer))
+                if (selectedTiles[x][y] && (validLeft || validRight) && !(currentPlaceable == Placeable.playerTank && this.movePlayer && validLeft))
                 {
                     double ox = mousePlaceable.posX;
                     double oy = mousePlaceable.posY;
@@ -1322,6 +1347,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             }
             else if (tool == BuildTool.circle)
             {
+                lx++;
+                hx++;
+                ly++;
+                hy++;
+
                 for (double t = 0; t < Math.PI * 2; t += Math.PI / Math.max(width, length) / 2)
                 {
                     int x = (int) (lx + Math.cos(t) * 0.5 * width + width / 2);
@@ -1330,7 +1360,6 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                     if (y == hy) y--;
 
                     s.xys.add(new XY(x, y));
-
                 }
             }
             else if (tool == BuildTool.line)
@@ -2023,6 +2052,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
     @Override
     public void draw()
     {
+        Game.game.window.orthographic = Game.orthographicView != invertOrthographic;
+
         if (Level.isDark())
             this.fontBrightness = 255;
         else

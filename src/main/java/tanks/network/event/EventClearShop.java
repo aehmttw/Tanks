@@ -31,8 +31,6 @@ public class EventClearShop extends PersonalEvent
     {
         if (Game.screen instanceof ScreenGame)
         {
-            ((ScreenGame) Game.screen).npcShopList = new ButtonList(new ArrayList<>(), 0, 0, (int) ScreenGame.shopOffset, -30);
-
             ((ScreenGame) Game.screen).shopList = new ButtonList(new ArrayList<>(), 0, 0, (int) ScreenGame.shopOffset, -30);
             ((ScreenGame) Game.screen).shopItemButtons = new ArrayList<>();
             ((ScreenGame) Game.screen).shop = new ArrayList<>();

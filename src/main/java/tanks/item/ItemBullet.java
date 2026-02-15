@@ -114,9 +114,8 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
 						this.fractionUsed--;
 					}
 
-					// TODO: make this work with fraction used, involves fixing the hits too
 					if (Crusade.crusadeMode && Crusade.currentCrusade != null && this.player != null)
-						Crusade.currentCrusade.getCrusadePlayer(this.player).addItemUse(this);
+						Crusade.currentCrusade.getCrusadePlayer(this.player).addItemUse(this, useAmt);
 
 					if (this.stackSize <= 0 && !unlimited)
 						this.destroy = true;

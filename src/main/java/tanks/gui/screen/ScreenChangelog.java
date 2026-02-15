@@ -479,82 +479,50 @@ public class ScreenChangelog extends Screen
                     }
             );
 
-            new Changelog("v1.6.a", new String[]
+            new Changelog("v1.6.0", new String[]
                     {
-                            "*What's new in Tanks v1.6.a:\n\n" +
+                            "*What's new in Tanks v1.6.0:\n" +
+                                    "\n" +
+                                    "*Customization:\n\n" +
+                                    "Added configurable player tank builds\n" +
+                                    "Revamped item editor\n" +
                                     "Added an enormous number of new bullet options\n" +
-                                    "Improved item editor\n" +
-                                    "Improved the tank editor for spawned and transformed tanks\n" +
-                                    "Level editor menu UI improvements\n" +
+                                    "Improved the level, tank, and crusade editors\n" +
+                                    "Added many new tank emblems and skins\n" +
+                                    "\n" +
+                                    "*New additions:\n\n" +
                                     "Added beat blocks\n" +
-                                    "Made fireworks prettier and more performant\n" +
-                                    "Updated music\n" +
-                                    "Added third color for players\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    }
-            );
+                                    "Added block and air strike bullet types\n" +
+                                    "New beat block arcade mode minigame\n" +
+                                    "Added best run display option for speedrunning\n" +
+                                    "Added new circular hotbar option\n" +
+                                    "Added new orthographic camera perspective\n",
 
-            new Changelog("v1.6.b", new String[]
-                    {
-                            "*What's new in Tanks v1.6.b:\n\n" +
-                                    "Added block bullets\n" +
-                                    "Added beat arcade mode minigame\n" +
-                                    "Added new editor tools\n" +
+                                    "*Multiplayer:\n\n" +
+                                    "Added Steam Workshop\n" +
+                                    "Added public Steam parties and friend invites\n" +
+                                    "Bot players can now be added to parties\n" +
+                                    "Players can now be muted from chat\n" +
+                                    "Help your friends get ready for multiplayer games\n" +
+                                    "Improved tank spectating\n" +
+                                    "Added new versus mode rankings screen\n" +
+                                    "\n" +
+                                    "*More:\n\n" +
+                                    "Updated music\n" +
+                                    "Fireworks are prettier\n" +
+                                    "Players can now pick a third color\n" +
                                     "Added buttons to open file directories\n" +
                                     "Bug fixes and other minor improvements\n"
                     }
             );
 
-            new Changelog("v1.6.c", new String[]
+            new Changelog("v1.6.1", new String[]
                     {
-                            "*What's new in Tanks v1.6.c:\n\n" +
-                                    "Added configurable player tank builds\n" +
-                                    "Added Steam Workshop support\n" +
-                                    "Added public Steam parties\n" +
-                                    "New crusade editor\n" +
-                                    "Added option to add bot players to parties\n" +
-                                    "Added best run display option for speedrunning\n" +
-                                    "Added new versus mode rankings screen\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    }
-            );
-
-            new Changelog("v1.6.d", new String[]
-                    {
-                            "*What's new in Tanks v1.6.d:\n\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    }
-            );
-
-            new Changelog("v1.6.e", new String[]
-                    {
-                            "*What's new in Tanks v1.6.e:\n\n" +
-                                    "Added new circular hotbar option\n" +
-                                    "Improvements and new UI for tank spectating\n" +
-                                    "New emblems added, made by the Tanks community!\n" +
-                                    "Aim indicators for bullets now reflect size, range, type, etc...\n" +
-                                    "Added hotkeys to instantly use tank abilities\n" +
-                                    "Abilities can now be scrolled to like other hotbar slots\n" +
-                                    "Teleporter orbs now have trails\n" +
-                                    "Improved physics of arc and block bullets\n" +
-                                    "Several performance improvements\n" +
-                                    "Bug fixes and other minor improvements\n"
-                    }
-            );
-
-            new Changelog("v1.6.f", new String[]
-                    {
-                            "*What's new in Tanks v1.6.f:\n\n" +
-                                    "Added bullet effect and trail editor\n" +
-                                    "Item icons can now be recolored\n" +
-                                    "Mines can now be recolored\n" +
-                                    "Added option for bullets to destroy blocks on impact\n" +
-                                    "Added ability for explosions to stun tanks\n" +
-                                    "The party host can now mute player chat for players\n" +
-                                    "Added ability to nudge players in a party to click 'ready'\n" +
-                                    "Added indicator for ready players on top of their tanks\n" +
-                                    "New emblems and skins added, made by the Tanks community!\n" +
-                                    "Lots of major behind-the-scenes refactoring\n" +
+                            "*What's new in Tanks v1.6.1:\n\n" +
+                                    "Joining parties during a level no longer kicks you\n" +
+                                    "Added option to show public party count on play screen\n" +
+                                    "Added 'Max extra health' to explosions\n" +
+                                    "Fixed a crash in party crusades\n" +
                                     "Bug fixes and other minor improvements\n"
                     }
             );

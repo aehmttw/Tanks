@@ -98,6 +98,7 @@ Parth Iyer (ghostlypi)<br>
 brodiscool0902 on Discord<br>
 Blimpdxmk2<br>
 NekoSora<br>
+Comet<br>
 
 ### Supporters:
 SapphireDrew<br>

@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+import tanks.network.SteamNetworkHandler;
 
 public class ScreenPlay extends Screen
 {
@@ -41,6 +42,8 @@ public class ScreenPlay extends Screen
 			singleplayer.posY -= this.objYSpace / 2;
 			multiplayer.posY -= this.objYSpace / 2;
 		}
+
+        Game.steamNetworkHandler.addPartyCountSubtext(multiplayer);
 	}
 
 	@Override

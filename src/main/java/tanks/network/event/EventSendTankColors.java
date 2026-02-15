@@ -4,8 +4,10 @@ import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
+import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
+import tanks.network.ServerHandler;
 
 public class EventSendTankColors extends PersonalEvent
 {
@@ -46,12 +48,13 @@ public class EventSendTankColors extends PersonalEvent
     {
         if (this.clientID != null)
         {
-            synchronized (ScreenPartyLobby.connections)
+            synchronized (ScreenPartyHost.server.connections)
             {
-                for (Player p: Game.players)
+                for (ServerHandler sh: ScreenPartyHost.server.connections)
                 {
-                    if (p.clientID.equals(this.clientID))
+                    if (sh.clientID.equals(this.clientID) && sh.player != null)
                     {
+                        Player p = sh.player;
                         p.color.set(this.color1);
                         p.color2.set(this.color2);
                         p.color3.set(this.color3);

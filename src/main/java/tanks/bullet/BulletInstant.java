@@ -351,13 +351,13 @@ public class BulletInstant extends Bullet
             Drawing.drawing.addInterfaceVertex(start + mul * Math.cos(i / 20.0 * Math.PI) * size, y + mul * Math.sin(i / 20.0 * Math.PI) * size, 0);
             Drawing.drawing.addInterfaceVertex(start + mul * Math.cos((i + 1) / 20.0 * Math.PI) * size, y + mul * Math.sin((i + 1) / 20.0 * Math.PI) * size, 0);
             Drawing.drawing.setColor(cr, cg, cb, ca, this.effect.glowGlowy ? 1 : 0);
-            Drawing.drawing.addVertex(start, y, 0);
+            Drawing.drawing.addInterfaceVertex(start, y, 0);
 
             Drawing.drawing.setColor(cr, cg, cb, 0, 1);
             Drawing.drawing.addInterfaceVertex(start + l + mul * Math.cos((i + 20) / 20.0 * Math.PI) * size, y + mul * Math.sin((i + 20) / 20.0 * Math.PI) * size, 0);
             Drawing.drawing.addInterfaceVertex(start + l + mul * Math.cos((i + 21) / 20.0 * Math.PI) * size, y + mul * Math.sin((i + 21) / 20.0 * Math.PI) * size, 0);
             Drawing.drawing.setColor(cr, cg, cb, ca, this.effect.glowGlowy ? 1 : 0);
-            Drawing.drawing.addVertex(start + l, y, 0);
+            Drawing.drawing.addInterfaceVertex(start + l, y, 0);
         }
         Game.game.window.shapeRenderer.setBatchMode(false, false, false, this.effect.glowGlowy);
 

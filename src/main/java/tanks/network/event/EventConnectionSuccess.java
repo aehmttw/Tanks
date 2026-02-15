@@ -19,8 +19,7 @@ public class EventConnectionSuccess extends PersonalEvent
 		if (this.clientID == null)
 		{
 			Game.screen = new ScreenPartyLobby();
-            ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () -> Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText)));
-			Game.eventsOut.add(new EventSendTankColors(Game.player));
+            Game.eventsOut.add(new EventSendTankColors(Game.player));
 		}
 	}
 

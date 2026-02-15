@@ -24,7 +24,7 @@ public class ScreenOptionsWindow extends Screen
             Game.pauseOnLostFocus = !Game.pauseOnLostFocus;
             pauseOnLostFocus.setText("Pause on lost focus: ", Game.pauseOnLostFocus ? ScreenOptions.onText : ScreenOptions.offText);
         }
-    }, Translation.translate("Pauses the game when the---window loses focus"));
+    }, Translation.translate("Pauses the game when another window---is clicked, while playing"));
 
     Button showStats = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {

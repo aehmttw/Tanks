@@ -6,8 +6,6 @@ import tanks.bullet.Bullet;
 import tanks.bullet.BulletAirStrike;
 import tanks.bullet.BulletArc;
 import tanks.bullet.DefaultItems;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.Hotbar;
@@ -503,7 +501,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (Crusade.crusadeMode && Crusade.currentCrusade != null)
         {
             CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-            cp.addItemUse(m.item);
+            cp.addItemUse(m.item, 1);
         }
     }
 
@@ -597,7 +595,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (Crusade.crusadeMode && Crusade.currentCrusade != null)
         {
             CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-            cp.addItemUse(b.item);
+            cp.addItemUse(b.item, b.frameDamageMultipler);
         }
     }
 
@@ -617,17 +615,6 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     {
         if (Crusade.crusadeMode)
             this.player.remainingLives--;
-
-        for (IFixedMenu m : ModAPI.menuGroup)
-        {
-            if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.deaths))
-            {
-                if (((Scoreboard) m).players.isEmpty())
-                    ((Scoreboard) m).addTeamScore(this.team, 1);
-                else
-                    ((Scoreboard) m).addPlayerScore(this.player, 1);
-            }
-        }
 
         if (Game.screen instanceof ScreenGame)
         {

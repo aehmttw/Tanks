@@ -47,6 +47,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 	public boolean joined = false;
 	public boolean closed = false;
 
+    public EventSendClientDetails pendingJoin = null;
+
 	public ServerHandler(Server s)
 	{
 		this.server = s;
@@ -110,27 +112,39 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 		this.queuedEventIndices.add(Game.eventsOut.size());
 	}
 
-	public void addEvents(ArrayList<INetworkEvent> events)
+    public void addEvents(ArrayList<INetworkEvent> events)
+    {
+        this.addEvents(events, false);
+    }
+
+    public void addEvents(ArrayList<INetworkEvent> events, boolean chatOnly)
 	{
 		synchronized (this.events)
 		{
 			int j = 0;
 			for (int i = 0; i < events.size(); i++)
 			{
-				while (j < this.queuedEventIndices.size() && this.queuedEventIndices.get(j) == i)
-				{
-					this.events.add(this.queuedEvents.get(j));
-					j++;
-				}
+                if (!chatOnly)
+                {
+                    while (j < this.queuedEventIndices.size() && this.queuedEventIndices.get(j) == i)
+                    {
+                        this.events.add(this.queuedEvents.get(j));
+                        j++;
+                    }
+                }
 
-				this.events.add(events.get(i));
+                if (!chatOnly || events.get(j) instanceof IChatEvent)
+				    this.events.add(events.get(i));
 			}
 
-			while (j < this.queuedEventIndices.size())
-			{
-				this.events.add(this.queuedEvents.get(j));
-				j++;
-			}
+            if (!chatOnly)
+            {
+                while (j < this.queuedEventIndices.size())
+                {
+                    this.events.add(this.queuedEvents.get(j));
+                    j++;
+                }
+            }
 
 			this.queuedEvents.clear();
 			this.queuedEventIndices.clear();
@@ -213,8 +227,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 	public synchronized void sendEvent(INetworkEvent e, boolean flush)
 	{
-		eventFrequencies.putIfAbsent(e.getClass().getSimpleName(), 0);
-		eventFrequencies.put(e.getClass().getSimpleName(), eventFrequencies.get(e.getClass().getSimpleName()) + 1);
+        String n = e.getClass().getSimpleName();
+        if (!eventFrequencies.containsKey(n))
+    		eventFrequencies.put(n, 0);
+
+		eventFrequencies.put(n, eventFrequencies.get(n) + 1);
 
 		if (steamID != null)
 		{

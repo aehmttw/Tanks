@@ -171,7 +171,11 @@ public class ScreenOverlayIconColors
         Button first = this.colorButtons.buttons.get(0);
         Button last = this.colorButtons.buttons.get(this.colorButtons.buttons.size() - 1);
 
-        Drawing.drawing.setColor(0, 0, 0);
+        if (Level.isDark())
+            Drawing.drawing.setColor(255, 255, 255);
+        else
+            Drawing.drawing.setColor(0, 0, 0);
+
         Drawing.drawing.setInterfaceFontSize(this.selectorScreen.textSize / 2);
         Drawing.drawing.displayInterfaceText(first.posX, first.posY - first.sizeY * 0.70, "Change icon");
 
@@ -180,11 +184,15 @@ public class ScreenOverlayIconColors
             Drawing.drawing.displayInterfaceText(last.posX, first.posY - first.sizeY * 0.70, "Reset colors");
             Drawing.drawing.displayInterfaceText(this.selectorScreen.centerX, first.posY - first.sizeY * 0.70, "Icon layers");
 
-            Drawing.drawing.setColor(0, 0, 0, 64);
-            Drawing.drawing.fillRect((first.posX + this.colorButtons.buttons.get(1).posX) / 2,
+            if (Level.isDark())
+                Drawing.drawing.setColor(255, 255, 255, 64);
+            else
+                Drawing.drawing.setColor(0, 0, 0, 64);
+
+            Drawing.drawing.fillInterfaceRect((first.posX + this.colorButtons.buttons.get(1).posX) / 2,
                     first.posY, 2, first.sizeY);
 
-            Drawing.drawing.fillRect((last.posX + this.colorButtons.buttons.get(this.colorButtons.buttons.size() - 2).posX) / 2,
+            Drawing.drawing.fillInterfaceRect((last.posX + this.colorButtons.buttons.get(this.colorButtons.buttons.size() - 2).posX) / 2,
                     first.posY, 2, first.sizeY);
 
         }

@@ -4,11 +4,13 @@ import basewindow.BaseFile;
 import tanks.Game;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.jar.JarFile;
 
@@ -21,6 +23,7 @@ public class ExtensionRegistry
 		Game.extensionRegistry.extensions.clear();
 
 		String path = Game.homedir + Game.extensionRegistryPath;
+        HashMap<String, Class<? extends Extension>> loadedExtensionClasses = new HashMap<>();
 
 		if (Game.enableExtensions)
 		{
@@ -41,10 +44,14 @@ public class ExtensionRegistry
 					if (extensionLine[0].charAt(0) == '#')
 						continue;
 
-					if (extensionLine.length > 1)
-						loadExtension(extensionLine[0], extensionLine[1]);
+                    Class<? extends Extension> c;
+                    if (extensionLine.length > 1)
+						c = loadExtensionClass(extensionLine[0], extensionLine[1]);
 					else
-						loadExtension(extensionLine[0], null);
+						c = loadExtensionClass(extensionLine[0], null);
+
+                    if (c != null)
+                        loadedExtensionClasses.put(extensionLine[0], c);
 				}
 
 				in.stopReading();
@@ -62,9 +69,20 @@ public class ExtensionRegistry
 
 					for (String file : files)
 					{
-						loadExtension(file.substring(file.replace("\\", "/").lastIndexOf("/") + 1), null);
+                        String j = file.substring(file.replace("\\", "/").lastIndexOf("/") + 1);
+                        Class<? extends Extension> c = loadExtensionClass(j, null);
+                        if (c != null)
+                            loadedExtensionClasses.put(j, c);
 					}
 				}
+
+                for (String s: loadedExtensionClasses.keySet())
+                {
+                    Extension e = loadedExtensionClasses.get(s).getConstructor().newInstance();
+                    e.jarFile = new JarFile(Game.homedir + Game.extensionDir + s);
+                    this.extensions.add(e);
+                    System.out.println("loaded extension: " + e.name);
+                }
 			}
 			catch (Exception e)
 			{
@@ -73,45 +91,42 @@ public class ExtensionRegistry
 		}
 	}
 
-	public void loadExtension(String jar, String main) throws Exception
-	{
-		ClassLoader loader = new URLClassLoader(new URL[]{new File(Game.homedir + Game.extensionDir + jar).toURI().toURL()});
+    public Class<? extends Extension> loadExtensionClass(String jar, String main) throws Exception
+    {
+        ClassLoader loader = new URLClassLoader(new URL[]{new File(Game.homedir + Game.extensionDir + jar).toURI().toURL()});
 
-		if (main != null)
-		{
-			JarFile f = new JarFile(Game.homedir + Game.extensionDir + jar);
-			Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(main);
-			Extension e = clasz.getConstructor().newInstance();
-			e.jarFile = f;
-			this.extensions.add(e);
-		}
-		else
-		{
-			try
-			{
-				JarFile f = new JarFile(Game.homedir + Game.extensionDir + jar);
-				InputStream i = f.getInputStream(f.getEntry("extension.txt"));
+        if (main != null)
+        {
+            Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(main);
+            return clasz;
+        }
+        else
+        {
+            try
+            {
+                JarFile f = new JarFile(Game.homedir + Game.extensionDir + jar);
+                InputStream i = f.getInputStream(f.getEntry("extension.txt"));
 
-				if (i != null)
-				{
-					try
-					{
-						Scanner s = new Scanner(new InputStreamReader(i));
-						Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(s.nextLine());
-						Extension e = clasz.getConstructor().newInstance();
-						e.jarFile = f;
-						this.extensions.add(e);
-					}
-					catch (Exception e)
-					{
-						System.err.println("Failed to load extension " + jar);
-						e.printStackTrace();
-					}
-				}
-			}
-			catch (Exception ignored) { }
-		}
-	}
+                if (i != null)
+                {
+                    try
+                    {
+                        Scanner s = new Scanner(new InputStreamReader(i));
+                        Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(s.nextLine());
+                        return clasz;
+                    }
+                    catch (Exception e)
+                    {
+                        System.err.println("Failed to load extension into classpath " + jar);
+                        e.printStackTrace();
+                    }
+                }
+            }
+            catch (Exception ignored) { }
+        }
+
+        return null;
+    }
 
 	public void initRegistry()
 	{

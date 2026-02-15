@@ -7,6 +7,7 @@ import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
 import tanks.hotbar.Hotbar;
+import tanks.network.SteamNetworkHandler;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 import tanks.tank.Turret;
@@ -251,7 +252,8 @@ public class ScreenOptions extends Screen
 			f.println("steam_visibility=" + Game.steamVisibility.ordinal());
 			f.println("chat_filter=" + Game.enableChatFilter);
 			f.println("auto_ready=" + Game.autoReady);
-			f.println("anticheat=" + TankPlayerRemote.checkMotion);
+            f.println("show_public_party_count=" + SteamNetworkHandler.showPublicPartyCount);
+            f.println("anticheat=" + TankPlayerRemote.checkMotion);
 			f.println("anticheat_weak=" + TankPlayerRemote.weakTimeCheck);
 			f.println("disable_party_friendly_fire=" + Game.disablePartyFriendlyFire);
 			f.println("party_countdown=" + Game.partyStartTime);
@@ -408,28 +410,11 @@ public class ScreenOptions extends Screen
 						break;
 					case "perspective":
 						ScreenOptionsGraphics.viewNo = Integer.parseInt(optionLine[1]);
-						switch (ScreenOptionsGraphics.viewNo)
-						{
-							case 0:
-								Game.angledView = false;
-								Game.followingCam = false;
-								Game.firstPerson = false;
-								break;
-							case 1:
-								Game.angledView = true;
-								Game.followingCam = false;
-								Game.firstPerson = false;
-								break;
-							case 2:
-								Game.angledView = false;
-								Game.followingCam = true;
-								Game.firstPerson = false;
-								break;
-							case 3:
-								Game.angledView = false;
-								Game.followingCam = true;
-								Game.firstPerson = true;
-						}
+
+                        Game.angledView = ScreenOptionsGraphics.viewNo == 1;
+                        Game.orthographicView = ScreenOptionsGraphics.viewNo == 2;
+                        Game.followingCam = ScreenOptionsGraphics.viewNo >= 3;
+                        Game.firstPerson = ScreenOptionsGraphics.viewNo == 4;
 						break;
 					case "tank_textures":
 						Game.tankTextures = Boolean.parseBoolean(optionLine[1]);
@@ -476,6 +461,9 @@ public class ScreenOptions extends Screen
 					case "auto_ready":
 						Game.autoReady = Boolean.parseBoolean(optionLine[1]);
 						break;
+                    case "show_public_party_count":
+                        SteamNetworkHandler.showPublicPartyCount = Boolean.parseBoolean(optionLine[1]);
+                        break;
 					case "anticheat":
 						TankPlayerRemote.checkMotion = Boolean.parseBoolean(optionLine[1]);
 						break;

@@ -21,7 +21,9 @@ public class ScreenParty extends Screen
 
 		this.music = "menu_2.ogg";
 		this.musicID = "menu";
-	}
+
+        Game.steamNetworkHandler.addPartyCountSubtext(join);
+    }
 	
 	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay());
 	

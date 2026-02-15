@@ -134,6 +134,17 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
         this.back.draw();
         this.addItem.draw();
 
+        for (int i = Math.min((this.shopList.page + 1) * this.shopList.rows * this.shopList.columns, shopList.buttons.size()) - 1; i >= this.shopList.page * this.shopList.rows * this.shopList.columns; i--)
+        {
+            Button b = this.shopList.buttons.get(i);
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
+            int ss = editor.level.shop.get(i).itemStack.stackSize;
+
+            if (ss > 0)
+                Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY, b.posY + b.sizeY * 0.325, "x" + ss, false);
+        }
+
         if (this.shopList.reorder)
             this.reorderItems.setText("Stop reordering");
         else

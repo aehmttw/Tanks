@@ -109,7 +109,10 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         else if (type == EffectType.blockMarker)
             this.maxAge = 20;
         else if (type == EffectType.circleMarker)
+        {
+            this.force = true;
             this.maxAge = 20;
+        }
         else if (type == EffectType.explosion)
         {
             this.maxAge = 20;
@@ -158,6 +161,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             this.maxAge = 80 + Math.random() * 40;
             this.size = Math.random() * 5 + 5;
             this.distance = Math.random() * 50 + 25;
+            this.force = true;
         }
         else if (type == EffectType.healing)
             this.maxAge = 21;

@@ -1,6 +1,5 @@
 package tanks.bullet;
 
-import tanks.item.DefaultItemIcons;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
 import tanks.item.ItemShield;
@@ -272,6 +271,7 @@ public class DefaultItems
         air_strike.bullet.bounces = 0;
         air_strike.bullet.maxLiveBullets = 5;
         air_strike.bullet.effect = BulletEffect.fire.getCopy();
+        air_strike.bullet.recoil = 0;
         air_strike.name = Translation.translate("Air strike");
         air_strike.setAutomaticIcon();
 

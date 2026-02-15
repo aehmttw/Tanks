@@ -52,10 +52,8 @@ dependencies {
 //    implementation("it.unimi.dsi:fastutil-core:8.5.16")
 
     //Steamworks4j (Use files in libs folder until version 10 is available on mavenCentral
-    implementation(files("libs/steamworks4j-1.10.0-SNAPSHOT.jar"))
-    implementation(files("libs/steamworks4j-lwjgl3-1.10.0-SNAPSHOT.jar"))
-//    api("com.code-disaster.steamworks4j:steamworks4j:1.10.0-SNAPSHOT")
-//    api("com.code-disaster.steamworks4j:steamworks4j-lwjgl3:1.10.0-SNAPSHOT")
+    implementation("com.code-disaster.steamworks4j:steamworks4j:1.10.0")
+    implementation("com.code-disaster.steamworks4j:steamworks4j-lwjgl3:1.10.0")
 }
 
 group = "com.aehmttw"

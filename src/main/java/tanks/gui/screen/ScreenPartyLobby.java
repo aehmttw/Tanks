@@ -8,7 +8,6 @@ import tanks.gui.ChatMessage;
 import tanks.network.Client;
 import tanks.network.ConnectedPlayer;
 import tanks.network.SynchronizedList;
-import tanks.network.event.EventChat;
 import tanks.tank.Tank;
 import tanks.translation.Translation;
 

@@ -30,8 +30,8 @@ public class CrusadePlayer
 
     public HashMap<String, Integer> tankKills = new HashMap<>();
     public HashMap<String, Integer> tankDeaths = new HashMap<>();
-    public HashMap<String, Integer> itemUses = new HashMap<>();
-    public HashMap<String, Integer> itemHits = new HashMap<>();
+    public HashMap<String, Double> itemUses = new HashMap<>();
+    public HashMap<String, Double> itemHits = new HashMap<>();
 
     public void addKill(Tank t)
     {
@@ -61,20 +61,19 @@ public class CrusadePlayer
         }
     }
 
-    public void addItemUse(Item.ItemStack<?> i)
+    public void addItemUse(Item.ItemStack<?> i, double frac)
     {
-        this.addItemStat(this.itemUses, i);
+        this.addItemStat(this.itemUses, i, frac);
     }
 
-    //TODO: find out a way to support fractional numbers...
-    public void addItemHit(Item.ItemStack<?> i)
+    public void addItemHit(Item.ItemStack<?> i, double frac)
     {
-        this.addItemStat(this.itemHits, i);
+        this.addItemStat(this.itemHits, i, frac);
     }
 
-    public int getItemUses(String i)
+    public double getItemUses(String i)
     {
-        Integer n = this.itemUses.get(i);
+        Double n = this.itemUses.get(i);
 
         if (n == null)
             return 0;
@@ -82,9 +81,9 @@ public class CrusadePlayer
         return n;
     }
 
-    public int getItemHits(String i)
+    public double getItemHits(String i)
     {
-        Integer n = this.itemHits.get(i);
+        Double n = this.itemHits.get(i);
 
         if (n == null)
             return 0;
@@ -92,14 +91,14 @@ public class CrusadePlayer
         return n;
     }
 
-    public void addItemStat(HashMap<String, Integer> stat, Item.ItemStack<?> i)
+    public void addItemStat(HashMap<String, Double> stat, Item.ItemStack<?> i, double frac)
     {
         String name = i.item.name;
 
         if (Crusade.currentCrusade != null)
         {
-            this.putIfAbsent(stat, name, 0);
-            stat.put(name, stat.get(name) + 1);
+            this.putIfAbsent(stat, name, 0.0);
+            stat.put(name, stat.get(name) + frac);
         }
     }
 

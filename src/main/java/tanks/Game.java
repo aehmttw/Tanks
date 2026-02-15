@@ -1,28 +1,46 @@
 package tanks;
 
-import basewindow.*;
+import basewindow.BaseFile;
+import basewindow.BaseFileManager;
+import basewindow.BaseWindow;
+import basewindow.ShaderGroup;
 import com.codedisaster.steamworks.SteamMatchmaking;
 import tanks.bullet.*;
-import tanks.extension.*;
-import tanks.generator.*;
-import tanks.gui.*;
-import tanks.gui.input.*;
+import tanks.extension.Extension;
+import tanks.extension.ExtensionRegistry;
+import tanks.generator.LevelGenerator;
+import tanks.generator.LevelGeneratorRandom;
+import tanks.gui.Button;
+import tanks.gui.ChatFilter;
+import tanks.gui.input.InputBindingGroup;
+import tanks.gui.input.InputBindings;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.*;
+import tanks.gui.screen.leveleditor.OverlayEditorMenu;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.selector.*;
-import tanks.gui.screen.leveleditor.selector.SelectorColor;
-import tanks.hotbar.*;
+import tanks.hotbar.Hotbar;
+import tanks.hotbar.ItemBar;
 import tanks.item.*;
-import tanks.minigames.*;
-import tanks.network.*;
+import tanks.minigames.ArcadeBeatBlocks;
+import tanks.minigames.ArcadeClassic;
+import tanks.minigames.Minigame;
+import tanks.network.Client;
+import tanks.network.NetworkEventMap;
+import tanks.network.SteamNetworkHandler;
+import tanks.network.SynchronizedList;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
-import tanks.rendering.*;
+import tanks.rendering.ShaderGroundIntro;
+import tanks.rendering.ShaderGroundOutOfBounds;
+import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
 
 public class Game
@@ -123,7 +141,7 @@ public class Game
 
     public static boolean customDir = false;
 
-    public static final int network_protocol = 62;
+    public static final int network_protocol = 63;
 	public static boolean debug = false;
 	public static boolean traceAllRays = false;
 	public static boolean showNetworkIDs = false;
@@ -160,7 +178,8 @@ public class Game
 	public static boolean enable3d = true;
 	public static boolean enable3dBg = true;
 	public static boolean angledView = false;
-	public static boolean xrayBullets = true;
+    public static boolean orthographicView = false;
+    public static boolean xrayBullets = true;
 	public static boolean showPathfinding = false;
 	public static boolean showUpdatingObstacles = false;
 	public static boolean immutableFaces = false;
@@ -404,6 +423,7 @@ public class Game
 		NetworkEventMap.register(EventArcadeFrenzy.class);
 		NetworkEventMap.register(EventArcadeEnd.class);
 		NetworkEventMap.register(EventArcadeBonuses.class);
+        NetworkEventMap.register(EventPendingJoinParty.class);
 
 		NetworkEventMap.register(EventSendOnlineClientDetails.class);
 		NetworkEventMap.register(EventSilentDisconnect.class);

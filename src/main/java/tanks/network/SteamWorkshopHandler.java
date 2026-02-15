@@ -233,6 +233,14 @@ public class SteamWorkshopHandler
         {
             int n = pendingQueries.peek();
 
+            // Skip query if we already know there are no more results
+            if (totalResults >= 0 && n * results_count >= totalResults)
+            {
+                pendingQueries.remove();
+                updateQueries();
+                return;
+            }
+
             SteamUGCQuery q;
             if (searchUser == null)
                 q = workshop.createQueryAllUGCRequest(searchByScore ? SteamUGC.UGCQueryType.RankedByVote : SteamUGC.UGCQueryType.RankedByPublicationDate, SteamUGC.MatchingUGCType.Items, handler.clientUtils.getAppID(), handler.clientUtils.getAppID(), n + 1);

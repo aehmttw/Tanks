@@ -1,5 +1,6 @@
 package tanks.obstacle;
 
+import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
 import tanks.Panel;
@@ -124,5 +125,14 @@ public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
     public double getSeverity(double posX, double posY)
     {
         return Math.sqrt(Math.pow(posX - this.posX, 2) + Math.pow(posY - this.posY, 2));
+    }
+
+    @Override
+    public void draw3dOutline(double r, double g, double b, double a)
+    {
+        super.draw3dOutline(r, g, b, a);
+
+        Drawing.drawing.setColor(255, 0, 0, 64);
+        Mine.drawRange2D(this.posX, this.posY, this.getRadius());
     }
 }

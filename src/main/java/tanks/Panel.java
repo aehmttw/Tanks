@@ -2,9 +2,12 @@ package tanks;
 
 import basewindow.InputCodes;
 import tanks.extension.Extension;
-import tanks.gui.*;
+import tanks.gui.Button;
+import tanks.gui.Firework;
 import tanks.gui.ScreenElement.CenterMessage;
 import tanks.gui.ScreenElement.Notification;
+import tanks.gui.ScreenIntro;
+import tanks.gui.TextBox;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
@@ -145,8 +148,6 @@ public class Panel
 		Drawing.drawing.terrainRenderer = new TerrainRenderer();
 		Drawing.drawing.trackRenderer = new TrackRenderer();
 
-		ModAPI.setUp();
-
 		Game.resetTiles();
 
 		if (Game.game.fullscreen)
@@ -268,6 +269,8 @@ public class Panel
 
 		firstFrame = false;
 
+        Game.game.window.orthographic = Game.orthographicView;
+
 		if (Game.screen == Game.prevScreen && !Game.screen.windowTitle.equals(lastWindowTitle))
 		{
 			lastWindowTitle = Game.screen.windowTitle;
@@ -284,7 +287,15 @@ public class Panel
 		}
 
 		if (!started)
-			this.startTime = System.currentTimeMillis();
+        {
+            this.startTime = System.currentTimeMillis();
+
+            if (Game.cinematic)
+            {
+                Game.screen = new ScreenIntro();
+                return;
+            }
+        }
 
 		int maxFps = Game.maxFPS;
 		if (Game.deterministicMode && Game.deterministic30Fps)
@@ -338,12 +349,6 @@ public class Panel
 
 		if (this.continuation != null)
 			return;
-
-		if (Game.screen instanceof ScreenGame)
-		{
-			for (IFixedMenu menu : ModAPI.menuGroup)
-				menu.update();
-		}
 
 		synchronized (Game.eventsIn)
 		{
@@ -660,10 +665,17 @@ public class Panel
 			{
 				for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
 				{
-					if (ScreenPartyHost.server.connections.get(j).joined)
-						ScreenPartyHost.server.connections.get(j).addEvents(Game.eventsOut);
+                    ServerHandler sh = ScreenPartyHost.server.connections.get(j);
 
-					ScreenPartyHost.server.connections.get(j).reply();
+                    if (sh.joined)
+                        sh.addEvents(Game.eventsOut);
+                    else if (sh.pendingJoin != null)
+                        sh.addEvents(Game.eventsOut, true);
+
+                    if (sh.pendingJoin != null && !(Game.screen instanceof IPartyGameScreen))
+                        sh.pendingJoin.execute(sh);
+
+                    sh.reply();
 				}
 			}
 
@@ -839,6 +851,7 @@ public class Panel
                 Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 
 				Game.screen.draw();
+
 				this.continuation = null;
 				this.continuationMusic = false;
 			}
@@ -855,10 +868,10 @@ public class Panel
 				}
 				this.continuation = c;
 
-				Drawing.drawing.setColor(174, 92, 16);
+				Drawing.drawing.setColor(235, 207, 166);
 				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
-				Drawing.drawing.setColor(255, 255, 255);
+				Drawing.drawing.setColor(0, 0, 0);
 				Drawing.drawing.setInterfaceFontSize(24);
 				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
 				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
@@ -873,23 +886,11 @@ public class Panel
 						Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left", Game.timeInterval(0, (long) time + 1000, true));
 				}
 
-				Drawing.drawing.setColor(0, 0, 0);
-				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
 				Drawing.drawing.setColor(255, 255, 255);
+				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
+				Drawing.drawing.setColor(0, 0, 0, 127);
 				Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
 			}
-		}
-
-		if (Game.screen instanceof ScreenGame)
-		{
-			for (IFixedMenu menu : ModAPI.menuGroup)
-				menu.draw();
-		}
-
-		for (Movable m : Game.movables)
-		{
-			if (m instanceof TankNPC && ((TankNPC) m).draw)
-				((TankNPC) m).drawMessage();
 		}
 
 		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));

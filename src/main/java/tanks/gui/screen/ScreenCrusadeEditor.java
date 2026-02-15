@@ -17,6 +17,7 @@ import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -188,6 +189,9 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             this.imageXOffset = - this.sizeX / 2 + this.sizeY / 2 + 10;
             this.imageSizeX = this.sizeY;
             this.imageSizeY = this.sizeY;
+
+            if (!level.buildOverrides.isEmpty())
+                this.setSubtext("Custom builds");
         }
 
         public void setText(int li)
@@ -469,8 +473,8 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
         setIcon(toggleBuilds, showBuilds);
 
         this.buttons.buttons.clear();
-        this.crusade.crusadeShopItems.sort(Comparator.comparingInt(o -> o.levelUnlock));
-        this.crusade.crusadeShopBuilds.sort(Comparator.comparingInt(o -> o.levelUnlock));
+        Collections.sort(this.crusade.crusadeShopItems, Comparator.comparingInt(o -> o.levelUnlock));
+        Collections.sort(this.crusade.crusadeShopBuilds, Comparator.comparingInt(o -> o.levelUnlock));
 
         int j = 0;
         int k = 1;
@@ -728,6 +732,17 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             {
                 String l = this.crusade.levels.get(i).levelString;
                 f.println(l.substring(l.indexOf('{'), l.indexOf('}') + 1) + " name=" + this.crusade.levels.get(i).levelName);
+            }
+
+            f.println("build_overrides");
+
+            for (int i = 0; i < crusade.levels.size(); i++)
+            {
+                Crusade.CrusadeLevel cl = this.crusade.levels.get(i);
+                for (TankPlayer.ShopTankBuild b : cl.buildOverrides)
+                {
+                    f.println(i + " " + b.toString());
+                }
             }
 
             f.stopWriting();

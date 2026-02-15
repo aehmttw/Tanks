@@ -180,6 +180,9 @@ public class LevelGeneratorVersus extends LevelGenerator
 				case "Artillery shell":
 					price = 5;
 					break;
+                case "Air strike":
+                    price = 5;
+                    break;
 				case "Healing ray":
 					price = 25;
 					break;

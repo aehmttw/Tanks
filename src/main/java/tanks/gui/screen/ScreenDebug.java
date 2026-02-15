@@ -49,6 +49,7 @@ public class ScreenDebug extends Screen
 
     public ScreenDebug()
     {
+        super(350, 40, 380, 60);
         this.music = "menu_options.ogg";
         this.musicID = "menu";
 

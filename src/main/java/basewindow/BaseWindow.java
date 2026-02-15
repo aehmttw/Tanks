@@ -69,6 +69,7 @@ public abstract class BaseWindow
     public IUpdater updater;
     public IWindowHandler windowHandler;
 
+    public boolean orthographic = false;
     public ArrayList<Transformation> transformations = new ArrayList<>();
 
     public double yaw = 0;
@@ -164,6 +165,7 @@ public abstract class BaseWindow
         lastFrame = time;
 
         frameFrequency = Math.max(0, (time - lastFrameTime) / 10000000.0);
+
 //        if (Game.game.window.pressedKeys.contains(InputCodes.KEY_F8))
 //        {
 //            frameFrequency *= 5;

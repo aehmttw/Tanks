@@ -8,7 +8,7 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
 
-public class EventChat extends PersonalEvent
+public class EventChat extends PersonalEvent implements IChatEvent
 {
 	public String message;
 

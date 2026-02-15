@@ -88,7 +88,7 @@ public class Team
 	public boolean equals(Object obj)
 	{
 		if (obj instanceof Team)
-			return this.name.equals(((Team) obj).name);
+			return this.name.equals(((Team) obj).name) && !this.name.contains("*");
 		return super.equals(obj);
 	}
 

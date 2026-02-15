@@ -141,7 +141,7 @@ public class LWJGLWindow extends BaseWindow
                     if (zhCnFontInputStream == null) break;
                     if (zhCnTxtInputStream == null)
                     {
-                        Game.logger.println("Failed to load zh cn font " + count);
+                        System.err.println("Failed to load zh cn font " + count);
                         continue;
                     }
                     Scanner scanner = new Scanner(Objects.requireNonNull(zhCnTxtInputStream), StandardCharsets.UTF_8.name());

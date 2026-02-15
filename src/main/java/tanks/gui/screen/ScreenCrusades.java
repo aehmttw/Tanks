@@ -222,8 +222,11 @@ public class ScreenCrusades extends Screen
 		Drawing.drawing.setColor(0, 0, 0);
 		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5.35, "Crusades");
 
-        Drawing.drawing.setInterfaceFontSize(16);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Drag and drop levels here to import them");
+        if (Game.framework == Game.Framework.lwjgl)
+        {
+            Drawing.drawing.setInterfaceFontSize(16);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4, "Drag and drop crusades here to import them");
+        }
 	}
 
 	@Override

@@ -48,9 +48,9 @@ public class GameWindowHandler implements IWindowHandler
             Game.steamNetworkHandler.exit();
     }
 
-	@Override
+    @Override
     public void onFilesDropped(String... filePaths)
-	{
-		Game.screen.onFilesDropped(filePaths);
-	}
+    {
+        Game.screen.onFilesDropped(filePaths);
+    }
 }

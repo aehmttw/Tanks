@@ -17,8 +17,8 @@ public class ScreenImportingFiles extends Screen
 
     public Button cancel = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Cancel", () ->
     {
-       if (cancelable)
-           canceled = true;
+        if (cancelable)
+            canceled = true;
     });
 
     public ScreenImportingFiles(Screen prev)

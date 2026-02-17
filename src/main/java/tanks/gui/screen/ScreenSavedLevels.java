@@ -1,14 +1,12 @@
 package tanks.gui.screen;
 
 import basewindow.ComputerFile;
+import java.util.*;
+import java.util.stream.Collectors;
 import tanks.*;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.*;
 import tanks.translation.Translation;
-
-import javax.management.Notification;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ScreenSavedLevels extends Screen
 {
@@ -18,7 +16,8 @@ public class ScreenSavedLevels extends Screen
     public SavedFilesList fullSavedLevelsList;
     public SavedFilesList savedLevelsList;
 
-    Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer());
+    Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back",
+            () -> Game.screen = new ScreenPlaySingleplayer());
 
     SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
     {
@@ -61,8 +60,7 @@ public class ScreenSavedLevels extends Screen
         sl.modified = true;
         Game.screen = sl;
         l.loadLevel((ILevelPreviewScreen) Game.screen);
-    }
-    );
+    });
 
     public ScreenSavedLevels()
     {
@@ -71,19 +69,17 @@ public class ScreenSavedLevels extends Screen
         this.music = "menu_4.ogg";
         this.musicID = "menu";
 
-        fullSavedLevelsList = new SavedFilesList(Game.homedir + Game.levelDir, page, 0, -30,
-            (name, file) ->
-            {
-                ScreenLevelEditor s = new ScreenLevelEditor(name + ".tanks", null);
+        fullSavedLevelsList = new SavedFilesList(Game.homedir + Game.levelDir, page, 0, -30, (name, file) ->
+        {
+            ScreenLevelEditor s = new ScreenLevelEditor(name + ".tanks", null);
 
-                if (Game.loadLevel(file, s))
-                {
-                    s.level = Game.currentLevel;
-                    s.paused = true;
-                    Game.screen = new OverlayEditorMenu(s, s);
-                }
-            },
-            (file) -> Translation.translate("Last modified---%s ago", Game.timeInterval(file.lastModified(), System.currentTimeMillis())));
+            if (Game.loadLevel(file, s))
+            {
+                s.level = Game.currentLevel;
+                s.paused = true;
+                Game.screen = new OverlayEditorMenu(s, s);
+            }
+        }, (file) -> Translation.translate("Last modified---%s ago", Game.timeInterval(file.lastModified(), System.currentTimeMillis())));
 
         fullSavedLevelsList.drawOpenFileButton = true;
         fullSavedLevelsList.sortedByTime = sortByTime;
@@ -148,8 +144,7 @@ public class ScreenSavedLevels extends Screen
             if (search.inputText.length() > 0)
             {
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "No levels found");
-            }
-            else
+            } else
             {
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 30, "You have no levels");
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + 30, "Create a level with the 'New level' button!");
@@ -175,18 +170,27 @@ public class ScreenSavedLevels extends Screen
     }
 
     /**
-     * After running <code>validation</code> (validation is successful if it doesn't crash),
-     * moves the specified <code>filePaths</code> to <Code>dir</Code>.
-     * If files exist already, creates a popup that asks the user whether to replace the existing files.
+     * After running <code>validation</code> (validation is successful if it doesn't
+     * crash), moves the specified <code>filePaths</code> to <Code>dir</Code>. If
+     * files exist already, creates a popup that asks the user whether to replace
+     * the existing files.
      *
-     * @param filePaths     full paths to files to be moved
-     * @param dir           full directory path to move the files to
-     * @param validation    Function that takes the file contents as a string, throw an exception if validation fails
-     * @param onComplete    Runs after moving the files is complete. If files exist already, the function
-     *                      will be run again if the user selects the "Replace all" option.
-     * @param failedMessage Sends a notification if files are corrupted: <code>"%i files are corrupted... " + failedMessage</code>
-     * @apiNote IT IS NOT A BLOCKING FUNCTION! (It starts a new thread.)
-     * Make sure to use the <code>onComplete</code> runnable when necessary!
+     * @param filePaths
+     *            full paths to files to be moved
+     * @param dir
+     *            full directory path to move the files to
+     * @param validation
+     *            Function that takes the file contents as a string, throw an
+     *            exception if validation fails
+     * @param onComplete
+     *            Runs after moving the files is complete. If files exist already,
+     *            the function will be run again if the user selects the "Replace
+     *            all" option.
+     * @param failedMessage
+     *            Sends a notification if files are corrupted:
+     *            <code>"%i files are corrupted... " + failedMessage</code>
+     * @apiNote IT IS NOT A BLOCKING FUNCTION! (It starts a new thread.) Make sure
+     *          to use the <code>onComplete</code> runnable when necessary!
      */
     public static void importLevels(String[] filePaths, String dir, String levelType, Consumer<String> validation, Runnable onComplete, String failedMessage)
     {
@@ -217,11 +221,9 @@ public class ScreenSavedLevels extends Screen
                 {
                     StringBuilder b = new StringBuilder();
                     file.startReading();
-                    while (file.hasNextLine())
-                        b.append(file.nextLine()).append("\n");
+                    while (file.hasNextLine()) b.append(file.nextLine()).append("\n");
                     validation.accept(String.join("\n", b.toString()));
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     e.printStackTrace(System.err);
                     failed.add(file);
@@ -243,24 +245,21 @@ public class ScreenSavedLevels extends Screen
 
             ScreenImportingFiles.cancelable = false;
 
-            for (ComputerFile c: success)
-                c.moveTo(Game.homedir + dir);
+            for (ComputerFile c : success) c.moveTo(Game.homedir + dir);
 
             if (!existing.isEmpty())
             {
                 Game.screen = new ScreenPopupWarning(s,
-                    getNumberString(existing.size(), "file") + Translation.translate(" already exist" + (existing.size() == 1 ? "s" : "") + "!"),
-                    existing.stream().limit(existing.size() == 11 ? 11 : 10).map(f -> f.file.getName()).collect(Collectors.joining(", ")) +
-                            ((existing.size() > 11) ? (Translation.translate(", and %d others", (existing.size() - 10))) : ""),
-                    () ->
-                    {
-                        existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
-                        Panel.notifications.add(new ScreenElement.Notification(Translation.translate("Imported %s", getNumberString(paths.size(), levelType))));
-                        onComplete.run();
-                    })
-                    .setContinueText("Replace all").setCancelText("Skip");
-            }
-            else
+                        getNumberString(existing.size(), "file") + Translation.translate(" already exist" + (existing.size() == 1 ? "s" : "") + "!"),
+                        existing.stream().limit(existing.size() == 11 ? 11 : 10).map(f -> f.file.getName()).collect(Collectors.joining(", "))
+                                + ((existing.size() > 11) ? (Translation.translate(", and %d others", (existing.size() - 10))) : ""),
+                        () ->
+                        {
+                            existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
+                            Panel.notifications.add(new ScreenElement.Notification(Translation.translate("Imported %s", getNumberString(paths.size(), levelType))));
+                            onComplete.run();
+                        }).setContinueText("Replace all").setCancelText("Skip");
+            } else
                 Game.screen = s;
 
             Panel.forceRefreshMusic = true;
@@ -269,7 +268,8 @@ public class ScreenSavedLevels extends Screen
             if (successful > 0)
                 Panel.notifications.add(new ScreenElement.Notification(Translation.translate("Imported %s", getNumberString(successful, levelType))));
             if (!failed.isEmpty())
-                Panel.notifications.add(new ScreenElement.Notification(getNumberString(failed.size(), levelType) + " " + Translation.translate((failed.size() > 1 ? "are" : "is") + " corrupted and have been skipped") + Translation.translate(failedMessage)));
+                Panel.notifications.add(new ScreenElement.Notification(getNumberString(failed.size(), levelType) + " "
+                        + Translation.translate((failed.size() > 1 ? "are" : "is") + " corrupted and have been skipped") + Translation.translate(failedMessage)));
 
             onComplete.run();
         }).start();

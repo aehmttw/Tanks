@@ -18,8 +18,7 @@ public class ScreenConfirmRemoveLevel extends ScreenLayout
         {
             screen.setScreen();
         }
-    }
-    );
+    });
 
     public Button confirmDelete = new Button(sizeX / 2, sizeY / 2, 350, 40, "Yes", new Runnable()
     {
@@ -34,8 +33,7 @@ public class ScreenConfirmRemoveLevel extends ScreenLayout
             ScreenHome s = new ScreenHome(player);
             s.setScreen();
         }
-    }
-    );
+    });
 
     public ScreenConfirmRemoveLevel(TanksOnlineServerHandler player, UploadedLevel l, ScreenLayout s)
     {
@@ -52,7 +50,6 @@ public class ScreenConfirmRemoveLevel extends ScreenLayout
         this.music = "menu_4.ogg";
         this.musicID = "menu";
 
-        this.texts.add(new ScreenOnline.Text("Would you like to remove the level \"" + level.name + "\" from Tanks Online?",
-                sizeX / 2, sizeY / 2 - 90, 24, 0));
+        this.texts.add(new ScreenOnline.Text("Would you like to remove the level \"" + level.name + "\" from Tanks Online?", sizeX / 2, sizeY / 2 - 90, 24, 0));
     }
 }

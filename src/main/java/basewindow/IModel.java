@@ -1,7 +1,6 @@
 package basewindow;
 
 import basewindow.transformation.AxisRotation;
-
 import java.util.HashMap;
 
 public interface IModel

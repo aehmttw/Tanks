@@ -14,7 +14,9 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     public TextBox teamName;
     public Team team;
 
-    public Runnable onEscape = () -> {};
+    public Runnable onEscape = () ->
+    {
+    };
 
     public OverlayEditTeam(Screen previous, ScreenLevelEditor screenLevelEditor, Team team)
     {
@@ -41,8 +43,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
             {
                 team.name = teamName.inputText;
             }
-        }
-                , team.name);
+        }, team.name);
 
         teamFriendlyFire.image = "shield.png";
         teamFriendlyFire.imageXOffset = -teamFriendlyFire.sizeX / 2 + teamFriendlyFire.sizeY / 2;
@@ -70,7 +71,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
         {
             editor.teams.remove(team);
 
-            for (Movable m: Game.movables)
+            for (Movable m : Game.movables)
             {
                 if (m.team == team)
                     m.team = null;
@@ -78,10 +79,9 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
 
             escape();
         }
-    }
-    );
+    });
 
-    public Button teamFriendlyFire = new Button(this.centerX, this.centerY , this.objWidth, this.objHeight, "Friendly fire: on", new Runnable()
+    public Button teamFriendlyFire = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Friendly fire: on", new Runnable()
     {
         @Override
         public void run()
@@ -92,14 +92,12 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
             else
                 teamFriendlyFire.setText("Friendly fire: ", ScreenOptions.offText);
         }
-    }, "If a team has friendly fire disabled---no tanks on that team will be able to---damage each other"
-    );
+    }, "If a team has friendly fire disabled---no tanks on that team will be able to---damage each other");
 
     public Button teamColor = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Team color", () ->
-        {
-            Game.screen = new OverlayEditTeamColor(Game.screen, editor, team);
-        }
-    );
+    {
+        Game.screen = new OverlayEditTeamColor(Game.screen, editor, team);
+    });
 
     @Override
     public void escape()

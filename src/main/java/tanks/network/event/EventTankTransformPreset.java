@@ -92,7 +92,6 @@ public class EventTankTransformPreset extends PersonalEvent
             t.enableTracks = target.enableTracks;
             t.trackSpacing = target.trackSpacing;
 
-
             ((TankRemote) t).invisible = false;
             ((TankRemote) t).vanished = false;
 

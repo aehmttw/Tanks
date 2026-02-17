@@ -6,7 +6,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public Uniform1i depthTexture;
     public UniformMatrix4 biasMatrix;
     public UniformMatrix4 lightViewProjectionMatrix;
-//    public Uniform3f lightVec;
+    // public Uniform3f lightVec;
     public Uniform1b depthtest;
     public Uniform1f glow;
     public Uniform1i shadowres;
@@ -14,17 +14,17 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public Uniform1f glowLight;
     public Uniform1f shade;
     public Uniform1f glowShade;
-//    public Uniform1f edgeLight;
-//    public Uniform1f edgeCutoff;
-//    public Uniform1f minBrightness;
-//    public Uniform1f maxBrightness;
-//    public Uniform1b negativeBrightness;
-//    public Uniform1b customLight;
-//    public Uniform3f lightAmbient;
-//    public Uniform3f lightDiffuse;
-//    public Uniform3f lightSpecular;
-//    public Uniform1f shininess;
-//    public Uniform1f celsections;
+    // public Uniform1f edgeLight;
+    // public Uniform1f edgeCutoff;
+    // public Uniform1f minBrightness;
+    // public Uniform1f maxBrightness;
+    // public Uniform1b negativeBrightness;
+    // public Uniform1b customLight;
+    // public Uniform3f lightAmbient;
+    // public Uniform3f lightDiffuse;
+    // public Uniform3f lightSpecular;
+    // public Uniform1f shininess;
+    // public Uniform1f celsections;
     public Uniform1b shadow;
     public Uniform1b vbo;
     public Uniform4f originalColor;
@@ -42,7 +42,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
 
     public Uniform1i blendFunc;
 
-//    public Uniform1b useNormal;
+    // public Uniform1b useNormal;
 
     public BaseWindow window;
 
@@ -52,12 +52,12 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
         this.window = window;
     }
 
-//    @Override
-//    public void initialize() throws Exception
-//    {
-//        this.setUp("/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
-//                "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
-//    }
+    // @Override
+    // public void initialize() throws Exception
+    // {
+    // this.setUp("/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
+    // "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
+    // }
 
     @Override
     public void initializeUniforms()
@@ -72,7 +72,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     {
         this.vbo.set(true);
         this.originalColor.set((float) this.window.colorR, (float) this.window.colorG, (float) this.window.colorB, (float) this.window.colorA);
-        //this.useNormal.set(normalBufferID != 0);
+        // this.useNormal.set(normalBufferID != 0);
 
         this.util.setVertexBuffer(vertexBufferID);
         this.util.setColorBuffer(colorBufferID);
@@ -81,7 +81,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
         this.util.drawVBO(numberIndices);
 
         this.vbo.set(false);
-        //this.useNormal.set(false);
+        // this.useNormal.set(false);
     }
 
     @Override

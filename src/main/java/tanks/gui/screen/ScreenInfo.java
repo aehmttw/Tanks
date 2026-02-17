@@ -35,8 +35,7 @@ public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDa
             if (previous != null)
                 Game.screen = previous;
         }
-    }
-    );
+    });
 
     @Override
     public void update()
@@ -80,7 +79,8 @@ public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDa
         for (int i = 0; i < text.length; i++)
         {
             Drawing.drawing.setInterfaceFontSize(this.textSize * scale);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - width / 2 * scale, Drawing.drawing.interfaceSizeY / 2 + scale * (i - (text.length - 1) / 2.0) * this.objYSpace / 2, this.text[i], false);
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 - width / 2 * scale,
+                    Drawing.drawing.interfaceSizeY / 2 + scale * (i - (text.length - 1) / 2.0) * this.objYSpace / 2, this.text[i], false);
         }
 
         back.draw();

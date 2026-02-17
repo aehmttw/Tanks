@@ -1,6 +1,8 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import java.io.IOException;
+import java.util.ArrayList;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
@@ -11,9 +13,6 @@ import tanks.obstacle.Obstacle;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankSpawnMarker;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScreen
 {
@@ -52,8 +51,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
     public Button saveLevel = new Button(200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Save to my levels", () -> saveMenu = true);
 
-    public Button cancelRemove = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> removeMenu = false
-    );
+    public Button cancelRemove = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> removeMenu = false);
 
     public Button confirmRemove = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", new Runnable()
     {
@@ -137,60 +135,60 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         }
     });
 
-    public Button saveLevelConfirm = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Save level", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
-
-            boolean success = false;
-            if (!file.exists())
+    public Button saveLevelConfirm = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Save level",
+            new Runnable()
             {
-                try
+                @Override
+                public void run()
                 {
-                    if (file.create())
-                    {
-                        file.startWriting();
-                        String ls = level.levelString;
-                        StringBuilder tanks = new StringBuilder("\ntanks\n");
-                        if (previous2.crusade.customTanks.size() > 0)
-                        {
-                            for (TankAIControlled t: previous2.crusade.customTanks)
-                                tanks.append(t.toString()).append("\n");
+                    BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
 
-                            ls = ls + tanks;
-                        }
-                        file.println(ls);
-                        if (!level.buildOverrides.isEmpty())
+                    boolean success = false;
+                    if (!file.exists())
+                    {
+                        try
                         {
-                            file.println("builds\n");
-                            for (TankPlayer.ShopTankBuild b: level.buildOverrides)
+                            if (file.create())
                             {
-                                file.println(b.toString() + "\n");
+                                file.startWriting();
+                                String ls = level.levelString;
+                                StringBuilder tanks = new StringBuilder("\ntanks\n");
+                                if (previous2.crusade.customTanks.size() > 0)
+                                {
+                                    for (TankAIControlled t : previous2.crusade.customTanks) tanks.append(t.toString()).append("\n");
+
+                                    ls = ls + tanks;
+                                }
+                                file.println(ls);
+                                if (!level.buildOverrides.isEmpty())
+                                {
+                                    file.println("builds\n");
+                                    for (TankPlayer.ShopTankBuild b : level.buildOverrides)
+                                    {
+                                        file.println(b.toString() + "\n");
+                                    }
+                                }
+                                file.stopWriting();
+                                success = true;
                             }
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace(Game.logger);
+                            e.printStackTrace();
                         }
-                        file.stopWriting();
-                        success = true;
+                    }
+
+                    if (success)
+                    {
+                        saveLevelConfirm.enabled = false;
+                        saved = true;
+                        saveLevelConfirm.setText("Level saved!");
                     }
                 }
-                catch (IOException e)
-                {
-                    e.printStackTrace(Game.logger);
-                    e.printStackTrace();
-                }
-            }
+            });
 
-            if (success)
-            {
-                saveLevelConfirm.enabled = false;
-                saved = true;
-                saveLevelConfirm.setText("Level saved!");
-            }
-        }
-    });
-
-    public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> saveMenu = false);
+    public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back",
+            () -> saveMenu = false);
 
     public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, int in, ScreenCrusadeEditor s2)
     {
@@ -235,16 +233,14 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
             next.enabled = insertionIndex < previous2.crusade.levels.size();
             prev.enabled = insertionIndex > 0;
-        }
-                , "");
+        }, "");
 
         levelName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Level save name", () ->
         {
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             updateSaveButton();
-        }
-                , level.levelName.replace("_", " "));
+        }, level.levelName.replace("_", " "));
 
         levelName.enableCaps = true;
 
@@ -281,8 +277,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         {
             saveLevelConfirm.setText("Pick a different name...");
             saveLevelConfirm.enabled = false;
-        }
-        else
+        } else
         {
             saveLevelConfirm.setText("Save level");
             saveLevelConfirm.enabled = true;
@@ -302,8 +297,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
             confirmRemove.update();
             cancelRemove.update();
-        }
-        else if (saveMenu)
+        } else if (saveMenu)
         {
             if (Game.game.input.editorPause.isValid())
             {
@@ -314,8 +308,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             saveLevelConfirm.update();
             levelName.update();
             cancelSave.update();
-        }
-        else
+        } else
         {
             this.index.update();
             this.add.update();
@@ -330,20 +323,17 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                     Game.game.window.validScrollUp = false;
                     if (this.prev.enabled)
                         this.prev.function.run();
-                }
-                else if (Game.game.window.validScrollDown)
+                } else if (Game.game.window.validScrollDown)
                 {
                     Game.game.window.validScrollDown = false;
                     if (this.next.enabled)
                         this.next.function.run();
-                }
-                else
+                } else
                 {
                     this.next.update();
                     this.prev.update();
                 }
-            }
-            else
+            } else
             {
                 this.back.update();
                 this.forceBuilds.update();
@@ -381,8 +371,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
             confirmRemove.draw();
             cancelRemove.draw();
-        }
-        else if (saveMenu)
+        } else if (saveMenu)
         {
             Drawing.drawing.setColor(127, 178, 228, 64);
             Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
@@ -398,8 +387,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             saveLevelConfirm.draw();
             levelName.draw();
             cancelSave.draw();
-        }
-        else
+        } else
         {
             double extraWidth = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2;
             double height = (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale;
@@ -415,7 +403,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
                 Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
                 String t = (insertionIndex - i) + ". " + previous2.crusade.levels.get(insertionIndex - i - 1).levelName.replace("_", " ");
-                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 380, t);
                 Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, t);
             }
 
@@ -426,7 +414,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
                 Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
                 String t = (insertionIndex + i + 2) + ". " + previous2.crusade.levels.get(insertionIndex + i).levelName.replace("_", " ");
-                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 380, t);
                 Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, t);
             }
 
@@ -435,7 +423,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
             Drawing.drawing.setColor(255, 255, 255);
             String t = (insertionIndex + 1) + ". " + level.levelName.replace("_", " ");
-            Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+            Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 380, t);
             Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - 60, t);
 
             this.index.draw();
@@ -450,8 +438,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
                 if (!this.level.buildOverrides.isEmpty())
                     Drawing.drawing.drawTooltip(customBuildsDesc, saveLevel.posX - this.objWidth / 2, saveLevel.posY - this.objYSpace * 1.5);
-            }
-            else
+            } else
             {
                 this.forceBuilds.draw();
                 this.back.draw();

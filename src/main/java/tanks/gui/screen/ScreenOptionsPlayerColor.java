@@ -27,8 +27,7 @@ public class ScreenOptionsPlayerColor extends Screen
             Game.screen = new ScreenOptions();
         else
             Game.screen = new ScreenOptionsPersonalize();
-    }
-    );
+    });
 
     Button addColor = new Button(this.centerX + this.objXSpace * 0.3, this.centerY + this.objYSpace * 2.75, this.objHeight * 1.5, this.objHeight * 1.5, "+", new Runnable()
     {
@@ -163,14 +162,12 @@ public class ScreenOptionsPlayerColor extends Screen
             {
                 color1.setPosition(this.centerX - this.objXSpace, this.yPos);
                 color2.setPosition(this.centerX, this.yPos);
-            }
-            else
+            } else
             {
                 color1.setPosition(this.centerX - this.objXSpace / 2, this.yPos);
                 color2.setPosition(this.centerX + this.objXSpace / 2, this.yPos);
             }
-        }
-        else
+        } else
             color1.setPosition(this.centerX, this.yPos);
 
         if (!Game.player.enableSecondaryColor)

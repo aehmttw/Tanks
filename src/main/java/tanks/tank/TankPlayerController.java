@@ -1,12 +1,11 @@
 package tanks.tank;
 
+import java.util.Arrays;
+import java.util.UUID;
 import tanks.Game;
 import tanks.Panel;
 import tanks.item.Item;
 import tanks.network.event.EventTankControllerUpdateC;
-
-import java.util.Arrays;
-import java.util.UUID;
 
 public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
 {
@@ -126,19 +125,34 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
     }
 
     @Override
-    public double getDrawRangeMin() { return this.drawRangeMin; }
+    public double getDrawRangeMin()
+    {
+        return this.drawRangeMin;
+    }
 
     @Override
-    public double getDrawRangeMax() { return this.drawRangeMax; }
+    public double getDrawRangeMax()
+    {
+        return this.drawRangeMax;
+    }
 
     @Override
-    public double getDrawLifespan() { return this.drawLifespan; }
+    public double getDrawLifespan()
+    {
+        return this.drawLifespan;
+    }
 
     @Override
-    public boolean getShowTrace() { return this.drawTrace; }
+    public boolean getShowTrace()
+    {
+        return this.drawTrace;
+    }
 
     @Override
-    public double getDrawSpread() { return this.drawSpread; }
+    public double getDrawSpread()
+    {
+        return this.drawSpread;
+    }
 
     @Override
     public void setDrawRanges(double lifespan, double rangeMin, double rangeMax, boolean trace)

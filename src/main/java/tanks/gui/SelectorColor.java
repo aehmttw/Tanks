@@ -17,7 +17,9 @@ public class SelectorColor implements IDrawable, ITrigger
 
     public SelectorColor(double x, double y, double sizeX, double sizeY, String name, double space, Color toEdit, boolean alpha)
     {
-        this(x, y, sizeX, sizeY, name, space, toEdit, alpha, () -> {});
+        this(x, y, sizeX, sizeY, name, space, toEdit, alpha, () ->
+        {
+        });
     }
 
     public SelectorColor(double x, double y, double sizeX, double sizeY, String name, double space, Color toEdit, boolean alpha, Runnable onEdit)
@@ -34,8 +36,7 @@ public class SelectorColor implements IDrawable, ITrigger
 
             color.red = Double.parseDouble(colorRed.inputText);
             this.onEdit.run();
-        }
-                , (int) color.red, 0, 255, 1);
+        }, (int) color.red, 0, 255, 1);
 
         colorRed.allowLetters = false;
         colorRed.allowSpaces = false;
@@ -51,8 +52,7 @@ public class SelectorColor implements IDrawable, ITrigger
 
             color.green = Double.parseDouble(colorGreen.inputText);
             this.onEdit.run();
-        }
-                , (int) color.green, 0, 255, 1);
+        }, (int) color.green, 0, 255, 1);
 
         colorGreen.allowLetters = false;
         colorGreen.allowSpaces = false;
@@ -68,8 +68,7 @@ public class SelectorColor implements IDrawable, ITrigger
 
             color.blue = Double.parseDouble(colorBlue.inputText);
             this.onEdit.run();
-        }
-                , (int) color.blue, 0, 255, 1);
+        }, (int) color.blue, 0, 255, 1);
 
         colorBlue.allowLetters = false;
         colorBlue.allowSpaces = false;
@@ -85,8 +84,7 @@ public class SelectorColor implements IDrawable, ITrigger
 
             color.alpha = Double.parseDouble(colorAlpha.inputText);
             this.onEdit.run();
-        }
-                , (int) color.alpha, 0, 255, 1);
+        }, (int) color.alpha, 0, 255, 1);
 
         colorAlpha.allowLetters = false;
         colorAlpha.allowSpaces = false;

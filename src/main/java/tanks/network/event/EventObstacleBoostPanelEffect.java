@@ -24,8 +24,7 @@ public class EventObstacleBoostPanelEffect extends PersonalEvent
         {
             this.networkID = ((Tank) m).networkID;
             this.isTank = true;
-        }
-        else
+        } else
         {
             this.networkID = ((Bullet) m).networkID;
             this.isTank = false;

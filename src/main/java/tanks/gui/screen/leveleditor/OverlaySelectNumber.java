@@ -1,5 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
+import java.util.Locale;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -7,8 +8,6 @@ import tanks.gui.TextBox;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.leveleditor.selector.SelectorNumber;
-
-import java.util.Locale;
 
 public class OverlaySelectNumber extends ScreenLevelEditorOverlay
 {
@@ -23,13 +22,11 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         {
             selector.changeMetadata(editor, editor.mousePlaceable, 1);
             textBox.inputText = String.format(Locale.ROOT, selector.format, ((Number) selector.metadataField.get(editor.mousePlaceable)).doubleValue());
-        }
-        catch (IllegalAccessException e)
+        } catch (IllegalAccessException e)
         {
             Game.exitToCrash(e);
         }
-    }
-    );
+    });
 
     public Button decrease = new Button(this.centerX - 250, this.centerY, 60, 60, "-", () ->
     {
@@ -37,13 +34,11 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         {
             selector.changeMetadata(editor, editor.mousePlaceable, -1);
             textBox.inputText = String.format(Locale.ROOT, selector.format, ((Number) selector.metadataField.get(editor.mousePlaceable)).doubleValue());
-        }
-        catch (IllegalAccessException e)
+        } catch (IllegalAccessException e)
         {
             Game.exitToCrash(e);
         }
-    }
-    );
+    });
 
     public OverlaySelectNumber(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorNumber selector)
     {
@@ -52,7 +47,8 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         screenLevelEditor.paused = true;
 
         this.selector = selector;
-        textBox = new TextBox(this.centerX, this.centerY + 15, 350, 40, this.selector.metadataProperty.name(), this::submit, this.selector.numberString(screenLevelEditor.mousePlaceable));
+        textBox = new TextBox(this.centerX, this.centerY + 15, 350, 40, this.selector.metadataProperty.name(), this::submit,
+                this.selector.numberString(screenLevelEditor.mousePlaceable));
 
         textBox.allowLetters = false;
         textBox.allowSpaces = false;

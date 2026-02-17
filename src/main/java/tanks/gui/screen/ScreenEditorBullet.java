@@ -1,5 +1,8 @@
 package tanks.gui.screen;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Random;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -13,13 +16,11 @@ import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Random;
-
 public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
 {
-    public Selector bulletTypes = new Selector(this.centerX + 300, 60, this.objWidth, this.objHeight, "Bullet type", Game.registryBullet.getEntryNames(), () -> {});
+    public Selector bulletTypes = new Selector(this.centerX + 300, 60, this.objWidth, this.objHeight, "Bullet type", Game.registryBullet.getEntryNames(), () ->
+    {
+    });
 
     public Tab col1;
     public Tab col2;
@@ -39,14 +40,12 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             this.setupLayoutParameters();
             this.setTarget(((ItemBullet) b.item).bullet);
         }, "Bullet", ItemBullet.class);
-    }
-    );
+    });
 
     public Button save = new Button(this.centerX + this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Save to template", () ->
     {
         Game.screen = new ScreenSaveUnnamedItem(this);
-    }
-    );
+    });
 
     public ScreenEditorBullet(Pointer<Bullet> bullet, Screen screen)
     {
@@ -67,8 +66,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 target.get().clonePropertiesTo(b);
                 this.setupLayoutParameters();
                 setTarget(b);
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -89,7 +87,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -101,7 +99,11 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                         ((TextBox) el).silent = true;
                         Runnable func = ((TextBox) el).function;
                         Bullet t = target.get();
-                        ((TextBox) el).function = () -> { func.run(); Drawing.drawing.playSound(t.shotSound, (float) (t.pitch + (Math.random() - 0.5) * t.pitchVariation), (float) t.soundVolume); };
+                        ((TextBox) el).function = () ->
+                        {
+                            func.run();
+                            Drawing.drawing.playSound(t.shotSound, (float) (t.pitch + (Math.random() - 0.5) * t.pitchVariation), (float) t.soundVolume);
+                        };
                     }
 
                     this.uiElements.add(el);
@@ -121,7 +123,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -155,7 +157,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             boolean gas = target.get() instanceof BulletGas;
 
             this.uiElements.clear();
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -181,15 +183,14 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             {
                 col1.name = "Start color";
                 col2.name = "End color";
-            }
-            else
+            } else
             {
                 col1.name = "Base color";
                 col2.name = "Outline color";
             }
 
             col3Button = null;
-            for (ScreenEditorTanksONable<Bullet>.Tab t: this.subMenus)
+            for (ScreenEditorTanksONable<Bullet>.Tab t : this.subMenus)
             {
                 if (t == col3 && !gas)
                     continue;
@@ -233,7 +234,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                     this.uiElements.get(i).setPosition(Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2, posY);
             }
 
-            for (ScreenEditorTanksONable<Bullet>.Tab t: this.subMenus)
+            for (ScreenEditorTanksONable<Bullet>.Tab t : this.subMenus)
             {
                 t.sortUIElements();
             }
@@ -245,7 +246,8 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             Bullet bullet = screen.target.get();
 
             if (!Game.game.window.drawingShadow)
-                bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, Player.default_primary, Player.default_secondary);
+                bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand,
+                        Player.default_primary, Player.default_secondary);
 
             super.drawUIElements();
 
@@ -308,8 +310,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 {
                     b.overrideBaseColor = !b.overrideBaseColor;
                     enable = b.overrideBaseColor;
-                }
-                else if (colorIndex == 2)
+                } else if (colorIndex == 2)
                 {
                     b.overrideOutlineColor = !b.overrideOutlineColor;
                     enable = b.overrideOutlineColor;
@@ -317,8 +318,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
 
                 setColorText(enable);
             }
-        },
-                "If off, the color will be picked based---on the tank which shot the bullet");
+        }, "If off, the color will be picked based---on the tank which shot the bullet");
 
         public void setColorText(boolean enable)
         {
@@ -382,7 +382,8 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             Bullet bullet = screen.target.get();
             if (!Game.game.window.drawingShadow)
             {
-                bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, Player.default_primary, Player.default_secondary);
+                bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand,
+                        Player.default_primary, Player.default_secondary);
             }
 
             super.draw();
@@ -403,7 +404,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
 
@@ -418,8 +419,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                         {
                             this.uiElements.add(new EmptySpace());
                         }
-                    }
-                    else if (t instanceof SelectorColor)
+                    } else if (t instanceof SelectorColor)
                         this.colorPicker = (SelectorColor) t;
                 }
             }

@@ -10,8 +10,7 @@ public class ScreenUploadFinished extends ScreenLayout
     {
         ScreenLayout s = new ScreenHome(player);
         s.setScreen();
-    }
-    );
+    });
 
     public ScreenUploadFinished(TanksOnlineServerHandler player, String message)
     {

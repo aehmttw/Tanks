@@ -43,7 +43,7 @@ public abstract class ShaderProgram
 
     public void bindAttributes() throws IllegalAccessException, InstantiationException
     {
-        for (Field f: getFields(this.getClass()))
+        for (Field f : getFields(this.getClass()))
         {
             if (Attribute.class.isAssignableFrom(f.getType()))
             {
@@ -55,7 +55,7 @@ public abstract class ShaderProgram
             }
         }
 
-        for (Field f: getFields(this.group.getClass()))
+        for (Field f : getFields(this.group.getClass()))
         {
             if (ShaderGroup.Attribute.class.isAssignableFrom(f.getType()))
             {
@@ -73,8 +73,7 @@ public abstract class ShaderProgram
 
                     this.group.attributes.add(a);
                     a.shadowMapAttribute.bind();
-                }
-                else
+                } else
                 {
                     Attribute a1 = this.util.getAttribute();
                     a.normalAttribute = a1;
@@ -295,49 +294,40 @@ public abstract class ShaderProgram
                     {
                         int[] i = ((Uniform2i) oldU).get();
                         ((Uniform2i) newU).set(i[0], i[1]);
-                    }
-                    else if (oldU instanceof Uniform3i)
+                    } else if (oldU instanceof Uniform3i)
                     {
                         int[] i = ((Uniform3i) oldU).get();
                         ((Uniform3i) newU).set(i[0], i[1], i[2]);
-                    }
-                    else if (oldU instanceof Uniform4i)
+                    } else if (oldU instanceof Uniform4i)
                     {
                         int[] i = ((Uniform4i) oldU).get();
                         ((Uniform4i) newU).set(i[0], i[1], i[2], i[3]);
-                    }
-                    else if (oldU instanceof Uniform1f)
+                    } else if (oldU instanceof Uniform1f)
                     {
                         ((Uniform1f) newU).set(((Uniform1f) oldU).get());
-                    }
-                    else if (oldU instanceof Uniform2f)
+                    } else if (oldU instanceof Uniform2f)
                     {
                         float[] i = ((Uniform2f) oldU).get();
                         ((Uniform2f) newU).set(i[0], i[1]);
-                    }
-                    else if (oldU instanceof Uniform3f)
+                    } else if (oldU instanceof Uniform3f)
                     {
                         float[] i = ((Uniform3f) oldU).get();
                         ((Uniform3f) newU).set(i[0], i[1], i[2]);
-                    }
-                    else if (oldU instanceof Uniform4f)
+                    } else if (oldU instanceof Uniform4f)
                     {
                         float[] i = ((Uniform4f) oldU).get();
                         ((Uniform4f) newU).set(i[0], i[1], i[2], i[3]);
-                    }
-                    else if (oldU instanceof UniformMatrix2)
+                    } else if (oldU instanceof UniformMatrix2)
                     {
                         float[] fl = ((UniformMatrix2) oldU).getMatrix();
                         boolean t = ((UniformMatrix2) oldU).getTranspose();
                         ((UniformMatrix2) newU).set(fl, t);
-                    }
-                    else if (oldU instanceof UniformMatrix3)
+                    } else if (oldU instanceof UniformMatrix3)
                     {
                         float[] fl = ((UniformMatrix3) oldU).getMatrix();
                         boolean t = ((UniformMatrix3) oldU).getTranspose();
                         ((UniformMatrix3) newU).set(fl, t);
-                    }
-                    else if (oldU instanceof UniformMatrix4)
+                    } else if (oldU instanceof UniformMatrix4)
                     {
                         float[] fl = ((UniformMatrix4) oldU).getMatrix();
                         boolean t = ((UniformMatrix4) oldU).getTranspose();
@@ -345,8 +335,7 @@ public abstract class ShaderProgram
                     }
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }

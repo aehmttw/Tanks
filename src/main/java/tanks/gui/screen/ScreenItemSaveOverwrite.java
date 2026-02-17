@@ -27,8 +27,7 @@ public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundS
             String t = f.nextLine();
             f.stopReading();
             this.oldItem = Item.ItemStack.fromString(null, t);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -37,14 +36,12 @@ public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundS
     public Button replace = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Replace template", () ->
     {
         this.previous.writeItemAndConfirm(item, true);
-    }
-    );
+    });
 
     public Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Back", () ->
     {
         Game.screen = this.previous;
-    }
-    );
+    });
 
     @Override
     public void update()

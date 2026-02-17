@@ -42,38 +42,42 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
     public void drawWithoutBackground()
     {
         Drawing.drawing.setInterfaceFontSize(70);
-//
-//        double c = 0.5 - (8) * 3.0 / 30;
-//        if (c < 0)
-//            c = 1 + c;
-//
-//        double[] col = Game.getRainbowColor(c);
+        //
+        // double c = 0.5 - (8) * 3.0 / 30;
+        // if (c < 0)
+        // c = 1 + c;
+        //
+        // double[] col = Game.getRainbowColor(c);
 
-//        String t = "...or invite some bots";
-//        String t1 = "to play along with!";
-//        Drawing.drawing.setColor(0, 127, 127);
-////        Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2);
-//        Drawing.drawing.drawInterfaceText(this.centerX + 5, this.centerY - 50 + 5, t);
-//        Drawing.drawing.drawInterfaceText(this.centerX + 5, this.centerY + 50 + 5,t1);
-//        Drawing.drawing.setColor(0, 255, 255);
-////        Drawing.drawing.setColor(col[0], col[1], col[2]);
-//        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 50, t);
-//        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 50, t1);
+        // String t = "...or invite some bots";
+        // String t1 = "to play along with!";
+        // Drawing.drawing.setColor(0, 127, 127);
+        //// Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2);
+        // Drawing.drawing.drawInterfaceText(this.centerX + 5, this.centerY - 50 + 5,
+        // t);
+        // Drawing.drawing.drawInterfaceText(this.centerX + 5, this.centerY + 50 +
+        // 5,t1);
+        // Drawing.drawing.setColor(0, 255, 255);
+        //// Drawing.drawing.setColor(col[0], col[1], col[2]);
+        // Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 50, t);
+        // Drawing.drawing.drawInterfaceText(this.centerX, this.centerY + 50, t1);
 
-//        Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2);
-//        Drawing.drawing.drawInterfaceText(this.centerX + 5, this.centerY + 5, "...and even crazier!");
-//        Drawing.drawing.setColor(col[0], col[1], col[2]);
-//        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "...and even crazier!");
+        // Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2);
+        // Drawing.drawing.drawInterfaceText(this.centerX + 5, this.centerY + 5, "...and
+        // even crazier!");
+        // Drawing.drawing.setColor(col[0], col[1], col[2]);
+        // Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "...and even
+        // crazier!");
 
         Drawing.drawing.setColor(174, 92, 16);
-        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale,
+                Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.drawInterfaceImage("banner.png", this.centerX, this.centerY, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);
 
         Drawing.drawing.setColor(255, 255, 255, 127);
         Drawing.drawing.fillInterfaceRect(Math.min(t * 20 / 2, Drawing.drawing.interfaceSizeX / 2), this.centerY, Math.min(t * 20, Drawing.drawing.interfaceSizeX), 280);
-
 
         if (mine.destroy)
         {
@@ -113,15 +117,16 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
 
         }
 
-//        for (int i = 0; i < Game.tracks.size(); i++)
-//        {
-//            Game.tracks.get(i).draw();
-//        }
-
+        // for (int i = 0; i < Game.tracks.size(); i++)
+        // {
+        // Game.tracks.get(i).draw();
+        // }
 
         for (int i = Game.movables.size() - 1; i >= 0; i--)
         {
-//            System.out.println(Game.movables.get(i).posX + " " + Game.movables.get(i).posY + " " + Game.movables.get(i).getClass() + " " + Game.movables.get(i).destroy);
+            // System.out.println(Game.movables.get(i).posX + " " +
+            // Game.movables.get(i).posY + " " + Game.movables.get(i).getClass() + " " +
+            // Game.movables.get(i).destroy);
             Game.movables.get(i).draw();
         }
 
@@ -156,9 +161,9 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
                 b.setPolarMotion(this.logo.angle, 3.125);
                 this.logo.addPolarMotion(b.getPolarDirection() + Math.PI, 25.0 / 32.0);
 
-//                this.logo.fireBullet(b, 3.125, 0);
+                // this.logo.fireBullet(b, 3.125, 0);
                 b.moveOut(100 / 3.125 * this.logo.size / Game.tile_size);
-//                b.effect = Bullet.BulletEffect.trail;
+                // b.effect = Bullet.BulletEffect.trail;
 
                 Game.addMovable(b);
                 shot = true;
@@ -168,10 +173,10 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
         }
 
         Obstacle.draw_size = Game.tile_size;
-//        for (int i = 0; i < Game.tracks.size(); i++)
-//        {
-//            Game.tracks.get(i).update();
-//        }
+        // for (int i = 0; i < Game.tracks.size(); i++)
+        // {
+        // Game.tracks.get(i).update();
+        // }
 
         for (int i = 0; i < Game.movables.size(); i++)
         {
@@ -185,8 +190,8 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
             Game.effects.get(i).update();
         }
 
-//        Game.tracks.removeAll(Game.removeTracks);
-//        Game.removeTracks.clear();
+        // Game.tracks.removeAll(Game.removeTracks);
+        // Game.removeTracks.clear();
 
         Game.movables.removeAll(Game.removeMovables);
         Game.removeMovables.clear();

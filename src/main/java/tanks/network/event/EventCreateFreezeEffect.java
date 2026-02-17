@@ -20,7 +20,6 @@ public class EventCreateFreezeEffect extends PersonalEvent
         this.posY = a.posY;
     }
 
-
     @Override
     public void write(ByteBuf b)
     {

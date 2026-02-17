@@ -16,8 +16,7 @@ public class ScreenPendingJoinParty extends Screen
 
         Game.screen = new ScreenJoinParty();
         ScreenPartyLobby.connections.clear();
-    }
-    );
+    });
 
     public ScreenPendingJoinParty()
     {

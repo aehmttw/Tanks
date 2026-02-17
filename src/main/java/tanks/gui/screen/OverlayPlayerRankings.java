@@ -60,8 +60,7 @@ public class OverlayPlayerRankings
         }
 
         Drawing.drawing.setColor(0, 0, 0, Math.max(0, 127 * Math.min(1, (time * 10) / 200) * Math.min(s / 25, 1)));
-        Drawing.drawing.fillInterfaceRect(x + mobileMargin / 2, Drawing.drawing.interfaceSizeY / 2,
-                width + mobileMargin, height);
+        Drawing.drawing.fillInterfaceRect(x + mobileMargin / 2, Drawing.drawing.interfaceSizeY / 2, width + mobileMargin, height);
 
         double c = time - delay - 15;
 

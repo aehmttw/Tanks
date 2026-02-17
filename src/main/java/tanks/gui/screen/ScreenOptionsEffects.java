@@ -21,9 +21,7 @@ public class ScreenOptionsEffects extends Screen
             else
                 effects.setText(effectsText, ScreenOptions.offText);
         }
-    },
-            "Particle effects may significantly---impact performance");
-
+    }, "Particle effects may significantly---impact performance");
 
     TextBoxSlider effectMultiplier = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Particle percentage", new Runnable()
     {
@@ -35,11 +33,9 @@ public class ScreenOptionsEffects extends Screen
 
             Game.effectMultiplier = Integer.parseInt(effectMultiplier.inputText) / 100.0;
         }
-    }
-            , (int) Math.round(Game.effectMultiplier * 100), 10, 100, 10);
+    }, (int) Math.round(Game.effectMultiplier * 100), 10, 100, 10);
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsGraphics()
-    );
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsGraphics());
 
     public ScreenOptionsEffects()
     {

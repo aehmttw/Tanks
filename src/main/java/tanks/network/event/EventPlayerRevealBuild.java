@@ -42,7 +42,7 @@ public class EventPlayerRevealBuild extends PersonalEvent
     {
         if (this.clientID == null && build >= 0 && Game.currentLevel != null && build < Game.currentLevel.playerBuilds.size())
         {
-            for (Movable m: Game.movables)
+            for (Movable m : Game.movables)
             {
                 if (m instanceof TankRemote && ((TankRemote) m).tank instanceof TankPlayable && ((Tank) m).networkID == tank)
                 {

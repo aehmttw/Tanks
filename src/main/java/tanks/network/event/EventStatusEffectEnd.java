@@ -21,8 +21,7 @@ public class EventStatusEffectEnd extends PersonalEvent
         {
             isTank = true;
             networkID = ((Tank) m).networkID;
-        }
-        else
+        } else
         {
             isTank = false;
             networkID = ((Bullet) m).networkID;

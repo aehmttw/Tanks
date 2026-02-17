@@ -1,15 +1,14 @@
 package tanks.gui.screen.leveleditor.selector;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.Team;
 import tanks.gui.screen.leveleditor.OverlayEditTeam;
 import tanks.gui.screen.leveleditor.OverlaySelectTeam;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SelectorTeam extends SelectorChoice<Team>
 {

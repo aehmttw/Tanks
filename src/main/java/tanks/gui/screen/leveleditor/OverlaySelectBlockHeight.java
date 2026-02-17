@@ -24,19 +24,16 @@ public class OverlaySelectBlockHeight extends ScreenLevelEditorOverlay
         {
             selector.setMetadata(editor, editor.mousePlaceable, Math.max(1, (double) selector.getMetadata(editor.mousePlaceable)));
             editor.stagger = true;
-        }
-        else if (!editor.oddStagger)
+        } else if (!editor.oddStagger)
         {
             selector.setMetadata(editor, editor.mousePlaceable, Math.max(1, (double) selector.getMetadata(editor.mousePlaceable)));
             editor.oddStagger = true;
-        }
-        else
+        } else
         {
             editor.oddStagger = false;
             editor.stagger = false;
         }
-    }, " --- "
-    );
+    }, " --- ");
 
     public OverlaySelectBlockHeight(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorStackHeight selector)
     {
@@ -74,13 +71,11 @@ public class OverlaySelectBlockHeight extends ScreenLevelEditorOverlay
         {
             this.staggering.image = "icons/nostagger.png";
             this.staggering.setHoverText("Blocks will all be placed---with the same height");
-        }
-        else if (editor.oddStagger)
+        } else if (editor.oddStagger)
         {
             this.staggering.image = "icons/oddstagger.png";
             this.staggering.setHoverText("Every other block on the grid---will be half a block shorter");
-        }
-        else
+        } else
         {
             this.staggering.image = "icons/evenstagger.png";
             this.staggering.setHoverText("Every other block on the grid---will be half a block shorter");

@@ -1,6 +1,7 @@
 package tanks.network.event.online;
 
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.network.event.EventKick;
@@ -11,8 +12,6 @@ import tanksonline.TanksOnlineServerHandler;
 import tanksonline.screen.ScreenAccessCodeExpired;
 import tanksonline.screen.ScreenHome;
 import tanksonline.screen.ScreenInsertAccessCode;
-
-import java.util.UUID;
 
 public class EventSendOnlineClientDetails extends PersonalEvent implements IOnlineServerEvent
 {
@@ -111,13 +110,11 @@ public class EventSendOnlineClientDetails extends PersonalEvent implements IOnli
             {
                 ScreenHome sc = new ScreenHome(s);
                 sc.setScreen();
-            }
-            else if (ac != null && System.currentTimeMillis() > ac.expiration)
+            } else if (ac != null && System.currentTimeMillis() > ac.expiration)
             {
                 ScreenAccessCodeExpired sc = new ScreenAccessCodeExpired(s);
                 sc.setScreen();
-            }
-            else
+            } else
             {
                 ScreenInsertAccessCode sc = new ScreenInsertAccessCode(s);
                 sc.setScreen();

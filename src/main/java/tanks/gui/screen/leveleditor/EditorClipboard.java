@@ -1,9 +1,8 @@
 package tanks.gui.screen.leveleditor;
 
+import java.util.ArrayList;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
-
-import java.util.ArrayList;
 
 public class EditorClipboard
 {
@@ -81,8 +80,7 @@ public class EditorClipboard
 
     public void flipHorizontal()
     {
-        for (Obstacle o : obstacles)
-            o.posX = -(o.posX - centerX) + centerX;
+        for (Obstacle o : obstacles) o.posX = -(o.posX - centerX) + centerX;
 
         for (Tank t : tanks)
         {
@@ -94,8 +92,7 @@ public class EditorClipboard
 
     public void flipVertical()
     {
-        for (Obstacle o : obstacles)
-            o.posY = -(o.posY - centerY) + centerY;
+        for (Obstacle o : obstacles) o.posY = -(o.posY - centerY) + centerY;
 
         for (Tank t : tanks)
         {

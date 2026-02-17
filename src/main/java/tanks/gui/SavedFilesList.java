@@ -1,16 +1,14 @@
 package tanks.gui;
 
 import basewindow.BaseFile;
-import tanks.BiConsumer;
-import tanks.Drawing;
-import tanks.Function;
-import tanks.Game;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-
+import tanks.BiConsumer;
+import tanks.Drawing;
+import tanks.Function;
+import tanks.Game;
 
 public class SavedFilesList extends ButtonList
 {
@@ -26,8 +24,7 @@ public class SavedFilesList extends ButtonList
     public ArrayList<Button> fileButtons = new ArrayList<>();
     public boolean drawOpenFileButton = false;
 
-    Button openFolder = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () ->
-            Game.game.fileManager.openFileManager(this.directory), "Open folder in file manager");
+    Button openFolder = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () -> Game.game.fileManager.openFileManager(this.directory), "Open folder in file manager");
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover)
     {
@@ -39,12 +36,14 @@ public class SavedFilesList extends ButtonList
         this(dir, page, xOffset, yOffset, behavior, hover, null, ext);
     }
 
-    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile, Button> auxiliarySetup)
+    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover,
+            BiConsumer<BaseFile, Button> auxiliarySetup)
     {
         this(dir, page, xOffset, yOffset, behavior, hover, auxiliarySetup, ".tanks");
     }
 
-    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile, Button> auxiliarySetup, String ext)
+    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover,
+            BiConsumer<BaseFile, Button> auxiliarySetup, String ext)
     {
         super(new ArrayList<>(), page, xOffset, yOffset);
 
@@ -83,13 +82,12 @@ public class SavedFilesList extends ButtonList
                 if (p.endsWith(extension))
                     files.add(p);
             }
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             Game.exitToCrash(e);
         }
 
-        for (String l: files)
+        for (String l : files)
         {
             String[] pathSections = l.replace("\\", "/").split("/");
 
@@ -116,7 +114,8 @@ public class SavedFilesList extends ButtonList
             }
         }
 
-        //this.buttons.sort(Comparator.comparing(o -> o.text) /*(int) Math.signum(times.get(o2) - times.get(o1))*/);
+        // this.buttons.sort(Comparator.comparing(o -> o.text) /*(int)
+        // Math.signum(times.get(o2) - times.get(o1))*/);
         Collections.sort(buttons, (o1, o2) -> o1.text.compareTo(o2.text));
 
         this.sortButtons();

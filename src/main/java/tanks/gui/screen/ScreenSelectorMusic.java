@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.InputCodes;
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -9,8 +10,6 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SelectorMusic;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
 
 public class ScreenSelectorMusic extends Screen implements IConditionalOverlayScreen, IDarkScreen
 {
@@ -43,8 +42,7 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
             Game.screen = screen;
             selector.function.run();
         }
-    }
-    );
+    });
 
     public ButtonList buttonList;
 
@@ -82,8 +80,7 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
                     Drawing.drawing.removeSyncedMusic(selector.options[j], 500);
                 else
                     Drawing.drawing.addSyncedMusic(selector.options[j], Game.musicVolume, true, 500);
-            }
-            );
+            });
 
             buttons.add(b);
         }
@@ -124,8 +121,7 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
                 b.imageSizeX = 30;
                 b.imageSizeY = 30;
                 b.imageXOffset = -135;
-            }
-            else
+            } else
                 b.image = null;
         }
 
@@ -147,8 +143,7 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
         {
             this.enableMargins = this.screen.enableMargins;
             this.screen.draw();
-        }
-        else
+        } else
         {
             Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
             this.drawDefaultBackground();

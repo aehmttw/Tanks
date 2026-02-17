@@ -10,7 +10,8 @@ public class ScreenControlsHotbar extends Screen
     public static int page = 0;
     public static final int page_count = 2;
 
-    InputSelector hotbarToggle = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Toggle hotbar visibility", Game.game.input.hotbarToggle);
+    InputSelector hotbarToggle = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Toggle hotbar visibility",
+            Game.game.input.hotbarToggle);
     InputSelector hotbar1 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Item slot 1", Game.game.input.hotbar1);
     InputSelector hotbar2 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Item slot 2", Game.game.input.hotbar2);
     InputSelector hotbar3 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Item slot 3", Game.game.input.hotbar3);
@@ -21,11 +22,13 @@ public class ScreenControlsHotbar extends Screen
     InputSelector hotbar8 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Item slot 8", Game.game.input.hotbar8);
     InputSelector hotbar9 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Item slot 9", Game.game.input.hotbar9);
     InputSelector hotbar10 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Item slot 10", Game.game.input.hotbar10);
-    InputSelector hotbarDeselect = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Deselect item slot", Game.game.input.hotbarDeselect);
+    InputSelector hotbarDeselect = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Deselect item slot",
+            Game.game.input.hotbarDeselect);
 
     Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", () -> page++);
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page", () -> page--);
+    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page",
+            () -> page--);
 
     public ScreenControlsHotbar()
     {
@@ -58,8 +61,7 @@ public class ScreenControlsHotbar extends Screen
             hotbar3.update();
             hotbar4.update();
             hotbar5.update();
-        }
-        else
+        } else
         {
             hotbar6.update();
             hotbar7.update();
@@ -91,8 +93,7 @@ public class ScreenControlsHotbar extends Screen
             hotbar2.draw();
             hotbar1.draw();
             hotbarToggle.draw();
-        }
-        else
+        } else
         {
             hotbarDeselect.draw();
             hotbar10.draw();

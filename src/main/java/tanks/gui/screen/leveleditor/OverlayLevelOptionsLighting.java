@@ -11,8 +11,7 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
     public TextBoxSlider light;
     public TextBoxSlider shadow;
 
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", this::escape
-    );
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", this::escape);
 
     public OverlayLevelOptionsLighting(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
@@ -25,8 +24,7 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.light = Integer.parseInt(light.inputText) / 100.0;
             Level.currentLightIntensity = screenLevelEditor.level.light;
-        }
-                , (int) Math.round(screenLevelEditor.level.light * 100), 0, 200, 1);
+        }, (int) Math.round(screenLevelEditor.level.light * 100), 0, 200, 1);
 
         light.allowLetters = false;
         light.allowSpaces = false;
@@ -45,8 +43,7 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.shadow = Integer.parseInt(shadow.inputText) / 100.0;
             Level.currentShadowIntensity = screenLevelEditor.level.shadow;
-        }
-                , (int) Math.round(screenLevelEditor.level.shadow * 100), 0, 200, 1);
+        }, (int) Math.round(screenLevelEditor.level.shadow * 100), 0, 200, 1);
 
         shadow.allowLetters = false;
         shadow.allowSpaces = false;

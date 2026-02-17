@@ -11,7 +11,6 @@ public class EventTankMimicTransform extends PersonalEvent
     public int tank;
     public int target;
 
-
     public EventTankMimicTransform()
     {
 
@@ -49,8 +48,7 @@ public class EventTankMimicTransform extends PersonalEvent
                     RegistryTank.TankEntry e = Game.registryTank.getEntry(t.name);
                     t1 = e.getTank(0, 0, 0);
                 }
-            }
-            else
+            } else
                 t1 = Tank.idMap.get(target);
 
             if (t1 == null)

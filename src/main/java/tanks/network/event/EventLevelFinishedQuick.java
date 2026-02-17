@@ -32,8 +32,7 @@ public class EventLevelFinishedQuick extends PersonalEvent
             Panel.win = true;
             Panel.winlose = "Victory!";
             Drawing.drawing.playSound("win.ogg", 1.0f, true);
-        }
-        else
+        } else
         {
             Panel.win = false;
             Panel.winlose = "You were destroyed!";

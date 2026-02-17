@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import java.util.ArrayList;
 import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;
@@ -10,8 +11,6 @@ import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBoxInstant;
 import tanks.item.Item;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
 
 public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 {
@@ -48,8 +47,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
         {
             Game.screen = previousScreen;
         }
-    }
-    );
+    });
 
     public Button deleteMode = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Delete templates", new Runnable()
     {
@@ -63,11 +61,9 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
             else
                 deleteMode.setText("Delete templates");
 
-            for (Button b: allItems.buttons)
-                b.enabled = !deleting;
+            for (Button b : allItems.buttons) b.enabled = !deleting;
         }
-    }
-    );
+    });
 
     public Button delete = new Button(0, 0, 32, 32, "x", () -> removeNow = true);
 
@@ -90,46 +86,42 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
         this.musicID = previousScreen.musicID;
         this.previousScreen = previousScreen;
 
-        allItems = new SavedFilesList(Game.homedir + Game.itemDir, itemPage, 0, -30,
-                (name, file) ->
-                {
-                    try
-                    {
-                        file.startReading();
-                        Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
-                        file.stopReading();
-                        onComplete.accept(i);
-                    }
-                    catch (Exception e)
-                    {
-                        Game.exitToCrash(e);
-                    }
-                }, (file) -> null,
-                (file, b) ->
-                {
-                    try
-                    {
-                        file.startReading();
-                        Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
-                        file.stopReading();
+        allItems = new SavedFilesList(Game.homedir + Game.itemDir, itemPage, 0, -30, (name, file) ->
+        {
+            try
+            {
+                file.startReading();
+                Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
+                file.stopReading();
+                onComplete.accept(i);
+            } catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
+        }, (file) -> null, (file, b) ->
+        {
+            try
+            {
+                file.startReading();
+                Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
+                file.stopReading();
 
-                        b.itemIcon = i.item.icon;
-                        b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
-                        b.imageSizeX = b.sizeY;
-                        b.imageSizeY = b.sizeY;
+                b.itemIcon = i.item.icon;
+                b.imageXOffset = -b.sizeX / 2 + b.sizeY / 2 + 10;
+                b.imageSizeX = b.sizeY;
+                b.imageSizeY = b.sizeY;
 
-                        if (!itemClass.isAssignableFrom(i.getClass()) && !itemClass.isAssignableFrom(i.item.getClass()))
-                            b.text = null;
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                });
+                if (!itemClass.isAssignableFrom(i.getClass()) && !itemClass.isAssignableFrom(i.item.getClass()))
+                    b.text = null;
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        });
 
         ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
 
-        for (String s: items)
+        for (String s : items)
         {
             Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
             i.item.name = Translation.translate(i.item.name);
@@ -143,8 +135,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
                     Item.ItemStack<?> i1 = Item.ItemStack.fromString(null, s);
                     i1.item.name = Translation.translate(i1.item.name);
                     onComplete.accept(i1);
-                }
-                );
+                });
 
                 this.allItems.buttons.add(b);
 
@@ -195,7 +186,8 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
         if (deleting)
         {
-            for (int i = Math.min(items.page * items.rows * items.columns + items.rows * items.columns, items.buttons.size()) - 1; i >= items.page * items.rows * items.columns; i--)
+            for (int i = Math.min(items.page * items.rows * items.columns + items.rows * items.columns, items.buttons.size()) - 1; i >= items.page * items.rows
+                    * items.columns; i--)
             {
                 Button b = items.buttons.get(i);
 
@@ -242,7 +234,8 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
         if (deleting)
         {
-            for (int i = Math.min(items.page * items.rows * items.columns + items.rows * items.columns, items.buttons.size()) - 1; i >= items.page * items.rows * items.columns; i--)
+            for (int i = Math.min(items.page * items.rows * items.columns + items.rows * items.columns, items.buttons.size()) - 1; i >= items.page * items.rows
+                    * items.columns; i--)
             {
                 Button b = items.buttons.get(i);
 

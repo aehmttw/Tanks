@@ -1,14 +1,13 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import java.util.ArrayList;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
 import tanks.gui.SearchBoxInstant;
-
-import java.util.ArrayList;
 
 public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgroundScreen
 {
@@ -43,8 +42,7 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
         {
             Game.screen = previousScreen;
         }
-    }
-    );
+    });
 
     public Button deleteMode = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Delete templates", new Runnable()
     {
@@ -58,11 +56,9 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
             else
                 deleteMode.setText("Delete templates");
 
-            for (Button b: allEffects.buttons)
-                b.enabled = !deleting;
+            for (Button b : allEffects.buttons) b.enabled = !deleting;
         }
-    }
-    );
+    });
 
     public Button delete = new Button(0, 0, 32, 32, "x", () -> removeNow = true);
 
@@ -78,42 +74,38 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
         this.musicID = previousScreen.musicID;
         this.previousScreen = previousScreen;
 
-        allEffects = new SavedFilesList(Game.homedir + Game.bulletEffectsDir, page, 0, -30,
-                (name, file) ->
-                {
-                    try
-                    {
-                        file.startReading();
-                        BulletEffect e = BulletEffect.fromString(file.nextLine());
-                        file.stopReading();
-                        onComplete.accept(e);
-                    }
-                    catch (Exception e)
-                    {
-                        Game.exitToCrash(e);
-                    }
-                }, (file) -> null,
-                (file, b) ->
-                {
-                    try
-                    {
-                        file.startReading();
-                        b.miscData.put("effect", BulletEffect.fromString(file.nextLine()));
-                        b.miscData.put("name", b.text);
-                        b.miscData.put("particles", new ArrayList<>());
-                        b.miscData.put("removeParticles", new ArrayList<>());
-                        b.text = "";
-                        file.stopReading();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                });
+        allEffects = new SavedFilesList(Game.homedir + Game.bulletEffectsDir, page, 0, -30, (name, file) ->
+        {
+            try
+            {
+                file.startReading();
+                BulletEffect e = BulletEffect.fromString(file.nextLine());
+                file.stopReading();
+                onComplete.accept(e);
+            } catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
+        }, (file) -> null, (file, b) ->
+        {
+            try
+            {
+                file.startReading();
+                b.miscData.put("effect", BulletEffect.fromString(file.nextLine()));
+                b.miscData.put("name", b.text);
+                b.miscData.put("particles", new ArrayList<>());
+                b.miscData.put("removeParticles", new ArrayList<>());
+                b.text = "";
+                file.stopReading();
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        });
 
         ArrayList<String> effects = Game.game.fileManager.getInternalFileContents("/bullet_effects/bullet_effects.tanks");
 
-        for (String s: effects)
+        for (String s : effects)
         {
             BulletEffect i = BulletEffect.fromString(s);
 
@@ -121,8 +113,7 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
             {
                 BulletEffect e1 = BulletEffect.fromString(s);
                 onComplete.accept(e1);
-            }
-            );
+            });
 
             this.allEffects.buttons.add(builtInEffectsCount, b);
             builtInEffectsCount++;
@@ -165,12 +156,13 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
     {
         effects.update();
         quit.update();
-//        search.update();
+        // search.update();
         deleteMode.update();
 
         if (deleting)
         {
-            for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows * effects.columns; i--)
+            for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows
+                    * effects.columns; i--)
             {
                 Button b = effects.buttons.get(i);
 
@@ -212,21 +204,24 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
 
         effects.draw();
         quit.draw();
-//        search.draw();
+        // search.draw();
         deleteMode.draw();
 
-        for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows * effects.columns; i--)
+        for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows
+                * effects.columns; i--)
         {
             if (!Game.game.window.drawingShadow)
             {
                 Button b = effects.buttons.get(i);
-                ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size, (ArrayList<Effect>) b.miscData.get("particles"), (ArrayList<Effect>) b.miscData.get("removeParticles"), 1, true);
+                ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size, (ArrayList<Effect>) b.miscData.get("particles"),
+                        (ArrayList<Effect>) b.miscData.get("removeParticles"), 1, true);
             }
         }
 
         if (deleting)
         {
-            for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows * effects.columns; i--)
+            for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows
+                    * effects.columns; i--)
             {
                 Button b = effects.buttons.get(i);
 

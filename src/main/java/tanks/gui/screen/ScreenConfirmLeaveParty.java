@@ -7,8 +7,7 @@ import tanks.network.Client;
 
 public class ScreenConfirmLeaveParty extends Screen
 {
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPartyLobby()
-    );
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPartyLobby());
 
     public Button confirm = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Leave party", () ->
     {
@@ -19,8 +18,7 @@ public class ScreenConfirmLeaveParty extends Screen
 
         Game.screen = new ScreenJoinParty();
         ScreenPartyLobby.connections.clear();
-    }
-    );
+    });
 
     public ScreenConfirmLeaveParty()
     {

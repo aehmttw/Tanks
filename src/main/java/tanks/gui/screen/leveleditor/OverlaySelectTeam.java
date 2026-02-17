@@ -37,8 +37,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
             else
                 reorder.setText("Reorder teams");
         }
-    }
-    );
+    });
 
     public OverlaySelectTeam(Screen previous, ScreenLevelEditor screenLevelEditor, SelectorChoice<Team> selector)
     {
@@ -47,7 +46,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
 
         this.selector.buttonList.reorderBehavior = (i, j) ->
         {
-            this.editor.teams.add(j, this.editor.teams.remove((int)i));
+            this.editor.teams.add(j, this.editor.teams.remove((int) i));
             this.selector.buttonList.buttons.add(j, this.selector.buttonList.buttons.remove((int) i));
             this.selector.buttonList.sortButtons();
 
@@ -82,7 +81,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
 
             Drawing.drawing.setColor(255, 255, 255, 200);
             if (!t.friendlyFire)
-                Drawing.drawing.drawInterfaceImage( "shield.png", b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + 2, 25, 25);
+                Drawing.drawing.drawInterfaceImage("shield.png", b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + 2, 25, 25);
         }
 
         this.reorder.draw();
@@ -102,8 +101,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
     {
         this.selector.setChoice(editor, editor.mousePlaceable, this.selector.selectedIndex);
         this.editor.level.teamsMap.clear();
-        for (Team t : this.editor.teams)
-            this.editor.level.teamsMap.put(t.name, t);
+        for (Team t : this.editor.teams) this.editor.level.teamsMap.put(t.name, t);
         super.escape();
     }
 

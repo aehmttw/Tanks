@@ -26,7 +26,6 @@ public class EventItemDrop extends PersonalEvent
         this.posY = id.posY;
     }
 
-
     @Override
     public void write(ByteBuf b)
     {

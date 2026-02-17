@@ -18,15 +18,21 @@ public class ScreenControlsTank extends Screen
     InputSelector mine = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 180, 700, 40, "Lay mine", Game.game.input.mine);
     InputSelector aim = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 270, 700, 40, "Trace aim", Game.game.input.aim);
 
-    InputSelector ability1 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 180, 700, 40, "Quick use ability 1", Game.game.input.ability1);
-    InputSelector ability2 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 90, 700, 40, "Quick use ability 2", Game.game.input.ability2);
-    InputSelector ability3 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 0, 700, 40, "Quick use ability 3", Game.game.input.ability3);
-    InputSelector ability4 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 90, 700, 40, "Quick use ability 4", Game.game.input.ability4);
-    InputSelector ability5 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 180, 700, 40, "Quick use ability 5", Game.game.input.ability5);
+    InputSelector ability1 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 180, 700, 40, "Quick use ability 1",
+            Game.game.input.ability1);
+    InputSelector ability2 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 90, 700, 40, "Quick use ability 2",
+            Game.game.input.ability2);
+    InputSelector ability3 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 0, 700, 40, "Quick use ability 3",
+            Game.game.input.ability3);
+    InputSelector ability4 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 90, 700, 40, "Quick use ability 4",
+            Game.game.input.ability4);
+    InputSelector ability5 = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 180, 700, 40, "Quick use ability 5",
+            Game.game.input.ability5);
 
     Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", () -> page++);
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page", () -> page--);
+    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page",
+            () -> page--);
 
     public ScreenControlsTank()
     {
@@ -59,8 +65,7 @@ public class ScreenControlsTank extends Screen
             shoot.update();
             mine.update();
             aim.update();
-        }
-        else
+        } else
         {
             ability1.update();
             ability2.update();
@@ -92,8 +97,7 @@ public class ScreenControlsTank extends Screen
             moveLeft.draw();
             moveDown.draw();
             moveUp.draw();
-        }
-        else
+        } else
         {
             ability1.draw();
             ability2.draw();

@@ -3,6 +3,8 @@ package tanks.gui.screen;
 import basewindow.BaseFile;
 import com.codedisaster.steamworks.SteamFriends;
 import com.codedisaster.steamworks.SteamUGCDetails;
+import java.io.IOException;
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -12,9 +14,6 @@ import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 {
@@ -79,8 +78,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                         file.stopWriting();
                         success = true;
                     }
-                }
-                catch (IOException e)
+                } catch (IOException e)
                 {
                     e.printStackTrace(Game.logger);
                     e.printStackTrace();
@@ -112,7 +110,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         Game.obstacles.clear();
         Game.obstacles.addAll(obstacles);
 
-        for (Movable m: Game.movables)
+        for (Movable m : Game.movables)
         {
             if (m instanceof Tank)
                 ((Tank) m).drawAge = 50;
@@ -134,15 +132,17 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         Game.steamNetworkHandler.workshop.search(null, 0, 18, workshopDetails.getOwnerID(), null, Game.steamNetworkHandler.workshop.searchByScore);
     });
 
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () ->
+    {
+        confirmingDelete = false;
+    });
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
         Game.cleanUp();
         Game.steamNetworkHandler.workshop.delete(workshopDetails, "Level");
         Game.screen = new ScreenWaiting("Removing level from server...");
-    }
-    );
+    });
 
     public Button voteUp = new Button(Drawing.drawing.interfaceSizeX - 630, votePosY, this.objHeight, this.objHeight, "\u00A7000200000255+", () ->
     {
@@ -163,13 +163,13 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         votesDown++;
         Game.steamNetworkHandler.workshop.currentDownloadVote = -1;
 
-
         Game.steamNetworkHandler.workshop.workshop.setUserItemVote(workshopDetails.getPublishedFileID(), false);
     }, "Dislike the level");
 
     public Button showPage = new Button(Drawing.drawing.interfaceSizeX - 435, Drawing.drawing.interfaceSizeY - 200, this.objHeight, this.objHeight, "", () ->
     {
-        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
+        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage(
+                "steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
     }, "View level page on Steam");
 
     public Button favorite = new Button(Drawing.drawing.interfaceSizeX - 395, Drawing.drawing.interfaceSizeY - 200, this.objHeight, this.objHeight, "", () ->
@@ -202,8 +202,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             updateDownloadButton();
-        }
-                , name.replace("_", " "));
+        }, name.replace("_", " "));
 
         levelName.enableCaps = true;
 
@@ -214,8 +213,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             levelName.posY += 40;
             download.posY += 40;
             back.posY += 40;
-        }
-        else if (ScreenPartyHost.isServer && !fromInterlevel)
+        } else if (ScreenPartyHost.isServer && !fromInterlevel)
         {
             quickPlay.posY -= 40;
             levelName.posY -= 60;
@@ -238,8 +236,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         {
             confirmDelete.update();
             cancelDelete.update();
-        }
-        else
+        } else
         {
             this.download.update();
             this.back.update();
@@ -266,8 +263,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 {
                     Game.game.input.play.invalidate();
                     quickPlay.function.run();
-                }
-                else
+                } else
                     quickPlay.update();
 
                 showPage.update();
@@ -297,8 +293,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to remove the level?");
-        }
-        else
+        } else
         {
             this.download.draw();
             this.back.draw();
@@ -311,7 +306,8 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.setInterfaceFontSize(24);
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "This level is not automatically drawn because");
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "it is large (size: %dx%d, tanks: %d) and may lag the game.", this.queuedLevel.sizeX, this.queuedLevel.sizeY, this.queuedLevel.tanks.size());
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "it is large (size: %dx%d, tanks: %d) and may lag the game.",
+                        this.queuedLevel.sizeX, this.queuedLevel.sizeY, this.queuedLevel.tanks.size());
                 this.reveal.draw();
             }
 
@@ -362,8 +358,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         {
             download.setText("Pick a different name...");
             download.enabled = false;
-        }
-        else
+        } else
         {
             if (fromInterlevel)
                 download.setText("Save");

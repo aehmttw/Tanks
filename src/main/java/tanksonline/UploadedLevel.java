@@ -13,7 +13,10 @@ public class UploadedLevel
     public UUID creator;
     public long time;
 
-    public enum UploadResult {success, nameTaken, error}
+    public enum UploadResult
+    {
+        success, nameTaken, error
+    }
 
     public UploadedLevel(String name, String level, UUID creator, long time)
     {
@@ -35,13 +38,11 @@ public class UploadedLevel
                 this.creator = UUID.fromString(br.readLine());
                 this.time = Long.parseLong(br.readLine());
                 br.close();
-            }
-            else
+            } else
             {
                 System.out.println("Attempted to load an inexistent level: " + f);
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -63,11 +64,9 @@ public class UploadedLevel
                 pw.close();
 
                 return UploadResult.success;
-            }
-            else
+            } else
                 return UploadResult.nameTaken;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             return UploadResult.error;

@@ -2,17 +2,16 @@ package tanks;
 
 import basewindow.BaseFile;
 import basewindow.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.network.ConnectedPlayer;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
 
 public class Player
 {
@@ -28,8 +27,10 @@ public class Player
     public long lastNudge = 0;
 
     public static final Color default_primary = new Color(0, 150, 255, 255);
-    public static final Color default_secondary = new Color(Turret.calculateSecondaryColor(default_primary.red), Turret.calculateSecondaryColor(default_primary.green), Turret.calculateSecondaryColor(default_primary.blue), 255);
-    public static final Color default_tertiary = new Color((default_primary.red + default_secondary.red) / 2, (default_primary.green + default_secondary.green) / 2, (default_primary.blue + default_secondary.blue) / 2, 255);
+    public static final Color default_secondary = new Color(Turret.calculateSecondaryColor(default_primary.red), Turret.calculateSecondaryColor(default_primary.green),
+            Turret.calculateSecondaryColor(default_primary.blue), 255);
+    public static final Color default_tertiary = new Color((default_primary.red + default_secondary.red) / 2, (default_primary.green + default_secondary.green) / 2,
+            (default_primary.blue + default_secondary.blue) / 2, 255);
 
     public Color color = new Color().set(default_primary);
     public Color color2 = new Color().set(default_secondary);
@@ -140,8 +141,7 @@ public class Player
             }
 
             return c;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("Failed to load saved crusade progress (log file includes contents): ");
             e.printStackTrace();
@@ -152,10 +152,8 @@ public class Player
             try
             {
                 f.startReading();
-                while (f.hasNextLine())
-                    Game.logger.println(f.nextLine());
-            }
-            catch (Exception e2)
+                while (f.hasNextLine()) Game.logger.println(f.nextLine());
+            } catch (Exception e2)
             {
                 e2.printStackTrace();
             }
@@ -168,7 +166,7 @@ public class Player
     {
         String[] parts = str.replace("{", "").replace("}", "").split(", ");
 
-        for (String s: parts)
+        for (String s : parts)
         {
             if (s.length() <= 0)
                 continue;
@@ -182,7 +180,7 @@ public class Player
     {
         String[] parts = str.replace("{", "").replace("}", "").split(", ");
 
-        for (String s: parts)
+        for (String s : parts)
         {
             if (s.length() <= 0)
                 continue;
@@ -196,7 +194,7 @@ public class Player
     {
         String[] parts = str.replace("[", "").replace("]", "").split(", ");
 
-        for (String s: parts)
+        for (String s : parts)
         {
             if (s.length() <= 0)
                 continue;
@@ -209,7 +207,7 @@ public class Player
     {
         String[] parts = str.replace("[", "").replace("]", "").split(", ");
 
-        for (String s: parts)
+        for (String s : parts)
         {
             if (s.length() <= 0)
                 continue;
@@ -222,7 +220,7 @@ public class Player
     {
         String[] parts = str.replace("[", "").replace("]", "").split(", ");
 
-        for (String s: parts)
+        for (String s : parts)
         {
             if (s.length() <= 0)
                 continue;

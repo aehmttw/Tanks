@@ -35,8 +35,7 @@ public class OverlayCloneLevel extends ScreenLevelEditorOverlay
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             updateCloneButton();
-        }
-                , screenLevelEditor.name.replace("_", " ").split("\\.")[0]);
+        }, screenLevelEditor.name.replace("_", " ").split("\\.")[0]);
 
         levelName.enableCaps = true;
         updateCloneButton();
@@ -51,13 +50,11 @@ public class OverlayCloneLevel extends ScreenLevelEditorOverlay
         {
             saveCopy.setText("Pick a name for the copy!");
             saveCopy.enabled = false;
-        }
-        else if (file.exists())
+        } else if (file.exists())
         {
             saveCopy.setText("Pick a different name...");
             saveCopy.enabled = false;
-        }
-        else
+        } else
         {
             saveCopy.setText("Save copy");
             saveCopy.enabled = true;

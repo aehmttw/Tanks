@@ -12,8 +12,7 @@ public class ScreenShareSelect extends Screen
             Game.screen = ScreenPartyHost.activeScreen;
         else
             Game.screen = new ScreenPartyLobby();
-    }
-    );
+    });
 
     Button level = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Share a level", () -> Game.screen = new ScreenShareLevel());
 

@@ -1,156 +1,150 @@
 package tanks.network;
 
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 
-import java.util.UUID;
-
-public class MessageReader 
+public class MessageReader
 {
-	public static final int max_event_size = 104857600;
+    public static final int max_event_size = 104857600;
 
-	public static int downstreamBytes;
-	public static int upstreamBytes;
-	public static long lastMessageTime;
+    public static int downstreamBytes;
+    public static int upstreamBytes;
+    public static long lastMessageTime;
 
-	public static int upstreamBytesPerSec;
-	public static int downstreamBytesPerSec;
+    public static int upstreamBytesPerSec;
+    public static int downstreamBytesPerSec;
 
-	public boolean useQueue = true;
-	public ByteBuf queue;
-	protected boolean reading = false;
-	protected int endpoint;
+    public boolean useQueue = true;
+    public ByteBuf queue;
+    protected boolean reading = false;
+    protected int endpoint;
 
-	protected int lastID;
+    protected int lastID;
 
-	public void queueMessage(ClientHandler c, ByteBuf m, UUID clientID)
-	{
-		this.queueMessage(null, c, m, clientID);
-	}
+    public void queueMessage(ClientHandler c, ByteBuf m, UUID clientID)
+    {
+        this.queueMessage(null, c, m, clientID);
+    }
 
+    public void queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
+    {
+        this.queueMessage(s, null, m, clientID);
+    }
 
-	public void queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
-	{
-		this.queueMessage(s, null, m, clientID);
-	}
+    public synchronized void queueMessage(ServerHandler s, ClientHandler c, ByteBuf m, UUID clientID)
+    {
+        try
+        {
+            byte[] bytes = new byte[59];
+            m.getBytes(0, bytes);
 
-	public synchronized void queueMessage(ServerHandler s, ClientHandler c, ByteBuf m, UUID clientID)
-	{
-		try
-		{
-			byte[] bytes = new byte[59];
-			m.getBytes(0, bytes);
+            if (useQueue)
+                queue.writeBytes(m);
+            else
+                queue = m;
 
-			if (useQueue)
-				queue.writeBytes(m);
-			else
-				queue = m;
+            if (queue.readableBytes() >= 4)
+            {
+                if (!reading)
+                {
+                    endpoint = queue.readInt();
+                    downstreamBytes += endpoint + 4;
+                    updateLastMessageTime();
 
-			if (queue.readableBytes() >= 4)
-			{
-				if (!reading)
-				{
-					endpoint = queue.readInt();
-					downstreamBytes += endpoint + 4;
-					updateLastMessageTime();
+                    if (endpoint > max_event_size)
+                    {
+                        if (ScreenPartyHost.isServer && s != null)
+                        {
+                            s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
+                        } else if (ScreenPartyLobby.isClient)
+                        {
+                            EventKick ev = new EventKick("A network exception has occurred: message size " + endpoint + " is too big!");
+                            ev.clientID = null;
+                            Game.eventsIn.add(ev);
 
-					if (endpoint > max_event_size)
-					{
-						if (ScreenPartyHost.isServer && s != null)
-						{
-							s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
-						}
-						else if (ScreenPartyLobby.isClient)
-						{
-							EventKick ev = new EventKick("A network exception has occurred: message size " + endpoint + " is too big!");
-							ev.clientID = null;
-							Game.eventsIn.add(ev);
+                            Client.handler.close();
+                            ScreenPartyLobby.connections.clear();
+                        }
 
-							Client.handler.close();
-							ScreenPartyLobby.connections.clear();
-						}
+                        return;
+                    }
+                }
 
-						return;
-					}
-				}
-				
-				reading = true;
+                reading = true;
 
-				while (queue.readableBytes() >= endpoint)
-				{
-					this.readMessage(s, c, queue, clientID);
-					queue.discardReadBytes();
-					
-					reading = false;
-					
-					if (queue.readableBytes() >= 4)
-					{
-						endpoint = queue.readInt();
-						downstreamBytes += endpoint + 4;
-						updateLastMessageTime();
+                while (queue.readableBytes() >= endpoint)
+                {
+                    this.readMessage(s, c, queue, clientID);
+                    queue.discardReadBytes();
 
-						if (endpoint > MessageReader.max_event_size)
-						{
-							if (ScreenPartyHost.isServer && s != null)
-							{
-								s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
-							}
-							else if (ScreenPartyLobby.isClient)
-							{
-								EventKick ev = new EventKick("A network exception has occurred: message size " + endpoint + " is too big!");
-								ev.clientID = null;
-								Game.eventsIn.add(ev);
+                    reading = false;
 
-								Client.handler.close();
-								ScreenPartyLobby.connections.clear();
-							}
+                    if (queue.readableBytes() >= 4)
+                    {
+                        endpoint = queue.readInt();
+                        downstreamBytes += endpoint + 4;
+                        updateLastMessageTime();
 
-							return;
-						}
+                        if (endpoint > MessageReader.max_event_size)
+                        {
+                            if (ScreenPartyHost.isServer && s != null)
+                            {
+                                s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
+                            } else if (ScreenPartyLobby.isClient)
+                            {
+                                EventKick ev = new EventKick("A network exception has occurred: message size " + endpoint + " is too big!");
+                                ev.clientID = null;
+                                Game.eventsIn.add(ev);
 
-						reading = true;
-					}
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			if (s != null)
-			{
-				System.err.println("A network exception has occurred: " + e.toString() + " (" + s.rawUsername + "/" + s.clientID + ")");
-				Game.logger.println("A network exception has occurred: " + e.toString() + " (" + s.rawUsername + "/" + s.clientID + ")");
-			}
-			else
-			{
-				System.err.println("A network exception has occurred: " + e.toString());
-				Game.logger.println("A network exception has occurred: " + e.toString());
-			}
+                                Client.handler.close();
+                                ScreenPartyLobby.connections.clear();
+                            }
 
-			e.printStackTrace();
-			e.printStackTrace(Game.logger);
+                            return;
+                        }
 
-			if (ScreenPartyHost.isServer && s != null)
-			{
-				s.sendEventAndClose(new EventKick("A network exception has occurred: " + e.toString()));
-				//Game.screen = new ScreenHostingEnded("A network exception has occurred: " + e.toString());
-			}
-			else if (ScreenPartyLobby.isClient)
-			{
-				EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
-				ev.clientID = null;
-				Game.eventsIn.add(ev);
+                        reading = true;
+                    }
+                }
+            }
+        } catch (Exception e)
+        {
+            if (s != null)
+            {
+                System.err.println("A network exception has occurred: " + e.toString() + " (" + s.rawUsername + "/" + s.clientID + ")");
+                Game.logger.println("A network exception has occurred: " + e.toString() + " (" + s.rawUsername + "/" + s.clientID + ")");
+            } else
+            {
+                System.err.println("A network exception has occurred: " + e.toString());
+                Game.logger.println("A network exception has occurred: " + e.toString());
+            }
 
-				Client.handler.close();
-				ScreenPartyLobby.connections.clear();
-			}
-		}
-	}
+            e.printStackTrace();
+            e.printStackTrace(Game.logger);
 
-	public synchronized void readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
+            if (ScreenPartyHost.isServer && s != null)
+            {
+                s.sendEventAndClose(new EventKick("A network exception has occurred: " + e.toString()));
+                // Game.screen = new ScreenHostingEnded("A network exception has occurred: " +
+                // e.toString());
+            } else if (ScreenPartyLobby.isClient)
+            {
+                EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
+                ev.clientID = null;
+                Game.eventsIn.add(ev);
+
+                Client.handler.close();
+                ScreenPartyLobby.connections.clear();
+            }
+        }
+    }
+
+    public synchronized void readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
     {
         int i = m.readInt();
         Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
@@ -164,7 +158,6 @@ public class MessageReader
         {
             INetworkEvent e = c.getConstructor().newInstance();
             e.read(m);
-
 
             if (e instanceof PersonalEvent)
                 ((PersonalEvent) e).clientID = clientID;
@@ -185,8 +178,7 @@ public class MessageReader
                     Game.eventsIn.add(e);
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("A network exception has occurred:");
             e.printStackTrace();
@@ -205,17 +197,17 @@ public class MessageReader
         }
     }
 
-	public static void updateLastMessageTime()
-	{
-		long time = System.currentTimeMillis() / 1000;
+    public static void updateLastMessageTime()
+    {
+        long time = System.currentTimeMillis() / 1000;
 
-		if (lastMessageTime < time)
-		{
-			lastMessageTime = time;
-			upstreamBytesPerSec = upstreamBytes;
-			downstreamBytesPerSec = downstreamBytes;
-			upstreamBytes = 0;
-			downstreamBytes = 0;
-		}
-	}
+        if (lastMessageTime < time)
+        {
+            lastMessageTime = time;
+            upstreamBytesPerSec = upstreamBytes;
+            downstreamBytesPerSec = downstreamBytes;
+            upstreamBytes = 0;
+            downstreamBytes = 0;
+        }
+    }
 }

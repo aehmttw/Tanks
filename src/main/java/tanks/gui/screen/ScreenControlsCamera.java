@@ -9,7 +9,8 @@ public class ScreenControlsCamera extends Screen
     InputSelector toggleZoom = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Toggle zoom", Game.game.input.zoom);
     InputSelector zoomIn = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Zoom in", Game.game.input.zoomIn);
     InputSelector zoomOut = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Zoom out", Game.game.input.zoomOut);
-    InputSelector zoomAuto = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle automatic zoom", Game.game.input.zoomAuto);
+    InputSelector zoomAuto = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle automatic zoom",
+            Game.game.input.zoomAuto);
 
     public ScreenControlsCamera()
     {

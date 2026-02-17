@@ -10,7 +10,6 @@ public class EventBulletInstantWaypoint extends PersonalEvent
     public double posX;
     public double posY;
 
-
     public EventBulletInstantWaypoint()
     {
 

@@ -29,7 +29,6 @@ public class EventAddShape extends PersonalEvent
 
     }
 
-
     public EventAddShape(int id, ScreenOnline.Shape s)
     {
         this.id = id;

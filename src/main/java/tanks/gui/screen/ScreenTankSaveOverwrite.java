@@ -34,8 +34,7 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
             String t = f.nextLine();
             f.stopReading();
             this.oldTank = (tank instanceof TankPlayable ? TankPlayer.fromString(t) : TankAIControlled.fromString(t));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -57,14 +56,12 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
             ((ScreenEditorTank) this.previous).writeTankAndShowConfirmation((TankAIControlled) tank, true);
         else if (this.tank instanceof TankPlayer)
             ((ScreenEditorPlayerTankBuild) this.previous).writeTankAndShowConfirmation((TankPlayer) tank, true);
-    }
-    );
+    });
 
     public Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", () ->
     {
         Game.screen = this.previous;
-    }
-    );
+    });
 
     @Override
     public void update()

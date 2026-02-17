@@ -13,9 +13,15 @@ import tanks.tank.Turret;
 
 public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderableObject
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, blockMarker, circleMarker, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress}
+    public enum EffectType
+    {
+        fire, smokeTrail, trail, ray, blockMarker, circleMarker, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress
+    }
 
-    public enum State {live, removed, recycle}
+    public enum State
+    {
+        live, removed, recycle
+    }
 
     public EffectType type;
     public Color color = new Color();
@@ -37,7 +43,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
     public static double timeSinceLastTrack = 0;
 
-    //Effects that have this set to true are removed faster when the level has ended
+    // Effects that have this set to true are removed faster when the level has
+    // ended
     public boolean fastRemoveOnExit = false;
 
     public State state = State.live;
@@ -74,7 +81,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     }
 
     /**
-     * Use Effect.createNewEffect(double x, double y, Effect.EffectType type) instead of this because it can refurbish and reuse old effects
+     * Use Effect.createNewEffect(double x, double y, Effect.EffectType type)
+     * instead of this because it can refurbish and reuse old effects
      */
     protected Effect()
     {
@@ -112,32 +120,27 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         {
             this.force = true;
             this.maxAge = 20;
-        }
-        else if (type == EffectType.explosion)
+        } else if (type == EffectType.explosion)
         {
             this.maxAge = 20;
             this.color.set(255, 0, 0);
             this.force = true;
-        }
-        else if (type == EffectType.laser)
+        } else if (type == EffectType.laser)
         {
             this.maxAge = 21;
             this.color.set(255, 0, 0);
-        }
-        else if (type == EffectType.piece)
+        } else if (type == EffectType.piece)
         {
             this.maxAge = Math.random() * 100 + 50;
             this.size = Bullet.bullet_size;
-        }
-        else if (type == EffectType.obstaclePiece)
+        } else if (type == EffectType.obstaclePiece)
             this.maxAge = Math.random() * 100 + 50;
         else if (type == EffectType.obstaclePiece3d)
         {
             this.maxAge = Math.random() * 150 + 75;
             this.size = Game.tile_size / 4;
             this.force = true;
-        }
-        else if (type.equals(EffectType.charge))
+        } else if (type.equals(EffectType.charge))
         {
             if (Game.enable3d)
                 this.add3dPolarMotion(Math.random() * Math.PI * 2, -Math.atan(Math.random()), Math.random() * 3 + 3);
@@ -148,12 +151,10 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             this.posY -= this.vY * 25;
             this.posZ -= this.vZ * 25;
             this.maxAge = 25;
-        }
-        else if (type == EffectType.tread)
+        } else if (type == EffectType.tread)
         {
             this.maxAge = TrackRenderer.getMaxTrackAge();
-        }
-        else if (type == EffectType.darkFire)
+        } else if (type == EffectType.darkFire)
             this.maxAge = 20;
         else if (type == EffectType.stun)
         {
@@ -162,8 +163,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             this.size = Math.random() * 5 + 5;
             this.distance = Math.random() * 50 + 25;
             this.force = true;
-        }
-        else if (type == EffectType.healing)
+        } else if (type == EffectType.healing)
             this.maxAge = 21;
         else if (type == EffectType.bushBurn)
             this.maxAge = this.posZ * 2;
@@ -175,21 +175,18 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         {
             this.maxAge = Math.random() * 100 + 50;
             this.force = true;
-        }
-        else if (type == EffectType.snow)
+        } else if (type == EffectType.snow)
         {
             this.maxAge = Math.random() * 100 + 50;
             this.size = (Math.random() * 4 + 2) * Bullet.bullet_size;
-        }
-        else if (type == EffectType.shield)
+        } else if (type == EffectType.shield)
             this.maxAge = 50;
         else if (type == EffectType.chain || type == EffectType.tutorialProgress)
         {
             this.drawLevel = 9;
             this.maxAge = 100;
             this.size = Game.tile_size * 2;
-        }
-        else if (type == EffectType.boostLight)
+        } else if (type == EffectType.boostLight)
             this.maxAge = 0;
         else if (type == EffectType.exclamation)
             this.maxAge = 50;
@@ -246,23 +243,22 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         if (this.type == EffectType.fire)
         {
             double size = (this.age * 3 + 10);
-            double rawOpacity = (1.0 - (this.age)/20.0);
+            double rawOpacity = (1.0 - (this.age) / 20.0);
             rawOpacity *= rawOpacity * rawOpacity;
             double opacity = (rawOpacity * 255) / 4;
 
-            double green = Math.min(255, (255 - 255.0*(this.age / 20.0)));
-            drawing.setColor(255, green, 0,  Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
+            double green = Math.min(255, (255 - 255.0 * (this.age / 20.0)));
+            drawing.setColor(255, green, 0, Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
 
             if (Game.enable3d)
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.smokeTrail)
+        } else if (this.type == EffectType.smokeTrail)
         {
             double opacityModifier = Math.max(0, Math.min(1, this.age / 40.0 - 0.25));
             int size = 20;
-            double rawOpacity = (1.0 - (this.age)/200.0);
+            double rawOpacity = (1.0 - (this.age) / 200.0);
             rawOpacity *= rawOpacity * rawOpacity;
             double opacity = (rawOpacity * 100) / 2;
 
@@ -272,8 +268,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.trail)
+        } else if (this.type == EffectType.trail)
         {
             double size = Math.min(20, this.age / 20.0 + 10);
             double rawOpacity = (1.0 - (this.age) / 50.0);
@@ -285,8 +280,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.ray)
+        } else if (this.type == EffectType.ray)
         {
             double size = 6 * this.size / Bullet.bullet_size;
 
@@ -299,8 +293,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.blockMarker)
+        } else if (this.type == EffectType.blockMarker)
         {
             double size = Game.tile_size;
 
@@ -310,8 +303,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 Drawing.drawing.setColor(0, 0, 0, 50);
 
             drawing.drawRect(this.posX, this.posY, size, size, 10);
-        }
-        else if (this.type == EffectType.circleMarker)
+        } else if (this.type == EffectType.circleMarker)
         {
             if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255, 50);
@@ -319,15 +311,13 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 Drawing.drawing.setColor(0, 0, 0, 50);
 
             Mine.drawRange2D(this.posX, this.posY, size);
-        }
-        else if (this.type == EffectType.explosion)
+        } else if (this.type == EffectType.explosion)
         {
             double size = (radius * 2);
             double opacity = (100 - this.age * 5);
             drawing.setColor(this.color, opacity, 1);
             Mine.drawRange2D(this.posX, this.posY, size / 2);
-        }
-        else if (this.type == EffectType.laser)
+        } else if (this.type == EffectType.laser)
         {
             double size = Bullet.bullet_size - this.age / 2;
             drawing.setColor(this.color);
@@ -336,8 +326,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.piece)
+        } else if (this.type == EffectType.piece)
         {
             double size = 1 + (this.size * (1 - this.age / this.maxAge));
             drawing.setColor(this.color, 255, 0.5);
@@ -346,8 +335,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.snow)
+        } else if (this.type == EffectType.snow)
         {
             double size2 = 1 + 1.5 * (Bullet.bullet_size * (1 - this.age / this.maxAge));
             drawing.setColor(this.color);
@@ -356,8 +344,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size2, size2);
             else
                 drawing.fillOval(this.posX, this.posY, size2, size2);
-        }
-        else if (this.type == EffectType.interfacePiece || this.type == EffectType.interfacePieceSparkle)
+        } else if (this.type == EffectType.interfacePiece || this.type == EffectType.interfacePieceSparkle)
         {
             double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
 
@@ -366,22 +353,19 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
             drawing.setColor(this.color, 255, 0.5);
             drawing.fillInterfaceOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.obstaclePiece)
+        } else if (this.type == EffectType.obstaclePiece)
         {
             double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
             drawing.setColor(this.color);
 
             drawing.fillRect(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.obstaclePiece3d)
+        } else if (this.type == EffectType.obstaclePiece3d)
         {
             double size = 1 + (this.size * (1 - this.age / this.maxAge));
             drawing.setColor(this.color);
 
             drawing.fillBox(this.posX, this.posY, this.posZ, size, size, size);
-        }
-        else if (this.type == EffectType.charge)
+        } else if (this.type == EffectType.charge)
         {
             double size = 1 + (Bullet.bullet_size * (this.age / this.maxAge));
             drawing.setColor(this.color, 255, 0.5);
@@ -390,23 +374,21 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.darkFire)
+        } else if (this.type == EffectType.darkFire)
         {
             double size = (this.age * 3 + 10);
-            double rawOpacity = (1.0 - (this.age)/20.0);
+            double rawOpacity = (1.0 - (this.age) / 20.0);
             rawOpacity *= rawOpacity * rawOpacity;
             double opacity = (rawOpacity * 255) / 4;
 
             double red = Math.min(255, (128 - 128.0 * (this.age / 20.0)));
-            drawing.setColor(red / 2, 0, red,  Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
+            drawing.setColor(red / 2, 0, red, Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
 
             if (Game.enable3d)
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.stun)
+        } else if (this.type == EffectType.stun)
         {
             double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) / 30), Math.min(1, this.age / 30)));
             double angle = this.angle + this.age / 20;
@@ -421,8 +403,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX + o[0], this.posY + o[1], this.posZ, size, size);
             else
                 drawing.fillOval(this.posX + o[0], this.posY + o[1], size, size);
-        }
-        else if (this.type == EffectType.electric)
+        } else if (this.type == EffectType.electric)
         {
             double size = Math.max(0, Bullet.bullet_size - this.age / 2);
             drawing.setColor(0, 255, 255);
@@ -431,8 +412,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.healing)
+        } else if (this.type == EffectType.healing)
         {
             double size = Bullet.bullet_size - this.age / 2;
             drawing.setColor(0, 255, 0);
@@ -441,15 +421,13 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
             else
                 drawing.fillOval(this.posX, this.posY, size, size);
-        }
-        else if (this.type == EffectType.bushBurn)
+        } else if (this.type == EffectType.bushBurn)
         {
             if (Game.enable3d)
             {
                 Drawing.drawing.setColor(this.color);
                 Drawing.drawing.fillBox(this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, this.posZ);
-            }
-            else
+            } else
             {
                 Drawing.drawing.setColor(this.color, this.posZ);
                 Drawing.drawing.fillRect(this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
@@ -458,9 +436,9 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             if (!Game.game.window.drawingShadow)
                 this.posZ -= Panel.frameFrequency / 2;
 
-            this.color.set(Math.max(this.color.red - Panel.frameFrequency, 0), Math.max(this.color.green - Panel.frameFrequency, 0), Math.max(this.color.blue - Panel.frameFrequency, 0));
-        }
-        else if (this.type == EffectType.glow)
+            this.color.set(Math.max(this.color.red - Panel.frameFrequency, 0), Math.max(this.color.green - Panel.frameFrequency, 0),
+                    Math.max(this.color.blue - Panel.frameFrequency, 0));
+        } else if (this.type == EffectType.glow)
         {
             double size = 1 + (40 * (1 - this.age / this.maxAge));
             drawing.setColor(255, 255, 255, 40);
@@ -469,22 +447,19 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             {
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size, false, true);
                 drawing.fillOval(this.posX, this.posY, this.posZ, size / 2, size / 2, false, true);
-            }
-            else
+            } else
             {
                 drawing.fillOval(this.posX, this.posY, size, size);
                 drawing.fillOval(this.posX, this.posY, size / 2, size / 2);
             }
-        }
-        else if (this.type == EffectType.teleporterLight)
+        } else if (this.type == EffectType.teleporterLight)
         {
             for (double i = 0; i < 1 - this.size; i += 0.025)
             {
                 Drawing.drawing.setColor(255, 255, 255, (1 - this.size - i) * 25, 1);
                 Drawing.drawing.fillOval(this.posX, this.posY, posZ + 7 + i * 50, Obstacle.draw_size / 2, Obstacle.draw_size / 2, true, false);
             }
-        }
-        else if (this.type == EffectType.shield)
+        } else if (this.type == EffectType.shield)
         {
             double a = Math.min(25, 50 - this.age) * 2.55 * 4;
             drawing.setColor(255, 255, 255, a);
@@ -495,16 +470,14 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.setFontSize(24 * this.size / Game.tile_size);
                 drawing.setColor(0, 0, 0, a, 0.5);
                 drawing.drawText(this.posX, this.posY - this.size / 20, this.posZ + this.age + 1, "" + (int) this.radius);
-            }
-            else
+            } else
             {
                 drawing.drawImage("shield.png", this.posX, this.posY, this.size * 1.25, this.size * 1.25);
                 drawing.setFontSize(24 * this.size / Game.tile_size);
                 drawing.setColor(0, 0, 0, a, 0.5);
                 drawing.drawText(this.posX, this.posY - this.size / 20, "" + (int) this.radius);
             }
-        }
-        else if (this.type == EffectType.boostLight)
+        } else if (this.type == EffectType.boostLight)
         {
             if (Game.game.window.drawingShadow)
                 return;
@@ -521,8 +494,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             }
 
             Game.game.window.shapeRenderer.setBatchMode(false, true, true, true, false);
-        }
-        else if (this.type == EffectType.exclamation)
+        } else if (this.type == EffectType.exclamation)
         {
             double a = Math.min(25, 50 - this.age) * 2.55 * 4;
 
@@ -543,10 +515,9 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.drawText(this.posX + 2, 3 + this.posY - this.size / 20, this.posZ + this.age + 1, "!");
                 drawing.setColor(this.glowColor, a, 1);
                 drawing.drawText(this.posX + 0, 1 + this.posY - this.size / 20, this.posZ + this.age + 2, "!");
-            }
-            else
+            } else
             {
-                drawing.fillOval(this.posX, this.posY,this.size, this.size);
+                drawing.fillOval(this.posX, this.posY, this.size, this.size);
                 drawing.setColor(this.color, a, 0);
                 drawing.fillOval(this.posX, this.posY, this.posZ + this.age, this.size * 0.8, this.size * 0.8);
                 drawing.setFontSize(32 * this.size / Game.tile_size);
@@ -555,8 +526,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.setColor(this.glowColor, a, 1);
                 drawing.drawText(this.posX + 0, 1 + this.posY - this.size / 20, "!");
             }
-        }
-        else if (this.type == EffectType.chain)
+        } else if (this.type == EffectType.chain)
         {
             double a = Math.min(50, this.maxAge - this.age) / 50 * 255;
             drawing.setColor(255, 255, 255, a);
@@ -580,8 +550,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.drawText(this.posX + 2, this.posY - this.size / 20 + 22, this.posZ + this.age, "chain!");
                 drawing.setColor(col[0], col[1], col[2], a, 0.5);
                 drawing.drawText(this.posX, this.posY - this.size / 20 + 20, this.posZ + this.age + 1, "chain!");
-            }
-            else
+            } else
             {
                 drawing.setFontSize(24 * this.size / Game.tile_size);
                 drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, a, 0.5);
@@ -596,8 +565,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.drawText(this.posX, this.posY - this.size / 20 + 20, "chain!");
 
             }
-        }
-        else if (this.type == EffectType.tutorialProgress)
+        } else if (this.type == EffectType.tutorialProgress)
         {
             double a = Math.min(50, this.maxAge - this.age) / 50 * 255;
             drawing.setColor(255, 255, 255, a);
@@ -626,8 +594,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.drawText(this.posX + 2, this.posY - this.size / 20 - 5, this.posZ + this.age, text);
                 drawing.setColor(col[0], col[1], col[2], a, 0.5);
                 drawing.drawText(this.posX, this.posY - this.size / 20 - 7, this.posZ + this.age + 1, text);
-            }
-            else
+            } else
             {
                 drawing.setFontSize(24 * this.size / Game.tile_size);
                 drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, a, 0.5);
@@ -636,8 +603,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.drawText(this.posX, this.posY - this.size / 20 - 7, text);
 
             }
-        }
-        else
+        } else
         {
             Game.exitToCrash(new RuntimeException("Invalid effect type: " + this.type));
         }
@@ -657,7 +623,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
     public Effect setColorWithNoise(double r, double g, double b, double noise)
     {
-        this.color.set(Math.max(0, Math.min(255, r + (Math.random() - 0.5) * noise)), Math.max(0, Math.min(255, g + (Math.random() - 0.5) * noise)), Math.max(0, Math.min(255, b + (Math.random() - 0.5) * noise)));
+        this.color.set(Math.max(0, Math.min(255, r + (Math.random() - 0.5) * noise)), Math.max(0, Math.min(255, g + (Math.random() - 0.5) * noise)),
+                Math.max(0, Math.min(255, b + (Math.random() - 0.5) * noise)));
         return this;
     }
 
@@ -775,8 +742,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             drawing.setColor(this.glowColor, this.glowColor.alpha, 1);
 
             drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8);
-        }
-        else if (this.type == EffectType.interfacePieceSparkle)
+        } else if (this.type == EffectType.interfacePieceSparkle)
         {
             double size = 1 + (Bullet.bullet_size * (1 - this.age / this.maxAge));
 
@@ -787,8 +753,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
             drawing.fillInterfaceGlow(this.posX, this.posY, size * 8, size * 8);
             drawing.fillInterfaceGlowSparkle(this.posX, this.posY, 0, size * 4, this.age / 100.0 * this.radius);
-        }
-        else if (this.type == EffectType.charge)
+        } else if (this.type == EffectType.charge)
         {
             double size = 1 + (Bullet.bullet_size * (this.age / this.maxAge));
 
@@ -798,8 +763,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillGlow(this.posX, this.posY, this.posZ, size * 8, size * 8);
             else
                 drawing.fillGlow(this.posX, this.posY, size * 8, size * 8);
-        }
-        else if (this.type == EffectType.stun)
+        } else if (this.type == EffectType.stun)
         {
             double size = 1 + (this.size * Math.min(Math.min(1, (this.maxAge - this.age) / 30), Math.min(1, this.age / 30)));
             double angle = this.angle + this.age / 20;
@@ -813,8 +777,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillGlow(this.posX + o[0], this.posY + o[1], this.posZ, size * 8, size * 8);
             else
                 drawing.fillGlow(this.posX + o[0], this.posY + o[1], size * 8, size * 8);
-        }
-        else if (this.type == EffectType.glow)
+        } else if (this.type == EffectType.glow)
         {
             double size = 1 + (40 * (1 - this.age / this.maxAge));
 
@@ -824,8 +787,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillGlow(this.posX, this.posY, this.posZ, size * 8, size * 8, false, true);
             else
                 drawing.fillGlow(this.posX, this.posY, size * 8, size * 8);
-        }
-        else if (this.type == EffectType.snow)
+        } else if (this.type == EffectType.snow)
         {
             double size = this.size * (1 + this.age / this.maxAge);
             drawing.setColor(this.color, (1 - this.age / this.maxAge) * 255);
@@ -835,12 +797,12 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             else
                 drawing.fillGlow(this.posX, this.posY, size, size, true);
 
-            /*if (Game.enable3d)
-                drawing.drawImage("glow.png", this.posX, this.posY, this.posZ, size, size);
-            else
-                drawing.drawImage("glow.png", this.posX, this.posY, size, size);*/
-        }
-        else if (this.type == EffectType.ray)
+            /*
+             * if (Game.enable3d) drawing.drawImage("glow.png", this.posX, this.posY,
+             * this.posZ, size, size); else drawing.drawImage("glow.png", this.posX,
+             * this.posY, size, size);
+             */
+        } else if (this.type == EffectType.ray)
         {
             drawing.setColor(255, 255, 255, 50, 1);
             double size = this.size / Bullet.bullet_size * 24;
@@ -904,13 +866,13 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             {
                 collided = this.posZ <= this.gridHeight;
 
-                if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY && this.gridHeight > Math.max(5, Chunk.getOrDefault(prevGridX, prevGridY).height()))
+                if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY
+                        && this.gridHeight > Math.max(5, Chunk.getOrDefault(prevGridX, prevGridY).height()))
                 {
                     collidedX = this.prevGridX != x;
                     collidedY = this.prevGridY != y;
                 }
-            }
-            else
+            } else
                 collided = true;
 
             this.vZ -= 0.1 * Panel.frameFrequency;
@@ -967,8 +929,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
             this.prevGridX = (int) (this.posX / Game.tile_size);
             this.prevGridY = (int) (this.posY / Game.tile_size);
-        }
-        else if (this.type == EffectType.bushBurn && Game.effectsEnabled)
+        } else if (this.type == EffectType.bushBurn && Game.effectsEnabled)
         {
             if (Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.1)
             {
@@ -979,8 +940,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                     e.color.set(255, Math.random() * 255, 0);
                     e.glowColor.set(e.color);
                     e.vZ = Math.random() + 1;
-                }
-                else
+                } else
                 {
                     e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, EffectType.piece);
                     e.color.set(255, Math.random() * 255, 0);
@@ -991,7 +951,8 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
             if (Game.enable3d && Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.1 * (2 - this.posZ / Game.tile_size))
             {
-                Effect e2 = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, this.posZ - Game.tile_size / 4, EffectType.obstaclePiece3d);
+                Effect e2 = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size,
+                        this.posZ - Game.tile_size / 4, EffectType.obstaclePiece3d);
                 e2.addPolarMotion(Math.random() * 2 * Math.PI, Math.random());
                 double col = (this.color.red + this.color.green + this.color.blue) / 3;
                 e2.color.set(col, col, col);

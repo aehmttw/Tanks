@@ -22,8 +22,7 @@ public class ScreenBindInput extends Screen
         {
             Game.screen = previous;
         }
-    }
-    );
+    });
 
     Button unbind = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "Unbind", new Runnable()
     {
@@ -34,8 +33,7 @@ public class ScreenBindInput extends Screen
             input.inputType = null;
             Game.screen = previous;
         }
-    }
-    );
+    });
 
     Button reset = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Reset", new Runnable()
     {
@@ -45,8 +43,7 @@ public class ScreenBindInput extends Screen
             input.reset();
             Game.screen = previous;
         }
-    }
-    );
+    });
 
     public ScreenBindInput(Screen prev, InputBinding input, String name, InputSelector selector, boolean number)
     {
@@ -79,8 +76,7 @@ public class ScreenBindInput extends Screen
                 this.selector.glowEffects.clear();
                 this.selector.lastFrame = Panel.panel.ageFrames;
                 this.selector.submitEffect(this.number);
-            }
-            else if (!Game.game.window.validPressedButtons.isEmpty())
+            } else if (!Game.game.window.validPressedButtons.isEmpty())
             {
                 input.input = Game.game.window.validPressedButtons.get(0);
                 input.inputType = InputBinding.InputType.mouse;
@@ -99,7 +95,7 @@ public class ScreenBindInput extends Screen
     @Override
     public void draw()
     {
-        //this.drawDefaultBackground();
+        // this.drawDefaultBackground();
 
         previous.draw();
 

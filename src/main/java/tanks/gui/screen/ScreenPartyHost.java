@@ -1,6 +1,11 @@
 package tanks.gui.screen;
 
 import com.codedisaster.steamworks.SteamMatchmaking;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.UUID;
 import tanks.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
@@ -13,12 +18,6 @@ import tanks.network.event.*;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 import tanks.translation.Translation;
-
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.UUID;
 
 public class ScreenPartyHost extends Screen
 {
@@ -83,16 +82,12 @@ public class ScreenPartyHost extends Screen
         Game.cleanUp();
         Game.loadRandomLevel();
         Game.screen = new ScreenGame();
-    }
-            , "Generate a random level to play");
+    }, "Generate a random level to play");
 
-    Button nextUsernamePage = new Button(this.centerX - 190,
-            this.centerY + username_y_offset + username_spacing * (1 + entries_per_page), 300, 30, "Next page", () -> usernamePage++
-    );
+    Button nextUsernamePage = new Button(this.centerX - 190, this.centerY + username_y_offset + username_spacing * (1 + entries_per_page), 300, 30, "Next page",
+            () -> usernamePage++);
 
-    Button previousUsernamePage = new Button(this.centerX - 190, this.centerY + username_y_offset,
-            300, 30, "Previous page", () -> usernamePage--
-    );
+    Button previousUsernamePage = new Button(this.centerX - 190, this.centerY + username_y_offset, 300, 30, "Previous page", () -> usernamePage--);
 
     Button versus = new Button(this.centerX + 190, this.centerY - 190, this.objWidth, this.objHeight, "Random versus", () ->
     {
@@ -103,8 +98,7 @@ public class ScreenPartyHost extends Screen
         ScreenGame.versus = true;
 
         Game.screen = new ScreenGame();
-    }
-            , "Fight other players in this party---in a randomly generated level");
+    }, "Fight other players in this party---in a randomly generated level");
 
     Button crusades = new Button(this.centerX + 190, this.centerY - 130, this.objWidth, this.objHeight, "Crusades", () ->
     {
@@ -112,21 +106,20 @@ public class ScreenPartyHost extends Screen
             Game.screen = new ScreenPartyCrusades();
         else
             Game.screen = new ScreenPartyResumeCrusade();
-    },
-            "Fight battles in an order,---and see how long you can survive!");
+    }, "Fight battles in an order,---and see how long you can survive!");
 
     Button minigames = new Button(this.centerX + 190, this.centerY - 70, this.objWidth, this.objHeight, "Minigames", () ->
     {
         Game.screen = new ScreenMinigames();
-    },
-            "Play Tanks in new ways!");
+    }, "Play Tanks in new ways!");
 
     Button myLevels = new Button(this.centerX + 190, this.centerY - 10, this.objWidth, this.objHeight, "My levels", () -> Game.screen = new ScreenPlaySavedLevels(),
             "Play levels you have created");
 
     Button share = new Button(this.centerX + 190, this.centerY + 80, this.objWidth, this.objHeight, "Upload", () -> Game.screen = new ScreenShareSelect());
 
-    Button shared = new Button(this.centerX + 190, this.centerY + 140, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
+    Button shared = new Button(this.centerX + 190, this.centerY + 140, this.objWidth, this.objHeight, "Download",
+            () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
 
     Button options = new Button(this.centerX - 190, this.centerY + 210, this.objWidth, this.objHeight, "Options", () -> Game.screen = new ScreenOptions());
 
@@ -169,8 +162,8 @@ public class ScreenPartyHost extends Screen
         for (int i = 0; i < this.kickButtons.length; i++)
         {
             final int j = i;
-            kickButtons[i] = new Button(this.centerX - 35,
-                    this.centerY + (1 + i) * username_spacing + username_y_offset, 25, 25, "x", () -> Game.screen = new ScreenPartyKick(server.connections.get(j + usernamePage * entries_per_page)));
+            kickButtons[i] = new Button(this.centerX - 35, this.centerY + (1 + i) * username_spacing + username_y_offset, 25, 25, "x",
+                    () -> Game.screen = new ScreenPartyKick(server.connections.get(j + usernamePage * entries_per_page)));
 
             kickButtons[i].textOffsetY = -2.5;
 
@@ -188,8 +181,7 @@ public class ScreenPartyHost extends Screen
 
             kickButtons[i].fontSize = this.textSize;
 
-            muteButtons[i] = new Button(this.centerX - 5,
-                this.centerY + (1 + i) * username_spacing + username_y_offset, 25, 25, "", () ->
+            muteButtons[i] = new Button(this.centerX - 5, this.centerY + (1 + i) * username_spacing + username_y_offset, 25, 25, "", () ->
             {
                 ServerHandler sh = server.connections.get(j + usernamePage * entries_per_page);
                 UUID id = sh.clientID;
@@ -216,8 +208,7 @@ public class ScreenPartyHost extends Screen
             {
                 server = new Server(Game.port);
                 server.run();
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -232,8 +223,7 @@ public class ScreenPartyHost extends Screen
             try
             {
                 ip = Translation.translate("Your Local IP Address: %s (Port: %d)", Inet4Address.getLocalHost().getHostAddress(), Game.port);
-            }
-            catch (UnknownHostException e)
+            } catch (UnknownHostException e)
             {
                 ip = Translation.translate("Connect to a non-cellular data network to play with others!");
             }
@@ -244,8 +234,7 @@ public class ScreenPartyHost extends Screen
             if (ip.contains("127.0.0.1"))
                 ip = Translation.translate("Party host");
 
-        }
-        ).start();
+        }).start();
 
         if (Game.steamNetworkHandler.initialized)
             Game.steamNetworkHandler.hostParty();
@@ -278,10 +267,10 @@ public class ScreenPartyHost extends Screen
             {
                 visibility.update();
                 invite.update();
-            }
-            else if (Game.steamNetworkHandler.lobbyHostStatus != null)
+            } else if (Game.steamNetworkHandler.lobbyHostStatus != null)
             {
-                steamHostFailed.setHoverText("Hosting failed:---%s------If you keep getting this error try restarting the game.", SteamResults.getMessage(Game.steamNetworkHandler.lobbyHostStatus));
+                steamHostFailed.setHoverText("Hosting failed:---%s------If you keep getting this error try restarting the game.",
+                        SteamResults.getMessage(Game.steamNetworkHandler.lobbyHostStatus));
                 steamHostFailed.update();
             }
         }
@@ -350,7 +339,6 @@ public class ScreenPartyHost extends Screen
         else
             Drawing.drawing.displayInterfaceText(this.centerX - 190, this.centerY - 280, "1 player in this party:");
 
-
         double ipY = 400;
         if (Game.steamNetworkHandler.initialized)
         {
@@ -358,8 +346,7 @@ public class ScreenPartyHost extends Screen
             {
                 invite.draw();
                 visibility.draw();
-            }
-            else
+            } else
             {
                 if (Game.steamNetworkHandler.lobbyHostStatus != null)
                     steamHostFailed.draw();
@@ -370,8 +357,7 @@ public class ScreenPartyHost extends Screen
                     Drawing.drawing.drawInterfaceText(steamHostFailed.posX, steamHostFailed.posY, "Starting Steam party...");
                 }
             }
-        }
-        else
+        } else
             ipY = 330;
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
@@ -412,12 +398,14 @@ public class ScreenPartyHost extends Screen
 
                 Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 250, Game.player.username);
                 Drawing.drawing.drawInterfaceText(this.centerX - 190, this.centerY + username_y_offset, n);
-                Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, this.centerY + username_y_offset, Game.player.color, Game.player.color2, Game.player.color3);
+                Tank.drawTank(this.centerX - Drawing.drawing.getStringWidth(n) / 2 - 230, this.centerY + username_y_offset, Game.player.color, Game.player.color2,
+                        Game.player.color3);
             }
 
             if (server.connections != null)
             {
-                for (int i = this.usernamePage * entries_per_page; i < Math.min(((this.usernamePage + 1) * entries_per_page), server.connections.size() + Game.botPlayers.size()); i++)
+                for (int i = this.usernamePage * entries_per_page; i < Math.min(((this.usernamePage + 1) * entries_per_page),
+                        server.connections.size() + Game.botPlayers.size()); i++)
                 {
                     ServerHandler h = i < server.connections.size() ? server.connections.get(i) : null;
                     Player p = i < server.connections.size() ? h.player : Game.botPlayers.get(i - server.connections.size());
@@ -445,8 +433,7 @@ public class ScreenPartyHost extends Screen
                                 {
                                     muteButtons[i].image = "mute.png";
                                     muteButtons[n].setHoverText("Click to unmute %s.---%s is currently muted and can't chat.", p.username, p.username);
-                                }
-                                else
+                                } else
                                 {
                                     muteButtons[i].image = "chat.png";
                                     muteButtons[n].setHoverText("Click to mute %s and prevent them from chatting.---%s is currently not muted.", p.username, p.username);
@@ -458,8 +445,7 @@ public class ScreenPartyHost extends Screen
                                 Drawing.drawing.setColor(0, 0, 0);
                                 Drawing.drawing.drawInterfaceText(this.centerX - w - 255, y, server.connections.get(i).lastLatency + "ms", true);
                             }
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
 
                         }
@@ -530,8 +516,7 @@ public class ScreenPartyHost extends Screen
         }
 
         ArrayList<String> namesList = new ArrayList<>(botNames);
-        for (Player p: Game.botPlayers)
-            namesList.remove(p.username);
+        for (Player p : Game.botPlayers) namesList.remove(p.username);
 
         for (int i = Game.botPlayers.size(); i < bots; i++)
         {
@@ -558,8 +543,7 @@ public class ScreenPartyHost extends Screen
                 p.color2.red = (int) (col[0] * (1 - power) + shade * power);
                 p.color2.green = (int) (col[1] * (1 - power) + shade * power);
                 p.color2.blue = (int) (col[2] * (1 - power) + shade * power);
-            }
-            else
+            } else
             {
                 p.color2.red = (int) Turret.calculateSecondaryColor(col[0]);
                 p.color2.green = (int) Turret.calculateSecondaryColor(col[1]);
@@ -574,8 +558,7 @@ public class ScreenPartyHost extends Screen
                 p.color3.red = (int) (col[0] * (1 - power) + shade * power);
                 p.color3.green = (int) (col[1] * (1 - power) + shade * power);
                 p.color3.blue = (int) (col[2] * (1 - power) + shade * power);
-            }
-            else
+            } else
             {
                 p.color3.red = (p.color.red + p.color2.red) / 2;
                 p.color3.green = (p.color.green + p.color2.green) / 2;
@@ -604,8 +587,7 @@ public class ScreenPartyHost extends Screen
                 s = "\u00A7000127255255" + c + " bot has joined the party\u00A7000000000255";
             ScreenPartyHost.chat.add(0, new ChatMessage(s));
             Game.eventsOut.add(new EventChat(s));
-        }
-        else if (old > Game.botPlayers.size())
+        } else if (old > Game.botPlayers.size())
         {
             Drawing.drawing.playGlobalSound("leave.ogg");
             int c = (old - Game.botPlayers.size());

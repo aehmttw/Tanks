@@ -4,7 +4,6 @@ import basewindow.BaseWindow;
 import basewindow.Model;
 import basewindow.ModelPart;
 import basewindow.transformation.AxisRotation;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -52,8 +51,7 @@ public class ImmediateModeModelPart extends ModelPart
                 }
 
                 window.setTexture(this.material.texture);
-            }
-            else
+            } else
                 window.stopTexture();
 
             window.setColor(r * shape.brightness, g * shape.brightness, b * shape.brightness, window.colorA * 255, window.glow * 255);
@@ -85,8 +83,7 @@ public class ImmediateModeModelPart extends ModelPart
                 }
 
                 window.setTexture(this.material.texture);
-            }
-            else
+            } else
                 window.stopTexture();
 
             window.setColor(r * shape.brightness, g * shape.brightness, b * shape.brightness, window.colorA * 255, window.glow * 255);
@@ -116,10 +113,8 @@ public class ImmediateModeModelPart extends ModelPart
             if (m.material != null)
                 window.setTextureCoords(s.texCoords[index].x, s.texCoords[index].y);
 
-            window.addVertex(
-                    (s.points[index].x * Math.cos(yaw) * sX - s.points[index].y * Math.sin(yaw) * sY) + posX,
-                    (s.points[index].y * Math.cos(yaw) * sY + s.points[index].x * Math.sin(yaw) * sX) + posY,
-                    s.points[index].z * sZ + posZ);
+            window.addVertex((s.points[index].x * Math.cos(yaw) * sX - s.points[index].y * Math.sin(yaw) * sY) + posX,
+                    (s.points[index].y * Math.cos(yaw) * sY + s.points[index].x * Math.sin(yaw) * sX) + posY, s.points[index].z * sZ + posZ);
         }
 
         public void addVertex(ModelPart m, Shape s, int index, double posX, double posY, double sX, double sY, double yaw)
@@ -127,8 +122,7 @@ public class ImmediateModeModelPart extends ModelPart
             if (m.material != null)
                 window.setTextureCoords(s.texCoords[index].x, s.texCoords[index].y);
 
-            window.addVertex(
-                    (s.points[index].x * Math.cos(yaw) * sX - s.points[index].y * Math.sin(yaw) * sY) + posX,
+            window.addVertex((s.points[index].x * Math.cos(yaw) * sX - s.points[index].y * Math.sin(yaw) * sY) + posX,
                     (s.points[index].y * Math.cos(yaw) * sY + s.points[index].x * Math.sin(yaw) * sX) + posY);
         }
 
@@ -170,8 +164,7 @@ public class ImmediateModeModelPart extends ModelPart
                 {
                     this.addVertex(m, s, i, posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll);
                 }
-            }
-            else if (s instanceof Quad)
+            } else if (s instanceof Quad)
             {
                 this.addVertex(m, s, 0, posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll);
                 this.addVertex(m, s, 1, posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll);
@@ -192,8 +185,7 @@ public class ImmediateModeModelPart extends ModelPart
                 {
                     this.addVertex(m, s, i, posX, posY, posZ, sX, sY, sZ, yaw);
                 }
-            }
-            else if (s instanceof Quad)
+            } else if (s instanceof Quad)
             {
                 this.addVertex(m, s, 0, posX, posY, posZ, sX, sY, sZ, yaw);
                 this.addVertex(m, s, 1, posX, posY, posZ, sX, sY, sZ, yaw);
@@ -214,8 +206,7 @@ public class ImmediateModeModelPart extends ModelPart
                 {
                     this.addVertex(m, s, i, posX, posY, sX, sY, yaw);
                 }
-            }
-            else if (s instanceof Quad)
+            } else if (s instanceof Quad)
             {
                 this.addVertex(m, s, 0, posX, posY, sX, sY, yaw);
                 this.addVertex(m, s, 1, posX, posY, sX, sY, yaw);

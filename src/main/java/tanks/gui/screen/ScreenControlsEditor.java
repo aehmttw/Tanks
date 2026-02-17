@@ -11,58 +11,83 @@ public class ScreenControlsEditor extends Screen
     public static final int page_count = 7;
 
     InputSelector pause = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Editor menu", Game.game.input.editorPause);
-    InputSelector objectMenu = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Object menu", Game.game.input.editorObjectMenu);
+    InputSelector objectMenu = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Object menu",
+            Game.game.input.editorObjectMenu);
     InputSelector play = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Play level", Game.game.input.editorPlay);
-    InputSelector toggleControls = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Toggle on-screen buttons", Game.game.input.editorToggleControls);
+    InputSelector toggleControls = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Toggle on-screen buttons",
+            Game.game.input.editorToggleControls);
     InputSelector undo = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Undo", Game.game.input.editorUndo);
     InputSelector redo = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Redo", Game.game.input.editorRedo);
 
     InputSelector use = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Use tool", Game.game.input.editorUse);
-    InputSelector action = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Tool quick action", Game.game.input.editorAction);
+    InputSelector action = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Tool quick action",
+            Game.game.input.editorAction);
     InputSelector team = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Tank team", Game.game.input.editorTeam);
-    InputSelector rotate = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Tank orientation", Game.game.input.editorRotate);
-    InputSelector height = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Obstacle height", Game.game.input.editorHeight);
-    InputSelector group = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Obstacle group ID", Game.game.input.editorGroupID);
+    InputSelector rotate = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Tank orientation",
+            Game.game.input.editorRotate);
+    InputSelector height = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Obstacle height",
+            Game.game.input.editorHeight);
+    InputSelector group = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Obstacle group ID",
+            Game.game.input.editorGroupID);
 
     InputSelector build = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Build", Game.game.input.editorBuild);
     InputSelector erase = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Erase", Game.game.input.editorErase);
-    InputSelector camera = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Adjust camera", Game.game.input.editorCamera);
+    InputSelector camera = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Adjust camera",
+            Game.game.input.editorCamera);
     InputSelector zoomIn = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Zoom in", Game.game.input.editorZoomIn);
     InputSelector zoomOut = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Zoom out", Game.game.input.editorZoomOut);
-    InputSelector revertCamera = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Re-center camera", Game.game.input.editorRevertCamera);
+    InputSelector revertCamera = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Re-center camera",
+            Game.game.input.editorRevertCamera);
 
-    InputSelector nextObj = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Next object", Game.game.input.editorNextObj);
-    InputSelector prevObj = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Previous object", Game.game.input.editorPrevObj);
-    InputSelector nextType = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Next object type", Game.game.input.editorNextType);
-    InputSelector prevType = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Previous object type", Game.game.input.editorPrevType);
-    InputSelector nextMeta = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Next object property", Game.game.input.editorNextMeta);
-    InputSelector prevMeta = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Previous object property", Game.game.input.editorPrevMeta);
+    InputSelector nextObj = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Next object",
+            Game.game.input.editorNextObj);
+    InputSelector prevObj = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Previous object",
+            Game.game.input.editorPrevObj);
+    InputSelector nextType = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Next object type",
+            Game.game.input.editorNextType);
+    InputSelector prevType = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Previous object type",
+            Game.game.input.editorPrevType);
+    InputSelector nextMeta = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Next object property",
+            Game.game.input.editorNextMeta);
+    InputSelector prevMeta = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Previous object property",
+            Game.game.input.editorPrevMeta);
 
     InputSelector select = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Select", Game.game.input.editorSelect);
-    InputSelector deselect = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Clear selection", Game.game.input.editorDeselect);
-    InputSelector holdSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Square selection", Game.game.input.editorHoldSquare);
-    InputSelector lockSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Toggle square selection", Game.game.input.editorLockSquare);
-    InputSelector toggleAdd = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle remove from selection", Game.game.input.editorSelectAddToggle);
-    InputSelector quickPick = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Block/tank picker", Game.game.input.editorPickBlock);
+    InputSelector deselect = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Clear selection",
+            Game.game.input.editorDeselect);
+    InputSelector holdSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Square selection",
+            Game.game.input.editorHoldSquare);
+    InputSelector lockSquare = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Toggle square selection",
+            Game.game.input.editorLockSquare);
+    InputSelector toggleAdd = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Toggle remove from selection",
+            Game.game.input.editorSelectAddToggle);
+    InputSelector quickPick = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Block/tank picker",
+            Game.game.input.editorPickBlock);
 
     InputSelector copy = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Copy", Game.game.input.editorCopy);
     InputSelector cut = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Cut", Game.game.input.editorCut);
     InputSelector paste = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Paste", Game.game.input.editorPaste);
-    InputSelector flipH = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Flip selection horizontally", Game.game.input.editorFlipHoriz);
-    InputSelector flipV = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Flip selection vertically", Game.game.input.editorFlipVert);
-    InputSelector rotateSel = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Rotate selection", Game.game.input.editorRotateClockwise);
+    InputSelector flipH = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Flip selection horizontally",
+            Game.game.input.editorFlipHoriz);
+    InputSelector flipV = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Flip selection vertically",
+            Game.game.input.editorFlipVert);
+    InputSelector rotateSel = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Rotate selection",
+            Game.game.input.editorRotateClockwise);
 
-    InputSelector resetTool = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Clear tool", Game.game.input.editorResetTool);
-    InputSelector square = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Square tool", Game.game.input.editorSquare);
+    InputSelector resetTool = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 225, 700, 40, "Clear tool",
+            Game.game.input.editorResetTool);
+    InputSelector square = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 135, 700, 40, "Square tool",
+            Game.game.input.editorSquare);
     InputSelector circle = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 45, 700, 40, "Circle tool", Game.game.input.editorCircle);
     InputSelector line = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 - 45, 700, 40, "Line tool", Game.game.input.editorLine);
     InputSelector wand = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 135, 700, 40, "Wand tool", Game.game.input.editorWand);
-    InputSelector wandDiscont = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Non-contiguous wand tool", Game.game.input.editorWandDiscontiguous);
-
+    InputSelector wandDiscont = new InputSelector(Drawing.drawing.interfaceSizeX * 2 / 3, Drawing.drawing.interfaceSizeY / 2 + 225, 700, 40, "Non-contiguous wand tool",
+            Game.game.input.editorWandDiscontiguous);
 
     Button next = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 + 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Next page", () -> page++);
 
-    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page", () -> page--);
+    Button previous = new Button(Drawing.drawing.interfaceSizeX * 2 / 3 - 190, Drawing.drawing.interfaceSizeY / 2 + 350, this.objWidth, this.objHeight, "Previous page",
+            () -> page--);
 
     public ScreenControlsEditor()
     {
@@ -94,8 +119,7 @@ public class ScreenControlsEditor extends Screen
             toggleControls.update();
             undo.update();
             redo.update();
-        }
-        else if (page == 1)
+        } else if (page == 1)
         {
             use.update();
             action.update();
@@ -103,8 +127,7 @@ public class ScreenControlsEditor extends Screen
             rotate.update();
             height.update();
             group.update();
-        }
-        else if (page == 2)
+        } else if (page == 2)
         {
             build.update();
             erase.update();
@@ -112,8 +135,7 @@ public class ScreenControlsEditor extends Screen
             zoomIn.update();
             zoomOut.update();
             revertCamera.update();
-        }
-        else if (page == 3)
+        } else if (page == 3)
         {
             nextObj.update();
             prevObj.update();
@@ -121,8 +143,7 @@ public class ScreenControlsEditor extends Screen
             prevType.update();
             nextMeta.update();
             prevMeta.update();
-        }
-        else if (page == 4)
+        } else if (page == 4)
         {
             select.update();
             deselect.update();
@@ -130,8 +151,7 @@ public class ScreenControlsEditor extends Screen
             lockSquare.update();
             toggleAdd.update();
             quickPick.update();
-        }
-        else if (page == 5)
+        } else if (page == 5)
         {
             copy.update();
             cut.update();
@@ -139,8 +159,7 @@ public class ScreenControlsEditor extends Screen
             flipV.update();
             flipH.update();
             rotateSel.update();
-        }
-        else if (page == 6)
+        } else if (page == 6)
         {
             resetTool.update();
             circle.update();
@@ -173,8 +192,7 @@ public class ScreenControlsEditor extends Screen
             objectMenu.draw();
             pause.draw();
 
-        }
-        else if (page == 1)
+        } else if (page == 1)
         {
             group.draw();
             height.draw();
@@ -182,8 +200,7 @@ public class ScreenControlsEditor extends Screen
             team.draw();
             action.draw();
             use.draw();
-        }
-        else if (page == 2)
+        } else if (page == 2)
         {
             revertCamera.draw();
             zoomOut.draw();
@@ -191,8 +208,7 @@ public class ScreenControlsEditor extends Screen
             camera.draw();
             erase.draw();
             build.draw();
-        }
-        else if (page == 3)
+        } else if (page == 3)
         {
             prevMeta.draw();
             nextMeta.draw();
@@ -200,8 +216,7 @@ public class ScreenControlsEditor extends Screen
             nextType.draw();
             prevObj.draw();
             nextObj.draw();
-        }
-        else if (page == 4)
+        } else if (page == 4)
         {
             toggleAdd.draw();
             lockSquare.draw();
@@ -209,8 +224,7 @@ public class ScreenControlsEditor extends Screen
             deselect.draw();
             select.draw();
             quickPick.draw();
-        }
-        else if (page == 5)
+        } else if (page == 5)
         {
             copy.draw();
             cut.draw();
@@ -218,8 +232,7 @@ public class ScreenControlsEditor extends Screen
             flipV.draw();
             flipH.draw();
             rotateSel.draw();
-        }
-        else if (page == 6)
+        } else if (page == 6)
         {
             resetTool.draw();
             circle.draw();

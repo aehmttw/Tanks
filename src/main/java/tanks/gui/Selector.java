@@ -3,13 +3,12 @@ package tanks.gui;
 import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
+import java.util.ArrayList;
 import tanks.*;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenSelector;
 import tanks.item.ItemIcon;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
 
 public class Selector implements IDrawable, ITrigger
 {
@@ -67,21 +66,24 @@ public class Selector implements IDrawable, ITrigger
 
     public boolean drawBehindScreen = false;
 
-    //public String sound = "click.ogg";
+    // public String sound = "click.ogg";
 
-    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
+    /**
+     * If set to true and is part of an online service, pressing the button sends
+     * the player to a loading screen
+     */
     public boolean wait = false;
 
-    /** For online service use with changing interface scales
-     * -1 = left
-     * 0 = middle
-     * 1 = right*/
+    /**
+     * For online service use with changing interface scales -1 = left 0 = middle 1
+     * = right
+     */
     public int xAlignment = 0;
 
-    /** For online service use with changing interface scales
-     * -1 = top
-     * 0 = middle
-     * 1 = bottom*/
+    /**
+     * For online service use with changing interface scales -1 = top 0 = middle 1 =
+     * bottom
+     */
     public int yAlignment = 0;
 
     public Selector(double x, double y, double sX, double sY, String text, String[] o, Runnable f)
@@ -188,8 +190,7 @@ public class Selector implements IDrawable, ITrigger
                     Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
                     Drawing.drawing.setColor(0, 0, 255);
                     Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
-                }
-                else
+                } else
                     Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
             }
 
@@ -200,8 +201,7 @@ public class Selector implements IDrawable, ITrigger
                 drawing.setColor(255, 255, 255);
                 drawing.drawInterfaceText(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
                 drawing.drawTooltip(this.hoverText);
-            }
-            else
+            } else
             {
                 drawing.setColor(0, 150, 255);
                 drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
@@ -243,7 +243,8 @@ public class Selector implements IDrawable, ITrigger
 
         double size = this.sizeY * 0.6;
         if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, t) / Drawing.drawing.interfaceScale > this.sizeX - 80)
-            Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, t) / Drawing.drawing.interfaceScale));
+            Drawing.drawing
+                    .setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, t) / Drawing.drawing.interfaceScale));
 
         Drawing.drawing.drawInterfaceText(posX, posY, t);
     }
@@ -261,10 +262,9 @@ public class Selector implements IDrawable, ITrigger
 
             if (handled)
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
-        }
-        else
+        } else
         {
-            for (int i: Game.game.window.touchPoints.keySet())
+            for (int i : Game.game.window.touchPoints.keySet())
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
 
@@ -335,7 +335,7 @@ public class Selector implements IDrawable, ITrigger
         }
 
         selected = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
-        infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
 
         if (selected && valid)
         {
@@ -345,8 +345,7 @@ public class Selector implements IDrawable, ITrigger
                 Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
                 Drawing.drawing.playVibration("click");
                 Game.screen = new ScreenInfo(Game.screen, this.translatedText, this.hoverText);
-            }
-            else if (enabled)
+            } else if (enabled)
             {
                 handled = true;
                 this.setScreen();

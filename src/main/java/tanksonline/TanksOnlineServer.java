@@ -8,9 +8,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import tanks.network.event.EventKick;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.SynchronizedList;
+import tanks.network.event.EventKick;
 
 public class TanksOnlineServer
 {
@@ -36,30 +36,25 @@ public class TanksOnlineServer
         try
         {
             ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>()
-                    {
-                        @Override
-                        public void initChannel(SocketChannel ch) {
-                            ch.pipeline().addLast(new TanksOnlineServerHandler(instance));
-                        }
-                    })
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+            b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializer<SocketChannel>()
+            {
+                @Override
+                public void initChannel(SocketChannel ch)
+                {
+                    ch.pipeline().addLast(new TanksOnlineServerHandler(instance));
+                }
+            }).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true);
 
             channel = b.bind(port).sync();
 
             channel.channel().closeFuture().sync();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             if (ScreenPartyHost.isServer)
             {
                 e.printStackTrace();
             }
-        }
-        finally
+        } finally
         {
             close();
         }

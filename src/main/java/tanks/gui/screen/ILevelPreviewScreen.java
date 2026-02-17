@@ -1,8 +1,7 @@
 package tanks.gui.screen;
 
-import tanks.tank.TankSpawnMarker;
-
 import java.util.ArrayList;
+import tanks.tank.TankSpawnMarker;
 
 public interface ILevelPreviewScreen
 {

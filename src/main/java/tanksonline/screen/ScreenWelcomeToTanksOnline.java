@@ -12,8 +12,7 @@ public class ScreenWelcomeToTanksOnline extends ScreenLayout
     {
         ScreenHome s = new ScreenHome(player);
         s.setScreen();
-    }
-    );
+    });
 
     public ScreenWelcomeToTanksOnline(TanksOnlineServerHandler player, AccessCode accessCode)
     {
@@ -26,7 +25,8 @@ public class ScreenWelcomeToTanksOnline extends ScreenLayout
         if (accessCode.expiration < 0)
             this.texts.add(new ScreenOnline.Text("You now have indefinite access to Tanks Online", sizeX / 2, sizeY / 2 - 30, 18, 0));
         else
-            this.texts.add(new ScreenOnline.Text("You now have access to Tanks Online for " + Game.timeInterval(System.currentTimeMillis(), accessCode.expiration), sizeX / 2, sizeY / 2 - 30, 18, 0));
+            this.texts.add(new ScreenOnline.Text("You now have access to Tanks Online for " + Game.timeInterval(System.currentTimeMillis(), accessCode.expiration), sizeX / 2,
+                    sizeY / 2 - 30, 18, 0));
 
         play.wait = true;
         this.buttons.add(play);

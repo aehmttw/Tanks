@@ -1,12 +1,10 @@
 package lwjglwindow;
 
-import org.lwjgl.opengl.GL13;
-
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 import static org.lwjgl.opengl.GL20.*;
+
+import java.nio.ByteBuffer;
+import org.lwjgl.opengl.GL13;
 
 public class ShaderHandler
 {
@@ -20,13 +18,7 @@ public class ShaderHandler
 
     public boolean initialized;
 
-    float[] biasMatrix = new float[]
-            {
-                    0.5f, 0.0f, 0.0f, 0.0f,
-                    0.0f, 0.5f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.5f, 0.0f,
-                    0.5f, 0.5f, 0.5f, 1.0f
-            };
+    float[] biasMatrix = new float[]{0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f};
 
     public ShaderHandler(LWJGLWindow window)
     {
@@ -99,7 +91,9 @@ public class ShaderHandler
 
         this.window.setShader(this.window.shaderDefault.shaderBase);
         this.window.shaderDefault.shaderBase.shadowres.set(this.size);
-        //this.window.shaderDefault.shaderBase.lightVec.set((float) this.window.lightVec[0], (float) this.window.lightVec[1], (float) this.window.lightVec[2]);
+        // this.window.shaderDefault.shaderBase.lightVec.set((float)
+        // this.window.lightVec[0], (float) this.window.lightVec[1], (float)
+        // this.window.lightVec[2]);
         this.window.shaderDefault.shaderBase.shadow.set(this.window.shadowsEnabled);
         this.window.shaderDefault.shaderBase.width.set((float) this.window.absoluteWidth);
         this.window.shaderDefault.shaderBase.height.set((float) this.window.absoluteHeight);
@@ -133,10 +127,10 @@ public class ShaderHandler
         glActiveTexture(GL13.GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, 0);
 
-//        glBindTexture(GL_TEXTURE_2D, depthTexture);
-//        this.window.textures.put("depth", depthTexture);
-//        this.window.setColor(255, 255, 255);
-//        this.window.shapeRenderer.drawImage(100, 200, 500, 500, "depth", false);
+        // glBindTexture(GL_TEXTURE_2D, depthTexture);
+        // this.window.textures.put("depth", depthTexture);
+        // this.window.setColor(255, 255, 255);
+        // this.window.shapeRenderer.drawImage(100, 200, 500, 500, "depth", false);
 
         glUseProgram(0);
     }

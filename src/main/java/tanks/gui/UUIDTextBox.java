@@ -1,10 +1,9 @@
 package tanks.gui;
 
 import basewindow.InputCodes;
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
-
-import java.util.ArrayList;
 
 public class UUIDTextBox extends TextBox
 {
@@ -29,7 +28,8 @@ public class UUIDTextBox extends TextBox
             return;
         }
 
-        if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SUPER) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SUPER))
+        if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_CONTROL)
+                || Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SUPER) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SUPER))
         {
             if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_C))
             {

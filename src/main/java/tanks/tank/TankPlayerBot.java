@@ -1,5 +1,6 @@
 package tanks.tank;
 
+import java.util.ArrayList;
 import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
@@ -11,8 +12,6 @@ import tanks.hotbar.Hotbar;
 import tanks.item.*;
 import tanks.network.ConnectedPlayer;
 import tanks.network.event.EventUpdateEliminatedPlayers;
-
-import java.util.ArrayList;
 
 public class TankPlayerBot extends TankPurple implements IServerPlayerTank
 {
@@ -61,7 +60,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
         {
-            for (Item.ItemStack<?> i: h.itemBar.slots)
+            for (Item.ItemStack<?> i : h.itemBar.slots)
             {
                 if (i != null && !i.isEmpty)
                 {
@@ -115,7 +114,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         this.bulletSelectTimer = this.bulletSelectTimerBase;
 
         boolean hasAllies = false;
-        for (Movable m: Game.movables)
+        for (Movable m : Game.movables)
         {
             if (m instanceof Tank && m != this && Team.isAllied(m, this))
             {
@@ -140,7 +139,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         }
 
         int netIndex = -1;
-        for (Item.ItemStack<?> i: this.abilities)
+        for (Item.ItemStack<?> i : this.abilities)
         {
             i.networkIndex = netIndex;
             netIndex--;
@@ -170,7 +169,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         }
 
         int netIndex = -1;
-        for (Item.ItemStack<?> i: this.abilities)
+        for (Item.ItemStack<?> i : this.abilities)
         {
             i.networkIndex = netIndex;
             netIndex--;
@@ -206,15 +205,19 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
     {
         super.draw();
 
-//        Drawing.drawing.setColor(255, 255, 255);
-//        Drawing.drawing.drawImage(this.bulletItem.item.icon, this.posX, this.posY, 50, 50, 50);
-//
-//        Drawing.drawing.setFontSize(16);
-//        Drawing.drawing.drawText(this.posX + 25, this.posY + 25, 50, this.bulletItem.stackSize + "");
-//
-//        Drawing.drawing.drawText(this.posX - 25, this.posY + 25, 50, this.player.hotbar.coins + "");
-//
-//        Drawing.drawing.drawText(this.posX, this.posY + 35, 50, this.player.ownedBuilds.size() + "");
+        // Drawing.drawing.setColor(255, 255, 255);
+        // Drawing.drawing.drawImage(this.bulletItem.item.icon, this.posX, this.posY,
+        // 50, 50, 50);
+        //
+        // Drawing.drawing.setFontSize(16);
+        // Drawing.drawing.drawText(this.posX + 25, this.posY + 25, 50,
+        // this.bulletItem.stackSize + "");
+        //
+        // Drawing.drawing.drawText(this.posX - 25, this.posY + 25, 50,
+        // this.player.hotbar.coins + "");
+        //
+        // Drawing.drawing.drawText(this.posX, this.posY + 35, 50,
+        // this.player.ownedBuilds.size() + "");
 
     }
 

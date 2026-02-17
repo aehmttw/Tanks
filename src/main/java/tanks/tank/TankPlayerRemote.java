@@ -79,7 +79,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
     public double bufferCooldown = 0;
     public Item.ItemStack<?> lastItem = null;
-    
+
     public boolean didAction = false;
 
     public TankPlayerRemote(double x, double y, double angle, Player p)
@@ -132,8 +132,12 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         this.posX = TankRemote.cubicInterpolationVelocity(this.prevKnownPosX, pvx, this.currentKnownPosX, cvx, this.timeSinceRefresh, this.interpolationTime);
         this.posY = TankRemote.cubicInterpolationVelocity(this.prevKnownPosY, pvy, this.currentKnownPosY, cvy, this.timeSinceRefresh, this.interpolationTime);
 
-        //System.out.printf("t: %f %f | pos: %f %f -> %f %f, vel %f %f -> %f %f\n", this.timeSinceRefresh, this.interpolationTime, +this.prevKnownPosX, this.prevKnownPosY, this.currentKnownPosX, this.currentKnownPosY, this.prevKnownVX, this.prevKnownVY, this.currentKnownVX, this.currentKnownVY);
-        //System.out.printf("pos: %f %f\n", this.posX, this.posY);
+        // System.out.printf("t: %f %f | pos: %f %f -> %f %f, vel %f %f -> %f %f\n",
+        // this.timeSinceRefresh, this.interpolationTime, +this.prevKnownPosX,
+        // this.prevKnownPosY, this.currentKnownPosX, this.currentKnownPosY,
+        // this.prevKnownVX, this.prevKnownVY, this.currentKnownVX,
+        // this.currentKnownVY);
+        // System.out.printf("pos: %f %f\n", this.posX, this.posY);
 
         double frac = Math.min(1, this.timeSinceRefresh / this.interpolationTime);
         this.vX = (1 - frac) * this.prevKnownVX + frac * this.currentKnownVX;
@@ -170,7 +174,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         this.bufferCooldown -= Panel.frameFrequency;
         double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
-        for (Item.ItemStack<?> s: this.abilities)
+        for (Item.ItemStack<?> s : this.abilities)
         {
             s.player = this.player;
             s.updateCooldown(reload);
@@ -179,7 +183,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
         {
-            for (Item.ItemStack<?> i: h.itemBar.slots)
+            for (Item.ItemStack<?> i : h.itemBar.slots)
             {
                 if (i != null && !(i.isEmpty))
                 {
@@ -196,11 +200,11 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
         if (this.hasCollided)
         {
-            //System.out.println("collision");
+            // System.out.println("collision");
             this.lastVX = this.vX;
             this.lastVY = this.vY;
-            //this.lastPosX = this.posX;
-            //this.lastPosY = this.posY;
+            // this.lastPosX = this.posX;
+            // this.lastPosY = this.posY;
 
             this.prevKnownPosX = this.posX;
             this.prevKnownPosY = this.posY;
@@ -209,7 +213,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.prevKnownVXFinal = this.lastFinalVX;
             this.prevKnownVYFinal = this.lastFinalVY;
             this.lastAngle = this.angle;
-            //this.interpolationTime -= this.timeSinceRefresh;
+            // this.interpolationTime -= this.timeSinceRefresh;
             this.timeSinceRefresh = 0;
         }
 
@@ -219,8 +223,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             {
                 this.tookRecoil = false;
                 this.inControlOfMotion = true;
-            }
-            else
+            } else
             {
                 this.setMotionInDirection(this.vX + this.posX, this.vY + this.posY, this.recoilSpeed);
                 this.recoilSpeed *= Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), Panel.frameFrequency);
@@ -277,7 +280,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         lastMaxLiveMines = mlm;
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions, double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions,
+            double time, long receiveTime)
     {
         if (this.destroy)
             return;
@@ -295,8 +299,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             {
                 time = this.lastUpdateTime + anticheatMaxTimeOffset - prevTime;
                 this.lastUpdateReportedTime = this.lastUpdateTime + anticheatMaxTimeOffset;
-            }
-            else if (this.lastUpdateReportedTime - this.lastUpdateTime < -anticheatMaxTimeOffset)
+            } else if (this.lastUpdateReportedTime - this.lastUpdateTime < -anticheatMaxTimeOffset)
             {
                 time = this.lastUpdateTime - anticheatMaxTimeOffset - prevTime;
                 this.lastUpdateReportedTime = this.lastUpdateTime - anticheatMaxTimeOffset;
@@ -319,10 +322,12 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                 double changeVelocitySq = dVX * dVX + dVY * dVY;
 
                 if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
-                        && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
-                        && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
-                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001)
-                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVY) < 0.001)))
+                        && !(Math
+                                .abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
+                                && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
+                                && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001)
+                                && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time))
+                                        || Math.abs(this.lastVY) < 0.001)))
                 {
                     double changeVelocity = Math.sqrt(changeVelocitySq);
 
@@ -384,8 +389,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                     x = this.lastPosX + this.dXSinceFrame - prevDX;
                     y = this.lastPosY + this.dYSinceFrame - prevDY;
                 }
-            }
-            else
+            } else
             {
                 x = this.posX;
                 y = this.posY;
@@ -427,8 +431,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             {
                 double pitch = Math.atan(GameObject.distanceBetween(this.posX, this.posY, this.mouseX, this.mouseY) / b.speed * 0.5 * BulletArc.gravity / b.speed);
                 this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
-            }
-            else if (b instanceof BulletAirStrike)
+            } else if (b instanceof BulletAirStrike)
             {
                 double pitch = Math.PI / 2;
                 this.pitch -= GameObject.angleBetween(this.pitch, pitch) / 10 * Panel.frameFrequency;
@@ -583,8 +586,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         Game.eventsOut.add(new EventShootBullet(b));
         Game.movables.add(b);
 
-//        if (b.recoil != 0)
-//            this.forceMotion = true;
+        // if (b.recoil != 0)
+        // this.forceMotion = true;
 
         if (!this.hasCollided && b.recoil != 0)
         {

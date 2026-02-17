@@ -65,8 +65,7 @@ public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
             {
                 this.trigger = ((Bullet) m).tank;
                 this.itemTrigger = ((Bullet) m).item;
-            }
-            else
+            } else
                 this.trigger = (Tank) m;
 
             this.setUpdate(true);

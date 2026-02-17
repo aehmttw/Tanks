@@ -12,7 +12,7 @@ public class ObstacleStackable extends Obstacle
 {
     public static final int default_max_height = 8;
 
-    @MetadataProperty(id="stack_height", name = "Block height", image="obstacle_height.png", selector = SelectorStackHeight.selector_name, keybind = "editor.height")
+    @MetadataProperty(id = "stack_height", name = "Block height", image = "obstacle_height.png", selector = SelectorStackHeight.selector_name, keybind = "editor.height")
     public double stackHeight = 1;
     public double startHeight = 0;
 
@@ -59,8 +59,7 @@ public class ObstacleStackable extends Obstacle
             col[0] = (colorMul * (176 - Math.random() * 70));
             col[1] = (colorMul * (111 - Math.random() * 34));
             col[2] = (colorMul * 14);
-        }
-        else
+        } else
             col = new double[]{87, 46, 8};
 
         return col;
@@ -88,7 +87,8 @@ public class ObstacleStackable extends Obstacle
         {
             byte o = this.getOptionsByte((i + 1) * Game.tile_size);
             Drawing.drawing.setColor(this.stackColorR[i], this.stackColorG[i], this.stackColorB[i], this.colorA, this.glow);
-            Drawing.drawing.fillBox(this, this.posX, this.posY, i * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size, draw_size * Math.min(1, stackHeight - i), o);
+            Drawing.drawing.fillBox(this, this.posX, this.posY, i * Game.tile_size + this.startHeight * Game.tile_size, draw_size, draw_size,
+                    draw_size * Math.min(1, stackHeight - i), o);
         }
     }
 
@@ -104,8 +104,7 @@ public class ObstacleStackable extends Obstacle
         double sizeZ = this.stackHeight * Game.tile_size;
 
         Drawing.drawing.setColor(r, g, b, a, 0.5);
-        Drawing.drawing.fillBox(this.posX, this.posY, this.startHeight * Game.tile_size,
-                Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, (byte) 0);
+        Drawing.drawing.fillBox(this.posX, this.posY, this.startHeight * Game.tile_size, Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, (byte) 0);
     }
 
     @Override
@@ -168,10 +167,10 @@ public class ObstacleStackable extends Obstacle
                 for (; h < this.stackHeight; h++)
                 {
                     int block = (int) (default_max_height - 1 - h);
-                    destroyAnimation3d(this.posX, this.posY, Math.max(h, 0) * Game.tile_size, posX, posY, Game.tile_size - Math.min(h, 0), effect, this.destroyEffectAmount * freq * freq, radius, this.stackColorR[block], this.stackColorG[block], this.stackColorB[block]);
+                    destroyAnimation3d(this.posX, this.posY, Math.max(h, 0) * Game.tile_size, posX, posY, Game.tile_size - Math.min(h, 0), effect,
+                            this.destroyEffectAmount * freq * freq, radius, this.stackColorR[block], this.stackColorG[block], this.stackColorB[block]);
                 }
-            }
-            else
+            } else
             {
                 for (int j = 0; j < Game.tile_size - 6; j += 4)
                 {
@@ -196,7 +195,8 @@ public class ObstacleStackable extends Obstacle
         }
     }
 
-    public static void destroyAnimation3d(double x, double y, double z, double posX, double posY, double height, Effect.EffectType effect, double freq, double radius, double r, double g, double b)
+    public static void destroyAnimation3d(double x, double y, double z, double posX, double posY, double height, Effect.EffectType effect, double freq, double radius, double r,
+            double g, double b)
     {
         double s = 12.5;
         for (double j = 0; j < Game.tile_size; j += s)

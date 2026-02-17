@@ -8,8 +8,7 @@ public class ScreenPartyCrusades extends ScreenCrusades
 {
     public ScreenPartyCrusades()
     {
-        this.quit2 = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = ScreenPartyHost.activeScreen
-        );
+        this.quit2 = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = ScreenPartyHost.activeScreen);
     }
 
     @Override

@@ -98,8 +98,7 @@ public class EventPlayerSetBuild extends PersonalEvent
                         }
                     }
                 }
-            }
-            else if (Game.playerTank != null)
+            } else if (Game.playerTank != null)
             {
                 s.builds.get(build).clonePropertiesTo(Game.playerTank);
                 Game.playerTank.health = s.builds.get(build).baseHealth;

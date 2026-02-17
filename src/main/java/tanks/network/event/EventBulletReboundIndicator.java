@@ -34,18 +34,8 @@ public class EventBulletReboundIndicator extends PersonalEvent
     @Override
     public void read(ByteBuf b)
     {
-        this.indicator = new BulletReboundIndicator(
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble());
+        this.indicator = new BulletReboundIndicator(b.readDouble(), b.readDouble(), b.readDouble(), b.readDouble(), b.readDouble(), b.readDouble(), b.readDouble(), b.readDouble(),
+                b.readDouble(), b.readDouble(), b.readDouble());
     }
 
     @Override

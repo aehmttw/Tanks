@@ -1,11 +1,10 @@
 package tanks.gui.screen.leveleditor.selector;
 
+import java.lang.reflect.Field;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.gui.screen.leveleditor.OverlaySelectBeatBlockPattern;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-
-import java.lang.reflect.Field;
 
 public class SelectorBeatPattern extends SelectorGroupID
 {

@@ -1,11 +1,10 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
-
-import java.util.ArrayList;
 
 public class ScreenJoinSteamLobby extends Screen
 {
@@ -18,9 +17,7 @@ public class ScreenJoinSteamLobby extends Screen
         {
             Game.screen = screen;
         }
-    }
-    );
-
+    });
 
     public ScreenJoinSteamLobby(ScreenJoinParty s, ArrayList<Button> parties)
     {

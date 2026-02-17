@@ -1,12 +1,11 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Firework;
-
-import java.util.ArrayList;
 
 public class DisplayFireworks
 {
@@ -37,7 +36,8 @@ public class DisplayFireworks
         {
             for (int i = 0; i < initial_fireworks * fireworkMultiplier; i++)
             {
-                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY, getFireworkArray());
+                Firework f = new Firework(Firework.FireworkType.rocket, (Math.random() * 0.6 + 0.2) * Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY,
+                        getFireworkArray());
                 f.setRandomColor();
                 f.setVelocity();
                 getFireworkArray().add(f);
@@ -52,7 +52,8 @@ public class DisplayFireworks
     {
         ArrayList<Firework> fireworks = getFireworkArray();
 
-        if (addOwnFireworks && ((!debug && Math.random() < firework_frequency * fireworkMultiplier * Panel.frameFrequency * Game.effectMultiplier) || (debug && Game.game.input.shoot.isValid())))
+        if (addOwnFireworks && ((!debug && Math.random() < firework_frequency * fireworkMultiplier * Panel.frameFrequency * Game.effectMultiplier)
+                || (debug && Game.game.input.shoot.isValid())))
         {
             if (debug)
                 Game.game.input.shoot.invalidate();
@@ -116,7 +117,7 @@ public class DisplayFireworks
             Game.game.window.shaderDefault.set();
         }
 
-        //A fix to some glitchiness on ios
+        // A fix to some glitchiness on ios
         Drawing.drawing.setColor(0, 0, 0, 0);
         Drawing.drawing.fillInterfaceRect(0, 0, 0, 0);
 

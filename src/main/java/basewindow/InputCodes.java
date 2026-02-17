@@ -2,7 +2,8 @@ package basewindow;
 
 public class InputCodes
 {
-    //Taken from GLFW so that we can use these key codes without having GLFW imported
+    // Taken from GLFW so that we can use these key codes without having GLFW
+    // imported
     public static final int HAT_CENTERED = 0;
     public static final int HAT_UP = 1;
     public static final int HAT_RIGHT = 2;

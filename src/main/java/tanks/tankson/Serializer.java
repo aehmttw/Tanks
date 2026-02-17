@@ -1,17 +1,16 @@
 package tanks.tankson;
 
 import basewindow.Color;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
 import tanks.bullet.Trail;
 import tanks.item.Item;
 import tanks.tank.*;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.util.*;
 
 public final class Serializer
 {
@@ -25,8 +24,7 @@ public final class Serializer
         if (o instanceof TankAIControlled)
         {
             return TankAIControlled.class;
-        }
-        else
+        } else
         {
             return o.getClass();
         }
@@ -37,16 +35,14 @@ public final class Serializer
         if (defaults.containsKey(c))
         {
             return defaults.get(c);
-        }
-        else
+        } else
         {
             try
             {
                 Object o = c.getConstructor().newInstance();
                 defaults.put(c, o);
                 return o;
-            }
-            catch (Exception ignore)
+            } catch (Exception ignore)
             {
                 return null;
             }
@@ -67,8 +63,7 @@ public final class Serializer
 
     public static boolean isTanksONable(Class c)
     {
-        while (c != null && !c.isAnnotationPresent(TanksONable.class))
-            c = c.getSuperclass();
+        while (c != null && !c.isAnnotationPresent(TanksONable.class)) c = c.getSuperclass();
         return c != null;
     }
 
@@ -103,26 +98,24 @@ public final class Serializer
                 try
                 {
                     p.put("item_type", ((Item) o).getClass().getField("item_class_name").get(null));
-                }
-                catch (Exception ignore)
+                } catch (Exception ignore)
                 {
                 }
             else if (o instanceof Bullet)
                 p.put("bullet_type", ((Bullet) o).typeName);
 
-
             for (Field f : o.getClass().getFields())
             {
                 try
                 {
-                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion || o instanceof Trail) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
+                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion || o instanceof Trail)
+                            || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
                     {
                         Object o2 = f.get(o);
                         if (o2 != null && isTanksONable(f))
                         {
                             p.put(getid(f), toMap(o2));
-                        }
-                        else if (o2 instanceof ArrayList)
+                        } else if (o2 instanceof ArrayList)
                         {
                             if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
                             {
@@ -132,21 +125,18 @@ public final class Serializer
                                     o3s.add(toMap(o3));
                                 }
                                 p.put(getid(f), o3s);
-                            }
-                            else
+                            } else
                             {
                                 p.put(getid(f), f.get(o));
                             }
-                        }
-                        else if (o2 instanceof Enum)
+                        } else if (o2 instanceof Enum)
                             p.put(getid(f), ((Enum) o2).name());
                         else if (o2 instanceof Serializable)
                             p.put(getid(f), ((Serializable) o2).serialize());
                         else
                             p.put(getid(f), f.get(o));
                     }
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     throw new RuntimeException(e);
                 }
@@ -190,11 +180,9 @@ public final class Serializer
                     }
 
                     return true;
-                }
-                else
+                } else
                     return false;
-            }
-            else if (a.getClass().isArray() && b.getClass().isArray())
+            } else if (a.getClass().isArray() && b.getClass().isArray())
             {
                 if (a instanceof Object[] && b instanceof Object[])
                 {
@@ -210,8 +198,7 @@ public final class Serializer
                         }
 
                         return true;
-                    }
-                    else
+                    } else
                         return false;
                 } // sigh
                 else if (a instanceof int[] && b instanceof int[])
@@ -232,8 +219,7 @@ public final class Serializer
                     return Arrays.equals((double[]) a, (double[]) b);
                 else
                     return false;
-            }
-            else if (isTanksONable(a) && isTanksONable(b))
+            } else if (isTanksONable(a) && isTanksONable(b))
             {
                 if (!a.getClass().equals(b.getClass()))
                     return false;
@@ -244,16 +230,14 @@ public final class Serializer
                     {
                         if (f.getAnnotation(Property.class) != null && !equivalent(f.get(a), f.get(b)))
                             return false;
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         throw new RuntimeException(e);
                     }
                 }
 
                 return true;
-            }
-            else
+            } else
                 return Objects.equals(a, b);
         }
         return false;
@@ -268,84 +252,82 @@ public final class Serializer
         processed.add("obj_type");
         switch ((String) m.get("obj_type"))
         {
-            case "tank":
+            case "tank" :
                 o = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
                 break;
-            case "player_tank":
+            case "player_tank" :
                 o = new TankPlayer();
                 break;
-            case "bullet":
+            case "bullet" :
             {
                 try
                 {
                     processed.add("bullet_type");
                     o = Game.registryBullet.getEntry((String) m.get("bullet_type")).bullet.newInstance();
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     throw new RuntimeException(e);
                 }
                 break;
             }
-            case "mine":
+            case "mine" :
                 o = new Mine();
                 break;
-            case "item":
+            case "item" :
             {
                 try
                 {
                     processed.add("item_type");
                     o = Game.registryItem.getEntry((String) m.get("item_type")).item.getConstructor().newInstance();
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     throw new RuntimeException(e);
                 }
                 break;
             }
-            case "item_stack":
+            case "item_stack" :
             {
                 processed.add("item");
                 Item i = (Item) parseObject((Map) m.get("item"));
                 o = (i.getStack(null));
                 break;
             }
-            case "shop_item":
+            case "shop_item" :
                 o = new Item.ShopItem();
                 break;
-            case "crusade_shop_item":
+            case "crusade_shop_item" :
                 o = new Item.CrusadeShopItem();
                 break;
-            case "shop_build":
+            case "shop_build" :
                 o = new TankPlayer.ShopTankBuild();
                 break;
-            case "crusade_shop_build":
+            case "crusade_shop_build" :
                 o = new TankPlayer.CrusadeShopTankBuild();
                 break;
-            case "explosion":
+            case "explosion" :
                 o = new Explosion();
                 break;
-            case "spawned_tank":
+            case "spawned_tank" :
                 processed.add("tank");
                 processed.add("weight");
                 o = new TankAIControlled.SpawnedTankEntry((ITankField) parseObject((Map) m.get("tank")), (Double) m.get("weight"));
                 break;
-            case "tank_ref":
+            case "tank_ref" :
                 processed.add("tank");
                 o = new TankReference((String) m.get("tank"));
                 break;
-            case "trail":
+            case "trail" :
                 o = new Trail();
                 break;
-            case "bullet_effect":
+            case "bullet_effect" :
                 o = new BulletEffect();
                 break;
-            case "item_icon":
+            case "item_icon" :
                 o = Game.registryItemIcon.getItemIcon((String) m.get("id")).getCopy();
                 if (o == null)
                     throw new RuntimeException("Couldn't find item icon for " + m.get("id"));
                 break;
-            default:
+            default :
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
 
@@ -365,14 +347,12 @@ public final class Serializer
                         try
                         {
                             f.set(o, parseObject((Map<String, Object>) o3));
-                        }
-                        catch (ClassCastException | IllegalArgumentException e)
+                        } catch (ClassCastException | IllegalArgumentException e)
                         {
                             conversions.add(f);
                             conversionTargets.add(o3);
                         }
-                    }
-                    else if (o2 instanceof ArrayList)
+                    } else if (o2 instanceof ArrayList)
                     {
                         ParameterizedType pt = (ParameterizedType) f.getGenericType();
                         ArrayList arr = (ArrayList) m.get(getid(f));
@@ -384,29 +364,24 @@ public final class Serializer
                                 o3s.add(parseObject(o3));
                             }
                             f.set(o, o3s);
-                        }
-                        else if (pt.getActualTypeArguments()[0] == Color.class)
+                        } else if (pt.getActualTypeArguments()[0] == Color.class)
                         {
                             ArrayList<Color> colors = new ArrayList<>();
                             ArrayList<ArrayList<Double>> els = (ArrayList<ArrayList<Double>>) m.get(getid(f));
-                            for (ArrayList<Double> o4: els)
+                            for (ArrayList<Double> o4 : els)
                             {
                                 Color c = new Color(o4.get(0), o4.get(1), o4.get(2), (o4.size() >= 4) ? o4.get(3) : 255);
                                 colors.add(c);
                             }
                             f.set(o, colors);
-                        }
-                        else
+                        } else
                             f.set(o, m.get(getid(f)));
 
-
-                    }
-                    else if (o2 instanceof Color)
+                    } else if (o2 instanceof Color)
                     {
                         ArrayList<Double> objs = (ArrayList) m.get(getid(f));
                         f.set(o, new Color(objs.get(0), objs.get(1), objs.get(2), (objs.size() >= 4) ? objs.get(3) : 255));
-                    }
-                    else if (o2 instanceof HashSet)
+                    } else if (o2 instanceof HashSet)
                         f.set(o, new HashSet<>((ArrayList) m.get(getid(f))));
                     else if (o2 instanceof Enum)
                         f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getid(f))));
@@ -418,15 +393,13 @@ public final class Serializer
                         f.set(o, m.get(getid(f)));
                     else
                         f.set(o, m.get(getid(f)));
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     System.err.println(f + " " + getid(f));
                     throw new RuntimeException(e);
                 }
             }
         }
-
 
         for (int i = 0; i < conversions.size(); i++)
         {
@@ -435,8 +408,7 @@ public final class Serializer
             try
             {
                 f.set(o, Compatibility.convert(f, o, o3));
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 System.out.println(getid(f));
                 throw new RuntimeException(e);
@@ -457,26 +429,22 @@ public final class Serializer
             {
                 Field f = o.getClass().getField(Compatibility.convert(k));
                 f.set(o, Compatibility.compatibility_table.get(k).apply(o, m.get(k)));
-            }
-            catch (ClassCastException e)
+            } catch (ClassCastException e)
             {
                 try
                 {
                     Field f = o.getClass().getField(Compatibility.convert(k));
                     f.set(o, Compatibility.convert(f, o, m.get(k)));
-                }
-                catch (NoSuchFieldException | IllegalAccessException f)
+                } catch (NoSuchFieldException | IllegalAccessException f)
                 {
                     throw new RuntimeException(f);
                 }
-            }
-            catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
+            } catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
             {
                 System.out.println("Unconvertable field found! " + k);
                 e.printStackTrace();
             }
         }
-
 
         return o;
     }

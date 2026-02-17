@@ -1,10 +1,9 @@
 package tanks.translation;
 
 import basewindow.BaseFile;
-import tanks.Game;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import tanks.Game;
 
 public class Translation
 {
@@ -18,7 +17,7 @@ public class Translation
     {
         boolean first = true;
 
-        for (String s: translations)
+        for (String s : translations)
         {
             if (first)
             {
@@ -61,15 +60,13 @@ public class Translation
             }
 
             f.stopReading();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
 
         this.initialize(texts);
     }
-
 
     public String getTranslation(String s)
     {

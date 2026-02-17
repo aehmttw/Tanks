@@ -1,5 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -11,8 +12,6 @@ import tanks.tank.TankPlayer;
 import tanks.tankson.ArrayListIndexPointer;
 import tanks.tankson.Pointer;
 
-import java.util.ArrayList;
-
 public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRenamableScreen, ITankBuildScreen
 {
     public ButtonList tankButtons;
@@ -20,7 +19,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     public int cols = 10;
 
     public Button addButton;
-    
+
     public static int page = 0;
 
     public Button nextTankPage = new Button(this.centerX + 290, this.centerY + 60 * 3, 350, 40, "Next page", () -> page++);
@@ -108,10 +107,9 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
             if (i < count)
             {
                 t = this.editor.level.playerBuilds.get(i);
-            }
-            else
+            } else
             {
-                addButton = new Button(x, y, 50, 50, "+",  () ->
+                addButton = new Button(x, y, 50, 50, "+", () ->
                 {
                     ScreenAddSavedTankBuild s = new ScreenAddSavedTankBuild(this, this.editor.level.playerBuilds);
                     s.drawBehindScreen = true;
@@ -178,7 +176,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
         reorder.update();
         super.update();
     }
-    
+
     @Override
     public void draw()
     {
@@ -209,7 +207,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
         if (from.equals(to))
             return true;
 
-        for (TankPlayable t: this.editor.level.playerBuilds)
+        for (TankPlayable t : this.editor.level.playerBuilds)
         {
             if (to.equals(t.name))
                 return false;

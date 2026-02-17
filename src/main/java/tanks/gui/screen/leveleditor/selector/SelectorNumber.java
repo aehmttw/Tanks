@@ -1,12 +1,11 @@
 package tanks.gui.screen.leveleditor.selector;
 
+import java.lang.reflect.Field;
+import java.util.Locale;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.gui.screen.leveleditor.OverlaySelectNumber;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-
-import java.lang.reflect.Field;
-import java.util.Locale;
 
 public class SelectorNumber extends MetadataSelector
 {
@@ -19,11 +18,17 @@ public class SelectorNumber extends MetadataSelector
     public double max = 99999999;
     public double step = 1;
 
-    /** When a metadata keybind is pressed, set the number to the minimum value if it is above the maximum value,
-     * or the maximum value if it is below the minimum value. */
+    /**
+     * When a metadata keybind is pressed, set the number to the minimum value if it
+     * is above the maximum value, or the maximum value if it is below the minimum
+     * value.
+     */
     public boolean wrap = false;
 
-    /** When inputted from a text box, rounds it to the nearest number divisible to <code>step</code>. */
+    /**
+     * When inputted from a text box, rounds it to the nearest number divisible to
+     * <code>step</code>.
+     */
     public boolean forceStep = true;
     public boolean allowDecimals = false;
 
@@ -49,8 +54,7 @@ public class SelectorNumber extends MetadataSelector
 
             if (number < this.min)
                 number += this.min;
-        }
-        else
+        } else
             number = Math.max(this.min, Math.min(this.max, number));
 
         if (this.metadataField.getType().equals(int.class))

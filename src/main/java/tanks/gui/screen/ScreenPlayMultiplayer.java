@@ -18,8 +18,7 @@ public class ScreenPlayMultiplayer extends Screen
     Button online = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Online", () -> Game.screen = new ScreenJoinOnlineServer(),
             "Access the online Tanks community!");
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
-    );
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay());
 
     @Override
     public void update()

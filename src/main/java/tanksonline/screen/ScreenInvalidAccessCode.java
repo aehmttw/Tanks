@@ -10,8 +10,7 @@ public class ScreenInvalidAccessCode extends ScreenLayout
     {
         ScreenInsertAccessCode s = new ScreenInsertAccessCode(player);
         s.setScreen();
-    }
-    );
+    });
 
     public ScreenInvalidAccessCode(TanksOnlineServerHandler player)
     {

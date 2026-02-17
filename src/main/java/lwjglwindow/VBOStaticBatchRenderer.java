@@ -1,19 +1,18 @@
 package lwjglwindow;
 
+import static org.lwjgl.opengl.GL11.*;
+
 import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
-import org.lwjgl.BufferUtils;
-
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.BufferUtils;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
@@ -166,8 +165,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         for (int i = 0; i < attributeProperties.size(); i++)
         {
             AttributeProperty prop = attributeProperties.get(i);
-            for (float f : prop.floatArray)
-                prop.buffer.put(f);
+            for (float f : prop.floatArray) prop.buffer.put(f);
         }
     }
 
@@ -181,7 +179,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         int attributeId = this.attributeToId.get(a);
         AttributeProperty prop = this.attributeProperties.get(attributeId);
         int index = 0;
-        for (float f: floats)
+        for (float f : floats)
         {
             prop.floatArray[index] = f;
             index++;
@@ -247,7 +245,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         this.shader.setTexCoordBuffer(texVBO);
         this.shader.setNormalBuffer(normVBO);
 
-        for (ShaderGroup.Attribute a: this.shader.attributes)
+        for (ShaderGroup.Attribute a : this.shader.attributes)
         {
             int attributeId = this.attributeToId.get(a);
             AttributeProperty prop = this.attributeProperties.get(attributeId);

@@ -1,17 +1,16 @@
 package lwjglwindow;
 
+import static org.lwjgl.opengl.GL11.*;
+
 import basewindow.*;
 import basewindow.transformation.AxisRotation;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
-import org.lwjgl.BufferUtils;
-
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.BufferUtils;
 
 public class VBOModelPart extends ModelPart
 {
@@ -54,7 +53,7 @@ public class VBOModelPart extends ModelPart
         glPushMatrix();
         Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
 
-        for (AxisRotation a: axisRotations)
+        for (AxisRotation a : axisRotations)
         {
             a.apply();
         }

@@ -1,6 +1,7 @@
 package tanks.rendering;
 
 import basewindow.*;
+import java.util.HashMap;
 import tanks.Chunk;
 import tanks.Direction;
 import tanks.Drawing;
@@ -8,8 +9,6 @@ import tanks.Game;
 import tanks.gui.ScreenIntro;
 import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
-
-import java.util.HashMap;
 
 public class TerrainRenderer
 {
@@ -56,8 +55,7 @@ public class TerrainRenderer
 
             Game.game.shaderInstances.put(this.outsideShader.getClass(), this.outsideShader);
             Game.game.shaderInstances.put(this.introShader.getClass(), this.introShader);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             Game.exitToCrash(e);
@@ -67,8 +65,7 @@ public class TerrainRenderer
     public static double getExtra(int x, int y)
     {
         double extra = 0;
-        for (int dir = 0; dir < 4; dir++)
-            extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Direction.X[dir], y + Direction.Y[dir]));
+        for (int dir = 0; dir < 4; dir++) extra = Math.max(extra, -Game.sampleEdgeGroundDepth(x + Direction.X[dir], y + Direction.Y[dir]));
         extra += Math.max(0, Game.sampleEdgeGroundDepth(x, y));
 
         return extra;
@@ -86,8 +83,7 @@ public class TerrainRenderer
             s.initialize();
             Game.game.shaderInstances.put(shaderClass, s);
             return s;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
             return null;
@@ -117,8 +113,7 @@ public class TerrainRenderer
         {
             sg = ((Obstacle) o).renderer;
             num = ((Obstacle) o).rendererNumber;
-        }
-        else if (o instanceof Chunk.Tile && ((Chunk.Tile) o).obstacle() != null)
+        } else if (o instanceof Chunk.Tile && ((Chunk.Tile) o).obstacle() != null)
         {
             Obstacle o1 = ((Chunk.Tile) o).obstacle();
             sg = o1.tileRenderer;
@@ -129,10 +124,8 @@ public class TerrainRenderer
         {
             s = renderersByObj.get(o);
             renderers = this.getRenderers(sg);
-        }
-        else if (!(Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit))
+        } else if (!(Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit))
             sg = ShaderGroundOutOfBounds.class;
-
 
         if (s == null)
         {
@@ -316,9 +309,11 @@ public class TerrainRenderer
     }
 
     /**
-     * Different rendering method, easier to use if you want the shrinking/growing blocks animation to work properly but maybe a bit slower
+     * Different rendering method, easier to use if you want the shrinking/growing
+     * blocks animation to work properly but maybe a bit slower
      */
-    public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy, float cz)
+    public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy,
+            float cz)
     {
         x -= sX / 2;
         y -= sY / 2;
@@ -478,12 +473,9 @@ public class TerrainRenderer
 
     public void reset()
     {
-        for (HashMap<Integer, RegionRenderer> h : this.renderers.values())
-            for (RegionRenderer r : h.values())
-                r.renderer.free();
+        for (HashMap<Integer, RegionRenderer> h : this.renderers.values()) for (RegionRenderer r : h.values()) r.renderer.free();
 
-        for (RegionRenderer r : this.outOfBoundsRenderers.values())
-            r.renderer.free();
+        for (RegionRenderer r : this.outOfBoundsRenderers.values()) r.renderer.free();
 
         this.renderers.clear();
         this.renderersByObj.clear();
@@ -503,14 +495,16 @@ public class TerrainRenderer
             double z = 0;
             double sc = 1;
 
-            boolean in = Game.followingCam || asPreview || Drawing.drawing.isIncluded(x + s.posX * section_size, y + s.posY * section_size, x + (s.posX + 1) * section_size, y + (s.posY + 1) * section_size);
+            boolean in = Game.followingCam || asPreview
+                    || Drawing.drawing.isIncluded(x + s.posX * section_size, y + s.posY * section_size, x + (s.posX + 1) * section_size, y + (s.posY + 1) * section_size);
 
             s.renderer.endModification();
 
             if (in)
             {
                 if (s.shader instanceof RendererShader)
-                    s.renderer.settings(((RendererShader) s.shader).depthTest && Game.enable3d, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask && Game.enable3d);
+                    s.renderer.settings(((RendererShader) s.shader).depthTest && Game.enable3d, ((RendererShader) s.shader).glow,
+                            ((RendererShader) s.shader).depthMask && Game.enable3d);
                 else
                     s.renderer.settings(Game.enable3d, false, Game.enable3d);
 
@@ -547,20 +541,16 @@ public class TerrainRenderer
                     this.hasContinuationed = false;
                     throw new LoadingTerrainContinuation(this);
                 }
-            }
-            else
+            } else
             {
                 this.hasContinuationed = true;
                 throw new LoadingTerrainContinuation(this);
             }
-        }
-        else
+        } else
         {
-            for (Obstacle o : Game.redrawObstacles)
-                drawObstacle(o);
+            for (Obstacle o : Game.redrawObstacles) drawObstacle(o);
 
-            for (Game.GroundTile t : Game.redrawGroundTiles)
-                this.drawTile(t.x, t.y);
+            for (Game.GroundTile t : Game.redrawGroundTiles) this.drawTile(t.x, t.y);
 
             Game.redrawObstacles.clear();
             Game.redrawGroundTiles.clear();
@@ -593,9 +583,7 @@ public class TerrainRenderer
             this.introShader.setSize((float) (Obstacle.draw_size / Game.tile_size));
             this.introShader.d3.set(Game.enable3d);
 
-            for (int x = xStart; x <= xEnd; x++)
-                for (int y = yStart; y <= yEnd; y++)
-                    this.drawMap(this.outOfBoundsRenderers, x, y);
+            for (int x = xStart; x <= xEnd; x++) for (int y = yStart; y <= yEnd; y++) this.drawMap(this.outOfBoundsRenderers, x, y);
 
             Game.game.window.shaderDefault.set();
             return;
@@ -616,7 +604,7 @@ public class TerrainRenderer
                 for (int x = xStart; x <= xEnd; x++)
                     for (int y = yStart; y <= yEnd; y++)
                         if (Game.screen instanceof IBlankBackgroundScreen || (Game.screen instanceof IConditionalOverlayScreen) || x != 0 || y != 0)
-                            this.drawMap(this.outOfBoundsRenderers, x, y);
+                        this.drawMap(this.outOfBoundsRenderers, x, y);
             }
         }
 
@@ -634,8 +622,7 @@ public class TerrainRenderer
                             configureShader(s);
                             this.drawMap(this.renderers.get(s), 0, 0);
                         }
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }
@@ -690,33 +677,27 @@ public class TerrainRenderer
             if (!(Game.screen instanceof IBlankBackgroundScreen) && top != null && top.replaceTiles && !top.removed)
             {
                 top.drawTile(t, r, g, b, depth, getExtra(x, y));
-            }
-            else
+            } else
             {
                 byte o = BaseShapeRenderer.hide_neg_z;
                 if (!Game.fancyTerrain || !Game.enable3dBg)
                 {
-                    if (Game.sampleEdgeGroundDepth(x - 1, y) >= 0) o |= BaseShapeRenderer.hide_neg_x;
-                    if (Game.sampleEdgeGroundDepth(x + 1, y) >= 0) o |= BaseShapeRenderer.hide_pos_x;
-                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_neg_y;
-                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_pos_y;
+                    if (Game.sampleEdgeGroundDepth(x - 1, y) >= 0)
+                        o |= BaseShapeRenderer.hide_neg_x;
+                    if (Game.sampleEdgeGroundDepth(x + 1, y) >= 0)
+                        o |= BaseShapeRenderer.hide_pos_x;
+                    if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0)
+                        o |= BaseShapeRenderer.hide_neg_y;
+                    if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0)
+                        o |= BaseShapeRenderer.hide_pos_y;
                 }
 
                 double extra = getExtra(x, y);
-                this.addBox(t,
-                        x * Game.tile_size,
-                        y * Game.tile_size,
-                        -extra, Game.tile_size, Game.tile_size,
-                        extra + depth, o, false);
+                this.addBox(t, x * Game.tile_size, y * Game.tile_size, -extra, Game.tile_size, Game.tile_size, extra + depth, o, false);
             }
-        }
-        else
+        } else
         {
-            this.addBox(t,
-                    x * Game.tile_size,
-                    y * Game.tile_size,
-                    0, Game.tile_size, Game.tile_size,
-                    0, BaseShapeRenderer.hide_neg_z, false);
+            this.addBox(t, x * Game.tile_size, y * Game.tile_size, 0, Game.tile_size, Game.tile_size, 0, BaseShapeRenderer.hide_neg_z, false);
         }
 
         if (!this.staged)
@@ -724,17 +705,9 @@ public class TerrainRenderer
             Drawing.drawing.setColor(r, g, b);
 
             if (Game.enable3d)
-                this.addBox(t,
-                    x * Game.tile_size,
-                    y * Game.tile_size,
-                    -Game.tile_size, Game.tile_size, Game.tile_size,
-                    Game.tile_size + depth, BaseShapeRenderer.hide_neg_z, true);
+                this.addBox(t, x * Game.tile_size, y * Game.tile_size, -Game.tile_size, Game.tile_size, Game.tile_size, Game.tile_size + depth, BaseShapeRenderer.hide_neg_z, true);
             else
-                this.addBox(t,
-                        x * Game.tile_size,
-                        y * Game.tile_size,
-                        0, Game.tile_size, Game.tile_size,
-                        0, BaseShapeRenderer.hide_neg_z, true);
+                this.addBox(t, x * Game.tile_size, y * Game.tile_size, 0, Game.tile_size, Game.tile_size, 0, BaseShapeRenderer.hide_neg_z, true);
         }
     }
 
@@ -757,8 +730,7 @@ public class TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        for (Obstacle o : Game.obstacles)
-            o.postOverride();
+        for (Obstacle o : Game.obstacles) o.postOverride();
 
         if (stagedCount == 0)
             totalObjectsCount = Game.currentSizeX * Game.currentSizeY + Game.obstacles.size();
@@ -769,8 +741,7 @@ public class TerrainRenderer
         int x = stagedCount / Game.currentSizeY;
         for (; x < Game.currentSizeX && (!allowPartialLoading || System.currentTimeMillis() - start < (this.hasContinuationed ? 50 : 250)); x++)
         {
-            for (int y = 0; y < Game.currentSizeY; y++)
-                drawTile(x, y);
+            for (int y = 0; y < Game.currentSizeY; y++) drawTile(x, y);
             stagedCount++;
         }
 
@@ -819,8 +790,6 @@ public class TerrainRenderer
 
         o.draw();
     }
-
-
 
     public static class RegionRenderer
     {

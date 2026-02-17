@@ -1,5 +1,10 @@
 package tanks.tank;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.TextWithStyling;
@@ -7,12 +12,6 @@ import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 public class Ray extends GameObject
 {
@@ -49,12 +48,14 @@ public class Ray extends GameObject
     public boolean acquiredTarget = false;
 
     /**
-     * Set this and use {@linkplain #chunkComparator} to sort the chunks by manhattan distance from this chunk
+     * Set this and use {@linkplain #chunkComparator} to sort the chunks by
+     * manhattan distance from this chunk
      */
     private static Chunk startingChunk = Chunk.zeroChunk;
 
     /**
-     * Method references don't allocate new objects; however lambdas do (they create temp classes)
+     * Method references don't allocate new objects; however lambdas do (they create
+     * temp classes)
      */
     private static int keyExtractor(Chunk c)
     {
@@ -62,12 +63,14 @@ public class Ray extends GameObject
     }
 
     /**
-     * Comparator that sorts the chunks by manhattan distance from {@linkplain #startingChunk}
+     * Comparator that sorts the chunks by manhattan distance from
+     * {@linkplain #startingChunk}
      */
     private static final Comparator<Chunk> chunkComparator = (o1, o2) -> keyExtractor(o1) - keyExtractor(o2);
 
     /**
-     * Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}
+     * Should be consumed immediately via getTarget or getDist. Otherwise, use
+     * {@linkplain #copy()}
      */
     public static Ray newRay(double x, double y, double angle, int bounces, Tank tank)
     {
@@ -75,7 +78,8 @@ public class Ray extends GameObject
     }
 
     /**
-     * Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}
+     * Should be consumed immediately via getTarget or getDist. Otherwise, use
+     * {@linkplain #copy()}
      */
     public static Ray newRay(double x, double y, double angle, int bounces, Tank tank, double speed)
     {
@@ -84,10 +88,13 @@ public class Ray extends GameObject
 
     /**
      * Creates another ray with the properties of the last ray.<br>
-     * To set custom properties on your ray copy:
-     * <blockquote><pre>
+     * To set custom properties on your ray copy: <blockquote>
+     *
+     * <pre>
      *     Ray copy = Ray.newRay(params).copy()
-     * </pre></blockquote>
+     * </pre>
+     *
+     * </blockquote>
      *
      */
     public Ray copy()
@@ -148,8 +155,7 @@ public class Ray extends GameObject
                     errorChunkCache.add(c);
                     return errorChunkCache;
                 }
-            }
-            else if (obj instanceof Movable)
+            } else if (obj instanceof Movable)
             {
                 for (Chunk c : ((Movable) obj).getCurrentChunks())
                 {
@@ -167,14 +173,9 @@ public class Ray extends GameObject
         {
             if (Game.framework != Game.Framework.libgdx)
             {
-                System.err.printf("-----Ray collision face owner error-----%n" +
-                                "%s not in %s%n",
-                        gameObjectString(obj),
-                        info.stream().map(Chunk::toString)
-                                .collect(Collectors.joining(", "))
-                );
-            }
-            else
+                System.err.printf("-----Ray collision face owner error-----%n" + "%s not in %s%n", gameObjectString(obj),
+                        info.stream().map(Chunk::toString).collect(Collectors.joining(", ")));
+            } else
                 System.err.println("ray collision face owner error");
 
             if (!Game.disableErrorFixing && Game.currentLevel != null)
@@ -321,8 +322,7 @@ public class Ray extends GameObject
                 result.collisionX = posX + dx * range / dist;
                 result.collisionY = posY + dy * range / dist;
                 this.bounces = -1;
-            }
-            else
+            } else
                 this.range -= dist;
 
             this.posX = result.collisionX;
@@ -330,20 +330,11 @@ public class Ray extends GameObject
 
             if (Chunk.debug && trace)
             {
-                debugTexts.add(new DebugText(
-                    "@", bounces, bouncyBounces, 16,
-                    posX, posY
-                ));
+                debugTexts.add(new DebugText("@", bounces, bouncyBounces, 16, posX, posY));
 
                 String symbol = result.collisionFace.direction.isNonZeroY() ? "|" : "-";
-                debugTexts.add(new DebugText(
-                    symbol, bounces, bouncyBounces, 16,
-                    result.collisionFace.startX, result.collisionFace.startY
-                ));
-                debugTexts.add(new DebugText(
-                    symbol, bounces, bouncyBounces, 16,
-                    result.collisionFace.endX, result.collisionFace.endY
-                ));
+                debugTexts.add(new DebugText(symbol, bounces, bouncyBounces, 16, result.collisionFace.startX, result.collisionFace.startY));
+                debugTexts.add(new DebugText(symbol, bounces, bouncyBounces, 16, result.collisionFace.endX, result.collisionFace.endY));
             }
 
             ISolidObject obj = result.collisionFace.owner;
@@ -377,8 +368,7 @@ public class Ray extends GameObject
                 {
                     this.vX = -this.vX;
                     this.vY = -this.vY;
-                }
-                else if (!result.collisionFace.direction.isNonZeroX())
+                } else if (!result.collisionFace.direction.isNonZeroX())
                     this.vY = -this.vY;
                 else
                     this.vX = -this.vX;
@@ -426,8 +416,7 @@ public class Ray extends GameObject
                 double z = this.tank.size / 2 + this.tank.turretSize / 2 * frac + (Game.tile_size / 4) * (1 - frac);
                 if (Game.screen instanceof ScreenGame && !ScreenGame.finished)
                 {
-                    Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray)
-                        .setSize(Math.max(this.size, min_trace_size)));
+                    Game.effects.add(Effect.createNewEffect(x, y, z, Effect.EffectType.ray).setSize(Math.max(this.size, min_trace_size)));
                 }
             }
         }
@@ -440,8 +429,7 @@ public class Ray extends GameObject
         if (current == null)
             return;
 
-        chunkCheck:
-        for (int chunksChecked = 0; chunksChecked < maxChunkCheck; chunksChecked++)
+        chunkCheck : for (int chunksChecked = 0; chunksChecked < maxChunkCheck; chunksChecked++)
         {
             double moveXBase = Chunk.chunkSize * Game.tile_size * Math.cos(angle);
             double moveYBase = Chunk.chunkSize * Game.tile_size * Math.sin(angle);
@@ -465,21 +453,12 @@ public class Ray extends GameObject
 
             if (Chunk.debug && trace && totalChunksChecked > 0)
             {
-                debugTexts.add(new DebugText(
-                    (vX > 0 ? "+x" : "-x") + (vY > 0 ? "+y" : "-y"), bounces, bouncyBounces, 16,
-                    posX + moveX, posY + moveY
-                ));
+                debugTexts.add(new DebugText((vX > 0 ? "+x" : "-x") + (vY > 0 ? "+y" : "-y"), bounces, bouncyBounces, 16, posX + moveX, posY + moveY));
 
                 if (mid == null || current.manhattanDist(mid) > 1)
                 {
-                    debugTexts.add(new DebugText(
-                        vY > 0 ? "+x" : "-x", bounces, bouncyBounces, 16,
-                        posX + moveX, posY
-                    ));
-                    debugTexts.add(new DebugText(
-                        vX > 0 ? "+y" : "-y", bounces, bouncyBounces, 16,
-                        posX, posY + moveY
-                    ));
+                    debugTexts.add(new DebugText(vY > 0 ? "+x" : "-x", bounces, bouncyBounces, 16, posX + moveX, posY));
+                    debugTexts.add(new DebugText(vX > 0 ? "+y" : "-y", bounces, bouncyBounces, 16, posX, posY + moveY));
                 }
             }
 
@@ -522,10 +501,8 @@ public class Ray extends GameObject
 
     public boolean testInsideObstacle()
     {
-        return isInsideObstacle(posX - size / 2, posY - size / 2) ||
-            isInsideObstacle(posX + size / 2, posY - size / 2) ||
-            isInsideObstacle(posX + size / 2, posY + size / 2) ||
-            isInsideObstacle(posX - size / 2, posY + size / 2);
+        return isInsideObstacle(posX - size / 2, posY - size / 2) || isInsideObstacle(posX + size / 2, posY - size / 2) || isInsideObstacle(posX + size / 2, posY + size / 2)
+                || isInsideObstacle(posX - size / 2, posY + size / 2);
     }
 
     public void checkCollisionInChunk(Result result, Chunk chunk, boolean firstBounce)
@@ -563,8 +540,7 @@ public class Ray extends GameObject
                     break;
                 }
             }
-        }
-        else if (vX < 0)
+        } else if (vX < 0)
         {
             for (Face f : chunk.faces.rightFaces)
             {
@@ -625,8 +601,7 @@ public class Ray extends GameObject
                     break;
                 }
             }
-        }
-        else if (vY < 0)
+        } else if (vY < 0)
         {
             for (Face f : chunk.faces.bottomFaces)
             {
@@ -666,11 +641,8 @@ public class Ray extends GameObject
         if (Chunk.debug && trace)
         {
             // displays the order of chunks checked and locations that the ray checked
-            debugTexts.add(new DebugText(
-                "" + totalChunksChecked, bounces, bouncyBounces, 48,
-                (chunk.chunkX + 0.5) * Chunk.chunkSize * Game.tile_size + (totalChunksChecked * 15),
-                (chunk.chunkY + 0.5) * Chunk.chunkSize * Game.tile_size
-            ));
+            debugTexts.add(new DebugText("" + totalChunksChecked, bounces, bouncyBounces, 48, (chunk.chunkX + 0.5) * Chunk.chunkSize * Game.tile_size + (totalChunksChecked * 15),
+                    (chunk.chunkY + 0.5) * Chunk.chunkSize * Game.tile_size));
         }
 
         result.set(t, collisionX, collisionY, collisionFace, corner);
@@ -683,8 +655,7 @@ public class Ray extends GameObject
 
     public boolean passesThrough(Face f, boolean firstBounce)
     {
-        if ((asBullet ? !f.solidBullet : !f.solidTank) ||
-            (f.owner == tank && firstBounce))
+        if ((asBullet ? !f.solidBullet : !f.solidTank) || (f.owner == tank && firstBounce))
             return true;
 
         if (f.owner instanceof Obstacle && !((Obstacle) f.owner).bouncy)
@@ -719,8 +690,7 @@ public class Ray extends GameObject
 
     public static void drawDebug()
     {
-        for (DebugText t : debugTexts)
-            t.draw();
+        for (DebugText t : debugTexts) t.draw();
         debugTexts.clear();
     }
 

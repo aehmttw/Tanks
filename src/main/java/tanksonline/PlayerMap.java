@@ -1,7 +1,5 @@
 package tanksonline;
 
-import tanks.Game;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.UUID;
+import tanks.Game;
 
 public class PlayerMap
 {
@@ -105,15 +104,14 @@ public class PlayerMap
 
             PrintWriter pw = new PrintWriter(file);
 
-            for (UUID id: players.keySet())
+            for (UUID id : players.keySet())
             {
                 if (players.get(id).registered)
                     pw.println(id + "=" + players.get(id).username);
             }
 
             pw.close();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             Game.logger.println(players.toString());
@@ -128,7 +126,6 @@ public class PlayerMap
 
         File accessCodesFile = new File(access_codes_dir);
         accessCodesFile.mkdir();
-
 
         File file = new File(username_file);
 
@@ -158,8 +155,7 @@ public class PlayerMap
                                 setupPlayer(id, s);
                                 PlayerMap.instance.getPlayer(id).registered = true;
                             }
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
                             System.out.println("Failed to parse: " + in);
                             e.printStackTrace();
@@ -167,8 +163,7 @@ public class PlayerMap
                     }
 
                     br.close();
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     e.printStackTrace();
                 }
@@ -204,7 +199,7 @@ public class PlayerMap
 
             times.sort(Comparator.naturalOrder());
 
-            for (long t: times)
+            for (long t : times)
             {
                 UploadedLevel l = map.get(t);
                 players.get(l.creator).levels.add(0, l);
@@ -212,8 +207,7 @@ public class PlayerMap
             }
 
             ds.close();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -232,8 +226,7 @@ public class PlayerMap
             }
 
             ds.close();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }

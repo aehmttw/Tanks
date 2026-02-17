@@ -1,6 +1,8 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -15,9 +17,6 @@ import tanks.tank.Mine;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
 
 public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScreen
 {
@@ -40,12 +39,10 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
         }
     });
 
-
     public Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () ->
     {
         Game.screen = this.previous;
-    }
-    );
+    });
 
     public boolean writeItem(boolean overwrite)
     {
@@ -63,8 +60,7 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
                 f.stopWriting();
 
                 return true;
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 Game.exitToCrash(e);
             }
@@ -111,8 +107,7 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
 
             this.maxAmount.posX = this.centerX + this.objXSpace * 0.5;
             this.maxAmount.posY = this.centerY + this.objYSpace * 1;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -122,8 +117,7 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
             if (itemName.inputText.equals(""))
                 itemName.inputText = itemName.previousInputText;
             updateSaveButton();
-        }
-                , itemStack.item.name);
+        }, itemStack.item.name);
 
         itemName.enableCaps = true;
         updateSaveButton();

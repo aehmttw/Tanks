@@ -8,33 +8,33 @@ import tanks.bullet.DefaultItems;
  */
 public class TankBlue extends TankAIControlled
 {
-	public TankBlue(String name, double x, double y, double angle)
-	{
-		super(name, x, y, Game.tile_size, 0, 0, 200, angle, ShootAI.straight);
+    public TankBlue(String name, double x, double y, double angle)
+    {
+        super(name, x, y, Game.tile_size, 0, 0, 200, angle, ShootAI.straight);
 
-		this.enableMovement = false;
-		this.enableMineLaying = false;
-		this.enablePredictiveFiring = false;
+        this.enableMovement = false;
+        this.enableMineLaying = false;
+        this.enablePredictiveFiring = false;
         this.friction += 0.15;
 
-		this.setBullet(DefaultItems.zap);
-		this.getBullet().recoil = 0;
+        this.setBullet(DefaultItems.zap);
+        this.getBullet().recoil = 0;
 
-		this.turretAimSpeed = 0.02;
-		this.enableLookingAtTargetEnemy = false;
-		this.cooldownBase = 200;
-		this.cooldownRandom = 0;
+        this.turretAimSpeed = 0.02;
+        this.enableLookingAtTargetEnemy = false;
+        this.cooldownBase = 200;
+        this.cooldownRandom = 0;
 
-		if (Game.tankTextures)
-		{
-			this.colorSkin = TankModels.fixed;
-			this.emblem = "emblems/electric.png";
-			this.emblemColor.green = 160;
-			this.emblemColor.blue = 255;
-		}
+        if (Game.tankTextures)
+        {
+            this.colorSkin = TankModels.fixed;
+            this.emblem = "emblems/electric.png";
+            this.emblemColor.green = 160;
+            this.emblemColor.blue = 255;
+        }
 
-		this.coinValue = 4;
+        this.coinValue = 4;
 
-		this.description = "A stationary tank which shoots stunning electricity that arcs between targets";
-	}
+        this.description = "A stationary tank which shoots stunning electricity that arcs between targets";
+    }
 }

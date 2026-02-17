@@ -9,8 +9,7 @@ public class ScreenUploadLevel extends ScreenSpecial
     {
         ScreenHome s = new ScreenHome(player);
         s.setScreen();
-    }
-    );
+    });
 
     public ScreenUploadLevel(TanksOnlineServerHandler player)
     {
@@ -22,6 +21,5 @@ public class ScreenUploadLevel extends ScreenSpecial
         quit.wait = true;
         this.buttons.add(quit);
     }
-
 
 }

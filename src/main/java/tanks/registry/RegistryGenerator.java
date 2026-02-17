@@ -1,8 +1,7 @@
 package tanks.registry;
 
-import tanks.generator.LevelGenerator;
-
 import java.util.LinkedHashMap;
+import tanks.generator.LevelGenerator;
 
 public class RegistryGenerator
 {

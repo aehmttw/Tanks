@@ -11,16 +11,15 @@ public class ScreenResetControls extends Screen
 
     public Button reset = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Reset controls", () ->
     {
-        for (InputBindingGroup i: Game.game.inputBindings.values())
+        for (InputBindingGroup i : Game.game.inputBindings.values())
         {
             i.reset();
             Game.screen = ScreenOverlayControls.lastControlsScreen;
         }
-    }
-    );
+    });
 
-    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "No", () -> Game.screen = ScreenOverlayControls.lastControlsScreen
-    );
+    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "No",
+            () -> Game.screen = ScreenOverlayControls.lastControlsScreen);
 
     public ScreenResetControls(Screen s)
     {

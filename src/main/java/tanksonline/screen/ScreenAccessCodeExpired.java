@@ -1,12 +1,11 @@
 package tanksonline.screen;
 
+import java.io.File;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlinePlayer;
 import tanksonline.TanksOnlineServerHandler;
-
-import java.io.File;
 
 public class ScreenAccessCodeExpired extends ScreenLayout
 {
@@ -14,8 +13,7 @@ public class ScreenAccessCodeExpired extends ScreenLayout
     {
         ScreenInsertAccessCode s = new ScreenInsertAccessCode(player);
         s.setScreen();
-    }
-    );
+    });
 
     public ScreenAccessCodeExpired(TanksOnlineServerHandler player)
     {

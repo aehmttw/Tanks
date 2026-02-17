@@ -83,8 +83,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
             this.shouldClip = true;
 
             this.lastOn = this.tankCollision;
-        }
-        else
+        } else
         {
             this.allowBounce = true;
             this.shouldClip = false;
@@ -113,16 +112,14 @@ public class ObstacleBeatBlock extends ObstacleStackable
                 if (stackHeight % 1 == 0)
                 {
                     byte o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size));
-                    drawBox( i * Game.tile_size + this.startHeight * Game.tile_size, o);
-                }
-                else
+                    drawBox(i * Game.tile_size + this.startHeight * Game.tile_size, o);
+                } else
                 {
                     byte o = (byte) (option | this.getOptionsByte((i + stackHeight % 1.0) * Game.tile_size));
                     drawBox((i - 1 + stackHeight % 1.0) * Game.tile_size + this.startHeight * Game.tile_size, o);
                 }
             }
-        }
-        else
+        } else
         {
             int freq = (int) this.beatFrequency;
             boolean alt = this.alternate;
@@ -149,8 +146,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
                     size = (float) (small + (large - small) * Math.min(1, timeTillChange / 8));
                 else
                     size = (float) (small + (large - small) * (1.0 - Math.min(1, timeTillChange / 8)));
-            }
-            else
+            } else
                 size = (on ? large : small);
 
             if (!on)
@@ -182,7 +178,8 @@ public class ObstacleBeatBlock extends ObstacleStackable
         float cy = (float) this.posY;
         float cz = (float) Game.sampleTerrainGroundHeight(this.posX, this.posY);
 
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92, o, false, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92,
+                o, false, cx, cy, cz);
 
         Drawing.drawing.setColor(outlineColorR, outlineColorG, outlineColorB);
         double thickness = 2;
@@ -193,10 +190,14 @@ public class ObstacleBeatBlock extends ObstacleStackable
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY, z, thickness, Game.tile_size, thickness, (byte) 0, true, cx, cy, cz);
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY, z, thickness, Game.tile_size, thickness, (byte) 0, true, cx, cy, cz);
 
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY - dist, z + Game.tile_size - thickness, Game.tile_size, thickness, thickness, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY + dist, z + Game.tile_size - thickness, Game.tile_size, thickness, thickness, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY, z + Game.tile_size - thickness, thickness, Game.tile_size, thickness, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY, z + Game.tile_size - thickness, thickness, Game.tile_size, thickness, (byte) 0, true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY - dist, z + Game.tile_size - thickness, Game.tile_size, thickness, thickness, (byte) 0, true,
+                cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY + dist, z + Game.tile_size - thickness, Game.tile_size, thickness, thickness, (byte) 0, true,
+                cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY, z + Game.tile_size - thickness, thickness, Game.tile_size, thickness, (byte) 0, true,
+                cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY, z + Game.tile_size - thickness, thickness, Game.tile_size, thickness, (byte) 0, true,
+                cx, cy, cz);
 
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY - dist, z, thickness, thickness, Game.tile_size, (byte) 0, true, cx, cy, cz);
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY - dist, z, thickness, thickness, Game.tile_size, (byte) 0, true, cx, cy, cz);
@@ -246,8 +247,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
             String[] p = s.split("#");
             this.beatPattern = (int) Double.parseDouble(p[0]);
             this.stackHeight = Double.parseDouble(p[1]);
-        }
-        else
+        } else
             this.beatPattern = (int) Double.parseDouble(s);
 
         this.refreshMetadata();

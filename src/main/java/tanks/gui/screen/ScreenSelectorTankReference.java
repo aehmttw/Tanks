@@ -1,5 +1,7 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
+import java.util.Objects;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -11,9 +13,6 @@ import tanks.tank.TankAIControlled;
 import tanks.tank.TankReference;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
-import java.util.Objects;
 
 public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankField>
 {
@@ -37,7 +36,8 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
 
     public Button firstTankPage = new Button(this.centerX - 500, this.centerY + this.objYSpace * 3.5, 40, 40, "", () -> tankPage = 0);
 
-    public Button lastTankPage = new Button(this.centerX + 500, this.centerY + this.objYSpace * 3.5, 40, 40, "", () -> tankPage = (tankButtons.size() - 1) / objectButtonRows / objectButtonCols);
+    public Button lastTankPage = new Button(this.centerX + 500, this.centerY + this.objYSpace * 3.5, 40, 40, "",
+            () -> tankPage = (tankButtons.size() - 1) / objectButtonRows / objectButtonCols);
 
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Done", new Runnable()
     {
@@ -47,8 +47,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
             onComplete.run();
             Game.screen = screen;
         }
-    }
-    );
+    });
 
     public Button copy = new Button(this.centerX, this.centerY - this.objYSpace * 2.5, this.objWidth * 1.25, this.objHeight, "Create an editable copy", new Runnable()
     {
@@ -68,7 +67,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
             s.objName = objName;
 
             if (screen instanceof ScreenEditorTanksONable)
-                ((ScreenEditorTanksONable<?>)screen).clearMusicTracks();
+                ((ScreenEditorTanksONable<?>) screen).clearMusicTracks();
             Game.screen = s;
         }
     }, "");
@@ -131,8 +130,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
                     t = (TankAIControlled) tt;
                 else
                     continue;
-            }
-            else
+            } else
             {
                 t = new TankAIControlled("", 0, 0, 0, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
                 Game.currentLevel.customTanks.get(i - 1 - Game.registryTank.tankEntries.size()).cloneProperties(t);
@@ -153,8 +151,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
 
                 if (desc.equals(""))
                     b.enableHover = false;
-            }
-            else
+            } else
             {
                 b = new Button(x, y, 50, 50, "x", () -> pointer.set(null), "None");
 
@@ -193,7 +190,9 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
     public void update()
     {
         if (copy.hoverTextRaw.equals(""))
-            copy.setHoverText("Creating an editable copy will unlink the tank used---for the %s from the original---tank in the level. This allows you to modify the---%s independently of the tank---in the level.", this.objName, this.objName);
+            copy.setHoverText(
+                    "Creating an editable copy will unlink the tank used---for the %s from the original---tank in the level. This allows you to modify the---%s independently of the tank---in the level.",
+                    this.objName, this.objName);
 
         int pageCount = (this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols);
         if (tankPage > pageCount)
@@ -258,8 +257,8 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
 
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(this.textSize);
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
-                    Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY, Translation.translate("Page %d of %d", (tankPage + 1),
+                    (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
 
         }
 
@@ -273,11 +272,11 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         if (this.pointer.get() != null)
         {
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.75, "Note: the selected tank will be linked to its original copy, and edits will be shared.");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.75,
+                    "Note: the selected tank will be linked to its original copy, and edits will be shared.");
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.25, "To instead use an unlinked copy, click 'Create an editable copy'.");
             copy.draw();
-        }
-        else
+        } else
         {
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.25, "No %s is currently selected.", this.objName);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.75, "Click on a tank to use it as %s.", this.objName);

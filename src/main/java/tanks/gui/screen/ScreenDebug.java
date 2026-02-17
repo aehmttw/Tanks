@@ -1,5 +1,7 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;
@@ -8,15 +10,9 @@ import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.tank.TankPlayer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class ScreenDebug extends Screen
 {
-    Button test = new Button(
-            0, 0, this.objWidth, this.objHeight,
-            "Test stuff", () -> Game.screen = new ScreenTestDebug()
-    );
+    Button test = new Button(0, 0, this.objWidth, this.objHeight, "Test stuff", () -> Game.screen = new ScreenTestDebug());
 
     Button traceAllRays = createToggle("Trace rays: ", b -> Game.traceAllRays = b, () -> Game.traceAllRays);
     Button firstPerson = createToggle("First person: ", b -> Game.firstPerson = b, () -> Game.firstPerson);
@@ -34,13 +30,11 @@ public class ScreenDebug extends Screen
     Button disableFixes = createToggle("Disable fixes: ", b -> Game.disableErrorFixing = b, () -> Game.disableErrorFixing);
     Button recordMovableData = createToggle("Record movable data: ", b -> Game.recordMovableData = b, () -> Game.recordMovableData);
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 5, this.objWidth, this.objHeight, "Back",
+            () -> Game.screen = new ScreenTitle());
 
-    public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(
-            test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable,
-            fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles,
-            drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData
-    )), 0, 0, -30);
+    public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable, fancyLighting, tankIDs,
+            showPathfinding, drawFaces, showUpdatingObstacles, drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData)), 0, 0, -30);
 
     public Button createToggle(String text, Consumer<Boolean> setter, Producer<Boolean> getter)
     {

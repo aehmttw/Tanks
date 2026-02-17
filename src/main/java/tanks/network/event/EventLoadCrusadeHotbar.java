@@ -56,11 +56,11 @@ public class EventLoadCrusadeHotbar extends PersonalEvent
         }
 
         if (this.translate)
-            ((ScreenGame)(Game.screen)).title = Translation.translate(this.title, this.index);
+            ((ScreenGame) (Game.screen)).title = Translation.translate(this.title, this.index);
         else
-            ((ScreenGame)(Game.screen)).title = this.title;
+            ((ScreenGame) (Game.screen)).title = this.title;
 
-        ((ScreenGame)(Game.screen)).subtitle = this.subtitle;
+        ((ScreenGame) (Game.screen)).subtitle = this.subtitle;
 
         if (Game.playerTank != null)
             Game.playerTank.updateAbilities();

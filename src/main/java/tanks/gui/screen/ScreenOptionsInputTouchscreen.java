@@ -15,15 +15,13 @@ public class ScreenOptionsInputTouchscreen extends Screen
     public static final String singleText = "\u00A7000100200255single";
     public static final String dualText = "\u00A7200100000255dual";
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()
-    );
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
     Button test = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test controls in tutorial", () ->
     {
         ScreenOptions.saveOptions(Game.homedir);
         new Tutorial().loadTutorial(false, Game.game.window.touchscreen);
     });
-
 
     Button vibrations = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -37,8 +35,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
             else
                 vibrations.setText(vibrationsText, ScreenOptions.offText);
         }
-    },
-            "When enabled, your device---will vibrate a little as---feedback for interacting with---joysticks, buttons, etc...------Not supported on all devices");
+    }, "When enabled, your device---will vibrate a little as---feedback for interacting with---joysticks, buttons, etc...------Not supported on all devices");
 
     Button mobile = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -56,8 +53,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
 
             TankPlayer.controlStickMobile = TankPlayer.controlStick.mobile;
         }
-    },
-            "When enabled, the movement joystick---can be dragged around the screen.---It will also jump to your---finger when you select it.");
+    }, "When enabled, the movement joystick---can be dragged around the screen.---It will also jump to your---finger when you select it.");
 
     Button snap = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -75,8 +71,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
 
             TankPlayer.controlStickSnap = TankPlayer.controlStick.snap;
         }
-    },
-            "When enabled, the movement joystick---will return to its initial position---upon being released. It will also---jump to your finger when you---select it.");
+    }, "When enabled, the movement joystick---will return to its initial position---upon being released. It will also---jump to your finger when you---select it.");
 
     Button dualJoysticks = new Button(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -97,17 +92,14 @@ public class ScreenOptionsInputTouchscreen extends Screen
                     snap.setText(snapText, ScreenOptions.onText);
                 else
                     snap.setText(snapText, ScreenOptions.offText);
-            }
-            else
+            } else
             {
                 dualJoysticks.setText(dualJoysticksText, dualText);
                 snap.enabled = false;
                 snap.setText(snapText, ScreenOptions.onText);
             }
         }
-    },
-            "Single joystick: Use one joystick---to move, and tap on the screen to shoot.---Double tap the player to lay a mine.------Dual joysticks: Use a second joystick---to shoot, includes a mine button.");
-
+    }, "Single joystick: Use one joystick---to move, and tap on the screen to shoot.---Double tap the player to lay a mine.------Dual joysticks: Use a second joystick---to shoot, includes a mine button.");
 
     public ScreenOptionsInputTouchscreen()
     {
@@ -143,8 +135,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
                 snap.setText(snapText, ScreenOptions.onText);
             else
                 snap.setText(snapText, ScreenOptions.offText);
-        }
-        else
+        } else
         {
             dualJoysticks.setText(dualJoysticksText, dualText);
             snap.enabled = false;

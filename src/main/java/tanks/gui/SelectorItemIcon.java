@@ -1,11 +1,10 @@
 package tanks.gui;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import tanks.gui.screen.ScreenSelector;
 import tanks.item.Item;
 import tanks.item.ItemIcon;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class SelectorItemIcon extends SelectorImage
 {
@@ -42,7 +41,7 @@ public class SelectorItemIcon extends SelectorImage
         this.itemIcons = new ItemIcon[in.size()];
 
         int index = 0;
-        for (ItemIcon i: in)
+        for (ItemIcon i : in)
         {
             this.itemIcons[index] = i.getCopy();
             icons.add(i.idName);

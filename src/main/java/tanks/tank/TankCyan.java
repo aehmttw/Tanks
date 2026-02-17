@@ -8,33 +8,33 @@ import tanks.bullet.DefaultItems;
  */
 public class TankCyan extends TankAIControlled
 {
-	public TankCyan(String name, double x, double y, double angle)
-	{
-		super(name, x, y, Game.tile_size, 128, 255, 255, angle, ShootAI.straight);
+    public TankCyan(String name, double x, double y, double angle)
+    {
+        super(name, x, y, Game.tile_size, 128, 255, 255, angle, ShootAI.straight);
 
-		this.enableMovement = true;
-		this.maxSpeed = 0.75;
-		this.enableMineLaying = false;
-		this.enablePredictiveFiring = false;
-		this.cooldownRandom = 60;
-		this.cooldownBase = 240;
-		this.turretAimSpeed = 0.01;
+        this.enableMovement = true;
+        this.maxSpeed = 0.75;
+        this.enableMineLaying = false;
+        this.enablePredictiveFiring = false;
+        this.cooldownRandom = 60;
+        this.cooldownBase = 240;
+        this.turretAimSpeed = 0.01;
 
-		this.setBullet(DefaultItems.freezing_bullet);
-		this.getBullet().maxLiveBullets = 1;
+        this.setBullet(DefaultItems.freezing_bullet);
+        this.getBullet().maxLiveBullets = 1;
 
-		this.enableLookingAtTargetEnemy = false;
-		this.turnChance = 0.001;
-		this.resistFreeze = true;
+        this.enableLookingAtTargetEnemy = false;
+        this.turnChance = 0.001;
+        this.resistFreeze = true;
 
-		this.coinValue = 4;
+        this.coinValue = 4;
 
-		if (Game.tankTextures)
-		{
-			this.emblem = "emblems/snowflake.png";
-			this.emblemColor.set(160, 255, 255);
-		}
+        if (Game.tankTextures)
+        {
+            this.emblem = "emblems/snowflake.png";
+            this.emblemColor.set(160, 255, 255);
+        }
 
-		this.description = "A support tank which shoots freezing bullets that deal low damage";
-	}
+        this.description = "A support tank which shoots freezing bullets that deal low damage";
+    }
 }

@@ -46,8 +46,7 @@ public class EventPlaySound extends PersonalEvent
             try
             {
                 Drawing.drawing.playSound(this.sound, this.pitch, this.volume);
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 System.out.println("Invalid sound: " + this.sound);
             }

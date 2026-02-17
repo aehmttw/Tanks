@@ -25,7 +25,6 @@ public class EventAddText extends PersonalEvent
 
     }
 
-
     public EventAddText(int id, ScreenOnline.Text t)
     {
         this.id = id;

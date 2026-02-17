@@ -12,8 +12,7 @@ public class ScreenLanguage extends Screen
 
     public SavedFilesList languages;
 
-    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
-    );
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
 
     public ScreenLanguage()
     {
@@ -22,57 +21,48 @@ public class ScreenLanguage extends Screen
         this.music = "menu_options.ogg";
         this.musicID = "menu";
 
-        languages = new SavedFilesList(Game.homedir + Game.languagesPath, page, 0, -30,
-                (name, file) ->
-                {
-                    changeLanguage(new Translation(file));
-                }, (file) -> null, (file, button) ->
-                {
-                    try
-                    {
-                        file.startReading();
-                        button.text = file.nextLine();
-                        file.stopReading();
-                    }
-                    catch (Exception e)
-                    {
+        languages = new SavedFilesList(Game.homedir + Game.languagesPath, page, 0, -30, (name, file) ->
+        {
+            changeLanguage(new Translation(file));
+        }, (file) -> null, (file, button) ->
+        {
+            try
+            {
+                file.startReading();
+                button.text = file.nextLine();
+                file.stopReading();
+            } catch (Exception e)
+            {
 
-                    }
-                }, ".lang");
+            }
+        }, ".lang");
 
         languages.buttons.add(0, new Button(0, 0, 350, 40, "English", () ->
         {
             changeLanguage(null);
-        }
-        ));
+        }));
 
         languages.buttons.add(1, new Button(0, 0, 350, 40, "Français", () ->
         {
             changeLanguage(new Translation("fr.lang"));
-        }
-        ));
+        }));
 
-        /*languages.buttons.add(2, new Button(0, 0, 350, 40, "Español", () ->
-        {
-            changeLanguage(new Translation("es.lang"));
-        }
-        ));*/
+        /*
+         * languages.buttons.add(2, new Button(0, 0, 350, 40, "Español", () -> {
+         * changeLanguage(new Translation("es.lang")); } ));
+         */
 
         languages.buttons.add(2, new Button(0, 0, 350, 40, "Svenska", () ->
         {
             changeLanguage(new Translation("se.lang"));
-        }
-        ));
+        }));
 
-        /*languages.buttons.add(3, new Button(0, 0, 350, 40, "Română", () ->
-        {
-            changeLanguage(new Translation("ro.lang"));
-        }
-        ));*/
+        /*
+         * languages.buttons.add(3, new Button(0, 0, 350, 40, "Română", () -> {
+         * changeLanguage(new Translation("ro.lang")); } ));
+         */
 
-        languages.buttons.add(3, new Button(0, 0, 350, 40, "简体中文", () ->
-                changeLanguage(new Translation("zhcn.lang"))
-        ));
+        languages.buttons.add(3, new Button(0, 0, 350, 40, "简体中文", () -> changeLanguage(new Translation("zhcn.lang"))));
 
         languages.sortButtons();
     }

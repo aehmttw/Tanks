@@ -1,11 +1,10 @@
 package tanks.gui.screen.leveleditor.selector;
 
+import java.lang.reflect.Field;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.tankson.MetadataProperty;
-
-import java.lang.reflect.Field;
 
 public abstract class MetadataSelector
 {
@@ -30,8 +29,7 @@ public abstract class MetadataSelector
             }
 
             this.metadataField.set(o, value);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -42,8 +40,7 @@ public abstract class MetadataSelector
         try
         {
             return this.metadataField.get(o);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

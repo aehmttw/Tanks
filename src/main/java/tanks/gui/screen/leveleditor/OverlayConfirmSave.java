@@ -22,9 +22,7 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
         System.exit(0);
     });
 
-
     Button cancel = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Don't exit", this::escape);
-
 
     public OverlayConfirmSave(Screen previous, ScreenLevelEditor s)
     {

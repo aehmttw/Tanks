@@ -7,7 +7,8 @@ import tanks.gui.TextBox;
 
 public class ScreenTestFonts extends Screen
 {
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTestDebug());
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back",
+            () -> Game.screen = new ScreenTestDebug());
 
     public String boxText = "Draw box: ";
 
@@ -25,7 +26,9 @@ public class ScreenTestFonts extends Screen
         }
     });
 
-    TextBox testBox = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth * 4, this.objHeight * 2, "Test field", () -> {}, "");
+    TextBox testBox = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth * 4, this.objHeight * 2, "Test field", () ->
+    {
+    }, "");
 
     public ScreenTestFonts()
     {

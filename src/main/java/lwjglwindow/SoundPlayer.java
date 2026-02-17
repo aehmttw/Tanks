@@ -1,9 +1,12 @@
 package lwjglwindow;
 
-import basewindow.BaseSoundPlayer;
-import org.lwjgl.openal.*;
-import org.lwjgl.system.MemoryStack;
+import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.openal.ALC10.*;
+import static org.lwjgl.stb.STBVorbis.stb_vorbis_decode_memory;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.libc.LibCStdlib.free;
 
+import basewindow.BaseSoundPlayer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -13,12 +16,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import static org.lwjgl.openal.AL10.*;
-import static org.lwjgl.openal.ALC10.*;
-import static org.lwjgl.stb.STBVorbis.stb_vorbis_decode_memory;
-import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.libc.LibCStdlib.free;
+import org.lwjgl.openal.*;
+import org.lwjgl.system.MemoryStack;
 
 public class SoundPlayer extends BaseSoundPlayer
 {
@@ -51,7 +50,8 @@ public class SoundPlayer extends BaseSoundPlayer
     protected ArrayList<String> removeTracks = new ArrayList<>();
 
     /**
-     * Warning! This will give an exception if there are no audio devices plugged into the computer!
+     * Warning! This will give an exception if there are no audio devices plugged
+     * into the computer!
      */
     public SoundPlayer(LWJGLWindow window)
     {
@@ -80,7 +80,7 @@ public class SoundPlayer extends BaseSoundPlayer
             {
                 int bytesRead = channel.read(buffer);
                 if (bytesRead == -1)
-                    break;  // EOF
+                    break; // EOF
 
                 totalRead += bytesRead;
 
@@ -205,7 +205,6 @@ public class SoundPlayer extends BaseSoundPlayer
         if (looped)
             loop = AL_TRUE;
 
-
         stopMusicSource(prevMusic);
         alSourceUnqueueBuffers(prevMusic);
         prevMusic = currentMusic;
@@ -224,11 +223,9 @@ public class SoundPlayer extends BaseSoundPlayer
 
             fadeBegin = System.currentTimeMillis();
             fadeEnd = System.currentTimeMillis() + fadeTime;
-        }
-        else
+        } else
         {
-            for (int i : this.syncedTracks.values())
-                stopMusicSource(i);
+            for (int i : this.syncedTracks.values()) stopMusicSource(i);
 
             this.musicStart = System.currentTimeMillis();
             musicSpeed = 1;
@@ -281,8 +278,7 @@ public class SoundPlayer extends BaseSoundPlayer
             this.syncedTrackMaxVolumes.put(path, volume);
             this.syncedTrackFadeRate.put(path, 0f);
             alSourcef(sourcePointer, AL_GAIN, volume);
-        }
-        else
+        } else
         {
             this.syncedTrackCurrentVolumes.put(path, 0f);
             this.syncedTrackMaxVolumes.put(path, volume);
@@ -304,7 +300,7 @@ public class SoundPlayer extends BaseSoundPlayer
         {
             this.stoppingSyncedTracks.put(path, i);
             this.syncedTrackFadeRate.put(path, this.syncedTrackMaxVolumes.get(path) / fadeTime * 10);
-            //alSourceStop(i);
+            // alSourceStop(i);
         }
     }
 
@@ -321,8 +317,7 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcef(this.currentMusic, AL_PITCH, speed);
         alSourcef(this.prevMusic, AL_PITCH, speed);
 
-        for (int i : this.syncedTracks.values())
-            alSourcef(i, AL_PITCH, speed);
+        for (int i : this.syncedTracks.values()) alSourcef(i, AL_PITCH, speed);
     }
 
     @Override
@@ -332,8 +327,7 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcef(this.currentMusic, AL_GAIN, volume);
         alSourcef(this.prevMusic, AL_GAIN, volume);
 
-        for (int i : this.syncedTracks.values())
-            alSourcef(i, AL_GAIN, volume);
+        for (int i : this.syncedTracks.values()) alSourcef(i, AL_GAIN, volume);
     }
 
     @Override
@@ -349,8 +343,7 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcef(this.prevMusic, EXTOffset.AL_SEC_OFFSET, pos);
         this.musicStart = System.currentTimeMillis() - (long) (pos * 1000);
 
-        for (int i : this.syncedTracks.values())
-            alSourcef(i, EXTOffset.AL_SEC_OFFSET, pos);
+        for (int i : this.syncedTracks.values()) alSourcef(i, EXTOffset.AL_SEC_OFFSET, pos);
     }
 
     @Override
@@ -370,8 +363,7 @@ public class SoundPlayer extends BaseSoundPlayer
         this.prevMusic = -1;
         this.musicID = null;
 
-        for (int i : this.syncedTracks.values())
-            stopMusicSource(i);
+        for (int i : this.syncedTracks.values()) stopMusicSource(i);
 
         this.syncedTracks.clear();
         this.stoppingSyncedTracks.clear();
@@ -394,7 +386,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
         try (MemoryStack stack = stackPush())
         {
-            //Allocate space to store return information from the function
+            // Allocate space to store return information from the function
             IntBuffer channelsBuffer = stack.mallocInt(1);
             IntBuffer sampleRateBuffer = stack.mallocInt(1);
 
@@ -407,43 +399,41 @@ public class SoundPlayer extends BaseSoundPlayer
             rawAudioBuffer = stb_vorbis_decode_memory(b, channelsBuffer, sampleRateBuffer);
             in.close();
 
-            //Retreive the extra information that was stored in the buffers by the function
+            // Retreive the extra information that was stored in the buffers by the function
             channels = channelsBuffer.get(0);
             sampleRate = sampleRateBuffer.get(0);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("Failed to create sound " + path);
             e.printStackTrace();
         }
 
-        //Find the correct OpenAL format
+        // Find the correct OpenAL format
         int format = -1;
         if (channels == 1)
         {
             format = AL_FORMAT_MONO16;
-        }
-        else if (channels == 2)
+        } else if (channels == 2)
         {
             format = AL_FORMAT_STEREO16;
         }
 
-        //Request space for the buffer
+        // Request space for the buffer
         int bufferPointer = alGenBuffers();
 
-        //Send the data to OpenAL
+        // Send the data to OpenAL
         if (rawAudioBuffer != null)
         {
-//            for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
-//            {
-//                short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
-//                rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
-//                rawAudioBuffer.put(i, s);
-//            }
+            // for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+            // {
+            // short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+            // rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+            // rawAudioBuffer.put(i, s);
+            // }
             processAudio(rawAudioBuffer);
             alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
         }
-        //Free the memory allocated by STB
+        // Free the memory allocated by STB
         free(rawAudioBuffer);
 
         this.buffers.put(path, bufferPointer);
@@ -457,62 +447,61 @@ public class SoundPlayer extends BaseSoundPlayer
     double[] kernel;
     public void processAudio(ShortBuffer rawAudioBuffer)
     {
-//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
-//        {
-//            rawAudioBuffer.put(i, (short) (Math.floorDiv(rawAudioBuffer.get(i / 32 * 32), 4096) * 4096));
-//        }
-//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
-//        {
-//            rawAudioBuffer.put(i, (short) rawAudioBuffer.get(i / 32 * 32));
-//        }
+        // for (int i = 0; i < rawAudioBuffer.limit(); i++)
+        // {
+        // rawAudioBuffer.put(i, (short) (Math.floorDiv(rawAudioBuffer.get(i / 32 * 32),
+        // 4096) * 4096));
+        // }
+        // for (int i = 0; i < rawAudioBuffer.limit(); i++)
+        // {
+        // rawAudioBuffer.put(i, (short) rawAudioBuffer.get(i / 32 * 32));
+        // }
 
+        // if (kernel == null)
+        // {
+        // kernel = new double[1000];
+        // for (int j = 0; j < 1000; j++)
+        // {
+        // kernel[j] = Math.sin(j / 10.0) * (1000.0 - j) / 1000;
+        // }
+        // }
+        //
+        // short[] n = new short[rawAudioBuffer.limit()];
+        // for (int i = 0; i < rawAudioBuffer.limit(); i++)
+        // {
+        // double s = rawAudioBuffer.get(i);
+        // for (int j = 0; j < 1000; j++)
+        // {
+        // if (i - j >= 0)
+        // {
+        // s += rawAudioBuffer.get(i - j) * kernel[j];
+        // }
+        // }
+        // n[i] = (short) Math.min(32767, Math.max(-32768, s / 50));
+        // }
+        // for (int i = 0; i < rawAudioBuffer.limit(); i++)
+        // {
+        // rawAudioBuffer.put(i, n[i]);
+        // }
 
-//        if (kernel == null)
-//        {
-//            kernel = new double[1000];
-//            for (int j = 0; j < 1000; j++)
-//            {
-//                kernel[j] = Math.sin(j / 10.0) * (1000.0 - j) / 1000;
-//            }
-//        }
-//
-//        short[] n = new short[rawAudioBuffer.limit()];
-//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
-//        {
-//            double s = rawAudioBuffer.get(i);
-//            for (int j = 0; j < 1000; j++)
-//            {
-//                if (i - j >= 0)
-//                {
-//                    s += rawAudioBuffer.get(i - j) * kernel[j];
-//                }
-//            }
-//            n[i] = (short) Math.min(32767, Math.max(-32768, s / 50));
-//        }
-//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
-//        {
-//            rawAudioBuffer.put(i, n[i]);
-//        }
+        // int k = 1;
+        // for (int i = 0; i < rawAudioBuffer.limit(); i++)
+        // {
+        // if (i % 96000 == 0)
+        // k = (int) (Math.random() * 64 + 1);
+        // rawAudioBuffer.put(i, rawAudioBuffer.get(i / k * k));
+        // }
 
-//        int k = 1;
-//        for (int i = 0; i < rawAudioBuffer.limit(); i++)
-//        {
-//            if (i % 96000 == 0)
-//                k = (int) (Math.random() * 64 + 1);
-//            rawAudioBuffer.put(i, rawAudioBuffer.get(i / k * k));
-//        }
-
-//        for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
-//        {
-//            if ((i / 48000) % 2 == 0)
-//            {
-//                short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
-//                rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
-//                rawAudioBuffer.put(i, s);
-//            }
-//        }
+        // for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+        // {
+        // if ((i / 48000) % 2 == 0)
+        // {
+        // short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+        // rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+        // rawAudioBuffer.put(i, s);
+        // }
+        // }
     }
-
 
     protected int setupMusic(String path, InputStream in)
     {
@@ -521,7 +510,7 @@ public class SoundPlayer extends BaseSoundPlayer
 
         try (MemoryStack stack = stackPush())
         {
-            //Allocate space to store return information from the function
+            // Allocate space to store return information from the function
             IntBuffer channelsBuffer = stack.mallocInt(1);
             IntBuffer sampleRateBuffer = stack.mallocInt(1);
 
@@ -534,39 +523,38 @@ public class SoundPlayer extends BaseSoundPlayer
             rawAudioBuffer = stb_vorbis_decode_memory(b, channelsBuffer, sampleRateBuffer);
             in.close();
 
-            //Retreive the extra information that was stored in the buffers by the function
+            // Retreive the extra information that was stored in the buffers by the function
             channels = channelsBuffer.get(0);
             sampleRate = sampleRateBuffer.get(0);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             throw new RuntimeException("Failed to create music " + path);
         }
 
-        //Find the correct OpenAL format
+        // Find the correct OpenAL format
         int format = -1;
         if (channels == 1)
             format = AL_FORMAT_MONO16;
         else if (channels == 2)
             format = AL_FORMAT_STEREO16;
 
-        //Request space for the buffer
+        // Request space for the buffer
         int bufferPointer = alGenBuffers();
 
-        //Send the data to OpenAL
+        // Send the data to OpenAL
         assert rawAudioBuffer != null;
 
-//        for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
-//        {
-//            short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
-//            rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
-//            rawAudioBuffer.put(i, s);
-//        }
+        // for (int i = 0; i < rawAudioBuffer.limit() / 2; i++)
+        // {
+        // short s = rawAudioBuffer.get(rawAudioBuffer.limit() - i - 1);
+        // rawAudioBuffer.put(rawAudioBuffer.limit() - i - 1, rawAudioBuffer.get(i));
+        // rawAudioBuffer.put(i, s);
+        // }
 
         processAudio(rawAudioBuffer);
         alBufferData(bufferPointer, format, rawAudioBuffer, sampleRate);
 
-        //Free the memory allocated by STB
+        // Free the memory allocated by STB
         free(rawAudioBuffer);
 
         return bufferPointer;
@@ -647,8 +635,7 @@ public class SoundPlayer extends BaseSoundPlayer
                     this.syncedTrackCurrentVolumes.remove(s);
                     removeTracks.add(s);
                 }
-            }
-            else
+            } else
             {
                 if (vol < this.syncedTrackMaxVolumes.get(s))
                 {
@@ -659,8 +646,7 @@ public class SoundPlayer extends BaseSoundPlayer
             }
         }
 
-        for (String r : removeTracks)
-            this.syncedTracks.remove(r);
+        for (String r : removeTracks) this.syncedTracks.remove(r);
 
         this.removeTracks.clear();
     }

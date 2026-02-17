@@ -26,8 +26,7 @@ public class ScreenConfirmEndParty extends Screen
         Game.players.add(Game.player);
 
         ScreenPartyHost.disconnectedPlayers.clear();
-    }
-    );
+    });
 
     public ScreenConfirmEndParty()
     {
@@ -58,8 +57,7 @@ public class ScreenConfirmEndParty extends Screen
         {
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5 / 3, "All players will be disconnected,");
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "and progress in the crusade will be lost!");
-        }
-        else
+        } else
         {
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4 / 3, "All players will be disconnected!");
         }

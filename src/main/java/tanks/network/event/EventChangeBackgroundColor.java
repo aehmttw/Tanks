@@ -78,8 +78,7 @@ public class EventChangeBackgroundColor extends PersonalEvent
             l.colorVar.red = this.noiseR;
             l.colorVar.green = this.noiseG;
             l.colorVar.blue = this.noiseB;
-        }
-        else
+        } else
         {
             l.colorVar.red = Math.min(20, 255 - l.color.red);
             l.colorVar.green = Math.min(20, 255 - l.color.green);

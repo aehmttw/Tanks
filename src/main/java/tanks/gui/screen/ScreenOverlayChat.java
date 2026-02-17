@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -7,8 +8,6 @@ import tanks.Panel;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.tank.TankModels;
-
-import java.util.ArrayList;
 
 public class ScreenOverlayChat
 {
@@ -106,8 +105,10 @@ public class ScreenOverlayChat
                             Drawing.drawing.setColor(255, 255, 255, 127 * opacity);
 
                         Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - i * 30 - startY + radius / 2, width + xPad, radius);
-                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1)) * 30 - startY - radius / 2, width + xPad, radius);
-                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1) / 2.0) * 30 - startY, width + xPad + radius * 2, height + yPad - radius * 2);
+                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1)) * 30 - startY - radius / 2,
+                                width + xPad, radius);
+                        Drawing.drawing.fillInterfaceRect(width / 2 + xStart, Drawing.drawing.getInterfaceEdgeY(true) - (i + (c.lines.size() - 1) / 2.0) * 30 - startY,
+                                width + xPad + radius * 2, height + yPad - radius * 2);
 
                         Game.game.window.shapeRenderer.setBatchMode(true, false, false);
 
@@ -168,7 +169,8 @@ public class ScreenOverlayChat
                             if (c.color3.red >= 0)
                                 Drawing.drawing.setColor(c.color3, 255 * opacity);
                             else
-                                Drawing.drawing.setColor((c.color1.red + c.color2.red) / 2, (c.color1.green + c.color2.green) / 2, (c.color1.blue + c.color2.blue) / 2,255 * opacity);
+                                Drawing.drawing.setColor((c.color1.red + c.color2.red) / 2, (c.color1.green + c.color2.green) / 2, (c.color1.blue + c.color2.blue) / 2,
+                                        255 * opacity);
                             Drawing.drawing.drawInterfaceModel(TankModels.plainTankModel.turretBase, x, y, size, size, 0);
                         }
 

@@ -23,12 +23,10 @@ public class ScreenConfirmSaveCrusade extends Screen implements IBlankBackground
         System.exit(0);
     });
 
-
     Button cancel = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Don't exit", () ->
     {
         Game.screen = previous;
     });
-
 
     public ScreenConfirmSaveCrusade(Screen previous, ScreenCrusadeEditor s)
     {

@@ -1,16 +1,15 @@
 package lwjglwindow;
 
+import static org.lwjgl.opengl.GL11.*;
+
 import basewindow.*;
 import basewindow.transformation.AxisRotation;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
-import org.lwjgl.BufferUtils;
-
 import java.nio.FloatBuffer;
 import java.util.HashMap;
-
-import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.BufferUtils;
 
 public class VBOPosedModel extends PosedModel
 {
@@ -21,7 +20,7 @@ public class VBOPosedModel extends PosedModel
     {
         super(model);
 
-        for (ModelPart m: this.model.models)
+        for (ModelPart m : this.model.models)
         {
             int vbo = ((LWJGLWindow) this.model.window).createVBO();
             this.bonesVBOs.put(m, vbo);
@@ -78,7 +77,7 @@ public class VBOPosedModel extends PosedModel
 
         IBoneShader shader = (IBoneShader) this.model.window.currentShader;
 
-        for (PoseBone b: this.bones)
+        for (PoseBone b : this.bones)
         {
             b.computeMatrix();
             b.compileMatrix();
@@ -96,7 +95,7 @@ public class VBOPosedModel extends PosedModel
 
         shader.setBoneMatrices(this.matrices, false);
 
-        for (ModelPart mo: this.model.models)
+        for (ModelPart mo : this.model.models)
         {
             VBOModelPart m = (VBOModelPart) mo;
             LWJGLWindow window = (LWJGLWindow) this.model.window;
@@ -107,7 +106,8 @@ public class VBOPosedModel extends PosedModel
                 window.setDrawOptions(depthTest, m.material.glow, m.material.depthMask);
 
             if (m.material.customLight)
-                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness,
+                        m.material.negativeBrightness);
 
             window.setCelShadingSections(m.material.celSections);
 
@@ -129,7 +129,7 @@ public class VBOPosedModel extends PosedModel
             glPopMatrix();
         }
 
-        ((LWJGLWindow)this.model.window).setDrawOptions(false, false, true);
+        ((LWJGLWindow) this.model.window).setDrawOptions(false, false, true);
 
         if (!this.model.window.drawingShadow)
             this.model.window.setShader(this.model.window.shaderDefault.shaderBase);
@@ -147,7 +147,7 @@ public class VBOPosedModel extends PosedModel
 
         IBoneShader shader = (IBoneShader) this.model.window.currentShader;
 
-        for (ModelPart mo: this.model.models)
+        for (ModelPart mo : this.model.models)
         {
             VBOModelPart m = (VBOModelPart) mo;
             LWJGLWindow window = (LWJGLWindow) this.model.window;
@@ -158,7 +158,8 @@ public class VBOPosedModel extends PosedModel
                 window.setDrawOptions(false, m.material.glow, m.material.depthMask);
 
             if (m.material.customLight)
-                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness,
+                        m.material.negativeBrightness);
 
             window.setCelShadingSections(m.material.celSections);
 

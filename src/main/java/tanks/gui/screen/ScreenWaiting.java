@@ -57,8 +57,7 @@ public class ScreenWaiting extends Screen
         {
             double frac = (System.currentTimeMillis() / 1000.0 * speed + i / 100.0) % 1;
             double s = (i % (max * 1.0 / parts)) / 10.0 * parts;
-            Drawing.drawing.fillInterfaceOval(this.centerX + size * Math.cos(frac * Math.PI * 2),
-                    this.centerY - this.objYSpace * 5 / 12 + size * Math.sin(frac * Math.PI * 2),
+            Drawing.drawing.fillInterfaceOval(this.centerX + size * Math.cos(frac * Math.PI * 2), this.centerY - this.objYSpace * 5 / 12 + size * Math.sin(frac * Math.PI * 2),
                     s * dotSize, s * dotSize);
         }
     }

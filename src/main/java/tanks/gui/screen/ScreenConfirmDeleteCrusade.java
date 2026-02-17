@@ -17,8 +17,7 @@ public class ScreenConfirmDeleteCrusade extends Screen
         {
             Game.screen = previous;
         }
-    }
-    );
+    });
 
     public Button confirmDelete = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Yes", new Runnable()
     {
@@ -28,8 +27,7 @@ public class ScreenConfirmDeleteCrusade extends Screen
             Game.game.fileManager.getFile(crusade.fileName).delete();
             Game.screen = new ScreenCrusades();
         }
-    }
-    );
+    });
 
     public ScreenConfirmDeleteCrusade(Screen previous, Crusade crusade)
     {

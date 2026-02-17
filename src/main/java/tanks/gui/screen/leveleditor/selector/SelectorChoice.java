@@ -1,5 +1,7 @@
 package tanks.gui.screen.leveleditor.selector;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import tanks.BiConsumer;
 import tanks.Function;
 import tanks.Game;
@@ -8,10 +10,11 @@ import tanks.gui.ButtonList;
 import tanks.gui.screen.leveleditor.OverlaySelectChoice;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-/** @param <V> The class of the object being selected. (e.g. {@code Team} for team selectors) */
+/**
+ * @param <V>
+ *            The class of the object being selected. (e.g. {@code Team} for
+ *            team selectors)
+ */
 public class SelectorChoice<V> extends MetadataSelector
 {
     public ArrayList<V> choices = new ArrayList<>();
@@ -53,8 +56,7 @@ public class SelectorChoice<V> extends MetadataSelector
                 index += choices.size() + 1;
             else if (index >= choices.size())
                 index = -1;
-        }
-        else
+        } else
             index = (index + choices.size()) % choices.size();
 
         if (index > -1)

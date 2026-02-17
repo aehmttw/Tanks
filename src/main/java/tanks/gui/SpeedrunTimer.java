@@ -20,14 +20,16 @@ public class SpeedrunTimer
         else
             Drawing.drawing.setColor(0, 0, 0, alpha);
 
-        double posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50;
+        double posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+                + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50;
         double posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;
 
         String levelDiff = "";
         String crusadeDiff = "";
 
         boolean showDiff = false;
-        if (Crusade.crusadeMode && ScreenGame.finishedQuick && Crusade.currentCrusade.bestTimes != null && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient && Game.showBestTime)
+        if (Crusade.crusadeMode && ScreenGame.finishedQuick && Crusade.currentCrusade.bestTimes != null && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient
+                && Game.showBestTime)
         {
             showDiff = true;
             double time = 0;
@@ -69,8 +71,7 @@ public class SpeedrunTimer
 
                 levelDiff = "";
                 crusadeDiff = "";
-            }
-            else
+            } else
             {
                 String end = "\u00A7000000000255)";
                 if (Level.isDark() || (Game.screen instanceof IDarkScreen && Panel.win && Game.effectsEnabled))
@@ -100,7 +101,7 @@ public class SpeedrunTimer
                 Drawing.drawing.setColor(0, 0, 0, alpha);
 
             Drawing.drawing.setInterfaceFontSize(12);
-            Drawing.drawing.displayInterfaceText(posX, posY + 20, false, "Crusade time: %s",  getTime(Crusade.currentCrusade.timePassed) + crusadeDiff);
+            Drawing.drawing.displayInterfaceText(posX, posY + 20, false, "Crusade time: %s", getTime(Crusade.currentCrusade.timePassed) + crusadeDiff);
         }
     }
 

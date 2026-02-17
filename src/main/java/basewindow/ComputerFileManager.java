@@ -1,7 +1,5 @@
 package basewindow;
 
-import tanks.Game;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -34,8 +32,7 @@ public class ComputerFileManager extends BaseFileManager
             }
 
             return al;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             return al;
@@ -59,8 +56,7 @@ public class ComputerFileManager extends BaseFileManager
         try
         {
             Runtime.getRuntime().exec(cmd);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -73,7 +69,7 @@ public class ComputerFileManager extends BaseFileManager
 
     public static InputStream getResource(ArrayList<String> overrideLocations, String path) throws FileNotFoundException
     {
-        for (String overridesDir: overrideLocations)
+        for (String overridesDir : overrideLocations)
         {
             File f = new File(overridesDir + path);
 

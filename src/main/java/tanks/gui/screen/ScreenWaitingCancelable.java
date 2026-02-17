@@ -21,7 +21,6 @@ public class ScreenWaitingCancelable extends ScreenWaiting
             cancel.update();
     }
 
-
     @Override
     public void draw()
     {

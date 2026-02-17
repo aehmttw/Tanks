@@ -1,11 +1,10 @@
 package tanks.gui.screen.leveleditor.selector;
 
+import java.lang.reflect.Field;
 import tanks.Game;
 import tanks.gui.screen.leveleditor.OverlaySelectBlockHeight;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.ObstacleStackable;
-
-import java.lang.reflect.Field;
 
 public class SelectorStackHeight extends SelectorNumber
 {

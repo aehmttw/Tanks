@@ -18,15 +18,13 @@ public class ScreenSteamWorkshop extends Screen
             Game.screen = new ScreenShareLevel();
         else
             Game.screen = new ScreenSteamWorkshopAgreement();
-    },
-            "Share a level you made with the Tanks community!");
+    }, "Share a level you made with the Tanks community!");
 
     Button downloadLevel = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Browse levels", () ->
     {
         Game.screen = new ScreenWorkshopSearchWaiting();
         Game.steamNetworkHandler.workshop.search("Level", 0, 18, null, null, Game.steamNetworkHandler.workshop.searchByScore);
-    },
-            "Browse levels the Tanks community has created!");
+    }, "Browse levels the Tanks community has created!");
 
     Button uploadCrusade = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Upload crusade", () ->
     {
@@ -34,23 +32,19 @@ public class ScreenSteamWorkshop extends Screen
             Game.screen = new ScreenShareCrusade();
         else
             Game.screen = new ScreenSteamWorkshopAgreement();
-    },
-            "Share a crusade you made with the Tanks community!");
+    }, "Share a crusade you made with the Tanks community!");
 
     Button downloadCrusade = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Browse crusades", () ->
     {
         Game.screen = new ScreenWorkshopSearchWaiting();
         Game.steamNetworkHandler.workshop.search("Crusade", 0, 18, null, null, Game.steamNetworkHandler.workshop.searchByScore);
-    },
-            "Browse crusades the Tanks community has created!");
-
+    }, "Browse crusades the Tanks community has created!");
 
     Button myLevels = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "My uploaded creations", () ->
     {
         Game.screen = new ScreenWorkshopSearchWaiting();
         Game.steamNetworkHandler.workshop.search(null, 0, 18, Game.steamNetworkHandler.playerID, null, Game.steamNetworkHandler.workshop.searchByScore);
-    },
-            "View everything you have uploaded");
+    }, "View everything you have uploaded");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay());
 

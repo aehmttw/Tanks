@@ -100,8 +100,7 @@ public class ObstacleBoostPanel extends Obstacle
 
         if (Game.effectsEnabled && !ScreenGame.finished && !(m instanceof Bullet && !((Bullet) m).playPopSound))
         {
-            for (int i = 0; i < 25 * Game.effectMultiplier; i++)
-                this.addEffect(m.posX, m.posY, 0.5);
+            for (int i = 0; i < 25 * Game.effectMultiplier; i++) this.addEffect(m.posX, m.posY, 0.5);
         }
     }
 
@@ -117,8 +116,7 @@ public class ObstacleBoostPanel extends Obstacle
 
             Drawing.drawing.setColor(this.colorR - offset / 2, Math.min(this.colorG - offset + this.brightness, 255), this.colorB + this.brightness, 255, 1.0);
             Drawing.drawing.fillRect(this, this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
-        }
-        else
+        } else
         {
             Drawing.drawing.setColor(255, this.brightness, 0, (this.posX / Game.tile_size + this.posY / Game.tile_size) % 255);
             Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Obstacle.draw_size, Obstacle.draw_size, 10);

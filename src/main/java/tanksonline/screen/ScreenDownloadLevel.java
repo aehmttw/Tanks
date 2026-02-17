@@ -1,10 +1,10 @@
 package tanksonline.screen;
 
 import tanks.Game;
-import tanks.network.event.online.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.ScreenOnline;
+import tanks.network.event.online.*;
 import tanksonline.TanksOnlineServerHandler;
 import tanksonline.UploadedLevel;
 
@@ -24,8 +24,7 @@ public class ScreenDownloadLevel extends ScreenLayout
             screen.setScreen();
             player.sendEvent(new EventCleanUp());
         }
-    }
-    );
+    });
 
     Button delete = new Button(200, sizeY - 50, 350, 40, "Delete", new Runnable()
     {
@@ -37,8 +36,7 @@ public class ScreenDownloadLevel extends ScreenLayout
 
             player.sendEvent(new EventCleanUp());
         }
-    }
-    );
+    });
 
     public ScreenDownloadLevel(TanksOnlineServerHandler player, UploadedLevel level)
     {

@@ -1,11 +1,10 @@
 package tanks.gui.screen.leveleditor.selector;
 
+import java.lang.reflect.Field;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.gui.screen.leveleditor.OverlaySelectColor;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-
-import java.lang.reflect.Field;
 
 public class SelectorColor extends SelectorNumber
 {
@@ -41,7 +40,6 @@ public class SelectorColor extends SelectorNumber
         int r = (number / (256 * 256)) % 256;
         int g = (number / (256)) % 256;
         int b = number % 256;
-
 
         return String.format("\u00A7%03d%03d%03d255%d/%d/%d", r, g, b, r, g, b);
     }

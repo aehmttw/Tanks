@@ -1,5 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -7,8 +8,6 @@ import tanks.gui.ButtonList;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.leveleditor.selector.SelectorChoice;
-
-import java.util.ArrayList;
 
 public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
 {
@@ -37,14 +36,14 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
         for (V b : selector.choices)
         {
             final int j = i;
-            choiceButtons.add(new Button(0, 0, 350, 40, selector.choiceToString(b),
-                    () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, j), selector.description.apply(b)));
+            choiceButtons.add(new Button(0, 0, 350, 40, selector.choiceToString(b), () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, j),
+                    selector.description.apply(b)));
             i++;
         }
 
         if (selector.addNoneChoice)
-            choiceButtons.add(new Button(0, 0, 350, 40, "\u00A7127000000255none",
-                    () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, -1), selector.description.apply(null)));
+            choiceButtons.add(new Button(0, 0, 350, 40, "\u00A7127000000255none", () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, -1),
+                    selector.description.apply(null)));
 
         selector.buttonList = new ButtonList(choiceButtons, 0, 0, -30);
         selector.buttonList.manualDarkMode = true;
@@ -55,8 +54,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
 
     public void update()
     {
-        for (Button b : choiceButtons)
-            b.enabled = true;
+        for (Button b : choiceButtons) b.enabled = true;
 
         InputBindingGroup ig = Game.game.inputBindings.get(this.selector.metadataProperty.keybind());
         if (ig.isValid())

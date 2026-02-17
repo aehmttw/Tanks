@@ -1,6 +1,11 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -11,12 +16,6 @@ import tanks.tank.*;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Random;
 
 public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 {
@@ -41,8 +40,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                 f.stopWriting();
 
                 return true;
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 Game.exitToCrash(e);
             }
@@ -60,7 +58,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             ArrayList<Tank> copied = new ArrayList<>();
             ArrayList<Tank> notCopied = new ArrayList<>();
 
-            for (String s: linked)
+            for (String s : linked)
             {
                 Tank t1 = Game.currentLevel.lookupTank(s);
                 if (writeTank(t1))
@@ -70,8 +68,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             }
 
             Game.screen = new ScreenTankSavedInfo(this, t, copied, notCopied);
-        }
-        else
+        } else
             Game.screen = new ScreenTankSaveOverwrite(this, t);
     }
 
@@ -79,10 +76,10 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
     {
         TankAIControlled t = target.get();
         this.writeTankAndShowConfirmation(t, false);
-    }
-    );
+    });
 
-    public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
+    public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth,
+            Drawing.drawing.objHeight, "Ok", () -> message = null);
 
     @SuppressWarnings("unused")
     @Override
@@ -104,7 +101,6 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         new TabPartPicker(this, appearance, "Tank treads", TankPropertyCategory.appearanceTreads, 2);
         new TabGlow(this, appearance, "Glow", TankPropertyCategory.appearanceGlow);
         new Tab(this, appearance, "Tracks", TankPropertyCategory.appearanceTracks);
-
 
         Tab idle = new Tab(this, movement, "Idle movement", TankPropertyCategory.movementIdle);
         Tab avoid = new Tab(this, movement, "Threat avoidance", TankPropertyCategory.movementAvoid);
@@ -176,7 +172,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
         public void addFields()
         {
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -193,8 +189,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                         t.maxChars = 100;
                         t.sizeX *= 3;
                         this.description = t;
-                    }
-                    else
+                    } else
                         this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(target.get(), f), p));
                 }
             }
@@ -237,7 +232,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             Bullet bullet = screen.target.get().getBullet();
 
             if (!Game.game.window.drawingShadow)
-                bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, t.color, t.secondaryColor);
+                bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, t.color,
+                        t.secondaryColor);
             super.draw();
         }
     }
@@ -258,7 +254,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
         public void set()
         {
-            this.preview = new TankAIControlled("preview", Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 315 * Drawing.drawing.interfaceScaleZoom, Game.tile_size, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
+            this.preview = new TankAIControlled("preview", Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 315 * Drawing.drawing.interfaceScaleZoom, Game.tile_size, 0, 0, 0,
+                    0, TankAIControlled.ShootAI.none);
 
             this.preview.posX = this.screen.centerX;
             this.preview.posY = this.screen.centerY - 30;
@@ -352,8 +349,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                 {
                     tank.enableSecondaryColor = !tank.enableSecondaryColor;
                     enable = tank.enableSecondaryColor;
-                }
-                else if (colorIndex == 3)
+                } else if (colorIndex == 3)
                 {
                     tank.enableTertiaryColor = !tank.enableTertiaryColor;
                     enable = tank.enableTertiaryColor;
@@ -361,8 +357,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
                 setColorText(enable);
             }
-        },
-                "If off, an color will automatically---be picked for this part");
+        }, "If off, an color will automatically---be picked for this part");
 
         public void setColorText(boolean enable)
         {
@@ -399,8 +394,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         @Override
         public void sortUIElements()
         {
-            while (this.uiElements.size() < 8)
-                this.uiElements.add(new EmptySpace());
+            while (this.uiElements.size() < 8) this.uiElements.add(new EmptySpace());
 
             if (this.colorIndex == 2 || this.colorIndex == 3)
                 this.uiElements.add(enableColor);
@@ -416,7 +410,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             super.updateUIElements();
             TankAIControlled tank = screen.target.get();
 
-            if (this.colorIndex == 1 || (this.colorIndex == 4 && tank.emblem != null) || (this.colorIndex == 2 && tank.enableSecondaryColor) ||  (this.colorIndex == 3 && tank.enableTertiaryColor))
+            if (this.colorIndex == 1 || (this.colorIndex == 4 && tank.emblem != null) || (this.colorIndex == 2 && tank.enableSecondaryColor)
+                    || (this.colorIndex == 3 && tank.enableTertiaryColor))
                 this.colorPicker.update();
 
             if (!tank.enableSecondaryColor)
@@ -429,7 +424,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             this.updateColors();
             TankAIControlled tank = screen.target.get();
 
-            if (this.colorIndex == 1 || (this.colorIndex == 4 && tank.emblem != null) || (this.colorIndex == 2 && tank.enableSecondaryColor) ||  (this.colorIndex == 3 && tank.enableTertiaryColor))
+            if (this.colorIndex == 1 || (this.colorIndex == 4 && tank.emblem != null) || (this.colorIndex == 2 && tank.enableSecondaryColor)
+                    || (this.colorIndex == 3 && tank.enableTertiaryColor))
             {
                 this.colorPicker.draw();
             }
@@ -453,7 +449,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -467,8 +463,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                         {
                             this.uiElements.add(new EmptySpace());
                         }
-                    }
-                    else if (t instanceof SelectorColor)
+                    } else if (t instanceof SelectorColor)
                         this.colorPicker = (SelectorColor) t;
                 }
             }
@@ -480,14 +475,12 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                     Field f = Tank.class.getField("secondaryColor");
                     this.colorPicker = (SelectorColor) screen.getUIElementForField(new FieldPointer<>(target.get(), f), f.getAnnotation(Property.class));
                 }
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
 
         }
-
 
         public void updateColors()
         {
@@ -517,7 +510,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         public void sortUIElements()
         {
             int in = 0;
-            for (Tab t: this.subMenus)
+            for (Tab t : this.subMenus)
             {
                 this.uiElements.add(in, new Button(0, 0, 350, 40, t.name, () -> screen.setTab(t)));
                 in++;
@@ -531,7 +524,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                     this.uiElements.get(i).setPosition(margin3, Drawing.drawing.interfaceSizeY / 2 + yoffset + (i - in + 3) * 90);
             }
 
-            for (Tab t: this.subMenus)
+            for (Tab t : this.subMenus)
             {
                 t.sortUIElements();
             }
@@ -592,10 +585,12 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
             Drawing.drawing.setColor(80, 80, 80);
             Drawing.drawing.fillInterfaceOval(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
-            Drawing.drawing.setColor(tank.secondaryColor.red * preview.glowIntensity, tank.secondaryColor.green * preview.glowIntensity, tank.secondaryColor.blue * preview.glowIntensity, 255, 1);
+            Drawing.drawing.setColor(tank.secondaryColor.red * preview.glowIntensity, tank.secondaryColor.green * preview.glowIntensity,
+                    tank.secondaryColor.blue * preview.glowIntensity, 255, 1);
             Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * Math.min(2, preview.glowSize / 4), s * 1.5 * Math.min(2, preview.glowSize / 4));
             Drawing.drawing.setColor(255, 255, 255, 255 * preview.lightIntensity, 1);
-            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * Math.min(2, preview.lightSize / 4), s * 1.5 * Math.min(2, preview.lightSize / 4), false, true);
+            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * Math.min(2, preview.lightSize / 4), s * 1.5 * Math.min(2, preview.lightSize / 4),
+                    false, true);
 
             Drawing.drawing.setColor(0, 0, 0, 64);
             for (int i = 0; i < 3; i++)
@@ -656,23 +651,17 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             if ((double) oldValue >= bc && (double) f.cast().get() < bc)
             {
                 Game.screen = new ScreenInfo(Game.screen, "Note!",
-                        new String[]{"The base tank cooldown you picked is",
-                                "less than the tank's bullet's cooldown.", "",
-                                "The greater cooldown value will be used."});
+                        new String[]{"The base tank cooldown you picked is", "less than the tank's bullet's cooldown.", "", "The greater cooldown value will be used."});
             }
-        }
-        else if (p.id().equals("enable_predictive_firing"))
+        } else if (p.id().equals("enable_predictive_firing"))
         {
             if ((boolean) f.cast().get())
             {
                 if (t.shootAIType != TankAIControlled.ShootAI.straight && t.shootAIType != TankAIControlled.ShootAI.alternate)
                 {
-                    Game.screen = new ScreenInfo(Game.screen, "Note!",
-                            new String[]{"Predictive firing is only effective",
-                                    "with straight or alternate aiming behavior."});
+                    Game.screen = new ScreenInfo(Game.screen, "Note!", new String[]{"Predictive firing is only effective", "with straight or alternate aiming behavior."});
                 }
             }
         }
     }
 }
-

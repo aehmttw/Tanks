@@ -1,16 +1,15 @@
 package lwjglwindow;
 
+import static org.lwjgl.opengl.EXTGeometryShader4.*;
+import static org.lwjgl.opengl.GL20.*;
+
 import basewindow.*;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import static org.lwjgl.opengl.EXTGeometryShader4.*;
-import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderUtil extends BaseShaderUtil
 {
@@ -90,7 +89,7 @@ public class ShaderUtil extends BaseShaderUtil
             StringBuilder header = new StringBuilder();
             if (headers != null)
             {
-                for (String h: headers)
+                for (String h : headers)
                 {
                     header.append(this.window.readFileAsString(h));
                 }
@@ -112,8 +111,7 @@ public class ShaderUtil extends BaseShaderUtil
             }
 
             return shader;
-        }
-        catch (Exception exc)
+        } catch (Exception exc)
         {
             ARBShaderObjects.glDeleteObjectARB(shader);
             throw exc;
@@ -136,11 +134,11 @@ public class ShaderUtil extends BaseShaderUtil
 
         Class[] classes = this.getClass().getClasses();
 
-        for (Field f: fields)
+        for (Field f : fields)
         {
             if (ShaderProgram.IUniform.class.isAssignableFrom(f.getType()))
             {
-                for (Class c: classes)
+                for (Class c : classes)
                 {
                     if (f.getType().isAssignableFrom(c))
                     {
@@ -151,21 +149,21 @@ public class ShaderUtil extends BaseShaderUtil
                         try
                         {
                             u.bind();
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
-                            // If you get this, it means one of your shader uniforms doesn't have a corresponding
-                            // GLSL uniform. This could happen if the uniform is unused and is thus optimized out by the GLSL compiler.
+                            // If you get this, it means one of your shader uniforms doesn't have a
+                            // corresponding
+                            // GLSL uniform. This could happen if the uniform is unused and is thus
+                            // optimized out by the GLSL compiler.
                             throw new RuntimeException("Failed to bind uniform in " + program, e);
                         }
 
                         f.set(program, u);
                     }
                 }
-            }
-            else if (ShaderGroup.IGroupUniform.class.isAssignableFrom(f.getType()))
+            } else if (ShaderGroup.IGroupUniform.class.isAssignableFrom(f.getType()))
             {
-                for (Class c: classes)
+                for (Class c : classes)
                 {
                     if (f.getType().isAssignableFrom(c))
                     {
@@ -181,15 +179,17 @@ public class ShaderUtil extends BaseShaderUtil
                         {
                             u.instantiate(f.getName(), this.programID, this.program instanceof ShaderShadowMap);
 
-                            if (!((f.getAnnotation(OnlyBaseUniform.class) != null && this.program instanceof ShaderShadowMap) ||
-                                (f.getAnnotation(OnlyShadowMapUniform.class) != null && this.program instanceof ShaderBase)))
+                            if (!((f.getAnnotation(OnlyBaseUniform.class) != null && this.program instanceof ShaderShadowMap)
+                                    || (f.getAnnotation(OnlyShadowMapUniform.class) != null && this.program instanceof ShaderBase)))
                                 u.bind(this.program instanceof ShaderShadowMap);
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
-                            // If you get this, it means one of your shader uniforms in a ShaderGroup class doesn't have a corresponding
-                            // GLSL uniform. This could happen if you only use the uniform in the base or shadow map shader of the group
-                            // (in which case you can tag them with @OnlyBaseUniform or @OnlyShadowMapUniform)
+                            // If you get this, it means one of your shader uniforms in a ShaderGroup class
+                            // doesn't have a corresponding
+                            // GLSL uniform. This could happen if you only use the uniform in the base or
+                            // shadow map shader of the group
+                            // (in which case you can tag them with @OnlyBaseUniform or
+                            // @OnlyShadowMapUniform)
                             // or if the uniform is unused and is thus optimized out by the GLSL compiler.
                             throw new RuntimeException("Failed to bind uniform in " + program, e);
                         }
@@ -291,9 +291,8 @@ public class ShaderUtil extends BaseShaderUtil
         GL11.glDisableClientState(GL_COLOR_ARRAY);
 
         ArrayList<Integer> attributes = this.enabledAttributes;
-        //noinspection ForLoopReplaceableByForEach
-        for (int i = 0, attributesSize = attributes.size(); i < attributesSize; i++)
-            glDisableVertexAttribArray(attributes.get(i));
+        // noinspection ForLoopReplaceableByForEach
+        for (int i = 0, attributesSize = attributes.size(); i < attributesSize; i++) glDisableVertexAttribArray(attributes.get(i));
 
         this.enabledAttributes.clear();
     }
@@ -552,8 +551,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform1b();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform1b();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -572,8 +570,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform1i();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform1i();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -592,8 +589,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform2i();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform2i();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -612,8 +608,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform3i();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform3i();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -632,8 +627,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform4i();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform4i();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -652,8 +646,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform1f();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform1f();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -672,8 +665,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform2f();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform2f();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -692,8 +684,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform3f();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform3f();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -712,8 +703,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniform4f();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniform4f();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -732,8 +722,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniformMatrix2();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniformMatrix2();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -752,8 +741,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniformMatrix3();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniformMatrix3();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;
@@ -772,8 +760,7 @@ public class ShaderUtil extends BaseShaderUtil
                 this.baseUniform = new LWJGLUniformMatrix4();
                 ((LWJGLUniform) this.baseUniform).name = name;
                 ((LWJGLUniform) this.baseUniform).programID = programID;
-            }
-            else
+            } else
             {
                 this.shadowMapUniform = new LWJGLUniformMatrix4();
                 ((LWJGLUniform) this.shadowMapUniform).name = name;

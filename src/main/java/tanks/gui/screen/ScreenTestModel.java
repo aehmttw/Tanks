@@ -18,8 +18,8 @@ public class ScreenTestModel extends Screen
     public double posY = Drawing.drawing.sizeY / 2;
     public double posZ = 0;
 
-    //PosedModelAnimation animation;
-    //PosedModelPose pose;
+    // PosedModelAnimation animation;
+    // PosedModelPose pose;
 
     public ScreenTestModel(Model m)
     {
@@ -28,8 +28,10 @@ public class ScreenTestModel extends Screen
         this.model = m;
         this.screenHint = "Esc to exit";
 
-        //animation = new PosedModelAnimation(Game.game.fileManager, "/models/mustard-test/walk.pma");
-        //pose = new PosedModelPose(Game.game.fileManager, "/models/mustard-test/idlehands.pmp");
+        // animation = new PosedModelAnimation(Game.game.fileManager,
+        // "/models/mustard-test/walk.pma");
+        // pose = new PosedModelPose(Game.game.fileManager,
+        // "/models/mustard-test/idlehands.pmp");
     }
 
     @Override
@@ -82,18 +84,13 @@ public class ScreenTestModel extends Screen
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_R))
             this.posZ += Panel.frameFrequency;
 
-        /*for (PosedModel.PoseBone b: model.bones)
-        {
-            b.yaw = 0;
-            b.pitch = 0;
-            b.roll = 0;
-            b.offX = 0;
-            b.offY = 0;
-            b.offZ = 0;
-        }*/
+        /*
+         * for (PosedModel.PoseBone b: model.bones) { b.yaw = 0; b.pitch = 0; b.roll =
+         * 0; b.offX = 0; b.offY = 0; b.offZ = 0; }
+         */
 
-        //animation.apply(model, System.currentTimeMillis() / 10.0, 1);
-        //pose.apply(model, 1);
+        // animation.apply(model, System.currentTimeMillis() / 10.0, 1);
+        // pose.apply(model, 1);
     }
 
     @Override

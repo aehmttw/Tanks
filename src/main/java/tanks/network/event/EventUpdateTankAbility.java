@@ -1,12 +1,11 @@
 package tanks.network.event;
 
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import tanks.Game;
 import tanks.Player;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankPlayable;
-
-import java.util.UUID;
 
 public class EventUpdateTankAbility extends PersonalEvent
 {
@@ -24,7 +23,7 @@ public class EventUpdateTankAbility extends PersonalEvent
         this.playerID = p.clientID;
         this.slot = slot;
 
-        this.count = ((TankPlayable)(p.tank)).abilities.get(slot).stackSize;
+        this.count = ((TankPlayable) (p.tank)).abilities.get(slot).stackSize;
     }
 
     @Override

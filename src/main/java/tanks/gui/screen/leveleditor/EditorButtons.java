@@ -1,6 +1,8 @@
 package tanks.gui.screen.leveleditor;
 
 import basewindow.InputCodes;
+import java.util.ArrayList;
+import java.util.Collections;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
@@ -8,9 +10,6 @@ import tanks.ToBooleanFunction;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 public class EditorButtons
 {
@@ -47,10 +46,8 @@ public class EditorButtons
         if ((!editor.showControls && !slideAnimation) || buttons == null)
             return;
 
-        for (ArrayList<EditorButton> bl : buttons)
-            for (EditorButton b : bl)
-                if (b.shown)
-                    b.draw();
+        for (ArrayList<EditorButton> bl : buttons) for (EditorButton b : bl) if (b.shown)
+            b.draw();
     }
 
     public void update()
@@ -116,8 +113,7 @@ public class EditorButtons
 
         updateCornerCoords();
 
-        boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >=
-                Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
+        boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >= Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
         double vStep = 0;
         double hStep = 0;
 
@@ -126,18 +122,17 @@ public class EditorButtons
         else
             hStep = 100 * editor.controlsSizeMultiplier;
 
-        for (int i = 0; i < 4; i++)
-            setPositionAndParams(buttons[i], i, hStep, vStep);
+        for (int i = 0; i < 4; i++) setPositionAndParams(buttons[i], i, hStep, vStep);
     }
 
     public void updateCornerCoords()
     {
         double x1 = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
                 + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * editor.controlsSizeMultiplier;
-        double y1 = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale
-                - Drawing.drawing.interfaceSizeY) / 2 + 50 * editor.controlsSizeMultiplier;
-        double x2 = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-                + Drawing.drawing.interfaceSizeX - 50 * editor.controlsSizeMultiplier - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+        double y1 = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
+                + 50 * editor.controlsSizeMultiplier;
+        double x2 = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 + Drawing.drawing.interfaceSizeX
+                - 50 * editor.controlsSizeMultiplier - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
         double y2 = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
                 + Drawing.drawing.interfaceSizeY - 50 * editor.controlsSizeMultiplier;
 
@@ -147,8 +142,7 @@ public class EditorButtons
 
     public void setPositionAndParams(ArrayList<EditorButton> arr, int pos, double h, double v)
     {
-        boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >=
-                Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
+        boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >= Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
 
         if (pos == 1 || pos == 3)
             h = -h;
@@ -166,7 +160,8 @@ public class EditorButtons
             int posDir = (pos % 2 == 1 ? -1 : 1);
             if (v == 0)
                 posDir = pos / 2 == 1 ? -1 : 1;
-            axis[pos] += (animationMultiplier * (direction ? 1 : -1) * 100 * editor.controlsSizeMultiplier) + (editor.showControls ? -1 : 0) * posDir * 100 * editor.controlsSizeMultiplier;
+            axis[pos] += (animationMultiplier * (direction ? 1 : -1) * 100 * editor.controlsSizeMultiplier)
+                    + (editor.showControls ? -1 : 0) * posDir * 100 * editor.controlsSizeMultiplier;
         }
 
         EditorButton prev = null;
@@ -191,8 +186,8 @@ public class EditorButtons
                 if (pos == 1)
                     extraX = -extraX;
 
-//                if (pos == 3)
-//                    extraY = -extraY;
+                // if (pos == 3)
+                // extraY = -extraY;
             }
 
             EditorButton b = arr.get(i);
@@ -250,25 +245,18 @@ public class EditorButtons
             this(location, image, imageSX, imageSY, f, () -> false, () -> true, description, keybind);
         }
 
-        public EditorButton(
-                ArrayList<EditorButton> location, String image, double imageSX, double imageSY, Runnable f,
-                ToBooleanFunction disabledFunc, String description, InputBindingGroup keybind
-        )
+        public EditorButton(ArrayList<EditorButton> location, String image, double imageSX, double imageSY, Runnable f, ToBooleanFunction disabledFunc, String description,
+                InputBindingGroup keybind)
         {
             this(location, image, imageSX, imageSY, f, disabledFunc, () -> true, description, keybind);
         }
 
-        public EditorButton(
-                String image, double imageSX, double imageSY, Runnable f,
-                ToBooleanFunction disabledFunc, String description, InputBindingGroup keybind
-        )
+        public EditorButton(String image, double imageSX, double imageSY, Runnable f, ToBooleanFunction disabledFunc, String description, InputBindingGroup keybind)
         {
             this(null, image, imageSX, imageSY, f, disabledFunc, () -> true, description, keybind);
         }
 
-        public EditorButton(
-                ArrayList<EditorButton> location, String image, double imageSX, double imageSY, Runnable f,
-                ToBooleanFunction disabledFunc, ToBooleanFunction shownFunc,
+        public EditorButton(ArrayList<EditorButton> location, String image, double imageSX, double imageSY, Runnable f, ToBooleanFunction disabledFunc, ToBooleanFunction shownFunc,
                 String description, InputBindingGroup keybind)
         {
             super(0, -1000, 70, 70, "", f, description, keybind != null ? keybind.getInputs() : "");
@@ -318,8 +306,7 @@ public class EditorButtons
         @Override
         public void draw()
         {
-            boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >=
-                    Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
+            boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >= Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
 
             if (!subMenuButtons.isEmpty())
             {
@@ -343,8 +330,7 @@ public class EditorButtons
                 {
                     double centerY = posY - sizeY / 2 + Math.max(sizeY / 2, s / 2);
                     Drawing.drawing.fillInterfaceRoundedRect(posX, centerY, sizeX, s, 9999);
-                }
-                else
+                } else
                 {
                     double centerX = posX - sizeX / 2 + Math.max(sizeX / 2, s / 2);
                     Drawing.drawing.fillInterfaceRoundedRect(centerX, posY, s, sizeY, 9999);
@@ -365,8 +351,7 @@ public class EditorButtons
                             b.setPosition(posX, posY);
                             continue;
                         }
-                    }
-                    else
+                    } else
                     {
                         x = posX + (sizeX + 10) * (i + 1) - (totalSize - s);
                         if (x <= posX)
@@ -394,8 +379,7 @@ public class EditorButtons
                 imageYOffset = imageSizeY * -0.1;
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.drawInterfaceImage(secondaryImage, posX + imageSizeX * 0.25, posY + imageSizeY * 0.25, b.imageSizeX * 0.75, b.imageSizeY * 0.75);
-            }
-            else
+            } else
             {
                 imageXOffset = 0;
                 imageYOffset = 0;
@@ -499,15 +483,15 @@ public class EditorButtons
 
             int ht = Game.game.window.touchscreen ? 1 : 25;
 
-            if (((this.selected && ! Game.game.window.touchscreen) || (Game.screen instanceof ScreenLevelEditor && ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this))
+            if (((this.selected && !Game.game.window.touchscreen)
+                    || (Game.screen instanceof ScreenLevelEditor && ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this))
                     && ((this.subButtonsAsOptions && !this.enabled) || (!this.subButtonsAsOptions && this.enabled)))
                 hoverTime = ht;
             else if (this.hoverTime > 0)
             {
                 double totalSize = (sizeX + 10) * (subMenuButtons.size() + 1) - 10;
 
-                boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >=
-                        Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
+                boolean vertical = Drawing.drawing.interfaceScale * Drawing.drawing.interfaceSizeY >= Game.game.window.absoluteHeight - Drawing.drawing.statsHeight - 0.001;
 
                 double startX;
                 double startY;
@@ -520,8 +504,7 @@ public class EditorButtons
                     endX = startX + totalSize;
                     startY = this.posY - this.sizeY / 2;
                     endY = this.posY + this.sizeY / 2;
-                }
-                else
+                } else
                 {
                     startX = this.posX - this.sizeX / 2;
                     endX = this.posX + this.sizeX / 2;
@@ -579,7 +562,7 @@ public class EditorButtons
         {
             Collections.addAll(subMenuButtons, buttons);
 
-            for (EditorButton b: buttons)
+            for (EditorButton b : buttons)
             {
                 if (Game.game.window.touchscreen)
                 {

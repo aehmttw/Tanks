@@ -3,14 +3,13 @@ package tanks.rendering;
 import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
+import java.util.HashMap;
 import tanks.Chunk;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
-
-import java.util.HashMap;
 
 public class StaticTerrainRenderer extends TerrainRenderer
 {
@@ -27,8 +26,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
             Game.game.shaderInstances.put(ds.getClass(), ds);
 
             this.outsideShader = Game.game.shaderOutOfBounds;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             Game.exitToCrash(e);
@@ -337,8 +335,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
                         configureShader(s);
                         this.drawMap(this.renderers.get(s), 0, 0);
                     }
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -353,12 +350,9 @@ public class StaticTerrainRenderer extends TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        for (Obstacle o : Game.obstacles)
-            o.postOverride();
+        for (Obstacle o : Game.obstacles) o.postOverride();
 
-        for (int i = 0; i < Game.currentSizeX; i++)
-            for (int j = 0; j < Game.currentSizeY; j++)
-                this.drawTile(i, j);
+        for (int i = 0; i < Game.currentSizeX; i++) for (int j = 0; j < Game.currentSizeY; j++) this.drawTile(i, j);
 
         Obstacle.draw_size = s;
     }
@@ -370,8 +364,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
         double d = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
-        for (Obstacle o: Game.obstacles)
-            drawObstacle(o);
+        for (Obstacle o : Game.obstacles) drawObstacle(o);
 
         Obstacle.draw_size = d;
     }

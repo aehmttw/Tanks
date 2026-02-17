@@ -51,8 +51,7 @@ public class EventPing extends PersonalEvent implements IServerThreadEvent, ICli
         {
             c.lastPingSent = System.currentTimeMillis();
             c.sendEvent(new EventPing(true));
-        }
-        else
+        } else
             c.lastLatency = System.currentTimeMillis() - c.lastPingSent;
     }
 }

@@ -1,19 +1,19 @@
 package lwjglwindow;
 
+import static org.lwjgl.opengl.GL11.*;
+
 import basewindow.BaseShapeRenderer;
 import org.lwjgl.opengl.GL11;
-
-import static org.lwjgl.opengl.GL11.*;
 
 public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 {
     public LWJGLWindow window;
-    
+
     public ImmediateModeShapeRenderer(LWJGLWindow window)
     {
         this.window = window;
     }
-    
+
     public void fillOval(double x, double y, double sX, double sY)
     {
         x += sX / 2;
@@ -22,8 +22,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
 
         glBegin(GL_TRIANGLE_FAN);
-        for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-            glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
+        for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides) glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
         glEnd();
     }
 
@@ -93,8 +92,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5);
 
         glBegin(GL_TRIANGLE_FAN);
-        for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-            glVertex3d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2, z);
+        for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides) glVertex3d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2, z);
         glEnd();
 
         if (depthTest)
@@ -113,8 +111,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
             if (this.window.colorA < 1)
                 glDepthMask(false);
-        }
-        else
+        } else
             this.window.disableDepthtest();
 
         glBegin(GL_QUADS);
@@ -185,7 +182,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         glEnd();
     }
-
 
     public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
     {
@@ -300,7 +296,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             double ox = Math.cos(i) * sX / 2;
             double oy = Math.sin(i) * sY / 2;
-            glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2 + oZ * this.window.bbx3, y + ox * this.window.bby1 + oy * this.window.bby2 + oZ * this.window.bby3, z + ox * this.window.bbz1 + oy * this.window.bbz2 + oZ * this.window.bbz3);
+            glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2 + oZ * this.window.bbx3, y + ox * this.window.bby1 + oy * this.window.bby2 + oZ * this.window.bby3,
+                    z + ox * this.window.bbz1 + oy * this.window.bbz2 + oZ * this.window.bbz3);
         }
 
         glEnd();
@@ -327,12 +324,12 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     @Override
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
     {
-        this.fillFacingGlow(x, y, z, sX, sY, depthTest,false);
+        this.fillFacingGlow(x, y, z, sX, sY, depthTest, false);
     }
 
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
     {
-        this.fillFacingGlow(x, y, z, sX, sY, depthTest, shade,false);
+        this.fillFacingGlow(x, y, z, sX, sY, depthTest, shade, false);
     }
 
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
@@ -477,7 +474,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
      * +16 hide left face<br>
      * +32 hide right face<br>
      * +64 draw on top<br>
-     * */
+     */
     public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options, String texture)
     {
         if (!this.window.batchMode)
@@ -523,8 +520,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
                 GL11.glVertex3d(x, y + sY, z);
                 glTexCoord2d(1, 1);
                 GL11.glVertex3d(x + sX, y + sY, z);
-            }
-            else
+            } else
             {
                 GL11.glVertex3d(x + sX, y, z);
                 GL11.glVertex3d(x, y, z);
@@ -547,8 +543,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
                 GL11.glVertex3d(x, y + sY, z);
                 glTexCoord2d(1, 0);
                 GL11.glVertex3d(x + sX, y + sY, z);
-            }
-            else
+            } else
             {
                 GL11.glVertex3d(x + sX, y + sY, z + sZ);
                 GL11.glVertex3d(x, y + sY, z + sZ);
@@ -571,8 +566,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
                 GL11.glVertex3d(x, y, z);
                 glTexCoord2d(1, 0);
                 GL11.glVertex3d(x + sX, y, z);
-            }
-            else
+            } else
             {
                 GL11.glVertex3d(x + sX, y, z + sZ);
                 GL11.glVertex3d(x, y, z + sZ);
@@ -595,8 +589,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
                 GL11.glVertex3d(x, y, z);
                 glTexCoord2d(0, 1);
                 GL11.glVertex3d(x, y, z + sZ);
-            }
-            else
+            } else
             {
                 GL11.glVertex3d(x, y + sY, z + sZ);
                 GL11.glVertex3d(x, y + sY, z);
@@ -619,8 +612,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
                 GL11.glVertex3d(x + sX, y, z + sZ);
                 glTexCoord2d(0, 0);
                 GL11.glVertex3d(x + sX, y, z);
-            }
-            else
+            } else
             {
                 GL11.glVertex3d(x + sX, y + sY, z);
                 GL11.glVertex3d(x + sX, y + sY, z + sZ);
@@ -643,8 +635,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
                 GL11.glVertex3d(x, y, z + sZ);
                 glTexCoord2d(1, 0);
                 GL11.glVertex3d(x + sX, y, z + sZ);
-            }
-            else
+            } else
             {
                 GL11.glVertex3d(x + sX, y + sY, z + sZ);
                 GL11.glVertex3d(x, y + sY, z + sZ);
@@ -679,12 +670,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glEnd();
     }
 
-    public void fillQuadBox(double x1, double y1,
-                            double x2, double y2,
-                            double x3, double y3,
-                            double x4, double y4,
-                            double z, double sZ,
-                            byte options)
+    public void fillQuadBox(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z, double sZ, byte options)
     {
         this.window.enableDepthtest();
 
@@ -815,7 +801,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glVertex2d(x, y + sY - width);
         glVertex2d(x + sX, y + sY - width);
         glVertex2d(x + sX, y + sY);
-        glVertex2d( x, y + sY);
+        glVertex2d(x, y + sY);
 
         glVertex2d(x + sX - width, y);
         glVertex2d(x + sX - width, y + sY - width);
@@ -904,7 +890,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         if (!this.window.textures.containsKey(image))
             this.window.createImage(image);
 
-        //loadPerspective();
+        // loadPerspective();
 
         glMatrixMode(GL_MODELVIEW);
         this.window.enableTexture();
@@ -947,7 +933,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         if (!this.window.textures.containsKey(image))
             this.window.createImage(image);
 
-        //loadPerspective();
+        // loadPerspective();
 
         glMatrixMode(GL_MODELVIEW);
         this.window.enableTexture();
@@ -1040,7 +1026,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         this.drawImage(x, y, z, sX, sY, u1, v1, u2, v2, image, rotation, scaled, true);
     }
 
-    public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest)
+    public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled,
+            boolean depthtest)
     {
         if (this.window.drawingShadow)
             return;
@@ -1128,8 +1115,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
                 glBegin(GL_QUADS);
             else
                 glBegin(GL_TRIANGLES);
-        }
-        else
+        } else
         {
             GL11.glEnd();
             window.disableDepthtest();

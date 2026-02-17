@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -7,8 +8,6 @@ import tanks.gui.Button;
 import tanks.network.event.online.EventUploadLevel;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
-
-import java.util.ArrayList;
 
 public class ScreenPreviewUploadLevel extends Screen implements ILevelPreviewScreen, IOnlineScreen
 {

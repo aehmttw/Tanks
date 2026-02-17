@@ -55,19 +55,19 @@ public class ScreenOptionsGraphics extends Screen
 
         switch (viewNo)
         {
-            case 0:
+            case 0 :
                 altPerspective.setText(perspectiveText, birdsEyeText);
                 break;
-            case 1:
+            case 1 :
                 altPerspective.setText(perspectiveText, angledText);
                 break;
-            case 2:
+            case 2 :
                 altPerspective.setText(perspectiveText, orthographicText);
                 break;
-            case 3:
+            case 3 :
                 altPerspective.setText(perspectiveText, "\u00a7200000000255third person");
                 break;
-            case 4:
+            case 4 :
                 altPerspective.setText(perspectiveText, "\u00a7255000000255first person");
                 break;
         }
@@ -77,12 +77,12 @@ public class ScreenOptionsGraphics extends Screen
         else
             antialiasing.setText(antialiasingText, ScreenOptions.onText);
 
-//        if (Game.framework == Game.Framework.libgdx)
-//        {
-//            altPerspective.enabled = false;
-//            shadows.enabled = false;
-//            maxFPS.enabled = false;
-//        }
+        // if (Game.framework == Game.Framework.libgdx)
+        // {
+        // altPerspective.enabled = false;
+        // shadows.enabled = false;
+        // maxFPS.enabled = false;
+        // }
 
         if (!Game.game.window.antialiasingSupported)
         {
@@ -90,8 +90,8 @@ public class ScreenOptionsGraphics extends Screen
             antialiasing.enabled = false;
         }
 
-//        if (Game.framework == Game.Framework.libgdx)
-//            Game.shadowsEnabled = false;
+        // if (Game.framework == Game.Framework.libgdx)
+        // Game.shadowsEnabled = false;
 
         if (!Game.shadowsEnabled)
             shadows.setText("Shadows: ", ScreenOptions.offText);
@@ -135,8 +135,7 @@ public class ScreenOptionsGraphics extends Screen
                 ground3d.setText(ground3dText, ScreenOptions.onText);
             else
                 ground3d.setText(ground3dText, ScreenOptions.offText);
-        }
-        else
+        } else
         {
             ground3d.enabled = false;
             ground3d.setText(ground3dText, ScreenOptions.offText);
@@ -150,8 +149,7 @@ public class ScreenOptionsGraphics extends Screen
                 xrayBullets.setText(xrayBulletsText, ScreenOptions.offText);
 
             xrayBullets.enabled = true;
-        }
-        else
+        } else
         {
             xrayBullets.setText(xrayBulletsText, ScreenOptions.offText);
             xrayBullets.enabled = false;
@@ -175,8 +173,7 @@ public class ScreenOptionsGraphics extends Screen
             Drawing.drawing.terrainRenderer.reset();
             Game.resetTiles();
         }
-    },
-            "Fancy terrain enables varied block---and ground colors------May impact performance on larger levels");
+    }, "Fancy terrain enables varied block---and ground colors------May impact performance on larger levels");
 
     Button bulletTrails = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -204,8 +201,7 @@ public class ScreenOptionsGraphics extends Screen
             else
                 glow.setText(glowText, ScreenOptions.offText);
         }
-    },
-            "Glow effects may significantly---impact performance");
+    }, "Glow effects may significantly---impact performance");
 
     Button graphics3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -224,8 +220,7 @@ public class ScreenOptionsGraphics extends Screen
             Drawing.drawing.terrainRenderer.reset();
             Game.resetTiles();
         }
-    },
-            "3D graphics may impact performance");
+    }, "3D graphics may impact performance");
 
     Button ground3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -242,19 +237,16 @@ public class ScreenOptionsGraphics extends Screen
             Drawing.drawing.terrainRenderer.reset();
             Game.resetTiles();
         }
-    },
-            "Enabling 3D ground may impact---performance in large levels");
-
+    }, "Enabling 3D ground may impact---performance in large levels");
 
     Button altPerspective = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
         {
-           Game.screen = new ScreenSelectPerspective();
+            Game.screen = new ScreenSelectPerspective();
         }
-    },
-            "Changes the angle at which---you view the game field");
+    }, "Changes the angle at which---you view the game field");
 
     Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -273,8 +265,7 @@ public class ScreenOptionsGraphics extends Screen
 
             ScreenOptions.saveOptions(Game.homedir);
         }
-    },
-            "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
+    }, "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
     Button tankTextures = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -288,8 +279,7 @@ public class ScreenOptionsGraphics extends Screen
             else
                 tankTextures.setText(tankTexturesText, ScreenOptions.offText);
         }
-    },
-            "Adds designs to the built-in tanks---which can help differentiate them");
+    }, "Adds designs to the built-in tanks---which can help differentiate them");
 
     Button xrayBullets = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -303,18 +293,22 @@ public class ScreenOptionsGraphics extends Screen
             else
                 xrayBullets.setText(xrayBulletsText, ScreenOptions.offText);
         }
-    },
-            "Shows indicators for bullets---hidden behind terrain");
+    }, "Shows indicators for bullets---hidden behind terrain");
 
-    //Button window = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
+    // Button window = new Button(this.centerX + this.objXSpace / 2, this.centerY +
+    // this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () ->
+    // Game.screen = new ScreenOptionsWindow());
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
-    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsShadows(), "Shadows are quite graphically intense---and may significantly reduce framerate");
+    Button shadows = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "",
+            () -> Game.screen = new ScreenOptionsShadows(), "Shadows are quite graphically intense---and may significantly reduce framerate");
 
-    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsEffects(), "Particle effects may significantly---impact performance");
+    Button effects = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "",
+            () -> Game.screen = new ScreenOptionsEffects(), "Particle effects may significantly---impact performance");
 
-    Button maxFPS = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", () -> Game.screen = new ScreenOptionsFramerate(), "Limiting your framerate may---decrease battery consumption");
+    Button maxFPS = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "",
+            () -> Game.screen = new ScreenOptionsFramerate(), "Limiting your framerate may---decrease battery consumption");
 
     @Override
     public void update()
@@ -339,8 +333,7 @@ public class ScreenOptionsGraphics extends Screen
         {
             antialiasing.bgColG = 238;
             antialiasing.bgColB = 220;
-        }
-        else
+        } else
         {
             antialiasing.bgColG = 255;
             antialiasing.bgColB = 255;

@@ -17,22 +17,6 @@ public @interface Property
 
     enum MiscType
     {
-        none,
-        baseModel,
-        colorModel,
-        turretBaseModel,
-        turretModel,
-        emblem,
-        colorRGBA,
-        colorRGB,
-        description,
-        complexString,
-        music,
-        spawnedTanks,
-        bulletSound,
-        itemIcon,
-        name,
-        defaultBuildForbidden,
-        trails,
+        none, baseModel, colorModel, turretBaseModel, turretModel, emblem, colorRGBA, colorRGB, description, complexString, music, spawnedTanks, bulletSound, itemIcon, name, defaultBuildForbidden, trails,
     }
 }

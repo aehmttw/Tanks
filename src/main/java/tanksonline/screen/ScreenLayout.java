@@ -1,15 +1,14 @@
 package tanksonline.screen;
 
+import java.util.ArrayList;
 import tanks.Game;
-import tanks.network.event.online.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.UUIDTextBox;
 import tanks.gui.screen.ScreenOnline;
 import tanks.gui.screen.ScreenOverlayOnline;
+import tanks.network.event.online.*;
 import tanksonline.TanksOnlineServerHandler;
-
-import java.util.ArrayList;
 
 public abstract class ScreenLayout
 {
@@ -38,8 +37,7 @@ public abstract class ScreenLayout
         if (id < 0 && id >= -ScreenOverlayOnline.max_button_count && this.player.menuButtons[-(1 + id)] != null)
         {
             player.menuButtons[-(1 + id)].function.run();
-        }
-        else if (id >= 0 && id < buttons.size() && buttons.get(id) != null && buttons.get(id).enabled)
+        } else if (id >= 0 && id < buttons.size() && buttons.get(id) != null && buttons.get(id).enabled)
         {
             buttons.get(id).function.run();
         }
@@ -77,7 +75,7 @@ public abstract class ScreenLayout
             ScreenOnline.Text t = this.texts.get(i);
 
             if (t != null)
-               this.player.sendEvent(new EventAddText(i, t));
+                this.player.sendEvent(new EventAddText(i, t));
         }
 
         for (int i = 0; i < this.buttons.size(); i++)

@@ -7,22 +7,22 @@ import tanks.Game;
  */
 public class TankPurple extends TankAIControlled
 {
-	public TankPurple(String name, double x, double y, double angle)
-	{
-		super(name, x, y, Game.tile_size, 150, 0, 200, angle, ShootAI.alternate);
-		this.enableDefensiveFiring = true;
-		this.cooldownBase = 20;
-		this.cooldownRandom = 40;
-		this.defensiveFiringUrgency = 0.5;
-		this.enablePathfinding = true;
+    public TankPurple(String name, double x, double y, double angle)
+    {
+        super(name, x, y, Game.tile_size, 150, 0, 200, angle, ShootAI.alternate);
+        this.enableDefensiveFiring = true;
+        this.cooldownBase = 20;
+        this.cooldownRandom = 40;
+        this.defensiveFiringUrgency = 0.5;
+        this.enablePathfinding = true;
 
-		this.turretAimSpeed = 0.03;
-		this.turretIdleSpeed = 0.001;
-		this.avoidanceSeekOpenSpaces = true;
-		this.bulletAvoidBehavior = BulletAvoidBehavior.dodge;
+        this.turretAimSpeed = 0.03;
+        this.turretIdleSpeed = 0.001;
+        this.avoidanceSeekOpenSpaces = true;
+        this.bulletAvoidBehavior = BulletAvoidBehavior.dodge;
 
-		this.coinValue = 10;
+        this.coinValue = 10;
 
-		this.description = "A smart, fast tank which can lay mines";
-	}
+        this.description = "A smart, fast tank which can lay mines";
+    }
 }

@@ -3,14 +3,13 @@ package tanks.gui.screen;
 import basewindow.BaseFile;
 import com.codedisaster.steamworks.SteamFriends;
 import com.codedisaster.steamworks.SteamUGCDetails;
+import java.io.IOException;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.event.EventShareCrusade;
-
-import java.io.IOException;
 
 public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScreen
 {
@@ -55,13 +54,11 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
                 EventShareCrusade e = new EventShareCrusade(crusade, crusade.name);
                 e.clientID = Game.clientID;
                 Game.eventsIn.add(e);
-            }
-            else if (ScreenPartyLobby.isClient)
+            } else if (ScreenPartyLobby.isClient)
             {
                 Game.screen = new ScreenPartyLobby();
                 Game.eventsOut.add(new EventShareCrusade(crusade, crusade.name));
-            }
-            else
+            } else
             {
                 showWaiting = true;
                 Game.steamNetworkHandler.workshop.upload("Crusade", crusadeName.inputText, crusade.contents, description.inputText);
@@ -90,8 +87,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
                         file.stopWriting();
                         success = true;
                     }
-                }
-                catch (IOException e)
+                } catch (IOException e)
                 {
                     e.printStackTrace(Game.logger);
                     e.printStackTrace();
@@ -114,8 +110,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         {
             Game.screen = previous;
         }
-    }
-    );
+    });
 
     public Button lookInside = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Look inside", new Runnable()
     {
@@ -124,8 +119,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         {
             Game.screen = new ScreenCrusadeEditor(crusade, true, Game.screen);
         }
-    }
-    );
+    });
 
     public Button delete = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Remove from server", () ->
     {
@@ -139,15 +133,17 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         Game.steamNetworkHandler.workshop.search(null, 0, 18, workshopDetails.getOwnerID(), null, Game.steamNetworkHandler.workshop.searchByScore);
     });
 
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () ->
+    {
+        confirmingDelete = false;
+    });
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
         Game.cleanUp();
         Game.steamNetworkHandler.workshop.delete(workshopDetails, "Crusade");
         Game.screen = new ScreenWaiting("Removing crusade from server...");
-    }
-    );
+    });
 
     public double votePosY = this.centerY + this.objYSpace * 2.75;
 
@@ -170,14 +166,15 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         votesDown++;
         Game.steamNetworkHandler.workshop.currentDownloadVote = -1;
 
-
         Game.steamNetworkHandler.workshop.workshop.setUserItemVote(workshopDetails.getPublishedFileID(), false);
     }, "Dislike the crusade");
 
-    public Button showPage = new Button(this.centerX + this.objXSpace - this.objWidth / 2 + this.objHeight / 2, this.centerY + this.objYSpace * 1.5, this.objHeight, this.objHeight, "", () ->
-    {
-        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
-    }, "View crusade page on Steam");
+    public Button showPage = new Button(this.centerX + this.objXSpace - this.objWidth / 2 + this.objHeight / 2, this.centerY + this.objYSpace * 1.5, this.objHeight, this.objHeight,
+            "", () ->
+            {
+                Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage(
+                        "steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
+            }, "View crusade page on Steam");
 
     public ScreenCrusadePreview(Crusade c, Screen previous, boolean upload)
     {
@@ -191,14 +188,12 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
 
         this.crusade = c;
 
-        crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight,
-                !uploadMode ? "Crusade save name" : "Crusade upload name", () ->
+        crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, !uploadMode ? "Crusade save name" : "Crusade upload name", () ->
         {
             if (crusadeName.inputText.equals(""))
                 crusadeName.inputText = crusadeName.previousInputText;
             updateDownloadButton();
-        }
-                , crusade.name.replace("_", " "));
+        }, crusade.name.replace("_", " "));
 
         crusadeName.enableCaps = true;
 
@@ -212,7 +207,8 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         showPage.imageSizeY = 30;
         showPage.image = "icons/link.png";
 
-        description = new TextBox(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth * 2.5, this.objHeight, "Description", () -> {
+        description = new TextBox(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth * 2.5, this.objHeight, "Description", () ->
+        {
 
         }, "");
         description.enableCaps = true;
@@ -259,8 +255,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         {
             confirmDelete.update();
             cancelDelete.update();
-        }
-        else
+        } else
         {
             quit.update();
             lookInside.update();
@@ -274,8 +269,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
                     crusadeName.update();
                     description.update();
                 }
-            }
-            else
+            } else
             {
                 crusadeName.update();
                 download.update();
@@ -320,8 +314,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
                 Drawing.drawing.drawPopup(this.centerX, this.centerY, Drawing.drawing.baseInterfaceSizeX * width, this.objYSpace * 11 - offset * 2);
                 Drawing.drawing.setColor(255, 255, 255);
             }
-        }
-        else
+        } else
             this.drawDefaultBackground();
 
         if (confirmingDelete)
@@ -336,8 +329,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
 
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to remove the crusade?");
-        }
-        else
+        } else
         {
             if (Game.previewCrusades)
                 Drawing.drawing.setColor(255, 255, 255);
@@ -359,22 +351,27 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
             }
 
             Drawing.drawing.setInterfaceFontSize(this.textSize);
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.levelsTextOffset - this.objYSpace * 2.5 + offset, "Levels: %d", crusade.levels.size());
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.levelsTextOffset - this.objYSpace * 2.5 + offset, "Levels: %d",
+                    crusade.levels.size());
 
-
-//            Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
-//            Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, crusade.name.replace("_", " "));
-//            Drawing.drawing.setInterfaceFontSize(this.textSize);
-//            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Levels: %d", crusade.levels.size());
-//            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 0.5, "Starting lives: %d", crusade.startingLives);
-//            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 1, "Bonus life frequency: %d", crusade.bonusLifeFrequency);
+            // Drawing.drawing.setInterfaceFontSize(this.textSize * 2);
+            // Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace
+            // * 1.5, crusade.name.replace("_", " "));
+            // Drawing.drawing.setInterfaceFontSize(this.textSize);
+            // Drawing.drawing.displayInterfaceText(this.centerX, this.centerY -
+            // this.objYSpace * 0.5, "Levels: %d", crusade.levels.size());
+            // Drawing.drawing.displayInterfaceText(this.centerX, this.centerY +
+            // this.objYSpace * 0.5, "Starting lives: %d", crusade.startingLives);
+            // Drawing.drawing.displayInterfaceText(this.centerX, this.centerY +
+            // this.objYSpace * 1, "Bonus life frequency: %d", crusade.bonusLifeFrequency);
 
             lookInside.draw();
             quit.draw();
 
-//            Drawing.drawing.setInterfaceFontSize(this.titleSize);
-//            Drawing.drawing.setColor(0, 0, 0);
-//            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + titleOffset, "Crusade details");
+            // Drawing.drawing.setInterfaceFontSize(this.titleSize);
+            // Drawing.drawing.setColor(0, 0, 0);
+            // Drawing.drawing.displayInterfaceText(this.centerX, this.centerY +
+            // titleOffset, "Crusade details");
 
             if (uploadMode)
             {
@@ -385,8 +382,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
                     crusadeName.draw();
                     description.draw();
                 }
-            }
-            else
+            } else
             {
                 crusadeName.draw();
                 download.draw();
@@ -432,8 +428,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         {
             download.setText("Pick a different name...");
             download.enabled = false;
-        }
-        else
+        } else
         {
             download.setText("Download");
             download.enabled = true;

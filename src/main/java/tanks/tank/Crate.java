@@ -52,8 +52,7 @@ public class Crate extends Movable
                 Drawing.drawing.setColor(this.tank.emblemColor);
                 Drawing.drawing.drawImage(this.tank.emblem, this.posX, this.posY, this.posZ + size + 2, size * 0.75, size * 0.75);
             }
-        }
-        else
+        } else
         {
             Drawing.drawing.setColor(this.tank.secondaryColor);
             Drawing.drawing.fillRect(this.posX, this.posY - this.posZ, size, size);

@@ -25,8 +25,8 @@ public class OverlaySelectBeatBlockPattern extends ScreenLevelEditorOverlay
         for (int i = 0; i < 8; i++)
         {
             int j = i;
-            groups[i] = new Button(this.centerX - 135 + i % 4 * 90, this.centerY - 45 + i / 4 * 90, buttonSize, buttonSize,
-                    "", () -> selector.setMetadata(editor, editor.mousePlaceable, (j % 4) * 2 + j / 4));
+            groups[i] = new Button(this.centerX - 135 + i % 4 * 90, this.centerY - 45 + i / 4 * 90, buttonSize, buttonSize, "",
+                    () -> selector.setMetadata(editor, editor.mousePlaceable, (j % 4) * 2 + j / 4));
         }
 
         this.musicInstruments = true;
@@ -104,8 +104,7 @@ public class OverlaySelectBeatBlockPattern extends ScreenLevelEditorOverlay
             {
                 Drawing.drawing.setColor(0, 0, 0, 127);
                 Drawing.drawing.setInterfaceFontSize(24);
-            }
-            else
+            } else
                 Drawing.drawing.setInterfaceFontSize(40);
 
             Drawing.drawing.drawInterfaceText(groups[i].posX, groups[i].posY, (int) Math.pow(2, i % 4) + (i / 4 == 0 ? "a" : "b"));

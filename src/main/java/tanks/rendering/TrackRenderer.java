@@ -2,12 +2,11 @@ package tanks.rendering;
 
 import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
+import java.util.HashMap;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
-
-import java.util.HashMap;
 
 public class TrackRenderer
 {
@@ -70,7 +69,7 @@ public class TrackRenderer
 
         s.setColor(r1, g1, b1, a, g);
         if (Game.screen instanceof ScreenGame)
-            s.setAttribute(shader.addTime, (float) ((ScreenGame)(Game.screen)).age);
+            s.setAttribute(shader.addTime, (float) ((ScreenGame) (Game.screen)).age);
         else
             s.setAttribute(shader.addTime, (float) Game.screen.screenAge);
 
@@ -85,7 +84,7 @@ public class TrackRenderer
 
     public void reset()
     {
-        for (RegionRenderer r: this.renderers.values())
+        for (RegionRenderer r : this.renderers.values())
         {
             r.renderer.free();
         }
@@ -96,7 +95,7 @@ public class TrackRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
-        for (RegionRenderer s: renderers.values())
+        for (RegionRenderer s : renderers.values())
         {
             double x = xOffset * Game.tile_size * Game.currentSizeX;
             double y = yOffset * Game.tile_size * Game.currentSizeY;
@@ -105,7 +104,7 @@ public class TrackRenderer
 
             boolean in = false;
             int c = 3;
-            outer: for (int i = 0; i < c; i++)
+            outer : for (int i = 0; i < c; i++)
             {
                 for (int j = 0; j < c; j++)
                 {

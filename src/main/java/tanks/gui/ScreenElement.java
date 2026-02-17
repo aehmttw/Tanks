@@ -1,11 +1,10 @@
 package tanks.gui;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.Panel;
-
-import java.util.ArrayList;
 
 public abstract class ScreenElement
 {
@@ -62,7 +61,8 @@ public abstract class ScreenElement
                 double g = Game.game.window.colorG;
                 double b = Game.game.window.colorB;
                 Drawing.drawing.setColor(fg, fg, fg, colA);
-                Drawing.drawing.drawUncenteredInterfaceText(x + 50 + addX, y + i * 20 + 12, String.format("\u00A7%03d%03d%03d255", (int) (r * 255), (int) (g * 255), (int) (b * 255)) + this.text.get(i));
+                Drawing.drawing.drawUncenteredInterfaceText(x + 50 + addX, y + i * 20 + 12,
+                        String.format("\u00A7%03d%03d%03d255", (int) (r * 255), (int) (g * 255), (int) (b * 255)) + this.text.get(i));
             }
 
             Drawing.drawing.setColor(0, 150, 255, colA);
@@ -104,8 +104,7 @@ public abstract class ScreenElement
                     this.baseColorA = this.styling.colorA;
 
                 this.styling.colorA = this.baseColorA * Math.min(1, this.age / 50);
-            }
-            else if (this.age > this.duration - 50)
+            } else if (this.age > this.duration - 50)
                 this.styling.colorA = this.baseColorA * Math.max(0, (this.duration - this.age) / 50);
             else
                 this.baseColorA = this.styling.colorA;

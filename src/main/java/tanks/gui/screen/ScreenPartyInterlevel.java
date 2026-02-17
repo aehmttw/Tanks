@@ -20,23 +20,20 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             Game.cleanUp();
             new Level(LevelGeneratorVersus.generateLevelString()).loadLevel();
             Game.screen = new ScreenGame();
-        }
-        else
+        } else
         {
             Game.cleanUp();
             Game.loadRandomLevel();
             Game.screen = new ScreenGame();
         }
-    }
-    );
+    });
 
     Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
     {
         Level level = new Level(Game.currentLevelString);
         level.loadLevel();
         Game.screen = new ScreenGame();
-    }
-    );
+    });
 
     Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Back to party", () ->
     {
@@ -45,16 +42,14 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         ScreenGame.versus = false;
         ScreenInterlevel.fromSavedLevels = false;
         ScreenInterlevel.fromMinigames = false;
-    }
-    );
+    });
 
     Button replayHigherPos = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay level", () ->
     {
         Level level = new Level(Game.currentLevelString);
         level.loadLevel();
         Game.screen = new ScreenGame();
-    }
-    );
+    });
 
     Button replayMinigame = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Play again", () ->
     {
@@ -65,8 +60,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
             Game.currentLevel.loadLevel();
 
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e.getCause());
         }
@@ -79,16 +73,14 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         ScreenGame.versus = false;
         ScreenInterlevel.fromSavedLevels = false;
         ScreenInterlevel.fromMinigames = false;
-    }
-    );
+    });
 
     Button next = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Continue", () ->
     {
         Game.resetTiles();
         Game.screen = new ScreenPartyLobby();
         ScreenGame.versus = false;
-    }
-    );
+    });
 
     Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
     {
@@ -101,8 +93,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         sc.music = music;
         sc.musicID = musicID;
         sc.updateDownloadButton();
-    }
-    );
+    });
 
     public ScreenPartyInterlevel()
     {
@@ -113,12 +104,11 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
         if (Panel.win)
         {
-            //Drawing.drawing.playSound("win.ogg");
+            // Drawing.drawing.playSound("win.ogg");
             this.music = "win_music.ogg";
-        }
-        else
+        } else
         {
-            //Drawing.drawing.playSound("lose.ogg");
+            // Drawing.drawing.playSound("lose.ogg");
             this.music = "lose_music.ogg";
         }
 
@@ -136,7 +126,6 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         save.imageSizeY = this.objHeight;
     }
 
-
     @Override
     public void update()
     {
@@ -146,18 +135,15 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         if (ScreenPartyLobby.isClient)
         {
             next.update();
-        }
-        else if (ScreenInterlevel.fromSavedLevels)
+        } else if (ScreenInterlevel.fromSavedLevels)
         {
             quitHigherPos.update();
             replayHigherPos.update();
-        }
-        else if (ScreenInterlevel.fromMinigames)
+        } else if (ScreenInterlevel.fromMinigames)
         {
             replayMinigame.update();
             quitHigherPos.update();
-        }
-        else
+        } else
         {
             quit.update();
             replay.update();
@@ -182,18 +168,15 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
         if (ScreenPartyLobby.isClient)
         {
             next.draw();
-        }
-        else if (ScreenInterlevel.fromSavedLevels)
+        } else if (ScreenInterlevel.fromSavedLevels)
         {
             quitHigherPos.draw();
             replayHigherPos.draw();
-        }
-        else if (ScreenInterlevel.fromMinigames)
+        } else if (ScreenInterlevel.fromMinigames)
         {
             quitHigherPos.draw();
             replayMinigame.draw();
-        }
-        else
+        } else
         {
             quit.draw();
             replay.draw();
@@ -215,6 +198,6 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             previous.rankingsOverlay.draw();
 
         if (!ScreenInterlevel.fromMinigames)
-           save.draw();
+            save.draw();
     }
 }

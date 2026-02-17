@@ -79,7 +79,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         this.action2 = b.readBoolean();
         for (int i = 0; i < this.quickActions.length; i++)
         {
-           this.quickActions[i] = b.readBoolean();
+            this.quickActions[i] = b.readBoolean();
         }
         this.time = b.readDouble();
     }
@@ -91,7 +91,8 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
 
         if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).player.clientID.equals(this.clientID))
         {
-            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.quickActions, this.time, this.sysTime);
+            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.quickActions, this.time,
+                    this.sysTime);
         }
     }
 

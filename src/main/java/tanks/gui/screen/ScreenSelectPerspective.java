@@ -2,14 +2,13 @@ package tanks.gui.screen;
 
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Translation;
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.tank.TankSpawnMarker;
-
-import java.util.ArrayList;
 
 public class ScreenSelectPerspective extends Screen implements ILevelPreviewScreen
 {
@@ -32,7 +31,8 @@ public class ScreenSelectPerspective extends Screen implements ILevelPreviewScre
         this.music = "menu_options.ogg";
         this.musicID = "menu";
 
-        Level l = new Level("{28,18,235,207,166,20,20,20|18-6...11,3-3-hard-2.0,3-4-hard-1.5,3-5-hard-2.0,3-6-hard-1.5,3-7-hard-2.0,3-8-hard-1.5,3-9-hard-2.0,3-10-hard-1.5,3-11-hard-2.0,3-12-hard-1.5,3-13-hard-2.0,3-14-hard-1.5,4-3-hard-1.5,4-14-hard-2.0,5-3-hard-2.0,5-14-hard-1.5,6-3-hard-1.5,6-14-hard-2.0,7-3-hard-2.0,7-14-hard-1.5,8-3-hard-1.5,8-14-hard-2.0,9-3-hard-2.0,9-14-hard-1.5,10-3-hard-1.5,10-14-hard-2.0,11-3-hard-2.0,11-14-hard-1.5,12-3-hard-1.5,12-14-hard-2.0,13-3-hard-2.0,13-14-hard-1.5,14-3-hard-1.5,14-14-hard-2.0,15-3-hard-2.0,15-14-hard-1.5,16-3-hard-1.5,16-14-hard-2.0,17-3-hard-2.0,17-14-hard-1.5,18-3-hard-1.5,18-14-hard-2.0,19-3-hard-2.0,19-14-hard-1.5,20-3-hard-1.5,20-14-hard-2.0,21-3-hard-2.0,21-14-hard-1.5,22-3-hard-1.5,22-14-hard-2.0,23-3-hard-2.0,23-14-hard-1.5,24-3-hard-1.5,24-4-hard-2.0,24-5-hard-1.5,24-6-hard-2.0,24-7-hard-1.5,24-8-hard-2.0,24-9-hard-1.5,24-10-hard-2.0,24-11-hard-1.5,24-12-hard-2.0,24-13-hard-1.5,24-14-hard-2.0,0...27-0-shrub,0...27-1-shrub,0...27-2-shrub,0-3...17-shrub,1-3...17-shrub,2-3...17-shrub,3...27-15-shrub,3...27-16-shrub,3...27-17-shrub,25-3...14-shrub,26-3...14-shrub,27-3...14-shrub|21-7-brown-2-enemy,6-10-player-0-ally|ally-true,enemy-true}");
+        Level l = new Level(
+                "{28,18,235,207,166,20,20,20|18-6...11,3-3-hard-2.0,3-4-hard-1.5,3-5-hard-2.0,3-6-hard-1.5,3-7-hard-2.0,3-8-hard-1.5,3-9-hard-2.0,3-10-hard-1.5,3-11-hard-2.0,3-12-hard-1.5,3-13-hard-2.0,3-14-hard-1.5,4-3-hard-1.5,4-14-hard-2.0,5-3-hard-2.0,5-14-hard-1.5,6-3-hard-1.5,6-14-hard-2.0,7-3-hard-2.0,7-14-hard-1.5,8-3-hard-1.5,8-14-hard-2.0,9-3-hard-2.0,9-14-hard-1.5,10-3-hard-1.5,10-14-hard-2.0,11-3-hard-2.0,11-14-hard-1.5,12-3-hard-1.5,12-14-hard-2.0,13-3-hard-2.0,13-14-hard-1.5,14-3-hard-1.5,14-14-hard-2.0,15-3-hard-2.0,15-14-hard-1.5,16-3-hard-1.5,16-14-hard-2.0,17-3-hard-2.0,17-14-hard-1.5,18-3-hard-1.5,18-14-hard-2.0,19-3-hard-2.0,19-14-hard-1.5,20-3-hard-1.5,20-14-hard-2.0,21-3-hard-2.0,21-14-hard-1.5,22-3-hard-1.5,22-14-hard-2.0,23-3-hard-2.0,23-14-hard-1.5,24-3-hard-1.5,24-4-hard-2.0,24-5-hard-1.5,24-6-hard-2.0,24-7-hard-1.5,24-8-hard-2.0,24-9-hard-1.5,24-10-hard-2.0,24-11-hard-1.5,24-12-hard-2.0,24-13-hard-1.5,24-14-hard-2.0,0...27-0-shrub,0...27-1-shrub,0...27-2-shrub,0-3...17-shrub,1-3...17-shrub,2-3...17-shrub,3...27-15-shrub,3...27-16-shrub,3...27-17-shrub,25-3...14-shrub,26-3...14-shrub,27-3...14-shrub|21-7-brown-2-enemy,6-10-player-0-ally|ally-true,enemy-true}");
         l.loadLevel(this);
 
         Button birdsEye = new Button(0, 0, this.objWidth, this.objHeight, "Bird's-eye", () ->
@@ -59,7 +59,6 @@ public class ScreenSelectPerspective extends Screen implements ILevelPreviewScre
         {
             ScreenOptionsGraphics.viewNo = 4;
         }, "See the game directly from your tank");
-
 
         ArrayList<Button> buttons = new ArrayList<>();
         buttons.add(birdsEye);

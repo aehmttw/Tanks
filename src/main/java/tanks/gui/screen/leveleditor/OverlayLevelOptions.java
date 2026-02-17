@@ -13,13 +13,17 @@ public class OverlayLevelOptions extends ScreenLevelEditorOverlay
 
     public Button back = new Button(this.centerX, (int) (this.centerY + this.objYSpace * 2), this.objWidth, this.objHeight, "Back", this::escape);
 
-    public Button colorOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Background colors", () -> Game.screen = new OverlayLevelOptionsColor(Game.screen, editor));
+    public Button colorOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Background colors",
+            () -> Game.screen = new OverlayLevelOptionsColor(Game.screen, editor));
 
-    public Button sizeOptions = new Button(this.centerX  - this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Level size", () -> Game.screen = new OverlayLevelOptionsSize(Game.screen, editor));
+    public Button sizeOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Level size",
+            () -> Game.screen = new OverlayLevelOptionsSize(Game.screen, editor));
 
-    public Button timerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Time limit", () -> Game.screen = new OverlayLevelOptionsTimer(Game.screen, editor));
+    public Button timerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Time limit",
+            () -> Game.screen = new OverlayLevelOptionsTimer(Game.screen, editor));
 
-    public Button lightingOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Lighting", () -> Game.screen = new OverlayLevelOptionsLighting(Game.screen, editor));
+    public Button lightingOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "Lighting",
+            () -> Game.screen = new OverlayLevelOptionsLighting(Game.screen, editor));
 
     public OverlayLevelOptions(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
@@ -44,15 +48,13 @@ public class OverlayLevelOptions extends ScreenLevelEditorOverlay
 
                 screenLevelEditor.name = input + ".tanks";
 
-                //screenLevelBuilder.reload(false);
-            }
-            else
+                // screenLevelBuilder.reload(false);
+            } else
             {
-                levelName.inputText =  screenLevelEditor.name.split("\\.")[0].replace("_", " ");
+                levelName.inputText = screenLevelEditor.name.split("\\.")[0].replace("_", " ");
             }
 
-        }
-                ,  screenLevelEditor.name.split("\\.")[0].replace("_", " "));
+        }, screenLevelEditor.name.split("\\.")[0].replace("_", " "));
 
         levelName.enableCaps = true;
         screenLevelEditor.modified = true;

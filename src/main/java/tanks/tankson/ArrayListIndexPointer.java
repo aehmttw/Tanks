@@ -35,8 +35,7 @@ public class ArrayListIndexPointer<T> extends Pointer<T>
         {
             this.deleted = true;
             this.arrayList.remove(this.index);
-        }
-        else
+        } else
             this.arrayList.set(this.index, val);
     }
 

@@ -18,7 +18,6 @@ public class SelectorMusic extends Selector
         this.screen = screen;
     }
 
-
     @Override
     public void drawSelection()
     {
@@ -42,10 +41,8 @@ public class SelectorMusic extends Selector
             else if (lastSelected.contains("arcade/"))
                 s = lastSelected.substring(lastSelected.indexOf("arcade/") + "arcade/".length(), lastSelected.indexOf(".ogg"));
             s = Game.formatString(s);
-        }
-        else if (numSelected > 1)
+        } else if (numSelected > 1)
             s = numSelected + " tracks";
-
 
         if (translate)
             Drawing.drawing.drawInterfaceText(posX, posY, Translation.translate(s));

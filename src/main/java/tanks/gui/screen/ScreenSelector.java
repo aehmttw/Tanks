@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.InputCodes;
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -12,8 +13,6 @@ import tanks.gui.SelectorItemIcon;
 import tanks.item.Item;
 import tanks.item.ItemIcon;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
 
 public class ScreenSelector extends Screen implements IConditionalOverlayScreen, IDarkScreen, IBlankBackgroundScreen
 {
@@ -54,8 +53,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             Game.screen = screen;
             Drawing.drawing.removeSyncedMusic(selector.options[selector.selectedOption], 500);
         }
-    }
-    );
+    });
 
     public ButtonList buttonList;
 
@@ -121,8 +119,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
                     if (itemBeingEdited != null)
                         itemBeingEdited.autoIcon = false;
                 }
-            }
-            );
+            });
 
             if (selector.sounds != null)
                 b.silent = true;
@@ -165,7 +162,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
                 if (drawModels && selector.models != null)
                     b.model = selector.models[i];
 
-                b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+                b.imageXOffset = -b.sizeX / 2 + b.sizeY / 2 + 10;
                 b.imageYOffset = 0;
                 b.imageSizeX = b.sizeY;
                 b.imageSizeY = b.sizeY;
@@ -224,8 +221,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
         {
             this.enableMargins = this.screen.enableMargins;
             this.screen.draw();
-        }
-        else
+        } else
         {
             Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
             this.drawDefaultBackground();

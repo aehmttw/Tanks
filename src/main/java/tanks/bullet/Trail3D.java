@@ -19,15 +19,12 @@ public class Trail3D extends Trail
 
     public static Model cap = Drawing.drawing.getModel("/models/cap/");
 
-    public Trail3D(Movable m, double speed, double backX, double backY, double backZ,
-                   double delay, double backWidth, double frontWidth, double length,
-                   double angle, double pitch,
-                   double frontR, double frontG, double frontB, double frontA,
-                   double backR, double backG, double backB, double backA,
-                   boolean glow, double luminosity,
-                   boolean frontCircle, boolean backCircle)
+    public Trail3D(Movable m, double speed, double backX, double backY, double backZ, double delay, double backWidth, double frontWidth, double length, double angle, double pitch,
+            double frontR, double frontG, double frontB, double frontA, double backR, double backG, double backB, double backA, boolean glow, double luminosity,
+            boolean frontCircle, boolean backCircle)
     {
-        super(m, speed, backX, backY, delay, backWidth, frontWidth, length, angle, frontR, frontG, frontB, frontA, backR, backG, backB, backA, glow, luminosity, frontCircle, backCircle);
+        super(m, speed, backX, backY, delay, backWidth, frontWidth, length, angle, frontR, frontG, frontB, frontA, backR, backG, backB, backA, glow, luminosity, frontCircle,
+                backCircle);
         this.backZ = backZ;
         this.frontZ = backZ;
         this.pitch = pitch;
@@ -94,22 +91,20 @@ public class Trail3D extends Trail
             if (frac1 >= 0)
             {
                 frac3 = 0;
-                Drawing.drawing.setColor(
-                        this.frontColor.red * (1 - frac1) + this.backColor.red * frac1,
-                        this.frontColor.green * (1 - frac1) + this.backColor.green * frac1,
-                        this.frontColor.blue * (1 - frac1) + this.backColor.blue * frac1,
-                        (this.frontColor.alpha * (1 - frac1) + this.backColor.alpha * frac1) * opacity, this.luminosity);
+                Drawing.drawing.setColor(this.frontColor.red * (1 - frac1) + this.backColor.red * frac1, this.frontColor.green * (1 - frac1) + this.backColor.green * frac1,
+                        this.frontColor.blue * (1 - frac1) + this.backColor.blue * frac1, (this.frontColor.alpha * (1 - frac1) + this.backColor.alpha * frac1) * opacity,
+                        this.luminosity);
 
                 if (frontCircle || (showOutsides && showOutsideFront))
                     drawCap3D(this.frontX, this.frontY, this.frontZ, frontWidth, angle, pitch + Math.PI);
-            }
-            else
+            } else
             {
                 frontWidth = this.frontWidth;
                 Drawing.drawing.setColor(this.frontColor.red, this.frontColor.green, this.frontColor.blue, this.frontColor.alpha * opacity, this.luminosity);
 
                 if (frontCircle)
-                    drawCap3D(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.backZ * frac3 + this.frontZ * (1 - frac3), frontWidth, angle, pitch);
+                    drawCap3D(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.backZ * frac3 + this.frontZ * (1 - frac3),
+                            frontWidth, angle, pitch);
             }
 
             double r = Drawing.drawing.currentColorR;
@@ -121,18 +116,15 @@ public class Trail3D extends Trail
             if (frac2 <= 1)
             {
                 frac4 = 0;
-                Drawing.drawing.setColor(
-                        this.frontColor.red * (1 - frac2) + this.backColor.red * frac2,
-                        this.frontColor.green * (1 - frac2) + this.backColor.green * frac2,
-                        this.frontColor.blue * (1 - frac2) + this.backColor.blue * frac2,
-                        (this.frontColor.alpha * (1 - frac2) + this.backColor.alpha * frac2) * opacity, this.luminosity);
+                Drawing.drawing.setColor(this.frontColor.red * (1 - frac2) + this.backColor.red * frac2, this.frontColor.green * (1 - frac2) + this.backColor.green * frac2,
+                        this.frontColor.blue * (1 - frac2) + this.backColor.blue * frac2, (this.frontColor.alpha * (1 - frac2) + this.backColor.alpha * frac2) * opacity,
+                        this.luminosity);
 
                 Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
                 if (backCircle || (showOutsides && showOutsideBack))
                     drawCap3D(this.backX, this.backY, this.backZ, backWidth, angle, pitch);
-            }
-            else
+            } else
             {
                 backWidth = this.backWidth;
                 Drawing.drawing.setColor(this.backColor.red, this.backColor.green, this.backColor.blue, this.backColor.alpha * opacity, this.luminosity);
@@ -140,27 +132,24 @@ public class Trail3D extends Trail
                 Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
                 if (backCircle)
-                    drawCap3D(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4), this.frontZ * frac4 + this.backZ * (1 - frac4), backWidth, angle, pitch + Math.PI);
+                    drawCap3D(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4), this.frontZ * frac4 + this.backZ * (1 - frac4),
+                            backWidth, angle, pitch + Math.PI);
             }
 
             Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
 
-            drawTube3D(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.backZ * frac3 + this.frontZ * (1 - frac3),
-                        frontWidth, frac1 >= 0 ? frontAngleOffset : 0, frac1 >= 0 ? frontAngleOffsetPitch : 0,
-                        r, g, b, a,
-                        this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4), this.frontZ * frac4 + this.backZ * (1 - frac4),
-                        backWidth, frac2 <= 1 ? backAngleOffset : 0, frac2 <= 1 ? backAngleOffsetPitch : 0,
-                        Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB, Drawing.drawing.currentColorA);
+            drawTube3D(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.backZ * frac3 + this.frontZ * (1 - frac3), frontWidth,
+                    frac1 >= 0 ? frontAngleOffset : 0, frac1 >= 0 ? frontAngleOffsetPitch : 0, r, g, b, a, this.frontX * frac4 + this.backX * (1 - frac4),
+                    this.frontY * frac4 + this.backY * (1 - frac4), this.frontZ * frac4 + this.backZ * (1 - frac4), backWidth, frac2 <= 1 ? backAngleOffset : 0,
+                    frac2 <= 1 ? backAngleOffsetPitch : 0, Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB,
+                    Drawing.drawing.currentColorA);
         }
     }
 
     // Welcome to math hell
-    public void drawTube3D(double frontX, double frontY, double frontZ, double frontWidth,
-                           double frontAngleOffset, double frontAngleOffsetPitch,
-                           double frontR, double frontG, double frontB, double frontA,
-                           double backX, double backY, double backZ, double backWidth,
-                           double backAngleOffset, double backAngleOffsetPitch,
-                           double backR, double backG, double backB, double backA)
+    public void drawTube3D(double frontX, double frontY, double frontZ, double frontWidth, double frontAngleOffset, double frontAngleOffsetPitch, double frontR, double frontG,
+            double frontB, double frontA, double backX, double backY, double backZ, double backWidth, double backAngleOffset, double backAngleOffsetPitch, double backR,
+            double backG, double backB, double backA)
     {
         Game.game.window.shapeRenderer.setBatchMode(true, true, Game.enable3d, this.glow, false);
 
@@ -177,13 +166,15 @@ public class Trail3D extends Trail
             double sinPitchFront = Math.sin(pitch + frontAngleOffsetPitch + Math.PI / 2);
             double sinPitchBack = Math.sin(pitch + backAngleOffsetPitch + Math.PI / 2);
 
-            // Vertical (+-z) and horizontal (+- x or y, depending on rotation) position as if the tube is facing horizontally
+            // Vertical (+-z) and horizontal (+- x or y, depending on rotation) position as
+            // if the tube is facing horizontally
             double vert1 = Math.sin(angle1);
             double vert2 = Math.sin(angle2);
             double hor1 = Math.cos(angle1);
             double hor2 = Math.cos(angle2);
 
-            // Heights of vertices - when pitch is zero (tube pointing up) it should be flat, hence sine
+            // Heights of vertices - when pitch is zero (tube pointing up) it should be
+            // flat, hence sine
             double z1Front = frontZ + vert1 * sinPitchFront * frontWidth;
             double z2Front = frontZ + vert2 * sinPitchFront * frontWidth;
             double z1Back = backZ + vert1 * sinPitchBack * backWidth;
@@ -201,7 +192,8 @@ public class Trail3D extends Trail
             double oxBackDep = backWidth * Math.cos(this.angle + backAngleOffset);
             double oyBackDep = backWidth * Math.sin(this.angle + backAngleOffset);
 
-            // The 'other' (perpendicular) horizontal coordinate obtained by rotating the vertical circle by up/down pitch
+            // The 'other' (perpendicular) horizontal coordinate obtained by rotating the
+            // vertical circle by up/down pitch
             double vert1FrontRot = vert1 * cosPitchFront;
             double vert2FrontRot = vert2 * cosPitchFront;
             double vert1BackRot = vert1 * cosPitchBack;

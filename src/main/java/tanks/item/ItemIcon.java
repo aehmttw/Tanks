@@ -1,26 +1,25 @@
 package tanks.item;
 
 import basewindow.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 import tanks.tankson.TanksONable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 @TanksONable("item_icon")
 public class ItemIcon implements ICopyable<ItemIcon>
 {
     public int registryIndex = -1;
 
-    @Property(id="id")
+    @Property(id = "id")
     public String idName;
     public String baseName;
 
     public ArrayList<Boolean> alphas;
-    @Property(id="colors")
+    @Property(id = "colors")
     public ArrayList<Color> colors;
 
     public ItemIcon()
@@ -75,8 +74,7 @@ public class ItemIcon implements ICopyable<ItemIcon>
             else
                 Drawing.drawing.drawImage(this.baseName, x, y, z, sX, sY);
 
-        }
-        else
+        } else
         {
             for (int i = 0; i < this.colors.size(); i++)
             {
@@ -103,10 +101,8 @@ public class ItemIcon implements ICopyable<ItemIcon>
         if (colors != null)
         {
             i1.colors = new ArrayList<>();
-            for (Color c: this.colors)
-                i1.colors.add(new Color().set(c));
-        }
-        else
+            for (Color c : this.colors) i1.colors.add(new Color().set(c));
+        } else
             i1.colors = null;
 
         if (alphas != null)

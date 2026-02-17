@@ -1,13 +1,12 @@
 package tanks.gui.screen;
 
+import java.util.UUID;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;
-
-import java.util.UUID;
 
 public class ScreenJoinOnlineServer extends Screen
 {
@@ -35,8 +34,7 @@ public class ScreenJoinOnlineServer extends Screen
             Game.lastOnlineServer = ip.inputText;
             ScreenOptions.saveOptions(Game.homedir);
         }
-    },
-            Game.lastOnlineServer);
+    }, Game.lastOnlineServer);
 
     Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
     {
@@ -69,8 +67,7 @@ public class ScreenJoinOnlineServer extends Screen
                             Client.connect("localhost", Game.port, true, connectionID);
                         else
                             Client.connect(ipaddress, port, true, connectionID);
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         if (Game.screen == s && Client.connectionID == connectionID)
                         {
@@ -92,8 +89,6 @@ public class ScreenJoinOnlineServer extends Screen
             }
         }
     });
-
-
 
     @Override
     public void update()

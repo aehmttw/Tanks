@@ -1,6 +1,8 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import java.util.ArrayList;
+import java.util.Arrays;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
@@ -8,9 +10,6 @@ import tanks.Panel;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScreen
 {
@@ -59,8 +58,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             {
                 String[] l = crusade.contents.split("\n");
                 c = new Crusade(new ArrayList<>(Arrays.asList(l)), crusade.name, crusade.fileName);
-            }
-            else
+            } else
                 c = new Crusade(Game.game.fileManager.getFile(crusade.fileName), crusade.name);
 
             Crusade.currentCrusade = c;
@@ -78,7 +76,8 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             Game.screen = new ScreenCrusadeEditor(crusade);
     });
 
-    public Button delete = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Delete crusade", () -> Game.screen = new ScreenConfirmDeleteCrusade(Game.screen, crusade));
+    public Button delete = new Button(this.centerX, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Delete crusade",
+            () -> Game.screen = new ScreenConfirmDeleteCrusade(Game.screen, crusade));
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
     {
@@ -96,9 +95,8 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             Game.screen = new ScreenCrusades();
     });
 
-    Button showRecordButton = new Button(this.centerX + Drawing.drawing.baseInterfaceSizeX * 0.35 - 30, this.centerY + this.objYSpace * 4, 30, 30, "i", () ->
-            Game.screen = new ScreenCrusadeStats(crusade, this), "View best run");
-
+    Button showRecordButton = new Button(this.centerX + Drawing.drawing.baseInterfaceSizeX * 0.35 - 30, this.centerY + this.objYSpace * 4, 30, 30, "i",
+            () -> Game.screen = new ScreenCrusadeStats(crusade, this), "View best run");
 
     public ScreenCrusadeDetails(Crusade c)
     {
@@ -147,11 +145,9 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
                     back2.posY -= this.objYSpace;
                     begin.posY -= this.objYSpace;
                 }
-            }
-            else
+            } else
                 sizeY += 2;
-        }
-        else if (c.started)
+        } else if (c.started)
             sizeY++;
 
         if (!c.started)
@@ -201,8 +197,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
                     }
 
                     f.stopReading();
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -217,8 +212,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
         {
             resume.update();
             startOver.update();
-        }
-        else
+        } else
             begin.update();
 
         if (!(crusade.readOnly || crusade.internal || ScreenPartyHost.isServer))
@@ -226,8 +220,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             edit.update();
             delete.update();
             back.update();
-        }
-        else
+        } else
             back2.update();
 
         if (this.bestTime >= 0 && !ScreenPartyHost.isServer)
@@ -248,8 +241,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
             Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
             Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
-        }
-        else
+        } else
             this.drawDefaultBackground();
 
         Drawing.drawing.setColor(0, 0, 0, 255);
@@ -274,14 +266,15 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
             if (Game.previewCrusades)
             {
-                Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.baseInterfaceSizeX * 0.35 - 50, this.centerY + this.objYSpace * (sizeY / 2. - 0.5), true, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
+                Drawing.drawing.displayInterfaceText(this.centerX + Drawing.drawing.baseInterfaceSizeX * 0.35 - 50, this.centerY + this.objYSpace * (sizeY / 2. - 0.5), true,
+                        "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
                 showRecordButton.posY = this.centerY + this.objYSpace * (sizeY / 2.0 - 0.5);
-            }
-            else
+            } else
             {
                 showRecordButton.posX = this.centerX + this.objXSpace / 2;
                 showRecordButton.posY = this.centerY + textOffset + this.objYSpace * 4;
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.objYSpace * 4, "Best completion time: %s", SpeedrunTimer.getTime(this.bestTime));
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.objYSpace * 4, "Best completion time: %s",
+                        SpeedrunTimer.getTime(this.bestTime));
             }
 
             this.showRecordButton.draw();
@@ -295,8 +288,10 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
         if (crusade.started && !ScreenPartyHost.isServer)
         {
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.levelsTextOffset - this.objYSpace * 2, "Current battle: %d", (crusade.currentLevel + 1));
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.levelsTextOffset - this.objYSpace * 1.5, "Remaining lives: %d", Game.player.remainingLives);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.levelsTextOffset - this.objYSpace * 2, "Current battle: %d",
+                    (crusade.currentLevel + 1));
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.textOffset + this.levelsTextOffset - this.objYSpace * 1.5, "Remaining lives: %d",
+                    Game.player.remainingLives);
         }
 
         if (!(crusade.readOnly || crusade.internal || ScreenPartyHost.isServer))
@@ -304,16 +299,14 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             edit.draw();
             delete.draw();
             back.draw();
-        }
-        else
+        } else
             back2.draw();
 
         if (crusade.started && !ScreenPartyHost.isServer)
         {
             resume.draw();
             startOver.draw();
-        }
-        else
+        } else
             begin.draw();
 
         if (crusade.description != null)

@@ -1,15 +1,14 @@
 package tanks;
 
 import basewindow.BaseFile;
+import java.util.HashMap;
+import java.util.HashSet;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
-
-import java.util.HashMap;
-import java.util.HashSet;
 
 public class CrusadePlayer
 {
@@ -137,14 +136,14 @@ public class CrusadePlayer
             f.println(Crusade.currentCrusade.internal + "");
             f.println(Crusade.currentCrusade.saveLevel + "");
 
-            /*if (Game.screen instanceof ScreenGame && !win && !Game.playerTank.destroy)
-            {
-                Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, win);
-                this.coins = player.hotbar.coins;
-
-                if (!(Game.screen instanceof ScreenCrashed || Game.screen instanceof ScreenOutOfMemory))
-                    player.remainingLives--;
-            }*/
+            /*
+             * if (Game.screen instanceof ScreenGame && !win && !Game.playerTank.destroy) {
+             * Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, win);
+             * this.coins = player.hotbar.coins;
+             *
+             * if (!(Game.screen instanceof ScreenCrashed || Game.screen instanceof
+             * ScreenOutOfMemory)) player.remainingLives--; }
+             */
 
             f.println(player.remainingLives + "");
             f.println(this.coins + "");
@@ -170,8 +169,7 @@ public class CrusadePlayer
 
             if ((player.remainingLives <= 0 || Crusade.currentCrusade.win) && f.exists())
                 f.delete();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

@@ -1,15 +1,14 @@
 package tanks.tank;
 
 import basewindow.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
 import tanks.*;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemMine;
 import tanks.network.event.EventMineChangeTimer;
 import tanks.network.event.EventMineRemove;
 import tanks.tankson.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 @TanksONable("mine")
 public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITanksONEditable
@@ -56,8 +55,9 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
 
     /**
-     * Do not use if you plan to place this mine in the game field. Only for templates.
-     * Use another constructor if you want to add the mine to the game field.
+     * Do not use if you plan to place this mine in the game field. Only for
+     * templates. Use another constructor if you want to add the mine to the game
+     * field.
      */
     public Mine()
     {
@@ -133,8 +133,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
             if (Game.glowEnabled)
                 Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ + height + 1, this.size * 4, this.size * 4, true, false);
-        }
-        else
+        } else
         {
             Drawing.drawing.fillOval(this.posX, this.posY, this.size, this.size);
 
@@ -143,9 +142,8 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
         }
 
         double frac = Math.min(1000, this.timer) / 1000.0;
-        Drawing.drawing.setColor(this.initialColor.red * frac + this.finalColor.red * (1 - frac),
-            this.initialColor.green * frac + this.finalColor.green * (1 - frac),
-            this.initialColor.blue * frac + this.finalColor.blue * (1 - frac), 255, 0.5);
+        Drawing.drawing.setColor(this.initialColor.red * frac + this.finalColor.red * (1 - frac), this.initialColor.green * frac + this.finalColor.green * (1 - frac),
+                this.initialColor.blue * frac + this.finalColor.blue * (1 - frac), 255, 0.5);
 
         if (timer < 150 && ((int) timer % 20) / 10 == 1)
             Drawing.drawing.setColor(this.initialColor, 255, 0.5);
@@ -155,17 +153,17 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
         else
             Drawing.drawing.fillOval(this.posX, this.posY, this.size * 0.8, this.size * 0.8);
 
-//        if (this.tankKnockback > 0 || this.bulletKnockback > 0)
-//        {
-//            Drawing.drawing.setColor(255, 0, 255, 64);
-//            drawRange2D(this.posX, this.posY, this.knockbackRadius);
-//        }
-//
-//        if (this.damage > 0)
-//        {
-//            Drawing.drawing.setColor(255, 0, 0, 64);
-//            drawRange2D(this.posX, this.posY, this.radius);
-//        }
+        // if (this.tankKnockback > 0 || this.bulletKnockback > 0)
+        // {
+        // Drawing.drawing.setColor(255, 0, 255, 64);
+        // drawRange2D(this.posX, this.posY, this.knockbackRadius);
+        // }
+        //
+        // if (this.damage > 0)
+        // {
+        // Drawing.drawing.setColor(255, 0, 0, 64);
+        // drawRange2D(this.posX, this.posY, this.radius);
+        // }
     }
 
     @Override
@@ -179,7 +177,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
         if ((this.timer <= 0 || destroy) && !ScreenPartyLobby.isClient)
             this.explode();
 
-        int beepTime = ((int)this.timer / 10);
+        int beepTime = ((int) this.timer / 10);
         if (this.timer <= 150 && beepTime % 2 == 1 && this.lastBeep != beepTime && this.tank == Game.playerTank)
         {
             Drawing.drawing.playSound("beep.ogg", 1f);
@@ -190,7 +188,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
         boolean enemyNear = false;
         boolean allyNear = false;
-        for (Movable m: Explosion.getMovablesInExplosion(this.posX, this.posY, this.explosion.radius))
+        for (Movable m : Explosion.getMovablesInExplosion(this.posX, this.posY, this.explosion.radius))
         {
             if (m instanceof Tank && !m.destroy && ((Tank) m).currentlyTargetable)
             {

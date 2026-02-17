@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -7,8 +8,6 @@ import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayable;
-
-import java.util.ArrayList;
 
 public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScreen
 {
@@ -42,8 +41,7 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 4.5, this.objWidth, this.objHeight, "Ok", () ->
     {
         Game.screen = this.previous;
-    }
-    );
+    });
 
     public ScreenTankSavedInfo(Screen s, Tank tank, ArrayList<Tank> copied, ArrayList<Tank> notCopied)
     {
@@ -64,15 +62,13 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
                 row1Y = cY - rowSpacing / 2;
                 row3Y = cY + rowSpacing / 2;
             }
-        }
-        else
+        } else
         {
             if (notCopied.size() == 0)
             {
                 row1Y = cY - rowSpacing / 2;
                 row2Y = cY + rowSpacing / 2;
-            }
-            else
+            } else
             {
                 row1Y = cY - rowSpacing;
                 row2Y = cY;
@@ -103,10 +99,22 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
             this.linkedTanksNotCopied.add(b);
         }
 
-        this.nextCopiedPage = new Button(this.centerX + 550, this.row2Y, 60, 60, "", () -> { this.copiedPage++; });
-        this.prevCopiedPage = new Button(this.centerX - 550, this.row2Y, 60, 60, "", () -> { this.copiedPage--; });
-        this.nextNotCopiedPage = new Button(this.centerX + 550, this.row3Y, 60, 60, "", () -> { this.notCopiedPage++; });
-        this.prevNotCopiedPage = new Button(this.centerX - 550, this.row3Y, 60, 60, "", () -> { this.notCopiedPage--; });
+        this.nextCopiedPage = new Button(this.centerX + 550, this.row2Y, 60, 60, "", () ->
+        {
+            this.copiedPage++;
+        });
+        this.prevCopiedPage = new Button(this.centerX - 550, this.row2Y, 60, 60, "", () ->
+        {
+            this.copiedPage--;
+        });
+        this.nextNotCopiedPage = new Button(this.centerX + 550, this.row3Y, 60, 60, "", () ->
+        {
+            this.notCopiedPage++;
+        });
+        this.prevNotCopiedPage = new Button(this.centerX - 550, this.row3Y, 60, 60, "", () ->
+        {
+            this.notCopiedPage--;
+        });
 
         this.nextCopiedPage.image = "icons/forward.png";
         this.nextCopiedPage.imageSizeX = 35;
@@ -186,8 +194,7 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
                 Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Player build saved to templates!");
             else
                 Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Player build added to level!");
-        }
-        else
+        } else
         {
             if (this.copiedToTemplate)
                 Drawing.drawing.displayInterfaceText(this.centerX, row1Y - 80, "Tank saved to templates!");
@@ -204,8 +211,7 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
 
             if (this.linkedTanksNotCopied.size() > 0)
                 Drawing.drawing.displayInterfaceText(this.centerX, row3Y - 80, "Tanks referenced by this tank already present in templates");
-        }
-        else
+        } else
         {
             if (this.linkedTanksCopied.size() > 0)
                 Drawing.drawing.displayInterfaceText(this.centerX, row2Y - 80, "Tank templates referenced by this tank also added to level");

@@ -24,7 +24,7 @@ public class BulletArc extends Bullet
     @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing, desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
     public double minRange = 0;
 
-    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,  desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
+    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing, desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
     public double maxRange = 0;
 
     @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands, relative to the distance traveled by the bullet. Larger values are less accurate. \n \n A value of 1 corresponds to the bullet landing off by up to one tile per tile traveled.")
@@ -89,8 +89,7 @@ public class BulletArc extends Bullet
                 this.postBounce(this.bounce());
                 if (this.destroy)
                     this.arcDestroy(true);
-            }
-            else
+            } else
             {
                 double ht = (this.vZ + Math.sqrt(Math.max(0, this.vZ * this.vZ + 2 * gravity * (this.posZ - Game.tile_size / 2)))) / gravity;
                 this.posX += ht * this.vX;
@@ -334,8 +333,7 @@ public class BulletArc extends Bullet
                 {
                     this.vZ = newVZ;
                     this.posZ += ht * vzAtCollision * this.bounciness - gravity * ht * ht * 0.5;
-                }
-                else
+                } else
                 {
                     this.posZ += -ht * this.vZ - gravity * ht * ht * 0.5;
                     this.vZ += gravity * ht;

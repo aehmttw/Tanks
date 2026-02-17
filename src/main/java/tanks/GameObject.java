@@ -1,12 +1,11 @@
 package tanks;
 
-import tanks.gui.screen.leveleditor.selector.MetadataSelector;
-import tanks.tank.Tank;
-import tanks.tankson.MetadataProperty;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import tanks.gui.screen.leveleditor.selector.MetadataSelector;
+import tanks.tank.Tank;
+import tanks.tankson.MetadataProperty;
 
 public abstract class GameObject
 {
@@ -17,8 +16,10 @@ public abstract class GameObject
     public static HashMap<Class<? extends GameObject>, LinkedHashMap<String, MetadataSelector>> metadataPropertiesByClass = new HashMap<>();
 
     /**
-     * If you want a subclass to use a different id for a selector (for example, have the player and ai tank teams use separate selectors in the editor),
-     * you can add to the map here to replace a selector id with another one for that subclass specifically.
+     * If you want a subclass to use a different id for a selector (for example,
+     * have the player and ai tank teams use separate selectors in the editor), you
+     * can add to the map here to replace a selector id with another one for that
+     * subclass specifically.
      */
     public HashMap<String, String> overrideMetadataPropertyIDs = new HashMap<>();
 
@@ -78,8 +79,7 @@ public abstract class GameObject
                     }
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -88,11 +88,7 @@ public abstract class GameObject
     @Override
     public String toString()
     {
-        return String.format(
-            "%s@(%.0f,%.0f)",
-            this instanceof Tank ? ((Tank) this).name : this.getClass().getSimpleName(),
-            this.posX, this.posY
-        );
+        return String.format("%s@(%.0f,%.0f)", this instanceof Tank ? ((Tank) this).name : this.getClass().getSimpleName(), this.posX, this.posY);
     }
 
     public HashMap<String, MetadataSelector> getMetadataProperties()
@@ -153,7 +149,7 @@ public abstract class GameObject
 
     public static double sqDistBetw(double x1, double y1, double x2, double y2)
     {
-        return (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
 
     public static double sqDistBetw(final GameObject a, final GameObject b)
@@ -173,7 +169,7 @@ public abstract class GameObject
 
     public static double angleBetween(double a, double b)
     {
-        return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;
+        return (a - b + Math.PI * 3) % (Math.PI * 2) - Math.PI;
     }
 
     public static double absoluteAngleBetween(double a, double b)

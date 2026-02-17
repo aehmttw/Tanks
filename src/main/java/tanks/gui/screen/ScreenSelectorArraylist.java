@@ -1,12 +1,11 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ITrigger;
 import tanks.gui.Selector;
 import tanks.gui.SelectorDrawable;
-
-import java.util.ArrayList;
 
 public class ScreenSelectorArraylist extends Screen implements IConditionalOverlayScreen, IDarkScreen, IScreenWithCompletion, IBlankBackgroundScreen
 {
@@ -23,7 +22,9 @@ public class ScreenSelectorArraylist extends Screen implements IConditionalOverl
     public Consumer<Entry> saveEntry;
     public Producer<Entry> defaultEntry;
 
-    public Runnable onComplete = () -> {};
+    public Runnable onComplete = () ->
+    {
+    };
 
     public Button create = new Button(this.centerX, 0, 60, 60, "+", () ->
     {
@@ -39,7 +40,7 @@ public class ScreenSelectorArraylist extends Screen implements IConditionalOverl
 
     public void apply()
     {
-        for (Entry e: this.entries)
+        for (Entry e : this.entries)
         {
             saveEntry.accept(e);
         }
@@ -59,8 +60,7 @@ public class ScreenSelectorArraylist extends Screen implements IConditionalOverl
         {
             page++;
         }
-    }
-    );
+    });
 
     Button previous = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Previous page", new Runnable()
     {
@@ -69,8 +69,7 @@ public class ScreenSelectorArraylist extends Screen implements IConditionalOverl
         {
             page--;
         }
-    }
-    );
+    });
 
     @Override
     public Runnable getOnComplete()
@@ -232,8 +231,7 @@ public class ScreenSelectorArraylist extends Screen implements IConditionalOverl
         {
             this.enableMargins = this.screen.enableMargins;
             this.screen.draw();
-        }
-        else
+        } else
         {
             Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
             this.drawDefaultBackground();

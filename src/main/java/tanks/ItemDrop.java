@@ -1,14 +1,13 @@
 package tanks;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.Item;
 import tanks.network.event.EventItemDropDestroy;
 import tanks.network.event.EventItemPickup;
 import tanks.tank.IServerPlayerTank;
 import tanks.tank.Tank;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ItemDrop extends Movable
 {
@@ -105,8 +104,7 @@ public class ItemDrop extends Movable
             double startHeight = this.height + 9;
             double endHeight = this.pickup.size / 2;
             pz = startHeight * (1 - frac) + endHeight * frac + this.pickup.size * (1 - Math.pow(2 * (frac - 0.5), 2));
-        }
-        else
+        } else
             size = s;
 
         if (Game.enable3d)
@@ -116,9 +114,8 @@ public class ItemDrop extends Movable
                 Drawing.drawing.setColor(255 * i / 8.0, 255 * i / 8.0, 255 * i / 8.0, 255, 0.5);
                 Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height + i, size, size);
             }
-            this.item.item.icon.drawImage(px, py, pz,s / 2, s / 2);
-        }
-        else
+            this.item.item.icon.drawImage(px, py, pz, s / 2, s / 2);
+        } else
         {
             Drawing.drawing.setColor(255, 255, 255, 255, 0.5);
             Drawing.drawing.drawImage("item.png", this.posX, this.posY, this.height, size, size);
@@ -144,10 +141,9 @@ public class ItemDrop extends Movable
             this.destroyTime += Panel.frameFrequency;
             if (this.destroyTime > this.maxDestroyTime)
                 Game.removeMovables.add(this);
-        }
-        else
+        } else
         {
-            for (Movable m: Movable.getMovablesInRadius(this.posX, this.posY, this.size))
+            for (Movable m : Movable.getMovablesInRadius(this.posX, this.posY, this.size))
             {
                 if (!(m instanceof IServerPlayerTank))
                     continue;

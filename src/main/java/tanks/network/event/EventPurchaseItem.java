@@ -50,7 +50,7 @@ public class EventPurchaseItem extends PersonalEvent
                         if (p.hotbar.itemBar.addItem(s.shop.get(this.item).itemStack))
                             p.hotbar.coins -= pr;
 
-                        for (Movable m: Game.movables)
+                        for (Movable m : Game.movables)
                         {
                             if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(this.clientID))
                                 ((TankPlayerRemote) m).refreshAmmo();

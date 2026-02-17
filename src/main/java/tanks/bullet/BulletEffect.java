@@ -1,14 +1,13 @@
 package tanks.bullet;
 
 import basewindow.Color;
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
 import tanks.Panel;
 import tanks.tank.Turret;
 import tanks.tankson.*;
-
-import java.util.ArrayList;
 
 @TanksONable("bullet_effect")
 public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
@@ -63,8 +62,8 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
         fire.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
 
-        fire_trail.trailEffects.add(new Trail(7,2, 2, 50, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5, false, true));
-        fire_trail.trailEffects.add(new Trail(3,2, 2, 4, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5, true, false));
+        fire_trail.trailEffects.add(new Trail(7, 2, 2, 50, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5, false, true));
+        fire_trail.trailEffects.add(new Trail(3, 2, 2, 4, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5, true, false));
         fire_trail.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
 
         dark_fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
@@ -139,7 +138,7 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         if (this.enableParticles)
             max = this.particleLifespan * 31.25;
 
-        for (Trail t: this.trailEffects)
+        for (Trail t : this.trailEffects)
         {
             max = Math.max(max, t.maxLength + t.delay);
         }
@@ -178,13 +177,16 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         if (bullet)
         {
             if (!this.overrideGlowColor)
-                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity, Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
+                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity,
+                        Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
             else
-                Drawing.drawing.setColor(this.glowColor.red * this.glowIntensity, this.glowColor.green * this.glowIntensity, this.glowColor.blue * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
+                Drawing.drawing.setColor(this.glowColor.red * this.glowIntensity, this.glowColor.green * this.glowIntensity, this.glowColor.blue * this.glowIntensity, 255,
+                        this.glowGlowy ? 1 : 0);
 
             Drawing.drawing.fillInterfaceGlow(start, y, size * this.glowSize, size * this.glowSize, !this.glowGlowy);
 
-            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity, Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity,
+                    Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
             Drawing.drawing.fillInterfaceOval(start, y, size, size);
             Drawing.drawing.setColor(0, 150, 255, 255, this.luminance);
             Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);

@@ -12,7 +12,8 @@ public class ScreenSteamWorkshopAgreement extends Screen
         this.musicID = "menu";
     }
 
-    Button back = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenSteamWorkshop());
+    Button back = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Back",
+            () -> Game.screen = new ScreenSteamWorkshop());
 
     Button agree = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 4, this.objWidth, this.objHeight, "Agree and continue", () ->
     {

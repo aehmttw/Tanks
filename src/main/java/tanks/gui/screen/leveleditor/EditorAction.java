@@ -1,12 +1,11 @@
 package tanks.gui.screen.leveleditor;
 
+import java.util.ArrayList;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankSpawnMarker;
-
-import java.util.ArrayList;
 
 public abstract class EditorAction
 {
@@ -94,8 +93,7 @@ public abstract class EditorAction
             {
                 Game.removeMovables.add(this.tank);
                 screenLevelEditor.spawns.remove(this.tank);
-            }
-            else
+            } else
             {
                 Game.movables.add(this.tank);
                 screenLevelEditor.spawns.add(this.tank);
@@ -109,8 +107,7 @@ public abstract class EditorAction
             {
                 Game.removeMovables.add(this.tank);
                 screenLevelEditor.spawns.remove(this.tank);
-            }
-            else
+            } else
             {
                 Game.movables.add(this.tank);
                 screenLevelEditor.spawns.add(this.tank);
@@ -137,7 +134,7 @@ public abstract class EditorAction
             Game.removeMovables.add(newSpawn);
             screenLevelEditor.spawns.clear();
 
-            for (TankSpawnMarker t: oldSpawns)
+            for (TankSpawnMarker t : oldSpawns)
             {
                 screenLevelEditor.spawns.add(t);
                 Game.movables.add(t);
@@ -174,8 +171,7 @@ public abstract class EditorAction
         @Override
         public void undo()
         {
-            for (int i = 0; i < this.x.size(); i++)
-                screenLevelEditor.selectedTiles[this.x.get(i)][this.y.get(i)] = !select;
+            for (int i = 0; i < this.x.size(); i++) screenLevelEditor.selectedTiles[this.x.get(i)][this.y.get(i)] = !select;
 
             screenLevelEditor.refreshSelection();
         }
@@ -183,8 +179,7 @@ public abstract class EditorAction
         @Override
         public void redo()
         {
-            for (int i = 0; i < this.x.size(); i++)
-                screenLevelEditor.selectedTiles[this.x.get(i)][this.y.get(i)] = select;
+            for (int i = 0; i < this.x.size(); i++) screenLevelEditor.selectedTiles[this.x.get(i)][this.y.get(i)] = select;
 
             screenLevelEditor.refreshSelection();
         }
@@ -230,15 +225,13 @@ public abstract class EditorAction
         @Override
         public void undo()
         {
-            for (EditorAction a: this.actions)
-                a.undo();
+            for (EditorAction a : this.actions) a.undo();
         }
 
         @Override
         public void redo()
         {
-            for (EditorAction a: this.actions)
-                a.redo();
+            for (EditorAction a : this.actions) a.redo();
         }
     }
 
@@ -258,8 +251,7 @@ public abstract class EditorAction
         @Override
         public void undo()
         {
-            for (EditorAction a: this.actions)
-                a.undo();
+            for (EditorAction a : this.actions) a.undo();
 
             this.screenLevelEditor.level.customTanks.add(this.tank);
         }
@@ -267,13 +259,11 @@ public abstract class EditorAction
         @Override
         public void redo()
         {
-            for (EditorAction a: this.actions)
-                a.redo();
+            for (EditorAction a : this.actions) a.redo();
 
             this.screenLevelEditor.level.customTanks.remove(this.tank);
         }
     }
-
 
     public static class ActionPaste extends EditorAction
     {
@@ -289,15 +279,13 @@ public abstract class EditorAction
         @Override
         public void undo()
         {
-            for (int i = this.actions.size() - 1; i >= 0; i--)
-                this.actions.get(i).undo();
+            for (int i = this.actions.size() - 1; i >= 0; i--) this.actions.get(i).undo();
         }
 
         @Override
         public void redo()
         {
-            for (EditorAction a: actions)
-                a.redo();
+            for (EditorAction a : actions) a.redo();
         }
     }
 
@@ -317,8 +305,7 @@ public abstract class EditorAction
         @Override
         public void undo()
         {
-            for (Obstacle o : obstacles)
-                Game.addObstacle(o);
+            for (Obstacle o : obstacles) Game.addObstacle(o);
             Game.movables.addAll(this.tanks);
             this.deselect.undo();
         }

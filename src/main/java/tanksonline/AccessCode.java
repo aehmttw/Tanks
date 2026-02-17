@@ -60,20 +60,17 @@ public class AccessCode
                             TanksOnlinePlayer p = PlayerMap.instance.getPlayer(UUID.fromString(s));
                             this.players.add(p);
                             p.accessCode = this;
-                        }
-                        else
+                        } else
                             break;
                     }
                 }
 
                 br.close();
-            }
-            else
+            } else
             {
                 System.out.println("Attempted to load an inexistent access code: " + f);
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -101,8 +98,7 @@ public class AccessCode
 
             pw.close();
             return true;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             return false;

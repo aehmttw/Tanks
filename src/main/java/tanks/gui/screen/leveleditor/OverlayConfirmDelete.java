@@ -9,8 +9,7 @@ import tanks.gui.screen.ScreenSavedLevels;
 
 public class OverlayConfirmDelete extends ScreenLevelEditorOverlay
 {
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", this::escape
-    );
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", this::escape);
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
@@ -24,8 +23,7 @@ public class OverlayConfirmDelete extends ScreenLevelEditorOverlay
         }
 
         Game.screen = new ScreenSavedLevels();
-    }
-    );
+    });
 
     public OverlayConfirmDelete(Screen previous, ScreenLevelEditor screenLevelEditor)
     {

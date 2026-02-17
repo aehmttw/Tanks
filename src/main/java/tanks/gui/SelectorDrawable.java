@@ -1,5 +1,6 @@
 package tanks.gui;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -11,8 +12,6 @@ import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.tank.Tank;
-
-import java.util.ArrayList;
 
 public class SelectorDrawable extends Button
 {
@@ -107,10 +106,10 @@ public class SelectorDrawable extends Button
 
         double size = this.sizeY * 0.6;
         if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, optionText) / Drawing.drawing.interfaceScale > this.sizeX - 80)
-            Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, optionText) / Drawing.drawing.interfaceScale));
+            Drawing.drawing.setInterfaceFontSize(
+                    size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, optionText) / Drawing.drawing.interfaceScale));
 
         Drawing.drawing.drawInterfaceText(posX, posY, this.optionText);
-
 
         if (enableHover)
         {
@@ -121,8 +120,7 @@ public class SelectorDrawable extends Button
                     Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
                     Drawing.drawing.setColor(0, 0, 255);
                     Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
-                }
-                else
+                } else
                     Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
             }
 
@@ -133,8 +131,7 @@ public class SelectorDrawable extends Button
                 drawing.setColor(255, 255, 255);
                 drawing.drawInterfaceText(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
                 drawing.drawTooltip(this.hoverText);
-            }
-            else
+            } else
             {
                 drawing.setColor(0, 150, 255);
                 drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
@@ -166,12 +163,10 @@ public class SelectorDrawable extends Button
                 double frac = base * i / (this.multiTanks.size() - 1);
                 this.multiTanks.get(i).drawForInterface(this.posX + start * (base - frac) + end * frac, this.posY, 0.5);
             }
-        }
-        else if (this.tank != null)
+        } else if (this.tank != null)
         {
             this.tank.drawForInterface(this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, 0.5);
-        }
-        else if (this.bulletEffect != null)
+        } else if (this.bulletEffect != null)
         {
             if (!Game.game.window.drawingShadow)
                 this.bulletEffect.drawForInterface(this.posX, this.sizeX * 0.8, this.posY, Bullet.bullet_size, this.effects, this.removeEffects);
@@ -189,7 +184,7 @@ public class SelectorDrawable extends Button
         }
 
         selected = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
-        infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
 
         if (selected && valid)
         {
@@ -203,8 +198,7 @@ public class SelectorDrawable extends Button
                     ((ScreenGame) Game.screen).overlay = new ScreenInfo(null, this.translatedText, this.hoverText);
                 else
                     Game.screen = new ScreenInfo(Game.screen, this.translatedText, this.hoverText);
-            }
-            else if (enabled)
+            } else if (enabled)
             {
                 handled = true;
 

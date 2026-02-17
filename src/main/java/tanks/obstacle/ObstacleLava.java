@@ -60,15 +60,16 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
             {
                 if (Game.enable3d)
                 {
-                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, 0, Effect.EffectType.piece);
+                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, 0,
+                            Effect.EffectType.piece);
                     e.setColor(255, Math.random() * 255, 0);
                     e.setGlowColor(e.color);
                     e.vZ = Math.random() + 1;
                     Game.addEffects.add(e);
-                }
-                else
+                } else
                 {
-                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size, Effect.EffectType.piece);
+                    Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size,
+                            Effect.EffectType.piece);
                     e.setColor(255, Math.random() * 255, 0);
                     e.setGlowColor(e.color);
                     Game.addEffects.add(e);
@@ -128,8 +129,7 @@ public class ObstacleLava extends Obstacle implements IAvoidObject
         {
             Drawing.drawing.setColor(this.colorR * frac + r * (1 - frac), this.colorG * frac + g * (1 - frac), this.colorB * frac + b * (1 - frac));
             Drawing.drawing.fillBox(o, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, d * (1 - frac) + extra);
-        }
-        else
+        } else
         {
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
             Drawing.drawing.fillBox(o, this.posX, this.posY, -extra, Game.tile_size, Game.tile_size, d * (1 - frac) + extra, (byte) 61);

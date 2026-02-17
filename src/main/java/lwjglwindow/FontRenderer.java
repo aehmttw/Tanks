@@ -1,12 +1,11 @@
 package lwjglwindow;
 
 import basewindow.BaseFontRenderer;
-import org.lwjgl.opengl.GL11;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.lwjgl.opengl.GL11;
 
 public class FontRenderer extends BaseFontRenderer
 {
@@ -16,7 +15,8 @@ public class FontRenderer extends BaseFontRenderer
         public int[] charSizes;
         public String image;
         public float size = 16; // how many characters fit per horizontal line
-        public int hSpace = 2; // spacing between rows, increase this to 2 for antialiasing to prevent weird artifacts
+        public int hSpace = 2; // spacing between rows, increase this to 2 for antialiasing to prevent weird
+                               // artifacts
         public Map<Character, Integer> charIndexMap = new HashMap<>();
 
         public FontInfo(String image, String chars, int[] charSizes)
@@ -40,24 +40,11 @@ public class FontRenderer extends BaseFontRenderer
         super(h);
 
         defaultFont = new FontInfo(defaultFontFile,
-            " !\"#$%&'()*+,-./" +
-                "0123456789:;<=>?" +
-                "@ABCDEFGHIJKLMNO" +
-                "PQRSTUVWXYZ[\\]^_" +
-                "'abcdefghijklmno" +
-                "pqrstuvwxyz{|}~`" +
-                "âăîşţàçæèéêëïôœù" +
-                "úûüÿáíóñ¡¿äöå",
-            new int[]{
-                3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 2, 5, 2, 5,
-                5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 5, 5, 5, 5,
-                7, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5,
-                5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5,
-                2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5,
-                5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2,
-                5, 5, 5, 5, 3, 5, 5, 7, 5, 5, 5, 5, 3, 5, 7, 5,
-                5, 5, 5, 5, 5, 3, 5, 5, 3, 5, 5, 5, 5
-            });
+                " !\"#$%&'()*+,-./" + "0123456789:;<=>?" + "@ABCDEFGHIJKLMNO" + "PQRSTUVWXYZ[\\]^_" + "'abcdefghijklmno" + "pqrstuvwxyz{|}~`" + "âăîşţàçæèéêëïôœù"
+                        + "úûüÿáíóñ¡¿äöå",
+                new int[]{3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 2, 5, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+                        5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5, 2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2, 5, 5, 5, 5, 3, 5, 5,
+                        7, 5, 5, 5, 5, 3, 5, 7, 5, 5, 5, 5, 5, 5, 3, 5, 5, 3, 5, 5, 5, 5});
 
         fontInfos.add(defaultFont);
     }
@@ -65,9 +52,12 @@ public class FontRenderer extends BaseFontRenderer
     /**
      * Add a new font to the renderer.
      *
-     * @param imageFile The image file path.
-     * @param chars     The characters to include in the font.
-     * @param charSizes The width of each character in (pixels / 4).
+     * @param imageFile
+     *            The image file path.
+     * @param chars
+     *            The characters to include in the font.
+     * @param charSizes
+     *            The width of each character in (pixels / 4).
      */
     public void addFont(String imageFile, String chars, int[] charSizes)
     {
@@ -120,10 +110,8 @@ public class FontRenderer extends BaseFontRenderer
             this.window.shapeRenderer.drawRect(x + sX * width * 2, y + sY * 16, sX * width * 2, sY * 16);
         }
 
-        this.window.shapeRenderer.drawImage(x, y - sY * 16, z, sX * 32 * font.size, sY * 32 * font.size,
-            col / font.size, (row * font.hSpace) / font.size,
-            (col + width / 8f) / font.size, (row * font.hSpace + 2) / font.size,
-            font.image, false, depthtest);
+        this.window.shapeRenderer.drawImage(x, y - sY * 16, z, sX * 32 * font.size, sY * 32 * font.size, col / font.size, (row * font.hSpace) / font.size,
+                (col + width / 8f) / font.size, (row * font.hSpace + 2) / font.size, font.image, false, depthtest);
         return width;
     }
 
@@ -180,8 +168,7 @@ public class FontRenderer extends BaseFontRenderer
                 }
 
                 i += 12;
-            }
-            else
+            } else
                 curX += (drawChar(curX, y, z, sX, sY, c[i], depth) + 1) * sX * 4;
         }
 
@@ -232,8 +219,7 @@ public class FontRenderer extends BaseFontRenderer
                 }
 
                 i += 12;
-            }
-            else
+            } else
                 curX += (drawChar(curX, y, 0, sX, sY, c[i], false) + 1) * sX * 4;
         }
     }
@@ -262,12 +248,12 @@ public class FontRenderer extends BaseFontRenderer
                     continue;
 
                 i += 12;
-            }
-            else
+            } else
             {
                 FontInfo font = findFontForChar(c[i]);
                 Integer index = font.charIndexMap.get(c[i]);
-                if (index == null) index = font.charIndexMap.getOrDefault('?', 31);
+                if (index == null)
+                    index = font.charIndexMap.getOrDefault('?', 31);
                 w += (font.charSizes[index] + 1) * sX * 4;
             }
         }

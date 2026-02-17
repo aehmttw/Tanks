@@ -1,13 +1,12 @@
 package tanksonline;
 
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import tanks.Game;
-import tanks.network.event.*;
-import tanks.network.event.online.IOnlineServerEvent;
 import tanks.network.MessageReader;
 import tanks.network.NetworkEventMap;
-
-import java.util.UUID;
+import tanks.network.event.*;
+import tanks.network.event.online.IOnlineServerEvent;
 
 public class TanksOnlineMessageReader
 {
@@ -72,8 +71,7 @@ public class TanksOnlineMessageReader
                     }
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("A network exception has occurred: " + e.toString());
             Game.logger.println("A network exception has occurred: " + e.toString());

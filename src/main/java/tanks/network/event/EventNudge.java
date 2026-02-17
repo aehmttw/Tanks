@@ -33,10 +33,9 @@ public class EventNudge extends PersonalEvent
             Drawing.drawing.playSound("obliterate.ogg");
             ((ScreenGame) Game.screen).nudgeTimer = 50;
             ScreenOverlayChat.addChat(Translation.translate("\u00A7255000000255%s is nudging you to click the ready button!", username));
-        }
-        else if (this.clientID != null)
+        } else if (this.clientID != null)
         {
-            for (ServerHandler serverHandler: ScreenPartyHost.server.connections)
+            for (ServerHandler serverHandler : ScreenPartyHost.server.connections)
             {
                 Player p = serverHandler.player;
                 if (p.clientID != null && p.clientID.equals(this.clientID))

@@ -1,12 +1,11 @@
 package tanks.gui.screen;
 
+import java.lang.reflect.Field;
 import tanks.item.Item;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.MonitoredFieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
-
-import java.lang.reflect.Field;
 
 public class ScreenEditorCrusadeShopItem extends ScreenEditorItem
 {

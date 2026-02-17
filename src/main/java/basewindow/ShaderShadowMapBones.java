@@ -11,11 +11,12 @@ public class ShaderShadowMapBones extends ShaderShadowMap implements IBaseShader
         super(window);
     }
 
-//    @Override
-//    public void initialize() throws Exception
-//    {
-//        this.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_bones.vert"}, "/shaders/shadow_map.frag", null);
-//    }
+    // @Override
+    // public void initialize() throws Exception
+    // {
+    // this.setUp("/shaders/shadow_map.vert", new
+    // String[]{"/shaders/main_bones.vert"}, "/shaders/shadow_map.frag", null);
+    // }
 
     @Override
     public void setBoneMatrices(float[] matrices, boolean transpose)

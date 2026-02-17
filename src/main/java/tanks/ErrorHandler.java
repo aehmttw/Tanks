@@ -1,20 +1,15 @@
 package tanks;
 
-import tanks.tank.Tank;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+import tanks.tank.Tank;
 
 public abstract class ErrorHandler<K, V>
 {
     public static String gameObjectString(GameObject o)
     {
-        return String.format(
-            "%s@(%.0f,%.0f)",
-            o instanceof Tank ? ((Tank) o).name : o.getClass().getSimpleName(),
-            o.posX, o.posY
-        );
+        return String.format("%s@(%.0f,%.0f)", o instanceof Tank ? ((Tank) o).name : o.getClass().getSimpleName(), o.posX, o.posY);
     }
 
     public static final ArrayList<ErrorHandler<?, ?>> errorHandlers = new ArrayList<>();

@@ -1,6 +1,9 @@
 package tanks.tankson;
 
 import basewindow.Color;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import tanks.BiConsumer;
 import tanks.BiFunction;
 import tanks.Game;
@@ -13,10 +16,6 @@ import tanks.tank.Mine;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankModels;
-
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Compatibility
 {
@@ -71,38 +70,34 @@ public class Compatibility
         field_table.put("turret_base_model", "turretBaseSkin");
         field_table.put("turret_model", "turretSkin");
 
-        compatibility_table.put("color_model", (owner, a) ->
-               convertModelToSkin((String) a));
+        compatibility_table.put("color_model", (owner, a) -> convertModelToSkin((String) a));
 
-        compatibility_table.put("base_model", (owner, a) ->
-                convertModelToSkin((String) a));
+        compatibility_table.put("base_model", (owner, a) -> convertModelToSkin((String) a));
 
-        compatibility_table.put("turret_base_model", (owner, a) ->
-                convertModelToSkin((String) a));
+        compatibility_table.put("turret_base_model", (owner, a) -> convertModelToSkin((String) a));
 
-        compatibility_table.put("turret_model", (owner, a) ->
-                convertModelToSkin((String) a));
+        compatibility_table.put("turret_model", (owner, a) -> convertModelToSkin((String) a));
 
         compatibility_table.put("effect", (owner, a) ->
         {
             String s = (String) a;
             switch (s)
             {
-                case "fire":
+                case "fire" :
                     return BulletEffect.fire.getCopy();
-                case "trail":
+                case "trail" :
                     return BulletEffect.trail.getCopy();
-                case "long_trail":
+                case "long_trail" :
                     return BulletEffect.long_trail.getCopy();
-                case "dark_fire":
+                case "dark_fire" :
                     return BulletEffect.dark_fire.getCopy();
-                case "fire_trail":
+                case "fire_trail" :
                     return BulletEffect.fire_trail.getCopy();
-                case "ice":
+                case "ice" :
                     return BulletEffect.ice.getCopy();
-                case "ember":
+                case "ember" :
                     return BulletEffect.ember.getCopy();
-                default:
+                default :
                     return new BulletEffect();
             }
         });
@@ -131,9 +126,9 @@ public class Compatibility
                 ((Bullet) owner).effect.glowSize = (double) value;
         });
 
-        for (String s: new String[]{"color_*", "color_*2", "color_*3", "emblem_*", "color_noise_*"})
+        for (String s : new String[]{"color_*", "color_*2", "color_*3", "emblem_*", "color_noise_*"})
         {
-            for (String c: new String[]{"r", "g", "b"})
+            for (String c : new String[]{"r", "g", "b"})
             {
                 String name = s.replace("*", c);
                 unused_table.put(name, (owner, value) ->
@@ -151,8 +146,7 @@ public class Compatibility
                             col = t.tertiaryColor;
                         else if (s.equals("emblem_*"))
                             col = t.emblemColor;
-                    }
-                    else if (owner instanceof Bullet)
+                    } else if (owner instanceof Bullet)
                     {
                         Bullet b = (Bullet) owner;
                         if (s.equals("color_*"))
@@ -161,8 +155,7 @@ public class Compatibility
                             col = b.outlineColor;
                         else if (s.equals("color_noise_*") && b instanceof BulletGas)
                             col = ((BulletGas) b).noise;
-                    }
-                    else
+                    } else
                         throw new RuntimeException("Uh oh, could not convert " + owner + "'s field " + name);
 
                     if (col != null)
@@ -181,7 +174,7 @@ public class Compatibility
 
     public static <V> void addGeneralCase(Class<V> cls, BiFunction<Field, V, Object> func)
     {
-        //noinspection unchecked
+        // noinspection unchecked
         general_table.put(cls, (BiFunction<Field, Object, Object>) func);
     }
 
@@ -203,8 +196,7 @@ public class Compatibility
         try
         {
             return b ? f.getType().getConstructor().newInstance() : null;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             throw new RuntimeException(e);
         }
@@ -212,19 +204,9 @@ public class Compatibility
 
     public static TankModels.TankSkin convertModelToSkin(String model)
     {
-        return Game.registryModelTank.tankSkins.get(model.replace("/models/", "")
-                .replace("/color/", "")
-                .replace("/base/", "")
-                .replace("/turret/", "")
-                .replace("/turretbase/", "")
-                .replace("tankarrow", "tank_arrow")
-                .replace("tankcamoflauge", "tank_camoflauge")
-                .replace("tankmimic", "tank_checkerboard")
-                .replace("tankcross", "tank_cross")
-                .replace("tankdiagonalstripes", "tank_diagonal_stripes")
-                .replace("tankfixed", "tank_fixed")
-                .replace("tankflames", "tank_flames")
-                .replace("tankhorizontalstripes", "tank_horizontal_stripes")
-                .replace("tankverticalstripes", "tank_vertical_stripes"));
+        return Game.registryModelTank.tankSkins.get(model.replace("/models/", "").replace("/color/", "").replace("/base/", "").replace("/turret/", "").replace("/turretbase/", "")
+                .replace("tankarrow", "tank_arrow").replace("tankcamoflauge", "tank_camoflauge").replace("tankmimic", "tank_checkerboard").replace("tankcross", "tank_cross")
+                .replace("tankdiagonalstripes", "tank_diagonal_stripes").replace("tankfixed", "tank_fixed").replace("tankflames", "tank_flames")
+                .replace("tankhorizontalstripes", "tank_horizontal_stripes").replace("tankverticalstripes", "tank_vertical_stripes"));
     }
 }

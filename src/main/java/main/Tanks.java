@@ -1,15 +1,6 @@
 package main;
 
 import basewindow.ComputerFileManager;
-import lwjglwindow.LWJGLWindow;
-import tanks.*;
-import tanks.Panel;
-import tanks.extension.Extension;
-import tanksonline.CommandExecutor;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlineServer;
-
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -18,6 +9,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Properties;
+import javax.swing.*;
+import lwjglwindow.LWJGLWindow;
+import tanks.*;
+import tanks.Panel;
+import tanks.extension.Extension;
+import tanksonline.CommandExecutor;
+import tanksonline.PlayerMap;
+import tanksonline.TanksOnlineServer;
 
 public class Tanks
 {
@@ -77,8 +76,7 @@ public class Tanks
                             Runtime.getRuntime().exit(0);
                             return;
                         }
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         e.printStackTrace();
                     }
@@ -92,21 +90,15 @@ public class Tanks
                 if (Game.framework == Game.Framework.lwjgl)
                 {
                     // Creates and configures the LWJGL window.
-                    Game.game.window = new LWJGLWindow(
-                            "Tanks",
-                            1400, 900 + Drawing.drawing.statsHeight,
-                            Game.absoluteDepthBase,
-                            new GameUpdater(), new GameDrawer(), new GameWindowHandler(),
-                            Game.vsync, !Panel.showMouseTarget
-                    );
+                    Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(),
+                            new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
                     Game.game.window.antialiasingEnabled = Game.antialiasing;
 
                     if (!path.endsWith(".jar"))
                     {
                         Game.game.window.buildDate = "Running from source";
                         Game.game.window.runningFromSource = true;
-                    }
-                    else if (f.exists())
+                    } else if (f.exists())
                     {
                         String hash = Game.readHashFromFile();
                         if (!hash.equals("") && !hash.equals("release"))
@@ -117,13 +109,11 @@ public class Tanks
                 Game.postInitScript();
 
                 Game.game.window.run();
-            }
-            catch (Throwable t)
+            } catch (Throwable t)
             {
                 fail(t);
             }
-        }
-        else
+        } else
         {
             System.out.println("TanksOnline has started! Port=" + port + "\n");
             Game.registerEvents();
@@ -141,16 +131,12 @@ public class Tanks
 
         StringBuilder props = new StringBuilder();
         Properties pr = System.getProperties();
-        for (Object sr: pr.keySet())
-            props.append(sr).append(": ").append(pr.get(sr)).append("\n");
+        for (Object sr : pr.keySet()) props.append(sr).append(": ").append(pr.get(sr)).append("\n");
 
-        String errorMsg = "Oh noes!\n" +
-                "Tanks ran into a problem and was unable to start :(\n\n" +
-                "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n" +
-                "If you would like support regarding this issue, you may join the Tanks Discord via the following link:\n" +
-                "https://discord.gg/aWPaJD3\n\n" +
-                "Crash details:\n" +
-                s.toString() + "\n";
+        String errorMsg = "Oh noes!\n" + "Tanks ran into a problem and was unable to start :(\n\n"
+                + "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n"
+                + "If you would like support regarding this issue, you may join the Tanks Discord via the following link:\n" + "https://discord.gg/aWPaJD3\n\n" + "Crash details:\n"
+                + s.toString() + "\n";
 
         Game.logger.println(errorMsg + "System properties:\n" + props + "\n");
         System.err.println(errorMsg);
@@ -218,7 +204,6 @@ public class Tanks
             }
         });
 
-
         JScrollPane scroll = new JScrollPane(jLabel);
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.createVerticalScrollBar();
@@ -233,16 +218,17 @@ public class Tanks
     }
 
     /**
-     * Call this method to launch Tanks with extensions directly instead of loading them from a jar file!
-     * This is useful if you want to test an extension without exporting it as a jar file.
-     * The integer array passed determines the order in which these extensions will be added to the full list
-     * (which includes extensions loaded from separate jar files traditionally)
+     * Call this method to launch Tanks with extensions directly instead of loading
+     * them from a jar file! This is useful if you want to test an extension without
+     * exporting it as a jar file. The integer array passed determines the order in
+     * which these extensions will be added to the full list (which includes
+     * extensions loaded from separate jar files traditionally)
      */
     public static void launchWithExtensions(String[] args, Extension[] extensions, int[] order)
     {
         Game.extraExtensions = extensions;
         Game.extraExtensionOrder = order;
-        
+
         // Append "no_relaunch" to the arguments.
         String[] newArgs = Arrays.copyOf(args, args.length + 1);
         newArgs[args.length] = "no_relaunch";

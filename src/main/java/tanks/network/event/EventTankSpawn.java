@@ -51,7 +51,7 @@ public class EventTankSpawn extends PersonalEvent
         Tank t = null;
         if (parent instanceof TankRemote && ((TankRemote) parent).tank instanceof TankAIControlled)
         {
-            for (TankAIControlled.SpawnedTankEntry e: ((TankAIControlled) ((TankRemote) parent).tank).spawnedTankEntries)
+            for (TankAIControlled.SpawnedTankEntry e : ((TankAIControlled) ((TankRemote) parent).tank).spawnedTankEntries)
             {
                 if (e.tank.getName().equals(type))
                 {

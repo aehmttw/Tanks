@@ -26,7 +26,7 @@ public abstract class PosedModel implements IModel
 
     public void resetBones()
     {
-        for (PoseBone b: this.bones)
+        for (PoseBone b : this.bones)
         {
             b.yaw = 0;
             b.pitch = 0;
@@ -50,8 +50,8 @@ public abstract class PosedModel implements IModel
         public double offY;
         public double offZ;
 
-        public double[] matrix = new double[]{1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
-        public double[] compiledMatrix = new double[]{1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
+        public double[] matrix = new double[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+        public double[] compiledMatrix = new double[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
         public PoseBone(PosedModel p, Model.Bone b)
         {
@@ -69,11 +69,11 @@ public abstract class PosedModel implements IModel
                     this.matrix[i] = 0;
             }
 
-            multiply(this.matrix, tempMatrix(Math.cos(roll), -Math.sin(roll), 0, 0,  Math.sin(roll), Math.cos(roll), 0, 0,  0, 0, 1, 0,  0, 0, 0, 1));
-            multiply(this.matrix, tempMatrix(1, 0, 0, 0,  0, Math.cos(pitch), -Math.sin(pitch), 0,  0, Math.sin(pitch), Math.cos(pitch), 0,  0, 0, 0, 1));
-            multiply(this.matrix, tempMatrix(Math.cos(yaw), 0, -Math.sin(yaw), 0,  0, 1, 0, 0,  Math.sin(yaw), 0, Math.cos(yaw), 0,  0, 0, 0, 1));
+            multiply(this.matrix, tempMatrix(Math.cos(roll), -Math.sin(roll), 0, 0, Math.sin(roll), Math.cos(roll), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+            multiply(this.matrix, tempMatrix(1, 0, 0, 0, 0, Math.cos(pitch), -Math.sin(pitch), 0, 0, Math.sin(pitch), Math.cos(pitch), 0, 0, 0, 0, 1));
+            multiply(this.matrix, tempMatrix(Math.cos(yaw), 0, -Math.sin(yaw), 0, 0, 1, 0, 0, Math.sin(yaw), 0, Math.cos(yaw), 0, 0, 0, 0, 1));
 
-            multiply(this.matrix, tempMatrix(1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  offX, offY, offZ, 1));
+            multiply(this.matrix, tempMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, offX, offY, offZ, 1));
         }
 
         public void compileMatrix()
@@ -81,15 +81,13 @@ public abstract class PosedModel implements IModel
             if (this.bone.parent == null)
             {
                 System.arraycopy(this.matrix, 0, this.compiledMatrix, 0, this.matrix.length);
-            }
-            else
+            } else
             {
-                for (int i = 0; i < this.compiledMatrix.length; i++)
-                    this.compiledMatrix[i] = this.posedModel.boneMap.get(this.bone.parent).compiledMatrix[i];
+                for (int i = 0; i < this.compiledMatrix.length; i++) this.compiledMatrix[i] = this.posedModel.boneMap.get(this.bone.parent).compiledMatrix[i];
 
-                multiply(this.compiledMatrix, tempMatrix(1, 0, 0, 0, 0, 1, 0, 0,  0, 0, 1, 0,  -this.bone.posX, -this.bone.posY, -this.bone.posZ, 1));
+                multiply(this.compiledMatrix, tempMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -this.bone.posX, -this.bone.posY, -this.bone.posZ, 1));
                 multiply(this.compiledMatrix, this.matrix);
-                multiply(this.compiledMatrix, tempMatrix(1, 0, 0, 0, 0, 1, 0, 0,  0, 0, 1, 0,  this.bone.posX, this.bone.posY, this.bone.posZ, 1));
+                multiply(this.compiledMatrix, tempMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, this.bone.posX, this.bone.posY, this.bone.posZ, 1));
             }
         }
     }
@@ -117,10 +115,8 @@ public abstract class PosedModel implements IModel
         }
     }
 
-    public static double[] tempMatrix(double a1, double a2, double a3, double a4,
-                                    double b1, double b2, double b3, double b4,
-                                    double c1, double c2, double c3, double c4,
-                                    double d1, double d2, double d3, double d4)
+    public static double[] tempMatrix(double a1, double a2, double a3, double a4, double b1, double b2, double b3, double b4, double c1, double c2, double c3, double c4, double d1,
+            double d2, double d3, double d4)
     {
         tempMatrix[0] = a1;
         tempMatrix[1] = a2;

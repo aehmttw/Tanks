@@ -65,8 +65,7 @@ public class ObstacleIce extends Obstacle
         {
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA * (h - Obstacle.draw_size / Game.tile_size * 15) / (h - 15));
             Drawing.drawing.fillRect(this, this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
-        }
-        else
+        } else
         {
             Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.colorA);
             Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, 0, (byte) 61);

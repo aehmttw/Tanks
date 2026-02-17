@@ -26,24 +26,21 @@ public class PosedModelAnimation implements IPosedModelFrame
             {
                 duration = 100 * Double.parseDouble(line.split(" ")[1]);
                 looped = line.contains("looped");
-            }
-            else if (line.startsWith("time "))
+            } else if (line.startsWith("time "))
                 time = 100 * Double.parseDouble(line.split(" ")[1]);
             else if (line.startsWith("rotation "))
             {
                 String[] s = line.split(" ");
 
-                this.getBone(s[1]).rotationFrames.add(new AnimatedBone.AnimatedBoneRotationFrame
-                        (time, Math.toRadians(Double.parseDouble(s[2])), Math.toRadians(Double.parseDouble(s[3])), Math.toRadians(Double.parseDouble(s[4]))));
-            }
-            else if (line.startsWith("translation "))
+                this.getBone(s[1]).rotationFrames.add(new AnimatedBone.AnimatedBoneRotationFrame(time, Math.toRadians(Double.parseDouble(s[2])),
+                        Math.toRadians(Double.parseDouble(s[3])), Math.toRadians(Double.parseDouble(s[4]))));
+            } else if (line.startsWith("translation "))
             {
                 String[] s = line.split(" ");
 
-                this.getBone(s[1]).translationFrames.add(new AnimatedBone.AnimatedBoneTranslationFrame
-                        (time, Double.parseDouble(s[2]), -Double.parseDouble(s[3]), Double.parseDouble(s[4])));
-            }
-            else if (line.startsWith("interpolation "))
+                this.getBone(s[1]).translationFrames
+                        .add(new AnimatedBone.AnimatedBoneTranslationFrame(time, Double.parseDouble(s[2]), -Double.parseDouble(s[3]), Double.parseDouble(s[4])));
+            } else if (line.startsWith("interpolation "))
             {
                 String[] s = line.split(" ");
 
@@ -68,8 +65,7 @@ public class PosedModelAnimation implements IPosedModelFrame
         if (this.looped)
             time %= this.duration;
 
-        for (AnimatedBone b: this.bones.values())
-            b.apply(m, time, frac);
+        for (AnimatedBone b : this.bones.values()) b.apply(m, time, frac);
     }
 
     public static class AnimatedBone
@@ -111,8 +107,7 @@ public class PosedModelAnimation implements IPosedModelFrame
                 {
                     last = f;
                     lastIndex = index;
-                }
-                else
+                } else
                     break;
 
                 index++;
@@ -131,11 +126,9 @@ public class PosedModelAnimation implements IPosedModelFrame
 
                 if (animation.looped)
                 {
-                    while (time2 < time1)
-                        time2 += animation.duration;
+                    while (time2 < time1) time2 += animation.duration;
 
-                    while (loopedTime < time1)
-                        loopedTime += animation.duration;
+                    while (loopedTime < time1) loopedTime += animation.duration;
                 }
 
                 double frac2 = (loopedTime - time1) / (time2 - time1);
@@ -149,8 +142,7 @@ public class PosedModelAnimation implements IPosedModelFrame
                     last.applyCubic(b, frac2, frac, 1);
                     next.applyCubic(b, frac2, frac, 2);
                     afterNext.applyCubic(b, frac2, frac, 3);
-                }
-                else
+                } else
                 {
                     last.apply(b, frac * (1 - frac2));
                     next.apply(b, frac * frac2);
@@ -174,8 +166,7 @@ public class PosedModelAnimation implements IPosedModelFrame
                 {
                     last = f;
                     lastIndex = index;
-                }
-                else
+                } else
                     break;
 
                 index++;
@@ -194,11 +185,9 @@ public class PosedModelAnimation implements IPosedModelFrame
 
                 if (animation.looped)
                 {
-                    while (time2 < time1)
-                        time2 += animation.duration;
+                    while (time2 < time1) time2 += animation.duration;
 
-                    while (loopedTime < time1)
-                        loopedTime += animation.duration;
+                    while (loopedTime < time1) loopedTime += animation.duration;
                 }
 
                 double frac2 = (loopedTime - time1) / (time2 - time1);
@@ -212,8 +201,7 @@ public class PosedModelAnimation implements IPosedModelFrame
                     last.applyCubic(b, frac2, frac, 1);
                     next.applyCubic(b, frac2, frac, 2);
                     afterNext.applyCubic(b, frac2, frac, 3);
-                }
-                else
+                } else
                 {
                     last.apply(b, frac * (1 - frac2));
                     next.apply(b, frac * frac2);
@@ -226,11 +214,9 @@ public class PosedModelAnimation implements IPosedModelFrame
             if (l == 0)
                 return 0;
 
-            while (in < 0)
-                in += l;
+            while (in < 0) in += l;
 
-            while (in >= l)
-                in -= l;
+            while (in >= l) in -= l;
 
             return in;
         }

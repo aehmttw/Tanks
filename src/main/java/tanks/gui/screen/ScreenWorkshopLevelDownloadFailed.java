@@ -21,14 +21,15 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
 
     public static final double votePosY = Drawing.drawing.interfaceSizeY - 125;
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580 + this.objXSpace, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            Game.screen = screen;
-        }
-    });
+    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580 + this.objXSpace, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Back",
+            new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Game.screen = screen;
+                }
+            });
 
     public Button more = new Button(200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "More by this user", () ->
     {
@@ -37,15 +38,17 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
         Game.steamNetworkHandler.workshop.search(null, 0, 18, workshopDetails.getOwnerID(), null, Game.steamNetworkHandler.workshop.searchByScore);
     });
 
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () ->
+    {
+        confirmingDelete = false;
+    });
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
         Game.cleanUp();
         Game.steamNetworkHandler.workshop.delete(workshopDetails, "Level");
         Game.screen = new ScreenWaiting("Removing level from server...");
-    }
-    );
+    });
 
     public Button delete = new Button(200, Drawing.drawing.interfaceSizeY - 110, this.objWidth, this.objHeight, "Remove from server", () ->
     {
@@ -71,13 +74,13 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
         votesDown++;
         Game.steamNetworkHandler.workshop.currentDownloadVote = -1;
 
-
         Game.steamNetworkHandler.workshop.workshop.setUserItemVote(workshopDetails.getPublishedFileID(), false);
     }, "Dislike the level");
 
     public Button showPage = new Button(Drawing.drawing.interfaceSizeX - 435 + this.objXSpace, Drawing.drawing.interfaceSizeY - 200, this.objHeight, this.objHeight, "", () ->
     {
-        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
+        Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage(
+                "steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
     }, "View level page on Steam");
 
     public ScreenWorkshopLevelDownloadFailed(SteamResult r, SteamUGCDetails d, Screen s)
@@ -111,8 +114,7 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
         {
             confirmDelete.update();
             cancelDelete.update();
-        }
-        else
+        } else
         {
             this.back.update();
 
@@ -151,8 +153,7 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
 
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "Are you sure you want to remove the level?");
-        }
-        else
+        } else
         {
             this.back.draw();
 

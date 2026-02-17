@@ -14,17 +14,23 @@ public class ScreenOverlayControls
     public double objXSpace = 380;
     public double objYSpace = 60;
 
-    public Button game = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 330, this.objWidth, this.objHeight, "Game", () -> Game.screen = new ScreenControlsGame());
+    public Button game = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 330, this.objWidth, this.objHeight, "Game",
+            () -> Game.screen = new ScreenControlsGame());
 
-    public Button camera = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 270, this.objWidth, this.objHeight, "Camera", () -> Game.screen = new ScreenControlsCamera());
+    public Button camera = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 270, this.objWidth, this.objHeight, "Camera",
+            () -> Game.screen = new ScreenControlsCamera());
 
-    public Button tank = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 210, this.objWidth, this.objHeight, "Tank", () -> Game.screen = new ScreenControlsTank());
+    public Button tank = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 210, this.objWidth, this.objHeight, "Tank",
+            () -> Game.screen = new ScreenControlsTank());
 
-    public Button hotbar = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 150, this.objWidth, this.objHeight, "Hotbar", () -> Game.screen = new ScreenControlsHotbar());
+    public Button hotbar = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 150, this.objWidth, this.objHeight, "Hotbar",
+            () -> Game.screen = new ScreenControlsHotbar());
 
-    public Button editor = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Editor", () -> Game.screen = new ScreenControlsEditor());
+    public Button editor = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 90, this.objWidth, this.objHeight, "Editor",
+            () -> Game.screen = new ScreenControlsEditor());
 
-    Button reset = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "Reset controls", () -> Game.screen = new ScreenResetControls(Game.screen));
+    Button reset = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 - 0, this.objWidth, this.objHeight, "Reset controls",
+            () -> Game.screen = new ScreenResetControls(Game.screen));
 
     public static final String mouseTargetText = "Mouse target: ";
     public static final String mouseTargetHeightText = "Mouse spotlight: ";
@@ -51,8 +57,7 @@ public class ScreenOverlayControls
     {
         Game.screen = new ScreenOptions();
         Game.game.input.save();
-    }
-    );
+    });
 
     Button mouseTarget = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -68,8 +73,7 @@ public class ScreenOverlayControls
 
             Game.game.window.setShowCursor(!Panel.showMouseTarget);
         }
-    },
-            "When enabled, your mouse pointer---will be replaced by a target");
+    }, "When enabled, your mouse pointer---will be replaced by a target");
 
     Button mouseTargetHeight = new Button(Drawing.drawing.interfaceSizeX / 6, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -85,8 +89,7 @@ public class ScreenOverlayControls
 
             Game.game.window.setShowCursor(!Panel.showMouseTarget);
         }
-    },
-            "When enabled, while ingame or in the editor,---a spotlight will appear on your mouse---to help you judge the height of objects.");
+    }, "When enabled, while ingame or in the editor,---a spotlight will appear on your mouse---to help you judge the height of objects.");
 
     public void update()
     {

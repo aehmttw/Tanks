@@ -1,11 +1,10 @@
 package tanks.gui;
 
+import java.util.ArrayList;
 import tanks.BiConsumer;
 import tanks.Drawing;
 import tanks.Level;
 import tanks.translation.Translation;
-
-import java.util.ArrayList;
 
 public class ButtonList
 {
@@ -66,15 +65,15 @@ public class ButtonList
 
     public BiConsumer<Integer, Integer> reorderBehavior;
 
-    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page++;
-        }
-    }
-    );
+    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page",
+            new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    page++;
+                }
+            });
 
     public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()
     {
@@ -83,28 +82,27 @@ public class ButtonList
         {
             page--;
         }
-    }
-    );
+    });
 
-    public Button first = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace - this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page = 0;
-        }
-    }
-    );
+    public Button first = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace - this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight,
+            "", new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    page = 0;
+                }
+            });
 
-    public Button last = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight, "", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page = (buttons.size() - 1) / rows / columns;
-        }
-    }
-    );
+    public Button last = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + this.objHeight * 2, Drawing.drawing.interfaceSizeY / 2, this.objHeight, this.objHeight,
+            "", new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    page = (buttons.size() - 1) / rows / columns;
+                }
+            });
 
     public ButtonList(ArrayList<Button> buttons, int page, double xOffset, double yOffset)
     {
@@ -263,9 +261,7 @@ public class ButtonList
 
     public void update()
     {
-        while (page * rows * columns >= buttons.size() && page > 0)
-            page--;
-
+        while (page * rows * columns >= buttons.size() && page > 0) page--;
 
         for (int n = 0; n < this.upButtons.size(); n++)
         {
@@ -336,7 +332,8 @@ public class ButtonList
             else
                 Drawing.drawing.setColor(0, 0, 0);
 
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + xOffset, 20 + Drawing.drawing.interfaceSizeY / 2 + yOffset + controlsYOffset + ((rows + 1) / 2.0) * this.objYSpace,
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + xOffset,
+                    20 + Drawing.drawing.interfaceSizeY / 2 + yOffset + controlsYOffset + ((rows + 1) / 2.0) * this.objYSpace,
                     Translation.translate("Page %d of %d", (page + 1), (buttons.size() / (rows * columns) + Math.min(1, buttons.size() % (rows * columns)))));
 
             previous.draw();
@@ -364,7 +361,6 @@ public class ButtonList
 
             if (indexPrefix)
                 b.text = (i + 1) + ". " + n;
-
 
             b.draw();
 

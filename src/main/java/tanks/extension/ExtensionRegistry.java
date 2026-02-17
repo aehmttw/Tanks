@@ -1,10 +1,7 @@
 package tanks.extension;
 
 import basewindow.BaseFile;
-import tanks.Game;
-
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -13,83 +10,82 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.jar.JarFile;
+import tanks.Game;
 
 public class ExtensionRegistry
 {
-	public ArrayList<Extension> extensions = new ArrayList<>();
+    public ArrayList<Extension> extensions = new ArrayList<>();
 
-	public void loadRegistry()
-	{
-		Game.extensionRegistry.extensions.clear();
+    public void loadRegistry()
+    {
+        Game.extensionRegistry.extensions.clear();
 
-		String path = Game.homedir + Game.extensionRegistryPath;
+        String path = Game.homedir + Game.extensionRegistryPath;
         HashMap<String, Class<? extends Extension>> loadedExtensionClasses = new HashMap<>();
 
-		if (Game.enableExtensions)
-		{
-			try
-			{
-				BaseFile in = Game.game.fileManager.getFile(path);
-				in.startReading();
+        if (Game.enableExtensions)
+        {
+            try
+            {
+                BaseFile in = Game.game.fileManager.getFile(path);
+                in.startReading();
 
-				while (in.hasNextLine())
-				{
-					String line = in.nextLine();
+                while (in.hasNextLine())
+                {
+                    String line = in.nextLine();
 
-					if (line == null || line.length() == 0)
-						continue;
+                    if (line == null || line.length() == 0)
+                        continue;
 
-					String[] extensionLine = line.split(",");
+                    String[] extensionLine = line.split(",");
 
-					if (extensionLine[0].charAt(0) == '#')
-						continue;
+                    if (extensionLine[0].charAt(0) == '#')
+                        continue;
 
                     Class<? extends Extension> c;
                     if (extensionLine.length > 1)
-						c = loadExtensionClass(extensionLine[0], extensionLine[1]);
-					else
-						c = loadExtensionClass(extensionLine[0], null);
+                        c = loadExtensionClass(extensionLine[0], extensionLine[1]);
+                    else
+                        c = loadExtensionClass(extensionLine[0], null);
 
                     if (c != null)
                         loadedExtensionClasses.put(extensionLine[0], c);
-				}
+                }
 
-				in.stopReading();
-			}
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
-			}
+                in.stopReading();
+            } catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
 
-			try
-			{
-				if (Game.autoLoadExtensions)
-				{
-					ArrayList<String> files = Game.game.fileManager.getFile(Game.homedir + Game.extensionDir).getSubfiles();
+            try
+            {
+                if (Game.autoLoadExtensions)
+                {
+                    ArrayList<String> files = Game.game.fileManager.getFile(Game.homedir + Game.extensionDir).getSubfiles();
 
-					for (String file : files)
-					{
+                    for (String file : files)
+                    {
                         String j = file.substring(file.replace("\\", "/").lastIndexOf("/") + 1);
                         Class<? extends Extension> c = loadExtensionClass(j, null);
                         if (c != null)
                             loadedExtensionClasses.put(j, c);
-					}
-				}
+                    }
+                }
 
-                for (String s: loadedExtensionClasses.keySet())
+                for (String s : loadedExtensionClasses.keySet())
                 {
                     Extension e = loadedExtensionClasses.get(s).getConstructor().newInstance();
                     e.jarFile = new JarFile(Game.homedir + Game.extensionDir + s);
                     this.extensions.add(e);
                     System.out.println("loaded extension: " + e.name);
                 }
-			}
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
-			}
-		}
-	}
+            } catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
+        }
+    }
 
     public Class<? extends Extension> loadExtensionClass(String jar, String main) throws Exception
     {
@@ -99,8 +95,7 @@ public class ExtensionRegistry
         {
             Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(main);
             return clasz;
-        }
-        else
+        } else
         {
             try
             {
@@ -114,53 +109,52 @@ public class ExtensionRegistry
                         Scanner s = new Scanner(new InputStreamReader(i));
                         Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(s.nextLine());
                         return clasz;
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         System.err.println("Failed to load extension into classpath " + jar);
                         e.printStackTrace();
                     }
                 }
+            } catch (Exception ignored)
+            {
             }
-            catch (Exception ignored) { }
         }
 
         return null;
     }
 
-	public void initRegistry()
-	{
-		String path = Game.homedir + Game.extensionRegistryPath;
+    public void initRegistry()
+    {
+        String path = Game.homedir + Game.extensionRegistryPath;
 
-		try 
-		{
-			Game.game.fileManager.getFile(path).create();
+        try
+        {
+            Game.game.fileManager.getFile(path).create();
 
-			BaseFile f = Game.game.fileManager.getFile(path);
-			f.startWriting();
-			f.println("# Warning!");
-			f.println("# 1. Loading Tanks extensions can potentially break the game or infect your computer with a virus.");
-			f.println("# Please be careful of what you download and add as an extension.");
-			f.println("# 2. To enable loading extensions from this file, set enable-extensions in options.txt to true");
-			f.println("# ");
-			f.println("# This is the Extension Registry file!");
-			f.println("# A registry entry is a line in the file");
-			f.println("# A line is composed of 2 things: jar name, and class");
-			f.println("# ");
-			f.println("# To create an extension, import the 'Tanks' jar into a java project,");
-			f.println("# write a class extending Extension, add your code to the setUp() method,");
-			f.println("# and export as a jar file.");
-			f.println("# ");
-			f.println("# To load an extension, put the jar file inside the \"extensions\" folder,");
-			f.println("# Then, add a line to the end of this file as shown below");
-			f.println("# MyExtension.jar,com.potato.MyExtension'");
-			f.println("# (Extensions will be loaded in the order listed here)");
+            BaseFile f = Game.game.fileManager.getFile(path);
+            f.startWriting();
+            f.println("# Warning!");
+            f.println("# 1. Loading Tanks extensions can potentially break the game or infect your computer with a virus.");
+            f.println("# Please be careful of what you download and add as an extension.");
+            f.println("# 2. To enable loading extensions from this file, set enable-extensions in options.txt to true");
+            f.println("# ");
+            f.println("# This is the Extension Registry file!");
+            f.println("# A registry entry is a line in the file");
+            f.println("# A line is composed of 2 things: jar name, and class");
+            f.println("# ");
+            f.println("# To create an extension, import the 'Tanks' jar into a java project,");
+            f.println("# write a class extending Extension, add your code to the setUp() method,");
+            f.println("# and export as a jar file.");
+            f.println("# ");
+            f.println("# To load an extension, put the jar file inside the \"extensions\" folder,");
+            f.println("# Then, add a line to the end of this file as shown below");
+            f.println("# MyExtension.jar,com.potato.MyExtension'");
+            f.println("# (Extensions will be loaded in the order listed here)");
 
-			f.stopWriting();
-		} 
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
-		}
-	}
+            f.stopWriting();
+        } catch (Exception e)
+        {
+            Game.exitToCrash(e);
+        }
+    }
 }

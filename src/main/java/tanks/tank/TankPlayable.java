@@ -1,6 +1,10 @@
 package tanks.tank;
 
+import static tanks.tank.TankPropertyCategory.*;
+
 import basewindow.Color;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import tanks.Game;
 import tanks.Player;
 import tanks.bullet.Bullet;
@@ -15,14 +19,10 @@ import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 import tanks.tankson.Serializer;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import static tanks.tank.TankPropertyCategory.*;
-
 public abstract class TankPlayable extends Tank implements ICopyable<TankPlayable>
 {
-    @TankBuildProperty @Property(id = "abilities", name = "Abilities", category = TankPropertyCategory.abilities)
+    @TankBuildProperty
+    @Property(id = "abilities", name = "Abilities", category = TankPropertyCategory.abilities)
     public ArrayList<Item.ItemStack<?>> abilities = new ArrayList<>();
 
     public Player player = Game.player;
@@ -111,7 +111,10 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
         return Serializer.toTanksON(this);
     }
 
-    /** Fully copies properties unlike "clone" - useful for making a template from another template */
+    /**
+     * Fully copies properties unlike "clone" - useful for making a template from
+     * another template
+     */
     public TankPlayable copyPropertiesTo(TankPlayable m)
     {
         try
@@ -130,18 +133,18 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, new Color().set((Color) v));
                         else
                             f.set(m, v);
+                    } catch (Exception ignored)
+                    {
                     }
-                    catch (Exception ignored) { }
                 }
             }
 
             m.abilities = new ArrayList<>();
-            for (Item.ItemStack<?> s: this.abilities)
+            for (Item.ItemStack<?> s : this.abilities)
             {
                 m.abilities.add(s.getCopy());
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -170,13 +173,14 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, ((ICopyable<?>) v).getCopy());
                         else
                             f.set(m, v);
+                    } catch (Exception ignored)
+                    {
                     }
-                    catch (Exception ignored) { }
                 }
             }
 
             m.abilities = new ArrayList<>();
-            for (Item.ItemStack<?> s: this.abilities)
+            for (Item.ItemStack<?> s : this.abilities)
             {
                 m.abilities.add(s.getCopy());
             }
@@ -197,8 +201,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                 m.emblemColor.set(this.emblemColor);
 
             m.buildName = this.name;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -227,8 +230,9 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, ((ICopyable<?>) v).getCopy());
                         else
                             f.set(m, v);
+                    } catch (Exception ignored)
+                    {
                     }
-                    catch (Exception ignored) { }
                 }
             }
 
@@ -258,12 +262,11 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             if (m instanceof TankPlayerBot)
             {
                 ((TankPlayerBot) m).abilities = new ArrayList<>();
-                for (Item.ItemStack<?> i: this.abilities)
+                for (Item.ItemStack<?> i : this.abilities)
                 {
                     ((TankPlayerBot) m).abilities.add(i.getCopy());
                 }
-            }
-            else
+            } else
             {
                 for (Item.ItemStack<?> i : this.abilities)
                 {
@@ -286,8 +289,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                         m.cooldownBase = i.item.cooldownBase;
                         m.cooldownRandom = 0;
                         m.setBullet(b);
-                    }
-                    else if (i instanceof ItemMine.ItemStackMine && !foundMine)
+                    } else if (i instanceof ItemMine.ItemStackMine && !foundMine)
                     {
                         foundMine = true;
                         Mine n = ((ItemMine.ItemStackMine) i).item.mine;
@@ -297,8 +299,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                     }
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

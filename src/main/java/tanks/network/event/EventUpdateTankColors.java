@@ -2,12 +2,11 @@ package tanks.network.event;
 
 import basewindow.Color;
 import io.netty.buffer.ByteBuf;
+import java.util.UUID;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
-
-import java.util.UUID;
 
 public class EventUpdateTankColors extends PersonalEvent
 {
@@ -56,7 +55,7 @@ public class EventUpdateTankColors extends PersonalEvent
         {
             synchronized (ScreenPartyLobby.connections)
             {
-                for (ConnectedPlayer p: ScreenPartyLobby.connections)
+                for (ConnectedPlayer p : ScreenPartyLobby.connections)
                 {
                     if (p.clientId.equals(this.player))
                     {

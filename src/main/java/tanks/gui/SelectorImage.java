@@ -68,10 +68,12 @@ public class SelectorImage extends Selector
         {
             if (selected && !Game.game.window.touchscreen)
                 TextBox.drawTallGlow(this.posX - sizeX / 2 + sizeY * 7 / 8, this.posY + 5, this.sizeY * (3.0 / 4 + m), this.sizeY * m, sizeY * 3 / 4, 0.65, 0, 0, 0, 80, false);
-                //Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
+            // Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m),
+            // this.sizeY * m, 0.65, 0, 0, 0, 80, false);
             else
                 TextBox.drawTallGlow(this.posX - sizeX / 2 + sizeY * 7 / 8, this.posY + 5, this.sizeY * (3.0 / 4 + m), this.sizeY * m, sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
-                //Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+            // Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m),
+            // this.sizeY * m, 0.6, 0, 0, 0, 100, false);
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
@@ -110,8 +112,7 @@ public class SelectorImage extends Selector
                     Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
                     Drawing.drawing.setColor(0, 0, 255);
                     Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
-                }
-                else
+                } else
                     Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
             }
 
@@ -122,8 +123,7 @@ public class SelectorImage extends Selector
                 drawing.setColor(255, 255, 255);
                 drawing.drawInterfaceText(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, "i");
                 drawing.drawTooltip(this.hoverText);
-            }
-            else
+            } else
             {
                 drawing.setColor(0, 150, 255);
                 drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
@@ -141,7 +141,8 @@ public class SelectorImage extends Selector
         if (models != null)
         {
             Drawing.drawing.setColor(127, 180, 255);
-            Drawing.drawing.drawInterfaceModel2D(models[selectedOption], posX - sizeX / 2 + sizeY * 7 / 8, this.posY - sizeY * 3 / 8, 0, sizeY * (3.0 / 4 + m) / 2, sizeY * (3.0 / 4 + m) / 2, sizeY * (3.0 / 4 + m) / 2);
+            Drawing.drawing.drawInterfaceModel2D(models[selectedOption], posX - sizeX / 2 + sizeY * 7 / 8, this.posY - sizeY * 3 / 8, 0, sizeY * (3.0 / 4 + m) / 2,
+                    sizeY * (3.0 / 4 + m) / 2, sizeY * (3.0 / 4 + m) / 2);
         }
     }
 

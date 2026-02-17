@@ -18,11 +18,8 @@ public abstract class Transformation
 
     public abstract void applyToWindow();
 
-    protected static void transform(BaseWindow w,
-                                    double a1, double a2, double a3, double a4,
-                                    double b1, double b2, double b3, double b4,
-                                    double c1, double c2, double c3, double c4,
-                                    double d1, double d2, double d3, double d4)
+    protected static void transform(BaseWindow w, double a1, double a2, double a3, double a4, double b1, double b2, double b3, double b4, double c1, double c2, double c3,
+            double c4, double d1, double d2, double d3, double d4)
     {
         matrix[0] = a1;
         matrix[1] = a2;

@@ -1,6 +1,8 @@
 plugins {
     `java-library`
     `maven-publish`
+    checkstyle
+    id("com.diffplug.spotless") version "6.13.0"
 }
 
 fun getHash(): String {
@@ -51,7 +53,6 @@ dependencies {
     implementation("io.netty:netty-all:4.1.94.Final")
 //    implementation("it.unimi.dsi:fastutil-core:8.5.16")
 
-    //Steamworks4j (Use files in libs folder until version 10 is available on mavenCentral
     implementation("com.code-disaster.steamworks4j:steamworks4j:1.10.0")
     implementation("com.code-disaster.steamworks4j:steamworks4j-lwjgl3:1.10.0")
 }
@@ -61,6 +62,16 @@ version = rootProject.file("src/main/resources/version.txt").readText().trim()
 rootProject.file("src/main/resources/hash.txt").writeText(getHash())
 description = "Tanks"
 java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+
+/*
+*
+*
+*   Tanks Building Below Here
+*
+*
+*
+* */
 
 // Force UTF-8 everywhere
 tasks.withType<JavaCompile>().configureEach {
@@ -124,4 +135,51 @@ task("BuildMacApp", Exec::class) {
         "--arguments", "mac",
         "--dest", distributions,
     )
+}
+
+/*
+*
+*
+*   Tanks Linting Below Here
+*
+*
+*
+* */
+
+checkstyle {
+    toolVersion = "9.3"
+    configFile = file("config/checkstyle/checkstyle.xml")
+    isIgnoreFailures = true
+}
+
+spotless {
+    isEnforceCheck = false // Don't run during ./gradlew check (requires Java 11+)
+    java {
+        eclipse().configFile("config/spotless/eclipse-formatter.xml")
+        importOrder("\\#", "")
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+tasks.register("lintCount") {
+    description = "Runs Checkstyle and prints the violation count"
+    group = "verification"
+    dependsOn("checkstyleMain")
+    doLast {
+        val report = file("build/reports/checkstyle/main.xml")
+        if (report.exists()) {
+            val violations = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder().parse(report)
+                .getElementsByTagName("error").length
+            val files = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder().parse(report)
+                .getElementsByTagName("file").length
+            println("Checkstyle: $violations violations in $files files")
+            println("Report: file://${file("build/reports/checkstyle/main.html").absolutePath}")
+        } else {
+            println("Checkstyle: no report found")
+        }
+    }
 }

@@ -2,13 +2,11 @@ package tanks.tankson;
 
 import basewindow.Color;
 import basewindow.IModel;
-
 import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
- * Tanks: The Crusades Object Notation
- * (totally not some other object notation)
+ * Tanks: The Crusades Object Notation (totally not some other object notation)
  */
 public class TanksON
 {
@@ -33,8 +31,7 @@ public class TanksON
             {
                 index += token.length();
                 return true;
-            }
-            else
+            } else
                 return false;
         }
 
@@ -50,16 +47,14 @@ public class TanksON
                 if (Character.isWhitespace(c))
                 {
                     index++;
-                }
-                else if (s.startsWith("//", index))
+                } else if (s.startsWith("//", index))
                 {
                     // Skip single-line comment
                     while (index < s.length() && s.charAt(index) != '\n' && s.charAt(index) != '\r')
                     {
                         index++;
                     }
-                }
-                else if (s.startsWith("/*", index))
+                } else if (s.startsWith("/*", index))
                 {
                     // Skip multi-line comment
                     index += 2; // Skip "/*"
@@ -67,14 +62,12 @@ public class TanksON
                     if (commentEnd != -1)
                     {
                         index = commentEnd + 2; // Skip "*/"
-                    }
-                    else
+                    } else
                     {
                         // Malformed comment, treat rest of string as part of comment
                         index = s.length();
                     }
-                }
-                else
+                } else
                 {
                     return;
                 }
@@ -113,8 +106,7 @@ public class TanksON
     {
         s.skipWhitespace();
         int start = s.index;
-        while ("+-0123456789.eE".indexOf(s.nextChar()) >= 0)
-            s.index++;
+        while ("+-0123456789.eE".indexOf(s.nextChar()) >= 0) s.index++;
 
         String infinity = "infinity";
         if (s.s.length() - s.index > infinity.length())
@@ -124,8 +116,7 @@ public class TanksON
         try
         {
             return Double.parseDouble(s.s.substring(start, s.index));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             return (double) error(e.toString(), s);
         }
@@ -198,10 +189,7 @@ public class TanksON
 
     public static String convertString(String s)
     {
-        return s.replace("\\", "\\\\")
-            .replace("\n", "\\n")
-            .replace("\u00A7", "\\&")
-            .replace("\"", "\\\"");
+        return s.replace("\\", "\\\\").replace("\n", "\\n").replace("\u00A7", "\\&").replace("\"", "\\\"");
     }
 
     public static String parseString(ParserState s)
@@ -214,7 +202,7 @@ public class TanksON
         s.skipWhitespace();
         int start = unquotedKey ? s.index - 1 : s.s.indexOf('"', s.index);
         StringBuilder b = new StringBuilder();
-        for (s.index = start + 1; ; s.index++)
+        for (s.index = start + 1;; s.index++)
         {
             if (s.nextChar() == '\\')
             {
@@ -230,8 +218,7 @@ public class TanksON
                     error("Failed to parse escape sequence", s);
 
                 s.index++;
-            }
-            else if (s.nextChar() != '"' && !(unquotedKey && (s.nextChar() == '=' || s.nextChar() == ':')))
+            } else if (s.nextChar() != '"' && !(unquotedKey && (s.nextChar() == '=' || s.nextChar() == ':')))
                 b.append(s.nextChar());
             else
             {
@@ -265,15 +252,13 @@ public class TanksON
 
             s.append("]");
             return s.toString();
-        }
-        else if (o instanceof Color)
+        } else if (o instanceof Color)
         {
             if (((Color) o).alpha >= 255)
                 return "[" + ((Color) o).red + "," + ((Color) o).green + "," + ((Color) o).blue + "]";
             else
                 return "[" + ((Color) o).red + "," + ((Color) o).green + "," + ((Color) o).blue + "," + ((Color) o).alpha + "]";
-        }
-        else if (o instanceof HashMap)
+        } else if (o instanceof HashMap)
         {
             StringBuilder s = new StringBuilder("{");
             HashMap<?, ?> h = ((HashMap<?, ?>) o);
@@ -295,8 +280,7 @@ public class TanksON
 
             s.append("}");
             return s.toString();
-        }
-        else
+        } else
             throw new RuntimeException("Failed to turn object to string: " + o);
     }
 
@@ -328,5 +312,3 @@ public class TanksON
             return a != null && a.equals(b);
     }
 }
-
-

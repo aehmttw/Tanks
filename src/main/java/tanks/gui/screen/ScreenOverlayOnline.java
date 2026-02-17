@@ -1,12 +1,11 @@
 package tanks.gui.screen;
 
+import java.util.HashMap;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
 import tanks.network.Client;
-
-import java.util.HashMap;
 
 public class ScreenOverlayOnline extends Screen
 {

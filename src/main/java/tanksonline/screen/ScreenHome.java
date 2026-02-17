@@ -1,8 +1,8 @@
 package tanksonline.screen;
 
-import tanks.network.event.online.EventSilentDisconnect;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
+import tanks.network.event.online.EventSilentDisconnect;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServerHandler;
 
@@ -12,8 +12,7 @@ public class ScreenHome extends ScreenLayout
     {
         ScreenUploadLevel s = new ScreenUploadLevel(player);
         s.setScreen();
-    }
-    );
+    });
 
     Button browse = new Button(sizeX / 2, sizeY / 2 - 60, 350, 40, "Browse levels", () ->
     {
@@ -22,8 +21,7 @@ public class ScreenHome extends ScreenLayout
             ScreenBrowseLevels s = new ScreenBrowseLevels(player, "Browse levels", PlayerMap.instance.getLevels());
             s.setScreen();
         }
-    }
-    );
+    });
 
     Button myUploadedLevels = new Button(sizeX / 2, sizeY / 2 + 0, 350, 40, "My uploaded levels", () ->
     {
@@ -32,8 +30,7 @@ public class ScreenHome extends ScreenLayout
             ScreenBrowseLevels s = new ScreenBrowseLevels(player, "My uploaded levels", PlayerMap.instance.getLevels(player.computerID));
             s.setScreen();
         }
-    }
-    );
+    });
 
     Button account = new Button(sizeX / 2, sizeY / 2 + 60, 350, 40, "My account", () ->
     {
@@ -42,11 +39,9 @@ public class ScreenHome extends ScreenLayout
             ScreenAccessInfo s = new ScreenAccessInfo(player, PlayerMap.instance.getPlayer(player.computerID).accessCode);
             s.setScreen();
         }
-    }
-    );
+    });
 
-    Button back = new Button(sizeX / 2, sizeY / 2 + 120, 350, 40, "Back", () -> player.sendEvent(new EventSilentDisconnect())
-    );
+    Button back = new Button(sizeX / 2, sizeY / 2 + 120, 350, 40, "Back", () -> player.sendEvent(new EventSilentDisconnect()));
 
     public ScreenHome(TanksOnlineServerHandler player)
     {

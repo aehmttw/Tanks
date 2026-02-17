@@ -1,10 +1,9 @@
 package tanks.gui.screen;
 
+import java.net.URL;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-
-import java.net.URL;
 
 public class ScreenAbout extends Screen
 {
@@ -15,32 +14,28 @@ public class ScreenAbout extends Screen
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks"));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
-    }
-    );
+    });
 
     Button chatroom = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Discord", () ->
     {
         try
         {
             Game.game.window.openLink(new URL(discord_link));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
-    }
-    );
+    });
 
     Button changelogs = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Changelogs", () ->
     {
         ScreenChangelog s = new ScreenChangelog();
         int p = 0;
-        for (ScreenChangelog.Changelog l: ScreenChangelog.Changelog.logs)
+        for (ScreenChangelog.Changelog l : ScreenChangelog.Changelog.logs)
         {
             s.add(l.pages);
             p = l.pages.length;
@@ -49,53 +44,43 @@ public class ScreenAbout extends Screen
         s.currentPage = s.pages.size() - p;
         s.pageContents = s.pages.get(s.currentPage).split("\n");
 
-
         Game.screen = s;
-    }
-    );
+    });
 
     Button libraries = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Library licenses", () ->
     {
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks/tree/master/src/main/java/licenses"));
-    }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
-    }
-    );
+    });
 
     Button license = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "License", () ->
     {
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks/blob/master/LICENSE.md"));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
-    }
-    );
+    });
 
     Button privacy = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Privacy policy", () ->
     {
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks/blob/master/PRIVACY.md"));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
-    }
-    );
+    });
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle()
-    );
-
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
 
     public ScreenAbout()
     {
@@ -162,7 +147,8 @@ public class ScreenAbout extends Screen
         if (Game.game.window.buildDate.isEmpty())
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s", Game.version);
         else
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s %s", Game.version, Game.game.window.runningFromSource ? "(Running from source)" : "(" + Game.game.window.buildDate + ")");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s %s", Game.version,
+                    Game.game.window.runningFromSource ? "(Running from source)" : "(" + Game.game.window.buildDate + ")");
 
         int extensions = Game.extensionRegistry.extensions.size();
         if (extensions > 0)

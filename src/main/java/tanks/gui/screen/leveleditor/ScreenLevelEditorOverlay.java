@@ -1,12 +1,11 @@
 package tanks.gui.screen.leveleditor;
 
+import java.util.ArrayList;
 import tanks.Game;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.Screen;
 import tanks.tank.TankSpawnMarker;
-
-import java.util.ArrayList;
 
 public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelPreviewScreen
 {
@@ -87,11 +86,10 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
         this.editor.setupLights();
     }
 
-
     @Override
     public void draw()
     {
-//        windowTitle = (this.editor.allowClose ? "" : "*");
+        // windowTitle = (this.editor.allowClose ? "" : "*");
         this.editor.draw();
     }
 

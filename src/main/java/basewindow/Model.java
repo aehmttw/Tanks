@@ -1,7 +1,6 @@
 package basewindow;
 
 import basewindow.transformation.AxisRotation;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,7 +22,7 @@ public class Model implements IModel
 
     public HashMap<String, String> currentSkin = new HashMap<>();
 
-    public double[] bonesMatrix = new double[]{1, 0, 0,  0, 1, 0,  0, 0, 1};
+    public double[] bonesMatrix = new double[]{1, 0, 0, 0, 1, 0, 0, 0, 1};
 
     public Model(BaseWindow window, BaseFileManager fileManager, String dir)
     {
@@ -322,8 +321,7 @@ public class Model implements IModel
                     int[] v4 = objToIndex(sections[4].split("/"));
                     this.addTriangle(shapes, v1, v2, v3);
                     this.addTriangle(shapes, v1, v4, v3);
-                }
-                else if (sections.length == 4)
+                } else if (sections.length == 4)
                 {
                     int[] v1 = objToIndex(sections[1].split("/"));
                     int[] v2 = objToIndex(sections[2].split("/"));
@@ -341,7 +339,7 @@ public class Model implements IModel
 
         int index = 0;
 
-        for (ModelPart mo: parts)
+        for (ModelPart mo : parts)
         {
             if (mo.material == null || mo.material.depthMask)
             {
@@ -350,7 +348,7 @@ public class Model implements IModel
             }
         }
 
-        for (ModelPart mo: parts)
+        for (ModelPart mo : parts)
         {
             if (mo.material != null && !mo.material.depthMask)
             {
@@ -383,7 +381,7 @@ public class Model implements IModel
         for (int n = 0; n < s.length; n++)
         {
             if (!s[n].equals(""))
-               i[n] = Integer.parseInt(s[n]);
+                i[n] = Integer.parseInt(s[n]);
         }
 
         return i;
@@ -391,10 +389,9 @@ public class Model implements IModel
 
     public void addTriangle(ArrayList<ModelPart.Shape> shapes, int[] v1, int[] v2, int[] v3)
     {
-        shapes.add(new ModelPart.Triangle(this.points.get(v1[0]), this.points.get(v2[0]), this.points.get(v3[0]),
-                this.texCoords.get(v1[1]), this.texCoords.get(v2[1]), this.texCoords.get(v3[1]),
-                this.normals.get(v1[2]), this.normals.get(v2[2]), this.normals.get(v3[2]),
-                this.colors.get(v1[3]), this.colors.get(v2[3]), this.colors.get(v3[3])));
+        shapes.add(new ModelPart.Triangle(this.points.get(v1[0]), this.points.get(v2[0]), this.points.get(v3[0]), this.texCoords.get(v1[1]), this.texCoords.get(v2[1]),
+                this.texCoords.get(v3[1]), this.normals.get(v1[2]), this.normals.get(v2[2]), this.normals.get(v3[2]), this.colors.get(v1[3]), this.colors.get(v2[3]),
+                this.colors.get(v3[3])));
     }
 
     public void setSkin(HashMap<String, String> skins)
@@ -409,27 +406,23 @@ public class Model implements IModel
 
     public void draw(double posX, double posY, double sX, double sY, double yaw)
     {
-        for (ModelPart m: this.models)
-            m.draw(posX, posY, sX, sY, yaw);
+        for (ModelPart m : this.models) m.draw(posX, posY, sX, sY, yaw);
     }
 
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, AxisRotation[] axisRotations, boolean depthTest)
     {
-        for (ModelPart m: this.models)
-            m.draw(posX, posY, posZ, sX, sY, sZ, axisRotations, depthTest);
+        for (ModelPart m : this.models) m.draw(posX, posY, posZ, sX, sY, sZ, axisRotations, depthTest);
     }
 
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)
     {
-        for (ModelPart m: this.models)
-            m.draw(posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll, depthTest);
+        for (ModelPart m : this.models) m.draw(posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll, depthTest);
     }
 
     public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
     {
-        for (ModelPart m: this.models)
-            m.draw2D(posX, posY, posZ, sX, sY, sZ);
+        for (ModelPart m : this.models) m.draw2D(posX, posY, posZ, sX, sY, sZ);
     }
 
     public static class Material
@@ -517,8 +510,8 @@ public class Model implements IModel
         return this.file;
     }
 
-//    public String serialize(){ return this.toString(); }
-//    public Serializable deserialize(String s) {
-//        return Drawing.drawing.createModel(s);
-//    }
+    // public String serialize(){ return this.toString(); }
+    // public Serializable deserialize(String s) {
+    // return Drawing.drawing.createModel(s);
+    // }
 }

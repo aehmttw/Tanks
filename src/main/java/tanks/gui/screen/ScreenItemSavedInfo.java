@@ -14,8 +14,7 @@ public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScree
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () ->
     {
         Game.screen = this.previous;
-    }
-    );
+    });
 
     public ScreenItemSavedInfo(Screen s)
     {

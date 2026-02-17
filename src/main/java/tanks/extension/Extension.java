@@ -1,12 +1,11 @@
 package tanks.extension;
 
-import tanks.Game;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.jar.JarFile;
+import tanks.Game;
 
 public class Extension
 {
@@ -24,7 +23,8 @@ public class Extension
 
     }
 
-    // Use the methods below like registerImage to register resources your extension uses
+    // Use the methods below like registerImage to register resources your extension
+    // uses
     public void loadResources()
     {
 
@@ -39,8 +39,7 @@ public class Extension
         try
         {
             Game.game.window.createImage(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -56,8 +55,7 @@ public class Extension
         {
             if (Game.game.window.soundsEnabled)
                 Game.game.window.soundPlayer.createSound(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -73,8 +71,7 @@ public class Extension
         {
             if (Game.game.window.soundsEnabled)
                 Game.game.window.soundPlayer.createMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -90,26 +87,28 @@ public class Extension
         {
             if (Game.game.window.soundsEnabled)
                 Game.game.window.soundPlayer.loadMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
     }
 
-    // Called before every frame. Perform tasks that need to run before the vanilla update() is called. Can be left blank.
+    // Called before every frame. Perform tasks that need to run before the vanilla
+    // update() is called. Can be left blank.
     public void preUpdate()
     {
 
     }
 
-    // Called before every frame. Draw items that appear beneath everything else or configure draw state. Can be left blank.
+    // Called before every frame. Draw items that appear beneath everything else or
+    // configure draw state. Can be left blank.
     public void preDraw()
     {
 
     }
 
-    // Called after every tick. Perform tasks that need processing but aren't tied to a specific tank/item/bullet here. Can be left blank.
+    // Called after every tick. Perform tasks that need processing but aren't tied
+    // to a specific tank/item/bullet here. Can be left blank.
     public void update()
     {
 
@@ -129,22 +128,19 @@ public class Extension
             if (this.jarFile == null)
             {
                 return Game.game.fileManager.getInternalFileContents("/" + file);
-            }
-            else
+            } else
             {
                 InputStream i = this.jarFile.getInputStream(this.jarFile.getEntry(file));
                 Scanner s = new Scanner(new InputStreamReader(i));
 
-                while (s.hasNextLine())
-                    strings.add(s.nextLine());
+                while (s.hasNextLine()) strings.add(s.nextLine());
 
                 i.close();
                 s.close();
 
                 return strings;
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             return null;

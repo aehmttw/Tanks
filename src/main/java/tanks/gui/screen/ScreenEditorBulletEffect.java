@@ -1,6 +1,9 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -17,10 +20,6 @@ import tanks.tankson.Pointer;
 import tanks.tankson.Property;
 import tanks.translation.Translation;
 
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
 public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffect>
 {
     public double trailLength;
@@ -32,15 +31,14 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     public ArrayList<Effect> particles = new ArrayList<>();
     public ArrayList<Effect> removeParticles = new ArrayList<>();
 
-    public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template", () ->
-            Game.screen = new ScreenAddSavedBulletEffect(this, (b) ->
+    public Button load = new Button(this.centerX - this.objXSpace, this.centerY + this.objYSpace * 6.5, this.objWidth, this.objHeight, "Load from template",
+            () -> Game.screen = new ScreenAddSavedBulletEffect(this, (b) ->
             {
                 Game.screen = this;
                 this.setupLayoutParameters();
                 this.setTarget(b);
                 trailTab.setupTrails();
-            })
-    );
+            }));
 
     public boolean save(BulletEffect e, boolean overwrite)
     {
@@ -58,8 +56,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                 f.stopWriting();
 
                 return true;
-            }
-            catch (IOException ex)
+            } catch (IOException ex)
             {
                 Game.exitToCrash(ex);
             }
@@ -75,8 +72,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
             this.message = "Bullet effect saved to templates!";
         else
             this.message = "Failed to save bullet effect!";
-    }
-    );
+    });
 
     public ScreenEditorBulletEffect(Pointer<BulletEffect> t, Screen screen)
     {
@@ -112,7 +108,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
 
@@ -127,8 +123,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                         {
                             this.uiElements.add(new EmptySpace());
                         }
-                    }
-                    else if (t instanceof SelectorColor)
+                    } else if (t instanceof SelectorColor)
                         this.colorPicker = (SelectorColor) t;
                 }
             }
@@ -176,7 +171,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
 
@@ -191,8 +186,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                         {
                             this.uiElements.add(new EmptySpace());
                         }
-                    }
-                    else
+                    } else
                         this.toggle = t;
                 }
             }
@@ -203,7 +197,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         {
             this.rows = 3;
             super.sortUIElements();
-            for (ITrigger t: this.uiElements)
+            for (ITrigger t : this.uiElements)
             {
                 t.setPosition(t.getPositionX(), t.getPositionY() + 90);
             }
@@ -245,7 +239,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f: this.screen.fields)
+            for (Field f : this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
 
@@ -260,8 +254,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                         {
                             this.uiElements.add(new EmptySpace());
                         }
-                    }
-                    else
+                    } else
                         this.toggle = t;
                 }
             }
@@ -272,7 +265,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         {
             this.rows = 3;
             super.sortUIElements();
-            for (ITrigger t: this.uiElements)
+            for (ITrigger t : this.uiElements)
             {
                 t.setPosition(t.getPositionX(), t.getPositionY() + 90);
             }
@@ -304,7 +297,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     public void setTrailLength()
     {
         trailLength = 0;
-        for (Trail t: this.target.get().trailEffects)
+        for (Trail t : this.target.get().trailEffects)
         {
             trailLength = Math.max(trailLength, t.maxLength + t.delay);
         }
@@ -325,7 +318,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         load.update();
         save.update();
 
-        for (Effect e: this.particles)
+        for (Effect e : this.particles)
         {
             e.update();
 
@@ -379,24 +372,26 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
             t.drawForInterface(start, end, y, Bullet.bullet_size, trailLength);
         }
 
-        for (Effect f: this.particles)
+        for (Effect f : this.particles)
         {
             f.draw();
         }
 
-        for (Effect f: this.particles)
+        for (Effect f : this.particles)
         {
             f.drawGlow();
         }
 
         if (!e.overrideGlowColor)
-            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * e.glowIntensity, Turret.calculateSecondaryColor(150) * e.glowIntensity, Turret.calculateSecondaryColor(255) * e.glowIntensity, 255, e.glowGlowy ? 1 : 0);
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * e.glowIntensity, Turret.calculateSecondaryColor(150) * e.glowIntensity,
+                    Turret.calculateSecondaryColor(255) * e.glowIntensity, 255, e.glowGlowy ? 1 : 0);
         else
             Drawing.drawing.setColor(e.glowColor.red * e.glowIntensity, e.glowColor.green * e.glowIntensity, e.glowColor.blue * e.glowIntensity, 255, e.glowGlowy ? 1 : 0);
 
-        Drawing.drawing.fillInterfaceGlow(start, y, Bullet.bullet_size * e.glowSize, Bullet.bullet_size * e.glowSize,  !e.glowGlowy);
+        Drawing.drawing.fillInterfaceGlow(start, y, Bullet.bullet_size * e.glowSize, Bullet.bullet_size * e.glowSize, !e.glowGlowy);
 
-        Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * e.glowIntensity, Turret.calculateSecondaryColor(150) * e.glowIntensity, Turret.calculateSecondaryColor(255) * e.glowIntensity, 255, e.glowGlowy ? 1 : 0);
+        Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * e.glowIntensity, Turret.calculateSecondaryColor(150) * e.glowIntensity,
+                Turret.calculateSecondaryColor(255) * e.glowIntensity, 255, e.glowGlowy ? 1 : 0);
         Drawing.drawing.fillInterfaceOval(start, y, Bullet.bullet_size, Bullet.bullet_size);
         Drawing.drawing.setColor(0, 150, 255, 255, e.luminance);
         Drawing.drawing.fillInterfaceOval(start, y, Bullet.bullet_size * 0.6, Bullet.bullet_size * 0.6);
@@ -420,17 +415,18 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
 
         Button prev = new Button(screen.centerX - screen.objXSpace / 2, screen.centerY + screen.objYSpace * 4.75, screen.objWidth, screen.objHeight, "Previous page", () -> page--);
 
-        Button first = new Button(screen.centerX - screen.objXSpace - screen.objHeight * 2, screen.centerY + screen.objYSpace * 4.75, screen.objHeight, screen.objHeight, "", () -> page = 0);
+        Button first = new Button(screen.centerX - screen.objXSpace - screen.objHeight * 2, screen.centerY + screen.objYSpace * 4.75, screen.objHeight, screen.objHeight, "",
+                () -> page = 0);
 
-        Button last = new Button(screen.centerX + screen.objXSpace + screen.objHeight * 2, screen.centerY + screen.objYSpace * 4.75, screen.objHeight, screen.objHeight, "", new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                page = (buttons.size() - 1) / trails_per_page;
-            }
-        }
-        );
+        Button last = new Button(screen.centerX + screen.objXSpace + screen.objHeight * 2, screen.centerY + screen.objYSpace * 4.75, screen.objHeight, screen.objHeight, "",
+                new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        page = (buttons.size() - 1) / trails_per_page;
+                    }
+                });
 
         public ArrayList<Button> buttons = new ArrayList<>();
 
@@ -512,12 +508,13 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                 }
 
                 int j = i;
-                this.buttons.add(new Button(Drawing.drawing.interfaceSizeX / 2, buttons_start + buttons_spacing * (i % trails_per_page), Drawing.drawing.interfaceSizeX * 0.6 + padding, 60, "", () ->
-                {
-                    ScreenEditorTrail s = new ScreenEditorTrail(this.trails, new ArrayListIndexPointer<>(Trail.class, this.trails, j, true), Game.screen);
-                    s.onComplete = this::setupTrails;
-                    Game.screen = s;
-                }));
+                this.buttons.add(new Button(Drawing.drawing.interfaceSizeX / 2, buttons_start + buttons_spacing * (i % trails_per_page),
+                        Drawing.drawing.interfaceSizeX * 0.6 + padding, 60, "", () ->
+                        {
+                            ScreenEditorTrail s = new ScreenEditorTrail(this.trails, new ArrayListIndexPointer<>(Trail.class, this.trails, j, true), Game.screen);
+                            s.onComplete = this::setupTrails;
+                            Game.screen = s;
+                        }));
             }
 
             this.buttons.add(new Button(Drawing.drawing.interfaceSizeX / 2, buttons_start + buttons_spacing * (this.trails.size() % trails_per_page), 60, 60, "+", () ->
@@ -572,7 +569,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                 if (i < this.trails.size())
                 {
                     if (buttons.get(i).selected)
-                        this.trails.get(i).drawForInterface(start, end, 175, Bullet.bullet_size, ((ScreenEditorBulletEffect)this.screen).trailLength, true, false);
+                        this.trails.get(i).drawForInterface(start, end, 175, Bullet.bullet_size, ((ScreenEditorBulletEffect) this.screen).trailLength, true, false);
                 }
             }
         }
@@ -581,7 +578,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         public void draw()
         {
             double max = 0;
-            for (Trail t: this.trails)
+            for (Trail t : this.trails)
             {
                 max = Math.max(max, t.maxLength + t.delay);
             }
@@ -603,8 +600,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
 
                     upButtons[n].draw();
                     downButtons[n].draw();
-                }
-                else if (i == this.trails.size())
+                } else if (i == this.trails.size())
                     this.buttons.get(i).draw();
 
                 n++;

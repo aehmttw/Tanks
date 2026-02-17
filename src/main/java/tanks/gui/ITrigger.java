@@ -8,9 +8,13 @@ public interface ITrigger
 
     void draw();
 
-    default void onClick() {}
+    default void onClick()
+    {
+    }
 
-    default void doubleClick() {}
+    default void doubleClick()
+    {
+    }
 
     void setPosition(double x, double y);
 
@@ -18,7 +22,10 @@ public interface ITrigger
 
     double getPositionY();
 
-    default InputBindingGroup getKeybind() { return null; }
+    default InputBindingGroup getKeybind()
+    {
+        return null;
+    }
 
     default void updateKeybind()
     {
@@ -38,7 +45,8 @@ public interface ITrigger
     }
 
     /**
-     * @return Size, in number of textboxes, this trigger takes up in a tanksonable editor
+     * @return Size, in number of textboxes, this trigger takes up in a tanksonable
+     *         editor
      */
     default int getSize()
     {

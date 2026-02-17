@@ -46,8 +46,7 @@ public class ShaderGroundObstacleBeatBlock extends RendererShader implements IOb
                 size = (float) (small + (large - small) * Math.min(1, timeTillChange / 8));
             else
                 size = (float) (small + (large - small) * (1.0 - Math.min(1, timeTillChange / 8)));
-        }
-        else
+        } else
             size = (on ? large : small);
 
         setSize(size);

@@ -1,16 +1,15 @@
 package tanksonline.screen;
 
-import tanks.network.event.online.EventSilentDisconnect;
+import java.io.File;
+import java.util.UUID;
 import tanks.gui.Button;
 import tanks.gui.UUIDTextBox;
 import tanks.gui.screen.ScreenOnline;
+import tanks.network.event.online.EventSilentDisconnect;
 import tanksonline.AccessCode;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlinePlayer;
 import tanksonline.TanksOnlineServerHandler;
-
-import java.io.File;
-import java.util.UUID;
 
 public class ScreenInsertAccessCode extends ScreenLayout
 {
@@ -48,8 +47,7 @@ public class ScreenInsertAccessCode extends ScreenLayout
                 }
 
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
 
         }
@@ -58,8 +56,7 @@ public class ScreenInsertAccessCode extends ScreenLayout
         s.setScreen();
     });
 
-    Button back = new Button(sizeX / 2, sizeY / 2 + 150, 350, 40, "Back", () -> player.sendEvent(new EventSilentDisconnect())
-    );
+    Button back = new Button(sizeX / 2, sizeY / 2 + 150, 350, 40, "Back", () -> player.sendEvent(new EventSilentDisconnect()));
 
     public ScreenInsertAccessCode(TanksOnlineServerHandler player)
     {

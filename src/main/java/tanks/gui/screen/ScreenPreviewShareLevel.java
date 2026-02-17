@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -9,8 +10,6 @@ import tanks.gui.TextBox;
 import tanks.network.event.EventShareLevel;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
-
-import java.util.ArrayList;
 
 public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScreen
 {
@@ -32,7 +31,6 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
         }
     });
 
-
     public Button upload = new Button(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY - 90, this.objWidth, this.objHeight, "Share", new Runnable()
     {
         @Override
@@ -45,14 +43,12 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
                 e.clientID = Game.clientID;
                 Game.eventsIn.add(e);
                 Game.cleanUp();
-            }
-            else if (ScreenPartyLobby.isClient)
+            } else if (ScreenPartyLobby.isClient)
             {
                 Game.screen = new ScreenPartyLobby();
                 Game.eventsOut.add(new EventShareLevel(level, name));
                 Game.cleanUp();
-            }
-            else
+            } else
             {
                 Game.steamNetworkHandler.workshop.upload("Level", name, level.levelString, description.inputText);
                 hideUI = true;
@@ -95,11 +91,11 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             this.name = levelName.inputText;
-        }
-                , name.replace("_", " "));
+        }, name.replace("_", " "));
         levelName.enableCaps = true;
 
-        description = new TextBox(320, this.back.posY, 590, this.objHeight, "Description", () -> {
+        description = new TextBox(320, this.back.posY, 590, this.objHeight, "Description", () ->
+        {
 
         }, "");
         description.enableCaps = true;
@@ -126,7 +122,6 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
     boolean mouseTarget;
     boolean mouseTargetHeight;
     boolean infoBar;
-
 
     @Override
     public void draw()

@@ -1,11 +1,10 @@
 package tanks;
 
 import basewindow.IBatchRenderableObject;
+import java.util.*;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
-
-import java.util.*;
 
 @SuppressWarnings("UnusedReturnValue")
 public class Chunk
@@ -63,7 +62,8 @@ public class Chunk
     }
 
     /**
-     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance traveled is >= maxChunks.
+     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance
+     * traveled is >= maxChunks.
      *
      * @return the chunks within the range
      */
@@ -99,28 +99,27 @@ public class Chunk
         return chunkCache;
     }
 
-
     /**
-     * Adds a level border on the specified side of the chunk, where rays will collide off of.
+     * Adds a level border on the specified side of the chunk, where rays will
+     * collide off of.
      *
-     * @param dir The side of the chunk to add the border on
-     * @param l   The level to get the border coordinates from
+     * @param dir
+     *            The side of the chunk to add the border on
+     * @param l
+     *            The level to get the border coordinates from
      */
     public void addBorderFace(Direction dir, Level l)
     {
         int side = dir.index();
-        Face f = new Face(null,
-            convert(chunkX + Face.x1[side], l, true),
-            convert(chunkY + Face.y1[side], l, false),
-            convert(chunkX + Face.x2[side], l, true),
-            convert(chunkY + Face.y2[side], l, false),
-            dir, true, true);
+        Face f = new Face(null, convert(chunkX + Face.x1[side], l, true), convert(chunkY + Face.y1[side], l, false), convert(chunkX + Face.x2[side], l, true),
+                convert(chunkY + Face.y2[side], l, false), dir, true, true);
         borderFaces[side] = f;
         faces.getSide(dir.opposite().index()).add(f);
     }
 
     /**
-     * Helper to convert chunk coordinates to game coordinates and clamp it to the level size.
+     * Helper to convert chunk coordinates to game coordinates and clamp it to the
+     * level size.
      */
     private static double convert(int chunk, Level l, boolean isX)
     {
@@ -133,7 +132,8 @@ public class Chunk
     }
 
     /**
-     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance traveled is >= maxChunks.
+     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance
+     * traveled is >= maxChunks.
      *
      * @return the chunks within the range
      */
@@ -155,8 +155,7 @@ public class Chunk
         if (dirtyChunks.isEmpty())
             return;
 
-        for (Chunk c : dirtyChunks)
-            c.faces.sort();
+        for (Chunk c : dirtyChunks) c.faces.sort();
 
         dirtyChunks.clear();
     }
@@ -188,12 +187,8 @@ public class Chunk
     @Override
     public String toString()
     {
-        return String.format(
-            "C(%d, %d)[%.0f, %.0f]-[%.0f, %.0f]",
-            this.chunkX, this.chunkY,
-            Chunk.chunkToGame(this.chunkX), Chunk.chunkToGame(this.chunkY),
-            Chunk.chunkToGame(this.chunkX + 1), Chunk.chunkToGame(this.chunkY + 1)
-        );
+        return String.format("C(%d, %d)[%.0f, %.0f]-[%.0f, %.0f]", this.chunkX, this.chunkY, Chunk.chunkToGame(this.chunkX), Chunk.chunkToGame(this.chunkY),
+                Chunk.chunkToGame(this.chunkX + 1), Chunk.chunkToGame(this.chunkY + 1));
     }
 
     public void markDirty()
@@ -223,8 +218,7 @@ public class Chunk
 
     public static ArrayList<Chunk> getChunksInRange(double x1, double y1, double x2, double y2)
     {
-        return getChunksInRange((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size),
-            (int) (x2 / Game.tile_size), (int) (y2 / Game.tile_size));
+        return getChunksInRange((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), (int) (x2 / Game.tile_size), (int) (y2 / Game.tile_size));
     }
 
     public static ArrayList<Chunk> getChunksInRange(int tx1, int ty1, int tx2, int ty2)
@@ -233,8 +227,7 @@ public class Chunk
         chunkCache.clear();
         for (Chunk c : chunkList)
         {
-            if (Game.isOrdered(true, x1, c.chunkX, x2)
-                && Game.isOrdered(true, y1, c.chunkY, y2))
+            if (Game.isOrdered(true, x1, c.chunkX, x2) && Game.isOrdered(true, y1, c.chunkY, y2))
                 chunkCache.add(c);
         }
         return chunkCache;
@@ -276,7 +269,8 @@ public class Chunk
     public static <K> K getChunkIfPresent(int tileX, int tileY, K fallback, Function<Chunk, K> func)
     {
         Chunk c = getChunk(tileX, tileY);
-        if (c == null) return fallback;
+        if (c == null)
+            return fallback;
         return func.apply(c);
     }
 
@@ -303,14 +297,16 @@ public class Chunk
     public static <K> K get(double tileX, double tileY, Function<Tile, K> func)
     {
         Tile t = getTile(tileX, tileY);
-        if (t == null) throw new RuntimeException("not present");
+        if (t == null)
+            throw new RuntimeException("not present");
         return func.apply(t);
     }
 
     public static <K> K getIfPresent(int tileX, int tileY, K fallback, Function<Tile, K> func)
     {
         Tile t = getTile(tileX, tileY);
-        if (t == null) return fallback;
+        if (t == null)
+            return fallback;
         return func.apply(t);
     }
 
@@ -331,8 +327,7 @@ public class Chunk
         double x1 = (double) tx1 / chunkSize, y1 = (double) ty1 / chunkSize, cRad = Math.ceil(radius / chunkSize) + 1;
         for (Chunk chunk : chunkList)
         {
-            if ((chunk.chunkX - x1) * (chunk.chunkX - x1) +
-                (chunk.chunkY - y1) * (chunk.chunkY - y1) <= cRad * cRad)
+            if ((chunk.chunkX - x1) * (chunk.chunkX - x1) + (chunk.chunkY - y1) * (chunk.chunkY - y1) <= cRad * cRad)
                 chunkCache.add(chunk);
         }
         return chunkCache;
@@ -353,8 +348,10 @@ public class Chunk
     }
 
     /**
-     * @param pix Coordinate in pixels
-     * @return The tile position relative to the top left corner of the chunk the coordinate is in
+     * @param pix
+     *            Coordinate in pixels
+     * @return The tile position relative to the top left corner of the chunk the
+     *         coordinate is in
      */
     public static int gameToPosInChunk(double pix)
     {
@@ -432,13 +429,8 @@ public class Chunk
                 if (f != null)
                 {
                     Drawing.drawing.setColor(50, 50, 255);
-                    drawClampedRect(
-                        Game.currentLevel != null ? Game.currentLevel : defaultLevel,
-                        f.startX, f.startY,
-                        f.endX, f.endY
-                    );
-                }
-                else
+                    drawClampedRect(Game.currentLevel != null ? Game.currentLevel : defaultLevel, f.startX, f.startY, f.endX, f.endY);
+                } else
                 {
                     double x = c.chunkX * chunkSize * Game.tile_size;
                     double y = c.chunkY * chunkSize * Game.tile_size;
@@ -446,27 +438,23 @@ public class Chunk
                     double sY = chunkSize * Game.tile_size;
 
                     Drawing.drawing.setColor(255, 255, 0);
-                    drawClampedRect(
-                        Game.currentLevel != null ? Game.currentLevel : defaultLevel,
-                        x + sX * Face.x1[i],
-                        y + sY * Face.y1[i],
-                        x + sX * (Face.x2[i] - Face.x1[i]),
-                        y + sY * (Face.y2[i] - Face.y1[i])
-                    );
+                    drawClampedRect(Game.currentLevel != null ? Game.currentLevel : defaultLevel, x + sX * Face.x1[i], y + sY * Face.y1[i], x + sX * (Face.x2[i] - Face.x1[i]),
+                            y + sY * (Face.y2[i] - Face.y1[i]));
                 }
                 i += 1;
             }
         }
 
         Drawing.drawing.setColor(255, 255, 255);
-//        for (Movable m : Game.movables)
-//            Drawing.drawing.drawText(m.posX, m.posY, m.getCurrentChunks().stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
-//                .collect(Collectors.joining(", ")));
+        // for (Movable m : Game.movables)
+        // Drawing.drawing.drawText(m.posX, m.posY, m.getCurrentChunks().stream().map(c
+        // -> "(" + c.chunkX + ", " + c.chunkY + ")")
+        // .collect(Collectors.joining(", ")));
     }
 
     /**
-     * Given a rectangle's bounding box, clamps it to the level borders and draws it.
-     * Also ensures a line width of 2.
+     * Given a rectangle's bounding box, clamps it to the level borders and draws
+     * it. Also ensures a line width of 2.
      */
     private static void drawClampedRect(Level l, double x1, double y1, double x2, double y2)
     {
@@ -498,9 +486,7 @@ public class Chunk
         int sX = l.sizeX / chunkSize + 1, sY = l.sizeY / chunkSize + 1;
         Random r = new Random(l.tilesRandomSeed);
 
-        for (int x = 0; x < sX; x++)
-            for (int y = 0; y < sY; y++)
-                addChunk(x + startX, y + startY, new Chunk(l, r, x, y));
+        for (int x = 0; x < sX; x++) for (int y = 0; y < sY; y++) addChunk(x + startX, y + startY, new Chunk(l, r, x, y));
     }
 
     /**
@@ -599,8 +585,7 @@ public class Chunk
 
             Face[] faces = s.getFaces();
             boolean changed = false;
-            for (int i = 0; i < 4; i++)
-                changed |= getSide(i).remove(faces[i]);
+            for (int i = 0; i < 4; i++) changed |= getSide(i).remove(faces[i]);
             return changed;
         }
 
@@ -627,15 +612,15 @@ public class Chunk
         {
             switch (side)
             {
-                case 0:
+                case 0 :
                     return topFaces;
-                case 1:
+                case 1 :
                     return rightFaces;
-                case 2:
+                case 2 :
                     return bottomFaces;
-                case 3:
+                case 3 :
                     return leftFaces;
-                default:
+                default :
                     throw new RuntimeException("Invalid side: " + side);
             }
         }
@@ -740,11 +725,7 @@ public class Chunk
         @Override
         public String toString()
         {
-            return "Tile(" +
-                "fullObstacle=" + fullObstacle +
-                ", surfaceObstacle=" + surfaceObstacle +
-                ", extraObstacle=" + extraObstacle +
-                ')';
+            return "Tile(" + "fullObstacle=" + fullObstacle + ", surfaceObstacle=" + surfaceObstacle + ", extraObstacle=" + extraObstacle + ')';
         }
     }
 }

@@ -131,7 +131,7 @@ public class TextBoxSlider extends TextBox
                 drawing.setColor(this.bgColorR, this.bgColorG, this.bgColorB);
 
             drawing.fillInterfaceOval(x, this.posY, this.sizeY * m * m, this.sizeY * m * m);
-            //drawing.setColor(this.colorR, this.colorG, this.colorB);
+            // drawing.setColor(this.colorR, this.colorG, this.colorB);
 
             if (Game.glowEnabled)
                 Button.drawGlow(x, this.posY + 1.5, this.sizeY * m * m, this.sizeY * m * m, 0.6, 0, 0, 0, 100, false);
@@ -147,8 +147,7 @@ public class TextBoxSlider extends TextBox
                 drawing.setColor(this.selectedFullColorR, this.selectedFullColorG, this.selectedFullColorB);
             else
                 drawing.setColor(this.selectedColorR, this.selectedColorG, this.selectedColorB);
-        }
-        else if (hover && !Game.game.window.touchscreen)
+        } else if (hover && !Game.game.window.touchscreen)
             drawing.setColor(this.hoverColorR, this.hoverColorG, this.hoverColorB);
         else
             drawing.setColor(this.colorR, this.colorG, this.colorB);

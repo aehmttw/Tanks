@@ -1,12 +1,11 @@
 package tanks.bullet;
 
+import java.util.ArrayList;
 import tanks.*;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletBounce;
 import tanks.tank.Tank;
 import tanks.tankson.Property;
-
-import java.util.ArrayList;
 
 public class BulletAirStrike extends Bullet
 {
@@ -20,7 +19,7 @@ public class BulletAirStrike extends Bullet
     @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing, desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
     public double minRange = 0;
 
-    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,  desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
+    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing, desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
     public double maxRange = 0;
 
     @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands. Larger values are less accurate. \n \n 1 tile = 50 units")
@@ -89,13 +88,12 @@ public class BulletAirStrike extends Bullet
 
             this.bounces--;
 
-            if (this.bounces < 0 || this.posX >= Game.currentSizeX * Game.tile_size || this.posX < 0 || this.posY >= Game.currentSizeY * Game.tile_size || this.posY < 0 )
+            if (this.bounces < 0 || this.posX >= Game.currentSizeX * Game.tile_size || this.posX < 0 || this.posY >= Game.currentSizeY * Game.tile_size || this.posY < 0)
             {
                 this.destroy = true;
                 Drawing.drawing.playSound("bullet_explode.ogg", (float) (Bullet.bullet_size / this.size));
                 this.vZ = 0;
-            }
-            else
+            } else
             {
                 this.stopTrails();
                 this.posZ = Game.tile_size / 2 + 1;

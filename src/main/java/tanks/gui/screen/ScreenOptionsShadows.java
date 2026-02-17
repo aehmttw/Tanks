@@ -21,9 +21,7 @@ public class ScreenOptionsShadows extends Screen
             else
                 shadows.setText(shadowsText + ScreenOptions.offText);
         }
-    },
-            "Shadows are quite graphically intense---and may significantly reduce framerate");
-
+    }, "Shadows are quite graphically intense---and may significantly reduce framerate");
 
     TextBoxSlider shadowQuality = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Shadow quality", new Runnable()
     {
@@ -35,11 +33,9 @@ public class ScreenOptionsShadows extends Screen
 
             Game.shadowQuality = Integer.parseInt(shadowQuality.inputText);
         }
-    }
-            , Game.shadowQuality, 1, 20, 1);
+    }, Game.shadowQuality, 1, 20, 1);
 
-    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsGraphics()
-    );
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsGraphics());
 
     public ScreenOptionsShadows()
     {

@@ -10,7 +10,7 @@ public class ItemMine extends Item implements ICopyable<ItemMine>
 {
     public static final String item_class_name = "mine";
 
-    @Property(id="mine", category = "none")
+    @Property(id = "mine", category = "none")
     public Mine mine = new Mine();
 
     public ItemMine()
@@ -55,9 +55,7 @@ public class ItemMine extends Item implements ICopyable<ItemMine>
         @Override
         public boolean usable(Tank t)
         {
-            return t != null
-                    && (this.item.mine.maxLiveMines <= 0 || this.liveMines < this.item.mine.maxLiveMines)
-                    && !(this.cooldown > 0);
+            return t != null && (this.item.mine.maxLiveMines <= 0 || this.liveMines < this.item.mine.maxLiveMines) && !(this.cooldown > 0);
         }
     }
 }

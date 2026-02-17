@@ -1,11 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.ModelPart;
+import java.util.ArrayList;
 import tanks.*;
 import tanks.minigames.Minigame;
 import tanks.tank.*;
-
-import java.util.ArrayList;
 
 public class Tutorial extends Minigame
 {
@@ -37,9 +36,8 @@ public class Tutorial extends Minigame
 
     public Tutorial()
     {
-        super("{50,18,235,207,166,20,20,20|" +
-                "27-10...14,37-7...11,12-0...13-hard,13...22-7-hard,27-0...9-hard,27-15...17-hard,37-0...6-hard,37-12...17-hard,23...26-7-hole|" +
-                "5-7-player-1}");
+        super("{50,18,235,207,166,20,20,20|" + "27-10...14,37-7...11,12-0...13-hard,13...22-7-hard,27-0...9-hard,27-15...17-hard,37-0...6-hard,37-12...17-hard,23...26-7-hole|"
+                + "5-7-player-1}");
 
         this.customLevelEnd = true;
     }
@@ -168,7 +166,7 @@ public class Tutorial extends Minigame
 
         int i = this.prevDummiesDestroyed;
 
-        for (Tank t: destroyedDummies)
+        for (Tank t : destroyedDummies)
         {
             i++;
             Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 2, Effect.EffectType.tutorialProgress);
@@ -193,7 +191,7 @@ public class Tutorial extends Minigame
         {
             step = 4;
 
-            for (Movable m: Game.movables)
+            for (Movable m : Game.movables)
             {
                 if (m instanceof Mine)
                 {
@@ -204,8 +202,7 @@ public class Tutorial extends Minigame
 
             if (!Game.isTankSolid(27, 10) || !Game.isTankSolid(27, 11) || !Game.isTankSolid(27, 12) || !Game.isTankSolid(27, 13) || !Game.isTankSolid(27, 14))
                 step = 6;
-        }
-        else if (step == 6 && brown.destroy)
+        } else if (step == 6 && brown.destroy)
             step = 7;
         else if (step == 7 && Game.player.hotbar.persistent)
             step = 8;
@@ -223,23 +220,19 @@ public class Tutorial extends Minigame
                 Game.movables.add(new Crate(this.dummy2, 950));
                 Game.movables.add(new Crate(this.dummy3, 1050));
                 Game.movables.add(new Crate(this.dummy4, 1150));
-            }
-            else if (step == 3)
+            } else if (step == 3)
             {
                 Drawing.drawing.addSyncedMusic("arcade/rampage2.ogg", Game.musicVolume, true, 500);
                 Game.movables.add(new Crate(this.dummy5, 1000));
-            }
-            else if (step == 4)
+            } else if (step == 4)
             {
                 Game.movables.add(new Crate(this.brown, 1000));
                 Drawing.drawing.addSyncedMusic("arcade/rampage3.ogg", Game.musicVolume, true, 500);
-            }
-            else if (step == 6)
+            } else if (step == 6)
             {
                 Drawing.drawing.addSyncedMusic("arcade/rampage4.ogg", Game.musicVolume, true, 500);
                 Drawing.drawing.addSyncedMusic("arcade/rampage5.ogg", Game.musicVolume, true, 500);
-            }
-            else if (step == 8)
+            } else if (step == 8)
             {
                 Game.movables.add(new Crate(this.gray, 1000));
                 Drawing.drawing.addSyncedMusic("arcade/rampage6.ogg", Game.musicVolume, true, 500);
@@ -247,8 +240,7 @@ public class Tutorial extends Minigame
             }
 
             stepAnimation = 0;
-        }
-        else if (prevStep > step)
+        } else if (prevStep > step)
             Drawing.drawing.playSound("leave.ogg");
     }
 
@@ -274,9 +266,9 @@ public class Tutorial extends Minigame
 
             if (touchscreen)
             {
-                Drawing.drawing.drawInterfaceText(TankPlayer.controlStick.posX + TankPlayer.controlStick.size * 0.6, TankPlayer.controlStick.posY, "Use this stick to move your tank!", false);
-            }
-            else
+                Drawing.drawing.drawInterfaceText(TankPlayer.controlStick.posX + TankPlayer.controlStick.size * 0.6, TankPlayer.controlStick.posY,
+                        "Use this stick to move your tank!", false);
+            } else
             {
                 Drawing.drawing.setFontSize(24 * stepAnimation);
                 Drawing.drawing.drawText(Game.playerTank.posX, Game.playerTank.posY - 140 * stepAnimation, "Move up:");
@@ -294,20 +286,19 @@ public class Tutorial extends Minigame
 
             Drawing.drawing.setColor(255, 127, 0, 64 * stepAnimation);
             Drawing.drawing.fillOval(Game.tile_size * 5.5, Game.tile_size * 7.5, Game.tile_size * 8 * stepAnimation, Game.tile_size * 8 * stepAnimation);
-        }
-        else if (step == 1)
+        } else if (step == 1)
         {
             Drawing.drawing.setColor(255, 127, 0, 64 * stepAnimation);
             Drawing.drawing.fillOval(12.5 * Game.tile_size, 16 * Game.tile_size, Game.tile_size * 3 * stepAnimation, Game.tile_size * 3 * stepAnimation);
-            this.drawArrow(Game.playerTank.posX, Game.playerTank.posY, 12.5 * Game.tile_size, 16 * Game.tile_size, Game.playerTank.getAngleInDirection(12.5 * Game.tile_size, 16 * Game.tile_size));
+            this.drawArrow(Game.playerTank.posX, Game.playerTank.posY, 12.5 * Game.tile_size, 16 * Game.tile_size,
+                    Game.playerTank.getAngleInDirection(12.5 * Game.tile_size, 16 * Game.tile_size));
 
             Drawing.drawing.setColor(0, 0, 0, this.stepAnimation * 255);
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
 
             String s = "Move over here to continue";
             Drawing.drawing.drawText(7 * Game.tile_size, 16 * Game.tile_size, s);
-        }
-        else if (step == 2)
+        } else if (step == 2)
         {
             drawTopBar(200 * this.stepAnimation);
             Drawing.drawing.setColor(255, 255, 255, this.stepAnimation * 255);
@@ -316,17 +307,19 @@ public class Tutorial extends Minigame
             if (touchscreen)
             {
                 if (TankPlayer.shootStickEnabled)
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Swipe on the \u00A7255127000255orange joystick\u00A7255255255255 in the direction you want to shoot!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5,
+                            "Swipe on the \u00A7255127000255orange joystick\u00A7255255255255 in the direction you want to shoot!");
                 else
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "\u00A7255127000255Tap\u00A7255255255255 somewhere to shoot in that direction!");
-            }
-            else
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "Press \u00A7255127000255" + Game.game.input.shoot.getInputs() + "\u00A7255255255255 to shoot toward your mouse!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5,
+                            "\u00A7255127000255Tap\u00A7255255255255 somewhere to shoot in that direction!");
+            } else
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5,
+                        "Press \u00A7255127000255" + Game.game.input.shoot.getInputs() + "\u00A7255255255255 to shoot toward your mouse!");
 
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "Destroy all enemy tanks to win!");
 
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
-            Drawing.drawing.setColor(0, 0, 0, 255  * this.stepAnimation);
+            Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
             Drawing.drawing.drawText(20 * Game.tile_size, 13.5 * Game.tile_size, "Shoot these enemy tanks!");
 
             Drawing.drawing.setColor(255, 127, 0, 64);
@@ -342,8 +335,7 @@ public class Tutorial extends Minigame
 
             if (!dummy4.destroy)
                 Drawing.drawing.fillOval(dummy4.posX, dummy4.posY, Game.tile_size * 2 * this.stepAnimation, Game.tile_size * 2 * this.stepAnimation);
-        }
-        else if (step == 3)
+        } else if (step == 3)
         {
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
             Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
@@ -362,24 +354,28 @@ public class Tutorial extends Minigame
             {
                 if (TankPlayer.shootStickEnabled)
                 {
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "Drag around the \u00A7255127000255orange joystick\u00A7255255255255 to aim.");
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Drag your finger out of the joystick to shoot!");
-                }
-                else
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5,
+                            "Drag around the \u00A7255127000255orange joystick\u00A7255255255255 to aim.");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5,
+                            "Drag your finger out of the joystick to shoot!");
+                } else
                 {
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "\u00A7000150255255Tap the player\u00A7255255255255 and drag around the \u00A7255127000255orange circle\u00A7255255255255 to aim.");
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Pull your finger out of the \u00A7255127000255orange circle\u00A7255255255255 to shoot!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5,
+                            "\u00A7000150255255Tap the player\u00A7255255255255 and drag around the \u00A7255127000255orange circle\u00A7255255255255 to aim.");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5,
+                            "Pull your finger out of the \u00A7255127000255orange circle\u00A7255255255255 to shoot!");
                 }
-            }
-            else
+            } else
             {
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5, "Press and hold \u00A7000150255255" + Game.game.input.aim.getInputs() + "\u00A7255255255255 to aim.");
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press \u00A7255127000255" + Game.game.input.shoot.getInputs() + "\u00A7255255255255 to shoot!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 3.5,
+                        "Press and hold \u00A7000150255255" + Game.game.input.aim.getInputs() + "\u00A7255255255255 to aim.");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5,
+                        "Press \u00A7255127000255" + Game.game.input.shoot.getInputs() + "\u00A7255255255255 to shoot!");
             }
 
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "You can have up to 5 bullets on screen at one time.");
-        }
-        else if (step == 4)
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5,
+                    "You can have up to 5 bullets on screen at one time.");
+        } else if (step == 4)
         {
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
             Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
@@ -394,16 +390,18 @@ public class Tutorial extends Minigame
             if (touchscreen)
             {
                 if (TankPlayer.shootStickEnabled)
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press the \u00A7255255000255yellow button\u00A7255255255255 to lay a mine!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5,
+                            "Press the \u00A7255255000255yellow button\u00A7255255255255 to lay a mine!");
                 else
-                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Double-tap \u00A7000150255255your tank\u00A7255255255255 to lay a mine!");
-            }
-            else
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Press \u00A7255127000255" + Game.game.input.mine.getInputs() + "\u00A7255255255255 to lay a mine!");
+                    Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5,
+                            "Double-tap \u00A7000150255255your tank\u00A7255255255255 to lay a mine!");
+            } else
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5,
+                        "Press \u00A7255127000255" + Game.game.input.mine.getInputs() + "\u00A7255255255255 to lay a mine!");
 
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "Mines can destroy nearby tanks and brown blocks.");
-        }
-        else if (step == 5)
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5,
+                    "Mines can destroy nearby tanks and brown blocks.");
+        } else if (step == 5)
         {
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
             Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
@@ -413,7 +411,8 @@ public class Tutorial extends Minigame
                 if (m instanceof Mine)
                 {
                     Drawing.drawing.setColor(255, 0, 0, 127 * this.stepAnimation);
-                    //Drawing.drawing.fillOval(m.posX, m.posY, ((Mine) m).explosion.radius * 2 * this.stepAnimation, ((Mine) m).explosion.radius * 2 * this.stepAnimation);
+                    // Drawing.drawing.fillOval(m.posX, m.posY, ((Mine) m).explosion.radius * 2 *
+                    // this.stepAnimation, ((Mine) m).explosion.radius * 2 * this.stepAnimation);
                     Mine.drawRange2D(m.posX, m.posY, ((Mine) m).explosion.radius);
 
                     Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
@@ -426,10 +425,10 @@ public class Tutorial extends Minigame
             Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
             Drawing.drawing.setInterfaceFontSize(24 * this.stepAnimation);
 
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "A mine will explode after 10 seconds, if another tank gets near, or if shot.");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5,
+                    "A mine will explode after 10 seconds, if another tank gets near, or if shot.");
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "You can have up to 2 mines on screen at a time.");
-        }
-        else if (step == 6)
+        } else if (step == 6)
         {
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
             Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
@@ -447,10 +446,11 @@ public class Tutorial extends Minigame
             Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
             Drawing.drawing.setInterfaceFontSize(24 * this.stepAnimation);
 
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5, "Avoid all bullets and mines, including your own, as they can destroy you.");
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "If your tank is destroyed, you will have to start the level over!");
-        }
-        else if (step == 7)
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 2.5,
+                    "Avoid all bullets and mines, including your own, as they can destroy you.");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5,
+                    "If your tank is destroyed, you will have to start the level over!");
+        } else if (step == 7)
         {
             drawTopBar(200 * this.stepAnimation);
             Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
@@ -458,28 +458,29 @@ public class Tutorial extends Minigame
 
             if (touchscreen)
             {
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing the \u00A7255127000255bottom arrow\u00A7255255255255!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5,
+                        "and remaining enemy tanks by pressing the \u00A7255127000255bottom arrow\u00A7255255255255!");
                 Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "Press the arrow below!");
                 Drawing.drawing.setColor(255, 127, 0, 64 * this.stepAnimation);
                 Drawing.drawing.fillInterfaceOval(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 6, 150 * this.stepAnimation, 75 * this.stepAnimation);
                 Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
-            }
-            else
+            } else
             {
                 Drawing.drawing.setInterfaceFontSize(32 * this.stepAnimation);
                 Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5, "Press " + Game.game.input.hotbarToggle.getInputs() + "!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - Game.tile_size * 1.5,
+                        "Press " + Game.game.input.hotbarToggle.getInputs() + "!");
                 Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
                 Drawing.drawing.setInterfaceFontSize(24 * this.stepAnimation);
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "and remaining enemy tanks by pressing \u00A7255127000255" + Game.game.input.hotbarToggle.getInputs() + "\u00A7255255255255!");
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5,
+                        "and remaining enemy tanks by pressing \u00A7255127000255" + Game.game.input.hotbarToggle.getInputs() + "\u00A7255255255255!");
             }
 
             Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 1.5, "You can see your health, available bullets and mines,");
 
-        }
-        else if (step == 8)
+        } else if (step == 8)
         {
             drawTopBar(200 * this.stepAnimation);
             Drawing.drawing.setColor(255, 255, 255, 255 * this.stepAnimation);
@@ -529,12 +530,11 @@ public class Tutorial extends Minigame
         }
     }
 
-
     public TankDummy addDummy(double x, double y, double angle)
     {
         TankDummy t = new TankDummy("dummy", (x + 0.5) * Game.tile_size, (y + 0.5) * Game.tile_size, angle * Math.PI / 2);
         t.team = Game.enemyTeam;
-        //Game.addTank(t);
+        // Game.addTank(t);
 
         return t;
     }

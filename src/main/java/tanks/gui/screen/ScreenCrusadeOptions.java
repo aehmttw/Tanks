@@ -53,8 +53,7 @@ public class ScreenCrusadeOptions extends Screen
         {
             Game.screen = previous;
         }
-    }
-    );
+    });
 
     public ScreenCrusadeOptions(ScreenCrusadeEditor p)
     {
@@ -84,8 +83,7 @@ public class ScreenCrusadeOptions extends Screen
                 startingLives.inputText = crusade.startingLives + "";
             else
                 crusade.startingLives = Integer.parseInt(startingLives.inputText);
-        }
-                , crusade.startingLives + "");
+        }, crusade.startingLives + "");
 
         startingLives.allowLetters = false;
         startingLives.allowSpaces = false;
@@ -99,8 +97,7 @@ public class ScreenCrusadeOptions extends Screen
                 bonusLifeFrequency.inputText = crusade.bonusLifeFrequency + "";
             else
                 crusade.bonusLifeFrequency = Integer.parseInt(bonusLifeFrequency.inputText);
-        }
-                , crusade.bonusLifeFrequency + "");
+        }, crusade.bonusLifeFrequency + "");
 
         bonusLifeFrequency.allowLetters = false;
         bonusLifeFrequency.allowSpaces = false;

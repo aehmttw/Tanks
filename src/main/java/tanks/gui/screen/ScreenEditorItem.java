@@ -1,6 +1,8 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -13,9 +15,6 @@ import tanks.item.ItemMine;
 import tanks.tankson.FieldPointer;
 import tanks.tankson.Pointer;
 import tanks.tankson.Property;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
 
 public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
 {
@@ -42,8 +41,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             this.setupLayoutParameters();
             this.setTarget(b);
         }, "My", this.target.getType());
-    }
-    );
+    });
 
     public boolean writeItem(Item.ItemStack<?> t)
     {
@@ -66,8 +64,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 f.stopWriting();
 
                 return true;
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 Game.exitToCrash(e);
             }
@@ -88,8 +85,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     {
         Item.ItemStack<?> t = target.get();
         this.writeItemAndConfirm(t, false);
-    }
-    );
+    });
 
     public ScreenEditorItem(Pointer<Item.ItemStack<?>> itemStack, Screen screen)
     {
@@ -139,19 +135,17 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 this.objectEditorScreen = new ScreenEditorBullet(new FieldPointer<>(item, item.getClass().getField("bullet"), false), this.prevScreen);
                 ((ScreenEditorBullet) this.objectEditorScreen).screenEditorItem = this;
                 ((ScreenEditorBullet) this.objectEditorScreen).bulletTypes.posX += 20;
-            }
-            else if (is instanceof ItemMine.ItemStackMine)
+            } else if (is instanceof ItemMine.ItemStackMine)
             {
                 this.objectEditorScreen = new ScreenEditorMine(new FieldPointer<>(item, item.getClass().getField("mine"), false), this.prevScreen);
                 ((ScreenEditorMine) this.objectEditorScreen).screenEditorItem = this;
-//                this.objectEditorScreen.forceDisplayTabs = true;
-//                Button b = this.objectEditorScreen.topLevelButtons.get(0);
-//                b.posX = this.itemTabButton.posX;
-//                b.posY = this.itemTabButton.posY - 60;
-//                b.sizeX = this.itemTabButton.sizeX;
-//                b.imageXOffset = this.itemTabButton.imageXOffset;
-            }
-            else
+                // this.objectEditorScreen.forceDisplayTabs = true;
+                // Button b = this.objectEditorScreen.topLevelButtons.get(0);
+                // b.posX = this.itemTabButton.posX;
+                // b.posY = this.itemTabButton.posY - 60;
+                // b.sizeX = this.itemTabButton.sizeX;
+                // b.imageXOffset = this.itemTabButton.imageXOffset;
+            } else
                 this.objectEditorScreen = null;
 
             if (this.objectEditorScreen != null)
@@ -159,8 +153,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 this.objectEditorScreen.currentTab = null;
                 this.objectEditorScreen.title += " item";
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -223,8 +216,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                         }
                     }
                 }
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -264,8 +256,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             }
 
             this.itemTabButton.draw();
-        }
-        else
+        } else
             super.draw();
 
         if (this.showLoadFromTemplate)
@@ -289,8 +280,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
 
             this.itemTabButton.enabled = this.objectEditorScreen.currentTab != null;
             this.itemTabButton.update();
-        }
-        else
+        } else
             super.update();
 
         this.updateAutoIcon();

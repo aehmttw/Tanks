@@ -1,9 +1,9 @@
 package tanks.tank;
 
+import java.util.ArrayList;
 import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletPropertyCategory;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
@@ -16,8 +16,6 @@ import tanks.tankson.ICopyable;
 import tanks.tankson.ITanksONEditable;
 import tanks.tankson.Property;
 import tanks.tankson.TanksONable;
-
-import java.util.ArrayList;
 
 @TanksONable("explosion")
 public class Explosion extends Movable implements ICopyable<Explosion>, ITanksONEditable
@@ -98,9 +96,9 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
     {
         movablesCache.clear();
         for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
-            for (Movable o : c.movables)    // Movables are in any chunk that their hitboxes touch
+            for (Movable o : c.movables) // Movables are in any chunk that their hitboxes touch
                 if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < Math.pow(radius + o.getSize() / 2, 2))
-                    movablesCache.add(o);
+                movablesCache.add(o);
         return movablesCache;
     }
 
@@ -180,8 +178,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                         e.posZ -= e.vZ * e.maxAge;
 
                         Game.effects.add(e);
-                    }
-                    else
+                    } else
                     {
                         double k1 = Math.min(25, Math.max(k, 2)) / 2 * knockbackRadius / 250;
                         Effect e = Effect.createNewEffect(this.posX, this.posY, Effect.EffectType.snow);
@@ -207,21 +204,19 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
         {
             Game.eventsOut.add(new EventExplosion(this));
 
-            for (Movable m: getMovablesInExplosion(posX, posY, radius))
-                handleExplosionDamage(m);
-            for (Movable m: getMovablesInExplosion(posX, posY, knockbackRadius))
-                handleExplosionKb(m, Movable.sqDistBetw(m.posX, m.posY, posX, posY));
+            for (Movable m : getMovablesInExplosion(posX, posY, radius)) handleExplosionDamage(m);
+            for (Movable m : getMovablesInExplosion(posX, posY, knockbackRadius)) handleExplosionKb(m, Movable.sqDistBetw(m.posX, m.posY, posX, posY));
 
             if (this.stunTime > 0)
-                for (Movable m: getMovablesInExplosion(posX, posY, stunRadius))
-                    handleExplosionStun(m);
+                for (Movable m : getMovablesInExplosion(posX, posY, stunRadius)) handleExplosionStun(m);
         }
 
         if (this.destroysObstacles && !ScreenPartyLobby.isClient)
         {
-            for (Obstacle o: Obstacle.getObstaclesInRadius(posX, posY, radius + Game.tile_size / 2))
+            for (Obstacle o : Obstacle.getObstaclesInRadius(posX, posY, radius + Game.tile_size / 2))
             {
-                if (!o.destructible) continue;
+                if (!o.destructible)
+                    continue;
                 o.onDestroy(this);
                 o.playDestroyAnimation(this.posX, this.posY, this.radius);
                 Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, this.posX, this.posY, this.radius + Game.tile_size / 2));
@@ -274,22 +269,19 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                             Game.player.hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
                         else
                             Game.player.hotbar.coins += t.coinValue;
-                    }
-                    else if (this.tank instanceof IServerPlayerTank && (Crusade.crusadeMode || !Game.currentLevel.shop.isEmpty() || !Game.currentLevel.startingItems.isEmpty()))
+                    } else if (this.tank instanceof IServerPlayerTank && (Crusade.crusadeMode || !Game.currentLevel.shop.isEmpty() || !Game.currentLevel.startingItems.isEmpty()))
                     {
                         if (t instanceof TankPlayer || t instanceof TankPlayerRemote)
                         {
                             if (Game.currentLevel instanceof Minigame && ((Minigame) Game.currentLevel).playerKillCoins > 0)
                                 ((IServerPlayerTank) this.tank).getPlayer().hotbar.coins += ((Minigame) Game.currentLevel).playerKillCoins;
-                        }
-                        else
+                        } else
                             ((IServerPlayerTank) this.tank).getPlayer().hotbar.coins += t.coinValue;
 
                         if (this.tank instanceof TankPlayerRemote)
                             Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
                     }
-                }
-                else
+                } else
                 {
                     if (damage > 0)
                         Drawing.drawing.playGlobalSound("damage.ogg");
@@ -300,16 +292,14 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                     }
                 }
             }
-        }
-        else if (m instanceof Mine && !m.destroy)
+        } else if (m instanceof Mine && !m.destroy)
         {
             if (((Mine) m).timer > 10 && !this.isRemote)
             {
                 ((Mine) m).timer = 10;
                 Game.eventsOut.add(new EventMineChangeTimer((Mine) m));
             }
-        }
-        else if (m instanceof Bullet && !m.destroy && this.destroysBullets)
+        } else if (m instanceof Bullet && !m.destroy && this.destroysBullets)
         {
             m.destroy = true;
         }
@@ -325,8 +315,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
             ((Bullet) m).collisionX = m.posX;
             ((Bullet) m).collisionY = m.posY;
             ((Bullet) m).addTrail();
-        }
-        else if (m instanceof Tank && this.tankKnockback != 0)
+        } else if (m instanceof Tank && this.tankKnockback != 0)
         {
             double angle = this.getAngleInDirection(m.posX, m.posY);
             double vX = m.vX;

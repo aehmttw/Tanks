@@ -17,8 +17,7 @@ public class ScreenCrusadeEditWarning extends Screen
         {
             Game.screen = previous;
         }
-    }
-    );
+    });
 
     public Button confirm = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Edit crusade", new Runnable()
     {
@@ -28,8 +27,7 @@ public class ScreenCrusadeEditWarning extends Screen
             Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath + crusade.name).delete();
             Game.screen = new ScreenCrusadeEditor(crusade);
         }
-    }
-    );
+    });
 
     public ScreenCrusadeEditWarning(Screen previous, Crusade crusade)
     {

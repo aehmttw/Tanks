@@ -1,6 +1,6 @@
 package basewindow;
 
-public interface IUpdater 
-{	
-	void update();
+public interface IUpdater
+{
+    void update();
 }

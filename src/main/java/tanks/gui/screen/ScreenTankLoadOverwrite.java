@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
 import tanks.BiConsumer;
 import tanks.Drawing;
 import tanks.Game;
@@ -9,8 +10,6 @@ import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.tank.TankAIControlled;
 import tanks.tankson.Pointer;
-
-import java.util.ArrayList;
 
 public class ScreenTankLoadOverwrite extends Screen implements IBlankBackgroundScreen
 {
@@ -24,7 +23,8 @@ public class ScreenTankLoadOverwrite extends Screen implements IBlankBackgroundS
     public ButtonObject tankButton;
     public ButtonObject oldTankButton;
 
-    public ScreenTankLoadOverwrite(OverlayObjectMenu ts, TankAIControlled tank, Pointer<TankAIControlled> oldTank, BiConsumer<TankAIControlled, Pointer<TankAIControlled>> editFunc, ArrayList<TankAIControlled> customTanks, ArrayList<TankAIControlled> savedTanks)
+    public ScreenTankLoadOverwrite(OverlayObjectMenu ts, TankAIControlled tank, Pointer<TankAIControlled> oldTank, BiConsumer<TankAIControlled, Pointer<TankAIControlled>> editFunc,
+            ArrayList<TankAIControlled> customTanks, ArrayList<TankAIControlled> savedTanks)
     {
         this.previous = ts;
         this.music = this.previous.music;
@@ -55,20 +55,17 @@ public class ScreenTankLoadOverwrite extends Screen implements IBlankBackgroundS
         this.tank.name = name;
         Game.currentLevel.customTanks = this.customTanks;
         this.editFunc.accept(this.tank, null);
-    }
-    );
+    });
 
     public Button replace = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Replace tank", () ->
     {
         this.editFunc.accept(this.tank, this.oldTank);
-    }
-    );
+    });
 
     public Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () ->
     {
         Game.screen = this.previous;
-    }
-    );
+    });
 
     @Override
     public void update()

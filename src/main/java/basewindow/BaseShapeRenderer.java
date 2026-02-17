@@ -58,12 +58,7 @@ public abstract class BaseShapeRenderer
 
     public abstract void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
 
-    public abstract void fillQuadBox(double x1, double y1,
-                                     double x2, double y2,
-                                     double x3, double y3,
-                                     double x4, double y4,
-                                     double z, double sZ,
-                                     byte options);
+    public abstract void fillQuadBox(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z, double sZ, byte options);
 
     public abstract void drawRect(double x, double y, double sX, double sY);
 
@@ -89,7 +84,8 @@ public abstract class BaseShapeRenderer
 
     public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled);
 
-    public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest);
+    public abstract void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled,
+            boolean depthtest);
 
     public abstract void setBatchMode(boolean enabled, boolean quads, boolean depth);
 

@@ -35,7 +35,7 @@ public class BulletBlock extends BulletArc
     protected boolean hasBounced = false;
 
     AxisRotation[] rotations = new AxisRotation[]{new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0), new AxisRotation(Game.game.window, AxisRotation.Axis.yaw, 0),
-            new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0)};
+        new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0)};
 
     public BulletBlock()
     {

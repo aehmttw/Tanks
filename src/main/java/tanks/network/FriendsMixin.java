@@ -1,13 +1,15 @@
 package tanks.network;
 
-import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamFriendsCallback;
-import com.codedisaster.steamworks.SteamID;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.ScreenElement;
+
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamFriendsCallback;
+import com.codedisaster.steamworks.SteamID;
 
 public class FriendsMixin
 {

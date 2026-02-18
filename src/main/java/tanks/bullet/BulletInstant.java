@@ -1,8 +1,9 @@
 package tanks.bullet;
 
-import basewindow.Color;
 import java.util.ArrayList;
 import java.util.Random;
+
+import basewindow.Color;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
@@ -279,7 +280,7 @@ public class BulletInstant extends Bullet
 
         boolean finished = true;
 
-        for (Laser s : this.segments)
+        for (Laser s: this.segments)
         {
             s.age += Panel.frameFrequency;
 
@@ -297,7 +298,7 @@ public class BulletInstant extends Bullet
     @Override
     public void draw()
     {
-        for (Laser s : this.segments)
+        for (Laser s: this.segments)
         {
             s.draw();
         }

@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamUGC;
 import tanks.Drawing;
 import tanks.Game;
+
+import com.codedisaster.steamworks.SteamUGC;
 
 public class ScreenDownloadInfo extends Screen
 {

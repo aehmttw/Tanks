@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.Team;
@@ -10,6 +9,8 @@ import tanks.network.ServerHandler;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPlayerSetBuild extends PersonalEvent
 {
@@ -64,7 +65,7 @@ public class EventPlayerSetBuild extends PersonalEvent
                             p.hotbar.coins -= b.price;
                             success = true;
 
-                            for (ServerHandler h : ScreenPartyHost.server.connections)
+                            for (ServerHandler h: ScreenPartyHost.server.connections)
                             {
                                 if (h.player == p)
                                 {
@@ -81,7 +82,7 @@ public class EventPlayerSetBuild extends PersonalEvent
                             if (p.tank instanceof TankPlayerRemote && p.clientID.equals(this.clientID))
                                 ((TankPlayerRemote) p.tank).buildName = s.builds.get(build).name;
 
-                            for (ServerHandler h : ScreenPartyHost.server.connections)
+                            for (ServerHandler h: ScreenPartyHost.server.connections)
                             {
                                 if (h.player == p)
                                     h.queueEvent(new EventPlayerSetBuild(this.build));

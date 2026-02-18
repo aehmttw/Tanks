@@ -21,7 +21,7 @@ public class ChatFilter
         String rawMessage = msg.toLowerCase().replaceAll("_", " ");
         String message = msg.toLowerCase().replaceAll("_", " ");
 
-        for (String badword : this.badwords)
+        for (String badword: this.badwords)
         {
             String p = "\\w" + badword + "\\w";
             Matcher m = Pattern.compile(p).matcher(rawMessage);
@@ -57,8 +57,7 @@ public class ChatFilter
     }
 
     /**
-     * I've added 1 to every character in these bad words so that they look like
-     * nonsense. This addition is removed when testing for bad words in chat
+     * I've added 1 to every character in these bad words so that they look like nonsense. This addition is removed when testing for bad words in chat
      */
     public void addBadWords()
     {

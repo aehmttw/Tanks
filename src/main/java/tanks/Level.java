@@ -1,10 +1,11 @@
 package tanks;
 
-import basewindow.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Random;
+
+import basewindow.Color;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
@@ -32,7 +33,8 @@ public class Level
 
     public static Color currentColor = new Color(235, 207, 166);
     public static Color currentColorVar = new Color(235, 207, 166);
-    public static double currentLightIntensity = 1, currentShadowIntensity = 0.5;
+    public static double currentLightIntensity = 1;
+    public static double currentShadowIntensity = 0.5;
 
     public static int currentCloudCount = 0;
 
@@ -44,8 +46,10 @@ public class Level
 
     public double timer = -1;
 
-    public int startX, startY;
-    public int sizeX, sizeY;
+    public int startX;
+    public int startY;
+    public int sizeX;
+    public int sizeY;
 
     public Color color = new Color(235, 207, 166);
     public Color colorVar = new Color(20, 20, 20);
@@ -100,16 +104,16 @@ public class Level
 
     public Level(String level, ArrayList<TankAIControlled> customTanks)
     {
-        this(level, customTanks, false, ScreenPartyHost.isServer && Game.disablePartyFriendlyFire);
+        this(level, customTanks, false,
+                ScreenPartyHost.isServer && Game.disablePartyFriendlyFire);
     }
 
     /**
      * A level string is structured like this:<br>
-     * (parentheses signify required parameters, and square brackets signify
-     * optional parameters.<br>
-     * Asterisks indicate that the parameter can be repeated, separated by commas.
-     * Do not include these in the level string.)<br>
-     * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
+     * (parentheses signify required parameters, and square brackets signify optional parameters.<br>
+     * Asterisks indicate that the parameter can be repeated, separated by commas. Do not include these in the level string.)<br>
+     * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|
+     * [(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
      */
     public Level(String level, ArrayList<TankAIControlled> customTanks, boolean remote, boolean disableFriendlyFire)
     {
@@ -117,7 +121,11 @@ public class Level
         this.remote = remote;
 
         this.customTanks = customTanks;
-        String[] preset = new String[0], screen = new String[0], obstaclesPos = new String[0], tanks = new String[0], teams;
+        String[] preset = new String[0];
+        String[] screen = new String[0];
+        String[] obstaclesPos = new String[0];
+        String[] tanks = new String[0];
+        String[] teams;
 
         if (ScreenPartyHost.isServer)
             this.startTime = Game.partyStartTime;
@@ -129,7 +137,7 @@ public class Level
         obstacles = new ArrayList<Obstacle>();
         this.tanks = new ArrayList<Tank>();
 
-        for (String s : blocks)
+        for (String s: blocks)
         {
             if (s.isEmpty())
             {
@@ -138,12 +146,12 @@ public class Level
             {
                 s = s.substring("items\n".length());
                 ArrayList<String> objects = getJsonObjects(s);
-                for (String o : objects) this.startingItems.add(Item.ItemStack.fromString(null, o));
+                for (String o: objects) this.startingItems.add(Item.ItemStack.fromString(null, o));
             } else if (s.startsWith("shop\n"))
             {
                 s = s.substring("shop\n".length());
                 ArrayList<String> objects = getJsonObjects(s);
-                for (String o : objects)
+                for (String o: objects)
                 {
                     this.shop.add(Item.ShopItem.fromString(o));
                 }
@@ -155,7 +163,7 @@ public class Level
             {
                 s = s.substring("tanks\n".length());
                 ArrayList<String> objects = getJsonObjects(s);
-                for (String o : objects)
+                for (String o: objects)
                 {
                     TankAIControlled t = TankAIControlled.fromString(o);
                     if (t != null)
@@ -165,7 +173,7 @@ public class Level
             {
                 s = s.substring("builds\n".length());
                 ArrayList<String> objects = getJsonObjects(s);
-                for (String o : objects)
+                for (String o: objects)
                 {
                     TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(o);
                     t.enableTertiaryColor = true;
@@ -263,7 +271,7 @@ public class Level
 
         if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
         {
-            for (String obstaclesPo : obstaclesPos)
+            for (String obstaclesPo: obstaclesPos)
             {
                 String[] obs = obstaclesPo.split("-");
 
@@ -322,13 +330,13 @@ public class Level
 
         int currentCrusadeID = 0;
         LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
-        for (TankAIControlled t : this.customTanks) customTanksMap.put(t.name, t);
+        for (TankAIControlled t: this.customTanks) customTanksMap.put(t.name, t);
 
         tanksToRemove = new ArrayList<>();
 
         if (!preset[2].isEmpty())
         {
-            for (String s : tanks)
+            for (String s: tanks)
             {
                 String[] tank = s.split("-");
                 double x = Game.tile_size * (0.5 + Double.parseDouble(tank[0]));
@@ -506,9 +514,9 @@ public class Level
             Game.movables.remove(Game.playerTank);
         }
 
-        for (Obstacle o : obstacles) Game.addObstacle(o, false);
+        for (Obstacle o: obstacles) Game.addObstacle(o, false);
 
-        for (Tank t : tanks)
+        for (Tank t: tanks)
         {
             if (sc != null)
                 t.drawAge = 50;
@@ -555,7 +563,7 @@ public class Level
 
                 Tile t = queue.remove(0);
 
-                for (int j : t.sidesOrder)
+                for (int j: t.sidesOrder)
                 {
                     Tile t1;
 
@@ -633,7 +641,7 @@ public class Level
             }
         }
 
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             if (m instanceof Tank)
             {
@@ -676,7 +684,7 @@ public class Level
                     if (Crusade.crusadeMode)
                     {
                         ArrayList<TankPlayer.ShopTankBuild> builds = Crusade.currentCrusade.getBuildsShop();
-                        for (TankPlayer.ShopTankBuild shopTankBuild : builds)
+                        for (TankPlayer.ShopTankBuild shopTankBuild: builds)
                         {
                             if (shopTankBuild.name.equals(Game.player.buildName))
                                 build = shopTankBuild;
@@ -710,7 +718,7 @@ public class Level
 
         if (Crusade.crusadeMode && Crusade.currentCrusade.retry)
         {
-            for (Tank t : tanksToRemove)
+            for (Tank t: tanksToRemove)
             {
                 INetworkEvent e = new EventTankRemove(t, false);
                 Game.removeMovables.add(t);
@@ -728,7 +736,7 @@ public class Level
                 Team player = new Team(Game.playerTeam.name);
                 Team enemy = new Team(Game.enemyTeam.name);
 
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m.team == Game.playerTeam)
                         m.team = player;
@@ -762,12 +770,12 @@ public class Level
 
     public static void broadcastBuilds(ArrayList<TankPlayer.ShopTankBuild> builds)
     {
-        for (Player p : Game.players)
+        for (Player p: Game.players)
         {
             p.ownedBuilds.add(builds.get(0).name);
 
             boolean found = false;
-            for (TankPlayer.ShopTankBuild b : builds)
+            for (TankPlayer.ShopTankBuild b: builds)
             {
                 if (b.name.equals(p.buildName))
                 {
@@ -780,11 +788,11 @@ public class Level
                 p.buildName = builds.get(0).name;
         }
 
-        for (ServerHandler h : ScreenPartyHost.server.connections)
+        for (ServerHandler h: ScreenPartyHost.server.connections)
         {
             if (h.player != null)
             {
-                for (String s : h.player.ownedBuilds)
+                for (String s: h.player.ownedBuilds)
                 {
                     h.queueEvent(new EventPurchaseBuild(s));
                 }
@@ -796,7 +804,7 @@ public class Level
                     {
                         h.queueEvent(new EventPlayerSetBuild(n));
 
-                        for (ServerHandler h1 : ScreenPartyHost.server.connections)
+                        for (ServerHandler h1: ScreenPartyHost.server.connections)
                         {
                             if (h1.player != null && Team.isAllied(h1.player.tank, h.player.tank))
                                 h1.queueEvent(new EventPlayerRevealBuild(h.player.tank.networkID, n));
@@ -825,7 +833,7 @@ public class Level
                     Game.playerTank.health = s.baseHealth;
                     Game.player.buildName = s.name;
 
-                    for (ServerHandler h1 : ScreenPartyHost.server.connections)
+                    for (ServerHandler h1: ScreenPartyHost.server.connections)
                     {
                         if (h1.player != null && Team.isAllied(h1.player.tank, Game.playerTank))
                             h1.queueEvent(new EventPlayerRevealBuild(Game.playerTank.networkID, i));
@@ -862,9 +870,9 @@ public class Level
         Chunk.populateChunks(this);
         addLevelBorders();
 
-        for (Obstacle o : Game.obstacles) o.postOverride();
-        for (Movable m : Game.movables) m.refreshFacesAndChunks();
-        for (Obstacle o : Game.obstacles) o.refreshFacesAndChunks();
+        for (Obstacle o: Game.obstacles) o.postOverride();
+        for (Movable m: Game.movables) m.refreshFacesAndChunks();
+        for (Obstacle o: Game.obstacles) o.refreshFacesAndChunks();
 
         ScreenLevelEditor s = null;
 
@@ -880,10 +888,10 @@ public class Level
     public void addLevelBorders()
     {
         // Do not use forEach. This breaks the iOS compiler.
-        for (Chunk c : Chunk.getChunksInRange(0, 0, sizeX, 0)) c.addBorderFace(Direction.up, this);
-        for (Chunk c : Chunk.getChunksInRange(sizeX, 0, sizeX, sizeY)) c.addBorderFace(Direction.right, this);
-        for (Chunk c : Chunk.getChunksInRange(0, sizeY, sizeX, sizeY)) c.addBorderFace(Direction.down, this);
-        for (Chunk c : Chunk.getChunksInRange(0, 0, 0, sizeY)) c.addBorderFace(Direction.left, this);
+        for (Chunk c: Chunk.getChunksInRange(0, 0, sizeX, 0)) c.addBorderFace(Direction.up, this);
+        for (Chunk c: Chunk.getChunksInRange(sizeX, 0, sizeX, sizeY)) c.addBorderFace(Direction.right, this);
+        for (Chunk c: Chunk.getChunksInRange(0, sizeY, sizeX, sizeY)) c.addBorderFace(Direction.down, this);
+        for (Chunk c: Chunk.getChunksInRange(0, 0, 0, sizeY)) c.addBorderFace(Direction.left, this);
     }
 
     public static class Tile
@@ -928,12 +936,12 @@ public class Level
             {
                 this.tankLookupTable = new HashMap<>();
 
-                for (RegistryTank.TankEntry e : Game.registryTank.tankEntries)
+                for (RegistryTank.TankEntry e: Game.registryTank.tankEntries)
                 {
                     this.tankLookupTable.put(e.name, e.getTank(0, 0, 0));
                 }
 
-                for (TankAIControlled t : this.customTanks)
+                for (TankAIControlled t: this.customTanks)
                 {
                     this.tankLookupTable.put(t.name, t);
                 }
@@ -945,7 +953,7 @@ public class Level
             RegistryTank.TankEntry e = Game.registryTank.getEntry(name);
             if (TankUnknown.class.isAssignableFrom(e.tank))
             {
-                for (TankAIControlled t : this.customTanks)
+                for (TankAIControlled t: this.customTanks)
                 {
                     if (t.name.equals(name))
                         return t;
@@ -1043,7 +1051,7 @@ public class Level
         String ir = sb.toString();
         ArrayList<String> objects = getJsonObjects(ir);
         String out = "";
-        for (String o : objects)
+        for (String o: objects)
         {
             out += "\n" + o;
         }

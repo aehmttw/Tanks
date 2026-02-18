@@ -1,10 +1,12 @@
 package tanks.network;
 
-import basewindow.BaseFile;
-import com.codedisaster.steamworks.*;
 import java.util.*;
+
+import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.screen.*;
+
+import com.codedisaster.steamworks.*;
 
 public class SteamWorkshopHandler
 {

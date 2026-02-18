@@ -1,6 +1,9 @@
 package lwjglwindow;
 
-import static org.lwjgl.opengl.GL11.*;
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
@@ -8,11 +11,10 @@ import basewindow.ShaderGroup;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
-import java.nio.Buffer;
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import org.lwjgl.BufferUtils;
+
+import static org.lwjgl.opengl.GL11.*;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
@@ -37,23 +39,37 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
     public LWJGLWindow window;
 
     public ShaderGroup shader;
-    public int vertVBO, colVBO = -1, texVBO = -1, normVBO = -1;
+    public int vertVBO;
+    public int colVBO = -1;
+    public int texVBO = -1;
+    public int normVBO = -1;
 
     // Parallel arrays with ID map
     public HashMap<ShaderGroup.Attribute, Integer> attributeToId = new HashMap<>();
     public ArrayList<AttributeProperty> attributeProperties = new ArrayList<>();
 
     protected int vertexCount;
-    protected FloatBuffer vertices, colors, texCoords, normals;
+    protected FloatBuffer vertices;
+    protected FloatBuffer colors;
+    protected FloatBuffer texCoords;
+    protected FloatBuffer normals;
 
     public boolean staged = false;
 
     protected float colorGlow;
 
-    protected float currentR, currentG, currentB, currentA;
-    protected float currentTexU, currentTexV;
-    protected float currentNormalX, currentNormalY, currentNormalZ;
-    public boolean depth = false, glow = false, depthMask = false;
+    protected float currentR;
+    protected float currentG;
+    protected float currentB;
+    protected float currentA;
+    protected float currentTexU;
+    protected float currentTexV;
+    protected float currentNormalX;
+    protected float currentNormalY;
+    protected float currentNormalZ;
+    public boolean depth = false;
+    public boolean glow = false;
+    public boolean depthMask = false;
 
     public String texture;
 
@@ -69,7 +85,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 
         this.shader = shader;
 
-        for (ShaderGroup.Attribute a : shader.attributes)
+        for (ShaderGroup.Attribute a: shader.attributes)
         {
             int attributeId = this.attributeProperties.size();
             this.attributeToId.put(a, attributeId);
@@ -120,6 +136,11 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         this.currentNormalZ = z;
     }
 
+    public void setNormal(float[] n)
+    {
+        this.setNormal(n[0], n[1], n[2]);
+    }
+
     @Override
     public void delete(IBatchRenderableObject o)
     {
@@ -165,13 +186,8 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         for (int i = 0; i < attributeProperties.size(); i++)
         {
             AttributeProperty prop = attributeProperties.get(i);
-            for (float f : prop.floatArray) prop.buffer.put(f);
+            for (float f: prop.floatArray) prop.buffer.put(f);
         }
-    }
-
-    public void setNormal(float[] n)
-    {
-        this.setNormal(n[0], n[1], n[2]);
     }
 
     public void setAttribute(ShaderGroup.Attribute a, float... floats)
@@ -179,7 +195,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         int attributeId = this.attributeToId.get(a);
         AttributeProperty prop = this.attributeProperties.get(attributeId);
         int index = 0;
-        for (float f : floats)
+        for (float f: floats)
         {
             prop.floatArray[index] = f;
             index++;
@@ -245,7 +261,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         this.shader.setTexCoordBuffer(texVBO);
         this.shader.setNormalBuffer(normVBO);
 
-        for (ShaderGroup.Attribute a : this.shader.attributes)
+        for (ShaderGroup.Attribute a: this.shader.attributes)
         {
             int attributeId = this.attributeToId.get(a);
             AttributeProperty prop = this.attributeProperties.get(attributeId);

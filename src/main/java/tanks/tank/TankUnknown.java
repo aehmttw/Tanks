@@ -4,8 +4,7 @@ import tanks.Drawing;
 import tanks.Game;
 
 /**
- * This is the tank that appears whenever an invalid ID is specified. It is
- * useful for debugging purposes.
+ * This is the tank that appears whenever an invalid ID is specified. It is useful for debugging purposes.
  */
 public class TankUnknown extends Tank
 {

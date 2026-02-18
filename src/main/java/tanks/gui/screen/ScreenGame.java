@@ -1,13 +1,14 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
-import basewindow.InputPoint;
-import basewindow.transformation.RotationAboutPoint;
-import basewindow.transformation.Translation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
+
+import basewindow.InputCodes;
+import basewindow.InputPoint;
+import basewindow.transformation.RotationAboutPoint;
+import basewindow.transformation.Translation;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.generator.LevelGeneratorVersus;
@@ -119,7 +120,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public boolean playedIntro = false;
 
     protected static String[] ready_musics = {"piano.ogg", "synth.ogg", "bass-guitar.ogg", "drum.ogg", "beep.ogg", "bass.ogg", "cello.ogg", "chime.ogg", "drum2.ogg", "drum3.ogg",
-            "drum4.ogg", "echo-piano.ogg", "pizzicato-violin.ogg", "strings.ogg", "viola-beep.ogg", "violin.ogg", "violin-beep.ogg"};
+        "drum4.ogg", "echo-piano.ogg", "pizzicato-violin.ogg", "strings.ogg", "viola-beep.ogg", "violin.ogg", "violin-beep.ogg"};
     protected static int[][] intro_order = {{0, 1, 2, 3, 4}, {6, 8, 12, 14}, {5, 9, 11, 13, 16}, {7, 10, 15}};
     protected ArrayList<Integer> playingReadyMusics = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
     protected float lastReadyMusicTime = -2;
@@ -161,7 +162,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     {
         if (ScreenPartyHost.isServer)
         {
-            for (Player p : Game.players)
+            for (Player p: Game.players)
             {
                 if (!ScreenPartyHost.readyPlayers.contains(p) && ScreenPartyHost.includedPlayers.contains(p.clientID))
                     ScreenPartyHost.readyPlayers.add(p);
@@ -605,7 +606,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             this.initBuilds(Game.currentLevel.playerBuilds);
 
-            for (TankPlayer.ShopTankBuild b : Game.currentLevel.playerBuilds)
+            for (TankPlayer.ShopTankBuild b: Game.currentLevel.playerBuilds)
             {
                 if (b.price > 0)
                 {
@@ -619,7 +620,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 startingItems = true;
             }
 
-            for (Player p : Game.players)
+            for (Player p: Game.players)
             {
                 p.hotbar.itemBar = new ItemBar(p);
                 p.hotbar.itemBar.showItems = false;
@@ -630,7 +631,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                 if (startingItems)
                 {
-                    for (Item.ItemStack<?> i : Game.currentLevel.startingItems) p.hotbar.itemBar.addItem(i);
+                    for (Item.ItemStack<?> i: Game.currentLevel.startingItems) p.hotbar.itemBar.addItem(i);
 
                     p.hotbar.itemBar.showItems = true;
                 }
@@ -671,7 +672,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if (ScreenPartyHost.isServer)
         {
-            for (Player p : Game.botPlayers)
+            for (Player p: Game.botPlayers)
             {
                 if (ScreenPartyHost.includedPlayers.contains(p.clientID))
                     ScreenPartyHost.readyPlayers.add(p);
@@ -702,10 +703,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public void botShopping()
     {
-        for (Player p : Game.botPlayers)
+        for (Player p: Game.botPlayers)
         {
             ArrayList<TankPlayer.ShopTankBuild> unowned = new ArrayList<>();
-            for (TankPlayer.ShopTankBuild sb : this.builds)
+            for (TankPlayer.ShopTankBuild sb: this.builds)
             {
                 if (!p.ownedBuilds.contains(sb.name))
                     unowned.add(sb);
@@ -732,7 +733,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if (!this.shop.isEmpty())
         {
-            for (Player p : Game.botPlayers)
+            for (Player p: Game.botPlayers)
             {
                 int j = 0;
                 for (int i = 0; i < 5 && j < 100; i++)
@@ -874,7 +875,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                 if (ScreenPartyHost.isServer)
                 {
-                    for (ServerHandler h : ScreenPartyHost.server.connections)
+                    for (ServerHandler h: ScreenPartyHost.server.connections)
                     {
                         if (Team.isAllied(h.player.tank, Game.playerTank))
                             h.queueEvent(new EventPlayerRevealBuild(Game.playerTank.networkID, i));
@@ -887,7 +888,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public void initializeShopList()
     {
         StringBuilder s = new StringBuilder();
-        for (Button b : this.shopItemButtons) s.append(b.text);
+        for (Button b: this.shopItemButtons) s.append(b.text);
 
         if (!lastShop.contentEquals(s))
             newItemsNotification = true;
@@ -905,7 +906,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public static void setupGameLights()
     {
-        for (Obstacle o : Game.obstacles)
+        for (Obstacle o: Game.obstacles)
         {
             if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
             {
@@ -917,7 +918,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
         }
 
-        for (Movable o : Game.movables)
+        for (Movable o: Game.movables)
         {
             if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
             {
@@ -1046,7 +1047,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             Panel.autoZoom = !Panel.autoZoom;
         }
 
-        for (ErrorHandler<?, ?> h : ErrorHandler.errorHandlers) h.updateTimer();
+        for (ErrorHandler<?, ?> h: ErrorHandler.errorHandlers) h.updateTimer();
 
         Movable.movableSyncHandler.checkForErrors(null);
 
@@ -1111,7 +1112,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     if (isVersus && this.rankingsTime <= this.rankingsTimeIntro)
                     {
                         boolean lose = false;
-                        for (Movable m : Game.movables)
+                        for (Movable m: Game.movables)
                         {
                             if (m instanceof Tank && !m.destroy && m != Game.playerTank && !Team.isAllied(m, Game.playerTank))
                             {
@@ -1176,7 +1177,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             {
                 if (Game.currentLevel.timer <= -1 && !dead)
                 {
-                    for (Movable m : Game.movables)
+                    for (Movable m: Game.movables)
                     {
                         if (m instanceof Tank && !m.destroy)
                         {
@@ -1204,13 +1205,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 }
             }
 
-            for (String m : this.prevTankMusics)
+            for (String m: this.prevTankMusics)
             {
                 if (!this.tankMusics.contains(m))
                     Drawing.drawing.removeSyncedMusic(m, 500);
             }
 
-            for (String m : this.tankMusics)
+            for (String m: this.tankMusics)
             {
                 if (!this.prevTankMusics.contains(m))
                 {
@@ -1414,7 +1415,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 TankPlayer.controlStick.inputIntensity = 0;
                 TankPlayer.controlStick.update();
 
-                for (InputPoint p : Game.game.window.touchPoints.values())
+                for (InputPoint p: Game.game.window.touchPoints.values())
                 {
                     p.valid = false;
                     p.tag = "backgroundscreen";
@@ -1669,11 +1670,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             ArrayList<Team> aliveTeams = new ArrayList<>();
             ArrayList<Team> fullyAliveTeams = new ArrayList<>();
 
-            for (Effect e : Game.effects) e.update();
+            for (Effect e: Game.effects) e.update();
 
             updateGameField();
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Crate)
                     m = ((Crate) m).tank;
@@ -1830,7 +1831,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                 if (isVersus && ScreenPartyHost.isServer)
                 {
-                    for (Movable m : Game.movables)
+                    for (Movable m: Game.movables)
                     {
                         if (!m.destroy && m instanceof IServerPlayerTank && this.eliminatedPlayers.size() < ScreenPartyHost.includedPlayers.size())
                         {
@@ -1847,7 +1848,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 {
                     boolean noMovables = true;
 
-                    for (Movable m : Game.movables)
+                    for (Movable m: Game.movables)
                     {
                         if (m instanceof Bullet || m instanceof Mine)
                         {
@@ -1863,7 +1864,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     else if (ScreenPartyLobby.isClient)
                         includedPlayers = ScreenPartyLobby.includedPlayers.size();
 
-                    for (Effect e : Game.effects)
+                    for (Effect e: Game.effects)
                     {
                         if (e.maxAge > 100)
                         {
@@ -1885,13 +1886,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                         this.saveRemainingTanks();
 
-                        for (Movable m : Game.movables) m.destroy = true;
+                        for (Movable m: Game.movables) m.destroy = true;
 
                         if (Obstacle.draw_size <= 0)
                         {
                             Panel.levelPassed = false;
 
-                            for (Player p : Game.players)
+                            for (Player p: Game.players)
                             {
                                 if (p != null && p.tank != null && aliveTeams.contains(p.tank.team)
                                         || (!aliveTeams.isEmpty() && aliveTeams.get(0).name.equals(p.clientID.toString())))
@@ -1959,7 +1960,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                                     if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
                                         Game.eventsOut.add(new EventShowCrusadeStats());
 
-                                    for (Player p : Game.players) Game.eventsOut.add(new EventUpdateRemainingLives(p));
+                                    for (Player p: Game.players) Game.eventsOut.add(new EventUpdateRemainingLives(p));
                                 } else if (ScreenInterlevel.fromQuickPlay != null)
                                     exitQuickPlay();
                                 else
@@ -1996,7 +1997,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
         } else
         {
-            for (int i : Game.game.window.touchPoints.keySet())
+            for (int i: Game.game.window.touchPoints.keySet())
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
 
@@ -2042,9 +2043,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public static void handleRemovals()
     {
-        for (Movable m : Game.removeMovables)
+        for (Movable m: Game.removeMovables)
         {
-            for (Chunk chunk : m.getTouchingChunks()) chunk.removeMovable(m);
+            for (Chunk chunk: m.getTouchingChunks()) chunk.removeMovable(m);
 
             if (m instanceof IAvoidObject)
                 Game.avoidObjects.remove((IAvoidObject) m);
@@ -2053,9 +2054,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Game.movables.removeAll(Game.removeMovables);
         Game.clouds.removeAll(Game.removeClouds);
 
-        for (Obstacle o : Game.removeObstacles) Game.removeObstacle(o);
+        for (Obstacle o: Game.removeObstacles) Game.removeObstacle(o);
 
-        for (Effect e : Game.removeEffects)
+        for (Effect e: Game.removeEffects)
         {
             if (e.state == Effect.State.removed)
             {
@@ -2065,7 +2066,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
         }
 
-        for (SolidGameObject o : SolidGameObject.addFacesToChunks)
+        for (SolidGameObject o: SolidGameObject.addFacesToChunks)
         {
             if (!o.isRemoved())
                 Chunk.runIfChunkPresent(o.posX, o.posY, chunk -> chunk.faces.addFaces(o));
@@ -2085,7 +2086,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     public void updateGameField()
     {
-        for (Movable m : Game.movables) m.preUpdate();
+        for (Movable m: Game.movables) m.preUpdate();
 
         for (int i = 0; i < Game.movables.size(); i++)
         {
@@ -2111,7 +2112,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         Chunk.handleDirtyChunks();
 
-        for (Obstacle o : Game.checkObstaclesToUpdate)
+        for (Obstacle o: Game.checkObstaclesToUpdate)
         {
             if (o == null || !Chunk.getChunkIfPresent(o.posX, o.posY, false, chunk -> chunk.obstacles.contains(o)))
                 continue;
@@ -2124,7 +2125,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         Game.checkObstaclesToUpdate.clear();
 
-        for (Obstacle o : Game.obstaclesToUpdate) o.update();
+        for (Obstacle o: Game.obstaclesToUpdate) o.update();
 
         double time = Panel.frameFrequency;
         while (time > 0)
@@ -2160,7 +2161,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             float pos = Game.game.window.soundPlayer.getMusicPos();
             if (this.lastReadyMusicTime == -1)
             {
-                for (int m : this.playingReadyMusics)
+                for (int m: this.playingReadyMusics)
                 {
                     Drawing.drawing.addSyncedMusic("ready/" + ready_musics[m], Game.musicVolume, true, 0);
                 }
@@ -2183,7 +2184,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 if (Math.random() < 0.01 && specialReadyMusicIterationsLeft <= 0)
                 {
                     specialReadyMusicIterationsLeft = 3;
-                    for (int m : this.playingReadyMusics)
+                    for (int m: this.playingReadyMusics)
                     {
                         Drawing.drawing.removeSyncedMusic("ready/" + ready_musics[m], fadeTime);
                     }
@@ -2210,7 +2211,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     if (this.specialReadyMusicIterationsLeft == 0)
                     {
                         Drawing.drawing.removeSyncedMusic(this.specialReadyMusic, fadeTime);
-                        for (int m : this.playingReadyMusics)
+                        for (int m: this.playingReadyMusics)
                         {
                             Drawing.drawing.addSyncedMusic("ready/" + ready_musics[m], Game.musicVolume, true, fadeTime);
                         }
@@ -2294,7 +2295,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if ((Game.playerTank == null || Game.playerTank.destroy) && !ScreenGame.finishedQuick && Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale)
         {
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Tank && !m.destroy && !((Tank) m).hidden)
                 {
@@ -2345,7 +2346,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         {
             deadTime += Panel.frameFrequency;
 
-            for (Movable m : Movable.getMovablesInRadius(x, y, Game.tile_size * 4))
+            for (Movable m: Movable.getMovablesInRadius(x, y, Game.tile_size * 4))
             {
                 if (!(m instanceof Tank) || m.destroy || ((Tank) m).hidden || spectatingTank == m)
                     continue;
@@ -2494,7 +2495,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         // drawables[0].addAll(Game.tracks);
 
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             drawables[m.drawLevel].add(m);
 
@@ -2502,7 +2503,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 drawables[m.nameTag.drawLevel].add(m.nameTag);
         }
 
-        for (Obstacle o : Game.obstacles)
+        for (Obstacle o: Game.obstacles)
         {
             if (!o.batchDraw || !Game.enable3d)
                 drawables[o.drawLevel].add(o);
@@ -2512,9 +2513,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 this.drawables[9].add(e);
         }
 
-        for (Effect e : Game.effects) drawables[e.drawLevel].add(e);
+        for (Effect e: Game.effects) drawables[e.drawLevel].add(e);
 
-        for (Cloud c : Game.clouds) drawables[c.drawLevel].add(c);
+        for (Cloud c: Game.clouds) drawables[c.drawLevel].add(c);
 
         for (int i = 0; i < this.drawables.length; i++)
         {
@@ -2535,7 +2536,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 this.tutorial.drawTutorial();
             }
 
-            for (IDrawable d : this.drawables[i])
+            for (IDrawable d: this.drawables[i])
             {
                 if (d != null)
                     d.draw();
@@ -2543,7 +2544,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             if (Game.glowEnabled)
             {
-                for (IDrawable d : this.drawables[i])
+                for (IDrawable d: this.drawables[i])
                 {
                     if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
                         ((IDrawableWithGlow) d).drawGlow();
@@ -2552,7 +2553,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
             // if (i == 9 && Game.disableErrorFixing)
             // {
-            // for (Movable m : Movable.getDisjointMovables())
+            // for (Movable m: Movable.getDisjointMovables())
             // {
             // Drawing.drawing.setColor(255, 0, 0, 127);
             // Drawing.drawing.fillRect(m.posX, m.posY, m.getSize(), m.getSize());
@@ -2658,7 +2659,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if (!playing)
         {
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if ((m instanceof TankPlayable && (ScreenPartyHost.readyPlayers.contains(((TankPlayable) m).player) || (!this.cancelCountdown && ScreenPartyLobby.isClient)))
                         || m instanceof TankPlayerBot || (m == Game.playerTank && (this.ready || (!this.cancelCountdown && ScreenPartyHost.isServer))))
@@ -2669,7 +2670,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
                 if (ScreenPartyLobby.isClient && m instanceof TankRemote)
                 {
-                    for (ConnectedPlayer p : ScreenPartyLobby.readyPlayers)
+                    for (ConnectedPlayer p: ScreenPartyLobby.readyPlayers)
                     {
                         if (p.clientId.toString().endsWith(((TankRemote) m).name))
                         {
@@ -2774,7 +2775,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     {
                         readyPlayers.clear();
 
-                        for (Player p : ScreenPartyHost.readyPlayers) readyPlayers.add(p.getConnectedPlayer());
+                        for (Player p: ScreenPartyHost.readyPlayers) readyPlayers.add(p.getConnectedPlayer());
                     } else
                         readyPlayers = ScreenPartyLobby.readyPlayers;
 
@@ -3144,7 +3145,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         if (!savedRemainingTanks && Crusade.crusadeMode && Crusade.currentCrusade != null)
         {
             Crusade.currentCrusade.livingTankIDs.clear();
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
                     Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
@@ -3156,7 +3157,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public void onPlayerDeath(Player p)
     {
         int remaining = 0;
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             if (m instanceof IServerPlayerTank && !m.destroy)
                 remaining++;

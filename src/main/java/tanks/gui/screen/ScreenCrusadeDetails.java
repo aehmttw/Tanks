@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import basewindow.BaseFile;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
@@ -320,7 +321,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
             Drawing.drawing.setInterfaceFontSize(24);
 
-            for (String s : this.description)
+            for (String s: this.description)
             {
                 Drawing.drawing.displayInterfaceText(this.centerX, pos + this.textOffset, s);
                 pos += this.objYSpace * 0.5;

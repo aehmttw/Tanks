@@ -1,6 +1,7 @@
 package tanks.registry;
 
 import java.util.LinkedHashMap;
+
 import tanks.Game;
 import tanks.gui.screen.leveleditor.selector.MetadataSelector;
 

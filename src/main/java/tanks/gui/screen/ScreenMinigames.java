@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -46,7 +47,7 @@ public class ScreenMinigames extends Screen
 
         ArrayList<Button> buttons = new ArrayList<>();
 
-        for (String name : Game.registryMinigame.minigames.keySet())
+        for (String name: Game.registryMinigame.minigames.keySet())
         {
             buttons.add(new Button(0, 0, 0, 0, name, () ->
             {

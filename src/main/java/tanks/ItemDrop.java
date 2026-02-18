@@ -2,6 +2,7 @@ package tanks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.Item;
 import tanks.network.event.EventItemDropDestroy;
@@ -143,7 +144,7 @@ public class ItemDrop extends Movable
                 Game.removeMovables.add(this);
         } else
         {
-            for (Movable m : Movable.getMovablesInRadius(this.posX, this.posY, this.size))
+            for (Movable m: Movable.getMovablesInRadius(this.posX, this.posY, this.size))
             {
                 if (!(m instanceof IServerPlayerTank))
                     continue;

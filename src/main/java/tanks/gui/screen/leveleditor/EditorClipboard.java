@@ -1,6 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import java.util.ArrayList;
+
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 
@@ -9,7 +10,8 @@ public class EditorClipboard
     public ArrayList<Tank> tanks = new ArrayList<>();
     public ArrayList<Obstacle> obstacles = new ArrayList<>();
 
-    public double centerX, centerY;
+    public double centerX;
+    public double centerY;
     public double minX;
     public double minY;
     public double maxX;
@@ -46,7 +48,7 @@ public class EditorClipboard
         minX = minY = 9999;
         maxX = maxY = -9999;
 
-        for (Obstacle o : obstacles)
+        for (Obstacle o: obstacles)
         {
             minX = Math.min(minX, o.posX);
             minY = Math.min(minY, o.posY);
@@ -54,7 +56,7 @@ public class EditorClipboard
             maxY = Math.max(maxY, o.posY);
         }
 
-        for (Tank t : tanks)
+        for (Tank t: tanks)
         {
             minX = Math.min(minX, t.posX);
             minY = Math.min(minY, t.posY);
@@ -65,13 +67,13 @@ public class EditorClipboard
         centerX = (maxX - minX) / 2;
         centerY = (maxY - minY) / 2;
 
-        for (Obstacle o : obstacles)
+        for (Obstacle o: obstacles)
         {
             o.posX -= minX;
             o.posY -= minY;
         }
 
-        for (Tank t : tanks)
+        for (Tank t: tanks)
         {
             t.posX -= minX;
             t.posY -= minY;
@@ -80,9 +82,9 @@ public class EditorClipboard
 
     public void flipHorizontal()
     {
-        for (Obstacle o : obstacles) o.posX = -(o.posX - centerX) + centerX;
+        for (Obstacle o: obstacles) o.posX = -(o.posX - centerX) + centerX;
 
-        for (Tank t : tanks)
+        for (Tank t: tanks)
         {
             t.posX = -(t.posX - centerX) + centerX;
             if (t.angle % Math.PI == 0)
@@ -92,9 +94,9 @@ public class EditorClipboard
 
     public void flipVertical()
     {
-        for (Obstacle o : obstacles) o.posY = -(o.posY - centerY) + centerY;
+        for (Obstacle o: obstacles) o.posY = -(o.posY - centerY) + centerY;
 
-        for (Tank t : tanks)
+        for (Tank t: tanks)
         {
             t.posY = -(t.posY - centerY) + centerY;
             if (t.angle % Math.PI == Math.PI / 2)
@@ -104,16 +106,18 @@ public class EditorClipboard
 
     public void rotate()
     {
-        for (Obstacle o : obstacles)
+        for (Obstacle o: obstacles)
         {
-            double x = o.posX - centerX, y = o.posY - centerY;
+            double x = o.posX - centerX;
+            double y = o.posY - centerY;
             o.posX = -y + centerX;
             o.posY = x + centerY;
         }
 
-        for (Tank t : tanks)
+        for (Tank t: tanks)
         {
-            double x = t.posX - centerX, y = t.posY - centerY;
+            double x = t.posX - centerX;
+            double y = t.posY - centerY;
             t.posX = -y + centerX;
             t.posY = x + centerY;
             t.angle += Math.PI / 2;

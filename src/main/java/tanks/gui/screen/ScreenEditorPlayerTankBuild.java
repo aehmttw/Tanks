@@ -1,10 +1,11 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import basewindow.BaseFile;
 import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;
@@ -140,7 +141,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
         public void addFields()
         {
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 TankBuildProperty p1 = f.getAnnotation(TankBuildProperty.class);
@@ -167,7 +168,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
         public void addFields()
         {
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 TankBuildProperty p1 = f.getAnnotation(TankBuildProperty.class);
@@ -334,7 +335,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
         public void sortUIElements()
         {
             int in = 0;
-            for (Tab t : this.subMenus)
+            for (Tab t: this.subMenus)
             {
                 this.uiElements.add(in, new Button(0, 0, 350, 40, t.name, () -> screen.setTab(t)));
                 in++;
@@ -348,7 +349,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                     this.uiElements.get(i).setPosition(margin3, Drawing.drawing.interfaceSizeY / 2 + yoffset + (i - in + 3) * 90);
             }
 
-            for (Tab t : this.subMenus)
+            for (Tab t: this.subMenus)
             {
                 t.sortUIElements();
             }
@@ -597,7 +598,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -708,41 +709,49 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                     {
                         return Property.class;
                     }
+
                     @Override
                     public String id()
                     {
                         return "ability_" + (j + 1);
                     }
+
                     @Override
                     public String name()
                     {
                         return "Ability " + (j + 1);
                     }
+
                     @Override
                     public String desc()
                     {
                         return "";
                     }
+
                     @Override
                     public String category()
                     {
                         return "";
                     }
+
                     @Override
                     public MiscType miscType()
                     {
                         return MiscType.none;
                     }
+
                     @Override
                     public boolean nullable()
                     {
                         return false;
                     }
+
                     @Override
                     public double minValue()
                     {
                         return 0;
                     }
+
                     @Override
                     public double maxValue()
                     {

@@ -1,7 +1,8 @@
 package tanks.network;
 
-import basewindow.Color;
 import java.util.UUID;
+
+import basewindow.Color;
 import tanks.Game;
 import tanks.Player;
 

@@ -1,14 +1,8 @@
 package tanks.network;
 
-import com.codedisaster.steamworks.SteamID;
-import com.codedisaster.steamworks.SteamNetworking;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.ReferenceCountUtil;
 import java.util.HashMap;
 import java.util.UUID;
+
 import tanks.Crusade;
 import tanks.Game;
 import tanks.Panel;
@@ -19,6 +13,14 @@ import tanks.network.event.EventSendClientDetails;
 import tanks.network.event.INetworkEvent;
 import tanks.network.event.IStackableEvent;
 import tanks.network.event.online.EventSendOnlineClientDetails;
+
+import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.SteamNetworking;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter
 {
@@ -209,7 +211,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
                 if (prev != null)
                     this.sendEvent(prev, size == 0);
 
-                for (IStackableEvent e : this.stackedEvents.values())
+                for (IStackableEvent e: this.stackedEvents.values())
                 {
                     size--;
                     this.sendEvent(e, size <= 0);

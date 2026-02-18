@@ -1,6 +1,5 @@
 package main;
 
-import basewindow.ComputerFileManager;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -10,6 +9,8 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Properties;
 import javax.swing.*;
+
+import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import tanks.*;
 import tanks.Panel;
@@ -30,7 +31,7 @@ public class Tanks
 
         // Goes through arguments and applies specified settings.
         int i = 0;
-        for (String arg : args)
+        for (String arg: args)
         {
             if (arg.equals("online_server"))
                 Game.isOnlineServer = true;
@@ -131,7 +132,7 @@ public class Tanks
 
         StringBuilder props = new StringBuilder();
         Properties pr = System.getProperties();
-        for (Object sr : pr.keySet()) props.append(sr).append(": ").append(pr.get(sr)).append("\n");
+        for (Object sr: pr.keySet()) props.append(sr).append(": ").append(pr.get(sr)).append("\n");
 
         String errorMsg = "Oh noes!\n" + "Tanks ran into a problem and was unable to start :(\n\n"
                 + "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n"
@@ -218,11 +219,9 @@ public class Tanks
     }
 
     /**
-     * Call this method to launch Tanks with extensions directly instead of loading
-     * them from a jar file! This is useful if you want to test an extension without
-     * exporting it as a jar file. The integer array passed determines the order in
-     * which these extensions will be added to the full list (which includes
-     * extensions loaded from separate jar files traditionally)
+     * Call this method to launch Tanks with extensions directly instead of loading them from a jar file! This is useful if you want to test an extension without exporting it as a
+     * jar file. The integer array passed determines the order in which these extensions will be added to the full list (which includes extensions loaded from separate jar files
+     * traditionally)
      */
     public static void launchWithExtensions(String[] args, Extension[] extensions, int[] order)
     {

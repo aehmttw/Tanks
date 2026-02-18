@@ -174,7 +174,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         this.bufferCooldown -= Panel.frameFrequency;
         double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
-        for (Item.ItemStack<?> s : this.abilities)
+        for (Item.ItemStack<?> s: this.abilities)
         {
             s.player = this.player;
             s.updateCooldown(reload);
@@ -183,7 +183,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         Hotbar h = this.player.hotbar;
         if (h.enabledItemBar)
         {
-            for (Item.ItemStack<?> i : h.itemBar.slots)
+            for (Item.ItemStack<?> i: h.itemBar.slots)
             {
                 if (i != null && !(i.isEmpty))
                 {

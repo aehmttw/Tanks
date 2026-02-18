@@ -1,11 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Panel;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerController;
 import tanks.tank.TankPlayerRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankControllerUpdateC extends PersonalEvent implements IStackableEvent
 {
@@ -57,7 +58,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         b.writeDouble(this.mY);
         b.writeBoolean(this.action1);
         b.writeBoolean(this.action2);
-        for (boolean quickAction : this.quickActions)
+        for (boolean quickAction: this.quickActions)
         {
             b.writeBoolean(quickAction);
         }

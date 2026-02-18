@@ -1,12 +1,13 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Movable;
 import tanks.bullet.Bullet;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBoostPanel;
 import tanks.tank.Tank;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventObstacleBoostPanelEffect extends PersonalEvent
 {

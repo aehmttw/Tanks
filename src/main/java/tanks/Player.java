@@ -1,11 +1,12 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
+
+import basewindow.BaseFile;
+import basewindow.Color;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
@@ -129,7 +130,7 @@ public class Player
                 String itemName = sec[0];
                 int count = Integer.parseInt(sec[1]);
 
-                for (Item.ShopItem it : shop)
+                for (Item.ShopItem it: shop)
                 {
                     if (it.itemStack.item.name.equals(itemName))
                     {
@@ -166,7 +167,7 @@ public class Player
     {
         String[] parts = str.replace("{", "").replace("}", "").split(", ");
 
-        for (String s : parts)
+        for (String s: parts)
         {
             if (s.length() <= 0)
                 continue;
@@ -180,7 +181,7 @@ public class Player
     {
         String[] parts = str.replace("{", "").replace("}", "").split(", ");
 
-        for (String s : parts)
+        for (String s: parts)
         {
             if (s.length() <= 0)
                 continue;
@@ -194,7 +195,7 @@ public class Player
     {
         String[] parts = str.replace("[", "").replace("]", "").split(", ");
 
-        for (String s : parts)
+        for (String s: parts)
         {
             if (s.length() <= 0)
                 continue;
@@ -207,7 +208,7 @@ public class Player
     {
         String[] parts = str.replace("[", "").replace("]", "").split(", ");
 
-        for (String s : parts)
+        for (String s: parts)
         {
             if (s.length() <= 0)
                 continue;
@@ -220,7 +221,7 @@ public class Player
     {
         String[] parts = str.replace("[", "").replace("]", "").split(", ");
 
-        for (String s : parts)
+        for (String s: parts)
         {
             if (s.length() <= 0)
                 continue;

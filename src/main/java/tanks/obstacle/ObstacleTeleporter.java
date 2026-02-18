@@ -1,6 +1,7 @@
 package tanks.obstacle;
 
 import java.util.ArrayList;
+
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorGroupID;
@@ -9,8 +10,7 @@ import tanks.tank.TeleporterOrb;
 import tanks.tankson.MetadataProperty;
 
 /**
- * A teleporter which randomly transports the player to another teleporter in
- * the level
+ * A teleporter which randomly transports the player to another teleporter in the level
  */
 public class ObstacleTeleporter extends Obstacle
 {

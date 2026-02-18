@@ -1,6 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import java.util.ArrayList;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -207,7 +208,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
         if (from.equals(to))
             return true;
 
-        for (TankPlayable t : this.editor.level.playerBuilds)
+        for (TankPlayable t: this.editor.level.playerBuilds)
         {
             if (to.equals(t.name))
                 return false;

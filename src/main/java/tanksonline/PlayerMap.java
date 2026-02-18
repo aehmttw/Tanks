@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.UUID;
+
 import tanks.Game;
 
 public class PlayerMap
@@ -104,7 +105,7 @@ public class PlayerMap
 
             PrintWriter pw = new PrintWriter(file);
 
-            for (UUID id : players.keySet())
+            for (UUID id: players.keySet())
             {
                 if (players.get(id).registered)
                     pw.println(id + "=" + players.get(id).username);
@@ -177,14 +178,14 @@ public class PlayerMap
             HashMap<Long, UploadedLevel> map = new HashMap<>();
             ArrayList<Long> times = new ArrayList<>();
 
-            for (Path p : ds)
+            for (Path p: ds)
             {
                 if (p.toString().contains(".DS_Store"))
                     continue;
 
                 DirectoryStream<Path> ds2 = Files.newDirectoryStream(p);
 
-                for (Path p2 : ds2)
+                for (Path p2: ds2)
                 {
                     if (p2.toString().endsWith(".tanks"))
                     {
@@ -199,7 +200,7 @@ public class PlayerMap
 
             times.sort(Comparator.naturalOrder());
 
-            for (long t : times)
+            for (long t: times)
             {
                 UploadedLevel l = map.get(t);
                 players.get(l.creator).levels.add(0, l);
@@ -216,7 +217,7 @@ public class PlayerMap
         {
             DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(access_codes_dir));
 
-            for (Path p : ds)
+            for (Path p: ds)
             {
                 if (p.toString().endsWith(".tanks"))
                 {

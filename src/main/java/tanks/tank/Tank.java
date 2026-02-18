@@ -1,13 +1,12 @@
 package tanks.tank;
 
-import static tanks.tank.TankPropertyCategory.*;
-
-import basewindow.Color;
-import basewindow.Model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
+
+import basewindow.Color;
+import basewindow.Model;
 import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.attribute.EffectManager;
@@ -27,6 +26,8 @@ import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
+
+import static tanks.tank.TankPropertyCategory.*;
 
 public abstract class Tank extends Movable implements ISolidObject
 {
@@ -142,8 +143,7 @@ public abstract class Tank extends Movable implements ISolidObject
     public boolean invisible = false;
 
     /**
-     * Changes when the tank's visibility state changes, indicating whether the tank
-     * is visible on screen
+     * Changes when the tank's visibility state changes, indicating whether the tank is visible on screen
      */
     public boolean currentlyVisible = true;
 
@@ -167,12 +167,12 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = appearanceGlow, id = "light_size", name = "Light size", minValue = 0.0)
     public double lightSize = 0;
     @TankBuildProperty
-    @Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0, desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
+    @Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0,
+            desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
     public double luminance = 0.5;
 
     /**
-     * Important: this option only is useful for the tank editor. Secondary color
-     * will be treated independently even if disabled.
+     * Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled.
      */
     @Property(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = Property.MiscType.colorRGB)
     public boolean enableSecondaryColor = false;
@@ -189,8 +189,7 @@ public abstract class Tank extends Movable implements ISolidObject
     public boolean multipleTurrets = true;
 
     /**
-     * Important: tertiary color values will not be used unless this option is set
-     * to true!
+     * Important: tertiary color values will not be used unless this option is set to true!
      */
     @Property(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = Property.MiscType.colorRGB)
     public boolean enableTertiaryColor = false;
@@ -208,9 +207,7 @@ public abstract class Tank extends Movable implements ISolidObject
     /** Age in frames */
     protected double age = 0;
     /**
-     * A tank will spawn other tanks on the second frame it updates if it was
-     * spawned by another tank, to prevent infinite loop for recursively spawning
-     * tanks
+     * A tank will spawn other tanks on the second frame it updates if it was spawned by another tank, to prevent infinite loop for recursively spawning tanks
      */
     protected boolean readyForInitialSpawn = true;
 
@@ -340,7 +337,7 @@ public abstract class Tank extends Movable implements ISolidObject
         if (this.destroy)
             return;
 
-        for (Movable m : getCircleCollision(this))
+        for (Movable m: getCircleCollision(this))
         {
             if (!(m instanceof Tank))
                 continue;
@@ -431,7 +428,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
         double bound = size / 2 + Game.tile_size / 2 + 1;
 
-        for (Obstacle o : Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
+        for (Obstacle o: Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
         {
             boolean bouncy = o.bouncy;
 
@@ -751,6 +748,27 @@ public abstract class Tank extends Movable implements ISolidObject
     public void drawTank(boolean forInterface, boolean in3d)
     {
         this.drawTank(forInterface, in3d, false);
+    }
+
+    public static void drawTank(double x, double y, Color c1, Color c2, Color c3)
+    {
+        drawTank(x, y, c1, c2, c3, Game.tile_size / 2);
+    }
+
+    public static void drawTank(double x, double y, Color c1, Color c2, Color c3, double size)
+    {
+        Drawing.drawing.setColor(c2);
+        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.base, x, y, size, size, 0);
+
+        Drawing.drawing.setColor(c1);
+        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.color, x, y, size, size, 0);
+
+        Drawing.drawing.setColor(c2);
+
+        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turret, x, y, size, size, 0);
+
+        Drawing.drawing.setColor(c3);
+        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turretBase, x, y, size, size, 0);
     }
 
     public void drawTank(boolean forInterface, boolean in3d, boolean transparent)
@@ -1165,7 +1183,7 @@ public abstract class Tank extends Movable implements ISolidObject
         Movable nearestM = null;
         Movable farthestM = null;
 
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             if (!(m instanceof Tank) || Team.isAllied(m, this) || m == this || ((Tank) m).hidden || m.destroy)
                 continue;
@@ -1363,27 +1381,6 @@ public abstract class Tank extends Movable implements ISolidObject
     {
         Movable m = Movable.findMovable(x, y);
         return m instanceof Tank ? (Tank) m : null;
-    }
-
-    public static void drawTank(double x, double y, Color c1, Color c2, Color c3)
-    {
-        drawTank(x, y, c1, c2, c3, Game.tile_size / 2);
-    }
-
-    public static void drawTank(double x, double y, Color c1, Color c2, Color c3, double size)
-    {
-        Drawing.drawing.setColor(c2);
-        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.base, x, y, size, size, 0);
-
-        Drawing.drawing.setColor(c1);
-        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.color, x, y, size, size, 0);
-
-        Drawing.drawing.setColor(c2);
-
-        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turret, x, y, size, size, 0);
-
-        Drawing.drawing.setColor(c3);
-        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turretBase, x, y, size, size, 0);
     }
 
     public static class ClippedTile

@@ -4,8 +4,7 @@ import tanks.Game;
 import tanks.bullet.DefaultItems;
 
 /**
- * A big boss tank which spawns other tanks and takes 5 regular bullets to
- * destroy
+ * A big boss tank which spawns other tanks and takes 5 regular bullets to destroy
  */
 public class TankBoss extends TankAIControlled
 {

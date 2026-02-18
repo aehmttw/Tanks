@@ -1,8 +1,9 @@
 package tanks.rendering;
 
+import java.util.HashMap;
+
 import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
-import java.util.HashMap;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
@@ -84,7 +85,7 @@ public class TrackRenderer
 
     public void reset()
     {
-        for (RegionRenderer r : this.renderers.values())
+        for (RegionRenderer r: this.renderers.values())
         {
             r.renderer.free();
         }
@@ -95,7 +96,7 @@ public class TrackRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
-        for (RegionRenderer s : renderers.values())
+        for (RegionRenderer s: renderers.values())
         {
             double x = xOffset * Game.tile_size * Game.currentSizeX;
             double y = yOffset * Game.tile_size * Game.currentSizeY;
@@ -104,7 +105,7 @@ public class TrackRenderer
 
             boolean in = false;
             int c = 3;
-            outer : for (int i = 0; i < c; i++)
+            outer: for (int i = 0; i < c; i++)
             {
                 for (int j = 0; j < c; j++)
                 {

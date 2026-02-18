@@ -1,11 +1,12 @@
 package tanks.tankson;
 
-import static tanks.tankson.CopyableFields.copyFields;
-
-import basewindow.Color;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import basewindow.Color;
 import tanks.Game;
+
+import static tanks.tankson.CopyableFields.copyFields;
 
 @SuppressWarnings("unchecked")
 public interface ICopyable<T>
@@ -28,7 +29,7 @@ public interface ICopyable<T>
             ArrayList<Field> fields = copyFields.get((Class<? extends ICopyable<?>>) m.getClass());
             if (fields.isEmpty())
             {
-                for (Field f : m.getClass().getFields())
+                for (Field f: m.getClass().getFields())
                 {
                     Property p = f.getAnnotation(Property.class);
                     if (p == null)
@@ -63,7 +64,7 @@ public interface ICopyable<T>
             {
                 f.set(m, new ArrayList<>());
                 ArrayList a = (ArrayList) f.get(m);
-                for (Object o : (ArrayList) v)
+                for (Object o: (ArrayList) v)
                 {
                     if (o instanceof ICopyable)
                         a.add(((ICopyable<?>) o).getCopy());
@@ -80,8 +81,7 @@ public interface ICopyable<T>
     }
 
     /**
-     * Gets a template copy of this, not to be added to the game field but to be
-     * used as a template
+     * Gets a template copy of this, not to be added to the game field but to be used as a template
      *
      * @return a template copy
      */

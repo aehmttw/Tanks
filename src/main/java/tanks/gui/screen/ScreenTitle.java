@@ -1,7 +1,5 @@
 package tanks.gui.screen;
 
-import static basewindow.InputCodes.*;
-
 import tanks.*;
 import tanks.gui.Button;
 import tanks.item.ItemBullet;
@@ -10,6 +8,8 @@ import tanks.obstacle.Obstacle;
 import tanks.rendering.TrackRenderer;
 import tanks.tank.*;
 
+import static basewindow.InputCodes.*;
+
 public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 {
     boolean controlPlayer = false;
@@ -17,8 +17,10 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
     public int chain;
 
-    public double lCenterX, lCenterY;
-    public double rCenterX, rCenterY;
+    public double lCenterX;
+    public double lCenterY;
+    public double rCenterX;
+    public double rCenterY;
 
     protected int[] inputs = new int[11];
     protected int inputCount = 0;
@@ -141,7 +143,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
             this.music = "menu_1.ogg";
 
-            for (Integer i : Game.game.window.validPressedKeys)
+            for (Integer i: Game.game.window.validPressedKeys)
             {
                 this.inputs[inputCount] = i;
                 inputCount = (inputCount + 1) % inputs.length;
@@ -244,7 +246,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
         if (enemies <= 1 && !this.controlPlayer)
         {
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof TankAIControlled)
                 {

@@ -1,9 +1,11 @@
 package tanks.network;
 
-import basewindow.Color;
-import io.netty.buffer.ByteBuf;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+
+import basewindow.Color;
+
+import io.netty.buffer.ByteBuf;
 
 public class NetworkUtils
 {
@@ -29,8 +31,9 @@ public class NetworkUtils
             return;
         }
 
-        for (int i = 0; i < s.length(); i++) if (s.charAt(i) == '\u00A7')
-            extra++;
+        for (int i = 0; i < s.length(); i++)
+            if (s.charAt(i) == '\u00A7')
+                extra++;
 
         b.writeInt(s.length() + extra);
         b.writeCharSequence(s, charset);

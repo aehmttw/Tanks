@@ -1,8 +1,5 @@
 package tanks.network;
 
-import com.codedisaster.steamworks.*;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -10,10 +7,15 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.*;
 import tanks.network.event.INetworkEvent;
+
+import com.codedisaster.steamworks.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class SteamNetworkHandler
 {
@@ -242,7 +244,7 @@ public class SteamNetworkHandler
             }
 
             ArrayList<Integer> remove = new ArrayList<>();
-            for (int i : toClose.keySet())
+            for (int i: toClose.keySet())
             {
                 if (System.currentTimeMillis() - toClose.get(i) > 100)
                 {
@@ -251,7 +253,7 @@ public class SteamNetworkHandler
                 }
             }
 
-            for (int i : remove) toClose.remove(i);
+            for (int i: remove) toClose.remove(i);
 
             Game.game.runningCallbacks = true;
             SteamAPI.runCallbacks();
@@ -300,7 +302,7 @@ public class SteamNetworkHandler
                 }
             }
 
-            for (int id : remoteUserIDs.keySet())
+            for (int id: remoteUserIDs.keySet())
             {
                 SteamNetworking.P2PSessionState state = new SteamNetworking.P2PSessionState();
                 networking.getP2PSessionState(remoteUserIDs.get(id), state);

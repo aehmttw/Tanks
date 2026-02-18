@@ -2,6 +2,7 @@ package tanks.tank;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
 import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
@@ -103,7 +104,7 @@ public class TankRemote extends Tank
 
         try
         {
-            for (Field field : fieldsToClone)
+            for (Field field: fieldsToClone)
             {
                 field.set(this, field.get(t));
             }
@@ -117,7 +118,7 @@ public class TankRemote extends Tank
     {
         fieldsToClone = new ArrayList<>();
 
-        for (Field field : Tank.class.getFields())
+        for (Field field: Tank.class.getFields())
         {
             if (field.getAnnotation(Property.class) != null && !field.getName().equals("name"))
                 fieldsToClone.add(field);
@@ -233,11 +234,8 @@ public class TankRemote extends Tank
         }
 
         /*
-         * Drawing.drawing.setInterfaceFontSize(24); Drawing.drawing.setColor(0, 0, 0);
-         * Drawing.drawing.drawInterfaceText(Drawing.drawing.toInterfaceCoordsX(
-         * prevKnownPosX), Drawing.drawing.toInterfaceCoordsY(prevKnownPosY),
-         * String.format("%d, %d, %.2f", (int) posX / 50, (int) posY / 50,
-         * timeSinceRefresh));
+         * Drawing.drawing.setInterfaceFontSize(24); Drawing.drawing.setColor(0, 0, 0); Drawing.drawing.drawInterfaceText(Drawing.drawing.toInterfaceCoordsX( prevKnownPosX),
+         * Drawing.drawing.toInterfaceCoordsY(prevKnownPosY), String.format("%d, %d, %.2f", (int) posX / 50, (int) posY / 50, timeSinceRefresh));
          */
     }
 

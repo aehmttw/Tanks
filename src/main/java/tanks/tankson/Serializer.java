@@ -1,10 +1,11 @@
 package tanks.tankson;
 
-import basewindow.Color;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+
+import basewindow.Color;
 import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
@@ -104,7 +105,7 @@ public final class Serializer
             else if (o instanceof Bullet)
                 p.put("bullet_type", ((Bullet) o).typeName);
 
-            for (Field f : o.getClass().getFields())
+            for (Field f: o.getClass().getFields())
             {
                 try
                 {
@@ -120,7 +121,7 @@ public final class Serializer
                             if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
                             {
                                 ArrayList<Map<String, Object>> o3s = new ArrayList<>();
-                                for (Object o3 : ((ArrayList) o2))
+                                for (Object o3: ((ArrayList) o2))
                                 {
                                     o3s.add(toMap(o3));
                                 }
@@ -224,7 +225,7 @@ public final class Serializer
                 if (!a.getClass().equals(b.getClass()))
                     return false;
 
-                for (Field f : a.getClass().getFields())
+                for (Field f: a.getClass().getFields())
                 {
                     try
                     {
@@ -252,13 +253,13 @@ public final class Serializer
         processed.add("obj_type");
         switch ((String) m.get("obj_type"))
         {
-            case "tank" :
+            case "tank":
                 o = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
                 break;
-            case "player_tank" :
+            case "player_tank":
                 o = new TankPlayer();
                 break;
-            case "bullet" :
+            case "bullet":
             {
                 try
                 {
@@ -270,10 +271,10 @@ public final class Serializer
                 }
                 break;
             }
-            case "mine" :
+            case "mine":
                 o = new Mine();
                 break;
-            case "item" :
+            case "item":
             {
                 try
                 {
@@ -285,55 +286,55 @@ public final class Serializer
                 }
                 break;
             }
-            case "item_stack" :
+            case "item_stack":
             {
                 processed.add("item");
                 Item i = (Item) parseObject((Map) m.get("item"));
                 o = (i.getStack(null));
                 break;
             }
-            case "shop_item" :
+            case "shop_item":
                 o = new Item.ShopItem();
                 break;
-            case "crusade_shop_item" :
+            case "crusade_shop_item":
                 o = new Item.CrusadeShopItem();
                 break;
-            case "shop_build" :
+            case "shop_build":
                 o = new TankPlayer.ShopTankBuild();
                 break;
-            case "crusade_shop_build" :
+            case "crusade_shop_build":
                 o = new TankPlayer.CrusadeShopTankBuild();
                 break;
-            case "explosion" :
+            case "explosion":
                 o = new Explosion();
                 break;
-            case "spawned_tank" :
+            case "spawned_tank":
                 processed.add("tank");
                 processed.add("weight");
                 o = new TankAIControlled.SpawnedTankEntry((ITankField) parseObject((Map) m.get("tank")), (Double) m.get("weight"));
                 break;
-            case "tank_ref" :
+            case "tank_ref":
                 processed.add("tank");
                 o = new TankReference((String) m.get("tank"));
                 break;
-            case "trail" :
+            case "trail":
                 o = new Trail();
                 break;
-            case "bullet_effect" :
+            case "bullet_effect":
                 o = new BulletEffect();
                 break;
-            case "item_icon" :
+            case "item_icon":
                 o = Game.registryItemIcon.getItemIcon((String) m.get("id")).getCopy();
                 if (o == null)
                     throw new RuntimeException("Couldn't find item icon for " + m.get("id"));
                 break;
-            default :
+            default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
 
         ArrayList<Field> conversions = new ArrayList<>();
         ArrayList<Object> conversionTargets = new ArrayList<>();
-        for (Field f : o.getClass().getFields())
+        for (Field f: o.getClass().getFields())
         {
             if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f)))
             {
@@ -359,7 +360,7 @@ public final class Serializer
                         if (!arr.isEmpty() && (arr.get(0) instanceof Map))
                         {
                             ArrayList o3s = new ArrayList();
-                            for (Map o3 : ((ArrayList<Map>) m.get(getid(f))))
+                            for (Map o3: ((ArrayList<Map>) m.get(getid(f))))
                             {
                                 o3s.add(parseObject(o3));
                             }
@@ -368,7 +369,7 @@ public final class Serializer
                         {
                             ArrayList<Color> colors = new ArrayList<>();
                             ArrayList<ArrayList<Double>> els = (ArrayList<ArrayList<Double>>) m.get(getid(f));
-                            for (ArrayList<Double> o4 : els)
+                            for (ArrayList<Double> o4: els)
                             {
                                 Color c = new Color(o4.get(0), o4.get(1), o4.get(2), (o4.size() >= 4) ? o4.get(3) : 255);
                                 colors.add(c);
@@ -417,7 +418,7 @@ public final class Serializer
 
         Set<String> unused = new HashSet<>(m.keySet());
         unused.removeAll(processed);
-        for (String k : unused)
+        for (String k: unused)
         {
             if (Compatibility.unused_table.containsKey(k))
             {

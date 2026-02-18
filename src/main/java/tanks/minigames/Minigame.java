@@ -39,7 +39,7 @@ public abstract class Minigame extends Level
     public Minigame(String levelString)
     {
         super(levelString, ScreenPartyLobby.isClient);
-        for (String s : Game.registryMinigame.minigames.keySet())
+        for (String s: Game.registryMinigame.minigames.keySet())
         {
             if (Game.registryMinigame.minigames.get(s).equals(this.getClass()))
                 this.name = s;

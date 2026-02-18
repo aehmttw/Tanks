@@ -3,8 +3,7 @@ package basewindow;
 import java.util.HashSet;
 
 /**
- * A shader group allows for shaders to share the same uniforms and attributes
- * across both normal and shadow map render mode shaders.
+ * A shader group allows for shaders to share the same uniforms and attributes across both normal and shadow map render mode shaders.
  */
 public class ShaderGroup
 {
@@ -140,7 +139,7 @@ public class ShaderGroup
         void bind(boolean shadow);
     }
 
-    public static abstract class GroupPrimitiveUniform<T, U extends ShaderProgram.IPrimitiveUniform<T>> implements IGroupUniform
+    public abstract static class GroupPrimitiveUniform<T, U extends ShaderProgram.IPrimitiveUniform<T>> implements IGroupUniform
     {
         protected U baseUniform;
         protected U shadowMapUniform;
@@ -169,7 +168,7 @@ public class ShaderGroup
         }
     }
 
-    public static abstract class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
+    public abstract static class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
     {
         protected T baseUniform;
         protected T shadowMapUniform;

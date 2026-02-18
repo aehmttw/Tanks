@@ -1,7 +1,8 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.util.Date;
+
+import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
@@ -76,7 +77,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
         StringBuilder tanks = new StringBuilder("\ntanks\n");
         if (Crusade.crusadeMode && Crusade.currentCrusade.customTanks.size() > 0)
         {
-            for (TankAIControlled t : Crusade.currentCrusade.customTanks) tanks.append(t.toString()).append("\n");
+            for (TankAIControlled t: Crusade.currentCrusade.customTanks) tanks.append(t.toString()).append("\n");
 
             ls = ls + tanks;
         }

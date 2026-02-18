@@ -10,8 +10,7 @@ import tanks.tankson.MetadataProperty;
 public class ObstacleLight extends Obstacle implements IDrawableLightSource
 {
     /**
-     * 7 values, first 3 are automatically set to coords, 4th is brightness, 5-7 are
-     * color
+     * 7 values, first 3 are automatically set to coords, 4th is brightness, 5-7 are color
      */
     public double[] lightInfo;
 

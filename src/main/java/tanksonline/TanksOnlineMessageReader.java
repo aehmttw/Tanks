@@ -1,12 +1,14 @@
 package tanksonline;
 
-import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+
 import tanks.Game;
 import tanks.network.MessageReader;
 import tanks.network.NetworkEventMap;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
+
+import io.netty.buffer.ByteBuf;
 
 public class TanksOnlineMessageReader
 {

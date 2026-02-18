@@ -1,6 +1,7 @@
 package tanksonline.screen;
 
 import java.util.ArrayList;
+
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
@@ -59,7 +60,7 @@ public class ScreenBrowseLevels extends ScreenLayout
 
         synchronized (PlayerMap.instance)
         {
-            for (UploadedLevel l : levels)
+            for (UploadedLevel l: levels)
             {
                 Button b = new Button(0, 0, 350, 40, l.name.replace("_", " "), () ->
                 {

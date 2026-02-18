@@ -57,13 +57,13 @@ public abstract class BaseShapeBatchRenderer
 
     public abstract void setColor(float r, float g, float b, float a);
 
-    public abstract void setGlow(float g);
-
     public void setColor(float r, float g, float b, float a, float glow)
     {
         this.setColor(r, g, b, a);
         this.setGlow(glow);
     }
+
+    public abstract void setGlow(float g);
 
     public abstract void addAttribute(ShaderGroup.Attribute attribute);
 

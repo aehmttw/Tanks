@@ -1,8 +1,9 @@
 package tanks;
 
-import basewindow.BaseFile;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import basewindow.BaseFile;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.hotbar.ItemBar;
@@ -109,7 +110,7 @@ public class CrusadePlayer
             {
                 Crusade.currentCrusade.livingTankIDs.clear();
 
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
                         Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
@@ -137,19 +138,17 @@ public class CrusadePlayer
             f.println(Crusade.currentCrusade.saveLevel + "");
 
             /*
-             * if (Game.screen instanceof ScreenGame && !win && !Game.playerTank.destroy) {
-             * Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, win);
-             * this.coins = player.hotbar.coins;
+             * if (Game.screen instanceof ScreenGame && !win && !Game.playerTank.destroy) { Crusade.currentCrusade.recordPerformance(ScreenGame.lastTimePassed, win); this.coins =
+             * player.hotbar.coins;
              *
-             * if (!(Game.screen instanceof ScreenCrashed || Game.screen instanceof
-             * ScreenOutOfMemory)) player.remainingLives--; }
+             * if (!(Game.screen instanceof ScreenCrashed || Game.screen instanceof ScreenOutOfMemory)) player.remainingLives--; }
              */
 
             f.println(player.remainingLives + "");
             f.println(this.coins + "");
 
             StringBuilder items = new StringBuilder();
-            for (Item.ItemStack<?> i : this.itemBar.slots)
+            for (Item.ItemStack<?> i: this.itemBar.slots)
             {
                 items.append(i.item.name).append(",").append(i.stackSize).append("|");
             }

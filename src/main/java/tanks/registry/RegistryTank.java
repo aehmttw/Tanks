@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+
 import tanks.Game;
 import tanks.tank.Tank;
 import tanks.tank.TankUnknown;
@@ -128,7 +129,7 @@ public class RegistryTank
 
     public TankEntry getEntry(String name)
     {
-        for (TankEntry r : tankEntries)
+        for (TankEntry r: tankEntries)
         {
             if (r.name.equals(name))
                 return r;

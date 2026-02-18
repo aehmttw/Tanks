@@ -119,7 +119,7 @@ public abstract class Item extends GameObject
     }
 
     @TanksONable("item_stack")
-    public static abstract class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>, ITanksONEditable
+    public abstract static class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>, ITanksONEditable
     {
         @Property(id = "item", name = "Item")
         public T item;
@@ -139,8 +139,7 @@ public abstract class Item extends GameObject
         public int networkIndex = 0;
 
         /**
-         * Creates a new item stack with given parameters. Make sure if you extend this
-         * class you provide the same constructor parameters in your subclass.
+         * Creates a new item stack with given parameters. Make sure if you extend this class you provide the same constructor parameters in your subclass.
          *
          * @param p
          *            player
@@ -219,7 +218,7 @@ public abstract class Item extends GameObject
                 return Game.playerTank;
             } else
             {
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(this.player.clientID))
                     {
@@ -293,63 +292,67 @@ public abstract class Item extends GameObject
                 String kind = p[7];
                 switch (kind)
                 {
-                    case "normal" :
+                    case "normal":
                         bullet.bullet = DefaultItems.basic_bullet.bullet.getCopy();
                         break;
-                    case "flamethrower" :
+                    case "flamethrower":
                         bullet.bullet = DefaultItems.flamethrower.bullet.getCopy();
                         break;
-                    case "laser" :
+                    case "laser":
                         bullet.bullet = DefaultItems.laser.bullet.getCopy();
                         break;
-                    case "freezing" :
+                    case "freezing":
                         bullet.bullet = DefaultItems.freezing_bullet.bullet.getCopy();
                         break;
-                    case "electric" :
+                    case "electric":
                         bullet.bullet = DefaultItems.zap.bullet.getCopy();
                         break;
-                    case "healing" :
+                    case "healing":
                         bullet.bullet = DefaultItems.healing_ray.bullet.getCopy();
                         break;
-                    case "arc" :
+                    case "arc":
                         bullet.bullet = DefaultItems.artillery_shell.bullet.getCopy();
                         break;
-                    case "explosive" :
+                    case "explosive":
                         bullet.bullet = DefaultItems.explosive_bullet.bullet.getCopy();
                         break;
-                    case "boost" :
+                    case "boost":
                         bullet.bullet = DefaultItems.booster_bullet.bullet.getCopy();
                         break;
-                    case "air" :
+                    case "air":
                         bullet.bullet = DefaultItems.air.bullet.getCopy();
                         break;
-                    case "homing" :
+                    case "homing":
                         bullet.bullet = DefaultItems.homing_rocket.bullet.getCopy();
+                        break;
+                    default:
                         break;
                 }
 
                 switch (p[8])
                 {
-                    case "none" :
+                    case "none":
                         bullet.bullet.effect = new BulletEffect();
                         break;
-                    case "fire" :
+                    case "fire":
                         bullet.bullet.effect = BulletEffect.fire.getCopy();
                         break;
-                    case "trail" :
+                    case "trail":
                         bullet.bullet.effect = BulletEffect.trail.getCopy();
                         break;
-                    case "dark_fire" :
+                    case "dark_fire":
                         bullet.bullet.effect = BulletEffect.dark_fire.getCopy();
                         break;
-                    case "fire_and_smoke" :
+                    case "fire_and_smoke":
                         bullet.bullet.effect = BulletEffect.fire_trail.getCopy();
                         break;
-                    case "ice" :
+                    case "ice":
                         bullet.bullet.effect = BulletEffect.ice.getCopy();
                         break;
-                    case "ember" :
+                    case "ember":
                         bullet.bullet.effect = BulletEffect.ember.getCopy();
+                        break;
+                    default:
                         break;
                 }
 
@@ -477,7 +480,7 @@ public abstract class Item extends GameObject
             Color homing1 = null;
             Color homing2 = null;
 
-            for (Trail t : b.effect.trailEffects)
+            for (Trail t: b.effect.trailEffects)
             {
                 if (t.frontWidth >= t.backWidth)
                 {
@@ -628,7 +631,7 @@ public abstract class Item extends GameObject
         // String type = (String) this.getClass().getField("item_class_name").get(null);
         // StringBuilder s = new StringBuilder(type + "[");
         //
-        // for (Field f : this.getClass().getFields())
+        // for (Field f: this.getClass().getFields())
         // {
         // ItemProperty a = f.getAnnotation(ItemProperty.class);
         // if (a != null)

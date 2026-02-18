@@ -2,6 +2,7 @@ package tanks.gui.screen.leveleditor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
@@ -383,7 +384,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         }
 
         HashMap<String, MetadataSelector> h = editor.mousePlaceable.getMetadataProperties();
-        for (MetadataSelector s : h.values())
+        for (MetadataSelector s: h.values())
         {
             InputBindingGroup i = Game.game.inputBindings.get(s.metadataProperty.keybind());
             if (i != null && i.isValid())
@@ -552,7 +553,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             }
         }
 
-        for (TankAIControlled t1 : this.editor.level.customTanks)
+        for (TankAIControlled t1: this.editor.level.customTanks)
         {
             t1.removeBrokenLinks();
         }
@@ -569,7 +570,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         if (this.editor.mousePlaceable instanceof TankAIControlled)
         {
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof TankAIControlled && ((TankAIControlled) m).name.equals(name))
                     t.cloneProperties((TankAIControlled) m);
@@ -596,7 +597,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     @Override
     public boolean rename(String from, String to)
     {
-        for (TankAIControlled t1 : this.editor.level.customTanks)
+        for (TankAIControlled t1: this.editor.level.customTanks)
         {
             if (!t1.name.equals(from) && t1.name.equals(to))
                 return false;
@@ -608,11 +609,11 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         if (to.equals("player"))
             return false;
 
-        for (TankAIControlled t1 : this.editor.level.customTanks)
+        for (TankAIControlled t1: this.editor.level.customTanks)
         {
             if (t1.renameLinkedTank(from, to))
             {
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof TankAIControlled && ((TankAIControlled) m).name.equals(t1.name))
                         t1.cloneProperties((TankAIControlled) m);

@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.AreaEffectFreeze;
 import tanks.Game;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventCreateFreezeEffect extends PersonalEvent
 {

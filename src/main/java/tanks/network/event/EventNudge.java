@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Player;
@@ -10,6 +9,8 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
 import tanks.translation.Translation;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventNudge extends PersonalEvent
 {
@@ -35,7 +36,7 @@ public class EventNudge extends PersonalEvent
             ScreenOverlayChat.addChat(Translation.translate("\u00A7255000000255%s is nudging you to click the ready button!", username));
         } else if (this.clientID != null)
         {
-            for (ServerHandler serverHandler : ScreenPartyHost.server.connections)
+            for (ServerHandler serverHandler: ScreenPartyHost.server.connections)
             {
                 Player p = serverHandler.player;
                 if (p.clientID != null && p.clientID.equals(this.clientID))

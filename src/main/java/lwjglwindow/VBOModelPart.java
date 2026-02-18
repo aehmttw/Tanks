@@ -1,16 +1,18 @@
 package lwjglwindow;
 
-import static org.lwjgl.opengl.GL11.*;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import basewindow.*;
 import basewindow.transformation.AxisRotation;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
-import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import org.lwjgl.BufferUtils;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class VBOModelPart extends ModelPart
 {
@@ -53,7 +55,7 @@ public class VBOModelPart extends ModelPart
         glPushMatrix();
         Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
 
-        for (AxisRotation a : axisRotations)
+        for (AxisRotation a: axisRotations)
         {
             a.apply();
         }
@@ -108,32 +110,6 @@ public class VBOModelPart extends ModelPart
     }
 
     @Override
-    public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
-    {
-        IBaseShader shader = (IBaseShader) this.window.currentShader;
-
-        if (this.material.useDefaultDepthMask)
-            window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.window.colorA >= 1.0);
-        else
-            window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
-        Scale.transform(window, 1, 1, 0);
-        Rotation.transform(window, 0, Math.PI * -3 / 4, 0);
-        Rotation.transform(window, 0, 0, Math.PI / 4);
-        Scale.transform(window, sX, sY, sZ);
-
-        setTexture();
-
-        shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
-        window.disableTexture();
-
-        glPopMatrix();
-    }
-
-    @Override
     public void draw(double posX, double posY, double sX, double sY, double angle)
     {
         IBaseShader shader = (IBaseShader) this.window.currentShader;
@@ -165,6 +141,32 @@ public class VBOModelPart extends ModelPart
             window.disableMaterialLights();
     }
 
+    @Override
+    public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
+    {
+        IBaseShader shader = (IBaseShader) this.window.currentShader;
+
+        if (this.material.useDefaultDepthMask)
+            window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.window.colorA >= 1.0);
+        else
+            window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
+        Scale.transform(window, 1, 1, 0);
+        Rotation.transform(window, 0, Math.PI * -3 / 4, 0);
+        Rotation.transform(window, 0, 0, Math.PI / 4);
+        Scale.transform(window, sX, sY, sZ);
+
+        setTexture();
+
+        shader.renderVBO(this.vertexVBO, this.colorVBO, this.texVBO, this.normalVBO, this.shapes.length * 3);
+        window.disableTexture();
+
+        glPopMatrix();
+    }
+
     public void setTexture()
     {
         if (this.material.texture != null)
@@ -185,29 +187,29 @@ public class VBOModelPart extends ModelPart
         FloatBuffer tex = BufferUtils.createFloatBuffer(this.shapes.length * 6);
         FloatBuffer normals = BufferUtils.createFloatBuffer(this.shapes.length * 9);
 
-        for (Shape s : this.shapes)
+        for (Shape s: this.shapes)
         {
-            for (Point p : s.points)
+            for (Point p: s.points)
             {
                 vert.put((float) p.x);
                 vert.put((float) p.y);
                 vert.put((float) p.z);
             }
 
-            for (Point p : s.texCoords)
+            for (Point p: s.texCoords)
             {
                 tex.put((float) p.x);
                 tex.put((float) p.y);
             }
 
-            for (Point p : s.normals)
+            for (Point p: s.normals)
             {
                 normals.put((float) p.x);
                 normals.put((float) p.y);
                 normals.put((float) p.z);
             }
 
-            for (double[] p : s.colors)
+            for (double[] p: s.colors)
             {
                 color.put((float) (p[0] * this.material.colorR));
                 color.put((float) (p[1] * this.material.colorG));

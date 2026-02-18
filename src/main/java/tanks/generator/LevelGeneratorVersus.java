@@ -2,6 +2,7 @@ package tanks.generator;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import tanks.Game;
 import tanks.item.Item;
 import tanks.translation.Translation;
@@ -143,68 +144,68 @@ public class LevelGeneratorVersus extends LevelGenerator
         StringBuilder itemsString = new StringBuilder("coins\n50\nshop\n");
         ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
 
-        for (String si : items)
+        for (String si: items)
         {
             Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
             int price = 0;
 
             switch (i.item.name)
             {
-                case "Rocket" :
+                case "Rocket":
                     price = 5;
                     break;
-                case "Sniper rocket" :
+                case "Sniper rocket":
                     price = 10;
                     break;
-                case "Mega mine" :
+                case "Mega mine":
                     price = 25;
                     break;
-                case "Zap" :
+                case "Zap":
                     price = 15;
                     break;
-                case "Shield" :
+                case "Shield":
                     price = 50;
                     break;
-                case "Freezing bullet" :
+                case "Freezing bullet":
                     price = 10;
                     break;
-                case "Flamethrower" :
+                case "Flamethrower":
                     price = 4;
                     break;
-                case "Mega bullet" :
+                case "Mega bullet":
                     price = 15;
                     break;
-                case "Artillery shell" :
+                case "Artillery shell":
                     price = 5;
                     break;
-                case "Air strike" :
+                case "Air strike":
                     price = 5;
                     break;
-                case "Healing ray" :
+                case "Healing ray":
                     price = 25;
                     break;
-                case "Explosive bullet" :
+                case "Explosive bullet":
                     price = 10;
                     break;
-                case "Booster" :
+                case "Booster":
                     price = 10;
                     break;
-                case "Mini bullet" :
+                case "Mini bullet":
                     price = 5;
                     break;
-                case "Void rocket" :
+                case "Void rocket":
                     price = 10;
                     break;
-                case "Homing rocket" :
+                case "Homing rocket":
                     price = 25;
                     break;
-                case "Air" :
+                case "Air":
                     price = 8;
                     break;
-                case "Block" :
+                case "Block":
                     price = 5;
                     break;
-                default :
+                default:
                     continue;
             }
 

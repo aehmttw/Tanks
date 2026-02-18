@@ -1,8 +1,9 @@
 package basewindow;
 
-import basewindow.transformation.AxisRotation;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import basewindow.transformation.AxisRotation;
 
 public class Model implements IModel
 {
@@ -52,7 +53,7 @@ public class Model implements IModel
         this.materials.put("default", Model.defaultMaterial);
 
         int bones = 0;
-        for (String s : lines)
+        for (String s: lines)
         {
             if (s.startsWith("newmtl "))
             {
@@ -294,7 +295,7 @@ public class Model implements IModel
 
         boolean facesAdded = false;
 
-        for (String s : lines)
+        for (String s: lines)
         {
             if (s.startsWith("usemtl "))
             {
@@ -339,7 +340,7 @@ public class Model implements IModel
 
         int index = 0;
 
-        for (ModelPart mo : parts)
+        for (ModelPart mo: parts)
         {
             if (mo.material == null || mo.material.depthMask)
             {
@@ -348,7 +349,7 @@ public class Model implements IModel
             }
         }
 
-        for (ModelPart mo : parts)
+        for (ModelPart mo: parts)
         {
             if (mo.material != null && !mo.material.depthMask)
             {
@@ -406,23 +407,23 @@ public class Model implements IModel
 
     public void draw(double posX, double posY, double sX, double sY, double yaw)
     {
-        for (ModelPart m : this.models) m.draw(posX, posY, sX, sY, yaw);
+        for (ModelPart m: this.models) m.draw(posX, posY, sX, sY, yaw);
     }
 
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, AxisRotation[] axisRotations, boolean depthTest)
     {
-        for (ModelPart m : this.models) m.draw(posX, posY, posZ, sX, sY, sZ, axisRotations, depthTest);
+        for (ModelPart m: this.models) m.draw(posX, posY, posZ, sX, sY, sZ, axisRotations, depthTest);
     }
 
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)
     {
-        for (ModelPart m : this.models) m.draw(posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll, depthTest);
+        for (ModelPart m: this.models) m.draw(posX, posY, posZ, sX, sY, sZ, yaw, pitch, roll, depthTest);
     }
 
     public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
     {
-        for (ModelPart m : this.models) m.draw2D(posX, posY, posZ, sX, sY, sZ);
+        for (ModelPart m: this.models) m.draw2D(posX, posY, posZ, sX, sY, sZ);
     }
 
     public static class Material

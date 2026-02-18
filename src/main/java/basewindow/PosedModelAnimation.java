@@ -20,7 +20,7 @@ public class PosedModelAnimation implements IPosedModelFrame
     {
         double time = 0;
 
-        for (String line : lines)
+        for (String line: lines)
         {
             if (line.startsWith("duration "))
             {
@@ -65,7 +65,7 @@ public class PosedModelAnimation implements IPosedModelFrame
         if (this.looped)
             time %= this.duration;
 
-        for (AnimatedBone b : this.bones.values()) b.apply(m, time, frac);
+        for (AnimatedBone b: this.bones.values()) b.apply(m, time, frac);
     }
 
     public static class AnimatedBone
@@ -101,7 +101,7 @@ public class PosedModelAnimation implements IPosedModelFrame
 
             AnimatedBoneRotationFrame last = defaultRotation;
 
-            for (AnimatedBoneRotationFrame f : this.rotationFrames)
+            for (AnimatedBoneRotationFrame f: this.rotationFrames)
             {
                 if (f.time <= time)
                 {
@@ -160,7 +160,7 @@ public class PosedModelAnimation implements IPosedModelFrame
 
             AnimatedBoneTranslationFrame last = defaultTranslation;
 
-            for (AnimatedBoneTranslationFrame f : this.translationFrames)
+            for (AnimatedBoneTranslationFrame f: this.translationFrames)
             {
                 if (f.time <= time)
                 {
@@ -221,7 +221,7 @@ public class PosedModelAnimation implements IPosedModelFrame
             return in;
         }
 
-        public static abstract class AnimatedBoneFrame
+        public abstract static class AnimatedBoneFrame
         {
             public double time;
 

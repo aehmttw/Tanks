@@ -1,15 +1,17 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
-import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamUGCDetails;
 import java.io.IOException;
+
+import basewindow.BaseFile;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.event.EventShareCrusade;
+
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamUGCDetails;
 
 public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScreen
 {

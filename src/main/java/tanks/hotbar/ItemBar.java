@@ -87,7 +87,7 @@ public class ItemBar
         Item.ItemStack<?> i = item.getCopy();
         i.player = this.player;
         int emptyAmount = 0;
-        for (Item.ItemStack<?> slot : this.slots)
+        for (Item.ItemStack<?> slot: this.slots)
         {
             if (slot.item.name.equals(i.item.name) || slot.isEmpty)
                 emptyAmount += i.maxStackSize - slot.stackSize;
@@ -208,7 +208,7 @@ public class ItemBar
 
             if (ScreenPartyHost.isServer)
             {
-                for (ServerHandler sh : ScreenPartyHost.server.connections)
+                for (ServerHandler sh: ScreenPartyHost.server.connections)
                 {
                     if (sh.player.equals(this.player))
                         sh.queueEvent(new EventSetItemBarSlot(-1));

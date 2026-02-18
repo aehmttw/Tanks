@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.ComputerFile;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import basewindow.ComputerFile;
 import tanks.*;
 import tanks.gui.*;
 import tanks.gui.screen.leveleditor.*;
@@ -170,27 +171,20 @@ public class ScreenSavedLevels extends Screen
     }
 
     /**
-     * After running <code>validation</code> (validation is successful if it doesn't
-     * crash), moves the specified <code>filePaths</code> to <Code>dir</Code>. If
-     * files exist already, creates a popup that asks the user whether to replace
-     * the existing files.
+     * After running <code>validation</code> (validation is successful if it doesn't crash), moves the specified <code>filePaths</code> to <Code>dir</Code>. If files exist already,
+     * creates a popup that asks the user whether to replace the existing files.
      *
      * @param filePaths
      *            full paths to files to be moved
      * @param dir
      *            full directory path to move the files to
      * @param validation
-     *            Function that takes the file contents as a string, throw an
-     *            exception if validation fails
+     *            Function that takes the file contents as a string, throw an exception if validation fails
      * @param onComplete
-     *            Runs after moving the files is complete. If files exist already,
-     *            the function will be run again if the user selects the "Replace
-     *            all" option.
+     *            Runs after moving the files is complete. If files exist already, the function will be run again if the user selects the "Replace all" option.
      * @param failedMessage
-     *            Sends a notification if files are corrupted:
-     *            <code>"%i files are corrupted... " + failedMessage</code>
-     * @apiNote IT IS NOT A BLOCKING FUNCTION! (It starts a new thread.) Make sure
-     *          to use the <code>onComplete</code> runnable when necessary!
+     *            Sends a notification if files are corrupted: <code>"%i files are corrupted... " + failedMessage</code>
+     * @apiNote IT IS NOT A BLOCKING FUNCTION! (It starts a new thread.) Make sure to use the <code>onComplete</code> runnable when necessary!
      */
     public static void importLevels(String[] filePaths, String dir, String levelType, Consumer<String> validation, Runnable onComplete, String failedMessage)
     {
@@ -212,7 +206,7 @@ public class ScreenSavedLevels extends Screen
 
             ScreenImportingFiles.numberTotal = paths.size();
             int i = 0;
-            for (String path : paths)
+            for (String path: paths)
             {
                 i++;
                 ScreenImportingFiles.numberCompleted = i;
@@ -245,7 +239,7 @@ public class ScreenSavedLevels extends Screen
 
             ScreenImportingFiles.cancelable = false;
 
-            for (ComputerFile c : success) c.moveTo(Game.homedir + dir);
+            for (ComputerFile c: success) c.moveTo(Game.homedir + dir);
 
             if (!existing.isEmpty())
             {

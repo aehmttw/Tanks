@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import java.util.ArrayList;
+
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
@@ -29,7 +30,7 @@ public class ScreenSharedCrusades extends Screen
         this.musicID = "menu";
 
         ArrayList<Button> buttons = new ArrayList<>();
-        for (ScreenPartyHost.SharedCrusade l : crusades)
+        for (ScreenPartyHost.SharedCrusade l: crusades)
         {
             buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
             {

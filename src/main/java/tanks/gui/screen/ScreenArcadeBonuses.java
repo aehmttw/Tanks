@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -203,7 +204,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         this.age += Panel.frameFrequency;
 
-        for (Effect e : Game.effects) e.update();
+        for (Effect e: Game.effects) e.update();
 
         Game.effects.removeAll(Game.removeEffects);
 
@@ -351,9 +352,9 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, yPos - this.objYSpace * 2, "Bonus points");
 
-        for (Effect e : Game.effects) e.draw();
+        for (Effect e: Game.effects) e.draw();
 
-        for (Effect e : Game.effects) e.drawGlow();
+        for (Effect e: Game.effects) e.drawGlow();
 
         Drawing.drawing.setColor(255, 255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
@@ -410,7 +411,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
             ArrayList<Firework> fireworks = this.fireworksDisplay.getFireworkArray();
             ArrayList<Firework> removeFireworks = new ArrayList<>();
-            for (Firework f : this.spawnedFireworks)
+            for (Firework f: this.spawnedFireworks)
             {
                 if (!fireworks.contains(f))
                 {
@@ -425,7 +426,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 }
             }
 
-            for (Firework f : removeFireworks) spawnedFireworks.remove(f);
+            for (Firework f: removeFireworks) spawnedFireworks.remove(f);
         }
     }
 

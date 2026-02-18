@@ -1,10 +1,12 @@
 package lwjglwindow;
 
-import basewindow.BaseFontRenderer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import basewindow.BaseFontRenderer;
+
 import org.lwjgl.opengl.GL11;
 
 public class FontRenderer extends BaseFontRenderer
@@ -15,8 +17,7 @@ public class FontRenderer extends BaseFontRenderer
         public int[] charSizes;
         public String image;
         public float size = 16; // how many characters fit per horizontal line
-        public int hSpace = 2; // spacing between rows, increase this to 2 for antialiasing to prevent weird
-                               // artifacts
+        public int hSpace = 2; // spacing between rows, increase this to 2 for antialiasing to prevent weird artifacts
         public Map<Character, Integer> charIndexMap = new HashMap<>();
 
         public FontInfo(String image, String chars, int[] charSizes)
@@ -43,8 +44,8 @@ public class FontRenderer extends BaseFontRenderer
                 " !\"#$%&'()*+,-./" + "0123456789:;<=>?" + "@ABCDEFGHIJKLMNO" + "PQRSTUVWXYZ[\\]^_" + "'abcdefghijklmno" + "pqrstuvwxyz{|}~`" + "âăîşţàçæèéêëïôœù"
                         + "úûüÿáíóñ¡¿äöå",
                 new int[]{3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 2, 5, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 5, 5, 5, 5, 7, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-                        5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5, 2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2, 5, 5, 5, 5, 3, 5, 5,
-                        7, 5, 5, 5, 5, 3, 5, 7, 5, 5, 5, 5, 5, 5, 3, 5, 5, 3, 5, 5, 5, 5});
+                    5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5, 2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2, 5, 5, 5, 5, 3, 5, 5, 7,
+                    5, 5, 5, 5, 3, 5, 7, 5, 5, 5, 5, 5, 5, 3, 5, 5, 3, 5, 5, 5, 5});
 
         fontInfos.add(defaultFont);
     }
@@ -66,7 +67,7 @@ public class FontRenderer extends BaseFontRenderer
 
     public boolean supportsChar(char c)
     {
-        for (FontInfo font : fontInfos)
+        for (FontInfo font: fontInfos)
         {
             if (font.charIndexMap.containsKey(c))
             {
@@ -78,7 +79,7 @@ public class FontRenderer extends BaseFontRenderer
 
     protected FontInfo findFontForChar(char c)
     {
-        for (FontInfo font : fontInfos)
+        for (FontInfo font: fontInfos)
         {
             if (font.charIndexMap.containsKey(c))
             {

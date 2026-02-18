@@ -1,9 +1,10 @@
 package tanks.network;
 
-import com.codedisaster.steamworks.SteamException;
-import com.codedisaster.steamworks.Version;
 import java.io.*;
 import java.util.UUID;
+
+import com.codedisaster.steamworks.SteamException;
+import com.codedisaster.steamworks.Version;
 
 // Someone decided it would be a smart idea to remove this very useful and fully functional class file from Steamworks4j making life way more complicated for me.
 // I am adding it back because I do not want to deal with the new system. To anyone who it may concern reading this file, if it ain't broke, don't fix it!
@@ -55,15 +56,15 @@ public class SteamSharedLibraryLoader
     {
         switch (OS)
         {
-            case Windows :
+            case Windows:
                 return libName + (IS_64_BIT ? "64" : "") + ".dll";
-            case Linux :
+            case Linux:
                 return "lib" + libName + ".so";
-            case MacOS :
+            case MacOS:
                 return "lib" + libName + ".dylib";
+            default:
+                throw new RuntimeException("Unknown host architecture");
         }
-
-        throw new RuntimeException("Unknown host architecture");
     }
 
     static String getSdkRedistributableBinPath()
@@ -71,16 +72,16 @@ public class SteamSharedLibraryLoader
         File path;
         switch (OS)
         {
-            case Windows :
+            case Windows:
                 path = new File(SDK_REDISTRIBUTABLE_BIN_PATH, IS_64_BIT ? "win64" : "");
                 break;
-            case Linux :
+            case Linux:
                 path = new File(SDK_REDISTRIBUTABLE_BIN_PATH, "linux64");
                 break;
-            case MacOS :
+            case MacOS:
                 path = new File(SDK_REDISTRIBUTABLE_BIN_PATH, "osx");
                 break;
-            default :
+            default:
                 return null;
         }
 
@@ -92,16 +93,16 @@ public class SteamSharedLibraryLoader
         File path;
         switch (OS)
         {
-            case Windows :
+            case Windows:
                 path = new File(SDK_LIBRARY_PATH, IS_64_BIT ? "win64" : "win32");
                 break;
-            case Linux :
+            case Linux:
                 path = new File(SDK_LIBRARY_PATH, "linux64");
                 break;
-            case MacOS :
+            case MacOS:
                 path = new File(SDK_LIBRARY_PATH, "osx");
                 break;
-            default :
+            default:
                 return null;
         }
 
@@ -172,9 +173,8 @@ public class SteamSharedLibraryLoader
             } catch (IOException e)
             {
                 /*
-                 * Extracting the library may fail, for example because 'nativeFile' already
-                 * exists and is in use by another process. In this case, we fail silently and
-                 * just try to load the existing file.
+                 * Extracting the library may fail, for example because 'nativeFile' already exists and is in use by another process. In this case, we fail silently and just try to
+                 * load the existing file.
                  */
                 if (!librarySystemPath.exists())
                 {

@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import java.util.ArrayList;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -93,7 +94,7 @@ public class ScreenOverlayChat
 
                         double width = 0;
 
-                        for (String s : c.lines)
+                        for (String s: c.lines)
                             width = Math.max(width, Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale);
 
                         double height = 22 * c.lines.size() + 8 * (c.lines.size() - 1);

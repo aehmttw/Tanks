@@ -1,8 +1,9 @@
 package tanks.gui.screen.leveleditor;
 
-import basewindow.InputCodes;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
@@ -46,8 +47,10 @@ public class EditorButtons
         if ((!editor.showControls && !slideAnimation) || buttons == null)
             return;
 
-        for (ArrayList<EditorButton> bl : buttons) for (EditorButton b : bl) if (b.shown)
-            b.draw();
+        for (ArrayList<EditorButton> bl: buttons)
+            for (EditorButton b: bl)
+                if (b.shown)
+                    b.draw();
     }
 
     public void update()
@@ -57,9 +60,9 @@ public class EditorButtons
         if (Game.game.window.hasResized)
             refreshButtons();
 
-        for (ArrayList<EditorButton> bl : buttons)
+        for (ArrayList<EditorButton> bl: buttons)
         {
-            for (EditorButton b : bl)
+            for (EditorButton b: bl)
             {
                 if (!b.fullInfo)
                     refreshButtons();
@@ -426,7 +429,7 @@ public class EditorButtons
                 }
             }
 
-            for (EditorButton b : subMenuButtons)
+            for (EditorButton b: subMenuButtons)
             {
                 b.enabled = !b.disabledFunc.apply();
 
@@ -534,7 +537,7 @@ public class EditorButtons
 
         public void setUpSubButtons()
         {
-            for (EditorButton b : subMenuButtons)
+            for (EditorButton b: subMenuButtons)
             {
                 b.bgColR = bgColR;
                 b.bgColG = bgColG;
@@ -562,7 +565,7 @@ public class EditorButtons
         {
             Collections.addAll(subMenuButtons, buttons);
 
-            for (EditorButton b : buttons)
+            for (EditorButton b: buttons)
             {
                 if (Game.game.window.touchscreen)
                 {

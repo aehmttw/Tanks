@@ -1,12 +1,14 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamFriends;
 import java.util.ArrayList;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.network.FriendsMixin;
+
+import com.codedisaster.steamworks.SteamFriends;
 
 public class ScreenInviteSteamFriends extends Screen
 {
@@ -36,13 +38,13 @@ public class ScreenInviteSteamFriends extends Screen
         ArrayList<Button> f = new ArrayList<>();
 
         FriendsMixin d = Game.steamNetworkHandler.friends;
-        for (int i : d.friendUserIDs.keySet())
+        for (int i: d.friendUserIDs.keySet())
         {
             String name = d.knownUsernamesByID.get(i);
 
             StringBuilder newName = new StringBuilder();
 
-            for (char c : name.toCharArray())
+            for (char c: name.toCharArray())
             {
                 if ("`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+{}|:\"<>?".contains((c + "").toLowerCase()))
                     newName.append(c);

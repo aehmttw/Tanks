@@ -1,10 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
+
 import tanks.Game;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.ScreenGame;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventClearShop extends PersonalEvent
 {

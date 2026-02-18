@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import tanks.Panel;
 
 public class AttributeModifier
@@ -64,8 +65,7 @@ public class AttributeModifier
     /** When applied to a tank, its bullet recoil will change accordingly */
     public static final Type recoil = new Type("recoil");
     /**
-     * When applied to a tank, its will show a green shield indicating health was
-     * added via a heal ray
+     * When applied to a tank, its will show a green shield indicating health was added via a heal ray
      */
     public static final Type healray = new Type("healray");
 
@@ -110,8 +110,7 @@ public class AttributeModifier
     }
 
     /**
-     * Factory method to obtain an AttributeModifier instance, either from the
-     * recycle pool or create new
+     * Factory method to obtain an AttributeModifier instance, either from the recycle pool or create new
      */
     public static AttributeModifier newInstance(Type type, Operation op, double amount)
     {
@@ -134,8 +133,7 @@ public class AttributeModifier
     /**
      * Creates a copy of an AttributeModifier instance
      *
-     * @apiNote Remember to {@link #recycle(AttributeModifier) recycle} the copy
-     *          when you're done with it
+     * @apiNote Remember to {@link #recycle(AttributeModifier) recycle} the copy when you're done with it
      */
     public static AttributeModifier copy(AttributeModifier a)
     {

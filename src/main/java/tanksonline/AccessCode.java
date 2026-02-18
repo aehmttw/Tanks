@@ -91,7 +91,7 @@ public class AccessCode
             pw.println(maxUses);
             pw.println(comment);
 
-            for (TanksOnlinePlayer player : this.players)
+            for (TanksOnlinePlayer player: this.players)
             {
                 pw.println(player.id);
             }

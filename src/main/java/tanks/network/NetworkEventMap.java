@@ -1,6 +1,7 @@
 package tanks.network;
 
 import java.util.HashMap;
+
 import tanks.Game;
 import tanks.network.event.INetworkEvent;
 

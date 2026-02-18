@@ -1,6 +1,7 @@
 package tanks.registry;
 
 import java.util.LinkedHashMap;
+
 import tanks.item.ItemIcon;
 
 public class RegistryItemIcon

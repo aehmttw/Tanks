@@ -101,7 +101,7 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
     {
         this.selector.setChoice(editor, editor.mousePlaceable, this.selector.selectedIndex);
         this.editor.level.teamsMap.clear();
-        for (Team t : this.editor.teams) this.editor.level.teamsMap.put(t.name, t);
+        for (Team t: this.editor.teams) this.editor.level.teamsMap.put(t.name, t);
         super.escape();
     }
 

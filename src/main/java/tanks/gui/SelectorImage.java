@@ -77,7 +77,7 @@ public class SelectorImage extends Selector
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();

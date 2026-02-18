@@ -1,6 +1,7 @@
 package tanks.gui;
 
 import java.util.ArrayList;
+
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -83,7 +84,7 @@ public class SelectorDrawable extends Button
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();

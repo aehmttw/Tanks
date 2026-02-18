@@ -1,7 +1,5 @@
 package tanks.tank;
 
-import static tanks.tank.TankPropertyCategory.general;
-
 import basewindow.Color;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
@@ -30,9 +28,10 @@ import tanks.tankson.Property;
 import tanks.tankson.Serializer;
 import tanks.tankson.TanksONable;
 
+import static tanks.tank.TankPropertyCategory.general;
+
 /**
- * A tank that is controlled by the player. TankPlayerController is used instead
- * if we are connected to a party as a client.
+ * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
  */
 @TanksONable("player_tank")
 public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServerPlayerTank
@@ -270,7 +269,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
         double reload = em().getAttributeValue(AttributeModifier.reload, 1);
 
-        for (Item.ItemStack<?> s : this.abilities)
+        for (Item.ItemStack<?> s: this.abilities)
         {
             s.player = this.player;
             s.updateCooldown(reload);
@@ -281,7 +280,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
         Hotbar h = Game.player.hotbar;
         if (h.enabledItemBar)
         {
-            for (Item.ItemStack<?> i : h.itemBar.slots)
+            for (Item.ItemStack<?> i: h.itemBar.slots)
             {
                 if (i != null && !i.isEmpty)
                     i.updateCooldown(reload);
@@ -338,7 +337,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
                 if (!shootStickEnabled || shootStickHidden)
                 {
-                    for (int i : Game.game.window.touchPoints.keySet())
+                    for (int i: Game.game.window.touchPoints.keySet())
                     {
                         InputPoint p = Game.game.window.touchPoints.get(i);
 
@@ -785,6 +784,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
         {
 
         }
+
         public CrusadeShopTankBuild(TankPlayable p)
         {
             p.copyPropertiesTo(this);

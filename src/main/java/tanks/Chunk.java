@@ -1,7 +1,8 @@
 package tanks;
 
-import basewindow.IBatchRenderableObject;
 import java.util.*;
+
+import basewindow.IBatchRenderableObject;
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
@@ -22,7 +23,8 @@ public class Chunk
     private static final HashSet<Chunk> dirtyChunks = new HashSet<>();
 
     public final Level level;
-    public final int chunkX, chunkY;
+    public final int chunkX;
+    public final int chunkY;
     public Face[] borderFaces = new Face[4];
     public final HashSet<Obstacle> obstacles = new HashSet<>();
     public final HashSet<Movable> movables = new HashSet<>();
@@ -62,8 +64,7 @@ public class Chunk
     }
 
     /**
-     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance
-     * traveled is >= maxChunks.
+     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance traveled is >= maxChunks.
      *
      * @return the chunks within the range
      */
@@ -100,8 +101,17 @@ public class Chunk
     }
 
     /**
-     * Adds a level border on the specified side of the chunk, where rays will
-     * collide off of.
+     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance traveled is >= maxChunks.
+     *
+     * @return the chunks within the range
+     */
+    public static ArrayList<Chunk> iterateOutwards(double posX, double posY, int maxChunks)
+    {
+        return iterateOutwards((int) (posX / Game.tile_size), (int) (posY / Game.tile_size), maxChunks);
+    }
+
+    /**
+     * Adds a level border on the specified side of the chunk, where rays will collide off of.
      *
      * @param dir
      *            The side of the chunk to add the border on
@@ -118,8 +128,7 @@ public class Chunk
     }
 
     /**
-     * Helper to convert chunk coordinates to game coordinates and clamp it to the
-     * level size.
+     * Helper to convert chunk coordinates to game coordinates and clamp it to the level size.
      */
     private static double convert(int chunk, Level l, boolean isX)
     {
@@ -129,17 +138,6 @@ public class Chunk
     public static boolean initialized()
     {
         return !Chunk.chunkList.isEmpty();
-    }
-
-    /**
-     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance
-     * traveled is >= maxChunks.
-     *
-     * @return the chunks within the range
-     */
-    public static ArrayList<Chunk> iterateOutwards(double posX, double posY, int maxChunks)
-    {
-        return iterateOutwards((int) (posX / Game.tile_size), (int) (posY / Game.tile_size), maxChunks);
     }
 
     static Queue<Chunk> queue = new LinkedList<>();
@@ -155,7 +153,7 @@ public class Chunk
         if (dirtyChunks.isEmpty())
             return;
 
-        for (Chunk c : dirtyChunks) c.faces.sort();
+        for (Chunk c: dirtyChunks) c.faces.sort();
 
         dirtyChunks.clear();
     }
@@ -223,9 +221,12 @@ public class Chunk
 
     public static ArrayList<Chunk> getChunksInRange(int tx1, int ty1, int tx2, int ty2)
     {
-        int x1 = tx1 / chunkSize, y1 = ty1 / chunkSize, x2 = tx2 / chunkSize, y2 = ty2 / chunkSize;
+        int x1 = tx1 / chunkSize;
+        int y1 = ty1 / chunkSize;
+        int x2 = tx2 / chunkSize;
+        int y2 = ty2 / chunkSize;
         chunkCache.clear();
-        for (Chunk c : chunkList)
+        for (Chunk c: chunkList)
         {
             if (Game.isOrdered(true, x1, c.chunkX, x2) && Game.isOrdered(true, y1, c.chunkY, y2))
                 chunkCache.add(c);
@@ -294,19 +295,19 @@ public class Chunk
         return getIfPresent(((int) (tileX / Game.tile_size)), ((int) (tileY / Game.tile_size)), fallback, func);
     }
 
-    public static <K> K get(double tileX, double tileY, Function<Tile, K> func)
-    {
-        Tile t = getTile(tileX, tileY);
-        if (t == null)
-            throw new RuntimeException("not present");
-        return func.apply(t);
-    }
-
     public static <K> K getIfPresent(int tileX, int tileY, K fallback, Function<Tile, K> func)
     {
         Tile t = getTile(tileX, tileY);
         if (t == null)
             return fallback;
+        return func.apply(t);
+    }
+
+    public static <K> K get(double tileX, double tileY, Function<Tile, K> func)
+    {
+        Tile t = getTile(tileX, tileY);
+        if (t == null)
+            throw new RuntimeException("not present");
         return func.apply(t);
     }
 
@@ -324,8 +325,10 @@ public class Chunk
     public static ArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
     {
         chunkCache.clear();
-        double x1 = (double) tx1 / chunkSize, y1 = (double) ty1 / chunkSize, cRad = Math.ceil(radius / chunkSize) + 1;
-        for (Chunk chunk : chunkList)
+        double x1 = (double) tx1 / chunkSize;
+        double y1 = (double) ty1 / chunkSize;
+        double cRad = Math.ceil(radius / chunkSize) + 1;
+        for (Chunk chunk: chunkList)
         {
             if ((chunk.chunkX - x1) * (chunk.chunkX - x1) + (chunk.chunkY - y1) * (chunk.chunkY - y1) <= cRad * cRad)
                 chunkCache.add(chunk);
@@ -350,8 +353,7 @@ public class Chunk
     /**
      * @param pix
      *            Coordinate in pixels
-     * @return The tile position relative to the top left corner of the chunk the
-     *         coordinate is in
+     * @return The tile position relative to the top left corner of the chunk the coordinate is in
      */
     public static int gameToPosInChunk(double pix)
     {
@@ -367,6 +369,17 @@ public class Chunk
             return null;
 
         return tileGrid[posX % chunkSize][posY % chunkSize];
+    }
+
+    /**
+     * Automatically converts to tile coordinates and then chunk coordinates.
+     */
+    public Tile getChunkTile(double posX, double posY)
+    {
+        if (posX < 0 || posX >= Game.currentSizeX * Game.tile_size || posY < 0 || posY >= Game.currentSizeY * Game.tile_size)
+            return null;
+
+        return tileGrid[gameToPosInChunk(posX)][gameToPosInChunk(posY)];
     }
 
     public void setObstacle(int x, int y, Obstacle o)
@@ -398,17 +411,6 @@ public class Chunk
         return c.getChunkTile(posX, posY);
     }
 
-    /**
-     * Automatically converts to tile coordinates and then chunk coordinates.
-     */
-    public Tile getChunkTile(double posX, double posY)
-    {
-        if (posX < 0 || posX >= Game.currentSizeX * Game.tile_size || posY < 0 || posY >= Game.currentSizeY * Game.tile_size)
-            return null;
-
-        return tileGrid[gameToPosInChunk(posX)][gameToPosInChunk(posY)];
-    }
-
     public static double addCoords(double chunk, double tile)
     {
         return chunk * chunkSize + tile;
@@ -421,10 +423,10 @@ public class Chunk
 
         Drawing.drawing.setColor(255, 255, 0, 128);
 
-        for (Chunk c : chunkList)
+        for (Chunk c: chunkList)
         {
             int i = 0;
-            for (Face f : c.borderFaces)
+            for (Face f: c.borderFaces)
             {
                 if (f != null)
                 {
@@ -446,15 +448,14 @@ public class Chunk
         }
 
         Drawing.drawing.setColor(255, 255, 255);
-        // for (Movable m : Game.movables)
+        // for (Movable m: Game.movables)
         // Drawing.drawing.drawText(m.posX, m.posY, m.getCurrentChunks().stream().map(c
         // -> "(" + c.chunkX + ", " + c.chunkY + ")")
         // .collect(Collectors.joining(", ")));
     }
 
     /**
-     * Given a rectangle's bounding box, clamps it to the level borders and draws
-     * it. Also ensures a line width of 2.
+     * Given a rectangle's bounding box, clamps it to the level borders and draws it. Also ensures a line width of 2.
      */
     private static void drawClampedRect(Level l, double x1, double y1, double x2, double y2)
     {
@@ -482,8 +483,10 @@ public class Chunk
             prevChunk = null;
         }
 
-        int startX = l.startX / chunkSize, startY = l.startY / chunkSize;
-        int sX = l.sizeX / chunkSize + 1, sY = l.sizeY / chunkSize + 1;
+        int startX = l.startX / chunkSize;
+        int startY = l.startY / chunkSize;
+        int sX = l.sizeX / chunkSize + 1;
+        int sY = l.sizeY / chunkSize + 1;
         Random r = new Random(l.tilesRandomSeed);
 
         for (int x = 0; x < sX; x++) for (int y = 0; y < sY; y++) addChunk(x + startX, y + startY, new Chunk(l, r, x, y));
@@ -612,15 +615,15 @@ public class Chunk
         {
             switch (side)
             {
-                case 0 :
+                case 0:
                     return topFaces;
-                case 1 :
+                case 1:
                     return rightFaces;
-                case 2 :
+                case 2:
                     return bottomFaces;
-                case 3 :
+                case 3:
                     return leftFaces;
-                default :
+                default:
                     throw new RuntimeException("Invalid side: " + side);
             }
         }
@@ -638,8 +641,13 @@ public class Chunk
     {
         public static Tile fallbackTile = new Tile();
 
-        public Obstacle fullObstacle, surfaceObstacle, extraObstacle;
-        public double colR, colG, colB, depth;
+        public Obstacle fullObstacle;
+        public Obstacle surfaceObstacle;
+        public Obstacle extraObstacle;
+        public double colR;
+        public double colG;
+        public double colB;
+        public double depth;
 
         /**
          * For use in level loading only

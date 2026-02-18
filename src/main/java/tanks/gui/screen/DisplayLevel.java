@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import java.util.ArrayList;
+
 import tanks.*;
 import tanks.obstacle.Obstacle;
 import tanks.tank.TankSpawnMarker;
@@ -25,15 +26,15 @@ public class DisplayLevel
     {
         Game.screen.drawDefaultBackground();
 
-        for (Movable m : Game.movables) drawables[m.drawLevel].add(m);
+        for (Movable m: Game.movables) drawables[m.drawLevel].add(m);
 
-        for (Obstacle o : Game.obstacles)
+        for (Obstacle o: Game.obstacles)
         {
             if (!Game.enable3d || !o.batchDraw)
                 drawables[o.drawLevel].add(o);
         }
 
-        for (Effect e : Game.effects) drawables[7].add(e);
+        for (Effect e: Game.effects) drawables[7].add(e);
 
         for (int i = 0; i < this.drawables.length; i++)
         {
@@ -48,7 +49,7 @@ public class DisplayLevel
                 Drawing.drawing.fillForcedBox(drawing.sizeX + Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
             }
 
-            for (IDrawable d : this.drawables[i])
+            for (IDrawable d: this.drawables[i])
             {
                 d.draw();
 
@@ -58,7 +59,7 @@ public class DisplayLevel
 
             if (Game.glowEnabled)
             {
-                for (IDrawable d : this.drawables[i])
+                for (IDrawable d: this.drawables[i])
                 {
                     if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
                         ((IDrawableWithGlow) d).drawGlow();

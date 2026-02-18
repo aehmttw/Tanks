@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.tank.TankPlayerRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventSetItemBarSlot extends PersonalEvent implements IStackableEvent
 {

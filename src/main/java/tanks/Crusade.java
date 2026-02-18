@@ -1,7 +1,8 @@
 package tanks;
 
-import basewindow.BaseFile;
 import java.util.*;
+
+import basewindow.BaseFile;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
@@ -89,7 +90,7 @@ public class Crusade
         this.initialize(levelArray, name);
 
         StringBuilder c = new StringBuilder();
-        for (String s : levelArray) c.append(s).append("\n");
+        for (String s: levelArray) c.append(s).append("\n");
 
         contents = c.substring(0, c.length() - 1);
 
@@ -164,25 +165,25 @@ public class Crusade
             String s = levelArray.get(i);
             switch (s.toLowerCase())
             {
-                case "levels" :
+                case "levels":
                     parsing = 0;
                     break;
-                case "items" :
+                case "items":
                     parsing = 1;
                     break;
-                case "properties" :
+                case "properties":
                     parsing = 2;
                     break;
-                case "tanks" :
+                case "tanks":
                     parsing = 3;
                     break;
-                case "builds" :
+                case "builds":
                     parsing = 4;
                     break;
-                case "build_overrides" :
+                case "build_overrides":
                     parsing = 5;
                     break;
-                default :
+                default:
                     if (parsing == 0)
                     {
                         String lvl = levelArray.get(i);
@@ -239,11 +240,11 @@ public class Crusade
 
         this.name = name;
 
-        for (TankAIControlled t : tankOccurrences.keySet())
+        for (TankAIControlled t: tankOccurrences.keySet())
         {
             String s = tankOccurrences.get(t);
             String[] lvls = s.substring(1, s.length() - 1).split(", ");
-            for (String l : lvls)
+            for (String l: lvls)
             {
                 this.levels.get(Integer.parseInt(l)).tanks.add(t);
             }
@@ -298,12 +299,12 @@ public class Crusade
         int livesTotal = 0;
 
         HashSet<String> availableBuilds = new HashSet<>();
-        for (TankPlayer.ShopTankBuild b : this.getBuildsShop())
+        for (TankPlayer.ShopTankBuild b: this.getBuildsShop())
         {
             availableBuilds.add(b.name);
         }
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             if (crusadePlayers.get(player) != null)
             {
@@ -320,13 +321,13 @@ public class Crusade
             }
         }
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             if (crusadePlayers.get(player) == null)
             {
                 boolean found = false;
 
-                for (CrusadePlayer cp : disconnectedPlayers)
+                for (CrusadePlayer cp: disconnectedPlayers)
                 {
                     if (cp.player.clientID.equals(player.clientID))
                     {
@@ -335,7 +336,7 @@ public class Crusade
                         cp.itemBar.player = player;
                         crusadePlayers.put(player, cp);
 
-                        for (Item.ItemStack<?> i : cp.itemBar.slots)
+                        for (Item.ItemStack<?> i: cp.itemBar.slots)
                         {
                             i.player = player;
                         }
@@ -361,7 +362,7 @@ public class Crusade
 
         ArrayList<TankPlayer.ShopTankBuild> builds = this.getBuildsShop();
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             CrusadePlayer cp = crusadePlayers.get(player);
             player.hotbar.coins = cp.coins;
@@ -381,7 +382,7 @@ public class Crusade
 
             if (player.hotbar.enabledItemBar)
             {
-                for (Item.ItemStack<?> item : player.hotbar.itemBar.slots)
+                for (Item.ItemStack<?> item: player.hotbar.itemBar.slots)
                 {
                     item.cooldown = 0;
 
@@ -396,7 +397,7 @@ public class Crusade
         if (ScreenPartyHost.isServer)
             Level.broadcastBuilds(builds);
 
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             if (m instanceof TankPlayerRemote)
                 ((TankPlayerRemote) m).buildName = ((TankPlayerRemote) m).player.buildName;
@@ -416,7 +417,7 @@ public class Crusade
 
         if (ScreenPartyHost.isServer)
         {
-            for (ServerHandler sh : ScreenPartyHost.server.connections)
+            for (ServerHandler sh: ScreenPartyHost.server.connections)
             {
                 if (sh.player != null)
                 {
@@ -454,7 +455,7 @@ public class Crusade
         {
             this.lose = true;
 
-            for (Player player : Game.players)
+            for (Player player: Game.players)
             {
                 if (player.remainingLives > 0)
                 {
@@ -475,7 +476,7 @@ public class Crusade
                 {
                     this.lifeGained = true;
 
-                    for (Player player : Game.players)
+                    for (Player player: Game.players)
                     {
                         player.remainingLives++;
                     }
@@ -493,7 +494,7 @@ public class Crusade
                 {
                     Crusade.currentCrusade.livingTankIDs.clear();
 
-                    for (Movable m : Game.movables)
+                    for (Movable m: Game.movables)
                     {
                         if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
                             Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
@@ -508,14 +509,14 @@ public class Crusade
 
     public boolean finalLife()
     {
-        for (Player p : Game.players)
+        for (Player p: Game.players)
         {
             if (p.remainingLives > 1)
                 return false;
             else if (p.remainingLives == 1)
             {
                 boolean found = false;
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p && m.destroy)
                         return false;
@@ -568,7 +569,7 @@ public class Crusade
 
     public void saveHotbars()
     {
-        for (Player p : Game.players)
+        for (Player p: Game.players)
         {
             CrusadePlayer cp = this.crusadePlayers.get(p);
 
@@ -591,7 +592,7 @@ public class Crusade
 
         if (cp == null)
         {
-            for (CrusadePlayer dp : Crusade.currentCrusade.disconnectedPlayers)
+            for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
             {
                 if (dp.player == p)
                     cp = dp;

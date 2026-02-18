@@ -28,8 +28,6 @@ public abstract class BaseShapeRenderer
 
     public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest);
 
-    public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest);
-
     public abstract void fillGlow(double x, double y, double sX, double sY, boolean shade);
 
     public abstract void fillGlow(double x, double y, double sX, double sY, boolean shade, boolean light);
@@ -37,6 +35,8 @@ public abstract class BaseShapeRenderer
     public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade);
 
     public abstract void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light);
+
+    public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest);
 
     public abstract void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade);
 

@@ -10,11 +10,11 @@ public class GameUpdater implements IUpdater
     {
         try
         {
-            for (Extension e : Game.extensionRegistry.extensions) e.preUpdate();
+            for (Extension e: Game.extensionRegistry.extensions) e.preUpdate();
 
             Panel.panel.update();
 
-            for (Extension e : Game.extensionRegistry.extensions) e.update();
+            for (Extension e: Game.extensionRegistry.extensions) e.update();
         } catch (Throwable e)
         {
             if (e instanceof GameCrashedException)

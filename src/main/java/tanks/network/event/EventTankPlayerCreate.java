@@ -1,8 +1,8 @@
 package tanks.network.event;
 
-import basewindow.Color;
-import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+
+import basewindow.Color;
 import tanks.Crusade;
 import tanks.Game;
 import tanks.Player;
@@ -15,6 +15,8 @@ import tanks.minigames.RampageTrial;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
 import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankPlayerCreate extends PersonalEvent
 {
@@ -141,7 +143,7 @@ public class EventTankPlayerCreate extends PersonalEvent
 
         if (ScreenPartyLobby.isClient)
         {
-            for (ConnectedPlayer c : ScreenPartyLobby.connections)
+            for (ConnectedPlayer c: ScreenPartyLobby.connections)
             {
                 if (c.clientId.equals(clientIdTarget))
                 {

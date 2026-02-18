@@ -1,10 +1,11 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.NetworkUtils;
 import tanks.translation.Translation;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventLoadCrusadeHotbar extends PersonalEvent
 {

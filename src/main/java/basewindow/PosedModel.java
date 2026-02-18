@@ -26,7 +26,7 @@ public abstract class PosedModel implements IModel
 
     public void resetBones()
     {
-        for (PoseBone b : this.bones)
+        for (PoseBone b: this.bones)
         {
             b.yaw = 0;
             b.pitch = 0;

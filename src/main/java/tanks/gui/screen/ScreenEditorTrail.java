@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import java.util.ArrayList;
+
 import tanks.Drawing;
 import tanks.bullet.Bullet;
 import tanks.bullet.Trail;
@@ -48,7 +49,7 @@ public class ScreenEditorTrail extends ScreenEditorTanksONable<Trail>
         super.draw();
 
         double max = 0;
-        for (Trail t : this.allTrails)
+        for (Trail t: this.allTrails)
         {
             max = Math.max(max, t.maxLength + t.delay);
         }
@@ -56,7 +57,7 @@ public class ScreenEditorTrail extends ScreenEditorTanksONable<Trail>
         double length = Math.min(Drawing.drawing.interfaceSizeX * 0.6, max * Bullet.bullet_size);
         double start = Drawing.drawing.interfaceSizeX / 2 - length / 2;
         double end = Drawing.drawing.interfaceSizeX / 2 + length / 2;
-        for (Trail t : this.allTrails)
+        for (Trail t: this.allTrails)
         {
             t.drawForInterface(start, end, 90, Bullet.bullet_size, max);
         }

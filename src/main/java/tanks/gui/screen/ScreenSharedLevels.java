@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import java.util.ArrayList;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -29,7 +30,7 @@ public class ScreenSharedLevels extends Screen
         this.musicID = "menu";
 
         ArrayList<Button> buttons = new ArrayList<>();
-        for (ScreenPartyHost.SharedLevel l : levels)
+        for (ScreenPartyHost.SharedLevel l: levels)
         {
             buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
             {

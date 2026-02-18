@@ -71,7 +71,7 @@ public class Joystick implements IDrawable
         if (!(Game.playerTank == null || (Game.playerTank.destroy && !(Game.currentLevel instanceof Arcade))
                 || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).paused)))
         {
-            for (int i : Game.game.window.touchPoints.keySet())
+            for (int i: Game.game.window.touchPoints.keySet())
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
                 double px = Drawing.drawing.getInterfacePointerX(p.x);

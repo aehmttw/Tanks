@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyHost;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPlayerReady extends PersonalEvent
 {
@@ -20,7 +21,7 @@ public class EventPlayerReady extends PersonalEvent
 
         Player pl = null;
 
-        for (Player p : Game.players)
+        for (Player p: Game.players)
         {
             if (p.clientID.equals(this.clientID))
             {

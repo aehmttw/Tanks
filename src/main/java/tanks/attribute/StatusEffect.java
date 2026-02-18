@@ -3,6 +3,7 @@ package tanks.attribute;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import tanks.minigames.Arcade;
 
 public class StatusEffect
@@ -15,11 +16,11 @@ public class StatusEffect
 
     public static final StatusEffect ice = new StatusEffect("ice",
             new AttributeModifier[]{AttributeModifier.newInstance("ice_accel", AttributeModifier.acceleration, AttributeModifier.Operation.multiply, -0.75),
-                    AttributeModifier.newInstance("ice_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.875),
-                    AttributeModifier.newInstance("ice_max_speed", AttributeModifier.max_speed, AttributeModifier.Operation.multiply, 3)});
+                AttributeModifier.newInstance("ice_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.875),
+                AttributeModifier.newInstance("ice_max_speed", AttributeModifier.max_speed, AttributeModifier.Operation.multiply, 3)});
 
     public static final StatusEffect snow_velocity = new StatusEffect("snow_velocity",
-            new AttributeModifier[]{AttributeModifier.newInstance("snow_velocity", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.25),});
+            new AttributeModifier[]{AttributeModifier.newInstance("snow_velocity", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.25), });
 
     public static final StatusEffect snow_friction = new StatusEffect("snow_friction",
             new AttributeModifier[]{AttributeModifier.newInstance("snow_friction", AttributeModifier.friction, AttributeModifier.Operation.multiply, 4)});
@@ -29,13 +30,13 @@ public class StatusEffect
 
     public static final StatusEffect boost_tank = new StatusEffect("boost_tank",
             new AttributeModifier[]{AttributeModifier.newInstance("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3),
-                    AttributeModifier.newInstance("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1),
-                    AttributeModifier.newInstance("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75),
-                    AttributeModifier.newInstance("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1)});
+                AttributeModifier.newInstance("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1),
+                AttributeModifier.newInstance("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75),
+                AttributeModifier.newInstance("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1)});
 
     public static final StatusEffect boost_bullet = new StatusEffect("boost_bullet",
             new AttributeModifier[]{AttributeModifier.newInstance("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 1),
-                    AttributeModifier.newInstance("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1)});
+                AttributeModifier.newInstance("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1)});
 
     public static final StatusEffect[] arcade_rampage = createArcadeRampage();
 
@@ -47,10 +48,10 @@ public class StatusEffect
         {
             s[i] = new StatusEffect("rampage", "rampage_" + (i + 1),
                     new AttributeModifier[]{AttributeModifier.newInstance("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
-                            AttributeModifier.newInstance("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)});
+                        AttributeModifier.newInstance("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                        AttributeModifier.newInstance("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                        AttributeModifier.newInstance("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
+                        AttributeModifier.newInstance("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)});
         }
 
         return s;
@@ -119,7 +120,7 @@ public class StatusEffect
 
         public double getValue(double in, AttributeModifier.Type type)
         {
-            for (AttributeModifier a : effect.attributeModifiers)
+            for (AttributeModifier a: effect.attributeModifiers)
             {
                 if (a.type.equals(type))
                 {

@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import basewindow.BaseFile;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
@@ -155,7 +156,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                                 StringBuilder tanks = new StringBuilder("\ntanks\n");
                                 if (previous2.crusade.customTanks.size() > 0)
                                 {
-                                    for (TankAIControlled t : previous2.crusade.customTanks) tanks.append(t.toString()).append("\n");
+                                    for (TankAIControlled t: previous2.crusade.customTanks) tanks.append(t.toString()).append("\n");
 
                                     ls = ls + tanks;
                                 }
@@ -163,7 +164,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                                 if (!level.buildOverrides.isEmpty())
                                 {
                                     file.println("builds\n");
-                                    for (TankPlayer.ShopTankBuild b : level.buildOverrides)
+                                    for (TankPlayer.ShopTankBuild b: level.buildOverrides)
                                     {
                                         file.println(b.toString() + "\n");
                                     }

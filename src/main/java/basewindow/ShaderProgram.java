@@ -43,7 +43,7 @@ public abstract class ShaderProgram
 
     public void bindAttributes() throws IllegalAccessException, InstantiationException
     {
-        for (Field f : getFields(this.getClass()))
+        for (Field f: getFields(this.getClass()))
         {
             if (Attribute.class.isAssignableFrom(f.getType()))
             {
@@ -55,7 +55,7 @@ public abstract class ShaderProgram
             }
         }
 
-        for (Field f : getFields(this.group.getClass()))
+        for (Field f: getFields(this.group.getClass()))
         {
             if (ShaderGroup.Attribute.class.isAssignableFrom(f.getType()))
             {
@@ -123,7 +123,7 @@ public abstract class ShaderProgram
         public abstract void bind();
     }
 
-    public static abstract class Uniform implements IUniform
+    public abstract static class Uniform implements IUniform
     {
         protected int flag;
         protected String name;
@@ -279,7 +279,7 @@ public abstract class ShaderProgram
         try
         {
             Field[] fields = getFields(c);
-            for (Field f : fields)
+            for (Field f: fields)
             {
                 if (IUniform.class.isAssignableFrom(f.getType()))
                 {

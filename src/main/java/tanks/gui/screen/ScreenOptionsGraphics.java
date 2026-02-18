@@ -55,20 +55,22 @@ public class ScreenOptionsGraphics extends Screen
 
         switch (viewNo)
         {
-            case 0 :
+            case 0:
                 altPerspective.setText(perspectiveText, birdsEyeText);
                 break;
-            case 1 :
+            case 1:
                 altPerspective.setText(perspectiveText, angledText);
                 break;
-            case 2 :
+            case 2:
                 altPerspective.setText(perspectiveText, orthographicText);
                 break;
-            case 3 :
+            case 3:
                 altPerspective.setText(perspectiveText, "\u00a7200000000255third person");
                 break;
-            case 4 :
+            case 4:
                 altPerspective.setText(perspectiveText, "\u00a7255000000255first person");
+                break;
+            default:
                 break;
         }
 

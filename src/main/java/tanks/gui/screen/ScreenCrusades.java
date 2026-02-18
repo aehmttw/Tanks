@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import basewindow.BaseFile;
 import tanks.Crusade;
 import tanks.Drawing;
 import tanks.Game;
@@ -16,7 +17,8 @@ public class ScreenCrusades extends Screen
     public static int page = 0;
     public static boolean sortByTime = false;
 
-    public SavedFilesList fullCrusadesList, crusadesList;
+    public SavedFilesList fullCrusadesList;
+    public SavedFilesList crusadesList;
 
     SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
     {

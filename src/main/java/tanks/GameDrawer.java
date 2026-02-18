@@ -10,11 +10,11 @@ public class GameDrawer implements IDrawer
     {
         try
         {
-            for (Extension e : Game.extensionRegistry.extensions) e.preDraw();
+            for (Extension e: Game.extensionRegistry.extensions) e.preDraw();
 
             Panel.panel.draw();
 
-            for (Extension e : Game.extensionRegistry.extensions) e.draw();
+            for (Extension e: Game.extensionRegistry.extensions) e.draw();
         } catch (Throwable e)
         {
             if (e instanceof GameCrashedException)

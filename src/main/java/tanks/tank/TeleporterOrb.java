@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import java.util.ArrayList;
+
 import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Trail;
@@ -37,7 +38,7 @@ public class TeleporterOrb extends Movable
     public boolean addedTrail = false;
 
     Trail[] trailSet = new Trail[]{new Trail(this, 12.5, 0, 0, 0, 0, 0.5, 8, 0, 127, 127, 127, 100, 255, 255, 255, 0, false, 1, true, true),
-            new Trail(this, 12.5, 0, 0, 0, 0, 1, 10, 0, 127, 127, 127, 100, 0, 0, 0, 0, true, 1, true, true)};
+        new Trail(this, 12.5, 0, 0, 0, 0, 1, 10, 0, 127, 127, 127, 100, 0, 0, 0, 0, true, 1, true, true)};
 
     public ArrayList<Trail>[] trails = null;
     public double size;
@@ -74,9 +75,9 @@ public class TeleporterOrb extends Movable
 
         if (trails != null)
         {
-            for (ArrayList<Trail> tr : trails)
+            for (ArrayList<Trail> tr: trails)
             {
-                for (Trail t : tr)
+                for (Trail t: tr)
                 {
                     t.draw();
                 }
@@ -197,7 +198,7 @@ public class TeleporterOrb extends Movable
             for (int i = 0; i < this.trails.length; i++) this.trails[i] = new ArrayList<>();
         }
 
-        for (ArrayList<Trail> trails : this.trails)
+        for (ArrayList<Trail> trails: this.trails)
         {
             double trailLength = 0;
             for (int i = 0; i < trails.size(); i++)
@@ -258,7 +259,7 @@ public class TeleporterOrb extends Movable
         this.trailSet[1].frontColor.set(tank.secondaryColor);
 
         int i = 0;
-        for (Trail t : this.trailSet)
+        for (Trail t: this.trailSet)
         {
             if (!Game.enable3d)
                 this.addTrailObj(new Trail(this, speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth,

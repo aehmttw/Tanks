@@ -1,7 +1,8 @@
 package tanks.gui;
 
-import basewindow.InputCodes;
 import java.util.ArrayList;
+
+import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
 
@@ -66,7 +67,7 @@ public class UUIDTextBox extends TextBox
 
         ArrayList<Character> texts = Game.game.window.getRawTextKeys();
 
-        for (char key : texts)
+        for (char key: texts)
         {
             String text = Character.toString(key);
             inputKey(Game.game.window.translateTextKey(key), text);

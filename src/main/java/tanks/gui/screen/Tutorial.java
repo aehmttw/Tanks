@@ -1,7 +1,8 @@
 package tanks.gui.screen;
 
-import basewindow.ModelPart;
 import java.util.ArrayList;
+
+import basewindow.ModelPart;
 import tanks.*;
 import tanks.minigames.Minigame;
 import tanks.tank.*;
@@ -166,7 +167,7 @@ public class Tutorial extends Minigame
 
         int i = this.prevDummiesDestroyed;
 
-        for (Tank t : destroyedDummies)
+        for (Tank t: destroyedDummies)
         {
             i++;
             Effect e = Effect.createNewEffect(t.posX, t.posY, t.size / 2, Effect.EffectType.tutorialProgress);
@@ -191,7 +192,7 @@ public class Tutorial extends Minigame
         {
             step = 4;
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Mine)
                 {
@@ -406,7 +407,7 @@ public class Tutorial extends Minigame
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
             Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Mine)
                 {

@@ -7,4 +7,7 @@
   <!-- Add suppressions here. Examples: -->
   <!-- <suppress checks="LineLength" files=".*\.java" /> -->
   <!-- <suppress checks="MagicNumber" files="Constants\.java" /> -->
+  <suppress checks=".*" files="ScreenChangelog\.java" />
+  <!-- Trailing semicolons after enum/class declarations (e.g. '};') do not need a preceding empty line -->
+  <suppress checks="EmptyLineSeparator" message="&apos;;&apos; should be separated from previous line\." />
 </suppressions>

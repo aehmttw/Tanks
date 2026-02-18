@@ -1,11 +1,12 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
+
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -58,7 +59,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             ArrayList<Tank> copied = new ArrayList<>();
             ArrayList<Tank> notCopied = new ArrayList<>();
 
-            for (String s : linked)
+            for (String s: linked)
             {
                 Tank t1 = Game.currentLevel.lookupTank(s);
                 if (writeTank(t1))
@@ -172,7 +173,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
         public void addFields()
         {
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -449,7 +450,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -510,7 +511,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         public void sortUIElements()
         {
             int in = 0;
-            for (Tab t : this.subMenus)
+            for (Tab t: this.subMenus)
             {
                 this.uiElements.add(in, new Button(0, 0, 350, 40, t.name, () -> screen.setTab(t)));
                 in++;
@@ -524,7 +525,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                     this.uiElements.get(i).setPosition(margin3, Drawing.drawing.interfaceSizeY / 2 + yoffset + (i - in + 3) * 90);
             }
 
-            for (Tab t : this.subMenus)
+            for (Tab t: this.subMenus)
             {
                 t.sortUIElements();
             }

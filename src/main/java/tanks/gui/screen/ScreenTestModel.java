@@ -85,8 +85,7 @@ public class ScreenTestModel extends Screen
             this.posZ += Panel.frameFrequency;
 
         /*
-         * for (PosedModel.PoseBone b: model.bones) { b.yaw = 0; b.pitch = 0; b.roll =
-         * 0; b.offX = 0; b.offY = 0; b.offZ = 0; }
+         * for (PosedModel.PoseBone b: model.bones) { b.yaw = 0; b.pitch = 0; b.roll = 0; b.offX = 0; b.offY = 0; b.offZ = 0; }
          */
 
         // animation.apply(model, System.currentTimeMillis() / 10.0, 1);

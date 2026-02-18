@@ -1,6 +1,7 @@
 package tanks.hotbar;
 
 import java.text.DecimalFormat;
+
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
@@ -196,9 +197,7 @@ public class Hotbar
                 Drawing.drawing.drawInterfaceText(x - bar_width / 2, y, shields + "");
             }
             /*
-             * else { Drawing.drawing.setColor(0, 160, 0);
-             * Drawing.drawing.drawImage("emblems/medic.png", x - bar_width / 2, y, 14, 14);
-             * }
+             * else { Drawing.drawing.setColor(0, 160, 0); Drawing.drawing.drawImage("emblems/medic.png", x - bar_width / 2, y, 14, 14); }
              */
         }
 
@@ -356,7 +355,7 @@ public class Hotbar
         {
             int count = 0;
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Tank && !Team.isAllied(Game.playerTank, m) && !m.destroy && ((Tank) m).mandatoryKill)
                     count++;
@@ -559,7 +558,7 @@ public class Hotbar
 
         int enemyCount = 0;
         int alliedCount = 0;
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             if (m instanceof Tank && !m.destroy && ((Tank) m).mandatoryKill)
             {

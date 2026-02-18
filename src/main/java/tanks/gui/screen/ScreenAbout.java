@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import java.net.URL;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -35,7 +36,7 @@ public class ScreenAbout extends Screen
     {
         ScreenChangelog s = new ScreenChangelog();
         int p = 0;
-        for (ScreenChangelog.Changelog l : ScreenChangelog.Changelog.logs)
+        for (ScreenChangelog.Changelog l: ScreenChangelog.Changelog.logs)
         {
             s.add(l.pages);
             p = l.pages.length;

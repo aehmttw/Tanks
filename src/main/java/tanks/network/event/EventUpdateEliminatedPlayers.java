@@ -1,12 +1,14 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
+
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventUpdateEliminatedPlayers extends PersonalEvent
 {
@@ -20,7 +22,7 @@ public class EventUpdateEliminatedPlayers extends PersonalEvent
     public EventUpdateEliminatedPlayers(ArrayList<ConnectedPlayer> players)
     {
         StringBuilder s = new StringBuilder();
-        for (ConnectedPlayer p : players) s.append(p.clientId).append(",");
+        for (ConnectedPlayer p: players) s.append(p.clientId).append(",");
 
         if (players.size() == 0)
             eliminatedPlayers = "";
@@ -36,9 +38,9 @@ public class EventUpdateEliminatedPlayers extends PersonalEvent
             ((ScreenGame) Game.screen).eliminatedPlayers.clear();
 
             String[] players = eliminatedPlayers.split(",");
-            for (String p : players)
+            for (String p: players)
             {
-                for (ConnectedPlayer c : ScreenPartyLobby.connections)
+                for (ConnectedPlayer c: ScreenPartyLobby.connections)
                 {
                     if (c.clientId.toString().equals(p))
                         ((ScreenGame) Game.screen).eliminatedPlayers.add(c);

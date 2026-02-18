@@ -16,7 +16,7 @@ public class PosedModelPose implements IPosedModelFrame
     {
         double time = 0;
 
-        for (String line : lines)
+        for (String line: lines)
         {
             if (line.startsWith("rotation "))
             {
@@ -43,7 +43,7 @@ public class PosedModelPose implements IPosedModelFrame
 
     public void apply(PosedModel m, double frac)
     {
-        for (PosedBone b : this.bones.values()) b.apply(m, frac);
+        for (PosedBone b: this.bones.values()) b.apply(m, frac);
     }
 
     public static class PosedBone
@@ -69,7 +69,7 @@ public class PosedModelPose implements IPosedModelFrame
             this.translation.apply(b, frac);
         }
 
-        public static abstract class BonePose
+        public abstract static class BonePose
         {
             public double time;
 

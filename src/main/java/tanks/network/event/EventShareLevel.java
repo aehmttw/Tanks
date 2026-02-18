@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -10,6 +9,8 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventShareLevel extends PersonalEvent
 {
@@ -35,7 +36,7 @@ public class EventShareLevel extends PersonalEvent
         {
             Player p = null;
 
-            for (Player pl : Game.players)
+            for (Player pl: Game.players)
             {
                 if (pl.clientID.equals(this.clientID))
                 {

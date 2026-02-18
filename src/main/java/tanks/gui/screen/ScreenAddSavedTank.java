@@ -1,10 +1,11 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+
+import basewindow.BaseFile;
 import tanks.BiConsumer;
 import tanks.Drawing;
 import tanks.Game;
@@ -75,7 +76,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             else
                 deleteMode.setText("Delete templates");
 
-            for (Button b : tankButtons) b.enabled = !deleting;
+            for (Button b: tankButtons) b.enabled = !deleting;
         }
     });
 
@@ -192,7 +193,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
         if (tankScreen instanceof OverlayObjectMenu)
         {
-            for (TankAIControlled t : ((OverlayObjectMenu) tankScreen).editor.level.customTanks)
+            for (TankAIControlled t: ((OverlayObjectMenu) tankScreen).editor.level.customTanks)
             {
                 int index = count % (rows * cols);
                 double x = this.centerX - 450 + 100 * (index % cols);
@@ -230,7 +231,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         levelTankCount = count;
 
         final ArrayList<TankAIControlled> savedTanks = new ArrayList<>();
-        for (String l : files)
+        for (String l: files)
         {
             BaseFile file = Game.game.fileManager.getFile(l);
 
@@ -268,7 +269,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                         ArrayList<TankAIControlled> inLevel = new ArrayList<>();
                         ArrayList<TankAIControlled> notInLevel = new ArrayList<>();
 
-                        for (TankAIControlled ta : tanks)
+                        for (TankAIControlled ta: tanks)
                         {
                             if (ta.name.equals(tank.name))
                                 continue;
@@ -280,7 +281,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                             }
                         }
 
-                        for (TankAIControlled ta : savedTanks)
+                        for (TankAIControlled ta: savedTanks)
                         {
                             if (ta.name.equals(tank.name))
                                 continue;
@@ -295,7 +296,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
                         final Pointer<TankAIControlled> p = p1 == null ? tankScreen.addTank(clone) : p1;
 
-                        for (TankAIControlled ta : notInLevel)
+                        for (TankAIControlled ta: notInLevel)
                         {
                             tankScreen.addTank(ta.instantiate(ta.name, ta.posX, ta.posY, ta.angle), false);
                         }
@@ -352,7 +353,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             }
         }
 
-        for (TankPlayer t : Game.currentLevel.playerBuilds)
+        for (TankPlayer t: Game.currentLevel.playerBuilds)
         {
             String desc = t.description;
             if (!t.description.equals(""))
@@ -365,7 +366,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         }
 
         files = searchDirectory(Game.buildDir);
-        for (String l : files)
+        for (String l: files)
         {
             BaseFile file = Game.game.fileManager.getFile(l);
 
@@ -409,7 +410,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         {
             ArrayList<String> ds = directory.getSubfiles();
 
-            for (String p : ds)
+            for (String p: ds)
             {
                 if (p.endsWith(".tanks"))
                     files.add(p);
@@ -440,7 +441,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 clone = ((TankPlayer) t).clonePropertiesTo((TankAIControlled) new TankPurple(t.name, t.posX, t.posY, t.angle).setDefaultPlayerColor());
 
             boolean duplicate = t.name.equals("player");
-            for (TankAIControlled t1 : Game.currentLevel.customTanks)
+            for (TankAIControlled t1: Game.currentLevel.customTanks)
             {
                 if (t1.name.equals(t.name))
                 {

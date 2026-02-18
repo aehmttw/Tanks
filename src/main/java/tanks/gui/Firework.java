@@ -1,7 +1,8 @@
 package tanks.gui;
 
-import basewindow.BaseShapeBatchRenderer;
 import java.util.ArrayList;
+
+import basewindow.BaseShapeBatchRenderer;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Movable;
@@ -17,6 +18,7 @@ public class Firework extends Movable
     {
         rocket, particle, particle_group, trail, flash
     }
+
     public FireworkType type;
 
     public double age = 0;
@@ -149,9 +151,8 @@ public class Firework extends Movable
             }
 
             /*
-             * Firework f = new Firework(FireworkType.trail, this.posX, this.posY, next);
-             * f.posZ = this.posZ; f.maxAge = 30; f.colorR = this.colorR; f.colorG =
-             * this.colorG; f.colorB = this.colorB;
+             * Firework f = new Firework(FireworkType.trail, this.posX, this.posY, next); f.posZ = this.posZ; f.maxAge = 30; f.colorR = this.colorR; f.colorG = this.colorG;
+             * f.colorB = this.colorB;
              *
              * f.size = this.size;
              */
@@ -252,10 +253,8 @@ public class Firework extends Movable
                 Drawing.drawing.fillInterfaceOval(posX, posY, posZ, s, s);
 
             /*
-             * Firework f = new Firework(FireworkType.trail, this.posX, this.posY,
-             * this.list, this.removeList); f.maxAge = opacity / 50; f.colorR = this.colorR;
-             * f.colorG = this.colorG; f.colorB = this.colorB; f.size = this.size;
-             * this.list.add(f);
+             * Firework f = new Firework(FireworkType.trail, this.posX, this.posY, this.list, this.removeList); f.maxAge = opacity / 50; f.colorR = this.colorR; f.colorG =
+             * this.colorG; f.colorB = this.colorB; f.size = this.size; this.list.add(f);
              */
 
             if (this.age < this.maxAge)

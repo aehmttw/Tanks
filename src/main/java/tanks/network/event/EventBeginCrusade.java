@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.hotbar.ItemBar;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventBeginCrusade extends PersonalEvent
 {

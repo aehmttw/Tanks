@@ -1,8 +1,9 @@
 package tanks.translation;
 
-import basewindow.BaseFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import basewindow.BaseFile;
 import tanks.Game;
 
 public class Translation
@@ -17,7 +18,7 @@ public class Translation
     {
         boolean first = true;
 
-        for (String s : translations)
+        for (String s: translations)
         {
             if (first)
             {

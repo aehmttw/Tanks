@@ -1,7 +1,8 @@
 package tanks.rendering;
 
-import basewindow.*;
 import java.util.HashMap;
+
+import basewindow.*;
 import tanks.Chunk;
 import tanks.Direction;
 import tanks.Drawing;
@@ -309,8 +310,7 @@ public class TerrainRenderer
     }
 
     /**
-     * Different rendering method, easier to use if you want the shrinking/growing
-     * blocks animation to work properly but maybe a bit slower
+     * Different rendering method, easier to use if you want the shrinking/growing blocks animation to work properly but maybe a bit slower
      */
     public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy,
             float cz)
@@ -473,9 +473,9 @@ public class TerrainRenderer
 
     public void reset()
     {
-        for (HashMap<Integer, RegionRenderer> h : this.renderers.values()) for (RegionRenderer r : h.values()) r.renderer.free();
+        for (HashMap<Integer, RegionRenderer> h: this.renderers.values()) for (RegionRenderer r: h.values()) r.renderer.free();
 
-        for (RegionRenderer r : this.outOfBoundsRenderers.values()) r.renderer.free();
+        for (RegionRenderer r: this.outOfBoundsRenderers.values()) r.renderer.free();
 
         this.renderers.clear();
         this.renderersByObj.clear();
@@ -486,7 +486,7 @@ public class TerrainRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
-        for (RegionRenderer s : renderers.values())
+        for (RegionRenderer s: renderers.values())
         {
             double sX = asPreview ? previewWidth : Game.currentSizeX;
             double x = xOffset * Game.tile_size * sX + offX;
@@ -548,9 +548,9 @@ public class TerrainRenderer
             }
         } else
         {
-            for (Obstacle o : Game.redrawObstacles) drawObstacle(o);
+            for (Obstacle o: Game.redrawObstacles) drawObstacle(o);
 
-            for (Game.GroundTile t : Game.redrawGroundTiles) this.drawTile(t.x, t.y);
+            for (Game.GroundTile t: Game.redrawGroundTiles) this.drawTile(t.x, t.y);
 
             Game.redrawObstacles.clear();
             Game.redrawGroundTiles.clear();
@@ -604,7 +604,7 @@ public class TerrainRenderer
                 for (int x = xStart; x <= xEnd; x++)
                     for (int y = yStart; y <= yEnd; y++)
                         if (Game.screen instanceof IBlankBackgroundScreen || (Game.screen instanceof IConditionalOverlayScreen) || x != 0 || y != 0)
-                        this.drawMap(this.outOfBoundsRenderers, x, y);
+                            this.drawMap(this.outOfBoundsRenderers, x, y);
             }
         }
 
@@ -612,7 +612,7 @@ public class TerrainRenderer
         {
             for (int i = 0; i < 10; i++)
             {
-                for (Class<? extends ShaderGroup> s : this.renderers.keySet())
+                for (Class<? extends ShaderGroup> s: this.renderers.keySet())
                 {
                     try
                     {
@@ -730,7 +730,7 @@ public class TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        for (Obstacle o : Game.obstacles) o.postOverride();
+        for (Obstacle o: Game.obstacles) o.postOverride();
 
         if (stagedCount == 0)
             totalObjectsCount = Game.currentSizeX * Game.currentSizeY + Game.obstacles.size();
@@ -795,7 +795,9 @@ public class TerrainRenderer
     {
         public BaseShapeBatchRenderer renderer;
         public ShaderGroup shader;
-        public int posX, posY, num;
+        public int posX;
+        public int posY;
+        public int num;
 
         public RegionRenderer(int x, int y, ShaderGroup s, int num)
         {

@@ -1,8 +1,9 @@
 package tanks.gui;
 
+import java.util.ArrayList;
+
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import java.util.ArrayList;
 import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenBindInput;
@@ -111,7 +112,7 @@ public class InputSelector implements IDrawable, ITrigger
 
             if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -219,7 +220,7 @@ public class InputSelector implements IDrawable, ITrigger
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
         } else
         {
-            for (int i : Game.game.window.touchPoints.keySet())
+            for (int i: Game.game.window.touchPoints.keySet())
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
 

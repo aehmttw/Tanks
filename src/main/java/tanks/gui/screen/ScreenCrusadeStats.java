@@ -1,10 +1,11 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+
+import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.Selector;
@@ -23,6 +24,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     {
         tanks, levels, items, misc
     };
+
     public View view = View.tanks;
     public View prevView = View.tanks;
 
@@ -159,7 +161,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         this.addItems();
         this.addMisc();
 
-        for (TankAIControlled t : this.crusade.customTanks)
+        for (TankAIControlled t: this.crusade.customTanks)
         {
             this.customTanks.put(t.name, t);
         }
@@ -209,7 +211,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         int us = 0;
 
         int i = 0;
-        for (CrusadePlayer pl : players)
+        for (CrusadePlayer pl: players)
         {
             playerNames[i] = pl.player.username;
             playerObjects[i] = pl;
@@ -234,7 +236,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void addTanks()
     {
-        for (RegistryTank.TankEntry t : Game.registryTank.tankEntries)
+        for (RegistryTank.TankEntry t: Game.registryTank.tankEntries)
         {
             Integer kills = this.player.tankKills.get(t.name);
             Integer deaths = this.player.tankDeaths.get(t.name);
@@ -251,7 +253,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             this.tanks.add(new TankEntry(this, t, kills, deaths));
         }
 
-        for (TankAIControlled t : crusade.customTanks)
+        for (TankAIControlled t: crusade.customTanks)
         {
             Integer kills = this.player.tankKills.get(t.name);
             Integer deaths = this.player.tankDeaths.get(t.name);
@@ -303,7 +305,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             }
         } else
         {
-            for (Crusade.LevelPerformance l : crusade.performances)
+            for (Crusade.LevelPerformance l: crusade.performances)
             {
                 String name = "Battle " + (l.index + 1);
 
@@ -361,7 +363,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                         f.create();
 
                     f.startWriting();
-                    for (Crusade.LevelPerformance l : crusade.performances)
+                    for (Crusade.LevelPerformance l: crusade.performances)
                     {
                         f.println(l.totalTime + "");
                     }
@@ -395,26 +397,26 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void addItems()
     {
-        for (TankPlayer.ShopTankBuild b : crusade.crusadeShopBuilds)
+        for (TankPlayer.ShopTankBuild b: crusade.crusadeShopBuilds)
         {
-            for (Item.ItemStack<?> i : b.abilities)
+            for (Item.ItemStack<?> i: b.abilities)
             {
                 this.addItem(i.item);
             }
         }
 
-        for (Crusade.CrusadeLevel cl : crusade.levels)
+        for (Crusade.CrusadeLevel cl: crusade.levels)
         {
-            for (TankPlayer.ShopTankBuild b : cl.buildOverrides)
+            for (TankPlayer.ShopTankBuild b: cl.buildOverrides)
             {
-                for (Item.ItemStack<?> i : b.abilities)
+                for (Item.ItemStack<?> i: b.abilities)
                 {
                     this.addItem(i.item);
                 }
             }
         }
 
-        for (Item.ShopItem i : crusade.getShop())
+        for (Item.ShopItem i: crusade.getShop())
         {
             this.addItem(i.itemStack.item);
         }
@@ -541,13 +543,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         else if (view == View.misc)
             miscPage++;
 
-        for (Entry e : tanks) e.age = 0;
+        for (Entry e: tanks) e.age = 0;
 
-        for (Entry e : levels) e.age = 0;
+        for (Entry e: levels) e.age = 0;
 
-        for (Entry e : items) e.age = 0;
+        for (Entry e: items) e.age = 0;
 
-        for (Entry e : misc) e.age = 0;
+        for (Entry e: misc) e.age = 0;
     });
 
     Button next = new Button(this.centerX, Drawing.drawing.interfaceSizeY - 35, this.objWidth, this.objHeight, "Next", () ->
@@ -592,13 +594,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         else if (view == View.misc)
             miscPage--;
 
-        for (Entry e : tanks) e.age = 0;
+        for (Entry e: tanks) e.age = 0;
 
-        for (Entry e : levels) e.age = 0;
+        for (Entry e: levels) e.age = 0;
 
-        for (Entry e : items) e.age = 0;
+        for (Entry e: items) e.age = 0;
 
-        for (Entry e : misc) e.age = 0;
+        for (Entry e: misc) e.age = 0;
     });
 
     @Override
@@ -734,7 +736,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             this.tankTimer -= Panel.frameFrequency;
 
             ArrayList<Tank> removeTanks = new ArrayList<>();
-            for (Tank t : this.rollingTanks)
+            for (Tank t: this.rollingTanks)
             {
                 if (t.posX < Drawing.drawing.sizeX / 2)
                     t.drawAge -= Panel.frameFrequency * 2;
@@ -881,13 +883,13 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         {
             prevView = view;
 
-            for (Entry e : tanks) e.age = 0;
+            for (Entry e: tanks) e.age = 0;
 
-            for (Entry e : levels) e.age = 0;
+            for (Entry e: levels) e.age = 0;
 
-            for (Entry e : items) e.age = 0;
+            for (Entry e: items) e.age = 0;
 
-            for (Entry e : misc) e.age = 0;
+            for (Entry e: misc) e.age = 0;
 
             topBarTimer = 0;
             bottomBarTimer = 0;
@@ -1213,7 +1215,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             if (!Game.game.window.drawingShadow)
             {
-                for (Tank t : this.rollingTanks)
+                for (Tank t: this.rollingTanks)
                 {
                     t.draw();
                 }

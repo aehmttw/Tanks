@@ -1,16 +1,5 @@
 package lwjglwindow;
 
-import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.system.MemoryStack.stackPush;
-import static org.lwjgl.system.MemoryUtil.NULL;
-
-import basewindow.*;
-import basewindow.transformation.*;
-import de.matthiasmann.twl.utils.PNGDecoder;
-import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
@@ -18,12 +7,25 @@ import java.nio.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import javax.imageio.ImageIO;
+
+import basewindow.*;
+import basewindow.transformation.*;
+import tanks.Game;
+
+import de.matthiasmann.twl.utils.PNGDecoder;
+import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
-import tanks.Game;
+
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class LWJGLWindow extends BaseWindow
 {
@@ -628,7 +630,7 @@ public class LWJGLWindow extends BaseWindow
     {
         this.scaledLights.clear();
 
-        for (double[] d : lights)
+        for (double[] d: lights)
         {
             double x = scaleLight(d[0] / absoluteWidth) * 256;
             double y = scaleLight(d[1] / absoluteHeight) * 256;
@@ -648,7 +650,7 @@ public class LWJGLWindow extends BaseWindow
 
         ByteBuffer buf = ByteBuffer.allocateDirect(4 * p);
 
-        for (double[] l : this.scaledLights)
+        for (double[] l: this.scaledLights)
         {
             double x = l[0];
             double y = l[1];
@@ -810,12 +812,12 @@ public class LWJGLWindow extends BaseWindow
         {
             applyShadowTransformations();
 
-            for (Transformation t : this.lightBaseTransformation) t.apply();
+            for (Transformation t: this.lightBaseTransformation) t.apply();
         } else
         {
             applyTransformations();
 
-            for (Transformation t : this.baseTransformations) t.apply();
+            for (Transformation t: this.baseTransformations) t.apply();
         }
     }
 
@@ -907,7 +909,7 @@ public class LWJGLWindow extends BaseWindow
     {
         double[][] matrix = m.values;
         double[] d = new double[]{matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3], matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3], matrix[2][0], matrix[2][1],
-                matrix[2][2], matrix[2][3], matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]};
+            matrix[2][2], matrix[2][3], matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]};
         glMultMatrixd(d);
     }
 
@@ -1113,14 +1115,10 @@ public class LWJGLWindow extends BaseWindow
             return;
 
         /*
-         * this.currentBaseShader.customLight.set(true);
-         * this.currentBaseShader.lightAmbient.set(ambient[0], ambient[1], ambient[2]);
-         * this.currentBaseShader.lightDiffuse.set(diffuse[0], diffuse[1], diffuse[2]);
-         * this.currentBaseShader.lightSpecular.set(specular[0], specular[1],
-         * specular[2]); this.currentBaseShader.shininess.set((float) shininess);
-         * this.currentBaseShader.minBrightness.set((float) minBound);
-         * this.currentBaseShader.maxBrightness.set((float) maxBound);
-         * this.currentBaseShader.negativeBrightness.set(negative);
+         * this.currentBaseShader.customLight.set(true); this.currentBaseShader.lightAmbient.set(ambient[0], ambient[1], ambient[2]);
+         * this.currentBaseShader.lightDiffuse.set(diffuse[0], diffuse[1], diffuse[2]); this.currentBaseShader.lightSpecular.set(specular[0], specular[1], specular[2]);
+         * this.currentBaseShader.shininess.set((float) shininess); this.currentBaseShader.minBrightness.set((float) minBound); this.currentBaseShader.maxBrightness.set((float)
+         * maxBound); this.currentBaseShader.negativeBrightness.set(negative);
          */
     }
 

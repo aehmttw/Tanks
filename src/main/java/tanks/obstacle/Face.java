@@ -9,38 +9,35 @@ import tanks.tank.TankAIControlled;
 
 public class Face implements Comparable<Face>
 {
-    public double startX, startY, endX, endY;
+    public double startX;
+    public double startY;
+    public double endX;
+    public double endY;
 
     /**
-     * The <code>startX</code> of a length 1 face, where index <code>i</code> of the
-     * array corresponds to the {@linkplain Direction#index() direction index} of
-     * the face
+     * The <code>startX</code> of a length 1 face, where index <code>i</code> of the array corresponds to the {@linkplain Direction#index() direction index} of the face
      */
     public static int[] x1 = {0, 1, 0, 0};
     /**
-     * The <code>startY</code> of a length 1 face, where index <code>i</code> of the
-     * array corresponds to the {@linkplain Direction#index() direction index} of
-     * the face
+     * The <code>startY</code> of a length 1 face, where index <code>i</code> of the array corresponds to the {@linkplain Direction#index() direction index} of the face
      */
     public static int[] y1 = {0, 0, 1, 0};
     /**
-     * The <code>endX</code> of a length 1 face, where index <code>i</code> of the
-     * array corresponds to the {@linkplain Direction#index() direction index} of
-     * the face
+     * The <code>endX</code> of a length 1 face, where index <code>i</code> of the array corresponds to the {@linkplain Direction#index() direction index} of the face
      */
     public static int[] x2 = {1, 1, 1, 0};
 
     /**
-     * The <code>endY</code> of a length 1 face, where index <code>i</code> of the
-     * array corresponds to the {@linkplain Direction#index() direction index} of
-     * the face
+     * The <code>endY</code> of a length 1 face, where index <code>i</code> of the array corresponds to the {@linkplain Direction#index() direction index} of the face
      */
     public static int[] y2 = {0, 1, 1, 1};
 
     public ISolidObject owner;
     public Direction direction;
-    public boolean solidTank, solidBullet;
-    public boolean valid = true, lastValid = false;
+    public boolean solidTank;
+    public boolean solidBullet;
+    public boolean valid = true;
+    public boolean lastValid = false;
 
     public Face(ISolidObject o, Direction direction, boolean tank, boolean bullet)
     {
@@ -62,10 +59,10 @@ public class Face implements Comparable<Face>
             return;
 
         Drawing d = Drawing.drawing;
-        for (Chunk c : Chunk.chunkList)
+        for (Chunk c: Chunk.chunkList)
         {
             Drawing.drawing.setFontSize(5);
-            for (Face f : c.faces.topFaces)
+            for (Face f: c.faces.topFaces)
             {
                 if (shouldHide(f))
                     continue;
@@ -73,7 +70,7 @@ public class Face implements Comparable<Face>
                 d.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
             }
 
-            for (Face f : c.faces.bottomFaces)
+            for (Face f: c.faces.bottomFaces)
             {
                 if (shouldHide(f))
                     continue;
@@ -81,7 +78,7 @@ public class Face implements Comparable<Face>
                 d.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
             }
 
-            for (Face f : c.faces.leftFaces)
+            for (Face f: c.faces.leftFaces)
             {
                 if (shouldHide(f))
                     continue;
@@ -89,7 +86,7 @@ public class Face implements Comparable<Face>
                 d.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
             }
 
-            for (Face f : c.faces.rightFaces)
+            for (Face f: c.faces.rightFaces)
             {
                 if (shouldHide(f))
                     continue;

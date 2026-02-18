@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -88,15 +89,15 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
     {
         this.levelDisplay.draw();
 
-        for (int i : this.shapes.keySet()) this.shapes.get(i).draw();
+        for (int i: this.shapes.keySet()) this.shapes.get(i).draw();
 
         Drawing.drawing.setColor(0, 0, 0);
 
-        for (int i : this.texts.keySet()) this.texts.get(i).draw();
+        for (int i: this.texts.keySet()) this.texts.get(i).draw();
 
-        for (int i : this.buttons.keySet()) this.buttons.get(i).draw();
+        for (int i: this.buttons.keySet()) this.buttons.get(i).draw();
 
-        for (int i : this.textboxes.keySet()) this.textboxes.get(i).draw();
+        for (int i: this.textboxes.keySet()) this.textboxes.get(i).draw();
 
         this.download.draw();
 

@@ -2,6 +2,7 @@ package tanks.generator;
 
 import java.util.ArrayList;
 import java.util.Random;
+
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyHost;
 
@@ -741,11 +742,9 @@ public class LevelGeneratorRandom extends LevelGenerator
         }
 
         /*
-         * for (int i = -2; i <= 2; i++) for (int j = -2; j <= 2; j++) cells[Math.max(0,
-         * Math.min(width - 1, x+i))][Math.max(0, Math.min(height - 1, y+j))] = true;
+         * for (int i = -2; i <= 2; i++) for (int j = -2; j <= 2; j++) cells[Math.max(0, Math.min(width - 1, x+i))][Math.max(0, Math.min(height - 1, y+j))] = true;
          *
-         * s.append(x).append("-").append(y).append("-player-").append((int)
-         * (random.nextDouble(() * 4)).append(",");
+         * s.append(x).append("-").append(y).append("-player-").append((int) (random.nextDouble(() * 4)).append(",");
          */
 
         int numPlayers = 1;

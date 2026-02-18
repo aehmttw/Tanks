@@ -1,5 +1,10 @@
 package tanks.network;
 
+import tanks.Game;
+import tanks.gui.screen.ScreenHostingEnded;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.network.event.EventKick;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -8,10 +13,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import tanks.Game;
-import tanks.gui.screen.ScreenHostingEnded;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.event.EventKick;
 
 public class Server
 {

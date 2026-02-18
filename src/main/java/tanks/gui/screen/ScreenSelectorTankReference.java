@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -191,7 +192,8 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
     {
         if (copy.hoverTextRaw.equals(""))
             copy.setHoverText(
-                    "Creating an editable copy will unlink the tank used---for the %s from the original---tank in the level. This allows you to modify the---%s independently of the tank---in the level.",
+                    "Creating an editable copy will unlink the tank used---for the %s from the original---tank in the level. This allows you to modify the---%s "
+                            + "independently of the tank---in the level.",
                     this.objName, this.objName);
 
         int pageCount = (this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols);

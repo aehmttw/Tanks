@@ -1,6 +1,7 @@
 package tanks.bullet;
 
 import java.util.ArrayList;
+
 import tanks.*;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventBulletBounce;
@@ -16,13 +17,16 @@ public class BulletAirStrike extends Bullet
     public ArrayList<Double> pastPosZ = new ArrayList<>();
     public ArrayList<Double> pastTime = new ArrayList<>();
 
-    @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing, desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
+    @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing,
+            desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
     public double minRange = 0;
 
-    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing, desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
+    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,
+            desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
     public double maxRange = 0;
 
-    @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands. Larger values are less accurate. \n \n 1 tile = 50 units")
+    @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing,
+            desc = "The maximum distance between the target aim location and where the bullet actually lands. Larger values are less accurate. \n \n 1 tile = 50 units")
     public double accuracySpreadCircle = 0;
 
     public double initialX;

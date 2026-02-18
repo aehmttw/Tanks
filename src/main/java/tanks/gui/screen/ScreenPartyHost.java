@@ -1,11 +1,11 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamMatchmaking;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
+
 import tanks.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
@@ -18,6 +18,8 @@ import tanks.network.event.*;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 import tanks.translation.Translation;
+
+import com.codedisaster.steamworks.SteamMatchmaking;
 
 public class ScreenPartyHost extends Screen
 {
@@ -516,7 +518,7 @@ public class ScreenPartyHost extends Screen
         }
 
         ArrayList<String> namesList = new ArrayList<>(botNames);
-        for (Player p : Game.botPlayers) namesList.remove(p.username);
+        for (Player p: Game.botPlayers) namesList.remove(p.username);
 
         for (int i = Game.botPlayers.size(); i < bots; i++)
         {

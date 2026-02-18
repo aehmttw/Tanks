@@ -7,8 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MetadataProperty
 {
     String id();
+
     String name() default "";
+
     String image() default "";
+
     String keybind() default "";
+
     String selector();
 }

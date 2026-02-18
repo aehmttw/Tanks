@@ -1,13 +1,15 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.UUID;
+
 import tanks.Crusade;
 import tanks.CrusadePlayer;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventShowCrusadeStats extends PersonalEvent
 {
@@ -26,7 +28,7 @@ public class EventShowCrusadeStats extends PersonalEvent
 
         StringBuilder l = new StringBuilder();
 
-        for (Crusade.LevelPerformance p : Crusade.currentCrusade.performances)
+        for (Crusade.LevelPerformance p: Crusade.currentCrusade.performances)
         {
             l.append(p.toString()).append("\n");
         }
@@ -44,7 +46,7 @@ public class EventShowCrusadeStats extends PersonalEvent
         if (Crusade.currentCrusade.win)
             levelExtra = 1;
 
-        for (CrusadePlayer cp : players)
+        for (CrusadePlayer cp: players)
         {
             if (cp != null)
             {
@@ -65,14 +67,14 @@ public class EventShowCrusadeStats extends PersonalEvent
 
         String[] levels = this.levels.split("\n");
 
-        for (String level : levels)
+        for (String level: levels)
         {
             Player.parseLevelPerformances(Crusade.currentCrusade.performances, level);
         }
 
         String[] players = this.stats.split("\n");
 
-        for (String p : players)
+        for (String p: players)
         {
             String[] parts1 = p.split(":");
             String[] parts2 = parts1[0].split("/");

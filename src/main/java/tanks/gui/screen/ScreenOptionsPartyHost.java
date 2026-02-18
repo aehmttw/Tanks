@@ -43,7 +43,8 @@ public class ScreenOptionsPartyHost extends Screen
             else
                 anticheat.setText(anticheatText, weakText);
         }
-    }, "When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.");
+    }, "When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------"
+            + "Weaker settings work better---with less stable connections.");
 
     Button disableFriendlyFire = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
     {

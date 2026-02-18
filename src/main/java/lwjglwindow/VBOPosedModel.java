@@ -1,15 +1,17 @@
 package lwjglwindow;
 
-import static org.lwjgl.opengl.GL11.*;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
 
 import basewindow.*;
 import basewindow.transformation.AxisRotation;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
-import java.nio.FloatBuffer;
-import java.util.HashMap;
+
 import org.lwjgl.BufferUtils;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class VBOPosedModel extends PosedModel
 {
@@ -20,16 +22,16 @@ public class VBOPosedModel extends PosedModel
     {
         super(model);
 
-        for (ModelPart m : this.model.models)
+        for (ModelPart m: this.model.models)
         {
             int vbo = ((LWJGLWindow) this.model.window).createVBO();
             this.bonesVBOs.put(m, vbo);
 
             FloatBuffer bones = BufferUtils.createFloatBuffer(m.shapes.length * 12);
 
-            for (ModelPart.Shape s : m.shapes)
+            for (ModelPart.Shape s: m.shapes)
             {
-                for (ModelPart.Point p : s.points)
+                for (ModelPart.Point p: s.points)
                 {
                     for (int i = 0; i < 4; i++)
                     {
@@ -77,16 +79,16 @@ public class VBOPosedModel extends PosedModel
 
         IBoneShader shader = (IBoneShader) this.model.window.currentShader;
 
-        for (PoseBone b : this.bones)
+        for (PoseBone b: this.bones)
         {
             b.computeMatrix();
             b.compileMatrix();
         }
 
         int in = 0;
-        for (PoseBone bone : this.bones)
+        for (PoseBone bone: this.bones)
         {
-            for (double v : bone.compiledMatrix)
+            for (double v: bone.compiledMatrix)
             {
                 this.matrices[in] = (float) v;
                 in++;
@@ -95,7 +97,7 @@ public class VBOPosedModel extends PosedModel
 
         shader.setBoneMatrices(this.matrices, false);
 
-        for (ModelPart mo : this.model.models)
+        for (ModelPart mo: this.model.models)
         {
             VBOModelPart m = (VBOModelPart) mo;
             LWJGLWindow window = (LWJGLWindow) this.model.window;
@@ -147,7 +149,7 @@ public class VBOPosedModel extends PosedModel
 
         IBoneShader shader = (IBoneShader) this.model.window.currentShader;
 
-        for (ModelPart mo : this.model.models)
+        for (ModelPart mo: this.model.models)
         {
             VBOModelPart m = (VBOModelPart) mo;
             LWJGLWindow window = (LWJGLWindow) this.model.window;

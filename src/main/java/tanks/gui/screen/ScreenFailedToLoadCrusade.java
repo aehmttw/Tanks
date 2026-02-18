@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.util.Date;
 import java.util.Properties;
+
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.GameCrashedException;
@@ -50,14 +51,14 @@ public class ScreenFailedToLoadCrusade extends Screen
             f.println("Crusade name: " + fileName);
             f.println("Crusade contents: " + contents + "\n");
             f.println(e.toString());
-            for (StackTraceElement el : e.getStackTrace())
+            for (StackTraceElement el: e.getStackTrace())
             {
                 f.println("at " + el.toString());
             }
 
             f.println("\nSystem properties:");
             Properties p = System.getProperties();
-            for (Object o : p.keySet()) f.println(o + ": " + p.get(o));
+            for (Object o: p.keySet()) f.println(o + ": " + p.get(o));
 
             f.stopWriting();
         } catch (Exception ex)

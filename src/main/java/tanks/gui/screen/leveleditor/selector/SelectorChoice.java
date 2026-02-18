@@ -2,6 +2,7 @@ package tanks.gui.screen.leveleditor.selector;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
 import tanks.BiConsumer;
 import tanks.Function;
 import tanks.Game;
@@ -12,8 +13,7 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 
 /**
  * @param <V>
- *            The class of the object being selected. (e.g. {@code Team} for
- *            team selectors)
+ *            The class of the object being selected. (e.g. {@code Team} for team selectors)
  */
 public class SelectorChoice<V> extends MetadataSelector
 {

@@ -99,7 +99,8 @@ public class ScreenOptionsInputTouchscreen extends Screen
                 snap.setText(snapText, ScreenOptions.onText);
             }
         }
-    }, "Single joystick: Use one joystick---to move, and tap on the screen to shoot.---Double tap the player to lay a mine.------Dual joysticks: Use a second joystick---to shoot, includes a mine button.");
+    }, "Single joystick: Use one joystick---to move, and tap on the screen to shoot.---Double tap the player to lay a mine.------Dual joysticks: Use a second joystick---"
+            + "to shoot, includes a mine button.");
 
     public ScreenOptionsInputTouchscreen()
     {

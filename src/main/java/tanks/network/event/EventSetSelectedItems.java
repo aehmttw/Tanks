@@ -1,12 +1,14 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
+
 import tanks.Game;
 import tanks.Player;
 import tanks.item.Item;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayerRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventSetSelectedItems extends PersonalEvent
 {

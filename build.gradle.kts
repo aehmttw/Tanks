@@ -2,7 +2,6 @@ plugins {
     `java-library`
     `maven-publish`
     checkstyle
-    id("com.diffplug.spotless") version "6.13.0"
 }
 
 fun getHash(): String {
@@ -150,17 +149,6 @@ checkstyle {
     toolVersion = "9.3"
     configFile = file("config/checkstyle/checkstyle.xml")
     isIgnoreFailures = true
-}
-
-spotless {
-    isEnforceCheck = false // Don't run during ./gradlew check (requires Java 11+)
-    java {
-        eclipse().configFile("config/spotless/eclipse-formatter.xml")
-        importOrder("\\#", "")
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
 }
 
 tasks.register("lintCount") {

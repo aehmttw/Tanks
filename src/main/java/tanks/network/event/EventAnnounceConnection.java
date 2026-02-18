@@ -1,10 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventAnnounceConnection extends PersonalEvent
 {

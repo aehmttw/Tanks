@@ -7,15 +7,14 @@ import tanks.gui.screen.ScreenGame;
 import tanks.minigames.Arcade;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.TrackRenderer;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
-import tanks.tank.Turret;
+import tanks.tank.*;
 
 public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderableObject
 {
     public enum EffectType
     {
-        fire, smokeTrail, trail, ray, blockMarker, circleMarker, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress
+        fire, smokeTrail, trail, ray, blockMarker, circleMarker, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun,
+        bushBurn, glow, teleporterLight, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress
     }
 
     public enum State
@@ -34,10 +33,15 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     public boolean glowy = true;
 
     public double maxAge = 100;
-    public double size, radius, angle, distance;
+    public double size;
+    public double radius;
+    public double angle;
+    public double distance;
 
-    public int prevGridX, prevGridY;
-    public int initialGridX, initialGridY;
+    public int prevGridX;
+    public int prevGridY;
+    public int initialGridX;
+    public int initialGridY;
     public double gridHeight;
     public Movable linkedMovable;
 
@@ -81,8 +85,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     }
 
     /**
-     * Use Effect.createNewEffect(double x, double y, Effect.EffectType type)
-     * instead of this because it can refurbish and reuse old effects
+     * Use Effect.createNewEffect(double x, double y, Effect.EffectType type) instead of this because it can refurbish and reuse old effects
      */
     protected Effect()
     {
@@ -670,15 +673,6 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         return this;
     }
 
-    public Effect setColorsFromTank(Tank t)
-    {
-        this.setColorWithNoise(t.color, 50);
-        this.setGlowColor(this.color);
-        this.glowSize = t.glowSize;
-        this.glowColor.alpha = t.glowIntensity * 127;
-        return this;
-    }
-
     public Effect setColorsFromBullet(Bullet b, Color c)
     {
         this.setColorWithNoise(c, 50);
@@ -687,6 +681,15 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         this.glowSize = b.effect.glowSize * 2;
         this.glowColor.alpha = b.effect.glowIntensity * 255;
         this.size = b.size;
+        return this;
+    }
+
+    public Effect setColorsFromTank(Tank t)
+    {
+        this.setColorWithNoise(t.color, 50);
+        this.setGlowColor(this.color);
+        this.glowSize = t.glowSize;
+        this.glowColor.alpha = t.glowIntensity * 127;
         return this;
     }
 
@@ -798,9 +801,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 drawing.fillGlow(this.posX, this.posY, size, size, true);
 
             /*
-             * if (Game.enable3d) drawing.drawImage("glow.png", this.posX, this.posY,
-             * this.posZ, size, size); else drawing.drawImage("glow.png", this.posX,
-             * this.posY, size, size);
+             * if (Game.enable3d) drawing.drawImage("glow.png", this.posX, this.posY, this.posZ, size, size); else drawing.drawImage("glow.png", this.posX, this.posY, size, size);
              */
         } else if (this.type == EffectType.ray)
         {

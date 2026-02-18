@@ -1,6 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import java.util.ArrayList;
+
 import tanks.Game;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ILevelPreviewScreen;

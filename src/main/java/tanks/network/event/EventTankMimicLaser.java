@@ -1,11 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.GameObject;
 import tanks.Movable;
 import tanks.bullet.Laser;
 import tanks.tank.Tank;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankMimicLaser extends PersonalEvent implements IStackableEvent
 {
@@ -36,7 +37,7 @@ public class EventTankMimicLaser extends PersonalEvent implements IStackableEven
         Tank t = Tank.idMap.get(tank);
         Tank t2 = Tank.idMap.get(tank2);
 
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             if (m instanceof Laser && (((Laser) m).tank1 == t || ((Laser) m).tank2 == t))
                 Game.removeMovables.add(m);

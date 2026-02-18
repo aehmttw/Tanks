@@ -1,6 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import java.util.Locale;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;

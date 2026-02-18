@@ -1,7 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
+
 import tanks.Crusade;
 import tanks.Game;
 import tanks.Level;
@@ -12,6 +12,8 @@ import tanks.minigames.Minigame;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventLoadLevel extends PersonalEvent
 {
@@ -33,21 +35,21 @@ public class EventLoadLevel extends PersonalEvent
         {
             StringBuilder s = new StringBuilder("tanks\n");
 
-            for (TankAIControlled t : l.customTanks)
+            for (TankAIControlled t: l.customTanks)
             {
                 s.append(t.toString()).append("\n");
             }
 
             s.append("shop\n");
 
-            for (Item.ShopItem i : Crusade.currentCrusade.getShop())
+            for (Item.ShopItem i: Crusade.currentCrusade.getShop())
             {
                 s.append(i.toString()).append("\n");
             }
 
             s.append("builds\n");
 
-            for (TankPlayer.ShopTankBuild i : Crusade.currentCrusade.getBuildsShop())
+            for (TankPlayer.ShopTankBuild i: Crusade.currentCrusade.getBuildsShop())
             {
                 s.append(i.toString()).append("\n");
             }

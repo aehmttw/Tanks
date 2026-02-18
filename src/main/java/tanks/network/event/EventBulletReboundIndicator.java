@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.bullet.BulletReboundIndicator;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventBulletReboundIndicator extends PersonalEvent
 {

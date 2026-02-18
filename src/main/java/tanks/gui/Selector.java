@@ -1,9 +1,10 @@
 package tanks.gui;
 
+import java.util.ArrayList;
+
 import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import java.util.ArrayList;
 import tanks.*;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenSelector;
@@ -69,20 +70,17 @@ public class Selector implements IDrawable, ITrigger
     // public String sound = "click.ogg";
 
     /**
-     * If set to true and is part of an online service, pressing the button sends
-     * the player to a loading screen
+     * If set to true and is part of an online service, pressing the button sends the player to a loading screen
      */
     public boolean wait = false;
 
     /**
-     * For online service use with changing interface scales -1 = left 0 = middle 1
-     * = right
+     * For online service use with changing interface scales -1 = left 0 = middle 1 = right
      */
     public int xAlignment = 0;
 
     /**
-     * For online service use with changing interface scales -1 = top 0 = middle 1 =
-     * bottom
+     * For online service use with changing interface scales -1 = top 0 = middle 1 = bottom
      */
     public int yAlignment = 0;
 
@@ -158,7 +156,7 @@ public class Selector implements IDrawable, ITrigger
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -264,7 +262,7 @@ public class Selector implements IDrawable, ITrigger
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
         } else
         {
-            for (int i : Game.game.window.touchPoints.keySet())
+            for (int i: Game.game.window.touchPoints.keySet())
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
 

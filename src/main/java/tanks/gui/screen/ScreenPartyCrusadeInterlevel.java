@@ -85,7 +85,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         if (Crusade.currentCrusade != null)
         {
             CrusadePlayer us = null;
-            for (Player p : Crusade.currentCrusade.crusadePlayers.keySet())
+            for (Player p: Crusade.currentCrusade.crusadePlayers.keySet())
             {
                 if (p.clientID.equals(Game.clientID))
                     us = Crusade.currentCrusade.getCrusadePlayer(p);
@@ -103,7 +103,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         StringBuilder tanks = new StringBuilder("\ntanks\n");
         if (Crusade.crusadeMode && Crusade.currentCrusade.customTanks.size() > 0)
         {
-            for (TankAIControlled t : Crusade.currentCrusade.customTanks) tanks.append(t.toString()).append("\n");
+            for (TankAIControlled t: Crusade.currentCrusade.customTanks) tanks.append(t.toString()).append("\n");
 
             ls = ls + tanks;
         }
@@ -125,9 +125,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         Game.player.hotbar.percentHidden = 100;
 
         /*
-         * if (ScreenPartyHost.isServer) { if (Panel.win)
-         * Drawing.drawing.playSound("win.ogg"); else
-         * Drawing.drawing.playSound("lose.ogg"); }
+         * if (ScreenPartyHost.isServer) { if (Panel.win) Drawing.drawing.playSound("win.ogg"); else Drawing.drawing.playSound("lose.ogg"); }
          */
 
         if (Panel.levelPassed)
@@ -254,7 +252,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 
     public boolean checkCrusadeEnd()
     {
-        for (Player p : Game.players)
+        for (Player p: Game.players)
         {
             if (p.remainingLives > 0)
                 return true;

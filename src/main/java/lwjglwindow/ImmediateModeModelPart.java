@@ -1,11 +1,12 @@
 package lwjglwindow;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import basewindow.BaseWindow;
 import basewindow.Model;
 import basewindow.ModelPart;
 import basewindow.transformation.AxisRotation;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ImmediateModeModelPart extends ModelPart
 {
@@ -39,7 +40,7 @@ public class ImmediateModeModelPart extends ModelPart
         double b = window.colorB * 255;
 
         boolean depthMask = true;
-        for (Shape shape : this.shapes)
+        for (Shape shape: this.shapes)
         {
             if (this.material != null)
             {
@@ -71,7 +72,7 @@ public class ImmediateModeModelPart extends ModelPart
         double b = window.colorB * 255;
 
         boolean depthMask = true;
-        for (Shape shape : this.shapes)
+        for (Shape shape: this.shapes)
         {
             if (this.material != null)
             {

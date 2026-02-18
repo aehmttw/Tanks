@@ -39,7 +39,8 @@ public class ScreenOptionsSpeedrun extends Screen
             else
                 bestRun.setText(bestRunText, ScreenOptions.offText);
         }
-    }, "When enabled and playing a built-in---crusade that you've already completed---at least once, the time difference from---your best run's time will show upon---clearing a level.");
+    }, "When enabled and playing a built-in---crusade that you've already completed---at least once, the time difference from---your best run's time will show upon---"
+            + "clearing a level.");
 
     Button deterministic = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -63,7 +64,8 @@ public class ScreenOptionsSpeedrun extends Screen
                 deterministic.setText(deterministicText, ScreenOptions.offText);
         }
     }, "Deterministic mode changes the random number---generation to be fixed based on a seed, and---the game speed to be locked and independent---of framerate."
-            + "------This is useful for fair speedruns but may---provide for a less smooth experience.------If your device can't run Tanks at 60 FPS,---use 30 FPS mode to prevent slowdowns.");
+            + "------This is useful for fair speedruns but may---provide for a less smooth experience.------If your device can't run Tanks at 60 FPS,---"
+            + "use 30 FPS mode to prevent slowdowns.");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 

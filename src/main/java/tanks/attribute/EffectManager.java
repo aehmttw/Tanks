@@ -3,6 +3,7 @@ package tanks.attribute;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+
 import tanks.BiConsumer;
 import tanks.Game;
 import tanks.Movable;
@@ -29,8 +30,7 @@ public class EffectManager
     public ArrayList<AttributeModifier> attributes = new ArrayList<>();
 
     /**
-     * Linear search function to find status effect property by status effect
-     * reference
+     * Linear search function to find status effect property by status effect reference
      */
     private StatusEffectProperty findStatusEffectProperty(StatusEffect statusEffect)
     {
@@ -42,6 +42,7 @@ public class EffectManager
         }
         return null;
     }
+
     public ArrayList<StatusEffect> removeStatusEffects = new ArrayList<>();
     public ArrayList<AttributeModifier> removeAttributes = new ArrayList<>();
 
@@ -75,6 +76,11 @@ public class EffectManager
     public boolean contains(StatusEffect statusEffect)
     {
         return indexOf(statusEffect) >= 0;
+    }
+
+    public void addStatusEffect(StatusEffect s, double warmup, double deterioration, double duration)
+    {
+        this.addStatusEffect(s, 0, warmup, deterioration, duration);
     }
 
     public void addStatusEffect(StatusEffect s, double age, double warmup, double deterioration, double duration)
@@ -184,11 +190,6 @@ public class EffectManager
         this.addAttributeCallback.accept(m, true);
     }
 
-    public void addStatusEffect(StatusEffect s, double warmup, double deterioration, double duration)
-    {
-        this.addStatusEffect(s, 0, warmup, deterioration, duration);
-    }
-
     public void updateStatusEffects()
     {
         double frameFrequency = this.movable.affectedByFrameFrequency ? Panel.frameFrequency : 1;
@@ -216,7 +217,7 @@ public class EffectManager
             }
         }
 
-        for (StatusEffect s : this.removeStatusEffects)
+        for (StatusEffect s: this.removeStatusEffects)
         {
             int index = indexOf(s);
             if (index >= 0)
@@ -249,13 +250,10 @@ public class EffectManager
     }
 
     /**
-     * Returns the attribute modifier object of the same type, or null if it doesn't
-     * exist.
+     * Returns the attribute modifier object of the same type, or null if it doesn't exist.
      *
-     * @apiNote The attribute modifier object returned is mutable. Create a copy
-     *          using {@link AttributeModifier#copy copy} if you want to modify it,
-     *          and make sure to {@link AttributeModifier#recycle recycle} it when
-     *          you're done.
+     * @apiNote The attribute modifier object returned is mutable. Create a copy using {@link AttributeModifier#copy copy} if you want to modify it, and make sure to
+     *          {@link AttributeModifier#recycle recycle} it when you're done.
      */
     public AttributeModifier getAttribute(AttributeModifier.Type type)
     {
@@ -286,7 +284,7 @@ public class EffectManager
 
             if (i != null)
             {
-                for (AttributeModifier a : s.attributeModifiers)
+                for (AttributeModifier a: s.attributeModifiers)
                 {
                     if (a.type.equals(type))
                     {
@@ -346,9 +344,9 @@ public class EffectManager
 
     public void recycle()
     {
-        for (StatusEffectProperty i : this.statusEffectProperties) StatusEffect.Instance.recycle(i.instance);
+        for (StatusEffectProperty i: this.statusEffectProperties) StatusEffect.Instance.recycle(i.instance);
 
-        for (AttributeModifier a : this.attributes) AttributeModifier.recycle(a);
+        for (AttributeModifier a: this.attributes) AttributeModifier.recycle(a);
 
         statusEffectProperties.clear();
         attributes.clear();

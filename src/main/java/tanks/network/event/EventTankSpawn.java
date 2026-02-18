@@ -1,12 +1,13 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Team;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankSpawn extends PersonalEvent
 {
@@ -51,7 +52,7 @@ public class EventTankSpawn extends PersonalEvent
         Tank t = null;
         if (parent instanceof TankRemote && ((TankRemote) parent).tank instanceof TankAIControlled)
         {
-            for (TankAIControlled.SpawnedTankEntry e : ((TankAIControlled) ((TankRemote) parent).tank).spawnedTankEntries)
+            for (TankAIControlled.SpawnedTankEntry e: ((TankAIControlled) ((TankRemote) parent).tank).spawnedTankEntries)
             {
                 if (e.tank.getName().equals(type))
                 {

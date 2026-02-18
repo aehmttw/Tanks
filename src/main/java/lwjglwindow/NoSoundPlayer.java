@@ -1,11 +1,8 @@
 package lwjglwindow;
 
-import static org.lwjgl.openal.AL10.*;
-import static org.lwjgl.openal.ALC10.*;
+import java.io.InputStream;
 
 import basewindow.BaseSoundPlayer;
-import java.io.InputStream;
-import org.lwjgl.openal.*;
 
 /**
  * Does nothing, useful if you don't have a sound device plugged in!
@@ -62,6 +59,12 @@ public class NoSoundPlayer extends BaseSoundPlayer
     }
 
     @Override
+    public void playMusic(String path, float volume, boolean looped, String continueID, long fadeTime, boolean stoppable)
+    {
+
+    }
+
+    @Override
     public void addSyncedMusic(String path, float volume, boolean looped, long fadeTime)
     {
 
@@ -69,12 +72,6 @@ public class NoSoundPlayer extends BaseSoundPlayer
 
     @Override
     public void removeSyncedMusic(String path, long fadeTime)
-    {
-
-    }
-
-    @Override
-    public void playMusic(String path, float volume, boolean looped, String continueID, long fadeTime, boolean stoppable)
     {
 
     }

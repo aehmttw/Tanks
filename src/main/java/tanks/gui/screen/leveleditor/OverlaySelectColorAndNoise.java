@@ -30,7 +30,8 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
     {
         this.dichromatic = !this.dichromatic;
         this.setColor();
-    }, "If disabled, the RGB components of noise---will be added separately, leading to---more color variation.------If enabled, they will be added---proportionally to their noise values.");
+    }, "If disabled, the RGB components of noise---will be added separately, leading to---more color variation.------If enabled, they will be added---proportionally to "
+            + "their noise values.");
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Done", this::escape);
 

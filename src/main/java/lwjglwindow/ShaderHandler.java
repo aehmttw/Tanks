@@ -1,10 +1,11 @@
 package lwjglwindow;
 
+import java.nio.ByteBuffer;
+
+import org.lwjgl.opengl.GL13;
+
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 import static org.lwjgl.opengl.GL20.*;
-
-import java.nio.ByteBuffer;
-import org.lwjgl.opengl.GL13;
 
 public class ShaderHandler
 {

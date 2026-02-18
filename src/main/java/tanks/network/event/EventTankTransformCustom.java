@@ -1,8 +1,8 @@
 package tanks.network.event;
 
-import basewindow.Color;
-import io.netty.buffer.ByteBuf;
 import java.util.HashSet;
+
+import basewindow.Color;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -10,6 +10,8 @@ import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankTransformCustom extends PersonalEvent
 {
@@ -215,7 +217,7 @@ public class EventTankTransformCustom extends PersonalEvent
 
         b.writeInt(this.tankMusic.size());
 
-        for (String s : this.tankMusic)
+        for (String s: this.tankMusic)
         {
             NetworkUtils.writeString(b, s);
         }

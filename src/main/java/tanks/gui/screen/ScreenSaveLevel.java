@@ -1,10 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
-import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamUGCDetails;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -14,6 +13,9 @@ import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
+
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamUGCDetails;
 
 public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
 {
@@ -110,7 +112,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         Game.obstacles.clear();
         Game.obstacles.addAll(obstacles);
 
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             if (m instanceof Tank)
                 ((Tank) m).drawAge = 50;

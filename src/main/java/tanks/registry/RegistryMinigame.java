@@ -1,6 +1,7 @@
 package tanks.registry;
 
 import java.util.LinkedHashMap;
+
 import tanks.minigames.Minigame;
 
 public class RegistryMinigame

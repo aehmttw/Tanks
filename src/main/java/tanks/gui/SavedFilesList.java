@@ -1,10 +1,11 @@
 package tanks.gui;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+
+import basewindow.BaseFile;
 import tanks.BiConsumer;
 import tanks.Drawing;
 import tanks.Function;
@@ -77,7 +78,7 @@ public class SavedFilesList extends ButtonList
         {
             ArrayList<String> ds = directoryFile.getSubfiles();
 
-            for (String p : ds)
+            for (String p: ds)
             {
                 if (p.endsWith(extension))
                     files.add(p);
@@ -87,7 +88,7 @@ public class SavedFilesList extends ButtonList
             Game.exitToCrash(e);
         }
 
-        for (String l : files)
+        for (String l: files)
         {
             String[] pathSections = l.replace("\\", "/").split("/");
 

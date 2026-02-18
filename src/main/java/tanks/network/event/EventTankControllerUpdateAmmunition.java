@@ -1,10 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+
 import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankPlayerController;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankControllerUpdateAmmunition extends PersonalEvent
 {

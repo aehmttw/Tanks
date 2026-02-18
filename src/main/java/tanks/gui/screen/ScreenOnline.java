@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+
 import tanks.Drawing;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
@@ -103,9 +104,9 @@ public class ScreenOnline extends Screen implements IOnlineScreen
     @Override
     public void update()
     {
-        for (int i : this.textboxKeys) this.textboxes.get(i).update();
+        for (int i: this.textboxKeys) this.textboxes.get(i).update();
 
-        for (int i : this.buttonKeys) this.buttons.get(i).update();
+        for (int i: this.buttonKeys) this.buttons.get(i).update();
     }
 
     @Override
@@ -113,15 +114,15 @@ public class ScreenOnline extends Screen implements IOnlineScreen
     {
         this.drawDefaultBackground();
 
-        for (int i : this.shapeKeys) this.shapes.get(i).draw();
+        for (int i: this.shapeKeys) this.shapes.get(i).draw();
 
         Drawing.drawing.setColor(0, 0, 0);
 
-        for (int i : this.textKeys) this.texts.get(i).draw();
+        for (int i: this.textKeys) this.texts.get(i).draw();
 
-        for (int i : this.buttonKeys) this.buttons.get(i).draw();
+        for (int i: this.buttonKeys) this.buttons.get(i).draw();
 
-        for (int i : this.textboxKeys) this.textboxes.get(i).draw();
+        for (int i: this.textboxKeys) this.textboxes.get(i).draw();
     }
 
     public void addButton(int id, Button b)

@@ -3,6 +3,7 @@ package tanks.gui.screen.leveleditor.selector;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import tanks.Game;
 import tanks.GameObject;
 import tanks.Team;

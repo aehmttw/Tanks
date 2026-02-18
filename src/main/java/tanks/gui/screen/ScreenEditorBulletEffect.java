@@ -1,9 +1,10 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -108,7 +109,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
 
@@ -171,7 +172,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
 
@@ -197,7 +198,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         {
             this.rows = 3;
             super.sortUIElements();
-            for (ITrigger t : this.uiElements)
+            for (ITrigger t: this.uiElements)
             {
                 t.setPosition(t.getPositionX(), t.getPositionY() + 90);
             }
@@ -239,7 +240,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
 
@@ -265,7 +266,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         {
             this.rows = 3;
             super.sortUIElements();
-            for (ITrigger t : this.uiElements)
+            for (ITrigger t: this.uiElements)
             {
                 t.setPosition(t.getPositionX(), t.getPositionY() + 90);
             }
@@ -297,7 +298,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     public void setTrailLength()
     {
         trailLength = 0;
-        for (Trail t : this.target.get().trailEffects)
+        for (Trail t: this.target.get().trailEffects)
         {
             trailLength = Math.max(trailLength, t.maxLength + t.delay);
         }
@@ -318,7 +319,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         load.update();
         save.update();
 
-        for (Effect e : this.particles)
+        for (Effect e: this.particles)
         {
             e.update();
 
@@ -367,17 +368,17 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         double y = 175;
         BulletEffect e = this.target.get();
 
-        for (Trail t : e.trailEffects)
+        for (Trail t: e.trailEffects)
         {
             t.drawForInterface(start, end, y, Bullet.bullet_size, trailLength);
         }
 
-        for (Effect f : this.particles)
+        for (Effect f: this.particles)
         {
             f.draw();
         }
 
-        for (Effect f : this.particles)
+        for (Effect f: this.particles)
         {
             f.drawGlow();
         }
@@ -578,7 +579,7 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
         public void draw()
         {
             double max = 0;
-            for (Trail t : this.trails)
+            for (Trail t: this.trails)
             {
                 max = Math.max(max, t.maxLength + t.delay);
             }

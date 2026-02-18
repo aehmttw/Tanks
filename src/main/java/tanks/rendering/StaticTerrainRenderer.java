@@ -1,9 +1,10 @@
 package tanks.rendering;
 
+import java.util.HashMap;
+
 import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
-import java.util.HashMap;
 import tanks.Chunk;
 import tanks.Drawing;
 import tanks.Game;
@@ -225,7 +226,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
     public void reset()
     {
-        for (RegionRenderer r : this.renderers.values())
+        for (RegionRenderer r: this.renderers.values())
         {
             r.renderer.free();
         }
@@ -325,7 +326,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
         for (int i = 0; i < 10; i++)
         {
-            for (Class<? extends ShaderGroup> s : this.renderers.keySet())
+            for (Class<? extends ShaderGroup> s: this.renderers.keySet())
             {
                 try
                 {
@@ -350,7 +351,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        for (Obstacle o : Game.obstacles) o.postOverride();
+        for (Obstacle o: Game.obstacles) o.postOverride();
 
         for (int i = 0; i < Game.currentSizeX; i++) for (int j = 0; j < Game.currentSizeY; j++) this.drawTile(i, j);
 
@@ -364,7 +365,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
         double d = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
-        for (Obstacle o : Game.obstacles) drawObstacle(o);
+        for (Obstacle o: Game.obstacles) drawObstacle(o);
 
         Obstacle.draw_size = d;
     }

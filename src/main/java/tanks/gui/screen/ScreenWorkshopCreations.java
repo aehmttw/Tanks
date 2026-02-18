@@ -1,14 +1,16 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamUGCDetails;
 import java.util.ArrayList;
 import java.util.Objects;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SearchBox;
 import tanks.translation.Translation;
+
+import com.codedisaster.steamworks.SteamUGCDetails;
 
 public class ScreenWorkshopCreations extends Screen
 {
@@ -114,7 +116,7 @@ public class ScreenWorkshopCreations extends Screen
 
         if (this.lastLoadedLevels != Game.steamNetworkHandler.workshop.publishedFiles.size())
         {
-            for (int i : Game.steamNetworkHandler.workshop.publishedFiles.keySet())
+            for (int i: Game.steamNetworkHandler.workshop.publishedFiles.keySet())
             {
                 if (this.creations.buttons.size() > i)
                 {

@@ -1,10 +1,11 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -78,7 +79,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
             else
                 deleteMode.setText("Delete templates");
 
-            for (Button b : tankButtons) b.enabled = !deleting;
+            for (Button b: tankButtons) b.enabled = !deleting;
         }
     });
 
@@ -107,7 +108,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
         ArrayList<String> files = searchDirectory(Game.buildDir);
         int count = 0;
 
-        for (TankPlayer t : builds)
+        for (TankPlayer t: builds)
         {
             String desc = t.description;
             if (!t.description.equals(""))
@@ -121,7 +122,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
 
         buildsIndex = count;
 
-        for (String l : files)
+        for (String l: files)
         {
             BaseFile file = Game.game.fileManager.getFile(l);
 
@@ -178,7 +179,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
             ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
             {
                 TankPlayer.ShopTankBuild clone = new TankPlayer.ShopTankBuild(tt.convertToPlayer(tt.posX, tt.posY, tt.angle));
-                for (TankPlayer t2 : this.buildsList)
+                for (TankPlayer t2: this.buildsList)
                 {
                     if (t2.name.equals(clone.name))
                     {
@@ -252,7 +253,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
 
         if (tankScreen instanceof OverlayPlayerBuilds)
         {
-            for (TankAIControlled t : ((OverlayPlayerBuilds) tankScreen).editor.level.customTanks)
+            for (TankAIControlled t: ((OverlayPlayerBuilds) tankScreen).editor.level.customTanks)
             {
                 String desc = t.description;
                 if (!t.description.equals(""))
@@ -267,7 +268,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
 
         customTanksIndex = count;
 
-        for (String l : files)
+        for (String l: files)
         {
             BaseFile file = Game.game.fileManager.getFile(l);
 
@@ -313,7 +314,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
         {
             ArrayList<String> ds = directory.getSubfiles();
 
-            for (String p : ds)
+            for (String p: ds)
             {
                 if (p.endsWith(".tanks"))
                     files.add(p);
@@ -339,7 +340,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
             TankPlayer.ShopTankBuild clone = t instanceof TankAIControlled
                     ? new TankPlayer.ShopTankBuild(((TankAIControlled) t).convertToPlayer(t.posX, t.posY, t.angle))
                     : (TankPlayer.ShopTankBuild) ((TankPlayable) t).copyPropertiesTo(new TankPlayer.ShopTankBuild());
-            for (TankPlayer t1 : this.buildsList)
+            for (TankPlayer t1: this.buildsList)
             {
                 if (t1.name.equals(t.name))
                 {

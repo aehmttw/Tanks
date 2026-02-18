@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import java.util.ArrayList;
+
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ITrigger;
@@ -40,7 +41,7 @@ public class ScreenSelectorArraylist extends Screen implements IConditionalOverl
 
     public void apply()
     {
-        for (Entry e : this.entries)
+        for (Entry e: this.entries)
         {
             saveEntry.accept(e);
         }

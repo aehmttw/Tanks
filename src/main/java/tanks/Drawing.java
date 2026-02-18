@@ -1,9 +1,10 @@
 package tanks;
 
-import basewindow.*;
-import basewindow.transformation.AxisRotation;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import basewindow.*;
+import basewindow.transformation.AxisRotation;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
 import tanks.gui.screen.ScreenGame;
@@ -205,56 +206,6 @@ public class Drawing
         Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
     }
 
-    public void fillGlow(double x, double y, double sizeX, double sizeY)
-    {
-        this.fillGlow(x, y, sizeX, sizeY, false);
-    }
-
-    public void fillGlow(double x, double y, double sizeX, double sizeY, boolean shade)
-    {
-        this.fillGlow(x, y, sizeX, sizeY, shade, false);
-    }
-
-    public void fillGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
-    {
-        double drawX = gameToAbsoluteX(x, sizeX);
-        double drawY = gameToAbsoluteY(y, sizeY);
-
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
-    }
-
-    public void fillLargeGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
-    {
-        double drawX = gameToAbsoluteX(x, sizeX);
-        double drawY = gameToAbsoluteY(y, sizeY);
-
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        boolean inBounds = false;
-        for (int i = 0; i < 2; i++)
-        {
-            for (int j = 0; j < 2; j++)
-            {
-                if (!isOutOfBounds(drawX + drawSizeX * i / 2, drawY + drawSizeY * j / 2))
-                {
-                    inBounds = true;
-                }
-            }
-        }
-
-        if (!inBounds)
-            return;
-
-        Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
-    }
-
     public void fillOval(double x, double y, double z, double sizeX, double sizeY)
     {
         this.fillOval(x, y, z, sizeX, sizeY, true, true);
@@ -319,6 +270,17 @@ public class Drawing
             Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
     }
 
+    public void fillForcedOval(double x, double y, double sizeX, double sizeY)
+    {
+        double drawX = gameToAbsoluteX(x, sizeX);
+        double drawY = gameToAbsoluteY(y, sizeY);
+
+        double drawSizeX = (sizeX * scale);
+        double drawSizeY = (sizeY * scale);
+
+        Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
+    }
+
     public void fillPartialInterfaceOval(double x, double y, double sizeX, double sizeY, double start, double end)
     {
         double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
@@ -330,6 +292,30 @@ public class Drawing
         double drawSizeX = (sizeX * interfaceScale);
         double drawSizeY = (sizeY * interfaceScale);
         Game.game.window.shapeRenderer.fillPartialOval(drawX, drawY, drawSizeX, drawSizeY, start, end);
+    }
+
+    public void fillGlow(double x, double y, double sizeX, double sizeY)
+    {
+        this.fillGlow(x, y, sizeX, sizeY, false);
+    }
+
+    public void fillGlow(double x, double y, double sizeX, double sizeY, boolean shade)
+    {
+        this.fillGlow(x, y, sizeX, sizeY, shade, false);
+    }
+
+    public void fillGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
+    {
+        double drawX = gameToAbsoluteX(x, sizeX);
+        double drawY = gameToAbsoluteY(y, sizeY);
+
+        if (isOutOfBounds(drawX, drawY))
+            return;
+
+        double drawSizeX = (sizeX * scale);
+        double drawSizeY = (sizeY * scale);
+
+        Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
     }
 
     public void fillGlow(double x, double y, double z, double sizeX, double sizeY)
@@ -387,6 +373,32 @@ public class Drawing
             Game.game.window.shapeRenderer.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
     }
 
+    public void fillLargeGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
+    {
+        double drawX = gameToAbsoluteX(x, sizeX);
+        double drawY = gameToAbsoluteY(y, sizeY);
+
+        double drawSizeX = (sizeX * scale);
+        double drawSizeY = (sizeY * scale);
+
+        boolean inBounds = false;
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                if (!isOutOfBounds(drawX + drawSizeX * i / 2, drawY + drawSizeY * j / 2))
+                {
+                    inBounds = true;
+                }
+            }
+        }
+
+        if (!inBounds)
+            return;
+
+        Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
+    }
+
     public void fillLargeGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing, boolean shade, boolean light)
     {
         double drawX = gameToAbsoluteX(x, sizeX);
@@ -418,17 +430,6 @@ public class Drawing
             Game.game.window.shapeRenderer.fillGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
     }
 
-    public void fillForcedOval(double x, double y, double sizeX, double sizeY)
-    {
-        double drawX = gameToAbsoluteX(x, sizeX);
-        double drawY = gameToAbsoluteY(y, sizeY);
-
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
-    }
-
     public void drawOval(double x, double y, double sizeX, double sizeY)
     {
         double drawX = gameToAbsoluteX(x, sizeX);
@@ -441,11 +442,6 @@ public class Drawing
         double drawSizeY = (sizeY * scale);
 
         Game.game.window.shapeRenderer.drawOval(drawX, drawY, drawSizeX, drawSizeY);
-    }
-
-    public void fillRect(double x, double y, double sizeX, double sizeY)
-    {
-        fillRoundedRect(x, y, sizeX, sizeY, 0);
     }
 
     public void fillRoundedRect(double x, double y, double sizeX, double sizeY, double borderRadius)
@@ -462,9 +458,11 @@ public class Drawing
         Game.game.window.shapeRenderer.fillRoundedRect(drawX, drawY, drawSizeX, drawSizeY, borderRadius * scale);
     }
 
-    public void fillBackgroundRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
+
+
+    public void fillRect(double x, double y, double sizeX, double sizeY)
     {
-        this.fillBackgroundRect(x, y, sizeX, sizeY);
+        fillRoundedRect(x, y, sizeX, sizeY, 0);
     }
 
     public void fillRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
@@ -647,6 +645,11 @@ public class Drawing
         return (interfaceScale * (y) + Math.max(0, Panel.windowHeight - statsHeight - this.interfaceSizeY * interfaceScale) / 2);
     }
 
+    public void fillBackgroundRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
+    {
+        this.fillBackgroundRect(x, y, sizeX, sizeY);
+    }
+
     public void fillBackgroundRect(double x, double y, double sizeX, double sizeY)
     {
         double drawX = gameToAbsoluteX(x, sizeX);
@@ -679,8 +682,7 @@ public class Drawing
      * <p>
      * 0: default
      * <p>
-     * +1 hide behind face +2 hide front face +4 hide bottom face +8 hide top face
-     * +16 hide left face +32 hide right face
+     * +1 hide behind face +2 hide front face +4 hide bottom face +8 hide top face +16 hide left face +32 hide right face
      * <p>
      * +64 draw on top
      */
@@ -736,6 +738,38 @@ public class Drawing
         double drawSizeZ = sizeZ * scale;
 
         Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options, null);
+    }
+
+    public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw, double pitch, double roll)
+    {
+        double drawX = gameToAbsoluteX(x, 0);
+        double drawY = gameToAbsoluteY(y, 0);
+        double drawZ = z * scale;
+
+        if (isOutOfBounds(drawX, drawY))
+            return;
+
+        double drawSizeX = width * scale;
+        double drawSizeY = height * scale;
+        double drawSizeZ = depth * scale;
+
+        m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, yaw, pitch, roll, true);
+    }
+
+    public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, AxisRotation[] axisRotations)
+    {
+        double drawX = gameToAbsoluteX(x, 0);
+        double drawY = gameToAbsoluteY(y, 0);
+        double drawZ = z * scale;
+
+        if (isOutOfBounds(drawX, drawY))
+            return;
+
+        double drawSizeX = width * scale;
+        double drawSizeY = height * scale;
+        double drawSizeZ = depth * scale;
+
+        m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, axisRotations, true);
     }
 
     public void drawModel(IModel m, double x, double y, double width, double height, double angle)
@@ -812,38 +846,6 @@ public class Drawing
         double drawSizeZ = depth * interfaceScale;
 
         m.draw2D(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ);
-    }
-
-    public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw, double pitch, double roll)
-    {
-        double drawX = gameToAbsoluteX(x, 0);
-        double drawY = gameToAbsoluteY(y, 0);
-        double drawZ = z * scale;
-
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = width * scale;
-        double drawSizeY = height * scale;
-        double drawSizeZ = depth * scale;
-
-        m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, yaw, pitch, roll, true);
-    }
-
-    public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, AxisRotation[] axisRotations)
-    {
-        double drawX = gameToAbsoluteX(x, 0);
-        double drawY = gameToAbsoluteY(y, 0);
-        double drawZ = z * scale;
-
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = width * scale;
-        double drawSizeY = height * scale;
-        double drawSizeZ = depth * scale;
-
-        m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, axisRotations, true);
     }
 
     public void drawRect(double x, double y, double sizeX, double sizeY)
@@ -941,6 +943,26 @@ public class Drawing
         Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawZ, drawSizeX, drawSizeY, false);
     }
 
+    public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean shade)
+    {
+        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+        double drawSizeX = (sizeX * interfaceScale);
+        double drawSizeY = (sizeY * interfaceScale);
+
+        Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade);
+    }
+
+    public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
+    {
+        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+        double drawSizeX = (sizeX * interfaceScale);
+        double drawSizeY = (sizeY * interfaceScale);
+
+        Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
+    }
+
     public void addInterfaceVertexRotated(double x, double y, double z, double ox, double oy, double rot)
     {
         Drawing.drawing.addInterfaceVertex(x + Math.cos(rot) * ox + Math.sin(rot) * oy, y - Math.sin(rot) * ox + Math.cos(rot) * oy, z);
@@ -989,25 +1011,7 @@ public class Drawing
 
     }
 
-    public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean shade)
-    {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
 
-        Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade);
-    }
-
-    public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
-    {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
-
-        Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
-    }
 
     public void drawInterfaceOval(double x, double y, double sizeX, double sizeY)
     {
@@ -1335,7 +1339,7 @@ public class Drawing
         setInterfaceFontSize(14);
 
         int sizeX = 0;
-        for (String s : text)
+        for (String s: text)
         {
             sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, s) / this.interfaceScale) + xPadding);
         }
@@ -1422,12 +1426,6 @@ public class Drawing
             Game.game.window.soundPlayer.playSound("/sounds/" + sound, 1, Game.soundVolume);
     }
 
-    public void playGlobalSound(String sound)
-    {
-        this.playSound(sound);
-        Game.eventsOut.add(new EventPlaySound(sound, 1, 1));
-    }
-
     public void playSound(String sound, float pitch)
     {
         if (Game.game.window.soundsEnabled && Game.soundsEnabled)
@@ -1447,16 +1445,22 @@ public class Drawing
         }
     }
 
-    public void playGlobalSound(String sound, float pitch)
-    {
-        this.playSound(sound, pitch);
-        Game.eventsOut.add(new EventPlaySound(sound, pitch, 1));
-    }
-
     public void playSound(String sound, float pitch, float volume)
     {
         if (Game.game.window.soundsEnabled && Game.soundsEnabled)
             Game.game.window.soundPlayer.playSound("/sounds/" + sound, pitch, volume * Game.soundVolume);
+    }
+
+    public void playGlobalSound(String sound)
+    {
+        this.playSound(sound);
+        Game.eventsOut.add(new EventPlaySound(sound, 1, 1));
+    }
+
+    public void playGlobalSound(String sound, float pitch)
+    {
+        this.playSound(sound, pitch);
+        Game.eventsOut.add(new EventPlaySound(sound, pitch, 1));
     }
 
     public void playGlobalSound(String sound, float pitch, float volume)
@@ -1472,14 +1476,16 @@ public class Drawing
 
         switch (vibration)
         {
-            case "click" :
+            case "click":
                 Game.game.window.vibrationPlayer.click();
                 break;
-            case "heavyClick" :
+            case "heavyClick":
                 Game.game.window.vibrationPlayer.heavyClick();
                 break;
-            case "selectionChanged" :
+            case "selectionChanged":
                 Game.game.window.vibrationPlayer.selectionChanged();
+                break;
+            default:
                 break;
         }
     }
@@ -1499,13 +1505,10 @@ public class Drawing
         return absoluteToInterfaceX(gameToAbsoluteX(x, 0));
 
         /*
-         * double rawX = (x + getPlayerMouseOffsetX()) * scale; rawX +=
-         * (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 *
-         * interfaceScale; double x1 = rawX / interfaceScale;
-         *
-         * if (enableMovingCamera && movingCamera && enableMovingCameraX) x1 -=
-         * (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 /
+         * double rawX = (x + getPlayerMouseOffsetX()) * scale; rawX += (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale; double x1 = rawX /
          * interfaceScale;
+         *
+         * if (enableMovingCamera && movingCamera && enableMovingCameraX) x1 -= (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
          *
          * return x1;
          */
@@ -1516,13 +1519,11 @@ public class Drawing
         return absoluteToInterfaceY(gameToAbsoluteY(y, 0));
 
         /*
-         * double rawY = (y + getPlayerMouseOffsetY()) * scale; rawY +=
-         * (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 *
-         * interfaceScale; double y1 = rawY / interfaceScale;
+         * double rawY = (y + getPlayerMouseOffsetY()) * scale; rawY += (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale; double y1 = rawY /
+         * interfaceScale;
          *
-         * if (enableMovingCamera && movingCamera && enableMovingCameraY) y1 -=
-         * (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY -
-         * statsHeight) / 2 / interfaceScale;
+         * if (enableMovingCamera && movingCamera && enableMovingCameraY) y1 -= (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 /
+         * interfaceScale;
          *
          * return y1;
          */
@@ -1559,8 +1560,7 @@ public class Drawing
     }
 
     /*
-     * public void setScreenSize(int x, int y) { sizeX = x; sizeY = y;
-     * this.setSize((int) (x * scale), (int) ((y) * scale)); }
+     * public void setScreenSize(int x, int y) { sizeX = x; sizeY = y; this.setSize((int) (x * scale), (int) ((y) * scale)); }
      */
 
     public void setScreenBounds(double x, double y)
@@ -1835,7 +1835,7 @@ public class Drawing
         StringBuilder l = new StringBuilder();
 
         boolean first = true;
-        for (String s : msg.split(" "))
+        for (String s: msg.split(" "))
         {
             if (s.equals("\n"))
             {
@@ -1856,7 +1856,7 @@ public class Drawing
                 if (!first)
                     l.append(" ");
 
-                for (char c : s.toCharArray())
+                for (char c: s.toCharArray())
                 {
                     if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, l.toString() + c) / Drawing.drawing.interfaceScale > max)
                     {

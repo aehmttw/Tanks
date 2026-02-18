@@ -1,12 +1,11 @@
 package tanks;
 
-import static tanks.Panel.notifications;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import basewindow.BaseWindow;
 import basewindow.InputCodes;
 import basewindow.ShaderGroup;
-import java.util.*;
-import java.util.stream.Collectors;
 import tanks.gui.ChatMessage;
 import tanks.gui.ScreenElement;
 import tanks.gui.screen.ScreenCrusadeDetails;
@@ -19,6 +18,8 @@ import tanks.rendering.TerrainRenderer;
 import tanks.tank.IAvoidObject;
 import tanks.tank.Mine;
 import tanks.tank.Ray;
+
+import static tanks.Panel.notifications;
 
 public class DebugKeybinds
 {
@@ -124,7 +125,7 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_T);
 
             HashMap<Class<? extends ShaderGroup>, ShaderGroup> newShaders = new HashMap<>();
-            for (Map.Entry<Class<? extends ShaderGroup>, ShaderGroup> entry : Game.game.shaderInstances.entrySet())
+            for (Map.Entry<Class<? extends ShaderGroup>, ShaderGroup> entry: Game.game.shaderInstances.entrySet())
             {
                 try
                 {
@@ -166,7 +167,8 @@ public class DebugKeybinds
         Drawing.drawing.setColor(brightness, brightness, brightness);
         Drawing.drawing.setInterfaceFontSize(16);
 
-        double mx = Game.game.window.absoluteMouseX, my = Game.game.window.absoluteMouseY;
+        double mx = Game.game.window.absoluteMouseX;
+        double my = Game.game.window.absoluteMouseY;
 
         String text;
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_S))
@@ -233,7 +235,8 @@ public class DebugKeybinds
                     text += " M: " + v.stream().iterator().next().getMetadata();
             } else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_3))
             {
-                double finalMx = mx, finalMy = my;
+                double finalMx = mx;
+                double finalMy = my;
                 Chunk.runIfTilePresent(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY(), t ->
                 {
                     if (t.fullObstacle == null)
@@ -261,7 +264,7 @@ public class DebugKeybinds
 
         if (Game.drawAvoidObjects)
         {
-            for (IAvoidObject o : Game.avoidObjects)
+            for (IAvoidObject o: Game.avoidObjects)
             {
                 if (!(o instanceof GameObject))
                     continue;
@@ -272,7 +275,7 @@ public class DebugKeybinds
 
         if (Game.showUpdatingObstacles)
         {
-            for (Obstacle o : Game.obstaclesToUpdate) o.draw3dOutline(255, 255, 0);
+            for (Obstacle o: Game.obstaclesToUpdate) o.draw3dOutline(255, 255, 0);
         }
     }
 }

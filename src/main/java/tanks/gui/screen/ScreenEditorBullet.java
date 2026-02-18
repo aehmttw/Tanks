@@ -3,6 +3,7 @@ package tanks.gui.screen;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
+
 import tanks.Drawing;
 import tanks.Effect;
 import tanks.Game;
@@ -87,7 +88,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -123,7 +124,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -157,7 +158,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             boolean gas = target.get() instanceof BulletGas;
 
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -190,7 +191,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
             }
 
             col3Button = null;
-            for (ScreenEditorTanksONable<Bullet>.Tab t : this.subMenus)
+            for (ScreenEditorTanksONable<Bullet>.Tab t: this.subMenus)
             {
                 if (t == col3 && !gas)
                     continue;
@@ -234,7 +235,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                     this.uiElements.get(i).setPosition(Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2, posY);
             }
 
-            for (ScreenEditorTanksONable<Bullet>.Tab t : this.subMenus)
+            for (ScreenEditorTanksONable<Bullet>.Tab t: this.subMenus)
             {
                 t.sortUIElements();
             }
@@ -404,7 +405,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
 

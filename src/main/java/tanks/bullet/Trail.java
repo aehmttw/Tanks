@@ -442,8 +442,8 @@ public class Trail implements IDrawable, ICopyable<Trail>
 
         for (int o = 0; o < outerPolyCount; o++)
         {
-            int polyCount = 20;// (int) Math.ceil(20 * (1.0 - (1.0 * o / outerPolyCount)));
-            int polyCount2 = 20;// (int) Math.ceil(20 * (1.0 - (1.0 * (o + 1) / outerPolyCount)));
+            int polyCount = 20; // (int) Math.ceil(20 * (1.0 - (1.0 * o / outerPolyCount)));
+            int polyCount2 = 20; // (int) Math.ceil(20 * (1.0 - (1.0 * (o + 1) / outerPolyCount)));
 
             double angleOffset = 0;
             if (back)

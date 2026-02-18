@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import java.util.ArrayList;
+
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -33,7 +34,7 @@ public class ScreenJoinSteamFriends extends Screen
         ArrayList<Button> f = new ArrayList<>();
 
         FriendsMixin d = Game.steamNetworkHandler.friends;
-        for (int i : d.friendUserIDs.keySet())
+        for (int i: d.friendUserIDs.keySet())
         {
             if (d.friendGameIDs.get(i) == game_id)
             {
@@ -41,7 +42,7 @@ public class ScreenJoinSteamFriends extends Screen
 
                 StringBuilder newName = new StringBuilder();
 
-                for (char c : name.toCharArray())
+                for (char c: name.toCharArray())
                 {
                     if ("`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./~!@#$%^&*()_+{}|:\"<>?".contains((c + "").toLowerCase()))
                         newName.append(c);

@@ -1,15 +1,15 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFileManager;
-import basewindow.BaseWindow;
-import basewindow.ShaderGroup;
-import com.codedisaster.steamworks.SteamMatchmaking;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.*;
+
+import basewindow.BaseFile;
+import basewindow.BaseFileManager;
+import basewindow.BaseWindow;
+import basewindow.ShaderGroup;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -42,12 +42,15 @@ import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
 
+import com.codedisaster.steamworks.SteamMatchmaking;
+
 public class Game
 {
     public enum Framework
     {
         lwjgl, libgdx
     }
+
     public static Framework framework;
 
     public static final double tile_size = 50;
@@ -71,12 +74,9 @@ public class Game
     public static int botPlayerCount = 0;
 
     /**
-     * Tracks are only added to the end and removed from the beginning since they
-     * always have the same max age. This means that we can use a queue to prevent
-     * updating every track every frame. Each track keeps track of how long ago the
-     * previous track was added (as maxAge). To handle removal, subtract time
-     * elapsed from this lifespan value, and if it goes below zero, remove that
-     * track and repeat with the remainder of time elapsed.
+     * Tracks are only added to the end and removed from the beginning since they always have the same max age. This means that we can use a queue to prevent updating every track
+     * every frame. Each track keeps track of how long ago the previous track was added (as maxAge). To handle removal, subtract time elapsed from this lifespan value, and if it
+     * goes below zero, remove that track and repeat with the remainder of time elapsed.
      */
     public static Queue<Effect> tracks = new LinkedList<>();
 
@@ -86,13 +86,13 @@ public class Game
     public static HashSet<Obstacle> redrawObstacles = new HashSet<>();
 
     /**
-     * Ground tiles that need to be redrawn due to obstacles being added/removed
-     * over them
+     * Ground tiles that need to be redrawn due to obstacles being added/removed over them
      */
     public static class GroundTile
     {
         public int x;
         public int y;
+
         public GroundTile(int x, int y)
         {
             this.x = x;
@@ -300,9 +300,24 @@ public class Game
     public static String directoryPath = "/.tanks";
 
     // initialized in initScript()
-    public static String logPath, extensionRegistryPath, optionsPath, controlsPath, tutorialPath, uuidPath, levelDir;
-    public static String crusadeDir, savedCrusadePath, itemDir, bulletEffectsDir;
-    public static String tankDir, buildDir, extensionDir, crashesPath, screenshotsPath, resourcesPath, languagesPath;
+    public static String logPath;
+    public static String extensionRegistryPath;
+    public static String optionsPath;
+    public static String controlsPath;
+    public static String tutorialPath;
+    public static String uuidPath;
+    public static String levelDir;
+    public static String crusadeDir;
+    public static String savedCrusadePath;
+    public static String itemDir;
+    public static String bulletEffectsDir;
+    public static String tankDir;
+    public static String buildDir;
+    public static String extensionDir;
+    public static String crashesPath;
+    public static String screenshotsPath;
+    public static String resourcesPath;
+    public static String languagesPath;
 
     public static float soundVolume = 1f;
     public static float musicVolume = 0.5f;
@@ -594,7 +609,8 @@ public class Game
         registerItem(ItemShield.class, ItemShield.item_class_name, DefaultItemIcons.shield.getCopy());
 
         registerMinigame(ArcadeClassic.class, "Arcade mode",
-                "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
+                "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game "
+                      + "bonuses!");
         registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
         // registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as
         // fast as you can---with unlimited lives and rampages!");
@@ -770,12 +786,13 @@ public class Game
         if (!enableExtensions && extraExtensions != null)
         {
             System.err.println(
-                    "Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. Only extensions provided to launchWithExtensions() will be used.");
+                    "Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. Only extensions provided to "
+                    + "launchWithExtensions() will be used.");
         }
 
-        for (Extension e : extensionRegistry.extensions) e.setUp();
+        for (Extension e: extensionRegistry.extensions) e.setUp();
 
-        for (RegistryTank.TankEntry e : registryTank.tankEntries) e.initialize();
+        for (RegistryTank.TankEntry e: registryTank.tankEntries) e.initialize();
 
         game.input.file = game.fileManager.getFile(Game.homedir + Game.controlsPath);
         game.input.load();
@@ -796,9 +813,8 @@ public class Game
     }
 
     /**
-     * Adds a tank to the game's movables list and generates/registers a network ID
-     * for it. Use this if you want to add computer-controlled tanks if you are not
-     * connected to a server.
+     * Adds a tank to the game's movables list and generates/registers a network ID for it. Use this if you want to add computer-controlled tanks if you are not connected to a
+     * server.
      *
      * @param tank
      *            the tank to add
@@ -815,7 +831,7 @@ public class Game
 
     public static void addMovable(Movable m)
     {
-        for (Chunk c : m.getTouchingChunks()) c.addMovable(m);
+        for (Chunk c: m.getTouchingChunks()) c.addMovable(m);
 
         Game.movables.add(m);
         if (m instanceof IAvoidObject)
@@ -831,10 +847,8 @@ public class Game
     }
 
     /**
-     * Adds a tank to the game's movables list and generates/registers a network ID
-     * for it after it was spawned by another tank. Use this if you want to spawn
-     * computer-controlled tanks from another tank if you are not connected to a
-     * server.
+     * Adds a tank to the game's movables list and generates/registers a network ID for it after it was spawned by another tank. Use this if you want to spawn computer-controlled
+     * tanks from another tank if you are not connected to a server.
      *
      * @param tank
      *            the tank to add
@@ -849,9 +863,8 @@ public class Game
     }
 
     /**
-     * Adds a tank to the game's movables list and generates/registers a network ID
-     * for it. Use this if you want to add computer-controlled tanks if you are not
-     * connected to a server.
+     * Adds a tank to the game's movables list and generates/registers a network ID for it. Use this if you want to add computer-controlled tanks if you are not connected to a
+     * server.
      */
     public static void addPlayerTank(Player player, double x, double y, double angle, Team t)
     {
@@ -881,7 +894,7 @@ public class Game
         if (refresh)
             redraw(o);
 
-        for (Obstacle o1 : o.getNeighbors()) o1.onNeighborUpdate();
+        for (Obstacle o1: o.getNeighbors()) o1.onNeighborUpdate();
     }
 
     public static boolean usernameInvalid(String username)
@@ -1019,7 +1032,7 @@ public class Game
         Game.crashMessage = e.toString();
         Game.crashLine = "Unable to locate crash line. Please check the crash report for more info.";
 
-        for (StackTraceElement se : e.getStackTrace())
+        for (StackTraceElement se: e.getStackTrace())
         {
             String s = se.toString();
             if (s.startsWith("tanks") || (s.contains(".") && s.split("\\.")[0].endsWith("window")))
@@ -1048,14 +1061,14 @@ public class Game
                 f.println("Tanks crash report: " + Game.version + " - " + new Date() + "\n");
 
                 f.println(e.toString());
-                for (StackTraceElement el : e.getStackTrace())
+                for (StackTraceElement el: e.getStackTrace())
                 {
                     f.println("at " + el.toString());
                 }
 
                 f.println("\nSystem properties:");
                 Properties p = System.getProperties();
-                for (Object s : p.keySet()) f.println(s + ": " + p.get(s));
+                for (Object s: p.keySet()) f.println(s + ": " + p.get(s));
 
                 f.stopWriting();
             } catch (Exception ex)
@@ -1114,6 +1127,7 @@ public class Game
     {
         return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
     }
+
     public static void removeObstacle(Obstacle o)
     {
         Drawing.drawing.terrainRenderer.remove(o);
@@ -1127,7 +1141,7 @@ public class Game
         if (o instanceof IAvoidObject)
             Game.avoidObjects.remove(o);
 
-        for (Obstacle o1 : o.getNeighbors()) o1.onNeighborUpdate();
+        for (Obstacle o1: o.getNeighbors()) o1.onNeighborUpdate();
 
         Game.obstacles.remove(o);
     }
@@ -1203,7 +1217,7 @@ public class Game
         ArrayList<String> music = Game.game.fileManager.getInternalFileContents("/music/tank/tank_music.txt");
 
         HashSet<String> loadedMusics = new HashSet<>();
-        for (String s : music)
+        for (String s: music)
         {
             String[] sections = s.split("=");
 
@@ -1213,7 +1227,7 @@ public class Game
             String tank = sections[0];
             String[] musics = sections[1].split(",");
 
-            for (String track : musics)
+            for (String track: musics)
             {
                 if (!loadedMusics.contains(track))
                 {
@@ -1317,7 +1331,7 @@ public class Game
         else
             Chunk.initialize();
 
-        for (ErrorHandler<?, ?> h : ErrorHandler.errorHandlers) h.reset();
+        for (ErrorHandler<?, ?> h: ErrorHandler.errorHandlers) h.reset();
 
         resetNetworkIDs();
 
@@ -1436,19 +1450,7 @@ public class Game
 
     public static void loadRandomLevel(int seed)
     {
-        // Level level = new
-        // Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-purple2-2,20-14-green,22-3-green-2,8-8.5-brown,19-8.5-mint-2,13.5-5-yellow-1}");
-        // Level level = new
-        // Level("{28,18|4...11-6,11-0...5,17...27-6,16-3...6,0...10-11,11-11...14,16...23-11,16-12...17|3-15-player,7-3-green-2,20-14-green,22-3-green-2,8-8.5-green,19-8.5-green-2,13.5-5-green-1}");
-
-        // System.out.println(LevelGenerator.generateLevelString());
-        // Game.currentLevel =
-        // "{28,18|0-17,1-16,2-15,3-14,4-13,5-12,6-11,7-10,10-7,12-5,15-2,16-1,17-0,27-0,26-1,25-2,24-3,23-4,22-5,21-6,20-7,17-10,15-12,12-15,11-16,10-17,27-17,26-16,25-15,24-14,23-13,22-12,21-11,20-10,17-7,15-5,12-2,11-1,10-0,0-0,1-1,3-3,2-2,4-4,5-5,6-6,7-7,10-10,12-12,15-15,16-16,17-17,11-11,16-11,16-6,11-6|0-8-player-0,13-8-magenta-1,14-9-magenta-3,12-10-yellow-0,15-7-yellow-2,13-0-mint-1,14-17-mint-3,27-8-mint-2,27-9-mint-2}";///LevelGenerator.generateLevelString();
         Level level = new Level(LevelGeneratorRandom.generateLevelString(seed));
-        // Level level = new
-        // Level("{28,18|3...6-3...4,3...4-5...6,10...19-13...14,18...19-4...12|22-14-player,14-10-brown}");
-        // Level level = new
-        // Level("{28,18|0...27-9,0...27-7|2-8-player,26-8-purple2-2}");
         level.loadLevel();
     }
 

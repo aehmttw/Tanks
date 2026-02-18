@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.io.IOException;
 import java.lang.reflect.Field;
+
+import basewindow.BaseFile;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;

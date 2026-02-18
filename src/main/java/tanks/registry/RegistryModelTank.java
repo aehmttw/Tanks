@@ -1,8 +1,9 @@
 package tanks.registry;
 
-import basewindow.IModel;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+
+import basewindow.IModel;
 import tanks.Drawing;
 import tanks.tank.TankModels;
 
@@ -70,7 +71,7 @@ public class RegistryModelTank
     public ArrayList<TankModels.TankSkin> getBaseSkins()
     {
         ArrayList<TankModels.TankSkin> skins = new ArrayList<>();
-        for (TankModels.TankSkin tankSkin : tankSkins.values())
+        for (TankModels.TankSkin tankSkin: tankSkins.values())
         {
             if (tankSkin.base != null)
                 skins.add(tankSkin);
@@ -82,7 +83,7 @@ public class RegistryModelTank
     public ArrayList<TankModels.TankSkin> getColorSkins()
     {
         ArrayList<TankModels.TankSkin> skins = new ArrayList<>();
-        for (TankModels.TankSkin tankSkin : tankSkins.values())
+        for (TankModels.TankSkin tankSkin: tankSkins.values())
         {
             if (tankSkin.color != null)
                 skins.add(tankSkin);
@@ -94,7 +95,7 @@ public class RegistryModelTank
     public ArrayList<TankModels.TankSkin> getTurretSkins()
     {
         ArrayList<TankModels.TankSkin> skins = new ArrayList<>();
-        for (TankModels.TankSkin tankSkin : tankSkins.values())
+        for (TankModels.TankSkin tankSkin: tankSkins.values())
         {
             if (tankSkin.turret != null)
                 skins.add(tankSkin);
@@ -106,7 +107,7 @@ public class RegistryModelTank
     public ArrayList<TankModels.TankSkin> getTurretBaseSkins()
     {
         ArrayList<TankModels.TankSkin> skins = new ArrayList<>();
-        for (TankModels.TankSkin tankSkin : tankSkins.values())
+        for (TankModels.TankSkin tankSkin: tankSkins.values())
         {
             if (tankSkin.turretBase != null)
                 skins.add(tankSkin);

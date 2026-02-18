@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenPendingJoinParty;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPendingJoinParty extends PersonalEvent
 {

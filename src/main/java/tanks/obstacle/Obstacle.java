@@ -1,8 +1,9 @@
 package tanks.obstacle;
 
+import java.util.ArrayList;
+
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
-import java.util.ArrayList;
 import tanks.*;
 import tanks.rendering.ShaderObstacle;
 import tanks.tank.IAvoidObject;
@@ -17,27 +18,24 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public boolean bulletCollision = true;
 
     /**
-     * If set to true, AI tanks will treat this block as breakable and shoot at it
-     * if there are tanks behind it
+     * If set to true, AI tanks will treat this block as breakable and shoot at it if there are tanks behind it
      */
     public boolean shouldShootThrough = false;
 
     /**
-     * If set to a nonnegative value, will override how much AI controlled tanks
-     * will avoid pathfinding over this
+     * If set to a nonnegative value, will override how much AI controlled tanks will avoid pathfinding over this
      */
     public int unfavorability = -1;
 
     /**
-     * Full = a full block, nothing can be placed underneath Ground = replaces the
-     * ground tile, can have blocks/tanks on top Top = can be placed on top of a
-     * ground tile, can have tanks inside Extra = can be placed anywhere without a
-     * full tile, can have tanks inside
+     * Full = a full block, nothing can be placed underneath Ground = replaces the ground tile, can have blocks/tanks on top Top = can be placed on top of a ground tile, can have
+     * tanks inside Extra = can be placed anywhere without a full tile, can have tanks inside
      */
     public enum ObstacleType
     {
         full, ground, top, extra
     }
+
     public ObstacleType type = ObstacleType.top;
 
     public double startHeight = 0;
@@ -50,16 +48,14 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public boolean replaceTiles = true;
 
     /**
-     * If set to true, will draw as a VBO. Set to false for simpler rendering of
-     * more dynamic obstacles.
+     * If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles.
      */
     public boolean batchDraw = true;
     public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
     public Class<? extends ShaderGroup> tileRenderer = ShaderGroup.class;
 
     /**
-     * Obstacles with different render numbers can have different values for their
-     * uniforms
+     * Obstacles with different render numbers can have different values for their uniforms
      */
     public int rendererNumber = 0;
     public int tileRendererNumber = 0;
@@ -241,8 +237,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     }
 
     /**
-     * Draws the tile under the obstacle if it needs to be drawn differently than
-     * when not covered by an obstacle
+     * Draws the tile under the obstacle if it needs to be drawn differently than when not covered by an obstacle
      *
      * @param r
      *            Red
@@ -253,8 +248,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
      * @param d
      *            Tile height
      * @param extra
-     *            The deepest tile next to the current tile, used to render sides
-     *            underground
+     *            The deepest tile next to the current tile, used to render sides underground
      */
     public void drawTile(IBatchRenderableObject tile, double r, double g, double b, double d, double extra)
     {
@@ -265,7 +259,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public void refreshSelfAndNeighbors()
     {
         updateFaces();
-        for (Obstacle o : getNeighbors()) o.onNeighborUpdate();
+        for (Obstacle o: getNeighbors()) o.onNeighborUpdate();
     }
 
     public void postOverride()
@@ -282,14 +276,12 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     }
 
     /**
-     * @return height of tile in terms of drawing, for things like block particle
-     *         collision
+     * @return height of tile in terms of drawing, for things like block particle collision
      */
     public abstract double getTileHeight();
 
     /**
-     * @return how deep the edges of the tile span - for example, ice tiles go down
-     *         to -15, but most tiles only go down to 0
+     * @return how deep the edges of the tile span - for example, ice tiles go down to -15, but most tiles only go down to 0
      */
     public double getEdgeDrawDepth()
     {
@@ -297,8 +289,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     }
 
     /**
-     * Returns height of tile in terms of where objects like mines or treads should
-     * be drawn on top of it
+     * Returns height of tile in terms of where objects like mines or treads should be drawn on top of it
      */
     public double getGroundHeight()
     {
@@ -312,17 +303,13 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
         /*
          * if (Obstacle.draw_size < Game.tile_size) return o;
          *
-         * if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h) o
-         * |= BaseShapeRenderer.hide_front;
+         * if (Game.sampleObstacleHeight(this.posX, this.posY + Game.tile_size) >= h) o |= BaseShapeRenderer.hide_front;
          *
-         * if (Game.sampleObstacleHeight(this.posX, this.posY - Game.tile_size) >= h) o
-         * |= BaseShapeRenderer.hide_back;
+         * if (Game.sampleObstacleHeight(this.posX, this.posY - Game.tile_size) >= h) o |= BaseShapeRenderer.hide_back;
          *
-         * if (Game.sampleObstacleHeight(this.posX - Game.tile_size, this.posY) >= h) o
-         * |= BaseShapeRenderer.hide_left;
+         * if (Game.sampleObstacleHeight(this.posX - Game.tile_size, this.posY) >= h) o |= BaseShapeRenderer.hide_left;
          *
-         * if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h) o
-         * |= BaseShapeRenderer.hide_right;
+         * if (Game.sampleObstacleHeight(this.posX + Game.tile_size, this.posY) >= h) o |= BaseShapeRenderer.hide_right;
          */
 
         return o;
@@ -455,8 +442,10 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public static ArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
     {
         obstacleOut.clear();
-        for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2)) for (Obstacle o : c.obstacles) if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))
-            obstacleOut.add(o);
+        for (Chunk c: Chunk.getChunksInRange(x1, y1, x2, y2))
+            for (Obstacle o: c.obstacles)
+                if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))
+                    obstacleOut.add(o);
         return obstacleOut;
     }
 
@@ -468,8 +457,10 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public static ArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
     {
         obstacleOut.clear();
-        for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius)) for (Obstacle o : c.obstacles) if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
-            obstacleOut.add(o);
+        for (Chunk c: Chunk.getChunksInRadius(posX, posY, radius))
+            for (Obstacle o: c.obstacles)
+                if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
+                    obstacleOut.add(o);
         return obstacleOut;
     }
 

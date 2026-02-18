@@ -69,7 +69,7 @@ public class ComputerFileManager extends BaseFileManager
 
     public static InputStream getResource(ArrayList<String> overrideLocations, String path) throws FileNotFoundException
     {
-        for (String overridesDir : overrideLocations)
+        for (String overridesDir: overrideLocations)
         {
             File f = new File(overridesDir + path);
 

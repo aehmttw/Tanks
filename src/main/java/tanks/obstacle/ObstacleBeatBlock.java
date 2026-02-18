@@ -17,7 +17,9 @@ public class ObstacleBeatBlock extends ObstacleStackable
     public double beatFrequency = 1;
     public boolean alternate;
 
-    public double outlineColorR, outlineColorG, outlineColorB;
+    public double outlineColorR;
+    public double outlineColorG;
+    public double outlineColorB;
     public boolean refreshHitboxes = false;
 
     protected boolean lastOn = false;

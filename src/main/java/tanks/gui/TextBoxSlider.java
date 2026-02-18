@@ -97,7 +97,7 @@ public class TextBoxSlider extends TextBox
 
             if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();

@@ -1,6 +1,7 @@
 package tanks.gui;
 
 import java.util.ArrayList;
+
 import tanks.BiConsumer;
 import tanks.Drawing;
 import tanks.Game;

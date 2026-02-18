@@ -1,7 +1,8 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.util.ArrayList;
+
+import basewindow.BaseFile;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
@@ -56,7 +57,7 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
             else
                 deleteMode.setText("Delete templates");
 
-            for (Button b : allEffects.buttons) b.enabled = !deleting;
+            for (Button b: allEffects.buttons) b.enabled = !deleting;
         }
     });
 
@@ -105,7 +106,7 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
 
         ArrayList<String> effects = Game.game.fileManager.getInternalFileContents("/bullet_effects/bullet_effects.tanks");
 
-        for (String s : effects)
+        for (String s: effects)
         {
             BulletEffect i = BulletEffect.fromString(s);
 

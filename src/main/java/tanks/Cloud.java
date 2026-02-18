@@ -38,7 +38,7 @@ public class Cloud extends Movable
     public void update()
     {
         ArrayList<Double> newXs = new ArrayList<>();
-        for (double x : this.posX) newXs.add(x - Panel.frameFrequency / 2);
+        for (double x: this.posX) newXs.add(x - Panel.frameFrequency / 2);
 
         this.posX = newXs;
 

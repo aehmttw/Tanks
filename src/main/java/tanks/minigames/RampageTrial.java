@@ -3,6 +3,7 @@ package tanks.minigames;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+
 import tanks.*;
 import tanks.attribute.StatusEffect;
 import tanks.gui.screen.ScreenGame;
@@ -27,7 +28,7 @@ public class RampageTrial extends Minigame
     public int rampageExitDuration = 200;
     public int maxPower = 8;
     public static String[] rampage_titles = new String[]{"Rampage!", "Extra rampage!", "Super rampage!", "Mega rampage!!", "Giga rampage!!", "Insane rampage!!",
-            "Ultimate rampage!!!", "Godlike rampage!!!"};
+        "Ultimate rampage!!!", "Godlike rampage!!!"};
 
     public HashMap<Player, Double> playerDeathTimes = new HashMap<>();
     public HashMap<Player, Tank> playerDeaths = new HashMap<>();
@@ -98,7 +99,7 @@ public class RampageTrial extends Minigame
 
             lastHit = age;
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Tank)
                 {
@@ -152,7 +153,7 @@ public class RampageTrial extends Minigame
         else
             chainOpacity = Math.max(0, chainOpacity - Panel.frameFrequency / 20);
 
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             int power = Math.min(maxPower, chain / 3);
             if (m instanceof TeleporterOrb)
@@ -186,7 +187,7 @@ public class RampageTrial extends Minigame
             ArrayList<Player> totalPlayers = new ArrayList<>();
 
             int enemies = 0;
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof IServerPlayerTank)
                 {
@@ -215,7 +216,7 @@ public class RampageTrial extends Minigame
                 this.availablePlayerSpawns.add(i);
             }
 
-            for (Player p : this.includedPlayers)
+            for (Player p: this.includedPlayers)
             {
                 if (playerDeathTimes.get(p) != null && age - playerDeathTimes.get(p) >= 500)
                 {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+
 import tanks.*;
 import tanks.attribute.StatusEffect;
 import tanks.bullet.Bullet;
@@ -39,7 +40,7 @@ public class Arcade extends Minigame
     public static final int rampage_exit_duration = 200;
     public static final int max_power = 8;
     public static String[] rampage_titles = new String[]{"Rampage!", "Extra rampage!", "Super rampage!", "Mega rampage!!", "Giga rampage!!", "Insane rampage!!",
-            "Ultimate rampage!!!", "Godlike rampage!!!"};
+        "Ultimate rampage!!!", "Godlike rampage!!!"};
 
     public ArrayList<Tank> spawnedTanks = new ArrayList<>();
     public ArrayList<Tank> spawnedFrenzyTanks = new ArrayList<>();
@@ -101,7 +102,7 @@ public class Arcade extends Minigame
         if (!ScreenPartyLobby.isClient)
         {
             int id = 0;
-            for (String si : items)
+            for (String si: items)
             {
                 Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
                 itemNumbers.put(i.item.name, id + 1);
@@ -132,7 +133,7 @@ public class Arcade extends Minigame
             tankItemsMap.put("magenta", "Block");
         } else
         {
-            for (String si : items)
+            for (String si: items)
             {
                 this.clientShop.add(new Item.ShopItem(Item.ItemStack.fromString(null, si)));
             }
@@ -144,7 +145,7 @@ public class Arcade extends Minigame
     {
         super.loadLevel();
 
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             m.team = Game.playerTeamNoFF;
         }
@@ -161,7 +162,7 @@ public class Arcade extends Minigame
     @Override
     public void onLevelEndQuick()
     {
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
             if (m instanceof Tank && m instanceof IServerPlayerTank && !m.destroy)
             {
@@ -246,7 +247,7 @@ public class Arcade extends Minigame
 
             lastHit = age;
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Tank)
                 {
@@ -268,11 +269,8 @@ public class Arcade extends Minigame
                 }
 
                 /*
-                 * if (m instanceof AreaEffect) { AttributeModifier c = new
-                 * AttributeModifier("rampage_speed", "speed",
-                 * AttributeModifier.Operation.multiply, power / 5.0); c.duration =
-                 * rampage_duration + rampage_exit_duration; c.deteriorationAge =
-                 * rampage_exit_duration; m.addUnduplicateAttribute(c); }
+                 * if (m instanceof AreaEffect) { AttributeModifier c = new AttributeModifier("rampage_speed", "speed", AttributeModifier.Operation.multiply, power / 5.0);
+                 * c.duration = rampage_duration + rampage_exit_duration; c.deteriorationAge = rampage_exit_duration; m.addUnduplicateAttribute(c); }
                  */
             }
         }
@@ -348,7 +346,7 @@ public class Arcade extends Minigame
             ArrayList<Player> alivePlayers = new ArrayList<>();
             ArrayList<Player> totalPlayers = new ArrayList<>();
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof IServerPlayerTank)
                 {
@@ -393,7 +391,7 @@ public class Arcade extends Minigame
             {
                 Game.eventsOut.add(new EventArcadeClearMovables());
 
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof Crate && (((Crate) m).tank instanceof IServerPlayerTank))
                         continue;
@@ -408,7 +406,7 @@ public class Arcade extends Minigame
                 {
                     deathCount++;
 
-                    for (Player p : this.includedPlayers)
+                    for (Player p: this.includedPlayers)
                     {
                         if (!totalPlayers.contains(p))
                         {
@@ -434,7 +432,7 @@ public class Arcade extends Minigame
                     }
                 } else
                 {
-                    for (Player p : this.includedPlayers)
+                    for (Player p: this.includedPlayers)
                     {
                         if (!totalPlayers.contains(p))
                         {
@@ -444,7 +442,7 @@ public class Arcade extends Minigame
                 }
             } else if (!frenzy)
             {
-                for (Player p : this.includedPlayers)
+                for (Player p: this.includedPlayers)
                 {
                     if (playerDeathTimes.get(p) != null && age - playerDeathTimes.get(p) >= 500)
                     {
@@ -479,13 +477,13 @@ public class Arcade extends Minigame
         if (Game.playerTank != null && !Game.playerTank.destroy)
             this.playingMusics.addAll(this.musics);
 
-        for (String s : this.playingMusics)
+        for (String s: this.playingMusics)
         {
             if (!this.prevMusics.contains(s))
                 Drawing.drawing.addSyncedMusic(s, Game.musicVolume, true, 500);
         }
 
-        for (String s : this.prevMusics)
+        for (String s: this.prevMusics)
         {
             if (!this.playingMusics.contains(s))
                 Drawing.drawing.removeSyncedMusic(s, 2000);
@@ -535,18 +533,15 @@ public class Arcade extends Minigame
             return;
 
         /*
-         * this.flashTimer -= Panel.frameFrequency; if (flashTimer <= 0) { flashTimer +=
-         * 37.5;
+         * this.flashTimer -= Panel.frameFrequency; if (flashTimer <= 0) { flashTimer += 37.5;
          *
          * if (chain >= max_power * 3) flashTimer /= 2;
          *
-         * for (int i = 0; i < Game.tilesFlash.length; i++) { for (int j = 0; j <
-         * Game.tilesFlash[i].length; j++) { if (Math.random() < 0.01 * (chain / 3)) {
-         * Game.tilesFlash[i][j] = 0.5; } } } }
+         * for (int i = 0; i < Game.tilesFlash.length; i++) { for (int j = 0; j < Game.tilesFlash[i].length; j++) { if (Math.random() < 0.01 * (chain / 3)) { Game.tilesFlash[i][j]
+         * = 0.5; } } } }
          *
-         * for (int i = 0; i < Game.tilesFlash.length; i++) { for (int j = 0; j <
-         * Game.tilesFlash[i].length; j++) { Game.tilesFlash[i][j] = Math.max(0,
-         * Game.tilesFlash[i][j] - 0.005 * Panel.frameFrequency); } }
+         * for (int i = 0; i < Game.tilesFlash.length; i++) { for (int j = 0; j < Game.tilesFlash[i].length; j++) { Game.tilesFlash[i][j] = Math.max(0, Game.tilesFlash[i][j] -
+         * 0.005 * Panel.frameFrequency); } }
          */
 
         if (age - lastRampage < 200 && chain >= 3)
@@ -676,7 +671,7 @@ public class Arcade extends Minigame
             {
                 found = true;
 
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if ((m instanceof IServerPlayerTank)
                             && (Math.pow(m.posX - (x * Game.tile_size), 2) + Math.pow(m.posY - (y * Game.tile_size), 2) <= Math.pow(Game.tile_size * 5, 2)))

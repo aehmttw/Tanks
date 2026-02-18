@@ -20,6 +20,11 @@ public class Turret extends Movable
         setTertiary(this.tank.color, this.tank.secondaryColor, this.tank.tertiaryColor);
     }
 
+    @Override
+    public void draw()
+    {
+    }
+
     public void draw(double rotation, double vAngle, boolean forInterface, boolean in3d, boolean transparent)
     {
         double luminance = this.tank.em().getAttributeValue(AttributeModifier.glow, this.tank.luminance);
@@ -124,16 +129,6 @@ public class Turret extends Movable
         }
     }
 
-    @Override
-    public void update()
-    {
-    }
-
-    @Override
-    public void draw()
-    {
-    }
-
     public static double calculateSecondaryColor(double input)
     {
         return (input + 64) / 2;
@@ -147,5 +142,10 @@ public class Turret extends Movable
     public static void setTertiary(Color c1, Color c2, Color target)
     {
         target.set((c1.red + c2.red) / 2, (c1.green + c2.green) / 2, (c1.blue + c2.blue) / 2);
+    }
+
+    @Override
+    public void update()
+    {
     }
 }

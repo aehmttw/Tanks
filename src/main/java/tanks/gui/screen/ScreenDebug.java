@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;

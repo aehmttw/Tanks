@@ -17,14 +17,12 @@ public class Label implements IDrawable
     public boolean rightAligned = false;
 
     /**
-     * For online service use with changing interface scales -1 = left 0 = middle 1
-     * = right
+     * For online service use with changing interface scales -1 = left 0 = middle 1 = right
      */
     public int xAlignment = 0;
 
     /**
-     * For online service use with changing interface scales -1 = top 0 = middle 1 =
-     * bottom
+     * For online service use with changing interface scales -1 = top 0 = middle 1 = bottom
      */
     public int yAlignment = 0;
 
@@ -56,18 +54,6 @@ public class Label implements IDrawable
             drawing.drawInterfaceText(this.posX, this.posY, this.text, this.rightAligned);
     }
 
-    public void setText(String text)
-    {
-        this.originalText = text;
-        this.text = Translation.translate(text);
-    }
-
-    public void setText(String text, Object... objects)
-    {
-        this.originalText = text;
-        this.text = Translation.translate(text, objects);
-    }
-
     public void draw(Object... objects)
     {
         Drawing drawing = Drawing.drawing;
@@ -79,5 +65,17 @@ public class Label implements IDrawable
             drawing.drawInterfaceText(this.posX, this.posY, this.text);
         else
             drawing.drawInterfaceText(this.posX, this.posY, this.text, this.rightAligned);
+    }
+
+    public void setText(String text)
+    {
+        this.originalText = text;
+        this.text = Translation.translate(text);
+    }
+
+    public void setText(String text, Object... objects)
+    {
+        this.originalText = text;
+        this.text = Translation.translate(text, objects);
     }
 }

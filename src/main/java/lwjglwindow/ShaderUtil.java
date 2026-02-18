@@ -1,15 +1,17 @@
 package lwjglwindow;
 
-import static org.lwjgl.opengl.EXTGeometryShader4.*;
-import static org.lwjgl.opengl.GL20.*;
-
-import basewindow.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import basewindow.*;
+
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+
+import static org.lwjgl.opengl.EXTGeometryShader4.*;
+import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderUtil extends BaseShaderUtil
 {
@@ -89,7 +91,7 @@ public class ShaderUtil extends BaseShaderUtil
             StringBuilder header = new StringBuilder();
             if (headers != null)
             {
-                for (String h : headers)
+                for (String h: headers)
                 {
                     header.append(this.window.readFileAsString(h));
                 }
@@ -134,11 +136,11 @@ public class ShaderUtil extends BaseShaderUtil
 
         Class[] classes = this.getClass().getClasses();
 
-        for (Field f : fields)
+        for (Field f: fields)
         {
             if (ShaderProgram.IUniform.class.isAssignableFrom(f.getType()))
             {
-                for (Class c : classes)
+                for (Class c: classes)
                 {
                     if (f.getType().isAssignableFrom(c))
                     {
@@ -163,7 +165,7 @@ public class ShaderUtil extends BaseShaderUtil
                 }
             } else if (ShaderGroup.IGroupUniform.class.isAssignableFrom(f.getType()))
             {
-                for (Class c : classes)
+                for (Class c: classes)
                 {
                     if (f.getType().isAssignableFrom(c))
                     {
@@ -297,7 +299,7 @@ public class ShaderUtil extends BaseShaderUtil
         this.enabledAttributes.clear();
     }
 
-    public static abstract class LWJGLUniform implements ShaderProgram.IUniform
+    public abstract static class LWJGLUniform implements ShaderProgram.IUniform
     {
         protected int flag;
         protected String name;

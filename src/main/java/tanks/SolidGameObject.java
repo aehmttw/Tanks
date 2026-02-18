@@ -1,6 +1,7 @@
 package tanks;
 
 import java.util.HashSet;
+
 import tanks.obstacle.Face;
 import tanks.obstacle.ISolidObject;
 

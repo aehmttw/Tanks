@@ -80,7 +80,7 @@ public class ChatBox extends TextBox
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
         } else
         {
-            for (int i : Game.game.window.touchPoints.keySet())
+            for (int i: Game.game.window.touchPoints.keySet())
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
 

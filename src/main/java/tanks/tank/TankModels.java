@@ -1,7 +1,8 @@
 package tanks.tank;
 
-import basewindow.Model;
 import java.util.ArrayList;
+
+import basewindow.Model;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.registry.RegistryModelTank;
@@ -95,7 +96,7 @@ public class TankModels
     {
         ArrayList<String> emblems = Game.game.fileManager.getInternalFileContents("/images/emblems/emblems.txt");
 
-        for (String s : emblems)
+        for (String s: emblems)
         {
             if (!s.isEmpty())
                 Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + s + ".png"));
@@ -106,7 +107,7 @@ public class TankModels
     {
         ArrayList<String> skins = Game.game.fileManager.getInternalFileContents("/models/skins/skins.txt");
 
-        for (String s : skins)
+        for (String s: skins)
         {
             if (!s.isEmpty())
             {

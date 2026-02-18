@@ -1,10 +1,9 @@
 package tanks.tank;
 
-import static tanks.tank.TankPropertyCategory.*;
-
-import basewindow.Color;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import basewindow.Color;
 import tanks.Game;
 import tanks.Player;
 import tanks.bullet.Bullet;
@@ -18,6 +17,8 @@ import tanks.item.ItemMine;
 import tanks.tankson.ICopyable;
 import tanks.tankson.Property;
 import tanks.tankson.Serializer;
+
+import static tanks.tank.TankPropertyCategory.*;
 
 public abstract class TankPlayable extends Tank implements ICopyable<TankPlayable>
 {
@@ -112,14 +113,13 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
     }
 
     /**
-     * Fully copies properties unlike "clone" - useful for making a template from
-     * another template
+     * Fully copies properties unlike "clone" - useful for making a template from another template
      */
     public TankPlayable copyPropertiesTo(TankPlayable m)
     {
         try
         {
-            for (Field f : m.getClass().getFields())
+            for (Field f: m.getClass().getFields())
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null)
@@ -140,7 +140,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             }
 
             m.abilities = new ArrayList<>();
-            for (Item.ItemStack<?> s : this.abilities)
+            for (Item.ItemStack<?> s: this.abilities)
             {
                 m.abilities.add(s.getCopy());
             }
@@ -161,7 +161,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
     {
         try
         {
-            for (Field f : m.getClass().getFields())
+            for (Field f: m.getClass().getFields())
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.miscType() != Property.MiscType.colorRGBA && p.miscType() != Property.MiscType.colorRGB)
@@ -180,7 +180,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             }
 
             m.abilities = new ArrayList<>();
-            for (Item.ItemStack<?> s : this.abilities)
+            for (Item.ItemStack<?> s: this.abilities)
             {
                 m.abilities.add(s.getCopy());
             }
@@ -218,7 +218,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
         String name = m.name;
         try
         {
-            for (Field f : m.getClass().getFields())
+            for (Field f: m.getClass().getFields())
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.miscType() != Property.MiscType.colorRGBA && p.miscType() != Property.MiscType.colorRGB)
@@ -262,13 +262,13 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             if (m instanceof TankPlayerBot)
             {
                 ((TankPlayerBot) m).abilities = new ArrayList<>();
-                for (Item.ItemStack<?> i : this.abilities)
+                for (Item.ItemStack<?> i: this.abilities)
                 {
                     ((TankPlayerBot) m).abilities.add(i.getCopy());
                 }
             } else
             {
-                for (Item.ItemStack<?> i : this.abilities)
+                for (Item.ItemStack<?> i: this.abilities)
                 {
                     if (i instanceof ItemBullet.ItemStackBullet && !foundBullet)
                     {
@@ -320,7 +320,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public ItemBullet.ItemStackBullet getFirstBullet()
     {
-        for (Item.ItemStack<?> ability : this.abilities)
+        for (Item.ItemStack<?> ability: this.abilities)
         {
             if (ability instanceof ItemBullet.ItemStackBullet)
                 return (ItemBullet.ItemStackBullet) ability;

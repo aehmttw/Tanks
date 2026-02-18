@@ -1,8 +1,9 @@
 package tanks.bullet;
 
-import basewindow.Color;
 import java.util.ArrayList;
 import java.util.Random;
+
+import basewindow.Color;
 import tanks.*;
 import tanks.item.ItemBullet;
 import tanks.network.event.EventTankControllerAddVelocity;

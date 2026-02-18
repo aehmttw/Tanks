@@ -1,10 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPlayerAutoReadyConfirm extends PersonalEvent
 {

@@ -1,8 +1,9 @@
 package tanks;
 
-import basewindow.InputCodes;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import basewindow.InputCodes;
 import tanks.extension.Extension;
 import tanks.gui.Button;
 import tanks.gui.Firework;
@@ -56,8 +57,7 @@ public class Panel
     public static Button draggedButton;
 
     /**
-     * Important value used in calculating game speed. Larger values are set when
-     * the frames are lower, and game speed is increased to compensate.
+     * Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.
      */
     public static double frameFrequency = 1;
 
@@ -111,8 +111,7 @@ public class Panel
     public boolean lastFocused = true;
 
     /**
-     * Set to a directory to have the game screenshot the next frame and save it to
-     * that directory
+     * Set to a directory to have the game screenshot the next frame and save it to that directory
      */
     public String saveScreenshotDir = null;
 
@@ -189,7 +188,7 @@ public class Panel
         Game.dummyTank = new TankDummy("dummy", 0, 0, 0);
         Game.dummyTank.team = null;
 
-        for (Extension e : Game.extensionRegistry.extensions) e.loadResources();
+        for (Extension e: Game.extensionRegistry.extensions) e.loadResources();
 
         Game.screen = new ScreenIntro();
 
@@ -381,7 +380,7 @@ public class Panel
             Game.eventsIn.clear();
         }
 
-        for (INetworkEvent e : stackedEventsIn.values())
+        for (INetworkEvent e: stackedEventsIn.values())
         {
             try
             {
@@ -413,7 +412,7 @@ public class Panel
 
                     ScreenPartyHost.includedPlayers.remove(ScreenPartyHost.disconnectedPlayers.get(i));
 
-                    for (Player p : Game.players)
+                    for (Player p: Game.players)
                     {
                         if (p.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
                         {
@@ -456,7 +455,7 @@ public class Panel
                     ScreenGame s = (ScreenGame) Game.screen;
                     s.cancelCountdown = false;
 
-                    for (Movable m : Game.movables)
+                    for (Movable m: Game.movables)
                     {
                         if (m instanceof TankPlayable)
                         {
@@ -479,7 +478,7 @@ public class Panel
                         } else if (m instanceof TankPlayerBot)
                         {
                             ArrayList<TankPlayer.ShopTankBuild> owned = new ArrayList<>();
-                            for (TankPlayer.ShopTankBuild sb : ((ScreenGame) Game.screen).builds)
+                            for (TankPlayer.ShopTankBuild sb: ((ScreenGame) Game.screen).builds)
                             {
                                 if (((TankPlayerBot) m).player.ownedBuilds.contains(sb.name))
                                     owned.add(sb);
@@ -728,7 +727,7 @@ public class Panel
                 ScreenPartyLobby.connections.clear();
             } else if (ScreenPartyHost.isServer)
             {
-                for (ServerHandler sh : ScreenPartyHost.server.connections)
+                for (ServerHandler sh: ScreenPartyHost.server.connections)
                 {
                     if (sh.clientID.equals(((PersonalEvent) e).clientID))
                         sh.sendEventAndClose(ev);

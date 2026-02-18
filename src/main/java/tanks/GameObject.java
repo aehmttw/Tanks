@@ -3,23 +3,24 @@ package tanks;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
 import tanks.gui.screen.leveleditor.selector.MetadataSelector;
 import tanks.tank.Tank;
 import tanks.tankson.MetadataProperty;
 
 public abstract class GameObject
 {
-    public double posX, posY, posZ;
+    public double posX;
+    public double posY;
+    public double posZ;
 
     public boolean draggable = false;
 
     public static HashMap<Class<? extends GameObject>, LinkedHashMap<String, MetadataSelector>> metadataPropertiesByClass = new HashMap<>();
 
     /**
-     * If you want a subclass to use a different id for a selector (for example,
-     * have the player and ai tank teams use separate selectors in the editor), you
-     * can add to the map here to replace a selector id with another one for that
-     * subclass specifically.
+     * If you want a subclass to use a different id for a selector (for example, have the player and ai tank teams use separate selectors in the editor), you can add to the map
+     * here to replace a selector id with another one for that subclass specifically.
      */
     public HashMap<String, String> overrideMetadataPropertyIDs = new HashMap<>();
 
@@ -58,7 +59,7 @@ public abstract class GameObject
                 LinkedHashMap<String, MetadataSelector> props = new LinkedHashMap<>();
                 metadataPropertiesByClass.put(this.getClass(), props);
 
-                for (Field f : this.getClass().getFields())
+                for (Field f: this.getClass().getFields())
                 {
                     MetadataProperty a = f.getAnnotation(MetadataProperty.class);
                     if (a != null)
@@ -116,6 +117,7 @@ public abstract class GameObject
     }
 
     static double pi_over_4 = Math.PI / 4;
+
     static double fastAtan(double a)
     {
         if (a < -1 || a > 1)
@@ -147,6 +149,11 @@ public abstract class GameObject
         return Math.sqrt(sqDistBetw(x1, y1, x2, y2));
     }
 
+    public static double distanceBetween(final GameObject a, final GameObject b)
+    {
+        return distanceBetween(a.posX, a.posY, b.posX, b.posY);
+    }
+
     public static double sqDistBetw(double x1, double y1, double x2, double y2)
     {
         return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
@@ -160,11 +167,6 @@ public abstract class GameObject
     public static boolean withinRadius(final GameObject a, final GameObject b, double range)
     {
         return sqDistBetw(a, b) < range * range;
-    }
-
-    public static double distanceBetween(final GameObject a, final GameObject b)
-    {
-        return distanceBetween(a.posX, a.posY, b.posX, b.posY);
     }
 
     public static double angleBetween(double a, double b)

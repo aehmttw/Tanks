@@ -1,7 +1,8 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.util.ArrayList;
+
+import basewindow.BaseFile;
 import tanks.Consumer;
 import tanks.Drawing;
 import tanks.Game;
@@ -61,7 +62,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
             else
                 deleteMode.setText("Delete templates");
 
-            for (Button b : allItems.buttons) b.enabled = !deleting;
+            for (Button b: allItems.buttons) b.enabled = !deleting;
         }
     });
 
@@ -121,7 +122,7 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
         ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
 
-        for (String s : items)
+        for (String s: items)
         {
             Item.ItemStack<?> i = Item.ItemStack.fromString(null, s);
             i.item.name = Translation.translate(i.item.name);

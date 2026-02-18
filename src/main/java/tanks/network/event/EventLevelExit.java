@@ -1,11 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.screen.ScreenPartyInterlevel;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventLevelExit extends PersonalEvent
 {

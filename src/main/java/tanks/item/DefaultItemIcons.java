@@ -17,21 +17,20 @@ public class DefaultItemIcons
 
     public static ItemIcon bullet_fire = new ItemIcon(
             "bullet_fire", "bullet_fire", new Color[]{BulletEffect.trail.trailEffects.get(0).frontColor, new Color(0, 0, 0, 0), new Color(0, 0, 0, 0), new Color(0, 0, 0, 0),
-                    new Color(255, 0, 0, 180), new Color(255, 255, 0), new Color(255, 0, 0), new Color(255, 220, 0)},
+                new Color(255, 0, 0, 180), new Color(255, 255, 0), new Color(255, 0, 0), new Color(255, 220, 0)},
             new Boolean[]{true, true, false, false, true, false, false, false}).register();
 
-    public static ItemIcon bullet_homing = new ItemIcon(
-            "bullet_homing", "bullet_fire", new Color[]{BulletEffect.trail.trailEffects.get(0).frontColor, new Color(0, 0, 0, 0), new Color(255, 100, 0), new Color(255, 160, 0),
-                    new Color(255, 0, 0, 180), new Color(255, 255, 0), new Color(255, 0, 0), new Color(255, 220, 0)},
+    public static ItemIcon bullet_homing = new ItemIcon("bullet_homing", "bullet_fire", new Color[]{BulletEffect.trail.trailEffects.get(0).frontColor, new Color(0, 0, 0, 0),
+        new Color(255, 100, 0), new Color(255, 160, 0), new Color(255, 0, 0, 180), new Color(255, 255, 0), new Color(255, 0, 0), new Color(255, 220, 0)},
             new Boolean[]{true, true, true, true, true, false, false, false}).register();
 
     public static ItemIcon bullet_fire_trail = new ItemIcon(
             "bullet_fire_trail", "bullet_fire", new Color[]{new Color(0, 0, 0, 0), BulletEffect.fire_trail.trailEffects.get(0).frontColor, new Color(0, 0, 0, 0),
-                    new Color(0, 0, 0, 0), new Color(255, 0, 0, 180), new Color(255, 255, 0), new Color(255, 0, 0), new Color(255, 220, 0)},
+                new Color(0, 0, 0, 0), new Color(255, 0, 0, 180), new Color(255, 255, 0), new Color(255, 0, 0), new Color(255, 220, 0)},
             new Boolean[]{true, true, false, false, true, false, false, false}).register();
 
     public static ItemIcon bullet_dark_fire = new ItemIcon("bullet_dark_fire", "bullet_fire", new Color[]{BulletEffect.trail.trailEffects.get(0).frontColor, new Color(0, 0, 0, 0),
-            new Color(0, 0, 0, 0), new Color(0, 0, 0, 0), new Color(64, 0, 128, 180), new Color(0, 0, 0), new Color(54, 0, 108), new Color(0, 0, 0)},
+        new Color(0, 0, 0, 0), new Color(0, 0, 0, 0), new Color(64, 0, 128, 180), new Color(0, 0, 0), new Color(54, 0, 108), new Color(0, 0, 0)},
             new Boolean[]{true, true, false, false, true, false, false, false}).register();
 
     public static ItemIcon bullet_flame = new ItemIcon("bullet_flame", "bullet_flame", new Color[]{new Color(255, 0, 0), new Color(255, 255, 0), new Color(255, 255, 255)},

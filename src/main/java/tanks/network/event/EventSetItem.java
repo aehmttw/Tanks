@@ -1,12 +1,14 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+
 import tanks.Game;
 import tanks.Player;
 import tanks.item.Item;
 import tanks.item.ItemEmpty;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventSetItem extends PersonalEvent
 {

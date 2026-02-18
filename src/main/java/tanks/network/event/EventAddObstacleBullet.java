@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventAddObstacleBullet extends PersonalEvent
 {

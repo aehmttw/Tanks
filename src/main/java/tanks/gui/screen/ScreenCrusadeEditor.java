@@ -1,10 +1,11 @@
 package tanks.gui.screen;
 
-import basewindow.BaseFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+
+import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -146,7 +147,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
         this.refreshButtons();
     }
 
-    public static abstract class CrusadeButton extends Button
+    public abstract static class CrusadeButton extends Button
     {
         public CrusadeButton(double x, double y, double sX, double sY, String text, Runnable f)
         {
@@ -363,7 +364,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             this.buttons.sortButtons();
 
             int levels = 0;
-            for (Button b : this.buttons.buttons)
+            for (Button b: this.buttons.buttons)
             {
                 if (b instanceof CrusadeLevelButton)
                 {
@@ -432,7 +433,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
 
         int levels = 0;
 
-        for (Button b : buttons.buttons)
+        for (Button b: buttons.buttons)
         {
             if (b instanceof CrusadeLevelButton)
             {
@@ -694,7 +695,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             f.println(this.crusade.startingLives + "," + this.crusade.bonusLifeFrequency + "," + this.crusade.showNames + "," + this.crusade.respawnTanks);
             f.println("items");
 
-            for (Item.CrusadeShopItem i : this.crusade.crusadeShopItems) f.println(i.toString());
+            for (Item.CrusadeShopItem i: this.crusade.crusadeShopItems) f.println(i.toString());
 
             f.println("tanks");
             HashMap<String, TankAIControlled> customTanks = new HashMap<>();
@@ -704,7 +705,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             {
                 ArrayList<TankAIControlled> tanks = this.crusade.levels.get(i).tanks;
 
-                for (TankAIControlled t : tanks)
+                for (TankAIControlled t: tanks)
                 {
                     customTanks.put(t.name, t);
                     ArrayList<Integer> a = customTankLevels.get(t.name);
@@ -717,14 +718,14 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
                 }
             }
 
-            for (String s : customTanks.keySet())
+            for (String s: customTanks.keySet())
             {
                 f.println(customTankLevels.get(s) + " " + customTanks.get(s));
             }
 
             f.println("builds");
 
-            for (TankPlayer.CrusadeShopTankBuild b : this.crusade.crusadeShopBuilds)
+            for (TankPlayer.CrusadeShopTankBuild b: this.crusade.crusadeShopBuilds)
             {
                 f.println(b.toString());
             }
@@ -742,7 +743,7 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             for (int i = 0; i < crusade.levels.size(); i++)
             {
                 Crusade.CrusadeLevel cl = this.crusade.levels.get(i);
-                for (TankPlayer.ShopTankBuild b : cl.buildOverrides)
+                for (TankPlayer.ShopTankBuild b: cl.buildOverrides)
                 {
                     f.println(i + " " + b.toString());
                 }

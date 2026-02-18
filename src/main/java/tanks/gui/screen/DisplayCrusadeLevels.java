@@ -1,11 +1,12 @@
 package tanks.gui.screen;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.ScaleAboutPoint;
 import basewindow.transformation.Transformation;
 import basewindow.transformation.Translation;
-import java.util.ArrayList;
-import java.util.HashMap;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.StaticTerrainRenderer;
@@ -61,7 +62,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
     {
         if (currentScreen != null)
         {
-            for (ScreenLevel l : currentScreen.levels)
+            for (ScreenLevel l: currentScreen.levels)
             {
                 if (l.renderer != null)
                     l.renderer.reset();
@@ -193,7 +194,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
             this.levels.add(l0);
             l0.levelString = "{28,18||10000-0-player}";
 
-            for (Crusade.CrusadeLevel level : this.crusade.levels)
+            for (Crusade.CrusadeLevel level: this.crusade.levels)
             {
                 ScreenLevel l = new ScreenLevel();
                 this.levels.add(l);
@@ -258,7 +259,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                 l.renderer.offY = Game.tile_size * -(i - rem);
                 l.renderer.draw();
 
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     drawables[m.drawLevel].add(m);
 
@@ -266,8 +267,9 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                         drawables[m.nameTag.drawLevel].add(m.nameTag);
                 }
 
-                for (Obstacle o : Game.obstacles) if (!o.batchDraw)
-                    drawables[o.drawLevel].add(o);
+                for (Obstacle o: Game.obstacles)
+                    if (!o.batchDraw)
+                        drawables[o.drawLevel].add(o);
 
                 translation.x = (Drawing.drawing.baseInterfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size) / Game.game.window.absoluteWidth * Drawing.drawing.interfaceScale;
                 translation.y = Game.tile_size * -(i - rem) / Game.game.window.absoluteHeight * Drawing.drawing.scale;
@@ -281,9 +283,9 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                     translation.y *= this.shadowScaleNum;
                 }
 
-                for (ArrayList<IDrawable> drawable : this.drawables)
+                for (ArrayList<IDrawable> drawable: this.drawables)
                 {
-                    for (IDrawable d : drawable)
+                    for (IDrawable d: drawable)
                     {
                         if (d != null)
                             d.draw();
@@ -291,7 +293,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
                     if (Game.glowEnabled)
                     {
-                        for (IDrawable d : drawable)
+                        for (IDrawable d: drawable)
                         {
                             if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
                                 ((IDrawableWithGlow) d).drawGlow();

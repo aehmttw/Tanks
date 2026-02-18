@@ -1,11 +1,12 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamResult;
-import com.codedisaster.steamworks.SteamUGCDetails;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamResult;
+import com.codedisaster.steamworks.SteamUGCDetails;
 
 public class ScreenWorkshopLevelDownloadFailed extends Screen
 {

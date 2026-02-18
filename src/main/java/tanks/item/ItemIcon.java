@@ -1,8 +1,9 @@
 package tanks.item;
 
-import basewindow.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import basewindow.Color;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.tankson.ICopyable;
@@ -101,7 +102,7 @@ public class ItemIcon implements ICopyable<ItemIcon>
         if (colors != null)
         {
             i1.colors = new ArrayList<>();
-            for (Color c : this.colors) i1.colors.add(new Color().set(c));
+            for (Color c: this.colors) i1.colors.add(new Color().set(c));
         } else
             i1.colors = null;
 

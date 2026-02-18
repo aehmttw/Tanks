@@ -1,7 +1,7 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import java.util.UUID;
+
 import tanks.Crusade;
 import tanks.Game;
 import tanks.Player;
@@ -12,6 +12,8 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventSendClientDetails extends PersonalEvent implements IServerThreadEvent
 {
@@ -150,7 +152,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 
         ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + s.username + " has joined the party\u00A7000000000255"));
 
-        for (ScreenPartyHost.SharedLevel l : ScreenPartyHost.activeScreen.sharedLevels)
+        for (ScreenPartyHost.SharedLevel l: ScreenPartyHost.activeScreen.sharedLevels)
         {
             EventShareLevel e = new EventShareLevel();
             e.username = l.creator;
@@ -173,7 +175,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
             }
         }
 
-        for (Player p1 : Game.botPlayers)
+        for (Player p1: Game.botPlayers)
         {
             s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(p1.clientID, p1.username, true), true));
             s.sendEvent(new EventUpdateTankColors(p1));

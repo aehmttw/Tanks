@@ -1,9 +1,10 @@
 package tanks.tankson;
 
-import basewindow.Color;
-import basewindow.IModel;
 import java.lang.annotation.Annotation;
 import java.util.*;
+
+import basewindow.Color;
+import basewindow.IModel;
 
 /**
  * Tanks: The Crusades Object Notation (totally not some other object notation)
@@ -242,7 +243,7 @@ public class TanksON
         else if (o instanceof AbstractCollection)
         {
             StringBuilder s = new StringBuilder("[");
-            for (Object el : (AbstractCollection<?>) o)
+            for (Object el: (AbstractCollection<?>) o)
             {
                 s.append(toString(el)).append(",");
             }
@@ -270,7 +271,7 @@ public class TanksON
             if (keys.remove("obj_type"))
                 keys.add(0, "obj_type");
 
-            for (String el : keys)
+            for (String el: keys)
             {
                 s.append("\"").append(convertString(el)).append("\":").append(toString(h.get(el))).append(",");
             }

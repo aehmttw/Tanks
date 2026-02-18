@@ -1,12 +1,13 @@
 package tanks.gui.screen;
 
-import basewindow.Color;
-import basewindow.IModel;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+
+import basewindow.Color;
+import basewindow.IModel;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;
@@ -110,8 +111,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
     }
 
     /**
-     * Add all the tabs here and make sure to set the default tab! You can also set
-     * icon prefix for editor icon folder
+     * Add all the tabs here and make sure to set the default tab! You can also set icon prefix for editor icon folder
      */
     public abstract void setupTabs();
 
@@ -156,7 +156,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
     public void resetTabs()
     {
-        for (Tab t : allTabs)
+        for (Tab t: allTabs)
         {
             t.uiElements.clear();
 
@@ -227,7 +227,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -250,7 +250,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         public void sortUIElements()
         {
             int in = 0;
-            for (Tab t : this.subMenus)
+            for (Tab t: this.subMenus)
             {
                 this.uiElements.add(in, new Button(0, 0, 350, 40, t.name, () -> screen.setTab(t)));
                 in++;
@@ -283,7 +283,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     this.uiElements.get(i).setPosition(Drawing.drawing.interfaceSizeX / 2 + offset + 380 * 2, posY);
             }
 
-            for (Tab t : this.subMenus)
+            for (Tab t: this.subMenus)
             {
                 t.sortUIElements();
             }
@@ -537,7 +537,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
                     ItemIcon n = t.itemIcons[t.selectedOption].getCopy();
 
-                    for (ItemIcon ii : t.itemIcons)
+                    for (ItemIcon ii: t.itemIcons)
                     {
                         ii.resetColors();
                     }
@@ -796,9 +796,9 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 HashSet<String> a = ((HashSet<String>) f.get());
                 ArrayList<String> musics = new ArrayList<>();
 
-                for (HashSet<String> s : Game.registryTank.tankMusics.values())
+                for (HashSet<String> s: Game.registryTank.tankMusics.values())
                 {
-                    for (String m : s)
+                    for (String m: s)
                     {
                         if (!musics.contains(m))
                             musics.add(m);
@@ -848,7 +848,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                     Game.screen = sc;
 
                     ArrayList<ScreenSelectorArraylist.Entry> entries = new ArrayList<>();
-                    for (TankAIControlled.SpawnedTankEntry e : a)
+                    for (TankAIControlled.SpawnedTankEntry e: a)
                     {
                         entries.add(getSpawnedTankEntry(e, sc));
                     }
@@ -872,7 +872,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 s.enabled = true;
 
                 s.optionText = Translation.translate("\u00A7127000000255none");
-                for (TankAIControlled.SpawnedTankEntry e : a)
+                for (TankAIControlled.SpawnedTankEntry e: a)
                 {
                     s.multiTanks.add(e.tank.resolve());
                     s.tank = e.tank.resolve();
@@ -1060,7 +1060,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         }
 
         this.topLevelButtons.clear();
-        for (Tab t : topLevelMenus)
+        for (Tab t: topLevelMenus)
         {
             Button b = new Button(space * (i - Math.min(topLevelMenus.size() - 1, 3) / 2.0) + this.centerX, pos + this.objYSpace * j, size, 40, t.name, () -> setTab(t));
             b.image = this.iconPrefix + "/" + t.name.toLowerCase().replace(" ", "_") + ".png";
@@ -1108,7 +1108,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             {
                 if (this.topLevelMenus.size() > 1 || this.forceDisplayTabs)
                 {
-                    for (Button b : this.topLevelButtons)
+                    for (Button b: this.topLevelButtons)
                     {
                         b.enabled = currentTab == null || !currentTab.getRoot().name.equals(b.text);
                         b.update();
@@ -1201,7 +1201,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             {
                 if (this.topLevelButtons.size() > 1 || this.forceDisplayTabs)
                 {
-                    for (Button b : this.topLevelButtons)
+                    for (Button b: this.topLevelButtons)
                     {
                         b.enabled = currentTab == null || !currentTab.getRoot().name.equals(b.text);
                         b.draw();
@@ -1273,13 +1273,13 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         this.musics.clear();
         this.addMusicTracks();
 
-        for (String m : this.prevMusics)
+        for (String m: this.prevMusics)
         {
             if (!this.musics.contains(m))
                 Drawing.drawing.removeSyncedMusic(m, 500);
         }
 
-        for (String m : this.musics)
+        for (String m: this.musics)
         {
             if (!this.prevMusics.contains(m))
                 Drawing.drawing.addSyncedMusic(m, Game.musicVolume * 0.5f, true, 500);
@@ -1293,7 +1293,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
     public void clearMusicTracks()
     {
-        for (String m : this.musics)
+        for (String m: this.musics)
         {
             Drawing.drawing.removeSyncedMusic(m, 500);
         }

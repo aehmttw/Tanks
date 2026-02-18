@@ -2,6 +2,7 @@ package tanks.registry;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleUnknown;
 

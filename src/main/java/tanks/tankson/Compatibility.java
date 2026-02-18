@@ -1,9 +1,10 @@
 package tanks.tankson;
 
-import basewindow.Color;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+
+import basewindow.Color;
 import tanks.BiConsumer;
 import tanks.BiFunction;
 import tanks.Game;
@@ -83,21 +84,21 @@ public class Compatibility
             String s = (String) a;
             switch (s)
             {
-                case "fire" :
+                case "fire":
                     return BulletEffect.fire.getCopy();
-                case "trail" :
+                case "trail":
                     return BulletEffect.trail.getCopy();
-                case "long_trail" :
+                case "long_trail":
                     return BulletEffect.long_trail.getCopy();
-                case "dark_fire" :
+                case "dark_fire":
                     return BulletEffect.dark_fire.getCopy();
-                case "fire_trail" :
+                case "fire_trail":
                     return BulletEffect.fire_trail.getCopy();
-                case "ice" :
+                case "ice":
                     return BulletEffect.ice.getCopy();
-                case "ember" :
+                case "ember":
                     return BulletEffect.ember.getCopy();
-                default :
+                default:
                     return new BulletEffect();
             }
         });
@@ -126,9 +127,9 @@ public class Compatibility
                 ((Bullet) owner).effect.glowSize = (double) value;
         });
 
-        for (String s : new String[]{"color_*", "color_*2", "color_*3", "emblem_*", "color_noise_*"})
+        for (String s: new String[]{"color_*", "color_*2", "color_*3", "emblem_*", "color_noise_*"})
         {
-            for (String c : new String[]{"r", "g", "b"})
+            for (String c: new String[]{"r", "g", "b"})
             {
                 String name = s.replace("*", c);
                 unused_table.put(name, (owner, value) ->

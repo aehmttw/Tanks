@@ -71,7 +71,7 @@ public class OverlaySelectBeatBlockPattern extends ScreenLevelEditorOverlay
 
         Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY, 450, 200);
 
-        for (Button group : groups)
+        for (Button group: groups)
         {
             double sx = group.sizeX;
             double sy = group.sizeY;

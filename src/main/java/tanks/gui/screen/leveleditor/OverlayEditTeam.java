@@ -71,7 +71,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
         {
             editor.teams.remove(team);
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m.team == team)
                     m.team = null;

@@ -1,11 +1,12 @@
 package tanks.gui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import basewindow.Color;
 import basewindow.IModel;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import java.util.ArrayList;
-import java.util.HashMap;
 import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.*;
@@ -17,7 +18,10 @@ public class Button implements IDrawable, ITrigger
     public Runnable function;
     public Runnable doubleClickFunc = null;
     public InputBindingGroup keybind;
-    public double posX, posY, sizeX, sizeY;
+    public double posX;
+    public double posY;
+    public double sizeX;
+    public double sizeY;
 
     public double age = 0;
     public double lastClick = 0;
@@ -25,7 +29,10 @@ public class Button implements IDrawable, ITrigger
 
     public boolean draggable;
     public String dragTooltip = null;
-    public double clickX, clickY, origX, origY;
+    public double clickX;
+    public double clickY;
+    public double origX;
+    public double origY;
     public boolean isDragging;
     public Consumer<Button> whileDragging;
     public BiConsumer<Button, Boolean> finishDrag;
@@ -101,20 +108,17 @@ public class Button implements IDrawable, ITrigger
     // public String sound = "click.ogg";
 
     /**
-     * If set to true and is part of an online service, pressing the button sends
-     * the player to a loading screen
+     * If set to true and is part of an online service, pressing the button sends the player to a loading screen
      */
     public boolean wait = false;
 
     /**
-     * For online service use with changing interface scales -1 = left 0 = middle 1
-     * = right
+     * For online service use with changing interface scales -1 = left 0 = middle 1 = right
      */
     public int xAlignment = 0;
 
     /**
-     * For online service use with changing interface scales -1 = top 0 = middle 1 =
-     * bottom
+     * For online service use with changing interface scales -1 = top 0 = middle 1 = bottom
      */
     public int yAlignment = 0;
 
@@ -244,7 +248,7 @@ public class Button implements IDrawable, ITrigger
 
             if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -414,7 +418,7 @@ public class Button implements IDrawable, ITrigger
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
         } else
         {
-            for (int i : Game.game.window.touchPoints.keySet())
+            for (int i: Game.game.window.touchPoints.keySet())
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
 

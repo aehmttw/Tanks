@@ -1,7 +1,8 @@
 package tanks.gui.screen;
 
-import basewindow.InputCodes;
 import java.util.ArrayList;
+
+import basewindow.InputCodes;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Level;

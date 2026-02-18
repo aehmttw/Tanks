@@ -1,11 +1,12 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamID;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.Button;
 import tanks.network.Client;
+
+import com.codedisaster.steamworks.SteamID;
 
 public class ScreenConnecting extends Screen
 {

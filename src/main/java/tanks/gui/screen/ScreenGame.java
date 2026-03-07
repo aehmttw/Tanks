@@ -1767,7 +1767,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 }
             }
 
-//			System.out.println(Ray.count);
+//          System.out.println(Ray.count);
 
             if (!finishedQuick)
             {

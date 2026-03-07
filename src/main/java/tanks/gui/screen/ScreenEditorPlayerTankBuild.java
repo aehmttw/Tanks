@@ -860,4 +860,3 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
         this.save.draw();
     }
 }
-

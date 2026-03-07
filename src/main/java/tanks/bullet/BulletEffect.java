@@ -63,8 +63,8 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
         fire.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
 
-        fire_trail.trailEffects.add(new Trail(7,2, 2, 50, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5, false, true));
-        fire_trail.trailEffects.add(new Trail(3,2, 2, 4, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5, true, false));
+        fire_trail.trailEffects.add(new Trail(7, 2, 2, 50, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5, false, true));
+        fire_trail.trailEffects.add(new Trail(3, 2, 2, 4, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5, true, false));
         fire_trail.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
 
         dark_fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));

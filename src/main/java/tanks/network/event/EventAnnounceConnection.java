@@ -9,78 +9,78 @@ import java.util.UUID;
 
 public class EventAnnounceConnection extends PersonalEvent
 {
-	public String name;
-	public UUID clientIdTarget;
-	public boolean joined;
-	public boolean isBot;
+    public String name;
+    public UUID clientIdTarget;
+    public boolean joined;
+    public boolean isBot;
 
-	public EventAnnounceConnection()
-	{
-		
-	}
-	
-	public EventAnnounceConnection(ConnectedPlayer p, boolean joined)
-	{
-		this.name = p.rawUsername;
-		this.clientIdTarget = p.clientId;
-		this.joined = joined;
-		this.isBot = p.isBot;
-	}
+    public EventAnnounceConnection()
+    {
 
-	@Override
-	public void execute() 
-	{
-		if (this.clientID != null)
-			return;
+    }
 
-		if (this.joined)
-		{
-			ConnectedPlayer c = new ConnectedPlayer(this.clientIdTarget, this.name);
-			if (isBot)
-			{
-				c.isBot = true;
-				ScreenPartyLobby.connectedBots++;
-				ScreenPartyLobby.connections.add(c);
-			}
-			else
-				ScreenPartyLobby.connections.add(ScreenPartyLobby.connections.size() - ScreenPartyLobby.connectedBots, c);
-		}
-		else
-		{
-			ScreenPartyLobby.includedPlayers.remove(this.clientIdTarget);
+    public EventAnnounceConnection(ConnectedPlayer p, boolean joined)
+    {
+        this.name = p.rawUsername;
+        this.clientIdTarget = p.clientId;
+        this.joined = joined;
+        this.isBot = p.isBot;
+    }
 
-			for (int i = 0; i < ScreenPartyLobby.connections.size(); i++)
-			{
-				if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientIdTarget))
-				{
-					ScreenPartyLobby.readyPlayers.remove(ScreenPartyLobby.connections.get(i));
+    @Override
+    public void execute()
+    {
+        if (this.clientID != null)
+            return;
 
-					if (ScreenPartyLobby.connections.get(i).isBot)
-						ScreenPartyLobby.connectedBots--;
+        if (this.joined)
+        {
+            ConnectedPlayer c = new ConnectedPlayer(this.clientIdTarget, this.name);
+            if (isBot)
+            {
+                c.isBot = true;
+                ScreenPartyLobby.connectedBots++;
+                ScreenPartyLobby.connections.add(c);
+            }
+            else
+                ScreenPartyLobby.connections.add(ScreenPartyLobby.connections.size() - ScreenPartyLobby.connectedBots, c);
+        }
+        else
+        {
+            ScreenPartyLobby.includedPlayers.remove(this.clientIdTarget);
 
-					ScreenPartyLobby.connections.remove(i);
-					i--;
-				}
-			}
-		}
-	}
+            for (int i = 0; i < ScreenPartyLobby.connections.size(); i++)
+            {
+                if (ScreenPartyLobby.connections.get(i).clientId.equals(this.clientIdTarget))
+                {
+                    ScreenPartyLobby.readyPlayers.remove(ScreenPartyLobby.connections.get(i));
 
-	@Override
-	public void read(ByteBuf b)
-	{
-		this.joined = b.readBoolean();
-		this.clientIdTarget = UUID.fromString(NetworkUtils.readString(b));
-		this.name = NetworkUtils.readString(b);
-		this.isBot = b.readBoolean();
-	}
-	
-	@Override
-	public void write(ByteBuf b)
-	{
-		b.writeBoolean(this.joined);
-		NetworkUtils.writeString(b, this.clientIdTarget.toString());
-		NetworkUtils.writeString(b, this.name);
-		b.writeBoolean(this.isBot);
-	}
+                    if (ScreenPartyLobby.connections.get(i).isBot)
+                        ScreenPartyLobby.connectedBots--;
+
+                    ScreenPartyLobby.connections.remove(i);
+                    i--;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.joined = b.readBoolean();
+        this.clientIdTarget = UUID.fromString(NetworkUtils.readString(b));
+        this.name = NetworkUtils.readString(b);
+        this.isBot = b.readBoolean();
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeBoolean(this.joined);
+        NetworkUtils.writeString(b, this.clientIdTarget.toString());
+        NetworkUtils.writeString(b, this.name);
+        b.writeBoolean(this.isBot);
+    }
 
 }

@@ -10,136 +10,136 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
-public class RegistryTank 
+public class RegistryTank
 {
-	public HashMap<String, HashSet<String>> tankMusics = new HashMap<>();
+    public HashMap<String, HashSet<String>> tankMusics = new HashMap<>();
 
-	public ArrayList<TankEntry> tankEntries = new ArrayList<>();
-	protected double maxTankWeight = 0;
+    public ArrayList<TankEntry> tankEntries = new ArrayList<>();
+    protected double maxTankWeight = 0;
 
-	public static class TankEntry
-	{
-		public final Class<? extends Tank> tank;
-		public final String name;
-		public final double weight;
+    public static class TankEntry
+    {
+        public final Class<? extends Tank> tank;
+        public final String name;
+        public final double weight;
 
-		protected double startWeight;
-		protected double endWeight;
+        protected double startWeight;
+        protected double endWeight;
 
-		public boolean isBoss;
+        public boolean isBoss;
 
-		protected RegistryTank registryTank;
+        protected RegistryTank registryTank;
 
-		public TankEntry(RegistryTank r, Class<? extends Tank> tank, String name, double weight)
-		{
-			this.tank = tank;
-			this.name = name;
-			this.weight = weight;
-			this.registryTank = r;
+        public TankEntry(RegistryTank r, Class<? extends Tank> tank, String name, double weight)
+        {
+            this.tank = tank;
+            this.name = name;
+            this.weight = weight;
+            this.registryTank = r;
 
-			r.tankEntries.add(this);
-		}
+            r.tankEntries.add(this);
+        }
 
-		public TankEntry(RegistryTank r, Class<? extends Tank> tank, String name, double weight, boolean isBoss)
-		{
-			this(r, tank, name, weight);
-			this.isBoss = isBoss;
-		}
+        public TankEntry(RegistryTank r, Class<? extends Tank> tank, String name, double weight, boolean isBoss)
+        {
+            this(r, tank, name, weight);
+            this.isBoss = isBoss;
+        }
 
-		public void initialize()
-		{
-			this.startWeight = registryTank.maxTankWeight;
-			registryTank.maxTankWeight += weight;
-			this.endWeight = registryTank.maxTankWeight;
-		}
+        public void initialize()
+        {
+            this.startWeight = registryTank.maxTankWeight;
+            registryTank.maxTankWeight += weight;
+            this.endWeight = registryTank.maxTankWeight;
+        }
 
-		protected TankEntry()
-		{
-			this.tank = TankUnknown.class;
-			this.name = "unknown";
-			this.weight = 0;
-		}
+        protected TankEntry()
+        {
+            this.tank = TankUnknown.class;
+            this.name = "unknown";
+            this.weight = 0;
+        }
 
-		protected TankEntry(String name)
-		{
-			this.tank = TankUnknown.class;
-			this.name = name;
-			this.weight = 0;
-		}
+        protected TankEntry(String name)
+        {
+            this.tank = TankUnknown.class;
+            this.name = name;
+            this.weight = 0;
+        }
 
-		public Tank getTank(double x, double y, double a)
-		{
-			try 
-			{
-				Constructor<? extends Tank> c = tank.getConstructor(String.class, double.class, double.class, double.class);
-				Tank t = c.newInstance(this.name, x, y, a);
-				t.fromRegistry = true;
-				t.musicTracks = Game.registryTank.tankMusics.get(this.name);
+        public Tank getTank(double x, double y, double a)
+        {
+            try
+            {
+                Constructor<? extends Tank> c = tank.getConstructor(String.class, double.class, double.class, double.class);
+                Tank t = c.newInstance(this.name, x, y, a);
+                t.fromRegistry = true;
+                t.musicTracks = Game.registryTank.tankMusics.get(this.name);
 
-				if (t.musicTracks == null)
-					t.musicTracks = new HashSet<>();
+                if (t.musicTracks == null)
+                    t.musicTracks = new HashSet<>();
 
-				return t;
-			}
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
-				return null;
-			}
-		}
+                return t;
+            }
+            catch (Exception e)
+            {
+                Game.exitToCrash(e);
+                return null;
+            }
+        }
 
-		public static TankEntry getUnknownEntry()
-		{
-			return new TankEntry();
-		}
+        public static TankEntry getUnknownEntry()
+        {
+            return new TankEntry();
+        }
 
-		public static TankEntry getUnknownEntry(String name)
-		{
-			return new TankEntry(name);
-		}
-	}
+        public static TankEntry getUnknownEntry(String name)
+        {
+            return new TankEntry(name);
+        }
+    }
 
-	public TankEntry getRandomTank()
-	{
-		return getRandomTank(null);
-	}
+    public TankEntry getRandomTank()
+    {
+        return getRandomTank(null);
+    }
 
-	public TankEntry getRandomTank(Random rand)
-	{
-		double d = Math.random();
+    public TankEntry getRandomTank(Random rand)
+    {
+        double d = Math.random();
 
-		if (rand != null)
-			d = rand.nextDouble();
+        if (rand != null)
+            d = rand.nextDouble();
 
-		if (this.tankEntries.size() <= 0)
-			throw new RuntimeException("the tank registry file is empty. please register some tanks!");
+        if (this.tankEntries.size() <= 0)
+            throw new RuntimeException("the tank registry file is empty. please register some tanks!");
 
-		double random = d * maxTankWeight;
-		for (int i = 0; i < tankEntries.size(); i++)
-		{
-			TankEntry r = tankEntries.get(i);
+        double random = d * maxTankWeight;
+        for (int i = 0; i < tankEntries.size(); i++)
+        {
+            TankEntry r = tankEntries.get(i);
 
-			if (random >= r.startWeight && random < r.endWeight)
-			{
-				return r;
-			}
-		}
+            if (random >= r.startWeight && random < r.endWeight)
+            {
+                return r;
+            }
+        }
 
-		return TankEntry.getUnknownEntry();
-	}
+        return TankEntry.getUnknownEntry();
+    }
 
-	public TankEntry getEntry(String name)
-	{
+    public TankEntry getEntry(String name)
+    {
         for (TankEntry r : tankEntries)
         {
             if (r.name.equals(name))
                 return r;
         }
-		return TankEntry.getUnknownEntry(name);
-	}
+        return TankEntry.getUnknownEntry(name);
+    }
 
-	public TankEntry getEntry(int number)
-	{		
-		return tankEntries.get(number);
-	}
+    public TankEntry getEntry(int number)
+    {
+        return tankEntries.get(number);
+    }
 }

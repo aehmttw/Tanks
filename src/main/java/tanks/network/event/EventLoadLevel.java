@@ -16,97 +16,97 @@ import java.util.ArrayList;
 
 public class EventLoadLevel extends PersonalEvent
 {
-	public String level;
+    public String level;
 
-	public double startTime;
-	public boolean disableFriendlyFire;
+    public double startTime;
+    public boolean disableFriendlyFire;
 
-	public EventLoadLevel()
-	{
-		
-	}
-	
-	public EventLoadLevel(Level l)
-	{
-		this.level = l.levelString;
+    public EventLoadLevel()
+    {
 
-		if (Crusade.crusadeMode)
-		{
-			StringBuilder s = new StringBuilder("tanks\n");
+    }
 
-			for (TankAIControlled t : l.customTanks)
-			{
-				s.append(t.toString()).append("\n");
-			}
+    public EventLoadLevel(Level l)
+    {
+        this.level = l.levelString;
 
-			s.append("shop\n");
+        if (Crusade.crusadeMode)
+        {
+            StringBuilder s = new StringBuilder("tanks\n");
 
-			for (Item.ShopItem i: Crusade.currentCrusade.getShop())
-			{
-				s.append(i.toString()).append("\n");
-			}
+            for (TankAIControlled t : l.customTanks)
+            {
+                s.append(t.toString()).append("\n");
+            }
 
-			s.append("builds\n");
+            s.append("shop\n");
 
-			for (TankPlayer.ShopTankBuild i: Crusade.currentCrusade.getBuildsShop())
-			{
-				s.append(i.toString()).append("\n");
-			}
+            for (Item.ShopItem i: Crusade.currentCrusade.getShop())
+            {
+                s.append(i.toString()).append("\n");
+            }
 
-			s.append("level\n");
+            s.append("builds\n");
 
-			this.level = s + level;
-		}
+            for (TankPlayer.ShopTankBuild i: Crusade.currentCrusade.getBuildsShop())
+            {
+                s.append(i.toString()).append("\n");
+            }
 
-		this.startTime = l.startTime;
-		this.disableFriendlyFire = l.disableFriendlyFire;
+            s.append("level\n");
 
-		if (l instanceof Minigame)
-			this.level = "minigame=" + ((Minigame) l).name;
-	}
+            this.level = s + level;
+        }
 
-	@Override
-	public void execute() 
-	{
-		if (this.clientID != null)
-			return;
+        this.startTime = l.startTime;
+        this.disableFriendlyFire = l.disableFriendlyFire;
 
-		if (Game.playerTank != null)
-			Game.playerTank.team = null;
-			
-		try
-		{
-			ScreenPartyLobby.readyPlayers.clear();
-			ScreenPartyLobby.includedPlayers.clear();
-			Game.cleanUp();
+        if (l instanceof Minigame)
+            this.level = "minigame=" + ((Minigame) l).name;
+    }
 
-			if (level.startsWith("minigame="))
-				Game.currentLevel = Game.registryMinigame.minigames.get(level.substring(level.indexOf("=") + 1)).getConstructor().newInstance();
-			else
-				Game.currentLevel = new Level(level, new ArrayList<>(), true, disableFriendlyFire);
+    @Override
+    public void execute()
+    {
+        if (this.clientID != null)
+            return;
 
-			Game.currentLevel.startTime = startTime;
-			Game.currentLevel.loadLevel();
-		}
-		catch (Exception e)
-		{
-			Game.screen = new ScreenFailedToLoadLevel("Level is remote!", level, e, new ScreenPartyLobby());
-		}
-	}
+        if (Game.playerTank != null)
+            Game.playerTank.team = null;
 
-	@Override
-	public void write(ByteBuf b)
-	{
-		NetworkUtils.writeString(b, this.level);
-		b.writeDouble(this.startTime);
-		b.writeBoolean(this.disableFriendlyFire);
-	}
+        try
+        {
+            ScreenPartyLobby.readyPlayers.clear();
+            ScreenPartyLobby.includedPlayers.clear();
+            Game.cleanUp();
 
-	@Override
-	public void read(ByteBuf b)
-	{
-		this.level = NetworkUtils.readString(b);
-		this.startTime = b.readDouble();
-		this.disableFriendlyFire = b.readBoolean();
-	}
+            if (level.startsWith("minigame="))
+                Game.currentLevel = Game.registryMinigame.minigames.get(level.substring(level.indexOf("=") + 1)).getConstructor().newInstance();
+            else
+                Game.currentLevel = new Level(level, new ArrayList<>(), true, disableFriendlyFire);
+
+            Game.currentLevel.startTime = startTime;
+            Game.currentLevel.loadLevel();
+        }
+        catch (Exception e)
+        {
+            Game.screen = new ScreenFailedToLoadLevel("Level is remote!", level, e, new ScreenPartyLobby());
+        }
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        NetworkUtils.writeString(b, this.level);
+        b.writeDouble(this.startTime);
+        b.writeBoolean(this.disableFriendlyFire);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.level = NetworkUtils.readString(b);
+        this.startTime = b.readDouble();
+        this.disableFriendlyFire = b.readBoolean();
+    }
 }

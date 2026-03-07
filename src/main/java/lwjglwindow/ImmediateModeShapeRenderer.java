@@ -8,12 +8,12 @@ import static org.lwjgl.opengl.GL11.*;
 public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 {
     public LWJGLWindow window;
-    
+
     public ImmediateModeShapeRenderer(LWJGLWindow window)
     {
         this.window = window;
     }
-    
+
     public void fillOval(double x, double y, double sX, double sY)
     {
         x += sX / 2;
@@ -327,12 +327,12 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     @Override
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
     {
-        this.fillFacingGlow(x, y, z, sX, sY, depthTest,false);
+        this.fillFacingGlow(x, y, z, sX, sY, depthTest, false);
     }
 
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
     {
-        this.fillFacingGlow(x, y, z, sX, sY, depthTest, shade,false);
+        this.fillFacingGlow(x, y, z, sX, sY, depthTest, shade, false);
     }
 
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)

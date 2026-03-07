@@ -21,11 +21,11 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
     public TextBoxSlider colorVarBlue;
 
     public double[][] randoms = new double[3][400];
-    
+
     public boolean dichromatic;
-    
+
     public String dichromaticText = "Dichromatic: %s";
-    
+
     public Button dichromaticToggle = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "", () ->
     {
         this.dichromatic = !this.dichromatic;
@@ -316,7 +316,7 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
         long vb = Integer.parseInt(colorVarBlue.inputText);
 
         dichromaticToggle.setText(dichromaticText, (Object) (dichromatic ? ScreenOptions.onText : ScreenOptions.offText));
-        
+
         long m = (((((((dichromatic ? 256L : 0L) + vr) * 256 + vg) * 256 + vb) * 256 + r) * 256 + g) * 256 + b);
         this.selectorColor.setMetadata(editor, editor.mousePlaceable, m);
     }

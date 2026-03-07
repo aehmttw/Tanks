@@ -8,54 +8,54 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 
 public class EventLevelExit extends PersonalEvent
-{	
-	public String winningTeam;
+{
+    public String winningTeam;
 
-	public EventLevelExit()
-	{
-		
-	}
-	
-	public EventLevelExit(String winner)
-	{
-		this.winningTeam = winner;
-	}
+    public EventLevelExit()
+    {
 
-	@Override
-	public void execute() 
-	{
-		if (this.clientID != null)
-			return;
+    }
 
-		if (Game.clientID.toString().equals(winningTeam) || (Game.playerTank != null && Game.playerTank.team != null && Game.playerTank.team.name.equals(this.winningTeam)))
-		{
-			Panel.win = true;
-			Panel.winlose = "Victory!";
-		}
-		else
-		{
-			Panel.win = false;
-			Panel.winlose = "You were destroyed!";
-		}
+    public EventLevelExit(String winner)
+    {
+        this.winningTeam = winner;
+    }
 
-		Game.silentCleanUp();
-		Game.screen = new ScreenPartyInterlevel();
+    @Override
+    public void execute()
+    {
+        if (this.clientID != null)
+            return;
 
-		ScreenPartyLobby.readyPlayers.clear();
-		ScreenPartyLobby.includedPlayers.clear();
+        if (Game.clientID.toString().equals(winningTeam) || (Game.playerTank != null && Game.playerTank.team != null && Game.playerTank.team.name.equals(this.winningTeam)))
+        {
+            Panel.win = true;
+            Panel.winlose = "Victory!";
+        }
+        else
+        {
+            Panel.win = false;
+            Panel.winlose = "You were destroyed!";
+        }
 
-		System.gc();
-	}
+        Game.silentCleanUp();
+        Game.screen = new ScreenPartyInterlevel();
 
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.winningTeam);
-	}
+        ScreenPartyLobby.readyPlayers.clear();
+        ScreenPartyLobby.includedPlayers.clear();
 
-	@Override
-	public void read(ByteBuf b)
-	{
-		this.winningTeam = NetworkUtils.readString(b);
-	}
+        System.gc();
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        NetworkUtils.writeString(b, this.winningTeam);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.winningTeam = NetworkUtils.readString(b);
+    }
 }

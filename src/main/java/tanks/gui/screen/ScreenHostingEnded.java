@@ -9,52 +9,52 @@ import tanks.network.event.EventKick;
 
 public class ScreenHostingEnded extends Screen
 {
-	public String reason;
+    public String reason;
 
-	public ScreenHostingEnded(String reason)
-	{
-		this.music = "menu_1.ogg";
-		this.musicID = "menu";
-		Panel.forceRefreshMusic = true;
+    public ScreenHostingEnded(String reason)
+    {
+        this.music = "menu_1.ogg";
+        this.musicID = "menu";
+        Panel.forceRefreshMusic = true;
 
-		Drawing.drawing.playSound("leave.ogg");
-		this.reason = reason;
+        Drawing.drawing.playSound("leave.ogg");
+        this.reason = reason;
 
-		//synchronized(ScreenPartyHost.server.connections)
-		{
-			while (ScreenPartyHost.server.connections.size() > 0)
-			{
-				for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
-				{
-					ServerHandler c = ScreenPartyHost.server.connections.get(i);
-					c.sendEventAndClose(new EventKick(reason));
-				}
-			}
-		}
-		
-		ScreenPartyHost.isServer = false;
-		ScreenPartyHost.server.close();
-		ScreenPartyHost.activeScreen = null;
-	}
+        //synchronized(ScreenPartyHost.server.connections)
+        {
+            while (ScreenPartyHost.server.connections.size() > 0)
+            {
+                for (int i = 0; i < ScreenPartyHost.server.connections.size(); i++)
+                {
+                    ServerHandler c = ScreenPartyHost.server.connections.get(i);
+                    c.sendEventAndClose(new EventKick(reason));
+                }
+            }
+        }
 
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () -> Game.screen = new ScreenParty()
-	);
+        ScreenPartyHost.isServer = false;
+        ScreenPartyHost.server.close();
+        ScreenPartyHost.activeScreen = null;
+    }
 
-	@Override
-	public void update() 
-	{
-		back.update();
-	}
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Ok", () -> Game.screen = new ScreenParty()
+    );
 
-	@Override
-	public void draw() 
-	{
-		this.drawDefaultBackground();
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, this.reason);
+    @Override
+    public void update()
+    {
+        back.update();
+    }
 
-		back.draw();
-	}
+    @Override
+    public void draw()
+    {
+        this.drawDefaultBackground();
+        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, this.reason);
+
+        back.draw();
+    }
 
 }

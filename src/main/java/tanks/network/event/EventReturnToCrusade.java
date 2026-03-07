@@ -9,72 +9,72 @@ import tanks.network.NetworkUtils;
 
 public class EventReturnToCrusade extends PersonalEvent
 {
-	public String msg1;
-	public String msg2;
-	public boolean win;
-	public boolean lose;
+    public String msg1;
+    public String msg2;
+    public boolean win;
+    public boolean lose;
 
-	public EventReturnToCrusade()
-	{
+    public EventReturnToCrusade()
+    {
 
-	}
+    }
 
-	public EventReturnToCrusade(Crusade c)
-	{
-		if (c.win)
-		{
-			msg1 = "You finished the crusade!";
-			win = true;
-		}
-		else if (c.lose)
-		{
-			msg1 = "Game over!";
-			lose = true;
-		}
-		else
-		{
-			if (Panel.levelPassed)
-				msg1 = "Battle cleared!";
-			else
-				msg1 = "Battle failed!";
-		}
+    public EventReturnToCrusade(Crusade c)
+    {
+        if (c.win)
+        {
+            msg1 = "You finished the crusade!";
+            win = true;
+        }
+        else if (c.lose)
+        {
+            msg1 = "Game over!";
+            lose = true;
+        }
+        else
+        {
+            if (Panel.levelPassed)
+                msg1 = "Battle cleared!";
+            else
+                msg1 = "Battle failed!";
+        }
 
-		if (c.lifeGained)
-			msg2 = "You gained a life for clearing Battle " + (c.currentLevel + 1) + "!";
-		else
-			msg2 = "";
-	}
+        if (c.lifeGained)
+            msg2 = "You gained a life for clearing Battle " + (c.currentLevel + 1) + "!";
+        else
+            msg2 = "";
+    }
 
-	@Override
-	public void execute() 
-	{
-		if (this.clientID == null)
-		{
-			Game.silentCleanUp();
-			ScreenPartyCrusadeInterlevel s = new ScreenPartyCrusadeInterlevel(this.win, this.lose);
-			s.msg1 = this.msg1;
-			s.msg2 = this.msg2;
-			Game.screen = s;
+    @Override
+    public void execute()
+    {
+        if (this.clientID == null)
+        {
+            Game.silentCleanUp();
+            ScreenPartyCrusadeInterlevel s = new ScreenPartyCrusadeInterlevel(this.win, this.lose);
+            s.msg1 = this.msg1;
+            s.msg2 = this.msg2;
+            Game.screen = s;
 
-			System.gc();
-		}
-	}
+            System.gc();
+        }
+    }
 
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, msg1);
-		NetworkUtils.writeString(b, msg2);
-		b.writeBoolean(win);
-		b.writeBoolean(lose);
-	}
+    @Override
+    public void write(ByteBuf b)
+    {
+        NetworkUtils.writeString(b, msg1);
+        NetworkUtils.writeString(b, msg2);
+        b.writeBoolean(win);
+        b.writeBoolean(lose);
+    }
 
-	@Override
-	public void read(ByteBuf b) 
-	{
-		msg1 = NetworkUtils.readString(b);
-		msg2 = NetworkUtils.readString(b);
-		win = b.readBoolean();
-		lose = b.readBoolean();
-	}
+    @Override
+    public void read(ByteBuf b)
+    {
+        msg1 = NetworkUtils.readString(b);
+        msg2 = NetworkUtils.readString(b);
+        win = b.readBoolean();
+        lose = b.readBoolean();
+    }
 }

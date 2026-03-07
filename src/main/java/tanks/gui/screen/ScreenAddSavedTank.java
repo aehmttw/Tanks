@@ -602,7 +602,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                     if (delete.selected)
                         ((ButtonObject) this.tankButtons.get(i)).tempDisableHover = true;
 
-                ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;}
+                ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete; }
 
                 tankButtons.get(i).draw();
             }

@@ -79,7 +79,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
     public double bufferCooldown = 0;
     public Item.ItemStack<?> lastItem = null;
-    
+
     public boolean didAction = false;
 
     public TankPlayerRemote(double x, double y, double angle, Player p)

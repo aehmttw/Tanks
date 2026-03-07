@@ -13,223 +13,223 @@ import tanks.tank.*;
 
 import java.util.*;
 
-public class Crusade 
+public class Crusade
 {
-	public static Crusade currentCrusade = null;
-	public static boolean crusadeMode = false;
+    public static Crusade currentCrusade = null;
+    public static boolean crusadeMode = false;
 
-	public boolean retry = false;
-	public boolean replay = false;
+    public boolean retry = false;
+    public boolean replay = false;
 
-	public boolean win = false;
-	public boolean lose = false;
+    public boolean win = false;
+    public boolean lose = false;
 
-	public boolean lifeGained = false;
+    public boolean lifeGained = false;
 
-	public int currentLevel = 0;
-	public int saveLevel = 0;
+    public int currentLevel = 0;
+    public int saveLevel = 0;
 
-	public ArrayList<Double> bestTimes = null;
+    public ArrayList<Double> bestTimes = null;
 
-	public double timePassed = 0;
+    public double timePassed = 0;
 
-	public static class CrusadeLevel
-	{
-		public String levelName;
-		public String levelString;
-		public ArrayList<TankAIControlled> tanks;
+    public static class CrusadeLevel
+    {
+        public String levelName;
+        public String levelString;
+        public ArrayList<TankAIControlled> tanks;
         public ArrayList<TankPlayer.ShopTankBuild> buildOverrides = new ArrayList<>();
 
-		public CrusadeLevel(String name, String lvl)
-		{
-			this.levelName = name;
-			this.levelString = lvl;
-			this.tanks = new ArrayList<>();
-		}
-	}
+        public CrusadeLevel(String name, String lvl)
+        {
+            this.levelName = name;
+            this.levelString = lvl;
+            this.tanks = new ArrayList<>();
+        }
+    }
 
-	public ArrayList<CrusadeLevel> levels = new ArrayList<>();
-	public HashSet<Integer> livingTankIDs = new HashSet<>();
+    public ArrayList<CrusadeLevel> levels = new ArrayList<>();
+    public HashSet<Integer> livingTankIDs = new HashSet<>();
 
-	public int bonusLifeFrequency = 3;
-	public int startingLives = 3;
-	public boolean showNames = false;
+    public int bonusLifeFrequency = 3;
+    public int startingLives = 3;
+    public boolean showNames = false;
 
-	public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
-	public ArrayList<Item.CrusadeShopItem> crusadeShopItems = new ArrayList<>();
-	public ArrayList<TankPlayer.CrusadeShopTankBuild> crusadeShopBuilds = new ArrayList<>();
+    public ArrayList<TankAIControlled> customTanks = new ArrayList<>();
+    public ArrayList<Item.CrusadeShopItem> crusadeShopItems = new ArrayList<>();
+    public ArrayList<TankPlayer.CrusadeShopTankBuild> crusadeShopBuilds = new ArrayList<>();
 
     public String name = "";
-	public String fileName = "";
+    public String fileName = "";
 
-	public boolean internal = false;
-	public boolean readOnly = false;
+    public boolean internal = false;
+    public boolean readOnly = false;
 
-	public boolean started = false;
+    public boolean started = false;
 
-	public LinkedHashMap<Player, CrusadePlayer> crusadePlayers = new LinkedHashMap<>();
+    public LinkedHashMap<Player, CrusadePlayer> crusadePlayers = new LinkedHashMap<>();
 
-	public ArrayList<CrusadePlayer> disconnectedPlayers = new ArrayList<>();
+    public ArrayList<CrusadePlayer> disconnectedPlayers = new ArrayList<>();
 
-	public String contents = "";
-	public Exception error = null;
+    public String contents = "";
+    public Exception error = null;
 
-	public ArrayList<LevelPerformance> performances = new ArrayList<>();
+    public ArrayList<LevelPerformance> performances = new ArrayList<>();
 
-	public boolean respawnTanks = true;
+    public boolean respawnTanks = true;
 
-	public String description = null;
+    public String description = null;
 
-	/**
-	 * Used for internal built-in crusades
-	 */
-	public Crusade(ArrayList<String> levelArray, String name, String file)
-	{
-		internal = true;
-		this.fileName = file;
-		this.initialize(levelArray, name);
+    /**
+     * Used for internal built-in crusades
+     */
+    public Crusade(ArrayList<String> levelArray, String name, String file)
+    {
+        internal = true;
+        this.fileName = file;
+        this.initialize(levelArray, name);
 
-		StringBuilder c = new StringBuilder();
-		for (String s: levelArray)
-			c.append(s).append("\n");
+        StringBuilder c = new StringBuilder();
+        for (String s: levelArray)
+            c.append(s).append("\n");
 
-		contents = c.substring(0, c.length() - 1);
+        contents = c.substring(0, c.length() - 1);
 
-		BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/records/internal" + fileName.replace(".tanks", ".record"));
-		if (f.exists())
-		{
-			try
-			{
-				f.startReading();
-				this.bestTimes = new ArrayList<>();
+        BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/records/internal" + fileName.replace(".tanks", ".record"));
+        if (f.exists())
+        {
+            try
+            {
+                f.startReading();
+                this.bestTimes = new ArrayList<>();
 
-				while (f.hasNextLine())
-				{
-					this.bestTimes.add(Double.parseDouble(f.nextLine()));
-				}
+                while (f.hasNextLine())
+                {
+                    this.bestTimes.add(Double.parseDouble(f.nextLine()));
+                }
 
-				f.stopReading();
-			}
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
-			}
-		}
-	}
+                f.stopReading();
+            }
+            catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
+        }
+    }
 
-	public Crusade(String s, String name)
-	{
-		this.contents = s;
-		this.initialize(new ArrayList<>(Arrays.asList(s.split("\n"))), name);
-	}
-	
-	public Crusade(BaseFile f, String name)
-	{
-		try 
-		{
-			this.fileName = f.path;
-			f.startReading();
-			ArrayList<String> list = new ArrayList<>();
+    public Crusade(String s, String name)
+    {
+        this.contents = s;
+        this.initialize(new ArrayList<>(Arrays.asList(s.split("\n"))), name);
+    }
 
-			StringBuilder c = new StringBuilder();
+    public Crusade(BaseFile f, String name)
+    {
+        try
+        {
+            this.fileName = f.path;
+            f.startReading();
+            ArrayList<String> list = new ArrayList<>();
 
-			while (f.hasNextLine())
-			{
-				String s = f.nextLine();
-				
-				if (!s.equals(""))
-					list.add(s);
+            StringBuilder c = new StringBuilder();
 
-				c.append(s).append("\n");
-			}
+            while (f.hasNextLine())
+            {
+                String s = f.nextLine();
 
-			this.contents = c.toString();
-			
-			this.initialize(list, name);
-			
-			f.stopReading();
-		}
-		catch (Exception e)
-		{
-			this.error = e;
-		}
-	}
-	
-	public void initialize(ArrayList<String> levelArray, String name)
-	{
-		int parsing = -1;
-		
-		int i = 0;
+                if (!s.equals(""))
+                    list.add(s);
 
-		HashMap<TankAIControlled, String> tankOccurrences = new HashMap<>();
+                c.append(s).append("\n");
+            }
 
-		while (i < levelArray.size())
-		{
-			String s = levelArray.get(i);
-			switch (s.toLowerCase())
-			{
-				case "levels":
-					parsing = 0;
-					break;
-				case "items":
-					parsing = 1;
-					break;
-				case "properties":
-					parsing = 2;
-					break;
-				case "tanks":
-					parsing = 3;
-					break;
-				case "builds":
-					parsing = 4;
-					break;
+            this.contents = c.toString();
+
+            this.initialize(list, name);
+
+            f.stopReading();
+        }
+        catch (Exception e)
+        {
+            this.error = e;
+        }
+    }
+
+    public void initialize(ArrayList<String> levelArray, String name)
+    {
+        int parsing = -1;
+
+        int i = 0;
+
+        HashMap<TankAIControlled, String> tankOccurrences = new HashMap<>();
+
+        while (i < levelArray.size())
+        {
+            String s = levelArray.get(i);
+            switch (s.toLowerCase())
+            {
+                case "levels":
+                    parsing = 0;
+                    break;
+                case "items":
+                    parsing = 1;
+                    break;
+                case "properties":
+                    parsing = 2;
+                    break;
+                case "tanks":
+                    parsing = 3;
+                    break;
+                case "builds":
+                    parsing = 4;
+                    break;
                 case "build_overrides":
                     parsing = 5;
                     break;
-				default:
-					if (parsing == 0)
-					{
-						String lvl = levelArray.get(i);
-						String lvlName;
+                default:
+                    if (parsing == 0)
+                    {
+                        String lvl = levelArray.get(i);
+                        String lvlName;
 
-						if (levelArray.get(i).contains("name="))
-							lvlName = (levelArray.get(i).substring(levelArray.get(i).indexOf("name=") + 5));
-						else
-							lvlName = ("Battle " + (levels.size() + 1));
+                        if (levelArray.get(i).contains("name="))
+                            lvlName = (levelArray.get(i).substring(levelArray.get(i).indexOf("name=") + 5));
+                        else
+                            lvlName = ("Battle " + (levels.size() + 1));
 
-						this.levels.add(new CrusadeLevel(lvlName, lvl));
-					}
-					else if (parsing == 1)
-					{
-						this.crusadeShopItems.add(Item.CrusadeShopItem.fromString(s));
-					}
-					else if (parsing == 2)
-					{
-						String[] z = s.split(",");
+                        this.levels.add(new CrusadeLevel(lvlName, lvl));
+                    }
+                    else if (parsing == 1)
+                    {
+                        this.crusadeShopItems.add(Item.CrusadeShopItem.fromString(s));
+                    }
+                    else if (parsing == 2)
+                    {
+                        String[] z = s.split(",");
 
-						this.startingLives = Integer.parseInt(z[0]);
-						this.bonusLifeFrequency = Integer.parseInt(z[1]);
+                        this.startingLives = Integer.parseInt(z[0]);
+                        this.bonusLifeFrequency = Integer.parseInt(z[1]);
 
-						if (z.length > 2)
-							this.showNames = Boolean.parseBoolean(z[2]);
+                        if (z.length > 2)
+                            this.showNames = Boolean.parseBoolean(z[2]);
 
-						if (z.length > 3)
-							this.respawnTanks = Boolean.parseBoolean(z[3]);
-					}
-					else if (parsing == 3)
-					{
-						int divider = s.indexOf("]") + 1;
-						String first = s.substring(0, divider);
-						String second = s.substring(divider);
-						TankAIControlled t = TankAIControlled.fromString(second);
-						tankOccurrences.put(t, first);
-						this.customTanks.add(t);
-					}
-					else if (parsing == 4)
-					{
-						TankPlayer.CrusadeShopTankBuild t = TankPlayer.CrusadeShopTankBuild.fromString(s);
-						this.crusadeShopBuilds.add(t);
-					}
+                        if (z.length > 3)
+                            this.respawnTanks = Boolean.parseBoolean(z[3]);
+                    }
+                    else if (parsing == 3)
+                    {
+                        int divider = s.indexOf("]") + 1;
+                        String first = s.substring(0, divider);
+                        String second = s.substring(divider);
+                        TankAIControlled t = TankAIControlled.fromString(second);
+                        tankOccurrences.put(t, first);
+                        this.customTanks.add(t);
+                    }
+                    else if (parsing == 4)
+                    {
+                        TankPlayer.CrusadeShopTankBuild t = TankPlayer.CrusadeShopTankBuild.fromString(s);
+                        this.crusadeShopBuilds.add(t);
+                    }
                     else if (parsing == 5)
                     {
                         int d = s.indexOf(" ");
@@ -237,32 +237,32 @@ public class Crusade
                         TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(s.substring(d + 1));
                         this.levels.get(lvl).buildOverrides.add(t);
                     }
-					break;
-			}
+                    break;
+            }
 
-			i++;
-		}
+            i++;
+        }
 
-		if (crusadeShopBuilds.isEmpty())
-			crusadeShopBuilds.add(new TankPlayer.CrusadeShopTankBuild());
-		
-		this.name = name;
+        if (crusadeShopBuilds.isEmpty())
+            crusadeShopBuilds.add(new TankPlayer.CrusadeShopTankBuild());
 
-		for (TankAIControlled t: tankOccurrences.keySet())
-		{
-			String s = tankOccurrences.get(t);
-			String[] lvls = s.substring(1, s.length() - 1).split(", ");
-			for (String l: lvls)
-			{
-				this.levels.get(Integer.parseInt(l)).tanks.add(t);
-			}
-		}
+        this.name = name;
 
-		for (int j = 0; j < Game.players.size(); j++)
-		{
-			Game.players.get(j).remainingLives = this.startingLives;
-		}
-	}
+        for (TankAIControlled t: tankOccurrences.keySet())
+        {
+            String s = tankOccurrences.get(t);
+            String[] lvls = s.substring(1, s.length() - 1).split(", ");
+            for (String l: lvls)
+            {
+                this.levels.get(Integer.parseInt(l)).tanks.add(t);
+            }
+        }
+
+        for (int j = 0; j < Game.players.size(); j++)
+        {
+            Game.players.get(j).remainingLives = this.startingLives;
+        }
+    }
 
     public void setupPlayer(Player p)
     {
@@ -274,154 +274,154 @@ public class Crusade
         crusadePlayers.put(p, new CrusadePlayer(p));
     }
 
-	public void begin()
-	{
-		for (int i = 0; i < Game.players.size(); i++)
-		{
-			setupPlayer(Game.players.get(i));
-		}
+    public void begin()
+    {
+        for (int i = 0; i < Game.players.size(); i++)
+        {
+            setupPlayer(Game.players.get(i));
+        }
 
-		currentLevel = 0;
-		saveLevel = 0;
+        currentLevel = 0;
+        saveLevel = 0;
 
-		disconnectedPlayers.clear();
-		livingTankIDs.clear();
+        disconnectedPlayers.clear();
+        livingTankIDs.clear();
 
-		Game.eventsOut.add(new EventBeginCrusade());
+        Game.eventsOut.add(new EventBeginCrusade());
 
-		this.timePassed = 0;
-		this.started = true;
-		this.crusadePlayers.clear();
+        this.timePassed = 0;
+        this.started = true;
+        this.crusadePlayers.clear();
 
         this.loadLevel();
-	}
+    }
 
-	public void loadLevel()
-	{
-		Level l = new Level(this.levels.get(this.currentLevel).levelString, this.customTanks);
+    public void loadLevel()
+    {
+        Level l = new Level(this.levels.get(this.currentLevel).levelString, this.customTanks);
 
-		Game.player.hotbar.enabledCoins = true;
-		Game.player.hotbar.itemBar.showItems = true;
+        Game.player.hotbar.enabledCoins = true;
+        Game.player.hotbar.itemBar.showItems = true;
 
-		int playersTotal = 0;
-		int livesTotal = 0;
+        int playersTotal = 0;
+        int livesTotal = 0;
 
-		HashSet<String> availableBuilds = new HashSet<>();
-		for (TankPlayer.ShopTankBuild b: this.getBuildsShop())
-		{
-			availableBuilds.add(b.name);
-		}
+        HashSet<String> availableBuilds = new HashSet<>();
+        for (TankPlayer.ShopTankBuild b: this.getBuildsShop())
+        {
+            availableBuilds.add(b.name);
+        }
 
-		for (Player player : Game.players)
-		{
-			if (crusadePlayers.get(player) != null)
-			{
-				livesTotal += player.remainingLives;
-				playersTotal++;
-			}
+        for (Player player : Game.players)
+        {
+            if (crusadePlayers.get(player) != null)
+            {
+                livesTotal += player.remainingLives;
+                playersTotal++;
+            }
 
-			if (player.buildName == null || !availableBuilds.contains(player.buildName))
+            if (player.buildName == null || !availableBuilds.contains(player.buildName))
             {
                 if (levels.get(this.currentLevel).buildOverrides.isEmpty())
                     player.buildName = this.crusadeShopBuilds.get(0).name;
                 else
                     player.buildName = levels.get(this.currentLevel).buildOverrides.get(0).name;
             }
-		}
+        }
 
-		for (Player player : Game.players)
-		{
-			if (crusadePlayers.get(player) == null)
-			{
-				boolean found = false;
+        for (Player player : Game.players)
+        {
+            if (crusadePlayers.get(player) == null)
+            {
+                boolean found = false;
 
-				for (CrusadePlayer cp: disconnectedPlayers)
-				{
-					if (cp.player.clientID.equals(player.clientID))
-					{
-						player.remainingLives = cp.player.remainingLives;
-						cp.player = player;
-						cp.itemBar.player = player;
-						crusadePlayers.put(player, cp);
+                for (CrusadePlayer cp: disconnectedPlayers)
+                {
+                    if (cp.player.clientID.equals(player.clientID))
+                    {
+                        player.remainingLives = cp.player.remainingLives;
+                        cp.player = player;
+                        cp.itemBar.player = player;
+                        crusadePlayers.put(player, cp);
 
-						for (Item.ItemStack<?> i: cp.itemBar.slots)
-						{
-							i.player = player;
-						}
+                        for (Item.ItemStack<?> i: cp.itemBar.slots)
+                        {
+                            i.player = player;
+                        }
 
-						found = true;
-						break;
-					}
-				}
+                        found = true;
+                        break;
+                    }
+                }
 
-				if (!found)
-				{
-					crusadePlayers.put(player, new CrusadePlayer(player));
-					if (playersTotal > 0)
-						player.remainingLives = livesTotal / playersTotal;
-				}
-			}
+                if (!found)
+                {
+                    crusadePlayers.put(player, new CrusadePlayer(player));
+                    if (playersTotal > 0)
+                        player.remainingLives = livesTotal / playersTotal;
+                }
+            }
 
-			if (player.remainingLives > 0)
-				l.includedPlayers.add(player);
-		}
+            if (player.remainingLives > 0)
+                l.includedPlayers.add(player);
+        }
 
-		l.loadLevel();
+        l.loadLevel();
 
-		ArrayList<TankPlayer.ShopTankBuild> builds = this.getBuildsShop();
+        ArrayList<TankPlayer.ShopTankBuild> builds = this.getBuildsShop();
 
-		for (Player player : Game.players)
-		{
-			CrusadePlayer cp = crusadePlayers.get(player);
-			player.hotbar.coins = cp.coins;
-			player.ownedBuilds = cp.ownedBuilds;
-			player.buildName = cp.currentBuild;
+        for (Player player : Game.players)
+        {
+            CrusadePlayer cp = crusadePlayers.get(player);
+            player.hotbar.coins = cp.coins;
+            player.ownedBuilds = cp.ownedBuilds;
+            player.buildName = cp.currentBuild;
 
-			player.ownedBuilds.add(player.buildName);
+            player.ownedBuilds.add(player.buildName);
 
-			ItemBar i = cp.itemBar;
+            ItemBar i = cp.itemBar;
 
-			if (i == null)
-				player.hotbar.itemBar = new ItemBar(player);
-			else
-				player.hotbar.itemBar = i;
+            if (i == null)
+                player.hotbar.itemBar = new ItemBar(player);
+            else
+                player.hotbar.itemBar = i;
 
-			player.hotbar.itemBar.showItems = true;
+            player.hotbar.itemBar.showItems = true;
 
-			if (player.hotbar.enabledItemBar)
-			{
-				for (Item.ItemStack<?> item: player.hotbar.itemBar.slots)
-				{
-					item.cooldown = 0;
+            if (player.hotbar.enabledItemBar)
+            {
+                for (Item.ItemStack<?> item: player.hotbar.itemBar.slots)
+                {
+                    item.cooldown = 0;
 
-					if (item instanceof ItemBullet.ItemStackBullet)
-						((ItemBullet.ItemStackBullet) item).liveBullets = 0;
-					else if (item instanceof ItemMine.ItemStackMine)
-						((ItemMine.ItemStackMine) item).liveMines = 0;
-				}
-			}
-		}
+                    if (item instanceof ItemBullet.ItemStackBullet)
+                        ((ItemBullet.ItemStackBullet) item).liveBullets = 0;
+                    else if (item instanceof ItemMine.ItemStackMine)
+                        ((ItemMine.ItemStackMine) item).liveMines = 0;
+                }
+            }
+        }
 
-		if (ScreenPartyHost.isServer)
-			Level.broadcastBuilds(builds);
+        if (ScreenPartyHost.isServer)
+            Level.broadcastBuilds(builds);
 
-		for (Movable m: Game.movables)
-		{
-			if (m instanceof TankPlayerRemote)
-				((TankPlayerRemote) m).buildName = ((TankPlayerRemote) m).player.buildName;
+        for (Movable m: Game.movables)
+        {
+            if (m instanceof TankPlayerRemote)
+                ((TankPlayerRemote) m).buildName = ((TankPlayerRemote) m).player.buildName;
             else if (m instanceof TankPlayable)
                 ((TankPlayable) m).buildName = ((TankPlayable) m).player.buildName;
         }
 
-		if (Game.playerTank != null)
-		{
-			for (int n = 0; n < builds.size(); n++)
-			{
-				TankPlayer.ShopTankBuild s = builds.get(n);
-				if (s.name.equals(Game.player.buildName))
-					s.clonePropertiesTo(Game.playerTank);
-			}
-		}
+        if (Game.playerTank != null)
+        {
+            for (int n = 0; n < builds.size(); n++)
+            {
+                TankPlayer.ShopTankBuild s = builds.get(n);
+                if (s.name.equals(Game.player.buildName))
+                    s.clonePropertiesTo(Game.playerTank);
+            }
+        }
 
         if (ScreenPartyHost.isServer)
         {
@@ -443,126 +443,126 @@ public class Crusade
         Game.player.hotbar.itemBar.setItem(-1);
         Game.player.hotbar.itemBar.setItem(sel);
 
-		this.disconnectedPlayers.clear();
+        this.disconnectedPlayers.clear();
 
-		String sub = "";
+        String sub = "";
 
-		if (Crusade.currentCrusade.showNames)
-			sub = Crusade.currentCrusade.levels.get(Crusade.currentCrusade.currentLevel).levelName.replace("_", " ");
+        if (Crusade.currentCrusade.showNames)
+            sub = Crusade.currentCrusade.levels.get(Crusade.currentCrusade.currentLevel).levelName.replace("_", " ");
 
-		Game.eventsOut.add(new EventLoadCrusadeHotbar("Battle %d", sub, (this.currentLevel + 1), true));
-	}
-	
-	public void levelFinished(boolean win)
-	{
-		this.recordPerformance(ScreenGame.lastTimePassed, win);
+        Game.eventsOut.add(new EventLoadCrusadeHotbar("Battle %d", sub, (this.currentLevel + 1), true));
+    }
 
-		this.lifeGained = false;
+    public void levelFinished(boolean win)
+    {
+        this.recordPerformance(ScreenGame.lastTimePassed, win);
 
-		if (!win)
-		{
-			this.lose = true;
+        this.lifeGained = false;
 
-			for (Player player : Game.players)
-			{
-				if (player.remainingLives > 0)
-				{
-					this.lose = false;
-					break;
-				}
-			}
-		}
-		else
-		{
-			if (this.currentLevel >= levels.size() - 1)
-			{
-				this.win = true;
-			}
-			else if (!replay)
-			{
-				this.saveLevel++;
+        if (!win)
+        {
+            this.lose = true;
 
-				if ((this.currentLevel + 1) % this.bonusLifeFrequency == 0)
-				{
-					this.lifeGained = true;
+            for (Player player : Game.players)
+            {
+                if (player.remainingLives > 0)
+                {
+                    this.lose = false;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if (this.currentLevel >= levels.size() - 1)
+            {
+                this.win = true;
+            }
+            else if (!replay)
+            {
+                this.saveLevel++;
 
-					for (Player player : Game.players)
-					{
-						player.remainingLives++;
-					}
-				}
-			}
-		}
+                if ((this.currentLevel + 1) % this.bonusLifeFrequency == 0)
+                {
+                    this.lifeGained = true;
 
-		try
-		{
-			if (!ScreenPartyHost.isServer)
-				this.crusadePlayers.get(Game.player).saveCrusade();
-			else
-			{
-				if (Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).savedRemainingTanks)
-				{
-					Crusade.currentCrusade.livingTankIDs.clear();
+                    for (Player player : Game.players)
+                    {
+                        player.remainingLives++;
+                    }
+                }
+            }
+        }
 
-					for (Movable m : Game.movables)
-					{
-						if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
-							Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
-					}
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
-		}
-	}
+        try
+        {
+            if (!ScreenPartyHost.isServer)
+                this.crusadePlayers.get(Game.player).saveCrusade();
+            else
+            {
+                if (Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).savedRemainingTanks)
+                {
+                    Crusade.currentCrusade.livingTankIDs.clear();
 
-	public boolean finalLife()
-	{
-		for (Player p: Game.players)
-		{
-			if (p.remainingLives > 1)
-				return false;
-			else if (p.remainingLives == 1)
-			{
-				boolean found = false;
-				for (Movable m: Game.movables)
-				{
-					if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p && m.destroy)
-						return false;
+                    for (Movable m : Game.movables)
+                    {
+                        if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
+                            Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Game.exitToCrash(e);
+        }
+    }
 
-					if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p)
-						found = true;
-				}
+    public boolean finalLife()
+    {
+        for (Player p: Game.players)
+        {
+            if (p.remainingLives > 1)
+                return false;
+            else if (p.remainingLives == 1)
+            {
+                boolean found = false;
+                for (Movable m: Game.movables)
+                {
+                    if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p && m.destroy)
+                        return false;
 
-				if (!found)
-					return false;
-			}
-		}
+                    if (m instanceof IServerPlayerTank && ((IServerPlayerTank) m).getPlayer() == p)
+                        found = true;
+                }
 
-		return true;
-	}
+                if (!found)
+                    return false;
+            }
+        }
 
-	public ArrayList<Item.ShopItem> getShop()
-	{
-		ArrayList<Item.ShopItem> shop = new ArrayList<>();
-		
-		for (int i = 0; i < this.crusadeShopItems.size(); i++)
-		{
-			Item.CrusadeShopItem item = this.crusadeShopItems.get(i);
-			if (item.levelUnlock <= this.currentLevel)
-				shop.add(item);
-		}
+        return true;
+    }
 
-		return shop;
-	}
+    public ArrayList<Item.ShopItem> getShop()
+    {
+        ArrayList<Item.ShopItem> shop = new ArrayList<>();
 
-	public ArrayList<TankPlayer.ShopTankBuild> getBuildsShop()
-	{
+        for (int i = 0; i < this.crusadeShopItems.size(); i++)
+        {
+            Item.CrusadeShopItem item = this.crusadeShopItems.get(i);
+            if (item.levelUnlock <= this.currentLevel)
+                shop.add(item);
+        }
+
+        return shop;
+    }
+
+    public ArrayList<TankPlayer.ShopTankBuild> getBuildsShop()
+    {
         ArrayList<TankPlayer.ShopTankBuild> overrides = this.levels.get(this.currentLevel).buildOverrides;
 
-		ArrayList<TankPlayer.ShopTankBuild> shop = new ArrayList<>();
+        ArrayList<TankPlayer.ShopTankBuild> shop = new ArrayList<>();
 
         if (overrides.isEmpty())
         {
@@ -576,107 +576,107 @@ public class Crusade
         else
             return new ArrayList<>(overrides);
 
-		return shop;
-	}
+        return shop;
+    }
 
-	public void saveHotbars()
-	{
-		for (Player p: Game.players)
-		{
-			CrusadePlayer cp = this.crusadePlayers.get(p);
+    public void saveHotbars()
+    {
+        for (Player p: Game.players)
+        {
+            CrusadePlayer cp = this.crusadePlayers.get(p);
 
-			if (cp == null)
-			{
-				cp = new CrusadePlayer(p);
-				this.crusadePlayers.put(p, cp);
-			}
+            if (cp == null)
+            {
+                cp = new CrusadePlayer(p);
+                this.crusadePlayers.put(p, cp);
+            }
 
-			cp.itemBar = p.hotbar.itemBar;
-			cp.coins = p.hotbar.coins;
-			cp.ownedBuilds = p.ownedBuilds;
-			cp.currentBuild = p.buildName;
-		}
-	}
+            cp.itemBar = p.hotbar.itemBar;
+            cp.coins = p.hotbar.coins;
+            cp.ownedBuilds = p.ownedBuilds;
+            cp.currentBuild = p.buildName;
+        }
+    }
 
-	public CrusadePlayer getCrusadePlayer(Player p)
-	{
-		CrusadePlayer cp = Crusade.currentCrusade.crusadePlayers.get(p);
+    public CrusadePlayer getCrusadePlayer(Player p)
+    {
+        CrusadePlayer cp = Crusade.currentCrusade.crusadePlayers.get(p);
 
-		if (cp == null)
-		{
-			for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
-			{
-				if (dp.player == p)
-					cp = dp;
-			}
-		}
+        if (cp == null)
+        {
+            for (CrusadePlayer dp: Crusade.currentCrusade.disconnectedPlayers)
+            {
+                if (dp.player == p)
+                    cp = dp;
+            }
+        }
 
-		return cp;
-	}
+        return cp;
+    }
 
-	public static class LevelPerformance
-	{
-		public int index;
-		public int attempts = 0;
-		public double bestTime = Double.MAX_VALUE;
-		public double totalTime = 0;
+    public static class LevelPerformance
+    {
+        public int index;
+        public int attempts = 0;
+        public double bestTime = Double.MAX_VALUE;
+        public double totalTime = 0;
 
-		public LevelPerformance(int index)
-		{
-			this.index = index;
-		}
+        public LevelPerformance(int index)
+        {
+            this.index = index;
+        }
 
-		public void recordAttempt(double time, boolean win)
-		{
-			if (win)
-				this.bestTime = Math.min(this.bestTime, time);
+        public void recordAttempt(double time, boolean win)
+        {
+            if (win)
+                this.bestTime = Math.min(this.bestTime, time);
 
-			this.totalTime += time;
-			this.attempts++;
-		}
+            this.totalTime += time;
+            this.attempts++;
+        }
 
-		@Override
-		public String toString()
-		{
-			return index + "/" + attempts + "/" + bestTime + "/" + totalTime;
-		}
-	}
+        @Override
+        public String toString()
+        {
+            return index + "/" + attempts + "/" + bestTime + "/" + totalTime;
+        }
+    }
 
-	public void recordPerformance(double time, boolean win)
-	{
-		for (int i = performances.size(); i < currentLevel; i++)
-			performances.add(new LevelPerformance(i));
+    public void recordPerformance(double time, boolean win)
+    {
+        for (int i = performances.size(); i < currentLevel; i++)
+            performances.add(new LevelPerformance(i));
 
-		if (performances.size() <= currentLevel)
-			performances.add(new LevelPerformance(currentLevel));
+        if (performances.size() <= currentLevel)
+            performances.add(new LevelPerformance(currentLevel));
 
-		performances.get(currentLevel).recordAttempt(time, win);
-	}
+        performances.get(currentLevel).recordAttempt(time, win);
+    }
 
-	public void quit()
-	{
-		boolean win = ScreenGame.finishedQuick && Panel.win;
+    public void quit()
+    {
+        boolean win = ScreenGame.finishedQuick && Panel.win;
 
-		if (!win)
-		{
-			for (int i = 0; i < Game.movables.size(); i++)
-			{
-				if (Game.movables.get(i) instanceof IServerPlayerTank && !Game.movables.get(i).destroy)
-					((IServerPlayerTank) Game.movables.get(i)).getPlayer().remainingLives--;
-			}
-		}
+        if (!win)
+        {
+            for (int i = 0; i < Game.movables.size(); i++)
+            {
+                if (Game.movables.get(i) instanceof IServerPlayerTank && !Game.movables.get(i).destroy)
+                    ((IServerPlayerTank) Game.movables.get(i)).getPlayer().remainingLives--;
+            }
+        }
 
-		this.saveHotbars();
-		this.levelFinished(win);
+        this.saveHotbars();
+        this.levelFinished(win);
 
-		if (saveLevel > currentLevel)
-			this.retry = false;
+        if (saveLevel > currentLevel)
+            this.retry = false;
 
-		this.currentLevel = saveLevel;
+        this.currentLevel = saveLevel;
 
-		Crusade.crusadeMode = false;
+        Crusade.crusadeMode = false;
 
-		if (!ScreenPartyHost.isServer)
-			Crusade.currentCrusade = null;
-	}
+        if (!ScreenPartyHost.isServer)
+            Crusade.currentCrusade = null;
+    }
 }

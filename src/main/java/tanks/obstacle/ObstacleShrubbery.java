@@ -14,195 +14,195 @@ import tanks.tank.Tank;
 
 public class ObstacleShrubbery extends Obstacle
 {
-	public double height = 255;
-	public double heightMultiplier = Math.random() * 0.2 + 0.6;
+    public double height = 255;
+    public double heightMultiplier = Math.random() * 0.2 + 0.6;
 
-	protected double finalHeight;
-	protected double previousFinalHeight;
+    protected double finalHeight;
+    protected double previousFinalHeight;
 
-	public ObstacleShrubbery(String name, double posX, double posY) 
-	{
-		super(name, posX, posY);
-		
-		if (Game.enable3d)
-			this.drawLevel = 1;
-		else
-			this.drawLevel = 9;
-		
-		this.destructible = true;
-		this.tankCollision = false;
-		this.bulletCollision = false;
-		this.checkForObjects = true;
-		this.colorR = (Math.random() * 20);
-		this.colorG = (Math.random() * 50) + 150;
-		this.colorB = (Math.random() * 20);
-		this.type = ObstacleType.top;
+    public ObstacleShrubbery(String name, double posX, double posY)
+    {
+        super(name, posX, posY);
 
-		if (!Game.fancyTerrain)
-		{
-			this.colorR = 10;
-			this.colorG = 175;
-			this.colorB = 10;
-			this.heightMultiplier = 0.8;
-		}
+        if (Game.enable3d)
+            this.drawLevel = 1;
+        else
+            this.drawLevel = 9;
 
-		this.description = "A destructible bush in which you can hide by standing still";
-		this.renderer = ShaderShrubbery.class;
-		this.tileRenderer = ShaderGroundObstacle.class;
-	}
+        this.destructible = true;
+        this.tankCollision = false;
+        this.bulletCollision = false;
+        this.checkForObjects = true;
+        this.colorR = (Math.random() * 20);
+        this.colorG = (Math.random() * 50) + 150;
+        this.colorB = (Math.random() * 20);
+        this.type = ObstacleType.top;
 
-	@Override
-	public void update()
-	{
-		this.previousFinalHeight = this.finalHeight;
-		this.height = Math.min(this.height + Panel.frameFrequency, 255);
+        if (!Game.fancyTerrain)
+        {
+            this.colorR = 10;
+            this.colorG = 175;
+            this.colorB = 10;
+            this.heightMultiplier = 0.8;
+        }
 
-		if (ScreenGame.finishedQuick)
+        this.description = "A destructible bush in which you can hide by standing still";
+        this.renderer = ShaderShrubbery.class;
+        this.tileRenderer = ShaderGroundObstacle.class;
+    }
+
+    @Override
+    public void update()
+    {
+        this.previousFinalHeight = this.finalHeight;
+        this.height = Math.min(this.height + Panel.frameFrequency, 255);
+
+        if (ScreenGame.finishedQuick)
             this.height = Math.max(127, this.height - Panel.frameFrequency * 2);
 
-		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+        this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
-		if (this.finalHeight != this.previousFinalHeight)
+        if (this.finalHeight != this.previousFinalHeight)
             redrawSelfAndNeighbors();
-		else
-			setUpdate(false);
-	}
+        else
+            setUpdate(false);
+    }
 
-	@Override
-	public void draw()
-	{
-		this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+    @Override
+    public void draw()
+    {
+        this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
-		if (!Game.enable3d && (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing))
+        if (!Game.enable3d && (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing))
         {
             this.height = 127;
             setUpdate(true);
         }
 
-		if (Game.enable3d)
-		{
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
-			Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight, this.getOptionsByte(this.getTileHeight()));
-		}
-		else
-		{
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.height);
-			Drawing.drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
-		}
-	}
-	
-	@Override
-	public void drawForInterface(double x, double y)
-	{
-		Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
-		Drawing.drawing.fillInterfaceRect(x, y, draw_size, draw_size);
-	}
+        if (Game.enable3d)
+        {
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB);
+            Drawing.drawing.fillBox(this, this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.finalHeight, this.getOptionsByte(this.getTileHeight()));
+        }
+        else
+        {
+            Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, this.height);
+            Drawing.drawing.fillRect(this, this.posX, this.posY, draw_size, draw_size);
+        }
+    }
 
-	@Override
-	public void draw3dOutline(double r, double g, double b, double a)
-	{
-		Drawing.drawing.setColor(r, g, b, a);
-		Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)));
-	}
+    @Override
+    public void drawForInterface(double x, double y)
+    {
+        Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, 127);
+        Drawing.drawing.fillInterfaceRect(x, y, draw_size, draw_size);
+    }
 
-	public boolean isInside(double x, double y)
-	{
-		return (x >= this.posX - Game.tile_size / 2 &&
-				x <= this.posX + Game.tile_size / 2 &&
-				y >= this.posY - Game.tile_size / 2 &&
-				y <= this.posY + Game.tile_size / 2);
-	}
-	
-	@Override
-	public void onObjectEntry(Movable m)
-	{
-		if (m instanceof Tank)
-		{
-			for (int x = -1; x <= 1; x++)
-			{
-				for (int y = -1; y <= 1; y++)
-				{
-					((Tank) m).canHidePoints[x + 1][y + 1] = ((Tank) m).canHidePoints[x + 1][y + 1] ||
-							this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x);
+    @Override
+    public void draw3dOutline(double r, double g, double b, double a)
+    {
+        Drawing.drawing.setColor(r, g, b, a);
+        Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)));
+    }
 
-					((Tank) m).hiddenPoints[x + 1][y + 1] = ((Tank) m).hiddenPoints[x + 1][y + 1] ||
-							(this.height >= 240 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
-				}
-			}
-		}
+    public boolean isInside(double x, double y)
+    {
+        return (x >= this.posX - Game.tile_size / 2 &&
+                x <= this.posX + Game.tile_size / 2 &&
+                y >= this.posY - Game.tile_size / 2 &&
+                y <= this.posY + Game.tile_size / 2);
+    }
 
-		//m.hiddenTimer = Math.min(100, m.hiddenTimer + (this.opacity - 127) / 255);
-		//m.canHide = true;
+    @Override
+    public void onObjectEntry(Movable m)
+    {
+        if (m instanceof Tank)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    ((Tank) m).canHidePoints[x + 1][y + 1] = ((Tank) m).canHidePoints[x + 1][y + 1] ||
+                            this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x);
 
-		if (m instanceof Bullet && ((Bullet) m).burnsBushes)
-		{
-			Game.removeObstacles.add(this);
+                    ((Tank) m).hiddenPoints[x + 1][y + 1] = ((Tank) m).hiddenPoints[x + 1][y + 1] ||
+                            (this.height >= 240 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
+                }
+            }
+        }
 
-			Effect e;
-			if (Game.enable3d)
-				e = Effect.createNewEffect(this.posX, this.posY,this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn);
-			else
-				e = Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn);
+        //m.hiddenTimer = Math.min(100, m.hiddenTimer + (this.opacity - 127) / 255);
+        //m.canHide = true;
 
-			e.setColor(this.colorR, this.colorG, this.colorB);
+        if (m instanceof Bullet && ((Bullet) m).burnsBushes)
+        {
+            Game.removeObstacles.add(this);
 
-			Game.effects.add(e);
+            Effect e;
+            if (Game.enable3d)
+                e = Effect.createNewEffect(this.posX, this.posY, this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn);
+            else
+                e = Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn);
 
-			Game.eventsOut.add(new EventObstacleShrubberyBurn(this.posX, this.posY));
-		}
+            e.setColor(this.colorR, this.colorG, this.colorB);
 
-		this.onObjectEntryLocal(m);
+            Game.effects.add(e);
 
-		this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
-	}
+            Game.eventsOut.add(new EventObstacleShrubberyBurn(this.posX, this.posY));
+        }
 
-	@Override
-	public void onObjectEntryLocal(Movable m)
-	{
-		if (m instanceof Bullet && !((Bullet) m).lowersBushes)
-		{
-			if (Math.random() < Panel.frameFrequency / Math.pow(((Bullet) m).size, 2) * 20 * Game.effectMultiplier)
-			{
-				Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Obstacle.draw_size, this.posY + (Math.random() - 0.5) * Obstacle.draw_size, this.getTileHeight() * (Math.random() * 0.8 + 0.2), Effect.EffectType.piece);
-				e.vX = m.vX * (Math.random() * 0.5 + 0.5);
-				e.vY = m.vY * (Math.random() * 0.5 + 0.5);
-				e.vZ = Math.random() * m.getSpeed() / 8;
-				e.setColor(this.colorR, this.colorG, this.colorB);
-				e.enableGlow = false;
-				Game.effects.add(e);
-			}
-		}
-		else
-		{
-			double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
-			this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
+        this.onObjectEntryLocal(m);
 
-			if (!(Game.playerTank == null || Game.playerTank.destroy))
-			{
-				double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
+        this.finalHeight = this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
+    }
 
-				double radius = 62500;
-				if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
-				{
-					int sound = (int) (Math.random() * 4 + 1);
-					Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
-				}
-			}
-		}
+    @Override
+    public void onObjectEntryLocal(Movable m)
+    {
+        if (m instanceof Bullet && !((Bullet) m).lowersBushes)
+        {
+            if (Math.random() < Panel.frameFrequency / Math.pow(((Bullet) m).size, 2) * 20 * Game.effectMultiplier)
+            {
+                Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Obstacle.draw_size, this.posY + (Math.random() - 0.5) * Obstacle.draw_size, this.getTileHeight() * (Math.random() * 0.8 + 0.2), Effect.EffectType.piece);
+                e.vX = m.vX * (Math.random() * 0.5 + 0.5);
+                e.vY = m.vY * (Math.random() * 0.5 + 0.5);
+                e.vZ = Math.random() * m.getSpeed() / 8;
+                e.setColor(this.colorR, this.colorG, this.colorB);
+                e.enableGlow = false;
+                Game.effects.add(e);
+            }
+        }
+        else
+        {
+            double speed = Math.sqrt((Math.pow(m.vX, 2) + Math.pow(m.vY, 2)));
+            this.height = Math.max(this.height - Panel.frameFrequency * speed * speed * 2, 127);
+
+            if (!(Game.playerTank == null || Game.playerTank.destroy))
+            {
+                double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
+
+                double radius = 62500;
+                if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+                {
+                    int sound = (int) (Math.random() * 4 + 1);
+                    Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));
+                }
+            }
+        }
 
         setUpdate((m.vX != 0 && m.vY != 0) || height < 255);
     }
 
-	public double getTileHeight()
-	{
-		if (Obstacle.draw_size < Game.tile_size)
-			return 0;
+    public double getTileHeight()
+    {
+        if (Obstacle.draw_size < Game.tile_size)
+            return 0;
 
-		double shrubScale = 0.25;
-		if (Game.screen instanceof ScreenGame)
-			shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
+        double shrubScale = 0.25;
+        if (Game.screen instanceof ScreenGame)
+            shrubScale = ((ScreenGame) Game.screen).shrubberyScale;
 
-		return this.finalHeight * shrubScale;
-	}
+        return this.finalHeight * shrubScale;
+    }
 
 }

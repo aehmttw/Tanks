@@ -12,429 +12,429 @@ import tanks.tankson.*;
 @TanksONable("item")
 public abstract class Item extends GameObject
 {
-	public static final String item_class_name = "item";
+    public static final String item_class_name = "item";
 
-	// Items like bullets and mines can hit enemies, so this will be shown on the stats screen
-	public boolean supportsHits = false;
+    // Items like bullets and mines can hit enemies, so this will be shown on the stats screen
+    public boolean supportsHits = false;
 
-	@Property(id = "name", name = "Item name", miscType = Property.MiscType.complexString)
-	public String name = System.currentTimeMillis() + "";
+    @Property(id = "name", name = "Item name", miscType = Property.MiscType.complexString)
+    public String name = System.currentTimeMillis() + "";
 
-	@Property(id = "icon", name = "Icon", miscType = Property.MiscType.itemIcon)
-	public ItemIcon icon = new ItemIcon("item", "item.png");
+    @Property(id = "icon", name = "Icon", miscType = Property.MiscType.itemIcon)
+    public ItemIcon icon = new ItemIcon("item", "item.png");
 
     @Property(id = "auto_icon", name = "", category = "none")
     public boolean autoIcon = false;
 
-	@Property(id = "cooldown", name = "Cooldown", desc = "Minimum time between uses of this item \n \n 1 time unit = 0.01 seconds")
-	public double cooldownBase = 20;
+    @Property(id = "cooldown", name = "Cooldown", desc = "Minimum time between uses of this item \n \n 1 time unit = 0.01 seconds")
+    public double cooldownBase = 20;
 
-	public boolean rightClick = false;
+    public boolean rightClick = false;
 
-	@TanksONable("shop_item")
-	public static class ShopItem
-	{
-		@Property(id = "stack")
-		public ItemStack<?> itemStack;
+    @TanksONable("shop_item")
+    public static class ShopItem
+    {
+        @Property(id = "stack")
+        public ItemStack<?> itemStack;
 
-		@Property(id = "price", name = "Price")
-		public int price;
+        @Property(id = "price", name = "Price")
+        public int price;
 
-		public ShopItem(ItemStack<?> itemStack)
-		{
-			this.itemStack = itemStack;
-		}
+        public ShopItem(ItemStack<?> itemStack)
+        {
+            this.itemStack = itemStack;
+        }
 
-		public ShopItem()
-		{
+        public ShopItem()
+        {
 
-		}
+        }
 
-		public String toString()
-		{
-			return Serializer.toTanksON(this);
-		}
+        public String toString()
+        {
+            return Serializer.toTanksON(this);
+        }
 
-		public static ShopItem fromString(String s)
-		{
-			if (!s.startsWith("{"))
-				return fromStringLegacy(s);
+        public static ShopItem fromString(String s)
+        {
+            if (!s.startsWith("{"))
+                return fromStringLegacy(s);
 
-			return (ShopItem) Serializer.fromTanksON(s);
-		}
+            return (ShopItem) Serializer.fromTanksON(s);
+        }
 
-		@Deprecated
-		public static ShopItem fromStringLegacy(String s)
-		{
-			String[] p = s.split(",");
+        @Deprecated
+        public static ShopItem fromStringLegacy(String s)
+        {
+            String[] p = s.split(",");
 
-			ItemStack<?> stack = ItemStack.fromStringLegacy(null, s);
-			ShopItem si = new ShopItem(stack);
+            ItemStack<?> stack = ItemStack.fromStringLegacy(null, s);
+            ShopItem si = new ShopItem(stack);
             si.price = Integer.parseInt(p[2]);
 
-			return si;
-		}
-	}
+            return si;
+        }
+    }
 
-	@TanksONable("crusade_shop_item")
-	public static class CrusadeShopItem extends ShopItem
-	{
-		@Property(id = "unlock_level", name = "Unlocks after level")
-		public int levelUnlock;
+    @TanksONable("crusade_shop_item")
+    public static class CrusadeShopItem extends ShopItem
+    {
+        @Property(id = "unlock_level", name = "Unlocks after level")
+        public int levelUnlock;
 
-		public CrusadeShopItem(ItemStack<?> itemStack)
-		{
-			super(itemStack);
-		}
+        public CrusadeShopItem(ItemStack<?> itemStack)
+        {
+            super(itemStack);
+        }
 
-		public CrusadeShopItem()
-		{
+        public CrusadeShopItem()
+        {
 
-		}
+        }
 
-		public static CrusadeShopItem fromString(String s)
-		{
-			if (!s.startsWith("{"))
-				return fromStringLegacy(s);
+        public static CrusadeShopItem fromString(String s)
+        {
+            if (!s.startsWith("{"))
+                return fromStringLegacy(s);
 
-			return (CrusadeShopItem) Serializer.fromTanksON(s);
-		}
+            return (CrusadeShopItem) Serializer.fromTanksON(s);
+        }
 
-		@Deprecated
-		public static CrusadeShopItem fromStringLegacy(String s)
-		{
-			String[] p = s.split(",");
+        @Deprecated
+        public static CrusadeShopItem fromStringLegacy(String s)
+        {
+            String[] p = s.split(",");
 
-			ItemStack<?> stack = ItemStack.fromStringLegacy(null, s);
-			CrusadeShopItem si = new CrusadeShopItem(stack);
+            ItemStack<?> stack = ItemStack.fromStringLegacy(null, s);
+            CrusadeShopItem si = new CrusadeShopItem(stack);
 
-			int price = Integer.parseInt(p[2]);
-			int level = Integer.parseInt(p[3]);
-			si.price = price;
-			si.levelUnlock = level;
+            int price = Integer.parseInt(p[2]);
+            int level = Integer.parseInt(p[3]);
+            si.price = price;
+            si.levelUnlock = level;
 
-			return si;
-		}
-	}
+            return si;
+        }
+    }
 
-	@TanksONable("item_stack")
-	public static abstract class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>, ITanksONEditable
-	{
-		@Property(id = "item", name = "Item")
-		public T item;
+    @TanksONable("item_stack")
+    public static abstract class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>, ITanksONEditable
+    {
+        @Property(id = "item", name = "Item")
+        public T item;
 
-		@Property(id = "amount", name = "Amount", desc = "Set to 0 for unlimited", minValue = 0)
-		public int stackSize;
+        @Property(id = "amount", name = "Amount", desc = "Set to 0 for unlimited", minValue = 0)
+        public int stackSize;
 
-		@Property(id = "max", name = "Max stack size", desc = "Set to 0 for unlimited", minValue = 0)
-		public int maxStackSize;
+        @Property(id = "max", name = "Max stack size", desc = "Set to 0 for unlimited", minValue = 0)
+        public int maxStackSize;
 
-		public boolean isEmpty = false;
+        public boolean isEmpty = false;
 
-		public double cooldown = 0;
-		public boolean destroy = false;
-		public Player player;
+        public double cooldown = 0;
+        public boolean destroy = false;
+        public Player player;
 
-		public int networkIndex = 0;
+        public int networkIndex = 0;
 
-		/**
-		 * Creates a new item stack with given parameters. Make sure if you extend this class you provide the same
-		 * constructor parameters in your subclass.
-		 *
-		 * @param p player
-		 * @param item item
-		 * @param max max stack size, set to 0 or negative for infinite
-		 */
-		public ItemStack(Player p, T item, int max)
-		{
-			this.player = p;
-			this.item = item;
-			this.maxStackSize = max;
-		}
+        /**
+         * Creates a new item stack with given parameters. Make sure if you extend this class you provide the same
+         * constructor parameters in your subclass.
+         *
+         * @param p player
+         * @param item item
+         * @param max max stack size, set to 0 or negative for infinite
+         */
+        public ItemStack(Player p, T item, int max)
+        {
+            this.player = p;
+            this.item = item;
+            this.maxStackSize = max;
+        }
 
-		@Override
-		public ItemStack<T> getCopy()
-		{
-			try
-			{
-				ItemStack<T> i = (ItemStack<T>) this.getClass().getConstructor(Player.class, item.getClass(), int.class).newInstance(this.player, this.item, this.maxStackSize);
-				this.clonePropertiesTo(i);
-				return i;
-			}
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
-			}
+        @Override
+        public ItemStack<T> getCopy()
+        {
+            try
+            {
+                ItemStack<T> i = (ItemStack<T>) this.getClass().getConstructor(Player.class, item.getClass(), int.class).newInstance(this.player, this.item, this.maxStackSize);
+                this.clonePropertiesTo(i);
+                return i;
+            }
+            catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public boolean usable()
-		{
-			return this.usable(this.getUser());
-		}
+        public boolean usable()
+        {
+            return this.usable(this.getUser());
+        }
 
-		public abstract boolean usable(Tank t);
+        public abstract boolean usable(Tank t);
 
-		public void use()
-		{
-			this.use(this.getUser());
-		}
+        public void use()
+        {
+            this.use(this.getUser());
+        }
 
-		public void use(Tank user)
-		{
-			this.setOtherItemsCooldown();
-			this.subtractItem();
-			this.cooldown = this.item.cooldownBase;
+        public void use(Tank user)
+        {
+            this.setOtherItemsCooldown();
+            this.subtractItem();
+            this.cooldown = this.item.cooldownBase;
 
-			if (Crusade.crusadeMode && Crusade.currentCrusade != null && this.player != null)
-				Crusade.currentCrusade.getCrusadePlayer(this.player).addItemUse(this, 1);
-		}
+            if (Crusade.crusadeMode && Crusade.currentCrusade != null && this.player != null)
+                Crusade.currentCrusade.getCrusadePlayer(this.player).addItemUse(this, 1);
+        }
 
 
-		public void attemptUse()
-		{
-			this.attemptUse(this.getUser());
-		}
+        public void attemptUse()
+        {
+            this.attemptUse(this.getUser());
+        }
 
-		public boolean attemptUse(Tank t)
-		{
-			if (this.usable(t) && !this.destroy)
-			{
-				use(t);
-				return true;
-			}
+        public boolean attemptUse(Tank t)
+        {
+            if (this.usable(t) && !this.destroy)
+            {
+                use(t);
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		public Tank getUser()
-		{
-			if (this.player == null)
-				return null;
-			else if (this.player == Game.player)
-			{
-				return Game.playerTank;
-			}
-			else
-			{
-				for (Movable m: Game.movables)
-				{
-					if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(this.player.clientID))
-					{
-						return (Tank) m;
-					}
-				}
-			}
+        public Tank getUser()
+        {
+            if (this.player == null)
+                return null;
+            else if (this.player == Game.player)
+            {
+                return Game.playerTank;
+            }
+            else
+            {
+                for (Movable m: Game.movables)
+                {
+                    if (m instanceof TankPlayerRemote && ((TankPlayerRemote) m).player.clientID.equals(this.player.clientID))
+                    {
+                        return (Tank) m;
+                    }
+                }
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		public void updateCooldown(double reload)
-		{
-			this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency * reload);
-		}
+        public void updateCooldown(double reload)
+        {
+            this.cooldown = Math.max(0, this.cooldown - Panel.frameFrequency * reload);
+        }
 
-		public void setOtherItemsCooldown()
-		{
-			Tank user = this.getUser();
+        public void setOtherItemsCooldown()
+        {
+            Tank user = this.getUser();
 
-			if (user != null)
-				user.setBufferCooldown(this, 20);
-		}
+            if (user != null)
+                user.setBufferCooldown(this, 20);
+        }
 
-		public void subtractItem()
-		{
-			if (this.stackSize > 0)
-			{
-				this.stackSize--;
+        public void subtractItem()
+        {
+            if (this.stackSize > 0)
+            {
+                this.stackSize--;
 
-				if (this.stackSize <= 0)
-					this.destroy = true;
-			}
-		}
+                if (this.stackSize <= 0)
+                    this.destroy = true;
+            }
+        }
 
-		public static ItemStack<?> fromString(Player p, String s)
-		{
-			if (!s.startsWith("{"))
-				return fromStringLegacy(p, s);
+        public static ItemStack<?> fromString(Player p, String s)
+        {
+            if (!s.startsWith("{"))
+                return fromStringLegacy(p, s);
 
-			ItemStack<?> i = (ItemStack<?>) Serializer.fromTanksON(s);
-			i.player = p;
+            ItemStack<?> i = (ItemStack<?>) Serializer.fromTanksON(s);
+            i.player = p;
 
             if (i.item.autoIcon)
                 i.item.setAutomaticIcon();
 
-			return i;
-		}
+            return i;
+        }
 
-		@Deprecated
-		public static ItemStack<?> fromStringLegacy(Player pl, String s)
-		{
-			if (s.contains("[") && s.contains("]"))
-				s = s.substring(s.indexOf("[") + 1, s.indexOf("]"));
+        @Deprecated
+        public static ItemStack<?> fromStringLegacy(Player pl, String s)
+        {
+            if (s.contains("[") && s.contains("]"))
+                s = s.substring(s.indexOf("[") + 1, s.indexOf("]"));
 
-			String[] p = s.split(",");
+            String[] p = s.split(",");
 
-			String name = p[0];
-			String image = p[1];
-			int quantity = Integer.parseInt(p[4]);
-			int maxStack = Integer.parseInt(p[5]);
+            String name = p[0];
+            String image = p[1];
+            int quantity = Integer.parseInt(p[4]);
+            int maxStack = Integer.parseInt(p[5]);
 
-			Item i = Game.registryItem.getEntry(p[6]).getItem();
-			i.name = name;
-			i.icon = Game.registryItemIcon.getItemIcon(image.replace(".png", "")).getCopy();
-			ItemStack<?> is = i.getStack(pl);
-			if (i instanceof ItemBullet)
-			{
-				ItemBullet bullet = (ItemBullet) i;
+            Item i = Game.registryItem.getEntry(p[6]).getItem();
+            i.name = name;
+            i.icon = Game.registryItemIcon.getItemIcon(image.replace(".png", "")).getCopy();
+            ItemStack<?> is = i.getStack(pl);
+            if (i instanceof ItemBullet)
+            {
+                ItemBullet bullet = (ItemBullet) i;
 
-				String kind = p[7];
-				switch (kind)
-				{
-					case "normal":
-						bullet.bullet = DefaultItems.basic_bullet.bullet.getCopy();
-						break;
-					case "flamethrower":
-						bullet.bullet = DefaultItems.flamethrower.bullet.getCopy();
-						break;
-					case "laser":
-						bullet.bullet = DefaultItems.laser.bullet.getCopy();
-						break;
-					case "freezing":
-						bullet.bullet = DefaultItems.freezing_bullet.bullet.getCopy();
-						break;
-					case "electric":
-						bullet.bullet = DefaultItems.zap.bullet.getCopy();
-						break;
-					case "healing":
-						bullet.bullet = DefaultItems.healing_ray.bullet.getCopy();
-						break;
-					case "arc":
-						bullet.bullet = DefaultItems.artillery_shell.bullet.getCopy();
-						break;
-					case "explosive":
-						bullet.bullet = DefaultItems.explosive_bullet.bullet.getCopy();
-						break;
-					case "boost":
-						bullet.bullet = DefaultItems.booster_bullet.bullet.getCopy();
-						break;
-					case "air":
-						bullet.bullet = DefaultItems.air.bullet.getCopy();
-						break;
-					case "homing":
-						bullet.bullet = DefaultItems.homing_rocket.bullet.getCopy();
-						break;
-				}
+                String kind = p[7];
+                switch (kind)
+                {
+                    case "normal":
+                        bullet.bullet = DefaultItems.basic_bullet.bullet.getCopy();
+                        break;
+                    case "flamethrower":
+                        bullet.bullet = DefaultItems.flamethrower.bullet.getCopy();
+                        break;
+                    case "laser":
+                        bullet.bullet = DefaultItems.laser.bullet.getCopy();
+                        break;
+                    case "freezing":
+                        bullet.bullet = DefaultItems.freezing_bullet.bullet.getCopy();
+                        break;
+                    case "electric":
+                        bullet.bullet = DefaultItems.zap.bullet.getCopy();
+                        break;
+                    case "healing":
+                        bullet.bullet = DefaultItems.healing_ray.bullet.getCopy();
+                        break;
+                    case "arc":
+                        bullet.bullet = DefaultItems.artillery_shell.bullet.getCopy();
+                        break;
+                    case "explosive":
+                        bullet.bullet = DefaultItems.explosive_bullet.bullet.getCopy();
+                        break;
+                    case "boost":
+                        bullet.bullet = DefaultItems.booster_bullet.bullet.getCopy();
+                        break;
+                    case "air":
+                        bullet.bullet = DefaultItems.air.bullet.getCopy();
+                        break;
+                    case "homing":
+                        bullet.bullet = DefaultItems.homing_rocket.bullet.getCopy();
+                        break;
+                }
 
-				switch (p[8])
-				{
-					case "none":
-						bullet.bullet.effect = new BulletEffect();
-						break;
-					case "fire":
-						bullet.bullet.effect = BulletEffect.fire.getCopy();
-						break;
-					case "trail":
-						bullet.bullet.effect = BulletEffect.trail.getCopy();
-						break;
-					case "dark_fire":
-						bullet.bullet.effect = BulletEffect.dark_fire.getCopy();
-						break;
-					case "fire_and_smoke":
-						bullet.bullet.effect = BulletEffect.fire_trail.getCopy();
-						break;
-					case "ice":
-						bullet.bullet.effect = BulletEffect.ice.getCopy();
-						break;
-					case "ember":
-						bullet.bullet.effect = BulletEffect.ember.getCopy();
-						break;
-				}
+                switch (p[8])
+                {
+                    case "none":
+                        bullet.bullet.effect = new BulletEffect();
+                        break;
+                    case "fire":
+                        bullet.bullet.effect = BulletEffect.fire.getCopy();
+                        break;
+                    case "trail":
+                        bullet.bullet.effect = BulletEffect.trail.getCopy();
+                        break;
+                    case "dark_fire":
+                        bullet.bullet.effect = BulletEffect.dark_fire.getCopy();
+                        break;
+                    case "fire_and_smoke":
+                        bullet.bullet.effect = BulletEffect.fire_trail.getCopy();
+                        break;
+                    case "ice":
+                        bullet.bullet.effect = BulletEffect.ice.getCopy();
+                        break;
+                    case "ember":
+                        bullet.bullet.effect = BulletEffect.ember.getCopy();
+                        break;
+                }
 
-				bullet.bullet.speed = Double.parseDouble(p[9]);
+                bullet.bullet.speed = Double.parseDouble(p[9]);
 
-				if (p[7].equals("arc"))
-				{
-					((BulletArc)bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
-					if (bullet.bullet.effect.trailEffects.isEmpty() && !bullet.bullet.effect.enableParticles)
-						bullet.bullet.effect = BulletEffect.long_trail.getCopy();
-				}
+                if (p[7].equals("arc"))
+                {
+                    ((BulletArc)bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
+                    if (bullet.bullet.effect.trailEffects.isEmpty() && !bullet.bullet.effect.enableParticles)
+                        bullet.bullet.effect = BulletEffect.long_trail.getCopy();
+                }
 
-				if (p[7].equals("electric"))
-					bullet.bullet.rebounds = Integer.parseInt(p[10]);
-				else
-					bullet.bullet.bounces = Integer.parseInt(p[10]);
+                if (p[7].equals("electric"))
+                    bullet.bullet.rebounds = Integer.parseInt(p[10]);
+                else
+                    bullet.bullet.bounces = Integer.parseInt(p[10]);
 
-				bullet.bullet.damage = Double.parseDouble(p[11]);
+                bullet.bullet.damage = Double.parseDouble(p[11]);
 
-				if (p[7].equals("healing"))
-					bullet.bullet.damage *= -1;
-				else if (p[7].equals("boost") || p[7].equals("air"))
-					bullet.bullet.damage = 0;
+                if (p[7].equals("healing"))
+                    bullet.bullet.damage *= -1;
+                else if (p[7].equals("boost") || p[7].equals("air"))
+                    bullet.bullet.damage = 0;
 
-				bullet.bullet.maxLiveBullets = Integer.parseInt(p[12]);
-				bullet.cooldownBase = Double.parseDouble(p[13]);
+                bullet.bullet.maxLiveBullets = Integer.parseInt(p[12]);
+                bullet.cooldownBase = Double.parseDouble(p[13]);
 
-				if (p[7].equals("flamethrower") || p[7].equals("air"))
-				{
-					bullet.bullet.lifespan *= Double.parseDouble(p[14]) / Bullet.bullet_size;
-					((BulletGas)(bullet.bullet)).endSize *= Double.parseDouble(p[14]) / Bullet.bullet_size;
-				}
-				else
-					bullet.bullet.size = Double.parseDouble(p[14]);
+                if (p[7].equals("flamethrower") || p[7].equals("air"))
+                {
+                    bullet.bullet.lifespan *= Double.parseDouble(p[14]) / Bullet.bullet_size;
+                    ((BulletGas)(bullet.bullet)).endSize *= Double.parseDouble(p[14]) / Bullet.bullet_size;
+                }
+                else
+                    bullet.bullet.size = Double.parseDouble(p[14]);
 
-				bullet.bullet.recoil = Double.parseDouble(p[15]);
-				bullet.bullet.heavy = Boolean.parseBoolean(p[16]);
-				bullet.bullet.pitch *= Bullet.bullet_size / bullet.bullet.size;
+                bullet.bullet.recoil = Double.parseDouble(p[15]);
+                bullet.bullet.heavy = Boolean.parseBoolean(p[16]);
+                bullet.bullet.pitch *= Bullet.bullet_size / bullet.bullet.size;
 
-				if (p.length > 17)
-				{
-					bullet.bullet.accuracySpread = Double.parseDouble(p[17]);
-					bullet.bullet.shotCount = Integer.parseInt(p[18]);
-					bullet.bullet.multishotSpread = Double.parseDouble(p[19]);
-				}
-			}
-			else if (i instanceof ItemMine)
-			{
-				ItemMine mine = (ItemMine) i;
-				mine.mine.timer = Double.parseDouble(p[7]);
-				mine.mine.triggeredTimer = Double.parseDouble(p[8]);
-				mine.mine.explosion.radius = Double.parseDouble(p[9]);
-				mine.mine.explosion.damage = Double.parseDouble(p[10]);
-				mine.mine.maxLiveMines = Integer.parseInt(p[11]);
-				mine.cooldownBase = Double.parseDouble(p[12]);
-				mine.mine.size = Double.parseDouble(p[13]);
-				mine.mine.explosion.destroysObstacles = Boolean.parseBoolean(p[14]);
-			}
-			else if (i instanceof ItemShield)
-			{
-				ItemShield shield = (ItemShield) i;
-				shield.amount = Double.parseDouble(p[7]);
-				shield.max = Double.parseDouble(p[8]);
-				shield.cooldownBase = Double.parseDouble(p[9]);
-			}
+                if (p.length > 17)
+                {
+                    bullet.bullet.accuracySpread = Double.parseDouble(p[17]);
+                    bullet.bullet.shotCount = Integer.parseInt(p[18]);
+                    bullet.bullet.multishotSpread = Double.parseDouble(p[19]);
+                }
+            }
+            else if (i instanceof ItemMine)
+            {
+                ItemMine mine = (ItemMine) i;
+                mine.mine.timer = Double.parseDouble(p[7]);
+                mine.mine.triggeredTimer = Double.parseDouble(p[8]);
+                mine.mine.explosion.radius = Double.parseDouble(p[9]);
+                mine.mine.explosion.damage = Double.parseDouble(p[10]);
+                mine.mine.maxLiveMines = Integer.parseInt(p[11]);
+                mine.cooldownBase = Double.parseDouble(p[12]);
+                mine.mine.size = Double.parseDouble(p[13]);
+                mine.mine.explosion.destroysObstacles = Boolean.parseBoolean(p[14]);
+            }
+            else if (i instanceof ItemShield)
+            {
+                ItemShield shield = (ItemShield) i;
+                shield.amount = Double.parseDouble(p[7]);
+                shield.max = Double.parseDouble(p[8]);
+                shield.cooldownBase = Double.parseDouble(p[9]);
+            }
 
-			is.stackSize = quantity;
-			is.maxStackSize = maxStack;
+            is.stackSize = quantity;
+            is.maxStackSize = maxStack;
 
-			return is;
-		}
+            return is;
+        }
 
-		@Override
-		public String toString()
-		{
-			return Serializer.toTanksON(this);
-		}
+        @Override
+        public String toString()
+        {
+            return Serializer.toTanksON(this);
+        }
 
-		@Override
-		public String getName()
-		{
-			return this.item.name;
-		}
-	}
+        @Override
+        public String getName()
+        {
+            return this.item.name;
+        }
+    }
 
-	public abstract ItemStack<?> getStack(Player p);
+    public abstract ItemStack<?> getStack(Player p);
 
     public void setAutomaticIcon()
     {
@@ -633,44 +633,44 @@ public abstract class Item extends GameObject
             return DefaultItemIcons.item.getCopy();
     }
 
-	public String toString()
-	{
-//		try
-//		{
-//			String type = (String) this.getClass().getField("item_class_name").get(null);
-//			StringBuilder s = new StringBuilder(type + "[");
+    public String toString()
+    {
+//      try
+//      {
+//          String type = (String) this.getClass().getField("item_class_name").get(null);
+//          StringBuilder s = new StringBuilder(type + "[");
 //
-//			for (Field f : this.getClass().getFields())
-//			{
-//				ItemProperty a = f.getAnnotation(ItemProperty.class);
-//				if (a != null)
-//				{
-//					s.append(a.id());
-//					s.append("=");
+//          for (Field f : this.getClass().getFields())
+//          {
+//              ItemProperty a = f.getAnnotation(ItemProperty.class);
+//              if (a != null)
+//              {
+//                  s.append(a.id());
+//                  s.append("=");
 //
-//					if (f.get(this) != null)
-//						s.append(f.get(this));
-//					else
-//						s.append("*");
+//                  if (f.get(this) != null)
+//                      s.append(f.get(this));
+//                  else
+//                      s.append("*");
 //
-//					s.append(";");
-//				}
-//			}
+//                  s.append(";");
+//              }
+//          }
 //
-//			return s.append("]").toString();
-//		}
-//		catch (Exception e)
-//		{
-//			Game.exitToCrash(e);
-//		}
+//          return s.append("]").toString();
+//      }
+//      catch (Exception e)
+//      {
+//          Game.exitToCrash(e);
+//      }
 //
-//		return null;
+//      return null;
 
-		return Serializer.toTanksON(this);
-	}
+        return Serializer.toTanksON(this);
+    }
 
-	public static Item fromString(String s)
-	{
+    public static Item fromString(String s)
+    {
         return (Item) Serializer.fromTanksON(s);
-	}
+    }
 }

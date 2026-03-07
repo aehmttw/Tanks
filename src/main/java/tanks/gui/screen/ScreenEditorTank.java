@@ -675,4 +675,3 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
         }
     }
 }
-

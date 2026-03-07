@@ -16,108 +16,108 @@ import java.util.ArrayList;
 
 public class ScreenCrusades extends Screen
 {
-	public static int page = 0;
-	public static boolean sortByTime = false;
+    public static int page = 0;
+    public static boolean sortByTime = false;
 
-	public SavedFilesList fullCrusadesList, crusadesList;
+    public SavedFilesList fullCrusadesList, crusadesList;
 
-	SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			createNewCrusadesList();
-			crusadesList.filter(search.inputText);
-			crusadesList.sortButtons();
-		}
-	}, "");
+    SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            createNewCrusadesList();
+            crusadesList.filter(search.inputText);
+            crusadesList.sortButtons();
+        }
+    }, "");
 
-	Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4, this.objHeight, this.objHeight, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			fullCrusadesList.sortedByTime = !fullCrusadesList.sortedByTime;
-			fullCrusadesList.sort(fullCrusadesList.sortedByTime);
-			createNewCrusadesList();
-			crusadesList.filter(search.inputText);
-			crusadesList.sortButtons();
+    Button sort = new Button(this.centerX - this.objXSpace / 2 * 1.35, this.centerY - this.objYSpace * 4, this.objHeight, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            fullCrusadesList.sortedByTime = !fullCrusadesList.sortedByTime;
+            fullCrusadesList.sort(fullCrusadesList.sortedByTime);
+            createNewCrusadesList();
+            crusadesList.filter(search.inputText);
+            crusadesList.sortButtons();
 
-			if (fullCrusadesList.sortedByTime)
-				sort.setHoverText("Sorting by last modified");
-			else
-				sort.setHoverText("Sorting by name");
-		}
-	}, "Sorting by name");
+            if (fullCrusadesList.sortedByTime)
+                sort.setHoverText("Sorting by last modified");
+            else
+                sort.setHoverText("Sorting by name");
+        }
+    }, "Sorting by name");
 
-	Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer()
-	);
+    Button quit = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer()
+    );
 
-	Button quit2 = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer()
-	);
+    Button quit2 = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlaySingleplayer()
+    );
 
-	Button create = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Create crusade", () ->
-	{
-		String name = System.currentTimeMillis() + "";
-		BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/" + name + ".tanks");
+    Button create = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Create crusade", () ->
+    {
+        String name = System.currentTimeMillis() + "";
+        BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/" + name + ".tanks");
 
-		try
-		{
-			f.create();
-			f.startWriting();
-			f.println("properties");
-			f.println("items");
-			f.println("levels");
-			f.stopWriting();
+        try
+        {
+            f.create();
+            f.startWriting();
+            f.println("properties");
+            f.println("items");
+            f.println("levels");
+            f.stopWriting();
 
-			Crusade c = new Crusade(f, name);
-			Game.screen = new ScreenCrusadeDetails(c);
-		}
-		catch (IOException e)
-		{
-			Game.exitToCrash(e);
-		}
-	}
-	);
+            Crusade c = new Crusade(f, name);
+            Game.screen = new ScreenCrusadeDetails(c);
+        }
+        catch (IOException e)
+        {
+            Game.exitToCrash(e);
+        }
+    }
+    );
 
-	public ScreenCrusades()
-	{
-		super(350, 40, 380, 60);
+    public ScreenCrusades()
+    {
+        super(350, 40, 380, 60);
 
-		this.music = "menu_4.ogg";
-		this.musicID = "menu";
+        this.music = "menu_4.ogg";
+        this.musicID = "menu";
 
-		search.enableCaps = true;
+        search.enableCaps = true;
 
-		fullCrusadesList = new SavedFilesList(Game.homedir + Game.crusadeDir, page,
-				(int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2),
-				(name, file) ->
-				{
-					Crusade c = findExistingCrusadeProgress(name);
+        fullCrusadesList = new SavedFilesList(Game.homedir + Game.crusadeDir, page,
+                (int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2),
+                (name, file) ->
+                {
+                    Crusade c = findExistingCrusadeProgress(name);
 
-					if (c == null)
-						c = new Crusade(file, name.split("\\.")[0]);
+                    if (c == null)
+                        c = new Crusade(file, name.split("\\.")[0]);
 
-					if (c.error == null)
-						Game.screen = new ScreenCrusadeDetails(c);
-					else
-						Game.screen = new ScreenFailedToLoadCrusade(name, c.contents, c.error, Game.screen);
-				},
-				(file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+                    if (c.error == null)
+                        Game.screen = new ScreenCrusadeDetails(c);
+                    else
+                        Game.screen = new ScreenFailedToLoadCrusade(name, c.contents, c.error, Game.screen);
+                },
+                (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
-		addDefaultCrusades();
-		fullCrusadesList.drawOpenFileButton = true;
-		fullCrusadesList.sortedByTime = sortByTime;
-		fullCrusadesList.sort(sortByTime);
-		crusadesList = fullCrusadesList.clone();
+        addDefaultCrusades();
+        fullCrusadesList.drawOpenFileButton = true;
+        fullCrusadesList.sortedByTime = sortByTime;
+        fullCrusadesList.sort(sortByTime);
+        crusadesList = fullCrusadesList.clone();
 
-		if (fullCrusadesList.sortedByTime)
-			sort.setHoverText("Sorting by last modified");
-		else
-			sort.setHoverText("Sorting by name");
+        if (fullCrusadesList.sortedByTime)
+            sort.setHoverText("Sorting by last modified");
+        else
+            sort.setHoverText("Sorting by name");
 
-		createNewCrusadesList();
-	}
+        createNewCrusadesList();
+    }
 
     public void addDefaultCrusades()
     {
@@ -127,122 +127,122 @@ public class ScreenCrusades extends Screen
         addCrusade("beginner_crusade", "An easy crusade serving as---good practice for beginners!");
     }
 
-	public void addCrusade(String name, String desc)
-	{
-		fullCrusadesList.buttons.add(new Button(0, 0, fullCrusadesList.objWidth, fullCrusadesList.objHeight, Translation.translate(Game.formatString(name)), () ->
-		{
-			Crusade c = findExistingCrusadeProgress("internal/" + Game.formatString(name));
+    public void addCrusade(String name, String desc)
+    {
+        fullCrusadesList.buttons.add(new Button(0, 0, fullCrusadesList.objWidth, fullCrusadesList.objHeight, Translation.translate(Game.formatString(name)), () ->
+        {
+            Crusade c = findExistingCrusadeProgress("internal/" + Game.formatString(name));
 
-			if (c == null)
-			{
-				ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/" + name +".tanks");
-				c = new Crusade(al, Game.formatString(name), "/" + name + ".tanks");
-			}
+            if (c == null)
+            {
+                ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/" + name +".tanks");
+                c = new Crusade(al, Game.formatString(name), "/" + name + ".tanks");
+            }
 
-			c.description = desc;
+            c.description = desc;
 
-			Game.screen = new ScreenCrusadeDetails(c);
-		}
-				, desc));
-	}
+            Game.screen = new ScreenCrusadeDetails(c);
+        }
+                , desc));
+    }
 
-	public void createNewCrusadesList()
-	{
-		crusadesList.buttons.clear();
-		crusadesList.buttons.addAll(fullCrusadesList.buttons);
-		crusadesList.sortButtons();
-	}
+    public void createNewCrusadesList()
+    {
+        crusadesList.buttons.clear();
+        crusadesList.buttons.addAll(fullCrusadesList.buttons);
+        crusadesList.sortButtons();
+    }
 
-	public Crusade findExistingCrusadeProgress(String name)
-	{
-		if (ScreenPartyHost.isServer)
-			return null;
+    public Crusade findExistingCrusadeProgress(String name)
+    {
+        if (ScreenPartyHost.isServer)
+            return null;
 
-		BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath + name);
+        BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.savedCrusadePath + name);
 
-		if (f.exists())
-			return Game.player.loadCrusade(f);
-		else
-			return null;
-	}
+        if (f.exists())
+            return Game.player.loadCrusade(f);
+        else
+            return null;
+    }
 
-	@Override
-	public void update()
-	{
-		crusadesList.update();
-		search.update();
+    @Override
+    public void update()
+    {
+        crusadesList.update();
+        search.update();
 
-		if (ScreenPartyHost.isServer)
-			quit2.update();
-		else
-		{
-			quit.update();
-			create.update();
-		}
+        if (ScreenPartyHost.isServer)
+            quit2.update();
+        else
+        {
+            quit.update();
+            create.update();
+        }
 
-		sortByTime = fullCrusadesList.sortedByTime;
+        sortByTime = fullCrusadesList.sortedByTime;
 
-		this.sort.imageSizeX = 25;
-		this.sort.imageSizeY = 25;
-		this.sort.fullInfo = true;
+        this.sort.imageSizeX = 25;
+        this.sort.imageSizeY = 25;
+        this.sort.fullInfo = true;
 
-		if (this.fullCrusadesList.sortedByTime)
-			this.sort.image = "icons/sort_chronological.png";
-		else
-			this.sort.image = "icons/sort_alphabetical.png";
+        if (this.fullCrusadesList.sortedByTime)
+            this.sort.image = "icons/sort_chronological.png";
+        else
+            this.sort.image = "icons/sort_alphabetical.png";
 
-		sort.update();
+        sort.update();
 
-		page = crusadesList.page;
-	}
+        page = crusadesList.page;
+    }
 
-	@Override
-	public void draw()
-	{
-		this.drawDefaultBackground();
+    @Override
+    public void draw()
+    {
+        this.drawDefaultBackground();
 
-		crusadesList.draw();
+        crusadesList.draw();
 
-		if (ScreenPartyHost.isServer)
-			quit2.draw();
-		else
-		{
-			quit.draw();
-			create.draw();
-		}
+        if (ScreenPartyHost.isServer)
+            quit2.draw();
+        else
+        {
+            quit.draw();
+            create.draw();
+        }
 
-		search.draw();
+        search.draw();
 
-		if (crusadesList.buttons.size() <= 0)
-		{
-			Drawing.drawing.setColor(0, 0, 0);
-			Drawing.drawing.setInterfaceFontSize(24);
+        if (crusadesList.buttons.size() <= 0)
+        {
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setInterfaceFontSize(24);
 
-			Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "No crusades found");
-		}
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "No crusades found");
+        }
 
-		sort.draw();
+        sort.draw();
 
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "Crusades");
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "Crusades");
 
         if (Game.framework == Game.Framework.lwjgl)
         {
             Drawing.drawing.setInterfaceFontSize(16);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.75 + crusadesList.noPageOffY, "Drag and drop crusades here to import them");
         }
-	}
+    }
 
-	@Override
-	public void onFilesDropped(String... filePaths)
-	{
-		ScreenSavedLevels.importLevels(filePaths, Game.crusadeDir, "crusade", s -> new Crusade(s, "test"), () ->
-		{
-			fullCrusadesList.refresh();
+    @Override
+    public void onFilesDropped(String... filePaths)
+    {
+        ScreenSavedLevels.importLevels(filePaths, Game.crusadeDir, "crusade", s -> new Crusade(s, "test"), () ->
+        {
+            fullCrusadesList.refresh();
             addDefaultCrusades();
             fullCrusadesList.sort(sortByTime);
-			createNewCrusadesList();
-		}, "... Your file(s) might be something else, like levels or items.");
-	}
+            createNewCrusadesList();
+        }, "... Your file(s) might be something else, like levels or items.");
+    }
 }

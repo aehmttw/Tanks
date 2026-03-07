@@ -20,7 +20,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     public int cols = 10;
 
     public Button addButton;
-    
+
     public static int page = 0;
 
     public Button nextTankPage = new Button(this.centerX + 290, this.centerY + 60 * 3, 350, 40, "Next page", () -> page++);
@@ -178,7 +178,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
         reorder.update();
         super.update();
     }
-    
+
     @Override
     public void draw()
     {

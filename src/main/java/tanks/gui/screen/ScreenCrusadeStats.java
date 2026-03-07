@@ -1392,7 +1392,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public static void drawStatistic(double x, double y, String text, double rank, double r, double g, double b, double a, double size)
     {
-        drawStatistic(x, y, text, rank, r, g, b, a, size,false);
+        drawStatistic(x, y, text, rank, r, g, b, a, size, false);
     }
 
     public static void drawStatistic(double x, double y, String text, double rank, double r, double g, double b, double a, double size, boolean rightAligned)

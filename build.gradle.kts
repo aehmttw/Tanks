@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     `maven-publish`
+    checkstyle
 }
 
 fun getHash(): String {
@@ -56,6 +57,61 @@ dependencies {
     implementation("com.code-disaster.steamworks4j:steamworks4j-lwjgl3:1.10.0")
 }
 
+// ---------------------------------------------------------------------------
+// Linting – Checkstyle
+// ---------------------------------------------------------------------------
+
+// Separate configuration that holds only the Checkstyle JAR (no custom-check
+// classes output).  This is the compile classpath for our AbstractCheck subclasses
+// and avoids a circular dependency: the 'checkstyle' tool configuration also
+// contains checkstyleChecks.output.classesDirs, so we cannot use it here.
+val checkstyleApi by configurations.creating { isTransitive = true }
+
+// Source set that holds the two custom Checkstyle check classes.
+// Sources live in src/checkstyle/java/ so they are clearly separate from
+// the game code and are never included in the production JAR.
+val checkstyleChecks by sourceSets.creating {
+    java.srcDir("src/checkstyle/java")
+    compileClasspath += checkstyleApi
+}
+
+dependencies {
+    checkstyleApi("com.puppycrawl.tools:checkstyle:8.45.1")
+
+    // Add the compiled custom-check classes to the Checkstyle tool classpath
+    // so Checkstyle can load tanks.linting.ColonSpacingCheck etc.
+    checkstyle(checkstyleChecks.output.classesDirs)
+    checkstyle("com.puppycrawl.tools:checkstyle:8.45.1")
+}
+
+checkstyle {
+    toolVersion = "8.45.1"
+    configFile  = file("config/checkstyle/checkstyle.xml")
+    // Only lint the main game sources, not the checkstyle check sources themselves.
+    sourceSets  = listOf(project.sourceSets.main.get())
+    isIgnoreFailures = false
+    maxWarnings = 0
+}
+
+// Custom check classes must be compiled before any Checkstyle task runs.
+tasks.withType<Checkstyle>().configureEach {
+    dependsOn(tasks.named(checkstyleChecks.compileJavaTaskName))
+    // Show violations in the console as well as writing the XML report.
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+// Convenience alias: `./gradlew lint`
+tasks.register("lint") {
+    description = "Runs Checkstyle linting on the main source set."
+    group       = "verification"
+    dependsOn("checkstyleMain")
+}
+
+// ---------------------------------------------------------------------------
+
 group = "com.aehmttw"
 version = rootProject.file("src/main/resources/version.txt").readText().trim()
 rootProject.file("src/main/resources/hash.txt").writeText(getHash())
@@ -66,6 +122,7 @@ java.sourceCompatibility = JavaVersion.VERSION_1_8
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
 }
+
 
 tasks.withType<Test>().configureEach {
     systemProperty("file.encoding", "UTF-8")

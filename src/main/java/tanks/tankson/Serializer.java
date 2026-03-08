@@ -1,17 +1,16 @@
 package tanks.tankson;
 
-import basewindow.Color;
-import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletEffect;
-import tanks.bullet.Trail;
-import tanks.item.Item;
-import tanks.tank.*;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+
+import basewindow.Color;
+import tanks.Game;
+import tanks.Team;
+import tanks.bullet.*;
+import tanks.item.Item;
+import tanks.tank.*;
 
 public final class Serializer
 {
@@ -344,6 +343,9 @@ public final class Serializer
                 o = Game.registryItemIcon.getItemIcon((String) m.get("id")).getCopy();
                 if (o == null)
                     throw new RuntimeException("Couldn't find item icon for " + m.get("id"));
+                break;
+            case "team":
+                o = new Team();
                 break;
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));

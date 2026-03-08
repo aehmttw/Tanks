@@ -1,16 +1,29 @@
 package tanks;
 
 import basewindow.Color;
+import tanks.tankson.Property;
+import tanks.tankson.TanksONable;
 
+@TanksONable("team")
 public class Team
 {
+    @Property(id="enable_color", name="Enable Color")
     public boolean enableColor;
+
+    @Property(id="team_color", name="Team Color")
     public Color teamColor = new Color();
 
+    @Property(id="friendly_fire", name="Friendly Fire")
     public boolean friendlyFire = true;
+    @Property(id="name", name="Name")
     public String name;
 
     public static double[] returnColor = new double[3];
+
+    public Team()
+    {
+        this.enableColor = false;
+    }
 
     public Team(String name)
     {

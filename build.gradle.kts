@@ -16,7 +16,7 @@ fun getHash(): String {
 val lwjglVersion = "3.4.1"
 val lwjglNatives = listOf(
     "natives-freebsd",
-    "natives-linux-arm32", "natives-linux-arm64", 
+    "natives-linux-arm32", "natives-linux-arm64",
 	"natives-linux-ppc64le", "natives-linux-riscv64",
 	"natives-linux",
     "natives-macos", "natives-macos-arm64",
@@ -87,8 +87,9 @@ dependencies {
 checkstyle {
     toolVersion = "8.45.1"
     configFile  = file("config/checkstyle/checkstyle.xml")
-    // Only lint the main game sources, not the checkstyle check sources themselves.
-    sourceSets  = listOf(project.sourceSets.main.get())
+    // Empty source sets: prevents the plugin from auto-wiring checkstyleMain
+    // into the check/build lifecycle. Linting only runs via `./gradlew lint`.
+    sourceSets  = emptyList()
     isIgnoreFailures = false
     maxWarnings = 0
 }
@@ -96,7 +97,6 @@ checkstyle {
 // Custom check classes must be compiled before any Checkstyle task runs.
 tasks.withType<Checkstyle>().configureEach {
     dependsOn(tasks.named(checkstyleChecks.compileJavaTaskName))
-    // Show violations in the console as well as writing the XML report.
     reports {
         xml.required.set(true)
         html.required.set(true)

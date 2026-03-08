@@ -147,7 +147,7 @@ public class DefaultItems
         booster_bullet.bullet.outlineColor.set(255, 180, 0);
         booster_bullet.name = Translation.translate("Booster");
         booster_bullet.setAutomaticIcon();
-        
+
         explosive_bullet.bullet = new Bullet();
         explosive_bullet.bullet.maxLiveBullets = 2;
         explosive_bullet.bullet.bounces = 0;

@@ -415,7 +415,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
                 Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
                 String t = (insertionIndex - i) + ". " + previous2.crusade.levels.get(insertionIndex - i - 1).levelName.replace("_", " ");
-                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 380, t);
                 Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - (i + 1) * 40 - 60, t);
             }
 
@@ -426,7 +426,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
                 Drawing.drawing.setColor(255, 255, 255, 200 - i * 30);
                 String t = (insertionIndex + i + 2) + ". " + previous2.crusade.levels.get(insertionIndex + i).levelName.replace("_", " ");
-                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+                Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 380, t);
                 Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 + (i + 1) * 40 - 60, t);
             }
 
@@ -435,7 +435,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
             Drawing.drawing.setColor(255, 255, 255);
             String t = (insertionIndex + 1) + ". " + level.levelName.replace("_", " ");
-            Drawing.drawing.setBoundedInterfaceFontSize(this.textSize,380, t);
+            Drawing.drawing.setBoundedInterfaceFontSize(this.textSize, 380, t);
             Drawing.drawing.drawInterfaceText(prev.posX, Drawing.drawing.interfaceSizeY / 2 - 60, t);
 
             this.index.draw();

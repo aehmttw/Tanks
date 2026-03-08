@@ -8,41 +8,41 @@ import tanks.network.NetworkUtils;
 
 public class EventPlayerChat extends PersonalEvent implements IChatEvent
 {
-	public String message;
-	public String username;
-	
-	public EventPlayerChat()
-	{
-		
-	}
-	
-	public EventPlayerChat(Player p, String m)
-	{
-		this.message = m;
-		this.username = "\u00A7" + (int) p.color.red + "," + (int) p.color.green + "," + (int) p.color.blue + "," +
+    public String message;
+    public String username;
+
+    public EventPlayerChat()
+    {
+
+    }
+
+    public EventPlayerChat(Player p, String m)
+    {
+        this.message = m;
+        this.username = "\u00A7" + (int) p.color.red + "," + (int) p.color.green + "," + (int) p.color.blue + "," +
             (int) p.color2.red + "," + (int) p.color2.green + "," + (int) p.color2.blue + "," +
             (int) p.color3.red + "," + (int) p.color3.green + "," + (int) p.color3.blue + "|" + p.username;
-	}
+    }
 
-	@Override
-	public void execute() 
-	{
-		if (this.clientID == null)
-			ScreenPartyLobby.chat.add(0, new ChatMessage(this.username, this.message));
-	}
+    @Override
+    public void execute()
+    {
+        if (this.clientID == null)
+            ScreenPartyLobby.chat.add(0, new ChatMessage(this.username, this.message));
+    }
 
-	@Override
-	public void write(ByteBuf b) 
-	{
-		NetworkUtils.writeString(b, this.username);
-		NetworkUtils.writeString(b, this.message);
-	}
+    @Override
+    public void write(ByteBuf b)
+    {
+        NetworkUtils.writeString(b, this.username);
+        NetworkUtils.writeString(b, this.message);
+    }
 
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.username = NetworkUtils.readString(b);
-		this.message = NetworkUtils.readString(b);
-	}
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.username = NetworkUtils.readString(b);
+        this.message = NetworkUtils.readString(b);
+    }
 
 }

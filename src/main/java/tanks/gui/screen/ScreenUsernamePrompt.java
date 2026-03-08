@@ -6,36 +6,36 @@ import tanks.gui.Button;
 
 public class ScreenUsernamePrompt extends Screen
 {
-	public ScreenUsernamePrompt()
-	{
-		this.music = "menu_1.ogg";
-		this.musicID = "menu";
-	}
+    public ScreenUsernamePrompt()
+    {
+        this.music = "menu_1.ogg";
+        this.musicID = "menu";
+    }
 
-	Button gotoOptions = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "My profile", () -> Game.screen = new ScreenOptionsPersonalize(true)
-	);
-	
-	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
-	);
-	
-	@Override
-	public void update() 
-	{
-		gotoOptions.update();
-		quit.update();
-	}
+    Button gotoOptions = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "My profile", () -> Game.screen = new ScreenOptionsPersonalize(true)
+    );
 
-	@Override
-	public void draw() 
-	{
-		this.drawDefaultBackground();
-		gotoOptions.draw();
-		quit.draw();
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()
+    );
 
-		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "You must choose a username to play with others!");
+    @Override
+    public void update()
+    {
+        gotoOptions.update();
+        quit.update();
+    }
 
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Would you like to go to 'my profile' and choose one now?");
-	}
+    @Override
+    public void draw()
+    {
+        this.drawDefaultBackground();
+        gotoOptions.draw();
+        quit.draw();
+
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 1.5, "You must choose a username to play with others!");
+
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Would you like to go to 'my profile' and choose one now?");
+    }
 
 }

@@ -1,6 +1,6 @@
 package tanks.network.event;
 
-public interface IEvent 
+public interface IEvent
 {
 
 }

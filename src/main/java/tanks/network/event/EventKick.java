@@ -8,43 +8,43 @@ import tanks.network.Client;
 import tanks.network.NetworkUtils;
 
 public class EventKick extends PersonalEvent
-{	
-	public String reason;
-	
-	public EventKick()
-	{
-		
-	}
-	
-	public EventKick(String reason)
-	{
-		this.reason = reason;
-	}
+{
+    public String reason;
 
-	@Override
-	public void execute() 
-	{
-		if (this.clientID == null)
-		{
-			Game.cleanUp();
-			ScreenPartyLobby.isClient = false;
+    public EventKick()
+    {
 
-			Client.handler.close();
+    }
 
-			if (!(Game.screen instanceof ScreenKicked))
-				Game.screen = new ScreenKicked(reason);
-		}
-	}
+    public EventKick(String reason)
+    {
+        this.reason = reason;
+    }
 
-	@Override
-	public void write(ByteBuf b)
-	{
-		NetworkUtils.writeString(b, this.reason);
-	}
+    @Override
+    public void execute()
+    {
+        if (this.clientID == null)
+        {
+            Game.cleanUp();
+            ScreenPartyLobby.isClient = false;
 
-	@Override
-	public void read(ByteBuf b) 
-	{
-		this.reason = NetworkUtils.readString(b);
-	}
+            Client.handler.close();
+
+            if (!(Game.screen instanceof ScreenKicked))
+                Game.screen = new ScreenKicked(reason);
+        }
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        NetworkUtils.writeString(b, this.reason);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.reason = NetworkUtils.readString(b);
+    }
 }

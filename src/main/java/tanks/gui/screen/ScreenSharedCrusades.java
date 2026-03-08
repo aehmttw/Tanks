@@ -10,65 +10,65 @@ import java.util.ArrayList;
 
 public class ScreenSharedCrusades extends Screen
 {
-	public static int page = 0;
+    public static int page = 0;
 
-	public ButtonList sharedCrusades;
+    public ButtonList sharedCrusades;
 
-	Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () ->
-	{
-		if (ScreenPartyHost.isServer)
-			Game.screen = new ScreenSharedSummary(ScreenPartyHost.activeScreen.sharedLevels, ScreenPartyHost.activeScreen.sharedCrusades);
-		else if (ScreenPartyLobby.isClient)
-			Game.screen = new ScreenSharedSummary(ScreenPartyLobby.sharedLevels, ScreenPartyLobby.sharedCrusades);
-	}
-	);
+    Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 5, this.objWidth, this.objHeight, "Back", () ->
+    {
+        if (ScreenPartyHost.isServer)
+            Game.screen = new ScreenSharedSummary(ScreenPartyHost.activeScreen.sharedLevels, ScreenPartyHost.activeScreen.sharedCrusades);
+        else if (ScreenPartyLobby.isClient)
+            Game.screen = new ScreenSharedSummary(ScreenPartyLobby.sharedLevels, ScreenPartyLobby.sharedCrusades);
+    }
+    );
 
-	public ScreenSharedCrusades(ArrayList<ScreenPartyHost.SharedCrusade> crusades)
-	{
-		super(350, 40, 380, 60);
+    public ScreenSharedCrusades(ArrayList<ScreenPartyHost.SharedCrusade> crusades)
+    {
+        super(350, 40, 380, 60);
 
-		this.music = "menu_4.ogg";
-		this.musicID = "menu";
+        this.music = "menu_4.ogg";
+        this.musicID = "menu";
 
-		ArrayList<Button> buttons = new ArrayList<>();
-		for (ScreenPartyHost.SharedCrusade l: crusades)
-		{
-			buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
-			{
-				Crusade c = new Crusade(l.crusade, l.name);
-				ScreenCrusadePreview sc = new ScreenCrusadePreview(c, Game.screen, false);
-				sc.setOffset(sc.objHeight);
-				Game.screen = sc;
-			}
-					, "Shared by " + l.creator));
-		}
+        ArrayList<Button> buttons = new ArrayList<>();
+        for (ScreenPartyHost.SharedCrusade l: crusades)
+        {
+            buttons.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
+            {
+                Crusade c = new Crusade(l.crusade, l.name);
+                ScreenCrusadePreview sc = new ScreenCrusadePreview(c, Game.screen, false);
+                sc.setOffset(sc.objHeight);
+                Game.screen = sc;
+            }
+                    , "Shared by " + l.creator));
+        }
 
-		sharedCrusades = new ButtonList(buttons, page, 0, -60);
-	}
+        sharedCrusades = new ButtonList(buttons, page, 0, -60);
+    }
 
-	@Override
-	public void update()
-	{
-		quit.update();
-		sharedCrusades.update();
-	}
+    @Override
+    public void update()
+    {
+        quit.update();
+        sharedCrusades.update();
+    }
 
-	@Override
-	public void draw()
-	{
-		this.drawDefaultBackground();
+    @Override
+    public void draw()
+    {
+        this.drawDefaultBackground();
 
-		quit.draw();
-		sharedCrusades.draw();
+        quit.draw();
+        sharedCrusades.draw();
 
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Shared crusades");
-	}
+        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Shared crusades");
+    }
 
-	@Override
-	public void setupLayoutParameters()
-	{
-		this.centerY -= this.objYSpace / 2;
-	}
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.centerY -= this.objYSpace / 2;
+    }
 }

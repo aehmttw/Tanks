@@ -1,10 +1,10 @@
 package basewindow;
 
-public interface IWindowHandler 
+public interface IWindowHandler
 {
-	boolean attemptCloseWindow();
+    boolean attemptCloseWindow();
 
-	void onWindowClose();
+    void onWindowClose();
 
     void onFilesDropped(String... filePaths);
 }

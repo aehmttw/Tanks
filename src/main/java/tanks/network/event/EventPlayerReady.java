@@ -7,46 +7,46 @@ import tanks.gui.screen.ScreenPartyHost;
 
 public class EventPlayerReady extends PersonalEvent
 {
-	public EventPlayerReady()
-	{
+    public EventPlayerReady()
+    {
 
-	}
+    }
 
-	@Override
-	public void execute() 
-	{
-		if (!ScreenPartyHost.includedPlayers.contains(this.clientID))
-			return;
+    @Override
+    public void execute()
+    {
+        if (!ScreenPartyHost.includedPlayers.contains(this.clientID))
+            return;
 
-		Player pl = null;
+        Player pl = null;
 
-		for (Player p: Game.players)
-		{
-			if (p.clientID.equals(this.clientID))
-			{
-				pl = p;
-			}
-		}
+        for (Player p: Game.players)
+        {
+            if (p.clientID.equals(this.clientID))
+            {
+                pl = p;
+            }
+        }
 
-		if (pl != null)
-		{
-			if (!ScreenPartyHost.readyPlayers.contains(pl))
-				ScreenPartyHost.readyPlayers.add(pl);
+        if (pl != null)
+        {
+            if (!ScreenPartyHost.readyPlayers.contains(pl))
+                ScreenPartyHost.readyPlayers.add(pl);
 
-			Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
-		}
-	}
+            Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
+        }
+    }
 
-	@Override
-	public void write(ByteBuf b)
-	{
-		
-	}
+    @Override
+    public void write(ByteBuf b)
+    {
 
-	@Override
-	public void read(ByteBuf b)
-	{
-		
-	}
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+
+    }
 
 }

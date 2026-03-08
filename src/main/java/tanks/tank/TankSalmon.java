@@ -8,27 +8,27 @@ import tanks.bullet.DefaultItems;
  */
 public class TankSalmon extends TankAIControlled
 {
-	public TankSalmon(String name, double x, double y, double angle)
-	{
-		super(name, x, y, Game.tile_size, 255, 180, 140, angle, ShootAI.homing);
-		this.cooldownBase = 150;
-		this.cooldownRandom = 50;
-		this.maxSpeed = 1.25;
-		this.setBullet(DefaultItems.homing_rocket);
-		this.turretAimSpeed = 0.06;
-		this.enablePathfinding = true;
-		this.enablePredictiveFiring = false;
-		this.targetEnemySightBehavior = TargetEnemySightBehavior.backwind;
+    public TankSalmon(String name, double x, double y, double angle)
+    {
+        super(name, x, y, Game.tile_size, 255, 180, 140, angle, ShootAI.homing);
+        this.cooldownBase = 150;
+        this.cooldownRandom = 50;
+        this.maxSpeed = 1.25;
+        this.setBullet(DefaultItems.homing_rocket);
+        this.turretAimSpeed = 0.06;
+        this.enablePathfinding = true;
+        this.enablePredictiveFiring = false;
+        this.targetEnemySightBehavior = TargetEnemySightBehavior.backwind;
 
-		this.coinValue = 10;
+        this.coinValue = 10;
 
-		if (Game.tankTextures)
-		{
-			this.emblem = "emblems/curve.png";
-			this.emblemColor.set(this.secondaryColor);
-			this.baseSkin = TankModels.diagonalStripes;
-		}
+        if (Game.tankTextures)
+        {
+            this.emblem = "emblems/curve.png";
+            this.emblemColor.set(this.secondaryColor);
+            this.baseSkin = TankModels.diagonalStripes;
+        }
 
-		this.description = "A tank which shoots homing rockets";
-	}
+        this.description = "A tank which shoots homing rockets";
+    }
 }

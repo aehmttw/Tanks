@@ -12,191 +12,191 @@ import static basewindow.InputCodes.*;
 
 public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 {
-	boolean controlPlayer = false;
-	TankPlayer logo;
+    boolean controlPlayer = false;
+    TankPlayer logo;
 
-	public int chain;
+    public int chain;
 
-	public double lCenterX, lCenterY;
-	public double rCenterX, rCenterY;
+    public double lCenterX, lCenterY;
+    public double rCenterX, rCenterY;
 
-	protected int[] inputs = new int[11];
-	protected int inputCount = 0;
+    protected int[] inputs = new int[11];
+    protected int inputCount = 0;
 
-	public int wave = 0;
+    public int wave = 0;
 
-	Button exit = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Exit the game", () ->
-	{
-		if (Game.framework == Game.Framework.libgdx)
-			Game.screen = new ScreenExit();
-		else
-		{
-			if (Game.game.window.soundsEnabled)
-				Game.game.window.soundPlayer.exit();
+    Button exit = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Exit the game", () ->
+    {
+        if (Game.framework == Game.Framework.libgdx)
+            Game.screen = new ScreenExit();
+        else
+        {
+            if (Game.game.window.soundsEnabled)
+                Game.game.window.soundPlayer.exit();
 
-			Game.game.window.windowHandler.onWindowClose();
+            Game.game.window.windowHandler.onWindowClose();
 
-			System.exit(0);
-		}
-	}
-	);
+            System.exit(0);
+        }
+    }
+    );
 
-	Button options = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Options", () ->
-	{
-		Game.silentCleanUp();
-		Game.screen = new ScreenOptions();
-	}
-	);
+    Button options = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "Options", () ->
+    {
+        Game.silentCleanUp();
+        Game.screen = new ScreenOptions();
+    }
+    );
 
-	Button debug = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 3, this.objWidth, this.objHeight, "Debug menu", () ->
-	{
-		Game.silentCleanUp();
-		Game.screen = new ScreenDebug();
-	}
-	);
+    Button debug = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 3, this.objWidth, this.objHeight, "Debug menu", () ->
+    {
+        Game.silentCleanUp();
+        Game.screen = new ScreenDebug();
+    }
+    );
 
-	Button about = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "About", () ->
-	{
-		Game.silentCleanUp();
-		Game.screen = new ScreenAbout();
-	}
-	);
+    Button about = new Button(this.rCenterX, this.rCenterY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "About", () ->
+    {
+        Game.silentCleanUp();
+        Game.screen = new ScreenAbout();
+    }
+    );
 
-	Button play = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Play!", () ->
-	{
-		Game.silentCleanUp();
-		Game.screen = new ScreenPlay();
-	}
-	);
+    Button play = new Button(this.rCenterX, this.rCenterY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Play!", () ->
+    {
+        Game.silentCleanUp();
+        Game.screen = new ScreenPlay();
+    }
+    );
 
-	Button takeControl = new Button(0, 0, Game.tile_size, Game.tile_size, "", new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			if (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT))
-			{
-				Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (0) / 12.0));
+    Button takeControl = new Button(0, 0, Game.tile_size, Game.tile_size, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT))
+            {
+                Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (0) / 12.0));
 
-				chain = 0;
-				wave = 0;
-				Game.bulletLocked = false;
-				ScreenGame.finishTimer = ScreenGame.finishTimerMax;
-				logo.depthTest = true;
-				controlPlayer = true;
+                chain = 0;
+                wave = 0;
+                Game.bulletLocked = false;
+                ScreenGame.finishTimer = ScreenGame.finishTimerMax;
+                logo.depthTest = true;
+                controlPlayer = true;
 
-				Game.currentLevel = new ScreenTitleMinigame((ScreenTitle) Game.screen);
-				Game.currentLevel.shadow = 0.75;
-				Game.currentSizeX = 28;
-				Game.currentSizeY = 18;
+                Game.currentLevel = new ScreenTitleMinigame((ScreenTitle) Game.screen);
+                Game.currentLevel.shadow = 0.75;
+                Game.currentSizeX = 28;
+                Game.currentSizeY = 18;
 
-				ScreenGame.finishedQuick = false;
-			}
-		}
-	}
-	);
+                ScreenGame.finishedQuick = false;
+            }
+        }
+    }
+    );
 
-	Button languages = new Button(-1000, -1000, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
-	{
-		Game.silentCleanUp();
-		Game.screen = new ScreenLanguage();
-	}
-	);
+    Button languages = new Button(-1000, -1000, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
+    {
+        Game.silentCleanUp();
+        Game.screen = new ScreenLanguage();
+    }
+    );
 
-	public ScreenTitle()
-	{
-		Effect.timeSinceLastTrack = TrackRenderer.getMaxTrackAge();
-		Game.movables.clear();
-		ScreenGame.finished = false;
+    public ScreenTitle()
+    {
+        Effect.timeSinceLastTrack = TrackRenderer.getMaxTrackAge();
+        Game.movables.clear();
+        ScreenGame.finished = false;
 
-		takeControl.silent = true;
+        takeControl.silent = true;
 
-		this.music = "menu_1.ogg";
-		this.musicID = "menu";
+        this.music = "menu_1.ogg";
+        this.musicID = "menu";
 
-		languages.image = "icons/language.png";
+        languages.image = "icons/language.png";
 
-		languages.imageSizeX = this.objHeight;
-		languages.imageSizeY = this.objHeight;
-	}
+        languages.imageSizeX = this.objHeight;
+        languages.imageSizeY = this.objHeight;
+    }
 
-	@Override
-	public void update()
-	{
-		languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-				+ Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
-		languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
-				+ Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+    @Override
+    public void update()
+    {
+        languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+                + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
+        languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
+                + Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
 
-		if (!this.controlPlayer)
-		{
-			play.update();
-			exit.update();
-			options.update();
+        if (!this.controlPlayer)
+        {
+            play.update();
+            exit.update();
+            options.update();
 
-			languages.update();
+            languages.update();
 
-			if (Drawing.drawing.interfaceScaleZoom == 1)
-			{
-				takeControl.update();
-			}
+            if (Drawing.drawing.interfaceScaleZoom == 1)
+            {
+                takeControl.update();
+            }
 
-			if (Game.debug)
-				debug.update();
+            if (Game.debug)
+                debug.update();
 
-			about.update();
+            about.update();
 
-			this.music = "menu_1.ogg";
+            this.music = "menu_1.ogg";
 
-			for (Integer i: Game.game.window.validPressedKeys)
-			{
-				this.inputs[inputCount] = i;
-				inputCount = (inputCount + 1) % inputs.length;
+            for (Integer i: Game.game.window.validPressedKeys)
+            {
+                this.inputs[inputCount] = i;
+                inputCount = (inputCount + 1) % inputs.length;
 
-				if (i == KEY_ENTER)
-				{
-					int[] inputs = new int[]{KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, KEY_B, KEY_A, KEY_ENTER};
+                if (i == KEY_ENTER)
+                {
+                    int[] inputs = new int[]{KEY_UP, KEY_UP, KEY_DOWN, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_LEFT, KEY_RIGHT, KEY_B, KEY_A, KEY_ENTER};
 
-					boolean match = true;
-					for (int n = 0; n < inputs.length; n++)
-					{
-						if (this.inputs[(this.inputCount + n) % this.inputs.length] != inputs[n])
-						{
-							match = false;
-							break;
-						}
-					}
+                    boolean match = true;
+                    for (int n = 0; n < inputs.length; n++)
+                    {
+                        if (this.inputs[(this.inputCount + n) % this.inputs.length] != inputs[n])
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
 
-					if (match)
-					{
-						Drawing.drawing.playSound("destroy.ogg", 2);
-						for (int c = 0; c < 100; c++)
-						{
-							Button.addEffect(debug.posX, debug.posY, debug.sizeX, debug.sizeY, debug.glowEffects);
-							debug.lastFrame = Panel.panel.ageFrames;
-						}
+                    if (match)
+                    {
+                        Drawing.drawing.playSound("destroy.ogg", 2);
+                        for (int c = 0; c < 100; c++)
+                        {
+                            Button.addEffect(debug.posX, debug.posY, debug.sizeX, debug.sizeY, debug.glowEffects);
+                            debug.lastFrame = Panel.panel.ageFrames;
+                        }
 
-						Game.debug = true;
-					}
-				}
-			}
+                        Game.debug = true;
+                    }
+                }
+            }
 
-			Game.game.window.validPressedKeys.remove((Integer) KEY_UP);
-			Game.game.window.validPressedKeys.remove((Integer) KEY_DOWN);
-			Game.game.window.validPressedKeys.remove((Integer) KEY_LEFT);
-			Game.game.window.validPressedKeys.remove((Integer) KEY_RIGHT);
-			Game.game.window.validPressedKeys.remove((Integer) KEY_B);
-			Game.game.window.validPressedKeys.remove((Integer) KEY_A);
-			Game.game.window.validPressedKeys.remove((Integer) KEY_ENTER);
-		}
+            Game.game.window.validPressedKeys.remove((Integer) KEY_UP);
+            Game.game.window.validPressedKeys.remove((Integer) KEY_DOWN);
+            Game.game.window.validPressedKeys.remove((Integer) KEY_LEFT);
+            Game.game.window.validPressedKeys.remove((Integer) KEY_RIGHT);
+            Game.game.window.validPressedKeys.remove((Integer) KEY_B);
+            Game.game.window.validPressedKeys.remove((Integer) KEY_A);
+            Game.game.window.validPressedKeys.remove((Integer) KEY_ENTER);
+        }
 
-		if (this.controlPlayer)
-		{
-			this.logo.hidden = false;
-			this.logo.invulnerable = false;
-		}
+        if (this.controlPlayer)
+        {
+            this.logo.hidden = false;
+            this.logo.invulnerable = false;
+        }
 
-		Obstacle.draw_size = Game.tile_size;
+        Obstacle.draw_size = Game.tile_size;
         double time = Panel.frameFrequency;
         while (time > 0)
         {
@@ -214,264 +214,264 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
                 Drawing.drawing.trackRenderer.remove(e);
             }
-			else
-				break;
+            else
+                break;
         }
 
         Effect.timeSinceLastTrack += Panel.frameFrequency;
 
-		int enemies = 0;
-		for (int i = 0; i < Game.movables.size(); i++)
-		{
-			Movable m = Game.movables.get(i);
+        int enemies = 0;
+        for (int i = 0; i < Game.movables.size(); i++)
+        {
+            Movable m = Game.movables.get(i);
 
-			if (m != this.logo || this.controlPlayer)
-			{
+            if (m != this.logo || this.controlPlayer)
+            {
                 if (m.skipNextUpdate)
                 {
                     m.skipNextUpdate = false;
                     continue;
                 }
 
-				m.preUpdate();
-				m.update();
+                m.preUpdate();
+                m.update();
                 m.postUpdate();
-			}
+            }
 
-			if (m instanceof Tank && m != this.logo)
-			{
-				if (this.controlPlayer)
-					m.team = Game.enemyTeam;
-				else
-					m.team = null;
-			}
+            if (m instanceof Tank && m != this.logo)
+            {
+                if (this.controlPlayer)
+                    m.team = Game.enemyTeam;
+                else
+                    m.team = null;
+            }
 
-			if ((m instanceof Tank && m.team != logo.team) || (m instanceof Crate && ((Crate) m).tank.team != logo.team))
-				enemies++;
-		}
+            if ((m instanceof Tank && m.team != logo.team) || (m instanceof Crate && ((Crate) m).tank.team != logo.team))
+                enemies++;
+        }
 
 
-		if (enemies <= 1 && !this.controlPlayer)
-		{
-			for (Movable m: Game.movables)
-			{
-				if (m instanceof TankAIControlled)
-				{
-					TankAIControlled t = (TankAIControlled) m;
+        if (enemies <= 1 && !this.controlPlayer)
+        {
+            for (Movable m: Game.movables)
+            {
+                if (m instanceof TankAIControlled)
+                {
+                    TankAIControlled t = (TankAIControlled) m;
 
-					if (!t.suicidal)
-						t.timeUntilDeath = 500;
+                    if (!t.suicidal)
+                        t.timeUntilDeath = 500;
 
-					t.enableSuicide = true;
-					t.suicidal = true;
-				}
-			}
-		}
+                    t.enableSuicide = true;
+                    t.suicidal = true;
+                }
+            }
+        }
 
-		if (enemies <= 0 && controlPlayer)
-		{
-			wave++;
+        if (enemies <= 0 && controlPlayer)
+        {
+            wave++;
 
-			if (wave > 1)
-				Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (wave - 1) / 12.0));
+            if (wave > 1)
+                Drawing.drawing.playSound("rampage.ogg", (float) Math.pow(2, (wave - 1) / 12.0));
 
-			music = "menu_" + Math.min(5, wave) + ".ogg";
-			Panel.forceRefreshMusic = true;
+            music = "menu_" + Math.min(5, wave) + ".ogg";
+            Panel.forceRefreshMusic = true;
 
-			for (int i = 0; i < (this.wave - 1) * 3 * (Math.random() * 0.5 + 0.5) + 3; i++)
-			{
-				Drawing.drawing.playGlobalSound("flame.ogg", 0.75f);
-				int x = (int) (Math.random() * Game.currentSizeX);
-				int y = (int) (Math.random() * Game.currentSizeY);
-				Tank t = Game.registryTank.getRandomTank().getTank((x + 0.5) * Game.tile_size, (y + 0.5) * Game.tile_size, (int) (Math.random() * 4));
-				t.team = Game.enemyTeam;
-				Game.movables.add(new Crate(t, Math.random() * 400 + 800));
-			}
-		}
+            for (int i = 0; i < (this.wave - 1) * 3 * (Math.random() * 0.5 + 0.5) + 3; i++)
+            {
+                Drawing.drawing.playGlobalSound("flame.ogg", 0.75f);
+                int x = (int) (Math.random() * Game.currentSizeX);
+                int y = (int) (Math.random() * Game.currentSizeY);
+                Tank t = Game.registryTank.getRandomTank().getTank((x + 0.5) * Game.tile_size, (y + 0.5) * Game.tile_size, (int) (Math.random() * 4));
+                t.team = Game.enemyTeam;
+                Game.movables.add(new Crate(t, Math.random() * 400 + 800));
+            }
+        }
 
-		if (wave < 1)
-			wave = 1;
+        if (wave < 1)
+            wave = 1;
 
-		for (int i = 0; i < Game.effects.size(); i++)
+        for (int i = 0; i < Game.effects.size(); i++)
             Game.effects.get(i).update();
 
         ScreenGame.handleRemovals();
 
-		if (!Game.movables.contains(this.logo) && Game.screen == this)
-		{
-			this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
-			this.logo.networkID = 0;
-			this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
-			this.logo.invulnerable = true;
-			this.logo.hidden = true;
-			this.logo.team = Game.playerTeam;
-			this.logo.maxSpeed *= 1.5;
-			((ItemBullet)(this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
-			Game.playerTank = logo;
-			Game.movables.add(this.logo);
-			this.controlPlayer = false;
-		}
+        if (!Game.movables.contains(this.logo) && Game.screen == this)
+        {
+            this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
+            this.logo.networkID = 0;
+            this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
+            this.logo.invulnerable = true;
+            this.logo.hidden = true;
+            this.logo.team = Game.playerTeam;
+            this.logo.maxSpeed *= 1.5;
+            ((ItemBullet)(this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
+            Game.playerTank = logo;
+            Game.movables.add(this.logo);
+            this.controlPlayer = false;
+        }
 
-		if (!controlPlayer)
-		{
-			this.logo.posX = Drawing.drawing.sizeX / 2;
-			this.logo.posY = Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom;
+        if (!controlPlayer)
+        {
+            this.logo.posX = Drawing.drawing.sizeX / 2;
+            this.logo.posY = Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom;
 
-			if (Drawing.drawing.interfaceScaleZoom > 1)
-			{
-				this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
-				this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
-			}
-		}
-	}
-
-	public void drawWithoutBackground()
-	{
-		languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-				+ Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
-		languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
-				+ Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
-
-		if (this.logo == null)
-		{
-			this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
-			takeControl.posX = logo.posX;
-			takeControl.posY = logo.posY;
-			this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
-			this.logo.drawAge = 50;
-			this.logo.depthTest = false;
-			this.logo.networkID = 0;
-			this.logo.invulnerable = true;
-			this.logo.hidden = true;
-			this.logo.maxSpeed *= 1.5;
-			((ItemBullet)(this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
-			Game.playerTank = logo;
-			this.logo.team = Game.playerTeam;
-
-			if (Drawing.drawing.interfaceScaleZoom > 1)
-			{
-				this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
-				this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
-			}
-
-			Game.movables.add(logo);
-		}
-
-		this.logo.luminance = Math.max(0.5, 1 - this.screenAge / 50.0);
-
-		play.draw();
-		exit.draw();
-		options.draw();
-		languages.draw();
-
-		if (Game.debug)
-			debug.draw();
-
-		about.draw();
-
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(24);
-
-		if (Game.player.enableTertiaryColor)
-			Drawing.drawing.setColor(Game.player.color3);
-		else
-			Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color.red), Turret.calculateSecondaryColor(Game.player.color.green), Turret.calculateSecondaryColor(Game.player.color.blue));
-		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
-		Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
-
-		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color2.red), Turret.calculateSecondaryColor(Game.player.color2.green), Turret.calculateSecondaryColor(Game.player.color2.blue));
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
-
-		Drawing.drawing.setColor(Game.player.color);
-		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
-		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
-
-		Drawing.drawing.setColor(Game.player.color2);
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
-
-		for (int i = Game.movables.size() - 1; i >= 0; i--)
-		{
-			Game.movables.get(i).draw();
-
-			if (Game.movables.get(i) instanceof IDrawableWithGlow)
-				((IDrawableWithGlow) Game.movables.get(i)).drawGlow();
-		}
-
-		for (int i = 0; i < Game.effects.size(); i++)
-		{
-			Game.effects.get(i).draw();
-		}
-
-		for (int i = 0; i < Game.effects.size(); i++)
-		{
-			Game.effects.get(i).drawGlow();
-		}
+            if (Drawing.drawing.interfaceScaleZoom > 1)
+            {
+                this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
+                this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
+            }
+        }
     }
 
-	@Override
-	public void draw()
-	{
-		if (Game.screen == this)
-			this.drawDefaultBackground();
+    public void drawWithoutBackground()
+    {
+        languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+                + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
+        languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
+                + Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
 
-		this.drawWithoutBackground();
-	}
+        if (this.logo == null)
+        {
+            this.logo = new TankPlayer(Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2 - 250 * Drawing.drawing.interfaceScaleZoom, 0);
+            takeControl.posX = logo.posX;
+            takeControl.posY = logo.posY;
+            this.logo.size *= 1.5 * Drawing.drawing.interfaceScaleZoom * this.objHeight / 40;
+            this.logo.drawAge = 50;
+            this.logo.depthTest = false;
+            this.logo.networkID = 0;
+            this.logo.invulnerable = true;
+            this.logo.hidden = true;
+            this.logo.maxSpeed *= 1.5;
+            ((ItemBullet)(this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
+            Game.playerTank = logo;
+            this.logo.team = Game.playerTeam;
 
-	@Override
-	public void drawPostMouse()
-	{
-		if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT)) && Drawing.drawing.interfaceScaleZoom == 1)
-			this.logo.draw();
-	}
+            if (Drawing.drawing.interfaceScaleZoom > 1)
+            {
+                this.logo.posY += 180 * Drawing.drawing.interfaceScaleZoom;
+                this.logo.posX -= 260 * Drawing.drawing.interfaceScaleZoom;
+            }
 
-	@Override
-	public void setupLayoutParameters()
-	{
-		this.lCenterX = Drawing.drawing.interfaceSizeX / 2;
-		this.lCenterY = Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5;
+            Game.movables.add(logo);
+        }
 
-		this.rCenterX = Drawing.drawing.interfaceSizeX / 2;
-		this.rCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
+        this.logo.luminance = Math.max(0.5, 1 - this.screenAge / 50.0);
 
-		if (Drawing.drawing.interfaceScaleZoom > 1)
-		{
-			this.rCenterX = Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2;
-			this.rCenterY = Drawing.drawing.interfaceSizeY / 2;
+        play.draw();
+        exit.draw();
+        options.draw();
+        languages.draw();
 
-			this.lCenterX = Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2;
-			this.lCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
-		}
-	}
+        if (Game.debug)
+            debug.draw();
 
-	public static class ScreenTitleMinigame extends Minigame
-	{
-		public ScreenTitle screen;
+        about.draw();
 
-		public ScreenTitleMinigame(ScreenTitle screen)
-		{
-			super("{28,18||0-0-player}");
-			this.screen = screen;
-		}
+        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setInterfaceFontSize(24);
 
-		@Override
-		public void onKill(Tank attacker, Tank target)
-		{
-			if (target == screen.logo)
-			{
-				screen.music = "menu_1.ogg";
-				Panel.forceRefreshMusic = true;
-			}
-			else if (attacker == screen.logo && screen.controlPlayer)
-			{
-				Drawing.drawing.playSound("hit_chain.ogg", (float) Math.pow(2, Math.min(24 - 1, screen.chain) / 12.0), 0.5f);
-				screen.chain++;
+        if (Game.player.enableTertiaryColor)
+            Drawing.drawing.setColor(Game.player.color3);
+        else
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color.red), Turret.calculateSecondaryColor(Game.player.color.green), Turret.calculateSecondaryColor(Game.player.color.blue));
+        Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
+        Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
 
-				Effect e = Effect.createNewEffect(target.posX, target.posY, target.size / 2, Effect.EffectType.chain);
-				e.radius = screen.chain;
-				Game.effects.add(Game.effects.size(), e);
-			}
-		}
-	}
+        Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color2.red), Turret.calculateSecondaryColor(Game.player.color2.green), Turret.calculateSecondaryColor(Game.player.color2.blue));
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
+
+        Drawing.drawing.setColor(Game.player.color);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
+        Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
+
+        Drawing.drawing.setColor(Game.player.color2);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
+
+        for (int i = Game.movables.size() - 1; i >= 0; i--)
+        {
+            Game.movables.get(i).draw();
+
+            if (Game.movables.get(i) instanceof IDrawableWithGlow)
+                ((IDrawableWithGlow) Game.movables.get(i)).drawGlow();
+        }
+
+        for (int i = 0; i < Game.effects.size(); i++)
+        {
+            Game.effects.get(i).draw();
+        }
+
+        for (int i = 0; i < Game.effects.size(); i++)
+        {
+            Game.effects.get(i).drawGlow();
+        }
+    }
+
+    @Override
+    public void draw()
+    {
+        if (Game.screen == this)
+            this.drawDefaultBackground();
+
+        this.drawWithoutBackground();
+    }
+
+    @Override
+    public void drawPostMouse()
+    {
+        if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT)) && Drawing.drawing.interfaceScaleZoom == 1)
+            this.logo.draw();
+    }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.lCenterX = Drawing.drawing.interfaceSizeX / 2;
+        this.lCenterY = Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5;
+
+        this.rCenterX = Drawing.drawing.interfaceSizeX / 2;
+        this.rCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
+
+        if (Drawing.drawing.interfaceScaleZoom > 1)
+        {
+            this.rCenterX = Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2;
+            this.rCenterY = Drawing.drawing.interfaceSizeY / 2;
+
+            this.lCenterX = Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2;
+            this.lCenterY = Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5;
+        }
+    }
+
+    public static class ScreenTitleMinigame extends Minigame
+    {
+        public ScreenTitle screen;
+
+        public ScreenTitleMinigame(ScreenTitle screen)
+        {
+            super("{28,18||0-0-player}");
+            this.screen = screen;
+        }
+
+        @Override
+        public void onKill(Tank attacker, Tank target)
+        {
+            if (target == screen.logo)
+            {
+                screen.music = "menu_1.ogg";
+                Panel.forceRefreshMusic = true;
+            }
+            else if (attacker == screen.logo && screen.controlPlayer)
+            {
+                Drawing.drawing.playSound("hit_chain.ogg", (float) Math.pow(2, Math.min(24 - 1, screen.chain) / 12.0), 0.5f);
+                screen.chain++;
+
+                Effect e = Effect.createNewEffect(target.posX, target.posY, target.size / 2, Effect.EffectType.chain);
+                e.radius = screen.chain;
+                Game.effects.add(Game.effects.size(), e);
+            }
+        }
+    }
 }

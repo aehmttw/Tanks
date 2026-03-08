@@ -242,7 +242,7 @@ public class Tanks
     {
         Game.extraExtensions = extensions;
         Game.extraExtensionOrder = order;
-        
+
         // Append "no_relaunch" to the arguments.
         String[] newArgs = Arrays.copyOf(args, args.length + 1);
         newArgs[args.length] = "no_relaunch";

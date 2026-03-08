@@ -546,7 +546,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             }
             else
             {
-                drawing.fillOval(this.posX, this.posY,this.size, this.size);
+                drawing.fillOval(this.posX, this.posY, this.size, this.size);
                 drawing.setColor(this.color, a, 0);
                 drawing.fillOval(this.posX, this.posY, this.posZ + this.age, this.size * 0.8, this.size * 0.8);
                 drawing.setFontSize(32 * this.size / Game.tile_size);

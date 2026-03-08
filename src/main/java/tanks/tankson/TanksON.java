@@ -328,5 +328,3 @@ public class TanksON
             return a != null && a.equals(b);
     }
 }
-
-

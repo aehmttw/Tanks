@@ -168,7 +168,7 @@ public class ScreenOverlayChat
                             if (c.color3.red >= 0)
                                 Drawing.drawing.setColor(c.color3, 255 * opacity);
                             else
-                                Drawing.drawing.setColor((c.color1.red + c.color2.red) / 2, (c.color1.green + c.color2.green) / 2, (c.color1.blue + c.color2.blue) / 2,255 * opacity);
+                                Drawing.drawing.setColor((c.color1.red + c.color2.red) / 2, (c.color1.green + c.color2.green) / 2, (c.color1.blue + c.color2.blue) / 2, 255 * opacity);
                             Drawing.drawing.drawInterfaceModel(TankModels.plainTankModel.turretBase, x, y, size, size, 0);
                         }
 

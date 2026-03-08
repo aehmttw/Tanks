@@ -57,7 +57,7 @@ public class ScreenOverlayIconColors
                     Button b = new Button(0, 0, 45, 45, "", () ->
                     {
                         this.colorSelector = new SelectorColor(selectorScreen.centerX + selectorScreen.objXSpace / 2, selectorScreen.centerY - selectorScreen.objYSpace * 3, selectorScreen.objWidth, selectorScreen.objHeight, "Layer",
-                                selectorScreen.objYSpace * 1.5, selector.selectedIcon.colors.get(finalI), selector.selectedIcon.alphas.get(finalI), () -> {selector.itemBeingEdited.autoIcon = false;});
+                                selectorScreen.objYSpace * 1.5, selector.selectedIcon.colors.get(finalI), selector.selectedIcon.alphas.get(finalI), () -> {selector.itemBeingEdited.autoIcon = false; });
                         this.selectedLayer = c2;
                     });
                     b.imageSizeX = 45;

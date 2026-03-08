@@ -585,7 +585,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         if (mousePlaceable instanceof Tank)
             ((Tank) mousePlaceable).angle = ((Tank) mousePlaceable).orientation;
 
-//		allowClose = this.undoActions.isEmpty() && !modified;
+//      allowClose = this.undoActions.isEmpty() && !modified;
         clickCooldown = Math.max(0, clickCooldown - Panel.frameFrequency);
 
         if (grab.keybind.isValid())
@@ -2059,7 +2059,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         else
             this.fontBrightness = 0;
 
-//		windowTitle = (allowClose ? "" : "*");
+//      windowTitle = (allowClose ? "" : "*");
 
         if (Panel.panel.continuation == null)
         {
@@ -2188,14 +2188,14 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 int y = (int) (mousePlaceable.posY / Game.tile_size);
 
                 if (x >= 0 && x < Game.currentSizeX && y >= 0 && y < Game.currentSizeY /*&&
-						(Game.getObstacle(x, y) == null || (Game.getSurfaceObstacle(x, y) == null &&
-								Game.getObstacle(x, y).isSurfaceTile != mousePlaceable.isSurfaceTile && !mousePlaceable.tankCollision))*/)
+                        (Game.getObstacle(x, y) == null || (Game.getSurfaceObstacle(x, y) == null &&
+                                Game.getObstacle(x, y).isSurfaceTile != mousePlaceable.isSurfaceTile && !mousePlaceable.tankCollision))*/)
                 {
                     Obstacle mouseObstacle = (Obstacle) mousePlaceable;
                     if (Game.enable3d)
                     {
                         if (Game.isOrdered(-1, x, Game.currentSizeX) && Game.isOrdered(-1, y, Game.currentSizeY) /*&&
-								(Game.getObstacle(x, y) == null || !Game.isOrdered(Game.getObstacle(x, y).startHeight, mousePlaceable.stackHeight + mousePlaceableStartHeight, Game.getObstacle(x, y).stackHeight))*/)
+                                (Game.getObstacle(x, y) == null || !Game.isOrdered(Game.getObstacle(x, y).startHeight, mousePlaceable.stackHeight + mousePlaceableStartHeight, Game.getObstacle(x, y).stackHeight))*/)
                             mouseObstacle.draw3dOutline(mouseObstacle.colorR, mouseObstacle.colorG, mouseObstacle.colorB, 100);
                     }
 
@@ -2241,22 +2241,22 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             {
                 Drawing.drawing.displayInterfaceText(this.centerX, Drawing.drawing.interfaceSizeY - this.objYSpace * 2 - 0, "Pinch to zoom");
                 recenter.draw();
-//				if (panDown)
-//				{
-//					Drawing.drawing.setColor(255, 255, 255);
-//					Drawing.drawing.setInterfaceFontSize(24);
-//					Drawing.drawing.fillOval(this.panCurrentX, this.panCurrentY, 40, 40);
-//					Drawing.drawing.drawInterfaceText(100, 100, (int) this.panCurrentX + " " + (int) this.panCurrentY);
-//				}
-//				Drawing.drawing.setColor(255, 0, 255);
-//				Drawing.drawing.fillOval(this.panX, this.panY, 40, 40);
-//				Drawing.drawing.drawInterfaceText(100, 200, (int) this.panX + " " + (int) this.panY);
-//				if (zoomDown)
-//				{
-//					Drawing.drawing.setColor(0, 255, 255);
-//					Drawing.drawing.fillOval(this.zoomCurrentX, this.zoomCurrentY, 40, 40);
-//					Drawing.drawing.drawInterfaceText(100, 300, (int) this.zoomCurrentX + " " + (int) this.zoomCurrentY);
-//				}
+//              if (panDown)
+//              {
+//                  Drawing.drawing.setColor(255, 255, 255);
+//                  Drawing.drawing.setInterfaceFontSize(24);
+//                  Drawing.drawing.fillOval(this.panCurrentX, this.panCurrentY, 40, 40);
+//                  Drawing.drawing.drawInterfaceText(100, 100, (int) this.panCurrentX + " " + (int) this.panCurrentY);
+//              }
+//              Drawing.drawing.setColor(255, 0, 255);
+//              Drawing.drawing.fillOval(this.panX, this.panY, 40, 40);
+//              Drawing.drawing.drawInterfaceText(100, 200, (int) this.panX + " " + (int) this.panY);
+//              if (zoomDown)
+//              {
+//                  Drawing.drawing.setColor(0, 255, 255);
+//                  Drawing.drawing.fillOval(this.zoomCurrentX, this.zoomCurrentY, 40, 40);
+//                  Drawing.drawing.drawInterfaceText(100, 300, (int) this.zoomCurrentX + " " + (int) this.zoomCurrentY);
+//              }
             }
             else
             {
@@ -2341,11 +2341,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
                     if (Game.enable3d)
                     {
-//						if (Game.getObstacle(gridX, gridY) != null)
-//						{
-//							Game.getObstacle(gridX, gridY).draw3dOutline(230 + extra, 230 + extra, 230 + extra, 128);
-//						}
-//						else
+//                      if (Game.getObstacle(gridX, gridY) != null)
+//                      {
+//                          Game.getObstacle(gridX, gridY).draw3dOutline(230 + extra, 230 + extra, 230 + extra, 128);
+//                      }
+//                      else
                         {
                             if (!selectInverted)
                                 Drawing.drawing.setColor(255, 255, 255, 127, 0.3);
@@ -2447,47 +2447,47 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             this.refreshSelection();
         }
 
-//		boolean obs = Game.getObstacle(x, y) != null || Game.getSurfaceObstacle(x, y) == null;
-//		Obstacle o = obs ? Game.getObstacle(x, y) : Game.getSurfaceObstacle(x, y);
-//		Class<? extends Obstacle> cls = o != null ? o.getClass() : null;
-//		ArrayList<Integer> xs = new ArrayList<>(), ys = new ArrayList<>();
-//		ArrayDeque<Point> deque = new ArrayDeque<>();
-//		deque.add(new Point(x, y));
+//      boolean obs = Game.getObstacle(x, y) != null || Game.getSurfaceObstacle(x, y) == null;
+//      Obstacle o = obs ? Game.getObstacle(x, y) : Game.getSurfaceObstacle(x, y);
+//      Class<? extends Obstacle> cls = o != null ? o.getClass() : null;
+//      ArrayList<Integer> xs = new ArrayList<>(), ys = new ArrayList<>();
+//      ArrayDeque<Point> deque = new ArrayDeque<>();
+//      deque.add(new Point(x, y));
 //
-//		selection = true;
+//      selection = true;
 //
-//		while (!deque.isEmpty())
-//		{
-//			Point p = deque.pop();
-//			for (int i = 0; i < 4; i++)
-//			{
-//				int newX = p.x + Game.dirX[i];
-//				int newY = p.y + Game.dirY[i];
+//      while (!deque.isEmpty())
+//      {
+//          Point p = deque.pop();
+//          for (int i = 0; i < 4; i++)
+//          {
+//              int newX = p.x + Game.dirX[i];
+//              int newY = p.y + Game.dirY[i];
 //
-//				if (newX < 0 || newX >= Game.currentSizeX || newY < 0 || newY >= Game.currentSizeY || selectedTiles[newX][newY] ||
-//						Math.abs(newX - x) + Math.abs(newY - y) > 50)
-//					continue;
+//              if (newX < 0 || newX >= Game.currentSizeX || newY < 0 || newY >= Game.currentSizeY || selectedTiles[newX][newY] ||
+//                      Math.abs(newX - x) + Math.abs(newY - y) > 50)
+//                  continue;
 //
-//				Obstacle o1 = obs ? Game.getObstacle(newX, newY) : Game.getSurfaceObstacle(newX, newY);
-//				if (cls == null)
-//				{
-//					if (o1 != null)
-//						continue;
-//				}
-//				else
-//				{
-//					if (o1 == null || !o1.getClass().equals(cls))
-//						continue;
-//				}
+//              Obstacle o1 = obs ? Game.getObstacle(newX, newY) : Game.getSurfaceObstacle(newX, newY);
+//              if (cls == null)
+//              {
+//                  if (o1 != null)
+//                      continue;
+//              }
+//              else
+//              {
+//                  if (o1 == null || !o1.getClass().equals(cls))
+//                      continue;
+//              }
 //
-//				xs.add(newX);
-//				ys.add(newY);
-//				selectedTiles[newX][newY] = true;
-//				deque.add(new Point(newX, newY));
-//			}
-//		}
+//              xs.add(newX);
+//              ys.add(newY);
+//              selectedTiles[newX][newY] = true;
+//              deque.add(new Point(newX, newY));
+//          }
+//      }
 //
-//		this.undoActions.add(new EditorAction.ActionSelectTiles(this, true, xs, ys));
+//      this.undoActions.add(new EditorAction.ActionSelectTiles(this, true, xs, ys));
     }
 
     public void previewShape(double lowX, double highX, double lowY, double highY)

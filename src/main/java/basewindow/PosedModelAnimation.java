@@ -118,7 +118,7 @@ public class PosedModelAnimation implements IPosedModelFrame
                 index++;
             }
 
-            AnimatedBoneRotationFrame next = this.rotationFrames.get(getIndex(lastIndex + 1, this.rotationFrames.size()));;
+            AnimatedBoneRotationFrame next = this.rotationFrames.get(getIndex(lastIndex + 1, this.rotationFrames.size())); ;
 
             if (next == last)
                 last.apply(b, frac);
@@ -143,7 +143,7 @@ public class PosedModelAnimation implements IPosedModelFrame
                 if (this.animation.cubic)
                 {
                     AnimatedBoneRotationFrame beforeLast = this.rotationFrames.get(getIndex(lastIndex - 1, this.rotationFrames.size()));
-                    AnimatedBoneRotationFrame afterNext = this.rotationFrames.get(getIndex(lastIndex + 2, this.rotationFrames.size()));;
+                    AnimatedBoneRotationFrame afterNext = this.rotationFrames.get(getIndex(lastIndex + 2, this.rotationFrames.size())); ;
 
                     beforeLast.applyCubic(b, frac2, frac, 0);
                     last.applyCubic(b, frac2, frac, 1);
@@ -181,7 +181,7 @@ public class PosedModelAnimation implements IPosedModelFrame
                 index++;
             }
 
-            AnimatedBoneTranslationFrame next = this.translationFrames.get(getIndex(lastIndex + 1, this.translationFrames.size()));;
+            AnimatedBoneTranslationFrame next = this.translationFrames.get(getIndex(lastIndex + 1, this.translationFrames.size())); ;
 
             if (next == last)
                 last.apply(b, frac);
@@ -206,7 +206,7 @@ public class PosedModelAnimation implements IPosedModelFrame
                 if (this.animation.cubic)
                 {
                     AnimatedBoneTranslationFrame beforeLast = this.translationFrames.get(getIndex(lastIndex - 1, this.translationFrames.size()));
-                    AnimatedBoneTranslationFrame afterNext = this.translationFrames.get(getIndex(lastIndex + 2, this.translationFrames.size()));;
+                    AnimatedBoneTranslationFrame afterNext = this.translationFrames.get(getIndex(lastIndex + 2, this.translationFrames.size())); ;
 
                     beforeLast.applyCubic(b, frac2, frac, 0);
                     last.applyCubic(b, frac2, frac, 1);

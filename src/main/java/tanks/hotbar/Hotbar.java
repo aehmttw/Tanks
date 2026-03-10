@@ -3,16 +3,10 @@ package tanks.hotbar;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.item.ItemShield;
+import tanks.item.*;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
-import tanks.tank.TankModels;
-import tanks.tank.TankPlayerController;
-import tanks.tank.Turret;
+import tanks.tank.*;
 import tanks.translation.Translation;
 
 import java.text.DecimalFormat;

@@ -1,10 +1,6 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFileManager;
-import basewindow.BaseWindow;
-import basewindow.ShaderGroup;
-import com.codedisaster.steamworks.SteamMatchmaking;
+import basewindow.*;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -24,10 +20,7 @@ import tanks.item.*;
 import tanks.minigames.ArcadeBeatBlocks;
 import tanks.minigames.ArcadeClassic;
 import tanks.minigames.Minigame;
-import tanks.network.Client;
-import tanks.network.NetworkEventMap;
-import tanks.network.SteamNetworkHandler;
-import tanks.network.SynchronizedList;
+import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
@@ -37,10 +30,9 @@ import tanks.rendering.ShaderGroundOutOfBounds;
 import tanks.rendering.ShaderTracks;
 import tanks.tank.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import com.codedisaster.steamworks.SteamMatchmaking;
+
+import java.io.*;
 import java.util.*;
 
 public class Game

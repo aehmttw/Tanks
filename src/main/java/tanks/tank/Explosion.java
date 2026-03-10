@@ -12,10 +12,7 @@ import tanks.item.Item;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
-import tanks.tankson.ICopyable;
-import tanks.tankson.ITanksONEditable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 import java.util.ArrayList;
 

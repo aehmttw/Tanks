@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.tank.TankSpawnMarker;
 

@@ -1,8 +1,9 @@
 package tanks.gui;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class TextWithStyling
 {

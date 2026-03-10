@@ -15,10 +15,7 @@ import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
-import tanks.tankson.ICopyable;
-import tanks.tankson.ITanksONEditable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

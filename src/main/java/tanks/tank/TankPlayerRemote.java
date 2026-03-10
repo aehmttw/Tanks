@@ -2,10 +2,7 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.attribute.AttributeModifier;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletAirStrike;
-import tanks.bullet.BulletArc;
-import tanks.bullet.DefaultItems;
+import tanks.bullet.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.Hotbar;

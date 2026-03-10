@@ -1,6 +1,7 @@
 package lwjglwindow;
 
 import basewindow.BaseSoundPlayer;
+
 import org.lwjgl.openal.*;
 import org.lwjgl.system.MemoryStack;
 

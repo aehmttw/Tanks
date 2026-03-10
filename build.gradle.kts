@@ -91,6 +91,7 @@ checkstyle {
     // into the check/build lifecycle. Linting only runs via `./gradlew lint`.
     sourceSets  = emptyList()
     isIgnoreFailures = false
+    isShowViolations = false
     maxWarnings = 0
 }
 

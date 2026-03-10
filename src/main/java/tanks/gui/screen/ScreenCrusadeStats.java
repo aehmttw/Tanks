@@ -13,10 +13,7 @@ import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenChatboxScreen, ICrusadePreviewScreen
 {

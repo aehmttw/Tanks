@@ -12,20 +12,14 @@ import tanks.gui.screen.ScreenPartyLobby;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.Item;
 import tanks.item.ItemDummyTankExplosion;
-import tanks.network.event.EventTankAddAttributeModifier;
-import tanks.network.event.EventTankUpdate;
-import tanks.network.event.EventTankUpdateHealth;
-import tanks.network.event.EventTankUpdateVisibility;
+import tanks.network.event.*;
 import tanks.obstacle.ISolidObject;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 import static tanks.tank.TankPropertyCategory.*;
 

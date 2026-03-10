@@ -1,10 +1,11 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayerController;
 import tanks.tank.TankRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankControllerUpdateS extends EventTankUpdate
 {

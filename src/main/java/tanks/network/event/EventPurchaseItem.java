@@ -1,11 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Movable;
 import tanks.Player;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.TankPlayerRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPurchaseItem extends PersonalEvent
 {

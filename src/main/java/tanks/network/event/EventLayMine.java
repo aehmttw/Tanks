@@ -1,10 +1,11 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.item.Item;
 import tanks.item.ItemMine;
 import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventLayMine extends PersonalEvent
 {

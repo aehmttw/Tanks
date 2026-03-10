@@ -1,15 +1,9 @@
 package tanks.gui;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenInfo;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;

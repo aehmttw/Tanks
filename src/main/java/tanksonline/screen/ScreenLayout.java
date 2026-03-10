@@ -1,12 +1,12 @@
 package tanksonline.screen;
 
 import tanks.Game;
-import tanks.network.event.online.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.UUIDTextBox;
 import tanks.gui.screen.ScreenOnline;
 import tanks.gui.screen.ScreenOverlayOnline;
+import tanks.network.event.online.*;
 import tanksonline.TanksOnlineServerHandler;
 
 import java.util.ArrayList;

@@ -1,10 +1,8 @@
 package lwjglwindow;
 
 import basewindow.*;
-import basewindow.transformation.AxisRotation;
-import basewindow.transformation.Rotation;
-import basewindow.transformation.Scale;
-import basewindow.transformation.Translation;
+import basewindow.transformation.*;
+
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;

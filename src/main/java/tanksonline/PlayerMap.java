@@ -2,18 +2,9 @@ package tanksonline;
 
 import tanks.Game;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.UUID;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
 public class PlayerMap
 {

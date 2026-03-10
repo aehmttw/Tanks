@@ -5,10 +5,7 @@ import tanks.tank.Tank;
 import tanks.tank.TankUnknown;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 public class RegistryTank
 {

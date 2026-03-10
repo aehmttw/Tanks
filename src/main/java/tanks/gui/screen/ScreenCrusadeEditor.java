@@ -2,10 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import tanks.*;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.Selector;
-import tanks.gui.TextBox;
+import tanks.gui.*;
 import tanks.item.Item;
 import tanks.item.ItemIcon;
 import tanks.registry.RegistryItem;
@@ -16,10 +13,7 @@ import tanks.tankson.MonitoredArrayListIndexPointer;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
 {

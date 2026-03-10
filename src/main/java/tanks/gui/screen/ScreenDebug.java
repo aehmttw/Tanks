@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Consumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Producer;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.tank.TankPlayer;

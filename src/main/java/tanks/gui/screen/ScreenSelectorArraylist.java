@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import tanks.*;
-import tanks.gui.Button;
-import tanks.gui.ITrigger;
-import tanks.gui.Selector;
-import tanks.gui.SelectorDrawable;
+import tanks.gui.*;
 
 import java.util.ArrayList;
 

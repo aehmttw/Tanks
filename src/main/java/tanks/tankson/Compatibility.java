@@ -9,10 +9,7 @@ import tanks.bullet.BulletEffect;
 import tanks.bullet.BulletGas;
 import tanks.item.ItemBullet;
 import tanks.item.ItemMine;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankModels;
+import tanks.tank.*;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

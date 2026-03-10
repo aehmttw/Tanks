@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventBulletInstantWaypoint extends PersonalEvent
 {

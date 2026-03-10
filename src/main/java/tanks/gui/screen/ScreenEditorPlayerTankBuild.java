@@ -1,19 +1,13 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Consumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.*;
 import tanks.item.Item;
 import tanks.item.ItemIcon;
 import tanks.registry.RegistryItem;
 import tanks.tank.*;
-import tanks.tankson.ArrayListIndexPointer;
-import tanks.tankson.FieldPointer;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
+import tanks.tankson.*;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

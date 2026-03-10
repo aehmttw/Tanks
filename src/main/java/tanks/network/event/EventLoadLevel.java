@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Crusade;
 import tanks.Game;
 import tanks.Level;
@@ -11,6 +10,8 @@ import tanks.minigames.Minigame;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
 

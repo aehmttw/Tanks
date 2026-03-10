@@ -1,11 +1,12 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamFriends;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.network.FriendsMixin;
+
+import com.codedisaster.steamworks.SteamFriends;
 
 import java.util.ArrayList;
 

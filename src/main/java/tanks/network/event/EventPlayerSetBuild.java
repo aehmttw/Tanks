@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.Team;
@@ -10,6 +9,8 @@ import tanks.network.ServerHandler;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPlayerSetBuild extends PersonalEvent
 {

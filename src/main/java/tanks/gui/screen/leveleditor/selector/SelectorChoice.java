@@ -1,9 +1,6 @@
 package tanks.gui.screen.leveleditor.selector;
 
-import tanks.BiConsumer;
-import tanks.Function;
-import tanks.Game;
-import tanks.GameObject;
+import tanks.*;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.leveleditor.OverlaySelectChoice;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;

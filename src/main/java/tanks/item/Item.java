@@ -3,10 +3,7 @@ package tanks.item;
 import basewindow.Color;
 import tanks.*;
 import tanks.bullet.*;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 import tanks.tankson.*;
 
 @TanksONable("item")

@@ -9,10 +9,7 @@ import tanks.network.ConnectedPlayer;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 public class Player
 {

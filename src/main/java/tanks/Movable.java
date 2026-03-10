@@ -10,10 +10,7 @@ import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface

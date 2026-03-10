@@ -1,9 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Team;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;

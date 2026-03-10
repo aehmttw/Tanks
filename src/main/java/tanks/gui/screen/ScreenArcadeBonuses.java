@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Firework;
 import tanks.minigames.Arcade;
 import tanks.network.event.EventArcadeBonuses;

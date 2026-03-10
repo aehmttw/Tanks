@@ -1,9 +1,6 @@
 package tanks.attribute;
 
-import tanks.BiConsumer;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.event.EventStatusEffectBegin;

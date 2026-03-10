@@ -1,9 +1,10 @@
 package tanks.network;
 
 import basewindow.BaseFile;
-import com.codedisaster.steamworks.*;
 import tanks.*;
 import tanks.gui.screen.*;
+
+import com.codedisaster.steamworks.*;
 
 import java.util.*;
 

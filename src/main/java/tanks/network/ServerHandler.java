@@ -1,5 +1,11 @@
 package tanks.network;
 
+import tanks.Game;
+import tanks.Player;
+import tanks.gui.ChatMessage;
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.network.event.*;
+
 import com.codedisaster.steamworks.SteamID;
 import com.codedisaster.steamworks.SteamNetworking;
 import io.netty.buffer.ByteBuf;
@@ -7,11 +13,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import tanks.Game;
-import tanks.Player;
-import tanks.gui.ChatMessage;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.event.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;

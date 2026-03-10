@@ -3,26 +3,17 @@ package tanks.minigames;
 import tanks.*;
 import tanks.attribute.StatusEffect;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.IDarkScreen;
-import tanks.gui.screen.ScreenArcadeBonuses;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.hotbar.Hotbar;
 import tanks.item.Item;
 import tanks.item.ItemShield;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
-import tanks.tank.Crate;
-import tanks.tank.IServerPlayerTank;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
+import tanks.tank.*;
 import tanks.translation.Translation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 public class Arcade extends Minigame
 {

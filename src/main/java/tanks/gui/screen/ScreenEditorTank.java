@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.*;
 import tanks.tank.*;

@@ -1,16 +1,14 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventShootBullet extends PersonalEvent
 {

@@ -1,10 +1,7 @@
 package tanks.gui;
 
 import tanks.*;
-import tanks.gui.screen.IDarkScreen;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 
 public class SpeedrunTimer
 {

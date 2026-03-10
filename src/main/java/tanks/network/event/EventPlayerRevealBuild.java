@@ -1,11 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Movable;
 import tanks.tank.Tank;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPlayerRevealBuild extends PersonalEvent
 {

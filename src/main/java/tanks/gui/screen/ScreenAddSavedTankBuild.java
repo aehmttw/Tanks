@@ -6,10 +6,7 @@ import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayPlayerBuilds;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayable;
-import tanks.tank.TankPlayer;
+import tanks.tank.*;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 

@@ -1,12 +1,13 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamUGCDetails;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SearchBox;
 import tanks.translation.Translation;
+
+import com.codedisaster.steamworks.SteamUGCDetails;
 
 import java.util.ArrayList;
 import java.util.Objects;

@@ -1,10 +1,7 @@
 package tanks.bullet;
 
 import basewindow.Color;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.tank.Turret;
 import tanks.tankson.*;
 

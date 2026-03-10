@@ -1,10 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import basewindow.InputCodes;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
-import tanks.ToBooleanFunction;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
 import tanks.translation.Translation;

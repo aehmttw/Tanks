@@ -1,19 +1,13 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.Item;
 import tanks.item.ItemDummyBlockExplosion;
 import tanks.network.event.EventObstacleDestroy;
 import tanks.rendering.ShaderExplosive;
-import tanks.tank.Explosion;
-import tanks.tank.IAvoidObject;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
+import tanks.tank.*;
 
 public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
 {

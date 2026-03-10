@@ -1,10 +1,10 @@
 package tanksonline.screen;
 
 import tanks.Game;
-import tanks.network.event.online.EventAddButton;
-import tanks.network.event.online.EventRemoveButton;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
+import tanks.network.event.online.EventAddButton;
+import tanks.network.event.online.EventRemoveButton;
 import tanksonline.PlayerMap;
 import tanksonline.TanksOnlineServerHandler;
 import tanksonline.UploadedLevel;

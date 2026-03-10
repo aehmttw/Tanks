@@ -3,10 +3,7 @@ package tanksonline.screen;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
-import tanksonline.AccessCode;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlinePlayer;
-import tanksonline.TanksOnlineServerHandler;
+import tanksonline.*;
 
 import java.io.File;
 

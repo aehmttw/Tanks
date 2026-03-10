@@ -1,5 +1,13 @@
 package tanks.network;
 
+import tanks.Crusade;
+import tanks.Game;
+import tanks.Panel;
+import tanks.gui.screen.ScreenOverlayOnline;
+import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.event.*;
+import tanks.network.event.online.EventSendOnlineClientDetails;
+
 import com.codedisaster.steamworks.SteamID;
 import com.codedisaster.steamworks.SteamNetworking;
 import io.netty.buffer.ByteBuf;
@@ -7,16 +15,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Panel;
-import tanks.gui.screen.ScreenOverlayOnline;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.network.event.EventKick;
-import tanks.network.event.EventSendClientDetails;
-import tanks.network.event.INetworkEvent;
-import tanks.network.event.IStackableEvent;
-import tanks.network.event.online.EventSendOnlineClientDetails;
 
 import java.util.HashMap;
 import java.util.UUID;

@@ -3,21 +3,16 @@ package main;
 import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import tanks.*;
-import tanks.Panel;
 import tanks.extension.Extension;
-import tanksonline.CommandExecutor;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlineServer;
+import tanksonline.*;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Properties;
+import javax.swing.*;
 
 public class Tanks
 {

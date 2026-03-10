@@ -1,7 +1,5 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamID;
-import com.codedisaster.steamworks.SteamNetworking;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
@@ -11,6 +9,9 @@ import tanks.gui.TextBox;
 import tanks.network.Client;
 import tanks.network.event.EventChat;
 import tanks.network.event.EventSendClientDetails;
+
+import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.SteamNetworking;
 
 import java.util.UUID;
 

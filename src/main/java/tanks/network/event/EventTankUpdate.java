@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.tank.Tank;
 import tanks.tank.TankRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankUpdate extends PersonalEvent implements IStackableEvent
 {

@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import basewindow.transformation.RotationAboutPoint;
-import basewindow.transformation.ScaleAboutPoint;
-import basewindow.transformation.Transformation;
-import basewindow.transformation.Translation;
+import basewindow.transformation.*;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.StaticTerrainRenderer;

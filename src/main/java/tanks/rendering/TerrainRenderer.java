@@ -1,10 +1,7 @@
 package tanks.rendering;
 
 import basewindow.*;
-import tanks.Chunk;
-import tanks.Direction;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.ScreenIntro;
 import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;

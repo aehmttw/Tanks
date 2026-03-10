@@ -1,11 +1,12 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 

@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.BiConsumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;

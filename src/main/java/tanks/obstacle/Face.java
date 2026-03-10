@@ -1,9 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Chunk;
-import tanks.Direction;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 

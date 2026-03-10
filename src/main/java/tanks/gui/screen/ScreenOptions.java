@@ -1,7 +1,6 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import com.codedisaster.steamworks.SteamMatchmaking;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
@@ -12,6 +11,8 @@ import tanks.tank.TankPlayer;
 import tanks.tank.TankPlayerRemote;
 import tanks.tank.Turret;
 import tanks.translation.Translation;
+
+import com.codedisaster.steamworks.SteamMatchmaking;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

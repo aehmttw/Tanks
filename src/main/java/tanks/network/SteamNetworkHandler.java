@@ -1,19 +1,17 @@
 package tanks.network;
 
-import com.codedisaster.steamworks.*;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.*;
 import tanks.network.event.INetworkEvent;
 
+import com.codedisaster.steamworks.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SteamNetworkHandler

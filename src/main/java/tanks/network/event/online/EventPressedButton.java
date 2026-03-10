@@ -1,8 +1,9 @@
 package tanks.network.event.online;
 
-import io.netty.buffer.ByteBuf;
 import tanks.network.event.PersonalEvent;
 import tanksonline.TanksOnlineServerHandler;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPressedButton extends PersonalEvent implements IOnlineServerEvent
 {

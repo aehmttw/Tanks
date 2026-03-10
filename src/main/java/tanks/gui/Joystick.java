@@ -1,10 +1,7 @@
 package tanks.gui;
 
 import basewindow.InputPoint;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawable;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.minigames.Arcade;
 import tanks.minigames.Minigame;

@@ -1,20 +1,11 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.bullet.*;
-import tanks.gui.Button;
-import tanks.gui.EmptySpace;
-import tanks.gui.ITrigger;
-import tanks.gui.SelectorColor;
+import tanks.gui.*;
 import tanks.tank.Turret;
-import tanks.tankson.ArrayListIndexPointer;
-import tanks.tankson.FieldPointer;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
+import tanks.tankson.*;
 import tanks.translation.Translation;
 
 import java.io.IOException;

@@ -1,14 +1,8 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
-import tanks.gui.Button;
-import tanks.gui.SavedFilesList;
-import tanks.gui.ScreenElement;
-import tanks.gui.SearchBoxInstant;
+import tanks.*;
+import tanks.gui.*;
 import tanks.translation.Translation;
 
 import java.io.IOException;

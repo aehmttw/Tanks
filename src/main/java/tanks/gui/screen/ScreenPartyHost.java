@@ -1,6 +1,5 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamMatchmaking;
 import tanks.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
@@ -13,6 +12,8 @@ import tanks.network.event.*;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 import tanks.translation.Translation;
+
+import com.codedisaster.steamworks.SteamMatchmaking;
 
 import java.net.Inet4Address;
 import java.net.UnknownHostException;

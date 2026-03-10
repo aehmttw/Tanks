@@ -1,10 +1,11 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Effect;
 import tanks.Game;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankMimicTransform extends PersonalEvent
 {

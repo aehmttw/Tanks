@@ -1,6 +1,5 @@
 package tanks.network.event.online;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.network.event.EventKick;
@@ -11,6 +10,8 @@ import tanksonline.TanksOnlineServerHandler;
 import tanksonline.screen.ScreenAccessCodeExpired;
 import tanksonline.screen.ScreenHome;
 import tanksonline.screen.ScreenInsertAccessCode;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 

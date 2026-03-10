@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
 import tanks.translation.Translation;

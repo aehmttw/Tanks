@@ -23,10 +23,7 @@ import tanks.obstacle.ObstacleStackable;
 import tanks.rendering.TrackRenderer;
 import tanks.tank.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 
 public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGameScreen
 {

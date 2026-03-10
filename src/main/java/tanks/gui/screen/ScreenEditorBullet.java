@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.bullet.*;
 import tanks.gui.*;
 import tanks.item.ItemBullet;

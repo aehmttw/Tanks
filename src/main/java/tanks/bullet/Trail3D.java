@@ -2,10 +2,7 @@ package tanks.bullet;
 
 import basewindow.Model;
 import basewindow.transformation.AxisRotation;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 
 public class Trail3D extends Trail

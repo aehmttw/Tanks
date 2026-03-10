@@ -1,10 +1,7 @@
 package tanks.gui;
 
 import basewindow.BaseFile;
-import tanks.BiConsumer;
-import tanks.Drawing;
-import tanks.Function;
-import tanks.Game;
+import tanks.*;
 
 import java.io.IOException;
 import java.util.ArrayList;

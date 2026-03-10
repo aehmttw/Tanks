@@ -1,9 +1,6 @@
 package tanks.gui;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenSelector;
 
 public class SelectorImage extends Selector

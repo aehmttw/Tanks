@@ -1,16 +1,16 @@
 package tanks.tankson;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.util.*;
-
 import basewindow.Color;
 import tanks.Game;
 import tanks.Team;
 import tanks.bullet.*;
 import tanks.item.Item;
 import tanks.tank.*;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
 
 public final class Serializer
 {

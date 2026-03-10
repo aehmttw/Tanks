@@ -1,6 +1,5 @@
 package tanks.network.event.online;
 
-import io.netty.buffer.ByteBuf;
 import tanks.network.NetworkUtils;
 import tanks.network.event.PersonalEvent;
 import tanksonline.PlayerMap;
@@ -8,6 +7,8 @@ import tanksonline.TanksOnlineServerHandler;
 import tanksonline.UploadedLevel;
 import tanksonline.screen.ScreenLayout;
 import tanksonline.screen.ScreenUploadFinished;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventUploadLevel extends PersonalEvent implements IOnlineServerEvent
 {

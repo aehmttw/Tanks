@@ -1,10 +1,7 @@
 package tanks.gui;
 
 import basewindow.BaseShapeBatchRenderer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.rendering.ShaderFireworkExplosion;
 import tanks.rendering.ShaderFireworkExplosionTrail;
 

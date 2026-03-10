@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.InputCodes;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.gui.SelectorMusic;

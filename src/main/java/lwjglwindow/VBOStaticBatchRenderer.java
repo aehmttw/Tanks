@@ -6,6 +6,7 @@ import basewindow.ShaderGroup;
 import basewindow.transformation.Rotation;
 import basewindow.transformation.Scale;
 import basewindow.transformation.Translation;
+
 import org.lwjgl.BufferUtils;
 
 import java.nio.Buffer;

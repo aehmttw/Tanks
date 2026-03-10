@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.ChatBox;
 import tanks.gui.ChatMessage;
 import tanks.tank.TankModels;

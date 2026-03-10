@@ -6,9 +6,9 @@ import tanks.gui.*;
 import tanks.gui.screen.leveleditor.*;
 import tanks.translation.Translation;
 
-import javax.management.Notification;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.management.Notification;
 
 public class ScreenSavedLevels extends Screen
 {

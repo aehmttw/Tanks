@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.IBatchRenderableObject;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.ScreenIntro;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.StaticTerrainRenderer;

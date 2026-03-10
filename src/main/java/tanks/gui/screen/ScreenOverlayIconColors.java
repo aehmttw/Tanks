@@ -3,10 +3,7 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Level;
 import tanks.Panel;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.SelectorColor;
-import tanks.gui.SelectorItemIcon;
+import tanks.gui.*;
 
 import java.util.ArrayList;
 

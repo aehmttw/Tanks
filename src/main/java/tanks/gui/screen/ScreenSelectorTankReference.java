@@ -5,10 +5,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
-import tanks.tank.ITankField;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankReference;
+import tanks.tank.*;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 

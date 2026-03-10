@@ -1,9 +1,6 @@
 package tanks.item;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.tank.Tank;
 import tanks.tankson.ICopyable;

@@ -1,9 +1,6 @@
 package tanks.gui;
 
-import basewindow.Color;
-import basewindow.IModel;
-import basewindow.InputCodes;
-import basewindow.InputPoint;
+import basewindow.*;
 import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.*;

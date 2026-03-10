@@ -2,6 +2,8 @@ package lwjglwindow;
 
 import basewindow.*;
 import basewindow.transformation.*;
+import tanks.Game;
+
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.BufferUtils;
@@ -9,15 +11,14 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
-import tanks.Game;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.nio.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import javax.imageio.ImageIO;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;

@@ -1,9 +1,6 @@
 package tanks.gui;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 
 import java.util.ArrayList;
 

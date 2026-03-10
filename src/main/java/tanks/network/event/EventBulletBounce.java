@@ -1,7 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.bullet.Bullet;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventBulletBounce extends PersonalEvent
 {

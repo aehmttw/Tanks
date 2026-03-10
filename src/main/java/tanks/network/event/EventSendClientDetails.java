@@ -1,6 +1,5 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Crusade;
 import tanks.Game;
 import tanks.Player;
@@ -11,6 +10,8 @@ import tanks.gui.screen.ScreenPartyHost;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 

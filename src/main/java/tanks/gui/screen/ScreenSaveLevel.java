@@ -1,17 +1,15 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamUGCDetails;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
+
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamUGCDetails;
 
 import java.io.IOException;
 import java.util.ArrayList;

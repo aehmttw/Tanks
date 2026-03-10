@@ -108,7 +108,8 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
         else
             opacity = Math.min(255 * this.opacity, 254) * (1 - this.destroyTimer / this.maxDestroyTimer);
 
-        Drawing.drawing.setColor(this.startColor.red * frac + this.endColor.red * (1 - frac), this.startColor.green * frac + this.endColor.green * (1 - frac), this.startColor.blue * frac + this.endColor.blue * (1 - frac), opacity, this.effect.luminance);
+        Drawing.drawing.setColor(this.startColor.red * frac + this.endColor.red * (1 - frac), this.startColor.green * frac + this.endColor.green * (1 - frac),
+                this.startColor.blue * frac + this.endColor.blue * (1 - frac), opacity, this.effect.luminance);
 
         if (Game.enable3d)
             Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -131,7 +132,8 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
 
 
         if (!this.effect.overrideGlowColor)
-            Drawing.drawing.setColor(this.startColor.red * frac + this.endColor.red * (1 - frac), this.startColor.green * frac + this.endColor.green * (1 - frac), this.startColor.blue * frac + this.endColor.blue * (1 - frac), opacity, opacity / 255 * this.effect.glowIntensity);
+            Drawing.drawing.setColor(this.startColor.red * frac + this.endColor.red * (1 - frac), this.startColor.green * frac + this.endColor.green * (1 - frac),
+                    this.startColor.blue * frac + this.endColor.blue * (1 - frac), opacity, opacity / 255 * this.effect.glowIntensity);
         else
             Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, opacity, opacity / 255 * this.effect.glowIntensity);
 
@@ -256,7 +258,8 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
                     c1.green * frac + c2.green * (1 - frac) + randoms[i] * this.noise.green,
                     c1.blue * frac + c2.blue * (1 - frac) + randoms[i] * this.noise.blue,
                     opacity, this.effect.luminance);
-            Drawing.drawing.fillInterfaceOval(start + l * (1 - f), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed, (frac * startSize + (1 - frac) * endSize), (frac * startSize + (1 - frac) * endSize));
+            Drawing.drawing.fillInterfaceOval(start + l * (1 - f), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed,
+                    (frac * startSize + (1 - frac) * endSize), (frac * startSize + (1 - frac) * endSize));
         }
 
         for (int i = 0; i < (int) life; i++)
@@ -281,9 +284,11 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
                         c1.blue * frac + c2.blue * (1 - frac) + randoms[i] * this.noise.blue,
                         opacity, opacity / 255 * this.effect.glowIntensity);
             else
-                Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, opacity, opacity / 255 * this.effect.glowIntensity);
+                Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, opacity,
+                        opacity / 255 * this.effect.glowIntensity);
 
-            Drawing.drawing.fillInterfaceGlow(start + l * (1 - f), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed, this.effect.glowSize * (frac * startSize + (1 - frac) * endSize), this.effect.glowSize * (frac * startSize + (1 - frac) * endSize));
+            Drawing.drawing.fillInterfaceGlow(start + l * (1 - f), y + (randoms[(int) (life + i)] - 0.5) * spread * i / 100.0 * speed,
+                    this.effect.glowSize * (frac * startSize + (1 - frac) * endSize), this.effect.glowSize * (frac * startSize + (1 - frac) * endSize));
 
         }
     }
@@ -343,9 +348,11 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
             double v = this.homingSharpness > 0 ? 1 : -1;
 
             if (Game.enable3d)
-                e.set3dPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, Math.PI * 0.1 * (Math.random() - 0.5), 0.2 * (12 + Math.random() * 4) * v);
+                e.set3dPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01,
+                        Math.PI * 0.1 * (Math.random() - 0.5), 0.2 * (12 + Math.random() * 4) * v);
             else
-                e.setPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, 0.2 * (12 + Math.random() * 4) * v);
+                e.setPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01,
+                        0.2 * (12 + Math.random() * 4) * v);
 
             Game.effects.add(e);
         }

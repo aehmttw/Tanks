@@ -3,7 +3,6 @@ package lwjglwindow;
 import org.lwjgl.opengl.GL13;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -21,12 +20,12 @@ public class ShaderHandler
     public boolean initialized;
 
     float[] biasMatrix = new float[]
-            {
-                    0.5f, 0.0f, 0.0f, 0.0f,
-                    0.0f, 0.5f, 0.0f, 0.0f,
-                    0.0f, 0.0f, 0.5f, 0.0f,
-                    0.5f, 0.5f, 0.5f, 1.0f
-            };
+    {
+        0.5f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.5f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.5f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f
+    };
 
     public ShaderHandler(LWJGLWindow window)
     {

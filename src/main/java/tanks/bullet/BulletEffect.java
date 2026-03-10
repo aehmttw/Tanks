@@ -24,7 +24,8 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
     @Property(id = "particle_speed", name = "Particle speed", category = BulletEffectPropertyCategory.particle, minValue = 0)
     public double particleSpeed = 4;
 
-    @Property(id = "luminance", minValue = 0.0, maxValue = 1.0, name = "Luminance", category = BulletEffectPropertyCategory.glow, desc = "How bright the bullet will be in dark lighting. At 0, the bullet will be shaded like terrain by lighting. At 1, the bullet will always be fully bright.")
+    @Property(id = "luminance", minValue = 0.0, maxValue = 1.0, name = "Luminance", category = BulletEffectPropertyCategory.glow,
+            desc = "How bright the bullet will be in dark lighting. At 0, the bullet will be shaded like terrain by lighting. At 1, the bullet will always be fully bright.")
     public double luminance = 0.5;
     @Property(id = "glow_intensity", minValue = 0.0, name = "Aura intensity", category = BulletEffectPropertyCategory.glow)
     public double glowIntensity = 1;
@@ -37,7 +38,8 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
     @Property(id = "glow_color", name = "Aura color", category = BulletEffectPropertyCategory.glow, miscType = Property.MiscType.colorRGB)
     public Color glowColor = new Color(0, 0, 0, 0);
 
-    @Property(id = "homing_particles", name = "Enable homing particles", category = BulletEffectPropertyCategory.particleHoming, desc = "When enabled, the bullet will display particles when it is homing towards a target.")
+    @Property(id = "homing_particles", name = "Enable homing particles", category = BulletEffectPropertyCategory.particleHoming,
+            desc = "When enabled, the bullet will display particles when it is homing towards a target.")
     public boolean enableHomingParticles = true;
     @Property(id = "homing_particle_color", name = "Particle color", category = BulletEffectPropertyCategory.particleHoming, miscType = Property.MiscType.colorRGB)
     public Color homingParticleColor = new Color(255, 120, 0, 255);
@@ -53,19 +55,28 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
 
     static
     {
-        trail.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
+        trail.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0,
+                false, 0.5, true, true));
 
-        long_trail.trailEffects.add(new Trail(0, 1, 1, 15 * 1.5, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
+        long_trail.trailEffects.add(new Trail(0, 1, 1, 15 * 1.5, 127, 127, 127, 100, 127, 127, 127,
+                0, false, 0.5, true, true));
 
-        fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
-        fire.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
+        fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0,
+                false, 0.5, true, true));
+        fire.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0,
+                false, 1, true, true));
 
-        fire_trail.trailEffects.add(new Trail(7, 2, 2, 50, 80, 80, 80, 100, 80, 80, 80, 0, false, 0.5, false, true));
-        fire_trail.trailEffects.add(new Trail(3, 2, 2, 4, 80, 80, 80, 0, 80, 80, 80, 100, false, 0.5, true, false));
-        fire_trail.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0, false, 1, true, true));
+        fire_trail.trailEffects.add(new Trail(7, 2, 2, 50, 80, 80, 80, 100, 80, 80, 80, 0,
+                false, 0.5, false, true));
+        fire_trail.trailEffects.add(new Trail(3, 2, 2, 4, 80, 80, 80, 0, 80, 80, 80, 100,
+                false, 0.5, true, false));
+        fire_trail.trailEffects.add(new Trail(0, 5, 1, 5, 255, 255, 0, 255, 255, 0, 0, 0,
+                false, 1, true, true));
 
-        dark_fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127, 0, false, 0.5, true, true));
-        dark_fire.trailEffects.add(new Trail(0, 5, 1, 5, 0, 0, 0, 255, 64, 0, 128, 0, false, 1, true, true));
+        dark_fire.trailEffects.add(new Trail(0, 1, 1, 15, 127, 127, 127, 100, 127, 127, 127,
+                0, false, 0.5, true, true));
+        dark_fire.trailEffects.add(new Trail(0, 5, 1, 5, 0, 0, 0, 255, 64, 0, 128, 0,
+                false, 1, true, true));
 
         ice.enableParticles = true;
         ice.particleColor.red = 128;
@@ -146,12 +157,12 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         double start = x - l / 2;
         double end = x + l / 2;
 
-        for (Trail t : this.trailEffects)
+        for (Trail t: this.trailEffects)
         {
             t.drawForInterface(start, end, y, size, max);
         }
 
-        for (Effect e : effects)
+        for (Effect e: effects)
         {
             e.update();
 
@@ -162,12 +173,12 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         effects.removeAll(removeEffects);
         removeEffects.clear();
 
-        for (Effect f : effects)
+        for (Effect f: effects)
         {
             f.draw();
         }
 
-        for (Effect f : effects)
+        for (Effect f: effects)
         {
             f.drawGlow();
         }
@@ -175,13 +186,16 @@ public class BulletEffect implements ICopyable<BulletEffect>, ITanksONEditable
         if (bullet)
         {
             if (!this.overrideGlowColor)
-                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity, Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
+                Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity,
+                        Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
             else
-                Drawing.drawing.setColor(this.glowColor.red * this.glowIntensity, this.glowColor.green * this.glowIntensity, this.glowColor.blue * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
+                Drawing.drawing.setColor(this.glowColor.red * this.glowIntensity, this.glowColor.green * this.glowIntensity, this.glowColor.blue * this.glowIntensity,
+                        255, this.glowGlowy ? 1 : 0);
 
             Drawing.drawing.fillInterfaceGlow(start, y, size * this.glowSize, size * this.glowSize, !this.glowGlowy);
 
-            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity, Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0) * this.glowIntensity, Turret.calculateSecondaryColor(150) * this.glowIntensity,
+                    Turret.calculateSecondaryColor(255) * this.glowIntensity, 255, this.glowGlowy ? 1 : 0);
             Drawing.drawing.fillInterfaceOval(start, y, size, size);
             Drawing.drawing.setColor(0, 150, 255, 255, this.luminance);
             Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);

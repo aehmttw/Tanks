@@ -37,6 +37,7 @@ public class EffectManager
         }
         return null;
     }
+
     public ArrayList<StatusEffect> removeStatusEffects = new ArrayList<>();
     public ArrayList<AttributeModifier> removeAttributes = new ArrayList<>();
 
@@ -120,6 +121,11 @@ public class EffectManager
         statusEffectProperties.add(new StatusEffectProperty(s, StatusEffect.Instance.newInstance(s, age, warmup, deterioration, duration)));
     }
 
+    public void addStatusEffect(StatusEffect s, double warmup, double deterioration, double duration)
+    {
+        this.addStatusEffect(s, 0, warmup, deterioration, duration);
+    }
+
     public void update()
     {
         updateAttributes();
@@ -179,11 +185,6 @@ public class EffectManager
         this.addAttributeCallback.accept(m, true);
     }
 
-    public void addStatusEffect(StatusEffect s, double warmup, double deterioration, double duration)
-    {
-        this.addStatusEffect(s, 0, warmup, deterioration, duration);
-    }
-
     public void updateStatusEffects()
     {
         double frameFrequency = this.movable.affectedByFrameFrequency ? Panel.frameFrequency : 1;
@@ -194,7 +195,8 @@ public class EffectManager
             StatusEffect s = prop.statusEffect;
             StatusEffect.Instance i = prop.instance;
 
-            if (i.age < i.deteriorationAge && i.age + frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer && (this.movable instanceof Bullet || this.movable instanceof Tank))
+            if (i.age < i.deteriorationAge && i.age + frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer &&
+                    (this.movable instanceof Bullet || this.movable instanceof Tank))
             {
                 Game.eventsOut.add(new EventStatusEffectDeteriorate(this.movable, s, i.duration - i.deteriorationAge));
             }
@@ -276,7 +278,7 @@ public class EffectManager
 
             if (i != null)
             {
-                for (AttributeModifier a : s.attributeModifiers)
+                for (AttributeModifier a: s.attributeModifiers)
                 {
                     if (a.type.equals(type))
                     {
@@ -336,7 +338,7 @@ public class EffectManager
 
     public void recycle()
     {
-        for (StatusEffectProperty i : this.statusEffectProperties)
+        for (StatusEffectProperty i: this.statusEffectProperties)
             StatusEffect.Instance.recycle(i.instance);
 
         for (AttributeModifier a: this.attributes)

@@ -26,9 +26,9 @@ public class VBOPosedModel extends PosedModel
 
             FloatBuffer bones = BufferUtils.createFloatBuffer(m.shapes.length * 12);
 
-            for (ModelPart.Shape s : m.shapes)
+            for (ModelPart.Shape s: m.shapes)
             {
-                for (ModelPart.Point p : s.points)
+                for (ModelPart.Point p: s.points)
                 {
                     for (int i = 0; i < 4; i++)
                     {
@@ -83,9 +83,9 @@ public class VBOPosedModel extends PosedModel
         }
 
         int in = 0;
-        for (PoseBone bone : this.bones)
+        for (PoseBone bone: this.bones)
         {
-            for (double v : bone.compiledMatrix)
+            for (double v: bone.compiledMatrix)
             {
                 this.matrices[in] = (float) v;
                 in++;
@@ -105,7 +105,8 @@ public class VBOPosedModel extends PosedModel
                 window.setDrawOptions(depthTest, m.material.glow, m.material.depthMask);
 
             if (m.material.customLight)
-                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness,
+                        m.material.negativeBrightness);
 
             window.setCelShadingSections(m.material.celSections);
 
@@ -127,7 +128,7 @@ public class VBOPosedModel extends PosedModel
             glPopMatrix();
         }
 
-        ((LWJGLWindow)this.model.window).setDrawOptions(false, false, true);
+        ((LWJGLWindow) this.model.window).setDrawOptions(false, false, true);
 
         if (!this.model.window.drawingShadow)
             this.model.window.setShader(this.model.window.shaderDefault.shaderBase);
@@ -156,7 +157,8 @@ public class VBOPosedModel extends PosedModel
                 window.setDrawOptions(false, m.material.glow, m.material.depthMask);
 
             if (m.material.customLight)
-                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness,
+                        m.material.negativeBrightness);
 
             window.setCelShadingSections(m.material.celSections);
 

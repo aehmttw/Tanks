@@ -180,7 +180,7 @@ public class ShaderUtil extends BaseShaderUtil
                             u.instantiate(f.getName(), this.programID, this.program instanceof ShaderShadowMap);
 
                             if (!((f.getAnnotation(OnlyBaseUniform.class) != null && this.program instanceof ShaderShadowMap) ||
-                                (f.getAnnotation(OnlyShadowMapUniform.class) != null && this.program instanceof ShaderBase)))
+                                    (f.getAnnotation(OnlyShadowMapUniform.class) != null && this.program instanceof ShaderBase)))
                                 u.bind(this.program instanceof ShaderShadowMap);
                         }
                         catch (Exception e)
@@ -296,7 +296,7 @@ public class ShaderUtil extends BaseShaderUtil
         this.enabledAttributes.clear();
     }
 
-    public static abstract class LWJGLUniform implements ShaderProgram.IUniform
+    public abstract static class LWJGLUniform implements ShaderProgram.IUniform
     {
         protected int flag;
         protected String name;

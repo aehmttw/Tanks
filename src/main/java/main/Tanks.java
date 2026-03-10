@@ -26,7 +26,7 @@ public class Tanks
 
         // Goes through arguments and applies specified settings.
         int i = 0;
-        for (String arg : args)
+        for (String arg: args)
         {
             if (arg.equals("online_server"))
                 Game.isOnlineServer = true;

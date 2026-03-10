@@ -35,7 +35,11 @@ public class BulletBlock extends BulletArc
 
     protected boolean hasBounced = false;
 
-    AxisRotation[] rotations = new AxisRotation[]{new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0), new AxisRotation(Game.game.window, AxisRotation.Axis.yaw, 0), new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0)};
+    AxisRotation[] rotations = new AxisRotation[]
+    {
+        new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0),
+        new AxisRotation(Game.game.window, AxisRotation.Axis.yaw, 0), new AxisRotation(Game.game.window, AxisRotation.Axis.roll, 0)
+    };
 
     public BulletBlock()
     {
@@ -84,8 +88,8 @@ public class BulletBlock extends BulletArc
         dx += Math.sin(angle) * offset;
         dy += Math.cos(angle) * offset;
 
-        dx = (Math.min(Math.max((int)((this.posX + dx) / Game.tile_size), 0), Game.currentSizeX - 1) + 0.5) * Game.tile_size - this.posX;
-        dy = (Math.min(Math.max((int)((this.posY + dy) / Game.tile_size), 0), Game.currentSizeY - 1) + 0.5) * Game.tile_size - this.posY;
+        dx = (Math.min(Math.max((int) ((this.posX + dx) / Game.tile_size), 0), Game.currentSizeX - 1) + 0.5) * Game.tile_size - this.posX;
+        dy = (Math.min(Math.max((int) ((this.posY + dy) / Game.tile_size), 0), Game.currentSizeY - 1) + 0.5) * Game.tile_size - this.posY;
 
         d = Math.sqrt(dx * dx + dy * dy);
 
@@ -100,8 +104,8 @@ public class BulletBlock extends BulletArc
     {
         this.landingAdjustPosIX = this.posX;
         this.landingAdjustPosIY = this.posY;
-        this.landingAdjustPosX = (0.5 + (int)(this.posX / Game.tile_size)) * Game.tile_size;
-        this.landingAdjustPosY = (0.5 + (int)(this.posY / Game.tile_size)) * Game.tile_size;
+        this.landingAdjustPosX = (0.5 + (int) (this.posX / Game.tile_size)) * Game.tile_size;
+        this.landingAdjustPosY = (0.5 + (int) (this.posY / Game.tile_size)) * Game.tile_size;
 
         if (remainingBounces || this.homingSharpness != 0)
         {
@@ -341,7 +345,9 @@ public class BulletBlock extends BulletArc
                 Drawing.drawing.playGlobalSound("break.ogg");
 
                 if (Game.enable3d)
-                    ObstacleStackable.destroyAnimation3d(this.posX, this.posY, this.posZ - Game.tile_size / 2, this.posX - this.vX, this.posY - this.vY, Game.tile_size, Effect.EffectType.obstaclePiece3d, Game.tile_size, Game.effectMultiplier, this.originalOutlineColor.red, this.originalOutlineColor.green, this.originalOutlineColor.blue);
+                    ObstacleStackable.destroyAnimation3d(this.posX, this.posY, this.posZ - Game.tile_size / 2, this.posX - this.vX, this.posY - this.vY,
+                            Game.tile_size, Effect.EffectType.obstaclePiece3d, Game.tile_size, Game.effectMultiplier, this.originalOutlineColor.red,
+                            this.originalOutlineColor.green, this.originalOutlineColor.blue);
 
                 this.outOfBounds = true;
             }
@@ -353,7 +359,8 @@ public class BulletBlock extends BulletArc
     {
         super.addTraceTarget(ix, iy);
 
-        Game.effects.add(Effect.createNewEffect((Math.round(this.posX / Game.tile_size - 0.5) + 0.5) * Game.tile_size, (Math.round(this.posY / Game.tile_size - 0.5) + 0.5) * Game.tile_size, Effect.EffectType.blockMarker));
+        Game.effects.add(Effect.createNewEffect((Math.round(this.posX / Game.tile_size - 0.5) + 0.5) * Game.tile_size,
+                (Math.round(this.posY / Game.tile_size - 0.5) + 0.5) * Game.tile_size, Effect.EffectType.blockMarker));
     }
 
     @Override

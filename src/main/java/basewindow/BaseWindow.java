@@ -1,7 +1,6 @@
 package basewindow;
 
 import basewindow.transformation.*;
-import tanks.Game;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,18 +18,31 @@ public abstract class BaseWindow
     public BaseFontRenderer fontRenderer;
 
     public boolean angled = false;
-    public double pointWidth = -1, pointHeight = -1;
+    public double pointWidth = -1;
+    public double pointHeight = -1;
 
-    public double absoluteWidth, absoluteHeight, absoluteDepth;
-    public double clipMultiplier = 100, clipDistMultiplier = 1;
+    public double absoluteWidth;
+    public double absoluteHeight;
+    public double absoluteDepth;
+
+    public double clipMultiplier = 100;
+    public double clipDistMultiplier = 1;
 
     public boolean hasResized;
 
-    public double absoluteMouseX, absoluteMouseY;
+    public double absoluteMouseX;
+    public double absoluteMouseY;
+
     public boolean constrainMouse;
 
-    public double colorR, colorG, colorB, colorA, glow;
-    public boolean fullscreen, focused;
+    public double colorR;
+    public double colorG;
+    public double colorB;
+    public double colorA;
+
+    public double glow;
+    public boolean fullscreen;
+    public boolean focused;
 
     public HashMap<Integer, InputPoint> touchPoints = new HashMap<>();
 
@@ -81,7 +93,9 @@ public abstract class BaseWindow
     public double zOffset = 0;
 
 
-    public Transformation[] baseTransformations = new Transformation[]{new Translation(this, -0.5, -0.5, -1),
+    public Transformation[] baseTransformations = new Transformation[]
+    {
+            new Translation(this, -0.5, -0.5, -1),
 //            new ScaleAboutPoint(this, 1,  Math.sqrt(0.5), 1, 0.5, 0.5, 0.5),
 //            new RotationAboutPoint(this, 0, 0, Math.PI / 4, 0.5, 0.5, 0.5),
 //            new Shear(this, 0, 0, 0, 0, Math.sqrt(0.5), -Math.sqrt(0.5)),
@@ -146,13 +160,13 @@ public abstract class BaseWindow
 
         ArrayList<Long> removeList = new ArrayList<>();
 
-        for (Long l : this.framesList)
+        for (Long l: this.framesList)
         {
             if (milliTime - l > 1000)
                 removeList.add(l);
         }
 
-        for (Long l : removeList)
+        for (Long l: removeList)
         {
             this.framesList.remove(l);
         }

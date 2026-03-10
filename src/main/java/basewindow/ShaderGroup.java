@@ -28,11 +28,11 @@ public class ShaderGroup
 
     public void initialize() throws Exception
     {
-        this.shaderShadowMap.setUp
-                ("/shaders/shadow_map.vert", new String[]{"/shaders/main_default.vert"},
+        this.shaderShadowMap.setUp(
+                "/shaders/shadow_map.vert", new String[]{"/shaders/main_default.vert"},
                 "/shaders/shadow_map.frag", null);
-        this.shaderBase.setUp
-                ("/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
+        this.shaderBase.setUp(
+                "/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
                 "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
     }
 
@@ -144,7 +144,7 @@ public class ShaderGroup
         void bind(boolean shadow);
     }
 
-    public static abstract class GroupPrimitiveUniform<T, U extends ShaderProgram.IPrimitiveUniform<T>> implements IGroupUniform
+    public abstract static class GroupPrimitiveUniform<T, U extends ShaderProgram.IPrimitiveUniform<T>> implements IGroupUniform
     {
         protected U baseUniform;
         protected U shadowMapUniform;
@@ -173,7 +173,7 @@ public class ShaderGroup
         }
     }
 
-    public static abstract class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
+    public abstract static class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
     {
         protected T baseUniform;
         protected T shadowMapUniform;

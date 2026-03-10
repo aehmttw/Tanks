@@ -66,7 +66,7 @@ public class ComputerFile extends BaseFile
         DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(this.path));
         ArrayList<String> files = new ArrayList<>();
 
-        for (Path p : ds)
+        for (Path p: ds)
             files.add(p.toString());
 
         ds.close();

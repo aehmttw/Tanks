@@ -53,7 +53,7 @@ public class Model implements IModel
         this.materials.put("default", Model.defaultMaterial);
 
         int bones = 0;
-        for (String s : lines)
+        for (String s: lines)
         {
             if (s.startsWith("newmtl "))
             {
@@ -295,7 +295,7 @@ public class Model implements IModel
 
         boolean facesAdded = false;
 
-        for (String s : lines)
+        for (String s: lines)
         {
             if (s.startsWith("usemtl "))
             {
@@ -383,7 +383,7 @@ public class Model implements IModel
         for (int n = 0; n < s.length; n++)
         {
             if (!s[n].equals(""))
-               i[n] = Integer.parseInt(s[n]);
+                i[n] = Integer.parseInt(s[n]);
         }
 
         return i;

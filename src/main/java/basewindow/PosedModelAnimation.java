@@ -20,7 +20,7 @@ public class PosedModelAnimation implements IPosedModelFrame
     {
         double time = 0;
 
-        for (String line : lines)
+        for (String line: lines)
         {
             if (line.startsWith("duration "))
             {
@@ -33,15 +33,15 @@ public class PosedModelAnimation implements IPosedModelFrame
             {
                 String[] s = line.split(" ");
 
-                this.getBone(s[1]).rotationFrames.add(new AnimatedBone.AnimatedBoneRotationFrame
-                        (time, Math.toRadians(Double.parseDouble(s[2])), Math.toRadians(Double.parseDouble(s[3])), Math.toRadians(Double.parseDouble(s[4]))));
+                this.getBone(s[1]).rotationFrames.add(new AnimatedBone.AnimatedBoneRotationFrame(
+                                time, Math.toRadians(Double.parseDouble(s[2])), Math.toRadians(Double.parseDouble(s[3])), Math.toRadians(Double.parseDouble(s[4]))));
             }
             else if (line.startsWith("translation "))
             {
                 String[] s = line.split(" ");
 
-                this.getBone(s[1]).translationFrames.add(new AnimatedBone.AnimatedBoneTranslationFrame
-                        (time, Double.parseDouble(s[2]), -Double.parseDouble(s[3]), Double.parseDouble(s[4])));
+                this.getBone(s[1]).translationFrames.add(new AnimatedBone.AnimatedBoneTranslationFrame(
+                        time, Double.parseDouble(s[2]), -Double.parseDouble(s[3]), Double.parseDouble(s[4])));
             }
             else if (line.startsWith("interpolation "))
             {
@@ -105,7 +105,7 @@ public class PosedModelAnimation implements IPosedModelFrame
 
             AnimatedBoneRotationFrame last = defaultRotation;
 
-            for (AnimatedBoneRotationFrame f : this.rotationFrames)
+            for (AnimatedBoneRotationFrame f: this.rotationFrames)
             {
                 if (f.time <= time)
                 {
@@ -168,7 +168,7 @@ public class PosedModelAnimation implements IPosedModelFrame
 
             AnimatedBoneTranslationFrame last = defaultTranslation;
 
-            for (AnimatedBoneTranslationFrame f : this.translationFrames)
+            for (AnimatedBoneTranslationFrame f: this.translationFrames)
             {
                 if (f.time <= time)
                 {
@@ -235,7 +235,7 @@ public class PosedModelAnimation implements IPosedModelFrame
             return in;
         }
 
-        public static abstract class AnimatedBoneFrame
+        public abstract static class AnimatedBoneFrame
         {
             public double time;
 

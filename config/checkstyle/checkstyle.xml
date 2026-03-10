@@ -8,9 +8,9 @@
     Based on Google Java Style (Checkstyle 8.45.1), with the following overrides:
 
       1. LINE_LENGTH      – max 180 (Google default: 100).
-      2. BRACE_STYLE      – Allman: opening '{' on its own line (option="nl").
+      2. BRACE_STYLE      – custom CurlyBraceCheck: same-line "{...}" always allowed;
+                            multi-line blocks require each brace alone on its own line (Allman).
                             NeedBraces removed – braces are optional for single-statement blocks.
-                            RightCurlySame removed – conflicts with Allman-style '}'.
       3. COLON_SPACING    – custom check: no space before ':' except in ternary expressions
                             (where a space IS required).  COLON removed from WhitespaceAround
                             and NoWhitespaceBeforeCaseDefaultColon removed; both are superseded
@@ -75,31 +75,10 @@
     </module>
     <!-- NeedBraces removed: single-statement blocks without braces are allowed (rule 2) -->
 
-    <!-- Override 2: Allman brace style – opening '{' must be on its own line -->
-    <module name="LeftCurly">
-      <property name="option" value="nl"/>
-      <property name="tokens"
-               value="ANNOTATION_DEF, CLASS_DEF, CTOR_DEF, ENUM_CONSTANT_DEF, ENUM_DEF,
-                    INTERFACE_DEF, LAMBDA, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT,
-                    LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF,
-                    LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF,
-                    OBJBLOCK, STATIC_INIT, RECORD_DEF, COMPACT_CTOR_DEF"/>
-    </module>
-    <!-- RightCurlySame removed: requires '} else {' which conflicts with Allman style (rule 2) -->
-    <module name="RightCurly">
-      <property name="id" value="RightCurlyAlone"/>
-      <property name="option" value="alone"/>
-      <property name="tokens"
-               value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT,
-                    INSTANCE_INIT, ANNOTATION_DEF, ENUM_DEF, INTERFACE_DEF, RECORD_DEF,
-                    COMPACT_CTOR_DEF"/>
-    </module>
-    <module name="SuppressionXpathSingleFilter">
-      <!-- suppresion is required till https://github.com/checkstyle/checkstyle/issues/7541 -->
-      <property name="id" value="RightCurlyAlone"/>
-      <property name="query" value="//RCURLY[parent::SLIST[count(./*)=1]
-                                     or preceding-sibling::*[last()][self::LCURLY]]"/>
-    </module>
+    <!-- Override 2: Allman brace style via custom check (replaces LeftCurly + RightCurly) -->
+    <!-- Same-line blocks (e.g. "{ stmt; }") are always allowed.                          -->
+    <!-- Multi-line blocks require each brace alone on its own line.                       -->
+    <module name="tanks.linting.CurlyBraceCheck"/>
     <module name="WhitespaceAfter">
       <property name="tokens"
                value="COMMA, SEMI, TYPECAST, LITERAL_IF, LITERAL_ELSE,

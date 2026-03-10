@@ -40,7 +40,7 @@ public class ImmediateModeModelPart extends ModelPart
         double b = window.colorB * 255;
 
         boolean depthMask = true;
-        for (Shape shape : this.shapes)
+        for (Shape shape: this.shapes)
         {
             if (this.material != null)
             {
@@ -73,7 +73,7 @@ public class ImmediateModeModelPart extends ModelPart
         double b = window.colorB * 255;
 
         boolean depthMask = true;
-        for (Shape shape : this.shapes)
+        for (Shape shape: this.shapes)
         {
             if (this.material != null)
             {

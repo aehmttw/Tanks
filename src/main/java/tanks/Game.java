@@ -37,7 +37,8 @@ import java.util.*;
 
 public class Game
 {
-    public enum Framework {lwjgl, libgdx}
+    public enum Framework { lwjgl, libgdx }
+
     public static Framework framework;
 
     public static final double tile_size = 50;
@@ -80,6 +81,7 @@ public class Game
     {
         public int x;
         public int y;
+
         public GroundTile(int x, int y)
         {
             this.x = x;
@@ -286,9 +288,26 @@ public class Game
     public static String directoryPath = "/.tanks";
 
     // initialized in initScript()
-    public static String logPath, extensionRegistryPath, optionsPath, controlsPath, tutorialPath, uuidPath, levelDir;
-    public static String crusadeDir, savedCrusadePath, itemDir, bulletEffectsDir;
-    public static String tankDir, buildDir, extensionDir, crashesPath, screenshotsPath, resourcesPath, languagesPath;
+    public static String logPath;
+    public static String extensionRegistryPath;
+    public static String optionsPath;
+    public static String controlsPath;
+    public static String tutorialPath;
+    public static String uuidPath;
+    public static String levelDir;
+
+    public static String crusadeDir;
+    public static String savedCrusadePath;
+    public static String itemDir;
+    public static String bulletEffectsDir;
+
+    public static String tankDir;
+    public static String buildDir;
+    public static String extensionDir;
+    public static String crashesPath;
+    public static String screenshotsPath;
+    public static String resourcesPath;
+    public static String languagesPath;
 
     public static float soundVolume = 1f;
     public static float musicVolume = 0.5f;
@@ -512,7 +531,8 @@ public class Game
         Panel.initialize();
         Game.exitToTitle();
 
-        Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
+        Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "",
+                () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 
         steamNetworkHandler = new SteamNetworkHandler();
         if (!disableSteam)
@@ -579,7 +599,9 @@ public class Game
         registerItem(ItemMine.class, ItemMine.item_class_name, DefaultItemIcons.mine.getCopy());
         registerItem(ItemShield.class, ItemShield.item_class_name, DefaultItemIcons.shield.getCopy());
 
-        registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
+        registerMinigame(ArcadeClassic.class, "Arcade mode",
+                "A gamemode which gets crazier as you---destroy more tanks." +
+                        "------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
         registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
 //      registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //      registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
@@ -726,7 +748,7 @@ public class Game
 
         try
         {
-            Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
+            Game.logger = new PrintStream(new FileOutputStream(homedir + logPath, true));
         }
         catch (FileNotFoundException e)
         {
@@ -757,7 +779,8 @@ public class Game
 
         if (!enableExtensions && extraExtensions != null)
         {
-            System.err.println("Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. Only extensions provided to launchWithExtensions() will be used.");
+            System.err.println("Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. " +
+                    "Only extensions provided to launchWithExtensions() will be used.");
         }
 
         for (Extension e: extensionRegistry.extensions)
@@ -802,7 +825,7 @@ public class Game
 
     public static void addMovable(Movable m)
     {
-        for (Chunk c : m.getTouchingChunks())
+        for (Chunk c: m.getTouchingChunks())
             c.addMovable(m);
 
         Game.movables.add(m);
@@ -864,7 +887,7 @@ public class Game
         if (refresh)
             redraw(o);
 
-        for (Obstacle o1 : o.getNeighbors())
+        for (Obstacle o1: o.getNeighbors())
             o1.onNeighborUpdate();
     }
 
@@ -875,7 +898,7 @@ public class Game
 
         for (int i = 0; i < username.length(); i++)
         {
-            if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(username.toLowerCase().substring(i, i+1)))
+            if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(username.toLowerCase().substring(i, i + 1)))
             {
                 return true;
             }
@@ -1046,7 +1069,7 @@ public class Game
 
                 f.stopWriting();
             }
-            catch (Exception ex) {ex.printStackTrace(); }
+            catch (Exception ex) { ex.printStackTrace(); }
         }
 
         if (e instanceof OutOfMemoryError)
@@ -1100,6 +1123,7 @@ public class Game
     {
         return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
     }
+
     public static void removeObstacle(Obstacle o)
     {
         Drawing.drawing.terrainRenderer.remove(o);

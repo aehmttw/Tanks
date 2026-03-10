@@ -9,7 +9,8 @@ public enum Direction
 {
     up, right, down, left, upLeft, upRight, downLeft, downRight;
 
-    public static final int[] X = {0, 1, 0, -1, 0, 1, -1, 0, 1, -1}, Y = {-1, 0, 1, 0, 1, 0, 0, -1, 1, -1};
+    public static final int[] X = {0, 1, 0, -1, 0, 1, -1, 0, 1, -1};
+    public static final int[] Y = {-1, 0, 1, 0, 1, 0, 0, -1, 1, -1};
 
     private static final Direction[] values = Direction.values();
 

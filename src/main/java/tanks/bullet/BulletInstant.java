@@ -153,7 +153,8 @@ public class BulletInstant extends Bullet
         if (this.hitStun > 0)
             this.addElectricEffect();
 
-        Laser l = new Laser(this.lastX, this.lastY, this.lastZ, this.collisionX, this.collisionY, this.posZ, this.size / 2, this.getAngleInDirection(this.lastX, this.lastY), this.baseColor);
+        Laser l = new Laser(this.lastX, this.lastY, this.lastZ, this.collisionX, this.collisionY, this.posZ, this.size / 2, this.getAngleInDirection(this.lastX, this.lastY),
+                this.baseColor);
 
         if (this.effect.overrideGlowColor)
             l.glowColor = this.effect.glowColor;
@@ -333,9 +334,10 @@ public class BulletInstant extends Bullet
         Drawing.drawing.fillInterfaceRect(start + l / 2, y, l, size);
 
         if (!this.effect.overrideGlowColor)
-            Drawing.drawing.setColor(base.red, base.green, base.blue, 255* this.effect.glowIntensity, this.effect.glowGlowy ? 1 : 0);
+            Drawing.drawing.setColor(base.red, base.green, base.blue, 255 * this.effect.glowIntensity, this.effect.glowGlowy ? 1 : 0);
         else
-            Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, 255 * this.effect.glowIntensity, this.effect.glowGlowy ? 1 : 0);
+            Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, 255 * this.effect.glowIntensity,
+                    this.effect.glowGlowy ? 1 : 0);
 
         double cr = Drawing.drawing.currentColorR;
         double cg = Drawing.drawing.currentColorG;

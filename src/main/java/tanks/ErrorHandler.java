@@ -20,7 +20,8 @@ public abstract class ErrorHandler<K, V>
     public static final ArrayList<ErrorHandler<?, ?>> errorHandlers = new ArrayList<>();
 
     public final HashMap<K, Integer> errorCounts = new HashMap<>();
-    public double baseInterval, intervalTimer;
+    public double baseInterval;
+    public double intervalTimer;
     public int triggerCount;
 
     public ErrorHandler(double interval, int triggerCount)
@@ -74,5 +75,6 @@ public abstract class ErrorHandler<K, V>
     }
 
     public abstract V containsErrors(K obj);
+
     public abstract void handleError(K obj, V info);
 }

@@ -15,7 +15,10 @@ public class Button implements IDrawable, ITrigger
     public Runnable function;
     public Runnable doubleClickFunc = null;
     public InputBindingGroup keybind;
-    public double posX, posY, sizeX, sizeY;
+    public double posX;
+    public double posY;
+    public double sizeX;
+    public double sizeY;
 
     public double age = 0;
     public double lastClick = 0;
@@ -23,7 +26,10 @@ public class Button implements IDrawable, ITrigger
 
     public boolean draggable;
     public String dragTooltip = null;
-    public double clickX, clickY, origX, origY;
+    public double clickX;
+    public double clickY;
+    public double origX;
+    public double origY;
     public boolean isDragging;
     public Consumer<Button> whileDragging;
     public BiConsumer<Button, Boolean> finishDrag;
@@ -183,7 +189,8 @@ public class Button implements IDrawable, ITrigger
             this(x, y, sX, sY, text, f, setter, getter, null);
         }
 
-        public Toggle(double x, double y, double sX, double sY, String text, Runnable f, Consumer<Boolean> setter, Producer<Boolean> getter, String hoverText, Object... hoverTextOptions)
+        public Toggle(double x, double y, double sX, double sY, String text, Runnable f, Consumer<Boolean> setter, Producer<Boolean> getter, String hoverText,
+                      Object... hoverTextOptions)
         {
             super(x, y, sX, sY, text, f, hoverText, hoverTextOptions);
             this.setter = setter;
@@ -237,7 +244,7 @@ public class Button implements IDrawable, ITrigger
 
             if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -402,7 +409,8 @@ public class Button implements IDrawable, ITrigger
             double mx = Drawing.drawing.getInterfaceMouseX();
             double my = Drawing.drawing.getInterfaceMouseY();
 
-            boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1), Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
+            boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1),
+                    Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
 
             if (handled)
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
@@ -477,8 +485,8 @@ public class Button implements IDrawable, ITrigger
             sizeY += 20;
         }
 
-        selected = (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
-        infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+        selected = (mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
+        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2  && my < posY + sizeY / 2);
 
         if (selected && valid)
         {

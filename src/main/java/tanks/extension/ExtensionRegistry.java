@@ -64,7 +64,7 @@ public class ExtensionRegistry
                 {
                     ArrayList<String> files = Game.game.fileManager.getFile(Game.homedir + Game.extensionDir).getSubfiles();
 
-                    for (String file : files)
+                    for (String file: files)
                     {
                         String j = file.substring(file.replace("\\", "/").lastIndexOf("/") + 1);
                         Class<? extends Extension> c = loadExtensionClass(j, null);

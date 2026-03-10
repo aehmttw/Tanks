@@ -66,14 +66,15 @@ public class ButtonList
 
     public BiConsumer<Integer, Integer> reorderBehavior;
 
-    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            page++;
-        }
-    }
+    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page",
+            new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    page++;
+                }
+            }
     );
 
     public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()

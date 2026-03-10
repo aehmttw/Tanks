@@ -134,9 +134,9 @@ public class ChatBox extends TextBox
         // Handle typing
         if (this.selected && !justSelectedByKeybind)
         {
-            double frac = Math.max(0, Math.round(Drawing.drawing.interfaceScale * (this.posY + 30) + Math.max(0, Panel.windowHeight - Drawing.drawing.statsHeight
-                    - Drawing.drawing.interfaceSizeY * Drawing.drawing.interfaceScale) / 2) - Game.game.window.absoluteHeight * Game.game.window.keyboardFraction)
-                    / Game.game.window.absoluteHeight;
+            double frac = Math.max(0, Math.round(Drawing.drawing.interfaceScale * (this.posY + 30) + Math.max(0, Panel.windowHeight - Drawing.drawing.statsHeight -
+                    Drawing.drawing.interfaceSizeY * Drawing.drawing.interfaceScale) / 2) - Game.game.window.absoluteHeight * Game.game.window.keyboardFraction) /
+                    Game.game.window.absoluteHeight;
             Game.game.window.keyboardOffset = Math.min(frac, Game.game.window.keyboardOffset + 0.04 * Panel.frameFrequency * frac);
             Game.game.window.showKeyboard = true;
             this.checkKeys();
@@ -322,7 +322,8 @@ public class ChatBox extends TextBox
     }
 
     @Override
-    public void submit() {
+    public void submit()
+    {
         super.submit();
 
         // Ensure that input text is cleared on edge cases where we are defocused though non-normal methods

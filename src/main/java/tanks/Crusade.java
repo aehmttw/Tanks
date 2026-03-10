@@ -312,7 +312,7 @@ public class Crusade
             availableBuilds.add(b.name);
         }
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             if (crusadePlayers.get(player) != null)
             {
@@ -329,7 +329,7 @@ public class Crusade
             }
         }
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             if (crusadePlayers.get(player) == null)
             {
@@ -370,7 +370,7 @@ public class Crusade
 
         ArrayList<TankPlayer.ShopTankBuild> builds = this.getBuildsShop();
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             CrusadePlayer cp = crusadePlayers.get(player);
             player.hotbar.coins = cp.coins;
@@ -425,7 +425,7 @@ public class Crusade
 
         if (ScreenPartyHost.isServer)
         {
-            for (ServerHandler sh : ScreenPartyHost.server.connections)
+            for (ServerHandler sh: ScreenPartyHost.server.connections)
             {
                 if (sh.player != null)
                 {
@@ -434,7 +434,8 @@ public class Crusade
                     for (int in = 0; in < sh.player.hotbar.itemBar.slots.length; in++)
                         sh.queueEvent(new EventSetItem(sh.player, in, sh.player.hotbar.itemBar.slots[in]));
 
-                    Game.eventsOut.add(new EventSetSelectedItems(sh.player.hotbar.itemBar.selected, sh.player.hotbar.itemBar.selectedPrimaryAbility, sh.player.hotbar.itemBar.selectedSecondaryAbility));
+                    Game.eventsOut.add(new EventSetSelectedItems(sh.player.hotbar.itemBar.selected, sh.player.hotbar.itemBar.selectedPrimaryAbility,
+                            sh.player.hotbar.itemBar.selectedSecondaryAbility));
                 }
             }
         }
@@ -463,7 +464,7 @@ public class Crusade
         {
             this.lose = true;
 
-            for (Player player : Game.players)
+            for (Player player: Game.players)
             {
                 if (player.remainingLives > 0)
                 {
@@ -486,7 +487,7 @@ public class Crusade
                 {
                     this.lifeGained = true;
 
-                    for (Player player : Game.players)
+                    for (Player player: Game.players)
                     {
                         player.remainingLives++;
                     }
@@ -504,7 +505,7 @@ public class Crusade
                 {
                     Crusade.currentCrusade.livingTankIDs.clear();
 
-                    for (Movable m : Game.movables)
+                    for (Movable m: Game.movables)
                     {
                         if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
                             Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);

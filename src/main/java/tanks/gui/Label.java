@@ -56,18 +56,6 @@ public class Label implements IDrawable
             drawing.drawInterfaceText(this.posX, this.posY, this.text, this.rightAligned);
     }
 
-    public void setText(String text)
-    {
-        this.originalText = text;
-        this.text = Translation.translate(text);
-    }
-
-    public void setText(String text, Object... objects)
-    {
-        this.originalText = text;
-        this.text = Translation.translate(text, objects);
-    }
-
     public void draw(Object... objects)
     {
         Drawing drawing = Drawing.drawing;
@@ -79,5 +67,17 @@ public class Label implements IDrawable
             drawing.drawInterfaceText(this.posX, this.posY, this.text);
         else
             drawing.drawInterfaceText(this.posX, this.posY, this.text, this.rightAligned);
+    }
+
+    public void setText(String text)
+    {
+        this.originalText = text;
+        this.text = Translation.translate(text);
+    }
+
+    public void setText(String text, Object... objects)
+    {
+        this.originalText = text;
+        this.text = Translation.translate(text, objects);
     }
 }

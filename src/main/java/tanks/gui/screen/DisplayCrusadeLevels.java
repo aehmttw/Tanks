@@ -28,7 +28,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
         int width;
     }
 
-    protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
+    protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[]) (new ArrayList[10]);
     protected RotationAboutPoint transform = new RotationAboutPoint(Game.game.window, 0, -Math.PI / 4, 0, 0, 0, -1);
     protected Translation translation = new Translation(Game.game.window, 0, 0, 0);
 
@@ -264,7 +264,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                         drawables[m.nameTag.drawLevel].add(m.nameTag);
                 }
 
-                for (Obstacle o : Game.obstacles)
+                for (Obstacle o: Game.obstacles)
                     if (!o.batchDraw)
                         drawables[o.drawLevel].add(o);
 
@@ -280,9 +280,9 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                     translation.y *= this.shadowScaleNum;
                 }
 
-                for (ArrayList<IDrawable> drawable : this.drawables)
+                for (ArrayList<IDrawable> drawable: this.drawables)
                 {
-                    for (IDrawable d : drawable)
+                    for (IDrawable d: drawable)
                     {
                         if (d != null)
                             d.draw();
@@ -290,7 +290,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
                     if (Game.glowEnabled)
                     {
-                        for (IDrawable d : drawable)
+                        for (IDrawable d: drawable)
                         {
                             if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
                                 ((IDrawableWithGlow) d).drawGlow();

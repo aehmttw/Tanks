@@ -111,7 +111,7 @@ public class InputSelector implements IDrawable, ITrigger
 
             if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -288,7 +288,7 @@ public class InputSelector implements IDrawable, ITrigger
         }
 
         selected = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
-        infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2  && my < posY + sizeY / 2);
         right = mx >= posX;
 
         if (selected && valid)

@@ -65,9 +65,10 @@ public class Joystick implements IDrawable
             this.activeInput = -1;
         }
 
-        if (!(Game.playerTank == null || (Game.playerTank.destroy && !(Game.currentLevel instanceof Arcade)) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).paused)))
+        if (!(Game.playerTank == null || (Game.playerTank.destroy && !(Game.currentLevel instanceof Arcade)) || (Game.screen instanceof ScreenGame &&
+                ((ScreenGame) Game.screen).paused)))
         {
-            for (int i : Game.game.window.touchPoints.keySet())
+            for (int i: Game.game.window.touchPoints.keySet())
             {
                 InputPoint p = Game.game.window.touchPoints.get(i);
                 double px = Drawing.drawing.getInterfacePointerX(p.x);
@@ -75,8 +76,10 @@ public class Joystick implements IDrawable
 
                 double distSq = Math.pow(px - this.posX, 2) + Math.pow(py - this.posY, 2);
                 if (!ScreenGame.finished && (p.tag.equals("") &&
-                        ((distSq <= Math.pow(this.size / 2 * 1.4, 2) && this.activeInput == -1) || (this.domain == 1 && px < Drawing.drawing.interfaceSizeX / 2 && !TankPlayer.shootStickHidden) || (this.domain == 2 && px >= Drawing.drawing.interfaceSizeX / 2 && !TankPlayer.shootStickHidden)))
-                        || (this.activeInput == i && p.tag.equals(this.name)))
+                        ((distSq <= Math.pow(this.size / 2 * 1.4, 2) && this.activeInput == -1) ||
+                                (this.domain == 1 && px < Drawing.drawing.interfaceSizeX / 2 && !TankPlayer.shootStickHidden) ||
+                                (this.domain == 2 && px >= Drawing.drawing.interfaceSizeX / 2 && !TankPlayer.shootStickHidden))) ||
+                                (this.activeInput == i && p.tag.equals(this.name)))
                 {
                     if (this.activeInput == -1 && (this.snap || this.mobile || this.domain > 0))
                     {

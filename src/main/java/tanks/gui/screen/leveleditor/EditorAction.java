@@ -317,7 +317,7 @@ public abstract class EditorAction
         @Override
         public void undo()
         {
-            for (Obstacle o : obstacles)
+            for (Obstacle o: obstacles)
                 Game.addObstacle(o);
             Game.movables.addAll(this.tanks);
             this.deselect.undo();
@@ -332,7 +332,7 @@ public abstract class EditorAction
             {
                 if (Game.movables.get(i) instanceof Tank)
                 {
-                    for (Tank o : this.tanks)
+                    for (Tank o: this.tanks)
                     {
                         if (Game.movables.get(i).equals(o))
                             Game.movables.remove(i);

@@ -35,8 +35,8 @@ public class OverlayCloneLevel extends ScreenLevelEditorOverlay
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             updateCloneButton();
-        }
-                , screenLevelEditor.name.replace("_", " ").split("\\.")[0]);
+        },
+                screenLevelEditor.name.replace("_", " ").split("\\.")[0]);
 
         levelName.enableCaps = true;
         updateCloneButton();

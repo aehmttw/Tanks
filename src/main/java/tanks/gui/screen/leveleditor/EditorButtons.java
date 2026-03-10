@@ -44,8 +44,8 @@ public class EditorButtons
         if ((!editor.showControls && !slideAnimation) || buttons == null)
             return;
 
-        for (ArrayList<EditorButton> bl : buttons)
-            for (EditorButton b : bl)
+        for (ArrayList<EditorButton> bl: buttons)
+            for (EditorButton b: bl)
                 if (b.shown)
                     b.draw();
     }
@@ -57,9 +57,9 @@ public class EditorButtons
         if (Game.game.window.hasResized)
             refreshButtons();
 
-        for (ArrayList<EditorButton> bl : buttons)
+        for (ArrayList<EditorButton> bl: buttons)
         {
-            for (EditorButton b : bl)
+            for (EditorButton b: bl)
             {
                 if (!b.fullInfo)
                     refreshButtons();
@@ -129,14 +129,14 @@ public class EditorButtons
 
     public void updateCornerCoords()
     {
-        double x1 = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-                + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * editor.controlsSizeMultiplier;
-        double y1 = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale
-                - Drawing.drawing.interfaceSizeY) / 2 + 50 * editor.controlsSizeMultiplier;
-        double x2 = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-                + Drawing.drawing.interfaceSizeX - 50 * editor.controlsSizeMultiplier - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
-        double y2 = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
-                + Drawing.drawing.interfaceSizeY - 50 * editor.controlsSizeMultiplier;
+        double x1 = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
+                Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * editor.controlsSizeMultiplier;
+        double y1 = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale -
+                Drawing.drawing.interfaceSizeY) / 2 + 50 * editor.controlsSizeMultiplier;
+        double x2 = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
+                Drawing.drawing.interfaceSizeX - 50 * editor.controlsSizeMultiplier - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+        double y2 = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 +
+                Drawing.drawing.interfaceSizeY - 50 * editor.controlsSizeMultiplier;
 
         xs = new double[]{x1, x2, x1, x2};
         ys = new double[]{y1, y1, y2, y2};
@@ -439,7 +439,7 @@ public class EditorButtons
                 }
             }
 
-            for (EditorButton b : subMenuButtons)
+            for (EditorButton b: subMenuButtons)
             {
                 b.enabled = !b.disabledFunc.apply();
 
@@ -496,8 +496,9 @@ public class EditorButtons
 
             int ht = Game.game.window.touchscreen ? 1 : 25;
 
-            if (((this.selected && ! Game.game.window.touchscreen) || (Game.screen instanceof ScreenLevelEditor && ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this))
-                    && ((this.subButtonsAsOptions && !this.enabled) || (!this.subButtonsAsOptions && this.enabled)))
+            if (((this.selected && ! Game.game.window.touchscreen) ||
+                    (Game.screen instanceof ScreenLevelEditor && ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this)) &&
+                    ((this.subButtonsAsOptions && !this.enabled) || (!this.subButtonsAsOptions && this.enabled)))
                 hoverTime = ht;
             else if (this.hoverTime > 0)
             {
@@ -531,8 +532,8 @@ public class EditorButtons
 
                 if (!(this.subButtonsAsOptions || this.enabled))
                     hoverTime = 0;
-                else if ((Game.screen instanceof ScreenLevelEditor && ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this)
-                        || (!Game.game.window.touchscreen && mx >= startX && mx <= endX && my >= startY && my <= endY))
+                else if ((Game.screen instanceof ScreenLevelEditor && ((ScreenLevelEditor) Game.screen).touchscreenSelectedButton == this) ||
+                        (!Game.game.window.touchscreen && mx >= startX && mx <= endX && my >= startY && my <= endY))
                     hoverTime = ht;
                 else
                     hoverTime = Math.max(0, this.hoverTime - Panel.frameFrequency);
@@ -548,7 +549,7 @@ public class EditorButtons
 
         public void setUpSubButtons()
         {
-            for (EditorButton b : subMenuButtons)
+            for (EditorButton b: subMenuButtons)
             {
                 b.bgColR = bgColR;
                 b.bgColG = bgColG;

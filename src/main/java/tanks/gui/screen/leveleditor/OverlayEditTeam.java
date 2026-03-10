@@ -38,8 +38,8 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
             {
                 team.name = teamName.inputText;
             }
-        }
-                , team.name);
+        },
+                team.name);
 
         teamFriendlyFire.image = "shield.png";
         teamFriendlyFire.imageXOffset = -teamFriendlyFire.sizeX / 2 + teamFriendlyFire.sizeY / 2;
@@ -78,7 +78,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     }
     );
 
-    public Button teamFriendlyFire = new Button(this.centerX, this.centerY , this.objWidth, this.objHeight, "Friendly fire: on", new Runnable()
+    public Button teamFriendlyFire = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Friendly fire: on", new Runnable()
     {
         @Override
         public void run()
@@ -93,10 +93,9 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     );
 
     public Button teamColor = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Team color", () ->
-        {
-            Game.screen = new OverlayEditTeamColor(Game.screen, editor, team);
-        }
-    );
+    {
+        Game.screen = new OverlayEditTeamColor(Game.screen, editor, team);
+    });
 
     @Override
     public void escape()

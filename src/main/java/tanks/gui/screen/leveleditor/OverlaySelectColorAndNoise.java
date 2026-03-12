@@ -30,7 +30,8 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
     {
         this.dichromatic = !this.dichromatic;
         this.setColor();
-    }, "If disabled, the RGB components of noise---will be added separately, leading to---more color variation.------If enabled, they will be added---proportionally to their noise values.");
+    }, "If disabled, the RGB components of noise---will be added separately, leading to---more color variation." +
+            "------If enabled, they will be added---proportionally to their noise values.");
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Done", this::escape);
 
@@ -49,8 +50,8 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
                 colorRed.inputText = colorRed.previousInputText;
 
             this.setColor();
-        }
-                , (initColor / (256 * 256)) % 256, 0, 255, 1);
+        },
+                (initColor / (256 * 256)) % 256, 0, 255, 1);
 
         colorRed.allowLetters = false;
         colorRed.allowSpaces = false;
@@ -65,8 +66,8 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
                 colorGreen.inputText = colorGreen.previousInputText;
 
             this.setColor();
-        }
-                , (initColor / 256) % 256, 0, 255, 1);
+        },
+                (initColor / 256) % 256, 0, 255, 1);
 
         colorGreen.allowLetters = false;
         colorGreen.allowSpaces = false;
@@ -81,8 +82,8 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
                 colorBlue.inputText = colorBlue.previousInputText;
 
             this.setColor();
-        }
-                , initColor % 256, 0, 255, 1);
+        },
+                initColor % 256, 0, 255, 1);
 
         colorBlue.allowLetters = false;
         colorBlue.allowSpaces = false;
@@ -97,8 +98,8 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
                 colorVarRed.inputText = colorVarRed.previousInputText;
 
             this.setColor();
-        }
-                , (initColor / ((long) Math.pow(256, 5))) % 256, 0, 255, 1);
+        },
+                (initColor / ((long) Math.pow(256, 5))) % 256, 0, 255, 1);
 
         colorVarRed.allowLetters = false;
         colorVarRed.allowSpaces = false;
@@ -111,8 +112,8 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
                 colorVarGreen.inputText = colorVarGreen.previousInputText;
 
             this.setColor();
-        }
-                , (initColor / ((long) Math.pow(256, 4))) % 256, 0, 255, 1);
+        },
+                (initColor / ((long) Math.pow(256, 4))) % 256, 0, 255, 1);
 
         colorVarGreen.allowLetters = false;
         colorVarGreen.allowSpaces = false;
@@ -125,8 +126,8 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
                 colorVarBlue.inputText = colorVarBlue.previousInputText;
 
             this.setColor();
-        }
-                , (initColor / ((long) Math.pow(256, 3))) % 256, 0, 255, 1);
+        },
+                (initColor / ((long) Math.pow(256, 3))) % 256, 0, 255, 1);
 
         colorVarBlue.allowLetters = false;
         colorVarBlue.allowSpaces = false;

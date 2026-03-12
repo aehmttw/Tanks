@@ -110,7 +110,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     }, "Sort tanks (irreversible)");
 
     public ButtonObject movePlayerButton;
-    public ButtonObject playerSpawnsButton = new ButtonObject(new TankSpawnMarker("player", 0, 0, 0), this.centerX + 50, this.centerY, 75, 75, () -> editor.movePlayer = false, "Add multiple player spawn points");
+    public ButtonObject playerSpawnsButton = new ButtonObject(new TankSpawnMarker("player", 0, 0, 0), this.centerX + 50, this.centerY, 75, 75,
+            () -> editor.movePlayer = false, "Add multiple player spawn points");
 
     public OverlayObjectMenu(Screen previous, ScreenLevelEditor editor)
     {
@@ -177,8 +178,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 editor.tankNum = j;
                 editor.setMousePlaceable();
                 this.loadMetadataButtons();
-            }
-                    , t.description);
+            },
+                    t.description);
 
             if (t.description.isEmpty())
                 b.enableHover = false;
@@ -200,8 +201,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 editor.obstacleNum = j;
                 editor.setMousePlaceable();
                 this.loadMetadataButtons();
-            }
-                    , o.description);
+            },
+                    o.description);
 
             if (o.description.isEmpty())
                 b.enableHover = false;
@@ -581,7 +582,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         if (this.editor.mousePlaceable instanceof TankAIControlled)
         {
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof TankAIControlled && ((TankAIControlled) m).name.equals(name))
                     t.cloneProperties((TankAIControlled) m);
@@ -624,7 +625,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         {
             if (t1.renameLinkedTank(from, to))
             {
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof TankAIControlled && ((TankAIControlled) m).name.equals(t1.name))
                         t1.cloneProperties((TankAIControlled) m);

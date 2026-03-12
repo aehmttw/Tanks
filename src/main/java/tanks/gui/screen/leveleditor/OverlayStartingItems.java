@@ -62,12 +62,14 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
             Consumer<Item.ItemStack<?>> addItem = (Item.ItemStack<?> i) ->
             {
                 screenLevelEditor.level.startingItems.add(i);
-                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>((Class<Item.ItemStack<?>>)(Class<?>) Item.ItemStack.class, screenLevelEditor.level.startingItems, screenLevelEditor.level.startingItems.size() - 1, false, this::refreshItems), this);
+                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>((Class<Item.ItemStack<?>>) (Class<?>) Item.ItemStack.class,
+                        screenLevelEditor.level.startingItems, screenLevelEditor.level.startingItems.size() - 1, false, this::refreshItems), this);
                 s.onComplete = this::refreshItems;
                 Game.screen = s;
             };
 
-            Game.screen = new ScreenAddSavedItem(this, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
+            Game.screen = new ScreenAddSavedItem(this, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]),
+                    Game.registryItem.getEntry(itemSelector.selectedOption).item);
         });
 
         itemSelector.itemIcons = itemImages;
@@ -82,7 +84,7 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
 
         startingItemsList.reorderBehavior = (i, j) ->
         {
-            editor.level.startingItems.add(j, editor.level.startingItems.remove((int)i));
+            editor.level.startingItems.add(j, editor.level.startingItems.remove((int) i));
             this.refreshItems();
         };
 
@@ -156,7 +158,8 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
 
             Button b = new Button(0, 0, 350, 40, items.get(i).item.name, () ->
             {
-                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>((Class<Item.ItemStack<?>>)(Class<?>) Item.ItemStack.class, editor.level.startingItems, j, false, this::refreshItems), Game.screen);
+                ScreenEditorItem s = new ScreenEditorItem(new MonitoredArrayListIndexPointer<>((Class<Item.ItemStack<?>>) (Class<?>) Item.ItemStack.class,
+                        editor.level.startingItems, j, false, this::refreshItems), Game.screen);
                 s.onComplete = this::refreshItems;
                 Game.screen = s;
             });

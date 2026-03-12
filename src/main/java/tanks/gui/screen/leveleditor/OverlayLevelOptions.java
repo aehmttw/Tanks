@@ -51,8 +51,8 @@ public class OverlayLevelOptions extends ScreenLevelEditorOverlay
                 levelName.inputText =  screenLevelEditor.name.split("\\.")[0].replace("_", " ");
             }
 
-        }
-                ,  screenLevelEditor.name.split("\\.")[0].replace("_", " "));
+        },
+                screenLevelEditor.name.split("\\.")[0].replace("_", " "));
 
         levelName.enableCaps = true;
         screenLevelEditor.modified = true;

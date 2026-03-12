@@ -59,32 +59,35 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
     public boolean movePlayer = true;
 
-    public enum EditorMode
-    {build, erase, camera, select, picker, paste}
+    public enum EditorMode { build, erase, camera, select, picker, paste }
 
     public EditorMode previousMode = EditorMode.build;
     public EditorMode currentMode = EditorMode.build;
 
     public boolean symmetrySelectMode = false;
 
-    public enum BuildTool
-    {normal, circle, rectangle, line}
+    public enum BuildTool { normal, circle, rectangle, line }
 
     public BuildTool buildTool = BuildTool.normal;
 
-    public enum SelectTool
-    {normal, wand_contiguous, wand_discontiguous}
+    public enum SelectTool { normal, wand_contiguous, wand_discontiguous }
 
     public SelectTool selectTool = SelectTool.normal;
 
     public Shape prevSelectShape;
-    public double selectX1, selectY1, selectX2, selectY2;
+    public double selectX1;
+    public double selectY1;
+    public double selectX2;
+    public double selectY2;
 
     public ArrayList<EditorButton> shortcutButtons = new ArrayList<>();
     public boolean initialized = false;
 
     public SymmetryType symmetryType = SymmetryType.none;
-    public double symmetryX1, symmetryY1, symmetryX2, symmetryY2;
+    public double symmetryX1;
+    public double symmetryY1;
+    public double symmetryX2;
+    public double symmetryY2;
 
     public boolean selectHeld = false;
     public boolean selectInverted = false;

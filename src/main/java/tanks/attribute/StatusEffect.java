@@ -61,13 +61,14 @@ public class StatusEffect
         for (int i = 0; i < Arcade.max_power; i++)
         {
             s[i] = new StatusEffect("rampage", "rampage_" + (i + 1), new AttributeModifier[]
-                    {
-                            AttributeModifier.newInstance("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
-                            AttributeModifier.newInstance("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)
-                    });
+                {
+                    AttributeModifier.newInstance("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                    AttributeModifier.newInstance("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                    AttributeModifier.newInstance("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                    AttributeModifier.newInstance("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
+                    AttributeModifier.newInstance("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)
+                }
+            );
         }
 
         return s;

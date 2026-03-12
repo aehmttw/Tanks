@@ -25,8 +25,8 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.light = Integer.parseInt(light.inputText) / 100.0;
             Level.currentLightIntensity = screenLevelEditor.level.light;
-        }
-                , (int) Math.round(screenLevelEditor.level.light * 100), 0, 200, 1);
+        },
+                (int) Math.round(screenLevelEditor.level.light * 100), 0, 200, 1);
 
         light.allowLetters = false;
         light.allowSpaces = false;
@@ -45,8 +45,8 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.shadow = Integer.parseInt(shadow.inputText) / 100.0;
             Level.currentShadowIntensity = screenLevelEditor.level.shadow;
-        }
-                , (int) Math.round(screenLevelEditor.level.shadow * 100), 0, 200, 1);
+        },
+                (int) Math.round(screenLevelEditor.level.shadow * 100), 0, 200, 1);
 
         shadow.allowLetters = false;
         shadow.allowSpaces = false;

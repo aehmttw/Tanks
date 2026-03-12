@@ -34,7 +34,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
         this.musicInstruments = true;
 
         int i = 0;
-        for (V b : selector.choices)
+        for (V b: selector.choices)
         {
             final int j = i;
             choiceButtons.add(new Button(0, 0, 350, 40, selector.choiceToString(b),
@@ -55,7 +55,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
 
     public void update()
     {
-        for (Button b : choiceButtons)
+        for (Button b: choiceButtons)
             b.enabled = true;
 
         InputBindingGroup ig = Game.game.inputBindings.get(this.selector.metadataProperty.keybind());
@@ -73,7 +73,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
             editSelected = -1;
             int page = this.selector.buttonList.page;
             int count = this.selector.buttonList.rows * this.selector.buttonList.columns;
-            for (Button b : choiceButtons)
+            for (Button b: choiceButtons)
             {
                 if ((b.selected || (i >= page * count && i < (page + 1) * count && i == selector.selectedIndex)) && i < choiceButtons.size() - 1)
                 {
@@ -118,7 +118,7 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
 
             int page = this.selector.buttonList.page;
             int count = this.selector.buttonList.rows * this.selector.buttonList.columns;
-            for (Button b : choiceButtons)
+            for (Button b: choiceButtons)
             {
                 if ((b.selected || (i >= page * count && i < (page + 1) * count && i == selector.selectedIndex)) && i < choiceButtons.size() - 1)
                 {

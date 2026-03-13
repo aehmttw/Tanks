@@ -50,8 +50,8 @@ public abstract class PosedModel implements IModel
         public double offY;
         public double offZ;
 
-        public double[] matrix = new double[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-        public double[] compiledMatrix = new double[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+        public double[] matrix = new double[]{1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
+        public double[] compiledMatrix = new double[]{1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1};
 
         public PoseBone(PosedModel p, Model.Bone b)
         {
@@ -69,11 +69,11 @@ public abstract class PosedModel implements IModel
                     this.matrix[i] = 0;
             }
 
-            multiply(this.matrix, tempMatrix(Math.cos(roll), -Math.sin(roll), 0, 0, Math.sin(roll), Math.cos(roll), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
-            multiply(this.matrix, tempMatrix(1, 0, 0, 0, 0, Math.cos(pitch), -Math.sin(pitch), 0, 0, Math.sin(pitch), Math.cos(pitch), 0, 0, 0, 0, 1));
-            multiply(this.matrix, tempMatrix(Math.cos(yaw), 0, -Math.sin(yaw), 0, 0, 1, 0, 0, Math.sin(yaw), 0, Math.cos(yaw), 0, 0, 0, 0, 1));
+            multiply(this.matrix, tempMatrix(Math.cos(roll), -Math.sin(roll), 0, 0,  Math.sin(roll), Math.cos(roll), 0, 0,  0, 0, 1, 0,  0, 0, 0, 1));
+            multiply(this.matrix, tempMatrix(1, 0, 0, 0,  0, Math.cos(pitch), -Math.sin(pitch), 0,  0, Math.sin(pitch), Math.cos(pitch), 0,  0, 0, 0, 1));
+            multiply(this.matrix, tempMatrix(Math.cos(yaw), 0, -Math.sin(yaw), 0,  0, 1, 0, 0,  Math.sin(yaw), 0, Math.cos(yaw), 0,  0, 0, 0, 1));
 
-            multiply(this.matrix, tempMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, offX, offY, offZ, 1));
+            multiply(this.matrix, tempMatrix(1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  offX, offY, offZ, 1));
         }
 
         public void compileMatrix()
@@ -87,9 +87,9 @@ public abstract class PosedModel implements IModel
                 for (int i = 0; i < this.compiledMatrix.length; i++)
                     this.compiledMatrix[i] = this.posedModel.boneMap.get(this.bone.parent).compiledMatrix[i];
 
-                multiply(this.compiledMatrix, tempMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -this.bone.posX, -this.bone.posY, -this.bone.posZ, 1));
+                multiply(this.compiledMatrix, tempMatrix(1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  -this.bone.posX, -this.bone.posY, -this.bone.posZ, 1));
                 multiply(this.compiledMatrix, this.matrix);
-                multiply(this.compiledMatrix, tempMatrix(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, this.bone.posX, this.bone.posY, this.bone.posZ, 1));
+                multiply(this.compiledMatrix, tempMatrix(1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  this.bone.posX, this.bone.posY, this.bone.posZ, 1));
             }
         }
     }

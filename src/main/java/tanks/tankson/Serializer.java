@@ -112,7 +112,8 @@ public final class Serializer
             {
                 try
                 {
-                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion || o instanceof Trail) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
+                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion ||
+                        o instanceof Trail) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
                     {
                         Object o2 = f.get(o);
                         if (o2 != null && isTanksONable(f))

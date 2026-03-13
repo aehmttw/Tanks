@@ -249,7 +249,9 @@ public class Panel
                 try
                 {
                     String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
-                    notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) + "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.", 1200, 400));
+                    notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) +
+                        "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.",
+                        1200, 400));
                 } catch (Exception e)
                 {
                     Game.exitToCrash(e);
@@ -309,7 +311,8 @@ public class Panel
 
         lastFrameNano = System.nanoTime();
 
-        Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
+        Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).playing &&
+            Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
 
         if (!Game.shadowsEnabled)
             Game.game.window.setShadowQuality(0);
@@ -358,7 +361,8 @@ public class Panel
                     try
                     {
                         if (e instanceof IStackableEvent)
-                            stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
+                            stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e)
+                                .getIdentifier())), (IStackableEvent) e);
                         else
                             Game.eventsIn.get(i).execute();
                     } catch (Exception ex)
@@ -439,7 +443,8 @@ public class Panel
                     Game.removePlayer(ScreenPartyHost.disconnectedPlayers.get(i));
                 }
 
-                if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).cancelCountdown)
+                if (ScreenPartyHost.readyPlayers.size() >= ScreenPartyHost.includedPlayers.size() && Game.screen instanceof ScreenGame &&
+                    ((ScreenGame) Game.screen).cancelCountdown)
                 {
                     Game.eventsOut.add(new EventBeginLevelCountdown());
                     ScreenGame s = (ScreenGame) Game.screen;
@@ -495,9 +500,9 @@ public class Panel
                 this.zoomTimer -= 0.01 * Panel.frameFrequency;
         }
 
-        if (((Game.playerTank != null && !Game.playerTank.destroy) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).spectatingTank != null)) && !ScreenGame.finished
-            && (Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale || Game.followingCam)
-            && Game.screen instanceof ScreenGame && (((ScreenGame) (Game.screen)).playing || ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && Game.startTime < Game.currentLevel.startTime)))
+        if (((Game.playerTank != null && !Game.playerTank.destroy) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).spectatingTank != null)) &&
+            !ScreenGame.finished && (Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale || Game.followingCam) && Game.screen instanceof ScreenGame &&
+            (((ScreenGame) (Game.screen)).playing || ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && Game.startTime < Game.currentLevel.startTime)))
         {
             Drawing.drawing.enableMovingCamera = Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale;
 
@@ -563,7 +568,8 @@ public class Panel
 
         this.zoomTimer = Math.min(Math.max(this.zoomTimer, 0), 1);
 
-        if (Game.screen instanceof ScreenGame && Drawing.drawing.enableMovingCamera && Panel.zoomTarget >= 0 && (((ScreenGame) Game.screen).spectatingTank != null || (Game.playerTank != null && !Game.playerTank.destroy)) && ((ScreenGame) Game.screen).playing)
+        if (Game.screen instanceof ScreenGame && Drawing.drawing.enableMovingCamera && Panel.zoomTarget >= 0 && (((ScreenGame) Game.screen).spectatingTank != null ||
+            (Game.playerTank != null && !Game.playerTank.destroy)) && ((ScreenGame) Game.screen).playing)
         {
             double speed = 0.3 * Drawing.drawing.unzoomedScale;
             double accel = 0.00003 * Drawing.drawing.unzoomedScale;
@@ -688,7 +694,8 @@ public class Panel
             Client.handler.reply();
         }
 
-        if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && Game.screen != null && !Game.stringsEqual(prevScreen.music, Game.screen.music) && !(Game.screen instanceof IOnlineScreen)))
+        if (forceRefreshMusic || (prevScreen != null && prevScreen != Game.screen && Game.screen != null && !Game.stringsEqual(prevScreen.music, Game.screen.music) &&
+            !(Game.screen instanceof IOnlineScreen)))
         {
             if (Game.stringsEqual(prevScreen.musicID, Game.screen.musicID))
                 this.playScreenMusic(500);
@@ -745,7 +752,8 @@ public class Panel
 
     public void draw()
     {
-        if ((Game.game.window.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
+        if ((Game.game.window.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer &&
+            !ScreenPartyLobby.isClient)))
             this.age += Panel.frameFrequency;
 
         while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.drawing.getTrackOffset())
@@ -790,18 +798,21 @@ public class Panel
                 Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
                 Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
                 Drawing.drawing.scale = Game.screen.getScale();
-                Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
+                Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28,
+                    (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
                 Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
             }
 
             if (!(Game.screen instanceof ScreenExit))
             {
                 if (Game.screen instanceof ScreenGame && Game.currentLevel != null && Game.followingCam)
-                    Drawing.drawing.setColor(133 * (Level.currentLightIntensity * 0.7), 193 * (Level.currentLightIntensity * 0.7), 233 * (Level.currentLightIntensity * 0.7));
+                    Drawing.drawing.setColor(133 * (Level.currentLightIntensity * 0.7), 193 * (Level.currentLightIntensity * 0.7),
+                        233 * (Level.currentLightIntensity * 0.7));
                 else
                     Drawing.drawing.setColor(174, 92, 16);
 
-                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+                    Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
             }
 
             Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
@@ -841,7 +852,8 @@ public class Panel
                     Drawing.drawing.interfaceScaleZoom = Game.screen.interfaceScaleZoomOverride;
                 else
                     Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
-                Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
+                Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28,
+                    (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 
                 Game.screen.draw();
 
@@ -861,12 +873,14 @@ public class Panel
                 this.continuation = c;
 
                 Drawing.drawing.setColor(235, 207, 166);
-                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+                    Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
                 Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.setInterfaceFontSize(24);
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
-                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
+                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)",
+                    100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
 
                 if (System.currentTimeMillis() - continuationStartTime > 500)
                 {
@@ -875,13 +889,15 @@ public class Panel
                     if (time <= 50)
                         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "Just a moment...");
                     else
-                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left", Game.timeInterval(0, (long) time + 1000, true));
+                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left",
+                            Game.timeInterval(0, (long) time + 1000, true));
                 }
 
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
                 Drawing.drawing.setColor(0, 0, 0, 127);
-                Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
+                Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5,
+                    1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
             }
         }
 
@@ -985,7 +1001,8 @@ public class Panel
             Drawing.drawing.drawInterfaceImage("cursor.png", mx, my, 48, 48);
         }
 
-        if (Game.enable3d && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && !((ScreenGame) Game.screen).shopScreen && Game.playerTank != null) || Game.screen instanceof ScreenLevelEditor) && Panel.showMouseTargetHeight)
+        if (Game.enable3d && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && !((ScreenGame) Game.screen).shopScreen && Game.playerTank != null) ||
+            Game.screen instanceof ScreenLevelEditor) && Panel.showMouseTargetHeight)
         {
             double c = 127 * Obstacle.draw_size / Game.tile_size;
             double a = 255;
@@ -1141,13 +1158,15 @@ public class Panel
         allocatedThisSecond += Math.max(0, used - lastMemory);
         lastMemory = used;
 
-        Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " + used / 1048576 + "/" + total / 1048576 + "MB (" + Math.round(allocatedLastSecond / 104857.6) / 10. + " MB/s)");
+        Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +
+            used / 1048576 + "/" + total / 1048576 + "MB (" + Math.round(allocatedLastSecond / 104857.6) / 10. + " MB/s)");
 
         if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
         {
             double[] col = getLatencyColor(Client.handler.lastLatency);
             Drawing.drawing.setColor(col[0], col[1], col[2]);
-            Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " + Client.handler.lastLatency + "ms");
+            Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, "Latency: " +
+                Client.handler.lastLatency + "ms");
         }
 
         if (ScreenPartyLobby.isClient || ScreenPartyHost.isServer)
@@ -1155,10 +1174,12 @@ public class Panel
             Drawing.drawing.setColor(255, 227, 186);
 
             String s = "Upstream: " + MessageReader.upstreamBytesPerSec / 1024 + "KB/s";
-            Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset, offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, s);
+            Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset,
+                offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, s);
 
             s = "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s";
-            Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, s);
+            Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset,
+                offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, s);
         }
     }
 

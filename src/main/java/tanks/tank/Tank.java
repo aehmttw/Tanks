@@ -163,7 +163,8 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = appearanceGlow, id = "light_size", name = "Light size", minValue = 0.0)
     public double lightSize = 0;
     @TankBuildProperty
-    @Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0, desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
+    @Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0,
+        desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
     public double luminance = 0.5;
 
     /**
@@ -932,6 +933,27 @@ public abstract class Tank extends Movable implements ISolidObject
         Drawing.drawing.setColor(this.secondaryColor.red, this.secondaryColor.green, this.secondaryColor.blue);
     }
 
+    public static void drawTank(double x, double y, Color c1, Color c2, Color c3)
+    {
+        drawTank(x, y, c1, c2, c3, Game.tile_size / 2);
+    }
+
+    public static void drawTank(double x, double y, Color c1, Color c2, Color c3, double size)
+    {
+        Drawing.drawing.setColor(c2);
+        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.base, x, y, size, size, 0);
+
+        Drawing.drawing.setColor(c1);
+        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.color, x, y, size, size, 0);
+
+        Drawing.drawing.setColor(c2);
+
+        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turret, x, y, size, size, 0);
+
+        Drawing.drawing.setColor(c3);
+        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turretBase, x, y, size, size, 0);
+    }
+
     public void drawTurret(boolean forInterface, boolean in3d, boolean transparent)
     {
         this.turret.draw(angle, pitch, forInterface, in3d, transparent);
@@ -1383,27 +1405,6 @@ public abstract class Tank extends Movable implements ISolidObject
     {
         Movable m = Movable.findMovable(x, y);
         return m instanceof Tank ? (Tank) m : null;
-    }
-
-    public static void drawTank(double x, double y, Color c1, Color c2, Color c3)
-    {
-        drawTank(x, y, c1, c2, c3, Game.tile_size / 2);
-    }
-
-    public static void drawTank(double x, double y, Color c1, Color c2, Color c3, double size)
-    {
-        Drawing.drawing.setColor(c2);
-        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.base, x, y, size, size, 0);
-
-        Drawing.drawing.setColor(c1);
-        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.color, x, y, size, size, 0);
-
-        Drawing.drawing.setColor(c2);
-
-        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turret, x, y, size, size, 0);
-
-        Drawing.drawing.setColor(c3);
-        Drawing.drawing.drawInterfaceModel(TankModels.skinnedTankModel.turretBase, x, y, size, size, 0);
     }
 
     public static class ClippedTile

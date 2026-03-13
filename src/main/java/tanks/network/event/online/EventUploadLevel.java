@@ -52,6 +52,12 @@ public class EventUploadLevel extends PersonalEvent implements IOnlineServerEven
     }
 
     @Override
+    public void execute()
+    {
+
+    }
+
+    @Override
     public void write(ByteBuf b)
     {
         NetworkUtils.writeString(b, this.name);
@@ -63,11 +69,5 @@ public class EventUploadLevel extends PersonalEvent implements IOnlineServerEven
     {
         this.name = NetworkUtils.readString(b);
         this.level = NetworkUtils.readString(b);
-    }
-
-    @Override
-    public void execute()
-    {
-
     }
 }

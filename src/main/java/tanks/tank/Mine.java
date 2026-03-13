@@ -20,7 +20,8 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     @Property(id = "explosion", name = "Explosion", category = MinePropertyCategory.mine)
     public Explosion explosion = new Explosion();
 
-    @Property(id = "timer", name = "Fuse length", desc = "The mine will explode this much time after it is placed \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
+    @Property(id = "timer", name = "Fuse length", desc = "The mine will explode this much time after it is placed \n \n 1 time unit = 0.01 seconds",
+        category = MinePropertyCategory.mine)
     public double timer = 1000;
 
     @Property(id = "size", name = "Size", category = MinePropertyCategory.mine)
@@ -31,14 +32,16 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public double outlineColorB;
     public double height = 0;
 
-    @Property(id = "triggered_timer", name = "Triggered fuse length", desc = "If an enemy tank is within this mine's radius, its fuse will be shortened to this length \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
+    @Property(id = "triggered_timer", name = "Triggered fuse length",
+        desc = "If an enemy tank is within this mine's radius, its fuse will be shortened to this length \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
     public double triggeredTimer = 50;
 
     public Tank tank;
     public ItemMine.ItemStackMine item;
     public int lastBeep = Integer.MAX_VALUE;
 
-    @Property(id = "max_live_mines", name = "Max live mines", desc = "The maximum number of this mine placed by one tank that can be onscreen at a time", category = MinePropertyCategory.mine)
+    @Property(id = "max_live_mines", name = "Max live mines",
+        desc = "The maximum number of this mine placed by one tank that can be onscreen at a time", category = MinePropertyCategory.mine)
     public int maxLiveMines = 2;
 
     @Property(id = "color", name = "Initial color", miscType = Property.MiscType.colorRGB, category = MinePropertyCategory.colors)

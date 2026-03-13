@@ -69,8 +69,8 @@ public class ScreenBrowseLevels extends ScreenLayout
                     ScreenDownloadLevel s = new ScreenDownloadLevel(player, l);
                     s.setScreen();
 
-                }
-                    , "Uploaded by: " + PlayerMap.instance.getUsername(l.creator) + "---" + Game.timeInterval(l.time, System.currentTimeMillis()) + " ago");
+                },
+                    "Uploaded by: " + PlayerMap.instance.getUsername(l.creator) + "---" + Game.timeInterval(l.time, System.currentTimeMillis()) + " ago");
 
                 b.wait = true;
                 levelButtons.add(b);

@@ -126,7 +126,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, new Color().set((Color) v));
                         else
                             f.set(m, v);
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) { }
                 }
             }
 
@@ -164,7 +164,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, ((ICopyable<?>) v).getCopy());
                         else
                             f.set(m, v);
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) { }
                 }
             }
 
@@ -219,7 +219,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, ((ICopyable<?>) v).getCopy());
                         else
                             f.set(m, v);
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) { }
                 }
             }
 

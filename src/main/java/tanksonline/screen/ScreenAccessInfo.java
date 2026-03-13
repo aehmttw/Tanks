@@ -44,7 +44,8 @@ public class ScreenAccessInfo extends ScreenLayout
         if (accessCode.expiration < 0)
             this.texts.add(new ScreenOnline.Text("Your access will last indefinitely", sizeX / 2, sizeY / 2 + 0, 24, 0));
         else
-            this.texts.add(new ScreenOnline.Text("Your access will expire in " + Game.timeInterval(System.currentTimeMillis(), accessCode.expiration), sizeX / 2, sizeY / 2 + 0, 24, 0));
+            this.texts.add(new ScreenOnline.Text("Your access will expire in " + Game.timeInterval(System.currentTimeMillis(), accessCode.expiration), sizeX / 2,
+                sizeY / 2 + 0, 24, 0));
 
         if (accessCode.maxUses < 0)
             this.texts.add(new ScreenOnline.Text("Accounts using this access code: " + accessCode.players.size(), sizeX / 2, sizeY / 2 + 30, 24, 0));

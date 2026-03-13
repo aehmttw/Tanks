@@ -37,10 +37,13 @@ public class TeleporterOrb extends Movable
     public double lastTrailPitch = -1;
     public boolean addedTrail = false;
 
-    Trail[] trailSet = new Trail[]{
-        new Trail(this, 12.5, 0, 0, 0, 0, 0.5, 8, 0, 127, 127, 127, 100, 255, 255, 255, 0, false, 1, true, true),
-        new Trail(this, 12.5, 0, 0, 0, 0, 1, 10, 0, 127, 127, 127, 100, 0, 0, 0, 0, true, 1, true, true)
-    };
+    Trail[] trailSet = new Trail[]
+        {
+            new Trail(this, 12.5, 0, 0, 0, 0, 0.5, 8, 0, 127, 127, 127, 100, 255,
+                255, 255, 0, false, 1, true, true),
+            new Trail(this, 12.5, 0, 0, 0, 0, 1, 10, 0, 127, 127, 127, 100, 0,
+                0, 0, 0, true, 1, true, true)
+        };
 
     public ArrayList<Trail>[] trails = null;
     public double size;
@@ -87,14 +90,17 @@ public class TeleporterOrb extends Movable
         }
 
         //Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac);
+        Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac,
+            this.tank.color.blue * (1 - frac) + 255 * frac);
 
         if (Game.enable3d)
-            Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2 * endFrac, (this.size - this.tank.size) / 2 * endFrac, true, true);
+            Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2 * endFrac, (this.size - this.tank.size) / 2 * endFrac,
+                true, true);
 
         for (int i = 0; i < (this.size - this.tank.size) * endFrac; i++)
         {
-            Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac, 20);
+            Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac,
+                this.tank.color.blue * (1 - frac) + 255 * frac, 20);
             //Drawing.drawing.setColor(255, 255, 255, 20);
 
             if (Game.enable3d)
@@ -159,7 +165,8 @@ public class TeleporterOrb extends Movable
         }
 
         if (this.tank == Game.playerTank)
-            Drawing.drawing.playSound("teleport2.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5) * fracmod, freq * (1 - (float) (tank.size / size)) / 4f * fracmod);
+            Drawing.drawing.playSound("teleport2.ogg", (float) (Math.sin((Math.min(Math.max(this.age, 0), this.maxAge) / this.maxAge) * Math.PI) / 4 + 0.5) * fracmod,
+                freq * (1 - (float) (tank.size / size)) / 4f * fracmod);
 
 
         if (this.age <= -50)
@@ -233,7 +240,8 @@ public class TeleporterOrb extends Movable
         this.prevZ = this.posZ;
 
         if (!this.addedTrail && !this.destroy &&
-            (GameObject.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (Game.enable3d && GameObject.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
+            (GameObject.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (Game.enable3d && GameObject.absoluteAngleBetween(this.getPolarPitch(),
+                this.lastTrailPitch) >= 0.1)))
         {
             this.addTrail();
         }
@@ -267,11 +275,15 @@ public class TeleporterOrb extends Movable
         for (Trail t: this.trailSet)
         {
             if (!Game.enable3d)
-                this.addTrailObj(new Trail(this, speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle,
-                    t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle, t.backCircle), i);
+                this.addTrailObj(new Trail(this, speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth,
+                    this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle,
+                    t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow,
+                    t.luminosity, t.frontCircle, t.backCircle), i);
             else
-                this.addTrailObj(new Trail3D(this, speed, x, y, z, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, this.lastTrailPitch,
-                    t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle, t.backCircle), i);
+                this.addTrailObj(new Trail3D(this, speed, x, y, z, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth,
+                    this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, this.lastTrailPitch,
+                    t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow,
+                    t.luminosity, t.frontCircle, t.backCircle), i);
             i++;
         }
     }

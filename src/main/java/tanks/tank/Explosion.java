@@ -21,7 +21,8 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
     @Property(id = "damage", name = "Damage", desc = "The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double damage = 2;
 
-    @Property(id = "max_extra_health", minValue = 0.0, name = "Max extra hitpoints", desc = "Applicable if damage is negative: this explosion will not heal a tank to more than its default hitpoints plus 'max extra hitpoints'")
+    @Property(id = "max_extra_health", minValue = 0.0, name = "Max extra hitpoints",
+        desc = "Applicable if damage is negative: this explosion will not heal a tank to more than its default hitpoints plus 'max extra hitpoints'")
     public double maxExtraHealth = 1;
 
     @Property(id = "destroys_obstacles", name = "Destroys blocks")

@@ -58,8 +58,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
     public double mouseY;
 
     public static Color default_primary_color = new Color(0, 150, 255, 255);
-    public static Color default_secondary_color = new Color((int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150), (int) Turret.calculateSecondaryColor(255), 255);
-    public static Color default_tertiary_color = new Color((default_primary_color.red + default_secondary_color.red) / 2, (default_primary_color.green + default_secondary_color.green) / 2, (default_primary_color.blue + default_secondary_color.blue) / 2, 255);
+    public static Color default_secondary_color = new Color((int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150),
+        (int) Turret.calculateSecondaryColor(255), 255);
+    public static Color default_tertiary_color = new Color((default_primary_color.red + default_secondary_color.red) / 2,
+        (default_primary_color.green + default_secondary_color.green) / 2, (default_primary_color.blue + default_secondary_color.blue) / 2, 255);
 
     public static final int max_abilities = 5;
 
@@ -354,8 +356,8 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
                             this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
                         }
 
-                        distSq = Math.pow(px - Drawing.drawing.gameToInterfaceCoordsX(this.posX), 2)
-                            + Math.pow(py - Drawing.drawing.gameToInterfaceCoordsY(this.posY), 2);
+                        distSq = Math.pow(px - Drawing.drawing.gameToInterfaceCoordsX(this.posX), 2) +
+                            Math.pow(py - Drawing.drawing.gameToInterfaceCoordsY(this.posY), 2);
 
                         if (distSq <= Math.pow(this.touchCircleSize / 4, 2) || p.tag.equals("aim"))
                         {

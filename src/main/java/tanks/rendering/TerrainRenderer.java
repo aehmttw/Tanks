@@ -313,7 +313,8 @@ public class TerrainRenderer
     /**
      * Different rendering method, easier to use if you want the shrinking/growing blocks animation to work properly but maybe a bit slower
      */
-    public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy, float cz)
+    public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy,
+                                 float cz)
     {
         x -= sX / 2;
         y -= sY / 2;
@@ -505,7 +506,8 @@ public class TerrainRenderer
             if (in)
             {
                 if (s.shader instanceof RendererShader)
-                    s.renderer.settings(((RendererShader) s.shader).depthTest && Game.enable3d, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask && Game.enable3d);
+                    s.renderer.settings(((RendererShader) s.shader).depthTest && Game.enable3d, ((RendererShader) s.shader).glow,
+                        ((RendererShader) s.shader).depthMask && Game.enable3d);
                 else
                     s.renderer.settings(Game.enable3d, false, Game.enable3d);
 
@@ -819,7 +821,9 @@ public class TerrainRenderer
     {
         public BaseShapeBatchRenderer renderer;
         public ShaderGroup shader;
-        public int posX, posY, num;
+        public int posX;
+        public int posY;
+        public int num;
 
         public RegionRenderer(int x, int y, ShaderGroup s, int num)
         {

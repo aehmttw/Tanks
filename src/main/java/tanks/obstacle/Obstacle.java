@@ -34,8 +34,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
      * Extra = can be placed anywhere without a full tile, can have tanks inside
      *
      */
-    public enum ObstacleType
-    {full, ground, top, extra}
+    public enum ObstacleType { full, ground, top, extra }
 
     public ObstacleType type = ObstacleType.top;
 

@@ -87,9 +87,12 @@ public class SteamWorkshopHandler
             if (result == SteamResult.OK)
             {
                 if (!needsToAcceptWLA)
-                    Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! \n Please note that it may take a few minutes for it to show up in listings.", true);
+                    Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! \n " +
+                        "Please note that it may take a few minutes for it to show up in listings.", true);
                 else
-                    Game.screen = new ScreenWorkshopMustAcceptAgreement(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! \n However, you haven't yet accepted the Steam Workshop Legal agreement. \n Your " + uploadingType.toLowerCase() + " will be private until you do so.", true);
+                    Game.screen = new ScreenWorkshopMustAcceptAgreement(new ScreenSteamWorkshop(), "Uploaded!", uploadingType + " was uploaded to Steam Workshop! " +
+                        "\n However, you haven't yet accepted the Steam Workshop Legal agreement. \n Your " + uploadingType.toLowerCase() + " will be private until you do so.",
+                        true);
 
                 Game.game.fileManager.getFile(Game.homedir + uploadDir + "/" + uploadingName).delete();
                 Game.game.fileManager.getFile(Game.homedir + screenshotDir).delete();
@@ -154,9 +157,11 @@ public class SteamWorkshopHandler
         public void onDeleteItem(SteamPublishedFileID publishedFileID, SteamResult result)
         {
             if (result.equals(SteamResult.OK))
-                Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Success!", uploadingType + " was removed from Steam Workshop! \n Please note that it may take a few minutes for it to disappear from listings.", true);
+                Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Success!", uploadingType + " was removed from Steam Workshop! \n " +
+                    "Please note that it may take a few minutes for it to disappear from listings.", true);
             else
-                Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Failed to remove " + uploadingType.toLowerCase() + "!", SteamResults.getMessage(result), false);
+                Game.screen = new ScreenWorkshopActionResult(new ScreenSteamWorkshop(), "Failed to remove " + uploadingType.toLowerCase() + "!",
+                    SteamResults.getMessage(result), false);
         }
 
         @Override
@@ -242,9 +247,11 @@ public class SteamWorkshopHandler
 
             SteamUGCQuery q;
             if (searchUser == null)
-                q = workshop.createQueryAllUGCRequest(searchByScore ? SteamUGC.UGCQueryType.RankedByVote : SteamUGC.UGCQueryType.RankedByPublicationDate, SteamUGC.MatchingUGCType.Items, handler.clientUtils.getAppID(), handler.clientUtils.getAppID(), n + 1);
+                q = workshop.createQueryAllUGCRequest(searchByScore ? SteamUGC.UGCQueryType.RankedByVote : SteamUGC.UGCQueryType.RankedByPublicationDate,
+                    SteamUGC.MatchingUGCType.Items, handler.clientUtils.getAppID(), handler.clientUtils.getAppID(), n + 1);
             else
-                q = workshop.createQueryUserUGCRequest(searchUser.getAccountID(), SteamUGC.UserUGCList.Published, SteamUGC.MatchingUGCType.Items, SteamUGC.UserUGCListSortOrder.CreationOrderDesc, handler.clientUtils.getAppID(), handler.clientUtils.getAppID(), n + 1);
+                q = workshop.createQueryUserUGCRequest(searchUser.getAccountID(), SteamUGC.UserUGCList.Published, SteamUGC.MatchingUGCType.Items,
+                    SteamUGC.UserUGCListSortOrder.CreationOrderDesc, handler.clientUtils.getAppID(), handler.clientUtils.getAppID(), n + 1);
 
             if (searchText != null)
                 workshop.setSearchText(q, searchText);

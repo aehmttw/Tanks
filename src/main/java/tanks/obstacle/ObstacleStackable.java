@@ -193,7 +193,8 @@ public class ObstacleStackable extends Obstacle
         }
     }
 
-    public static void destroyAnimation3d(double x, double y, double z, double posX, double posY, double height, Effect.EffectType effect, double freq, double radius, double r, double g, double b)
+    public static void destroyAnimation3d(double x, double y, double z, double posX, double posY, double height, Effect.EffectType effect, double freq, double radius, double r,
+                                          double g, double b)
     {
         double s = 12.5;
         for (double j = 0; j < Game.tile_size; j += s)

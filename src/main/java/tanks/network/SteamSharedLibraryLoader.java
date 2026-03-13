@@ -72,6 +72,8 @@ public class SteamSharedLibraryLoader
                 return "lib" + libName + ".so";
             case MacOS:
                 return "lib" + libName + ".dylib";
+            default:
+                break;
         }
 
         throw new RuntimeException("Unknown host architecture");

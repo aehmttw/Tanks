@@ -71,14 +71,6 @@ public class Team
             return setTeamColor(m.team.teamColor.red, m.team.teamColor.green, m.team.teamColor.blue);
     }
 
-    protected static double[] setTeamColor(double r, double g, double b)
-    {
-        returnColor[0] = r;
-        returnColor[1] = g;
-        returnColor[2] = b;
-        return returnColor;
-    }
-
     public static double[] getObjectColor(double[] col, double r, double g, double b, Movable m)
     {
         if (m.team == null)
@@ -87,6 +79,14 @@ public class Team
             return setTeamColor(col, r, g, b);
         else
             return setTeamColor(col, m.team.teamColor.red, m.team.teamColor.green, m.team.teamColor.blue);
+    }
+
+    protected static double[] setTeamColor(double r, double g, double b)
+    {
+        returnColor[0] = r;
+        returnColor[1] = g;
+        returnColor[2] = b;
+        return returnColor;
     }
 
     protected static double[] setTeamColor(double[] col, double r, double g, double b)

@@ -1,9 +1,7 @@
 package tanksonline;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class AccessCode
 {
@@ -69,8 +67,7 @@ public class AccessCode
             {
                 System.out.println("Attempted to load an inexistent access code: " + f);
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -91,15 +88,14 @@ public class AccessCode
             pw.println(maxUses);
             pw.println(comment);
 
-            for (TanksOnlinePlayer player : this.players)
+            for (TanksOnlinePlayer player: this.players)
             {
                 pw.println(player.id);
             }
 
             pw.close();
             return true;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             return false;

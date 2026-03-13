@@ -5,6 +5,7 @@ import tanks.bullet.DefaultItems;
 
 /**
  * A stationary tank which lobs bullets over walls
+ *
  * @see TankBrown
  */
 public class TankMustard extends TankAIControlled

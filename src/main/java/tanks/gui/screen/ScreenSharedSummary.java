@@ -60,8 +60,8 @@ public class ScreenSharedSummary extends Screen
                 ScreenCrusadePreview sc = new ScreenCrusadePreview(c, Game.screen, false);
                 sc.setOffset(sc.objHeight);
                 Game.screen = sc;
-            }
-                    , "Shared by " + l.creator));
+            },
+                "Shared by " + l.creator));
         }
 
         sharedCrusades = new ButtonList(buttons, 0, 0, 60);
@@ -79,11 +79,11 @@ public class ScreenSharedSummary extends Screen
                 lev.preview = true;
                 lev.loadLevel(sc);
                 Game.screen = sc;
-            }
-                    , "Shared by " + l.creator));
+            },
+                "Shared by " + l.creator));
         }
 
-        sharedLevels = new ButtonList(buttons2, 0, 0,  -180);
+        sharedLevels = new ButtonList(buttons2, 0, 0, -180);
         sharedLevels.rows = 2;
 
         sharedLevels.sortButtons();

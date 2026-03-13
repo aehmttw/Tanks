@@ -124,7 +124,6 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
     }
 
 
-
     @Override
     public void draw()
     {
@@ -136,7 +135,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX + extraWidth / 2, Drawing.drawing.interfaceSizeY / 2, extraWidth, height);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX - 200, Drawing.drawing.interfaceSizeY / 2,
-                400, height);
+            400, height);
 
         double posX = Drawing.drawing.interfaceSizeX - 200;
 

@@ -25,7 +25,7 @@ public class EventUpdateTankAbility extends PersonalEvent
         this.playerID = p.clientID;
         this.slot = slot;
 
-        this.count = ((TankPlayable)(p.tank)).abilities.get(slot).stackSize;
+        this.count = ((TankPlayable) (p.tank)).abilities.get(slot).stackSize;
     }
 
     @Override

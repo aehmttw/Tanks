@@ -4,9 +4,7 @@ import tanks.Game;
 import tanks.Level;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.*;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 public abstract class Minigame extends Level
 {
@@ -137,7 +135,7 @@ public abstract class Minigame extends Level
     }
 
     /**
-     *  Override and set customLevelEnd to true to set a custom level end condition
+     * Override and set customLevelEnd to true to set a custom level end condition
      */
     public boolean levelEnded()
     {
@@ -146,6 +144,7 @@ public abstract class Minigame extends Level
 
     /**
      * Override to do something when a bullet is fired
+     *
      * @param b
      */
     public void onBulletFire(Bullet b)
@@ -155,6 +154,7 @@ public abstract class Minigame extends Level
 
     /**
      * Override to do something when a tank destroys another tank
+     *
      * @param attacker
      * @param target
      */

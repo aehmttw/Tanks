@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import tanks.Game;
-import tanks.Movable;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.TankPlayerRemote;
 

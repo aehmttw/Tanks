@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.network.NetworkUtils;
 

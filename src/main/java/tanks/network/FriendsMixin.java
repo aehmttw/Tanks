@@ -1,15 +1,10 @@
 package tanks.network;
 
-import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 import tanks.gui.ScreenElement;
-import tanks.gui.screen.ScreenOverlayChat;
-import tanks.translation.Translation;
 
-import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamFriendsCallback;
-import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.*;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

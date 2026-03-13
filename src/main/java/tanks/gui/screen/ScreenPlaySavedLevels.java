@@ -2,9 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBoxInstant;
+import tanks.gui.*;
 
 public class ScreenPlaySavedLevels extends Screen
 {
@@ -66,15 +64,15 @@ public class ScreenPlaySavedLevels extends Screen
     public void initializeLevels()
     {
         this.allLevels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page,
-                (int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2),
-                (name, file) ->
+            (int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2),
+            (name, file) ->
+            {
+                if (Game.loadLevel(file))
                 {
-                    if (Game.loadLevel(file))
-                    {
-                        Game.screen = new ScreenGame();
-                        ScreenInterlevel.fromSavedLevels = true;
-                    }
-                }, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+                    Game.screen = new ScreenGame();
+                    ScreenInterlevel.fromSavedLevels = true;
+                }
+            }, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
         this.allLevels.drawOpenFileButton = true;
         this.levels = allLevels.clone();

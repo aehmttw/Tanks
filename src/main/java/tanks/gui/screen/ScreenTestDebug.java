@@ -7,19 +7,26 @@ import tanks.tank.Tank;
 
 public class ScreenTestDebug extends Screen
 {
-    Button keyboardTest = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Test keyboard", () -> Game.screen = new ScreenTestKeyboard());
+    Button keyboardTest = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Test keyboard",
+        () -> Game.screen = new ScreenTestKeyboard());
 
-    Button textboxTest = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Test text boxes", () -> Game.screen = new ScreenTestTextbox());
+    Button textboxTest = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Test text boxes",
+        () -> Game.screen = new ScreenTestTextbox());
 
-    Button modelTest = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Test models", () -> Game.screen = new ScreenTestModel(Tank.health_model));
+    Button modelTest = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Test models",
+        () -> Game.screen = new ScreenTestModel(Tank.health_model));
 
-    Button fontTest = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Test fonts", () -> Game.screen = new ScreenTestFonts());
+    Button fontTest = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Test fonts",
+        () -> Game.screen = new ScreenTestFonts());
 
-    Button fireworks = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test fireworks", () -> Game.screen = new ScreenTestFireworks());
+    Button fireworks = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Test fireworks",
+        () -> Game.screen = new ScreenTestFireworks());
 
-    Button shapeTest = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Test shapes", () -> Game.screen = new ScreenTestShapes());
+    Button shapeTest = new Button(this.centerX + this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Test shapes",
+        () -> Game.screen = new ScreenTestShapes());
 
-    Button rainbowTest = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Test rainbow", () -> Game.screen = new ScreenTestRainbow());
+    Button rainbowTest = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Test rainbow",
+        () -> Game.screen = new ScreenTestRainbow());
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenDebug());
 

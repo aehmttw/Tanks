@@ -159,7 +159,7 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
                 if (drawModels && selector.models != null)
                     b.model = selector.models[i];
 
-                b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+                b.imageXOffset = -b.sizeX / 2 + b.sizeY / 2 + 10;
                 b.imageYOffset = 0;
                 b.imageSizeX = b.sizeY;
                 b.imageSizeY = b.sizeY;

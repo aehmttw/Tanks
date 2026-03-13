@@ -66,7 +66,8 @@ public class ScreenCinematicTitle extends Screen implements ISeparateBackgroundS
 //        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY, "...and even crazier!");
 
         Drawing.drawing.setColor(174, 92, 16);
-        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+            Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.drawInterfaceImage("banner.png", this.centerX, this.centerY, Drawing.drawing.interfaceSizeX, Drawing.drawing.interfaceSizeY);

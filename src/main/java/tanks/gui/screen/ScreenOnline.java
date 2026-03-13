@@ -4,9 +4,7 @@ import tanks.Drawing;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 public class ScreenOnline extends Screen implements IOnlineScreen
 {
@@ -104,10 +102,10 @@ public class ScreenOnline extends Screen implements IOnlineScreen
     @Override
     public void update()
     {
-        for (int i : this.textboxKeys)
+        for (int i: this.textboxKeys)
             this.textboxes.get(i).update();
 
-        for (int i : this.buttonKeys)
+        for (int i: this.buttonKeys)
             this.buttons.get(i).update();
     }
 
@@ -116,24 +114,24 @@ public class ScreenOnline extends Screen implements IOnlineScreen
     {
         this.drawDefaultBackground();
 
-        for (int i : this.shapeKeys)
+        for (int i: this.shapeKeys)
             this.shapes.get(i).draw();
 
         Drawing.drawing.setColor(0, 0, 0);
 
-        for (int i : this.textKeys)
+        for (int i: this.textKeys)
             this.texts.get(i).draw();
 
-        for (int i : this.buttonKeys)
+        for (int i: this.buttonKeys)
             this.buttons.get(i).draw();
 
-        for (int i : this.textboxKeys)
+        for (int i: this.textboxKeys)
             this.textboxes.get(i).draw();
     }
 
     public void addButton(int id, Button b)
     {
-        this.buttonKeys.remove((Integer)id);
+        this.buttonKeys.remove((Integer) id);
         this.buttonKeys.add(id);
         this.buttons.put(id, b);
         this.buttonKeys.sort(intComparator);
@@ -147,7 +145,7 @@ public class ScreenOnline extends Screen implements IOnlineScreen
 
     public void addTextbox(int id, TextBox b)
     {
-        this.textboxKeys.remove((Integer)id);
+        this.textboxKeys.remove((Integer) id);
         this.textboxKeys.add(id);
         this.textboxes.put(id, b);
         this.textboxKeys.sort(intComparator);
@@ -161,7 +159,7 @@ public class ScreenOnline extends Screen implements IOnlineScreen
 
     public void addText(int id, Text t)
     {
-        this.textKeys.remove((Integer)id);
+        this.textKeys.remove((Integer) id);
         this.textKeys.add(id);
         this.texts.put(id, t);
         this.textKeys.sort(intComparator);
@@ -175,7 +173,7 @@ public class ScreenOnline extends Screen implements IOnlineScreen
 
     public void addShape(int id, Shape s)
     {
-        this.shapeKeys.remove((Integer)id);
+        this.shapeKeys.remove((Integer) id);
         this.shapeKeys.add(id);
         this.shapes.put(id, s);
         this.shapeKeys.sort(intComparator);

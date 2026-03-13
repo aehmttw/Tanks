@@ -13,7 +13,8 @@ public class ScreenCrusades extends Screen
     public static int page = 0;
     public static boolean sortByTime = false;
 
-    public SavedFilesList fullCrusadesList, crusadesList;
+    public SavedFilesList fullCrusadesList;
+    public SavedFilesList crusadesList;
 
     SearchBoxInstant search = new SearchBoxInstant(this.centerX, this.centerY - this.objYSpace * 4, this.objWidth * 1.25, this.objHeight, "Search", new Runnable()
     {
@@ -66,8 +67,7 @@ public class ScreenCrusades extends Screen
 
             Crusade c = new Crusade(f, name);
             Game.screen = new ScreenCrusadeDetails(c);
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             Game.exitToCrash(e);
         }
@@ -84,20 +84,20 @@ public class ScreenCrusades extends Screen
         search.enableCaps = true;
 
         fullCrusadesList = new SavedFilesList(Game.homedir + Game.crusadeDir, page,
-                (int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2),
-                (name, file) ->
-                {
-                    Crusade c = findExistingCrusadeProgress(name);
+            (int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2),
+            (name, file) ->
+            {
+                Crusade c = findExistingCrusadeProgress(name);
 
-                    if (c == null)
-                        c = new Crusade(file, name.split("\\.")[0]);
+                if (c == null)
+                    c = new Crusade(file, name.split("\\.")[0]);
 
-                    if (c.error == null)
-                        Game.screen = new ScreenCrusadeDetails(c);
-                    else
-                        Game.screen = new ScreenFailedToLoadCrusade(name, c.contents, c.error, Game.screen);
-                },
-                (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+                if (c.error == null)
+                    Game.screen = new ScreenCrusadeDetails(c);
+                else
+                    Game.screen = new ScreenFailedToLoadCrusade(name, c.contents, c.error, Game.screen);
+            },
+            (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
         addDefaultCrusades();
         fullCrusadesList.drawOpenFileButton = true;
@@ -129,15 +129,15 @@ public class ScreenCrusades extends Screen
 
             if (c == null)
             {
-                ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/" + name +".tanks");
+                ArrayList<String> al = Game.game.fileManager.getInternalFileContents("/crusades/" + name + ".tanks");
                 c = new Crusade(al, Game.formatString(name), "/" + name + ".tanks");
             }
 
             c.description = desc;
 
             Game.screen = new ScreenCrusadeDetails(c);
-        }
-                , desc));
+        },
+            desc));
     }
 
     public void createNewCrusadesList()

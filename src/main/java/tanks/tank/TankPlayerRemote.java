@@ -7,9 +7,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
+import tanks.item.*;
 import tanks.network.ConnectedPlayer;
 import tanks.network.event.*;
 
@@ -316,10 +314,10 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                 double changeVelocitySq = dVX * dVX + dVY * dVY;
 
                 if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
-                        && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
-                        && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
-                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001)
-                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVY) < 0.001)))
+                    && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
+                    && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
+                    && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001)
+                    && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVY) < 0.001)))
                 {
                     double changeVelocity = Math.sqrt(changeVelocitySq);
 

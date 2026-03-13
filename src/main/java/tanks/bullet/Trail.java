@@ -3,9 +3,7 @@ package tanks.bullet;
 import basewindow.Color;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.tankson.ICopyable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 @TanksONable("trail")
 public class Trail implements IDrawable, ICopyable<Trail>
@@ -72,7 +70,7 @@ public class Trail implements IDrawable, ICopyable<Trail>
                  boolean glow, double luminosity, boolean frontCircle, boolean backCircle)
     {
         this(null, 0, 0, 0, delay, backWidth, frontWidth, length, 0, frontR, frontG, frontB, frontA, backR, backG, backB, backA, glow, luminosity,
-                frontCircle, backCircle);
+            frontCircle, backCircle);
     }
 
     public Trail(Movable m, double speed, double backX, double backY,
@@ -167,7 +165,7 @@ public class Trail implements IDrawable, ICopyable<Trail>
 
             Drawing.drawing.setColor(0, 0, 0, 127);
             Drawing.drawing.drawInterfaceRect((start + end) / 2 + 5, y + 5, end - start + 5, (Math.max(backWidth, frontWidth) + 1) * height, 5,
-                    10);
+                10);
 
             return;
         }
@@ -245,10 +243,10 @@ public class Trail implements IDrawable, ICopyable<Trail>
             {
                 frac3 = 0;
                 Drawing.drawing.setColor(
-                        this.frontColor.red * (1 - frac1) + this.backColor.red * frac1,
-                        this.frontColor.green * (1 - frac1) + this.backColor.green * frac1,
-                        this.frontColor.blue * (1 - frac1) + this.backColor.blue * frac1,
-                        (this.frontColor.alpha * (1 - frac1) + this.backColor.alpha * frac1) * opacity, this.luminosity);
+                    this.frontColor.red * (1 - frac1) + this.backColor.red * frac1,
+                    this.frontColor.green * (1 - frac1) + this.backColor.green * frac1,
+                    this.frontColor.blue * (1 - frac1) + this.backColor.blue * frac1,
+                    (this.frontColor.alpha * (1 - frac1) + this.backColor.alpha * frac1) * opacity, this.luminosity);
 
                 if (frontCircle || (showOutsides && showOutsideFront))
                 {
@@ -259,9 +257,9 @@ public class Trail implements IDrawable, ICopyable<Trail>
                         for (int i = 30; i < 50; i++)
                         {
                             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, Math.cos(i / 20.0 * Math.PI + angle) * frontWidth,
-                                    Math.sin(i / 20.0 * Math.PI + angle) * frontWidth, 0);
+                                Math.sin(i / 20.0 * Math.PI + angle) * frontWidth, 0);
                             Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.movable.posZ - 1, Math.cos((i + 1) / 20.0 * Math.PI + angle) * frontWidth,
-                                    Math.sin((i + 1) / 20.0 * Math.PI + angle) * frontWidth, 0);
+                                Math.sin((i + 1) / 20.0 * Math.PI + angle) * frontWidth, 0);
                             Drawing.drawing.addVertex(this.frontX, this.frontY, this.movable.posZ - 1);
                         }
 
@@ -293,12 +291,12 @@ public class Trail implements IDrawable, ICopyable<Trail>
                         for (int i = 30; i < 50; i++)
                         {
                             Drawing.drawing.addFacingVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3),
-                                    this.movable.posZ - 1, Math.cos(i / 20.0 * Math.PI + angle) * frontWidth, Math.sin(i / 20.0 * Math.PI + angle) * frontWidth, 0);
+                                this.movable.posZ - 1, Math.cos(i / 20.0 * Math.PI + angle) * frontWidth, Math.sin(i / 20.0 * Math.PI + angle) * frontWidth, 0);
                             Drawing.drawing.addFacingVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3),
-                                    this.movable.posZ - 1, Math.cos((i + 1) / 20.0 * Math.PI + angle) * frontWidth,
-                                    Math.sin((i + 1) / 20.0 * Math.PI + angle) * frontWidth, 0);
+                                this.movable.posZ - 1, Math.cos((i + 1) / 20.0 * Math.PI + angle) * frontWidth,
+                                Math.sin((i + 1) / 20.0 * Math.PI + angle) * frontWidth, 0);
                             Drawing.drawing.addVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3),
-                                    this.movable.posZ - 1);
+                                this.movable.posZ - 1);
                         }
 
                         Game.game.window.shapeRenderer.setBatchMode(false, false, depth, this.glow, false);
@@ -313,9 +311,9 @@ public class Trail implements IDrawable, ICopyable<Trail>
                     Game.game.window.shapeRenderer.setBatchMode(true, true, depth, this.glow, false);
 
                     Drawing.drawing.addFacingVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.movable.posZ - 1,
-                            ox * frontWidth, oy * frontWidth, 0);
+                        ox * frontWidth, oy * frontWidth, 0);
                     Drawing.drawing.addFacingVertex(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3), this.movable.posZ - 1,
-                            -ox * frontWidth, -oy * frontWidth, 0);
+                        -ox * frontWidth, -oy * frontWidth, 0);
                 }
             }
 
@@ -329,10 +327,10 @@ public class Trail implements IDrawable, ICopyable<Trail>
             {
                 frac4 = 0;
                 Drawing.drawing.setColor(
-                        this.frontColor.red * (1 - frac2) + this.backColor.red * frac2,
-                        this.frontColor.green * (1 - frac2) + this.backColor.green * frac2,
-                        this.frontColor.blue * (1 - frac2) + this.backColor.blue * frac2,
-                        (this.frontColor.alpha * (1 - frac2) + this.backColor.alpha * frac2) * opacity, this.luminosity);
+                    this.frontColor.red * (1 - frac2) + this.backColor.red * frac2,
+                    this.frontColor.green * (1 - frac2) + this.backColor.green * frac2,
+                    this.frontColor.blue * (1 - frac2) + this.backColor.blue * frac2,
+                    (this.frontColor.alpha * (1 - frac2) + this.backColor.alpha * frac2) * opacity, this.luminosity);
 
                 if (!trail3d)
                 {
@@ -353,9 +351,9 @@ public class Trail implements IDrawable, ICopyable<Trail>
                         for (int i = 10; i < 30; i++)
                         {
                             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, Math.cos(i / 20.0 * Math.PI + angle) * backWidth,
-                                    Math.sin(i / 20.0 * Math.PI + angle) * backWidth, 0);
+                                Math.sin(i / 20.0 * Math.PI + angle) * backWidth, 0);
                             Drawing.drawing.addFacingVertex(this.backX, this.backY, this.movable.posZ - 1, Math.cos((i + 1) / 20.0 * Math.PI + angle) * backWidth,
-                                    Math.sin((i + 1) / 20.0 * Math.PI + angle) * backWidth, 0);
+                                Math.sin((i + 1) / 20.0 * Math.PI + angle) * backWidth, 0);
                             Drawing.drawing.addVertex(this.backX, this.backY, this.movable.posZ - 1);
                         }
 
@@ -371,9 +369,9 @@ public class Trail implements IDrawable, ICopyable<Trail>
                 if (!trail3d)
                 {
                     Drawing.drawing.addFacingVertex(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4), this.movable.posZ - 1,
-                            -ox * backWidth, -oy * backWidth, 0);
+                        -ox * backWidth, -oy * backWidth, 0);
                     Drawing.drawing.addFacingVertex(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4), this.movable.posZ - 1,
-                            ox * backWidth, oy * backWidth, 0);
+                        ox * backWidth, oy * backWidth, 0);
                 }
 
                 Game.game.window.shapeRenderer.setBatchMode(false, true, depth, this.glow, false);
@@ -389,12 +387,12 @@ public class Trail implements IDrawable, ICopyable<Trail>
                         for (int i = 10; i < 30; i++)
                         {
                             Drawing.drawing.addFacingVertex(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4),
-                                    this.movable.posZ - 1, Math.cos(i / 20.0 * Math.PI + angle) * backWidth, Math.sin(i / 20.0 * Math.PI + angle) * backWidth, 0);
+                                this.movable.posZ - 1, Math.cos(i / 20.0 * Math.PI + angle) * backWidth, Math.sin(i / 20.0 * Math.PI + angle) * backWidth, 0);
                             Drawing.drawing.addFacingVertex(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4),
-                                    this.movable.posZ - 1, Math.cos((i + 1) / 20.0 * Math.PI + angle) * backWidth,
-                                    Math.sin((i + 1) / 20.0 * Math.PI + angle) * backWidth, 0);
+                                this.movable.posZ - 1, Math.cos((i + 1) / 20.0 * Math.PI + angle) * backWidth,
+                                Math.sin((i + 1) / 20.0 * Math.PI + angle) * backWidth, 0);
                             Drawing.drawing.addVertex(this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4),
-                                    this.movable.posZ - 1);
+                                this.movable.posZ - 1);
                         }
 
                         Game.game.window.shapeRenderer.setBatchMode(false, false, depth, this.glow, false);
@@ -406,10 +404,10 @@ public class Trail implements IDrawable, ICopyable<Trail>
 
             if (trail3d)
                 drawTube3D(this.backX * frac3 + this.frontX * (1 - frac3), this.backY * frac3 + this.frontY * (1 - frac3),
-                        frontWidth, frac1 >= 0 ? frontAngleOffset : 0, r, g, b, a,
-                        this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4),
-                        backWidth, frac2 <= 1 ? backAngleOffset : 0, Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB,
-                        Drawing.drawing.currentColorA);
+                    frontWidth, frac1 >= 0 ? frontAngleOffset : 0, r, g, b, a,
+                    this.frontX * frac4 + this.backX * (1 - frac4), this.frontY * frac4 + this.backY * (1 - frac4),
+                    backWidth, frac2 <= 1 ? backAngleOffset : 0, Drawing.drawing.currentColorR, Drawing.drawing.currentColorG, Drawing.drawing.currentColorB,
+                    Drawing.drawing.currentColorA);
         }
     }
 

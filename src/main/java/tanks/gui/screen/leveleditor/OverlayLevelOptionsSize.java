@@ -30,7 +30,7 @@ public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         },
-                screenLevelEditor.level.sizeX + "");
+            screenLevelEditor.level.sizeX + "");
 
         sizeX.allowLetters = false;
         sizeX.allowSpaces = false;
@@ -53,7 +53,7 @@ public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
         },
-                screenLevelEditor.level.sizeY + "");
+            screenLevelEditor.level.sizeY + "");
 
         sizeY.allowLetters = false;
         sizeY.allowSpaces = false;

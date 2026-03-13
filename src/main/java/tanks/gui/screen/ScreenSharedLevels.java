@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 
@@ -40,8 +38,8 @@ public class ScreenSharedLevels extends Screen
                 lev.preview = true;
                 lev.loadLevel(sc);
                 Game.screen = sc;
-            }
-                    , "Shared by " + l.creator));
+            },
+                "Shared by " + l.creator));
         }
 
         sharedLevels = new ButtonList(buttons, page, 0, -60);

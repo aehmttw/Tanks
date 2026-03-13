@@ -91,8 +91,7 @@ public class LWJGLWindow extends BaseWindow
         {
             this.soundPlayer = new SoundPlayer(this);
             this.soundsEnabled = true;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             this.soundsEnabled = false;
             System.out.println("Failed to enable sounds");
@@ -138,7 +137,7 @@ public class LWJGLWindow extends BaseWindow
             while (true)
             {
                 try (InputStream zhCnFontInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".png");
-                        InputStream zhCnTxtInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".txt"))
+                     InputStream zhCnTxtInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".txt"))
                 {
                     if (zhCnFontInputStream == null) break;
                     if (zhCnTxtInputStream == null)
@@ -159,8 +158,7 @@ public class LWJGLWindow extends BaseWindow
                     count++;
                 }
             }
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             e.printStackTrace(Game.logger);
             e.printStackTrace();
@@ -294,18 +292,15 @@ public class LWJGLWindow extends BaseWindow
                 String line;
                 while ((line = reader.readLine()) != null)
                     source.append(line).append('\n');
-            }
-            catch (Exception exc)
+            } catch (Exception exc)
             {
                 exception = exc;
-            }
-            finally
+            } finally
             {
                 try
                 {
                     reader.close();
-                }
-                catch (Exception exc)
+                } catch (Exception exc)
                 {
                     if (innerExc == null)
                         innerExc = exc;
@@ -316,18 +311,15 @@ public class LWJGLWindow extends BaseWindow
 
             if (innerExc != null)
                 throw innerExc;
-        }
-        catch (Exception exc)
+        } catch (Exception exc)
         {
             exception = exc;
-        }
-        finally
+        } finally
         {
             try
             {
                 in.close();
-            }
-            catch (Exception exc)
+            } catch (Exception exc)
             {
                 if (exception == null)
                     exception = exc;
@@ -348,8 +340,7 @@ public class LWJGLWindow extends BaseWindow
         {
             this.shaderDefault = new ShaderGroup(this, "default");
             this.shaderDefault.initialize();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             System.exit(0);
@@ -511,7 +502,7 @@ public class LWJGLWindow extends BaseWindow
             glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), d, d2);
 
             glfwSetWindowMonitor(this.window, glfwGetPrimaryMonitor(), 0, 0, (int) (this.vidmode.width() * d[0]), (int) (this.vidmode.height() * d2[0]),
-                    this.vidmode.refreshRate());
+                this.vidmode.refreshRate());
         }
         else
             glfwSetWindowMonitor(this.window, NULL, this.prevPosX[0], this.prevPosY[0], this.prevSizeX[0], this.prevSizeY[0], this.vidmode.refreshRate());
@@ -611,13 +602,11 @@ public class LWJGLWindow extends BaseWindow
                 textures.put(image, id);
                 textureSX.put(image, decoder.getWidth());
                 textureSY.put(image, decoder.getHeight());
-            }
-            finally
+            } finally
             {
                 in.close();
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("Failed to load: " + image);
             e.printStackTrace();
@@ -738,8 +727,7 @@ public class LWJGLWindow extends BaseWindow
 
             if (!mac)
                 glfwSetWindowIcon(window, imagebuf);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -749,11 +737,10 @@ public class LWJGLWindow extends BaseWindow
     {
         String result = null;
         try (InputStream in = this.getResource(fileName);
-                Scanner scanner = new Scanner(in, java.nio.charset.StandardCharsets.UTF_8.name()))
+             Scanner scanner = new Scanner(in, java.nio.charset.StandardCharsets.UTF_8.name()))
         {
             result = scanner.useDelimiter("\\A").next();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -938,12 +925,12 @@ public class LWJGLWindow extends BaseWindow
     {
         double[][] matrix = m.values;
         double[] d = new double[]
-        {
+            {
                 matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3],
                 matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3],
                 matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3],
                 matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]
-        };
+            };
         glMultMatrixd(d);
     }
 
@@ -1386,13 +1373,12 @@ public class LWJGLWindow extends BaseWindow
                     {
                         int i = (x + w * y) * 4;
                         image.setRGB(x, image.getHeight() - 1 - y,
-                                (((buffer.get(i) & 0xFF) & 0x0ff) << 16) | (((buffer.get(i + 1) & 0xFF) & 0x0ff) << 8) | ((buffer.get(i + 2) & 0xFF) & 0x0ff));
+                            (((buffer.get(i) & 0xFF) & 0x0ff) << 16) | (((buffer.get(i + 1) & 0xFF) & 0x0ff) << 8) | ((buffer.get(i + 2) & 0xFF) & 0x0ff));
                     }
                 }
 
                 ImageIO.write(image, "png", f);
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 throw new RuntimeException(e);
             }

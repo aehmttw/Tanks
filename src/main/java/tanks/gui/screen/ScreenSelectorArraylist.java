@@ -20,7 +20,9 @@ public class ScreenSelectorArraylist extends Screen implements IConditionalOverl
     public Consumer<Entry> saveEntry;
     public Producer<Entry> defaultEntry;
 
-    public Runnable onComplete = () -> {};
+    public Runnable onComplete = () ->
+    {
+    };
 
     public Button create = new Button(this.centerX, 0, 60, 60, "+", () ->
     {

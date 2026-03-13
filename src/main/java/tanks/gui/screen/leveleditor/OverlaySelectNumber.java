@@ -23,8 +23,7 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         {
             selector.changeMetadata(editor, editor.mousePlaceable, 1);
             textBox.inputText = String.format(Locale.ROOT, selector.format, ((Number) selector.metadataField.get(editor.mousePlaceable)).doubleValue());
-        }
-        catch (IllegalAccessException e)
+        } catch (IllegalAccessException e)
         {
             Game.exitToCrash(e);
         }
@@ -37,8 +36,7 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         {
             selector.changeMetadata(editor, editor.mousePlaceable, -1);
             textBox.inputText = String.format(Locale.ROOT, selector.format, ((Number) selector.metadataField.get(editor.mousePlaceable)).doubleValue());
-        }
-        catch (IllegalAccessException e)
+        } catch (IllegalAccessException e)
         {
             Game.exitToCrash(e);
         }
@@ -53,7 +51,7 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
 
         this.selector = selector;
         textBox = new TextBox(this.centerX, this.centerY + 15, 350, 40, this.selector.metadataProperty.name(), this::submit,
-                this.selector.numberString(screenLevelEditor.mousePlaceable));
+            this.selector.numberString(screenLevelEditor.mousePlaceable));
 
         textBox.allowLetters = false;
         textBox.allowSpaces = false;

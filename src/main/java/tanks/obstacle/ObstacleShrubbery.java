@@ -105,9 +105,9 @@ public class ObstacleShrubbery extends Obstacle
     public boolean isInside(double x, double y)
     {
         return (x >= this.posX - Game.tile_size / 2 &&
-                x <= this.posX + Game.tile_size / 2 &&
-                y >= this.posY - Game.tile_size / 2 &&
-                y <= this.posY + Game.tile_size / 2);
+            x <= this.posX + Game.tile_size / 2 &&
+            y >= this.posY - Game.tile_size / 2 &&
+            y <= this.posY + Game.tile_size / 2);
     }
 
     @Override
@@ -120,10 +120,10 @@ public class ObstacleShrubbery extends Obstacle
                 for (int y = -1; y <= 1; y++)
                 {
                     ((Tank) m).canHidePoints[x + 1][y + 1] = ((Tank) m).canHidePoints[x + 1][y + 1] ||
-                            this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x);
+                        this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x);
 
                     ((Tank) m).hiddenPoints[x + 1][y + 1] = ((Tank) m).hiddenPoints[x + 1][y + 1] ||
-                            (this.height >= 240 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
+                        (this.height >= 240 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
                 }
             }
         }

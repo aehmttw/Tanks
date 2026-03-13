@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.screen.ScreenFailedToLoadLevel;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.Item;
@@ -35,7 +33,7 @@ public class EventLoadLevel extends PersonalEvent
         {
             StringBuilder s = new StringBuilder("tanks\n");
 
-            for (TankAIControlled t : l.customTanks)
+            for (TankAIControlled t: l.customTanks)
             {
                 s.append(t.toString()).append("\n");
             }
@@ -88,8 +86,7 @@ public class EventLoadLevel extends PersonalEvent
 
             Game.currentLevel.startTime = startTime;
             Game.currentLevel.loadLevel();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.screen = new ScreenFailedToLoadLevel("Level is remote!", level, e, new ScreenPartyLobby());
         }

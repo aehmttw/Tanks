@@ -1,8 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.attribute.StatusEffect;
 import tanks.rendering.ShaderGroundIce;
 import tanks.rendering.ShaderIce;

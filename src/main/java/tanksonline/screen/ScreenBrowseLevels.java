@@ -5,9 +5,7 @@ import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
 import tanks.network.event.online.EventAddButton;
 import tanks.network.event.online.EventRemoveButton;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlineServerHandler;
-import tanksonline.UploadedLevel;
+import tanksonline.*;
 
 import java.util.ArrayList;
 
@@ -64,7 +62,7 @@ public class ScreenBrowseLevels extends ScreenLayout
 
         synchronized (PlayerMap.instance)
         {
-            for (UploadedLevel l : levels)
+            for (UploadedLevel l: levels)
             {
                 Button b = new Button(0, 0, 350, 40, l.name.replace("_", " "), () ->
                 {
@@ -72,7 +70,7 @@ public class ScreenBrowseLevels extends ScreenLayout
                     s.setScreen();
 
                 }
-                        , "Uploaded by: " + PlayerMap.instance.getUsername(l.creator) + "---" + Game.timeInterval(l.time, System.currentTimeMillis()) + " ago");
+                    , "Uploaded by: " + PlayerMap.instance.getUsername(l.creator) + "---" + Game.timeInterval(l.time, System.currentTimeMillis()) + " ago");
 
                 b.wait = true;
                 levelButtons.add(b);

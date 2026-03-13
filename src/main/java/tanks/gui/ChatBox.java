@@ -2,9 +2,7 @@ package tanks.gui;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenPartyLobby;
@@ -135,8 +133,8 @@ public class ChatBox extends TextBox
         if (this.selected && !justSelectedByKeybind)
         {
             double frac = Math.max(0, Math.round(Drawing.drawing.interfaceScale * (this.posY + 30) + Math.max(0, Panel.windowHeight - Drawing.drawing.statsHeight -
-                    Drawing.drawing.interfaceSizeY * Drawing.drawing.interfaceScale) / 2) - Game.game.window.absoluteHeight * Game.game.window.keyboardFraction) /
-                    Game.game.window.absoluteHeight;
+                Drawing.drawing.interfaceSizeY * Drawing.drawing.interfaceScale) / 2) - Game.game.window.absoluteHeight * Game.game.window.keyboardFraction) /
+                Game.game.window.absoluteHeight;
             Game.game.window.keyboardOffset = Math.min(frac, Game.game.window.keyboardOffset + 0.04 * Panel.frameFrequency * frac);
             Game.game.window.showKeyboard = true;
             this.checkKeys();
@@ -304,18 +302,18 @@ public class ChatBox extends TextBox
         {
             Drawing.drawing.addInterfaceVertex(this.posX - this.sizeX / 2 - xPad / 2, this.posY, 0);
             Drawing.drawing.addInterfaceVertex(this.posX - this.sizeX / 2 - xPad / 2 + Math.cos((j + 15) / 30.0 * Math.PI) * (this.sizeY) / 2,
-                    this.posY + Math.sin((j + 15) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
+                this.posY + Math.sin((j + 15) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
             Drawing.drawing.addInterfaceVertex(this.posX - this.sizeX / 2 - xPad / 2 + Math.cos((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2,
-                    this.posY + Math.sin((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
+                this.posY + Math.sin((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
         }
 
         for (int j = 0; j < 30; j++)
         {
             Drawing.drawing.addInterfaceVertex(this.posX + this.sizeX / 2 + xPad / 2, this.posY, 0);
             Drawing.drawing.addInterfaceVertex(this.posX + this.sizeX / 2 + xPad / 2 + Math.cos((j + 45) / 30.0 * Math.PI) * (this.sizeY) / 2,
-                    this.posY + Math.sin((j + 15) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
+                this.posY + Math.sin((j + 15) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
             Drawing.drawing.addInterfaceVertex(this.posX + this.sizeX / 2 + xPad / 2 + Math.cos((j + 46) / 30.0 * Math.PI) * (this.sizeY) / 2,
-                    this.posY + Math.sin((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
+                this.posY + Math.sin((j + 16) / 30.0 * Math.PI) * (this.sizeY) / 2, 0);
         }
 
         Game.game.window.shapeRenderer.setBatchMode(false, false, false);

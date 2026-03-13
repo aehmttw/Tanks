@@ -73,8 +73,7 @@ public class SteamWorkshopHandler
                     workshop.setItemVisibility(v, SteamRemoteStorage.PublishedFileVisibility.Public);
                     workshop.setItemContent(v, Game.homedir + uploadDir);
                     workshop.submitItemUpdate(v, "");
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     e.printStackTrace();
                     Game.exitToCrash(e);
@@ -141,8 +140,7 @@ public class SteamWorkshopHandler
                         SteamUGC.ItemInstallInfo i = new SteamUGC.ItemInstallInfo();
                         workshop.getItemInstallInfo(publishedFileID, i);
                         downloadFolder = Game.game.fileManager.getFile(i.getFolder());
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }
@@ -346,8 +344,7 @@ public class SteamWorkshopHandler
             }
 
             downloadFolder = null;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

@@ -3,9 +3,7 @@ package tanks.item;
 import basewindow.Color;
 import tanks.Drawing;
 import tanks.Game;
-import tanks.tankson.ICopyable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,12 +13,12 @@ public class ItemIcon implements ICopyable<ItemIcon>
 {
     public int registryIndex = -1;
 
-    @Property(id="id")
+    @Property(id = "id")
     public String idName;
     public String baseName;
 
     public ArrayList<Boolean> alphas;
-    @Property(id="colors")
+    @Property(id = "colors")
     public ArrayList<Color> colors;
 
     public ItemIcon()

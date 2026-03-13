@@ -55,7 +55,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         b.writeDouble(this.mY);
         b.writeBoolean(this.action1);
         b.writeBoolean(this.action2);
-        for (boolean quickAction : this.quickActions)
+        for (boolean quickAction: this.quickActions)
         {
             b.writeBoolean(quickAction);
         }
@@ -77,7 +77,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         this.action2 = b.readBoolean();
         for (int i = 0; i < this.quickActions.length; i++)
         {
-           this.quickActions[i] = b.readBoolean();
+            this.quickActions[i] = b.readBoolean();
         }
         this.time = b.readDouble();
     }

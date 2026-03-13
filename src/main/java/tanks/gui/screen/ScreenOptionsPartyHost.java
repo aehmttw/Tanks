@@ -46,7 +46,8 @@ public class ScreenOptionsPartyHost extends Screen
                 anticheat.setText(anticheatText, weakText);
         }
     },
-            "When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid.------Weaker settings work better---with less stable connections.");
+        "When this option is enabled---while hosting a party,---other players' positions and---velocities will be checked---and corrected if invalid." +
+            "------Weaker settings work better---with less stable connections.");
 
     Button disableFriendlyFire = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -61,7 +62,7 @@ public class ScreenOptionsPartyHost extends Screen
                 disableFriendlyFire.setText(disableFriendlyFireText, defaultText);
         }
     },
-            "Disables all friendly fire in the party.---Tanks on the same team will---not damage each other.---Useful for co-op in bigger parties.");
+        "Disables all friendly fire in the party.---Tanks on the same team will---not damage each other.---Useful for co-op in bigger parties.");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
     {

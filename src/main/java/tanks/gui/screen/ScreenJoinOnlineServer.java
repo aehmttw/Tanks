@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.Client;
@@ -36,7 +34,7 @@ public class ScreenJoinOnlineServer extends Screen
             ScreenOptions.saveOptions(Game.homedir);
         }
     },
-            Game.lastOnlineServer);
+        Game.lastOnlineServer);
 
     Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
     {
@@ -69,8 +67,7 @@ public class ScreenJoinOnlineServer extends Screen
                             Client.connect("localhost", Game.port, true, connectionID);
                         else
                             Client.connect(ipaddress, port, true, connectionID);
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         if (Game.screen == s && Client.connectionID == connectionID)
                         {
@@ -92,7 +89,6 @@ public class ScreenJoinOnlineServer extends Screen
             }
         }
     });
-
 
 
     @Override

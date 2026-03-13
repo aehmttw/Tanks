@@ -38,13 +38,13 @@ public class OverlaySelectChoice<V> extends ScreenLevelEditorOverlay
         {
             final int j = i;
             choiceButtons.add(new Button(0, 0, 350, 40, selector.choiceToString(b),
-                    () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, j), selector.description.apply(b)));
+                () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, j), selector.description.apply(b)));
             i++;
         }
 
         if (selector.addNoneChoice)
             choiceButtons.add(new Button(0, 0, 350, 40, "\u00A7127000000255none",
-                    () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, -1), selector.description.apply(null)));
+                () -> selector.setChoice(screenLevelEditor, screenLevelEditor.mousePlaceable, -1), selector.description.apply(null)));
 
         selector.buttonList = new ButtonList(choiceButtons, 0, 0, -30);
         selector.buttonList.manualDarkMode = true;

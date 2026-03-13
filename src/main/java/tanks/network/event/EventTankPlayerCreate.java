@@ -2,9 +2,7 @@ package tanks.network.event;
 
 import basewindow.Color;
 import tanks.*;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.minigames.Arcade;
 import tanks.minigames.RampageTrial;
 import tanks.network.ConnectedPlayer;

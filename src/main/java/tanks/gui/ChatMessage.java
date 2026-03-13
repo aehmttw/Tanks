@@ -1,9 +1,7 @@
 package tanks.gui;
 
 import basewindow.Color;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 
 import java.util.ArrayList;
 

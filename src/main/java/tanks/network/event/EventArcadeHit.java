@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
+import tanks.*;
 import tanks.minigames.Arcade;
 
 import io.netty.buffer.ByteBuf;

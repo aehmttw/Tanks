@@ -56,8 +56,10 @@ public class ChatFilter
         this.badwords.add(newWord.toString());
     }
 
-    /** I've added 1 to every character in these bad words so that they look like nonsense.
-     *  This addition is removed when testing for bad words in chat*/
+    /**
+     * I've added 1 to every character in these bad words so that they look like nonsense.
+     * This addition is removed when testing for bad words in chat
+     */
     public void addBadWords()
     {
         registerBadWord("cjudi");

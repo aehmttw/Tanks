@@ -1,11 +1,7 @@
 package lwjglwindow;
 
-import basewindow.BaseShapeBatchRenderer;
-import basewindow.IBatchRenderableObject;
-import basewindow.ShaderGroup;
-import basewindow.transformation.Rotation;
-import basewindow.transformation.Scale;
-import basewindow.transformation.Translation;
+import basewindow.*;
+import basewindow.transformation.*;
 
 import org.lwjgl.BufferUtils;
 

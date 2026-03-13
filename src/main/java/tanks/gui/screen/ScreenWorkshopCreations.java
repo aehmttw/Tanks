@@ -2,9 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.SearchBox;
+import tanks.gui.*;
 import tanks.translation.Translation;
 
 import com.codedisaster.steamworks.SteamUGCDetails;
@@ -39,7 +37,8 @@ public class ScreenWorkshopCreations extends Screen
             if (!Objects.equals(Game.steamNetworkHandler.workshop.searchText, s))
             {
                 Game.screen = new ScreenWorkshopSearchWaiting();
-                Game.steamNetworkHandler.workshop.search(Game.steamNetworkHandler.workshop.searchType, 0, 18, Game.steamNetworkHandler.workshop.searchUser, search.inputText, Game.steamNetworkHandler.workshop.searchByScore);
+                Game.steamNetworkHandler.workshop.search(Game.steamNetworkHandler.workshop.searchType, 0, 18, Game.steamNetworkHandler.workshop.searchUser,
+                    search.inputText, Game.steamNetworkHandler.workshop.searchByScore);
             }
         }
     }, "");
@@ -50,7 +49,8 @@ public class ScreenWorkshopCreations extends Screen
         public void run()
         {
             Game.screen = new ScreenWorkshopSearchWaiting();
-            Game.steamNetworkHandler.workshop.search(Game.steamNetworkHandler.workshop.searchType, 0, 18, Game.steamNetworkHandler.workshop.searchUser, Game.steamNetworkHandler.workshop.searchText, !Game.steamNetworkHandler.workshop.searchByScore);
+            Game.steamNetworkHandler.workshop.search(Game.steamNetworkHandler.workshop.searchType, 0, 18, Game.steamNetworkHandler.workshop.searchUser,
+                Game.steamNetworkHandler.workshop.searchText, !Game.steamNetworkHandler.workshop.searchByScore);
 
             if (!Game.steamNetworkHandler.workshop.searchByScore)
                 sort.setHoverText("Sorting by upload date");
@@ -92,7 +92,8 @@ public class ScreenWorkshopCreations extends Screen
             buttons.add(new Button(0, 0, this.objWidth, this.objHeight, "Loading..."));
         }
 
-        this.creations = new ButtonList(buttons, ScreenWorkshopCreations.page, (int) (this.centerX - Drawing.drawing.interfaceSizeX / 2), (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2));
+        this.creations = new ButtonList(buttons, ScreenWorkshopCreations.page, (int) (this.centerX - Drawing.drawing.interfaceSizeX / 2),
+            (int) (-30 + this.centerY - Drawing.drawing.interfaceSizeY / 2));
     }
 
     @Override
@@ -107,7 +108,9 @@ public class ScreenWorkshopCreations extends Screen
         if (ScreenWorkshopCreations.page != this.creations.page)
         {
             ScreenWorkshopCreations.page = this.creations.page;
-            Game.steamNetworkHandler.workshop.search(Game.steamNetworkHandler.workshop.searchType, page * this.creations.columns * this.creations.rows, (page + 1) * this.creations.columns * this.creations.rows - 1, Game.steamNetworkHandler.workshop.searchUser, Game.steamNetworkHandler.workshop.searchText, Game.steamNetworkHandler.workshop.searchByScore);
+            Game.steamNetworkHandler.workshop.search(Game.steamNetworkHandler.workshop.searchType, page * this.creations.columns * this.creations.rows,
+                (page + 1) * this.creations.columns * this.creations.rows - 1, Game.steamNetworkHandler.workshop.searchUser, Game.steamNetworkHandler.workshop.searchText,
+                Game.steamNetworkHandler.workshop.searchByScore);
         }
 
         if (this.lastLoadedLevels != Game.steamNetworkHandler.workshop.publishedFiles.size())
@@ -163,7 +166,8 @@ public class ScreenWorkshopCreations extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
         Drawing.drawing.setColor(0, 0, 0);
-        for (int i = Math.min(creations.page * creations.rows * creations.columns + creations.rows * creations.columns, creations.buttons.size()) - 1; i >= creations.page * creations.rows * creations.columns; i--)
+        for (int i = Math.min(creations.page * creations.rows * creations.columns + creations.rows * creations.columns, creations.buttons.size()) - 1;
+             i >= creations.page * creations.rows * creations.columns; i--)
         {
             Button b = creations.buttons.get(i);
             SteamUGCDetails d = Game.steamNetworkHandler.workshop.publishedFiles.get(i);
@@ -171,7 +175,8 @@ public class ScreenWorkshopCreations extends Screen
             if (Game.steamNetworkHandler.workshop.searchUser == null)
             {
                 if (d != null && Game.steamNetworkHandler.friends.knownUsernamesByID.containsKey(d.getOwnerID().getAccountID()))
-                    Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325, Game.steamNetworkHandler.friends.knownUsernamesByID.get(d.getOwnerID().getAccountID()), false);
+                    Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY / 2, b.posY + b.sizeY * 0.325,
+                        Game.steamNetworkHandler.friends.knownUsernamesByID.get(d.getOwnerID().getAccountID()), false);
             }
             else if (d != null)
             {

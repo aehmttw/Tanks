@@ -11,7 +11,9 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     public TextBox teamName;
     public Team team;
 
-    public Runnable onEscape = () -> {};
+    public Runnable onEscape = () ->
+    {
+    };
 
     public OverlayEditTeam(Screen previous, ScreenLevelEditor screenLevelEditor, Team team)
     {
@@ -39,7 +41,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
                 team.name = teamName.inputText;
             }
         },
-                team.name);
+            team.name);
 
         teamFriendlyFire.image = "shield.png";
         teamFriendlyFire.imageXOffset = -teamFriendlyFire.sizeX / 2 + teamFriendlyFire.sizeY / 2;

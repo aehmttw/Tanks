@@ -4,9 +4,7 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.TextWithStyling;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.Face;
-import tanks.obstacle.ISolidObject;
-import tanks.obstacle.Obstacle;
+import tanks.obstacle.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -148,7 +146,7 @@ public class Ray extends GameObject
             }
             else if (obj instanceof Movable)
             {
-                for (Chunk c : ((Movable) obj).getCurrentChunks())
+                for (Chunk c: ((Movable) obj).getCurrentChunks())
                 {
                     if (!c.movables.contains(obj))
                         errorChunkCache.add(c);
@@ -165,10 +163,10 @@ public class Ray extends GameObject
             if (Game.framework != Game.Framework.libgdx)
             {
                 System.err.printf("-----Ray collision face owner error-----%n" +
-                                "%s not in %s%n",
-                        gameObjectString(obj),
-                        info.stream().map(Chunk::toString)
-                                .collect(Collectors.joining(", "))
+                        "%s not in %s%n",
+                    gameObjectString(obj),
+                    info.stream().map(Chunk::toString)
+                        .collect(Collectors.joining(", "))
                 );
             }
             else
@@ -281,7 +279,7 @@ public class Ray extends GameObject
 
         if (!ignoreTanks)
         {
-            for (Movable m : Movable.getSquareCollision(this))
+            for (Movable m: Movable.getSquareCollision(this))
             {
                 if (m instanceof Tank && m != this.tank)
                     return m;
@@ -497,7 +495,7 @@ public class Ray extends GameObject
                 if (result.collisionFace != null)
                 {
                     double x = result.collisionX, y = result.collisionY, bound = size / 2;
-                    for (Chunk c : Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
+                    for (Chunk c: Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
                     {
                         if (c == chunk)
                             continue;
@@ -534,7 +532,7 @@ public class Ray extends GameObject
 
         if (vX > 0)
         {
-            for (Face f : chunk.faces.leftFaces)
+            for (Face f: chunk.faces.leftFaces)
             {
                 double size = this.size;
 
@@ -563,7 +561,7 @@ public class Ray extends GameObject
         }
         else if (vX < 0)
         {
-            for (Face f : chunk.faces.rightFaces)
+            for (Face f: chunk.faces.rightFaces)
             {
                 double size = this.size;
 
@@ -591,7 +589,7 @@ public class Ray extends GameObject
 
         if (vY > 0)
         {
-            for (Face f : chunk.faces.topFaces)
+            for (Face f: chunk.faces.topFaces)
             {
                 double size = this.size;
 
@@ -625,7 +623,7 @@ public class Ray extends GameObject
         }
         else if (vY < 0)
         {
-            for (Face f : chunk.faces.bottomFaces)
+            for (Face f: chunk.faces.bottomFaces)
             {
                 double size = this.size;
 
@@ -716,7 +714,7 @@ public class Ray extends GameObject
 
     public static void drawDebug()
     {
-        for (DebugText t : debugTexts)
+        for (DebugText t: debugTexts)
             t.draw();
         debugTexts.clear();
     }

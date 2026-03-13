@@ -21,11 +21,11 @@ public class ScreenOptionsPersonalize extends Screen
                 Game.screen = new ScreenUsernameWarning();
         }
     },
-            Game.player.username, "Pick a username that players---will see in multiplayer");
+        Game.player.username, "Pick a username that players---will see in multiplayer");
 
 
     Button color = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Tank color", () -> Game.screen = new ScreenOptionsPlayerColor(),
-            "Personalize your tank!");
+        "Personalize your tank!");
 
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->

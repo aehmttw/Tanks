@@ -35,7 +35,7 @@ public class EventTankMimicTransform extends PersonalEvent
 
             if (this.target == this.tank)
             {
-                for (TankAIControlled t2 : Game.currentLevel.customTanks)
+                for (TankAIControlled t2: Game.currentLevel.customTanks)
                 {
                     if (t2.name.equals(t.name))
                     {

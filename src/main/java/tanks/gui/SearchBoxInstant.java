@@ -1,9 +1,7 @@
 package tanks.gui;
 
 import basewindow.InputCodes;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 
 public class SearchBoxInstant extends SearchBox
 {

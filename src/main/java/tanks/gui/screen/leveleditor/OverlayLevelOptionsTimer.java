@@ -22,13 +22,12 @@ public class OverlayLevelOptionsTimer extends ScreenLevelEditorOverlay
             try
             {
                 screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 minutes.inputText = "" + (int) (screenLevelEditor.level.timer / 6000);
             }
         },
-                (int) (screenLevelEditor.level.timer / 6000) + "", "Set minutes and seconds to 0---to disable the time limit");
+            (int) (screenLevelEditor.level.timer / 6000) + "", "Set minutes and seconds to 0---to disable the time limit");
 
         minutes.allowLetters = false;
         minutes.allowSpaces = false;
@@ -43,13 +42,12 @@ public class OverlayLevelOptionsTimer extends ScreenLevelEditorOverlay
             try
             {
                 screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 seconds.inputText = "" + ((int) screenLevelEditor.level.timer % 6000) / 100;
             }
         },
-                (int) (screenLevelEditor.level.timer % 6000) / 100 + "", "Set minutes and seconds to 0---to disable the time limit");
+            (int) (screenLevelEditor.level.timer % 6000) / 100 + "", "Set minutes and seconds to 0---to disable the time limit");
 
         seconds.allowLetters = false;
         seconds.allowSpaces = false;

@@ -3,7 +3,6 @@ package tanks.gui.screen;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.network.SteamNetworkHandler;
 
 public class ScreenPlay extends Screen
 {
@@ -11,8 +10,8 @@ public class ScreenPlay extends Screen
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTitle());
 
-    Button singleplayer = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Singleplayer", () -> Game.screen = new ScreenPlaySingleplayer()
-            , "Play random levels, crusades, minigames,---the tutorial, or make your own levels or crusades!");
+    Button singleplayer = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Singleplayer",
+        () -> Game.screen = new ScreenPlaySingleplayer(), "Play random levels, crusades, minigames,---the tutorial, or make your own levels or crusades!");
 
     Button multiplayer = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Multiplayer", () ->
     {
@@ -25,11 +24,11 @@ public class ScreenPlay extends Screen
         }
         else
             Game.screen = new ScreenUsernamePrompt();
-    }
-            , "Play, chat, and share levels---and crusades with other players!");
+    },
+        "Play, chat, and share levels---and crusades with other players!");
 
-    Button workshop = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Steam workshop", () -> Game.screen = new ScreenSteamWorkshop()
-            , "Publicly share and check out---levels and crusades other players---have made!");
+    Button workshop = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Steam workshop",
+        () -> Game.screen = new ScreenSteamWorkshop(), "Publicly share and check out---levels and crusades other players---have made!");
 
     public ScreenPlay()
     {

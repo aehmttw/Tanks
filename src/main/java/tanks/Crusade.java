@@ -4,9 +4,7 @@ import basewindow.BaseFile;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
+import tanks.item.*;
 import tanks.network.ServerHandler;
 import tanks.network.event.*;
 import tanks.tank.*;
@@ -109,8 +107,7 @@ public class Crusade
                 }
 
                 f.stopReading();
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -148,8 +145,7 @@ public class Crusade
             this.initialize(list, name);
 
             f.stopReading();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             this.error = e;
         }
@@ -435,7 +431,7 @@ public class Crusade
                         sh.queueEvent(new EventSetItem(sh.player, in, sh.player.hotbar.itemBar.slots[in]));
 
                     Game.eventsOut.add(new EventSetSelectedItems(sh.player.hotbar.itemBar.selected, sh.player.hotbar.itemBar.selectedPrimaryAbility,
-                            sh.player.hotbar.itemBar.selectedSecondaryAbility));
+                        sh.player.hotbar.itemBar.selectedSecondaryAbility));
                 }
             }
         }
@@ -512,8 +508,7 @@ public class Crusade
                     }
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

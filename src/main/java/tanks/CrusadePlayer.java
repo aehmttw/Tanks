@@ -170,8 +170,7 @@ public class CrusadePlayer
 
             if ((player.remainingLives <= 0 || Crusade.currentCrusade.win) && f.exists())
                 f.delete();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

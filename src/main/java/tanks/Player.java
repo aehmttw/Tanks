@@ -125,7 +125,7 @@ public class Player
                 String itemName = sec[0];
                 int count = Integer.parseInt(sec[1]);
 
-                for (Item.ShopItem it : shop)
+                for (Item.ShopItem it: shop)
                 {
                     if (it.itemStack.item.name.equals(itemName))
                     {
@@ -137,8 +137,7 @@ public class Player
             }
 
             return c;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("Failed to load saved crusade progress (log file includes contents): ");
             e.printStackTrace();
@@ -151,8 +150,7 @@ public class Player
                 f.startReading();
                 while (f.hasNextLine())
                     Game.logger.println(f.nextLine());
-            }
-            catch (Exception e2)
+            } catch (Exception e2)
             {
                 e2.printStackTrace();
             }

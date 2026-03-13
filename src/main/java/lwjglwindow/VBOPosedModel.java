@@ -106,7 +106,7 @@ public class VBOPosedModel extends PosedModel
 
             if (m.material.customLight)
                 window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness,
-                        m.material.negativeBrightness);
+                    m.material.negativeBrightness);
 
             window.setCelShadingSections(m.material.celSections);
 
@@ -158,7 +158,7 @@ public class VBOPosedModel extends PosedModel
 
             if (m.material.customLight)
                 window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness,
-                        m.material.negativeBrightness);
+                    m.material.negativeBrightness);
 
             window.setCelShadingSections(m.material.celSections);
 

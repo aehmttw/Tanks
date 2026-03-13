@@ -17,17 +17,13 @@ import tanks.gui.screen.leveleditor.selector.*;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.*;
-import tanks.minigames.ArcadeBeatBlocks;
-import tanks.minigames.ArcadeClassic;
-import tanks.minigames.Minigame;
+import tanks.minigames.*;
 import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
-import tanks.rendering.ShaderGroundIntro;
-import tanks.rendering.ShaderGroundOutOfBounds;
-import tanks.rendering.ShaderTracks;
+import tanks.rendering.*;
 import tanks.tank.*;
 
 import com.codedisaster.steamworks.SteamMatchmaking;
@@ -122,7 +118,9 @@ public class Game
     public static Team playerTeamNoFF = new Team("ally", false);
     public static Team enemyTeamNoFF = new Team("enemy", false);
 
-    /** Use this if you want to spawn a mine not allied with any tank, or such*/
+    /**
+     * Use this if you want to spawn a mine not allied with any tank, or such
+     */
     public static Tank dummyTank;
 
     public static int currentSizeX = 28;
@@ -493,8 +491,7 @@ public class Game
         try
         {
             Game.registryGenerator.generators.put(name, generator.getConstructor().newInstance());
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -532,7 +529,7 @@ public class Game
         Game.exitToTitle();
 
         Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "",
-                () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
+            () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 
         steamNetworkHandler = new SteamNetworkHandler();
         if (!disableSteam)
@@ -600,8 +597,8 @@ public class Game
         registerItem(ItemShield.class, ItemShield.item_class_name, DefaultItemIcons.shield.getCopy());
 
         registerMinigame(ArcadeClassic.class, "Arcade mode",
-                "A gamemode which gets crazier as you---destroy more tanks." +
-                        "------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
+            "A gamemode which gets crazier as you---destroy more tanks." +
+                "------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
         registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
 //      registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //      registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
@@ -651,8 +648,7 @@ public class Game
             {
                 game.fileManager.getFile(homedir + logPath).create();
                 Game.logger = new PrintStream(new FileOutputStream(homedir + logPath, true));
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 System.err.println("Failed to create logfile: " + homedir + logPath);
                 e.printStackTrace();
@@ -726,8 +722,7 @@ public class Game
                 uuidFile.println("The file can be used by online services. Deleting or modifying");
                 uuidFile.println("the file or its contents can cause loss of online data.");
                 uuidFile.stopWriting();
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 e.printStackTrace();
                 System.exit(1);
@@ -739,8 +734,7 @@ public class Game
             uuidFile.startReading();
             Game.computerID = UUID.fromString(uuidFile.nextLine());
             uuidFile.stopReading();
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             e.printStackTrace();
             System.exit(1);
@@ -749,8 +743,7 @@ public class Game
         try
         {
             Game.logger = new PrintStream(new FileOutputStream(homedir + logPath, true));
-        }
-        catch (FileNotFoundException e)
+        } catch (FileNotFoundException e)
         {
             Game.logger = System.err;
             Game.logger.println(new Date() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
@@ -780,7 +773,7 @@ public class Game
         if (!enableExtensions && extraExtensions != null)
         {
             System.err.println("Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. " +
-                    "Only extensions provided to launchWithExtensions() will be used.");
+                "Only extensions provided to launchWithExtensions() will be used.");
         }
 
         for (Extension e: extensionRegistry.extensions)
@@ -845,7 +838,7 @@ public class Game
      * Adds a tank to the game's movables list and generates/registers a network ID for it after it was spawned by another tank.
      * Use this if you want to spawn computer-controlled tanks from another tank if you are not connected to a server.
      *
-     * @param tank the tank to add
+     * @param tank   the tank to add
      * @param parent the tank that is spawning the tank
      */
     public static void spawnTank(Tank tank, Tank parent)
@@ -1068,8 +1061,7 @@ public class Game
                     f.println(s + ": " + p.get(s));
 
                 f.stopWriting();
-            }
-            catch (Exception ex) { ex.printStackTrace(); }
+            } catch (Exception ex) { ex.printStackTrace(); }
         }
 
         if (e instanceof OutOfMemoryError)
@@ -1083,8 +1075,7 @@ public class Game
             {
                 Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
             }
-        }
-        catch (Exception e1)
+        } catch (Exception e1)
         {
             e1.printStackTrace(Game.logger);
             e1.printStackTrace();
@@ -1189,7 +1180,9 @@ public class Game
         return Chunk.getIfPresent(x, y, 0d, Chunk.Tile::edgeDepth);
     }
 
-    /** @return The depth that the tile renders with; not affected by obstacles */
+    /**
+     * @return The depth that the tile renders with; not affected by obstacles
+     */
     public static double sampleTerrainGroundHeight(double px, double py)
     {
         return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::tileDepth);
@@ -1386,8 +1379,7 @@ public class Game
 
             f.stopReading();
             return true;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.screen = new ScreenFailedToLoadLevel(f.path, line.toString(), e, Game.screen);
             return false;
@@ -1465,27 +1457,29 @@ public class Game
         level.loadLevel();
     }
 
-    /** Please use {@link #version Game.version} instead. */
+    /**
+     * Please use {@link #version Game.version} instead.
+     */
     public static String readVersionFromFile()
     {
         try
         {
             return Game.game.fileManager.getInternalFileContents("/version.txt").get(0);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             return "Unknown";
         }
     }
 
-    /** Please use {@link BaseWindow#buildDate Game.game.window.buildDate} instead. */
+    /**
+     * Please use {@link BaseWindow#buildDate Game.game.window.buildDate} instead.
+     */
     public static String readHashFromFile()
     {
         try
         {
             return Game.game.fileManager.getInternalFileContents("/hash.txt").get(0);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             return "";
         }

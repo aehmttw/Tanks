@@ -9,7 +9,7 @@ public class ObstacleStackable extends Obstacle
 {
     public static final int default_max_height = 8;
 
-    @MetadataProperty(id="stack_height", name = "Block height", image="obstacle_height.png", selector = SelectorStackHeight.selector_name, keybind = "editor.height")
+    @MetadataProperty(id = "stack_height", name = "Block height", image = "obstacle_height.png", selector = SelectorStackHeight.selector_name, keybind = "editor.height")
     public double stackHeight = 1;
     public double startHeight = 0;
 
@@ -102,7 +102,7 @@ public class ObstacleStackable extends Obstacle
 
         Drawing.drawing.setColor(r, g, b, a, 0.5);
         Drawing.drawing.fillBox(this.posX, this.posY, this.startHeight * Game.tile_size,
-                Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, (byte) 0);
+            Game.tile_size + 1, Game.tile_size + 1, sizeZ + 1, (byte) 0);
     }
 
     @Override

@@ -2,9 +2,7 @@ package tanks.network.event.online;
 
 import tanks.network.NetworkUtils;
 import tanks.network.event.PersonalEvent;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlineServerHandler;
-import tanksonline.UploadedLevel;
+import tanksonline.*;
 import tanksonline.screen.ScreenLayout;
 import tanksonline.screen.ScreenUploadFinished;
 

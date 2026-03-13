@@ -1,15 +1,9 @@
 package tanks.network.event;
 
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.ChatMessage;
-import tanks.gui.screen.IPartyGameScreen;
-import tanks.gui.screen.ScreenConnecting;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.ConnectedPlayer;
-import tanks.network.NetworkUtils;
-import tanks.network.ServerHandler;
+import tanks.gui.screen.*;
+import tanks.network.*;
 
 import io.netty.buffer.ByteBuf;
 

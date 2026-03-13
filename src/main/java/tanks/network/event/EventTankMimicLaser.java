@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import tanks.Game;
-import tanks.GameObject;
-import tanks.Movable;
+import tanks.*;
 import tanks.bullet.Laser;
 import tanks.tank.Tank;
 
@@ -46,8 +44,8 @@ public class EventTankMimicLaser extends PersonalEvent implements IStackableEven
         if (this.clientID == null && t != null && t2 != null)
         {
             Laser laser = new Laser(t.posX, t.posY, t.size / 2, t2.posX, t2.posY, t2.size / 2,
-                    (this.range - GameObject.distanceBetween(t, t2)) / this.range * 10, t2.getAngleInDirection(t.posX, t.posY),
-                    t2.color);
+                (this.range - GameObject.distanceBetween(t, t2)) / this.range * 10, t2.getAngleInDirection(t.posX, t.posY),
+                t2.color);
             laser.tank1 = t;
             laser.tank2 = t2;
             Game.movables.add(laser);

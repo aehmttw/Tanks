@@ -7,9 +7,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
+import java.nio.*;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
@@ -411,8 +409,7 @@ public class SoundPlayer extends BaseSoundPlayer
             //Retreive the extra information that was stored in the buffers by the function
             channels = channelsBuffer.get(0);
             sampleRate = sampleRateBuffer.get(0);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("Failed to create sound " + path);
             e.printStackTrace();
@@ -479,8 +476,7 @@ public class SoundPlayer extends BaseSoundPlayer
             //Retreive the extra information that was stored in the buffers by the function
             channels = channelsBuffer.get(0);
             sampleRate = sampleRateBuffer.get(0);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             throw new RuntimeException("Failed to create music " + path);
         }

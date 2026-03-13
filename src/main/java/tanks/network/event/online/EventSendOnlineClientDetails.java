@@ -4,12 +4,8 @@ import tanks.Game;
 import tanks.network.NetworkUtils;
 import tanks.network.event.EventKick;
 import tanks.network.event.PersonalEvent;
-import tanksonline.AccessCode;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlineServerHandler;
-import tanksonline.screen.ScreenAccessCodeExpired;
-import tanksonline.screen.ScreenHome;
-import tanksonline.screen.ScreenInsertAccessCode;
+import tanksonline.*;
+import tanksonline.screen.*;
 
 import io.netty.buffer.ByteBuf;
 

@@ -117,8 +117,7 @@ public class MessageReader
                     }
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             if (s != null)
             {
@@ -186,8 +185,7 @@ public class MessageReader
                     Game.eventsIn.add(e);
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("A network exception has occurred:");
             e.printStackTrace();

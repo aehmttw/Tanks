@@ -52,7 +52,9 @@ public class ScreenInviteSteamFriends extends Screen
                     newName.append(c);
             }
 
-            Button b = new Button(0, 0, this.objWidth, this.objHeight, "", () -> {});
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, "", () ->
+            {
+            });
             b.function = () ->
             {
                 Game.steamNetworkHandler.matchmaking.inviteUserToLobby(Game.steamNetworkHandler.currentLobby, d.friendUserIDs.get(i));

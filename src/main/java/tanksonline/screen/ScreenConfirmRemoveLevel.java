@@ -2,9 +2,7 @@ package tanksonline.screen;
 
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOnline;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlineServerHandler;
-import tanksonline.UploadedLevel;
+import tanksonline.*;
 
 public class ScreenConfirmRemoveLevel extends ScreenLayout
 {
@@ -53,6 +51,6 @@ public class ScreenConfirmRemoveLevel extends ScreenLayout
         this.musicID = "menu";
 
         this.texts.add(new ScreenOnline.Text("Would you like to remove the level \"" + level.name + "\" from Tanks Online?",
-                sizeX / 2, sizeY / 2 - 90, 24, 0));
+            sizeX / 2, sizeY / 2 - 90, 24, 0));
     }
 }

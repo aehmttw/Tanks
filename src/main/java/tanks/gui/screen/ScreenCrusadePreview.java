@@ -1,9 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.event.EventShareCrusade;
@@ -91,8 +89,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
                         file.stopWriting();
                         success = true;
                     }
-                }
-                catch (IOException e)
+                } catch (IOException e)
                 {
                     e.printStackTrace(Game.logger);
                     e.printStackTrace();
@@ -140,7 +137,10 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         Game.steamNetworkHandler.workshop.search(null, 0, 18, workshopDetails.getOwnerID(), null, Game.steamNetworkHandler.workshop.searchByScore);
     });
 
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () ->
+    {
+        confirmingDelete = false;
+    });
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
@@ -193,13 +193,13 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         this.crusade = c;
 
         crusadeName = new TextBox(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight,
-                !uploadMode ? "Crusade save name" : "Crusade upload name", () ->
+            !uploadMode ? "Crusade save name" : "Crusade upload name", () ->
         {
             if (crusadeName.inputText.equals(""))
                 crusadeName.inputText = crusadeName.previousInputText;
             updateDownloadButton();
-        }
-                , crusade.name.replace("_", " "));
+        },
+            crusade.name.replace("_", " "));
 
         crusadeName.enableCaps = true;
 
@@ -213,7 +213,8 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         showPage.imageSizeY = 30;
         showPage.image = "icons/link.png";
 
-        description = new TextBox(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth * 2.5, this.objHeight, "Description", () -> {
+        description = new TextBox(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth * 2.5, this.objHeight, "Description", () ->
+        {
 
         }, "");
         description.enableCaps = true;

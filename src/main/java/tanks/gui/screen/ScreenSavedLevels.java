@@ -3,12 +3,12 @@ package tanks.gui.screen;
 import basewindow.ComputerFile;
 import tanks.*;
 import tanks.gui.*;
-import tanks.gui.screen.leveleditor.*;
+import tanks.gui.screen.leveleditor.OverlayEditorMenu;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.translation.Translation;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.management.Notification;
 
 public class ScreenSavedLevels extends Screen
 {
@@ -169,7 +169,8 @@ public class ScreenSavedLevels extends Screen
         if (Game.framework == Game.Framework.lwjgl)
         {
             Drawing.drawing.setInterfaceFontSize(16);
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.75 + savedLevelsList.noPageOffY, "Drag and drop levels here to import them");
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.75 + savedLevelsList.noPageOffY,
+                "Drag and drop levels here to import them");
         }
 
     }
@@ -208,7 +209,7 @@ public class ScreenSavedLevels extends Screen
 
             ScreenImportingFiles.numberTotal = paths.size();
             int i = 0;
-            for (String path : paths)
+            for (String path: paths)
             {
                 i++;
                 ScreenImportingFiles.numberCompleted = i;
@@ -220,8 +221,7 @@ public class ScreenSavedLevels extends Screen
                     while (file.hasNextLine())
                         b.append(file.nextLine()).append("\n");
                     validation.accept(String.join("\n", b.toString()));
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     e.printStackTrace(System.err);
                     failed.add(file);
@@ -251,7 +251,7 @@ public class ScreenSavedLevels extends Screen
                 Game.screen = new ScreenPopupWarning(s,
                     getNumberString(existing.size(), "file") + Translation.translate(" already exist" + (existing.size() == 1 ? "s" : "") + "!"),
                     existing.stream().limit(existing.size() == 11 ? 11 : 10).map(f -> f.file.getName()).collect(Collectors.joining(", ")) +
-                            ((existing.size() > 11) ? (Translation.translate(", and %d others", (existing.size() - 10))) : ""),
+                        ((existing.size() > 11) ? (Translation.translate(", and %d others", (existing.size() - 10))) : ""),
                     () ->
                     {
                         existing.forEach(f -> f.moveTo(Game.homedir + Game.levelDir, true));
@@ -269,7 +269,8 @@ public class ScreenSavedLevels extends Screen
             if (successful > 0)
                 Panel.notifications.add(new ScreenElement.Notification(Translation.translate("Imported %s", getNumberString(successful, levelType))));
             if (!failed.isEmpty())
-                Panel.notifications.add(new ScreenElement.Notification(getNumberString(failed.size(), levelType) + " " + Translation.translate((failed.size() > 1 ? "are" : "is") + " corrupted and have been skipped") + Translation.translate(failedMessage)));
+                Panel.notifications.add(new ScreenElement.Notification(getNumberString(failed.size(), levelType) + " " +
+                    Translation.translate((failed.size() > 1 ? "are" : "is") + " corrupted and have been skipped") + Translation.translate(failedMessage)));
 
             onComplete.run();
         }).start();

@@ -1,8 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.rendering.ShaderBeatBlocks;
@@ -113,7 +111,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
                 if (stackHeight % 1 == 0)
                 {
                     byte o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size));
-                    drawBox( i * Game.tile_size + this.startHeight * Game.tile_size, o);
+                    drawBox(i * Game.tile_size + this.startHeight * Game.tile_size, o);
                 }
                 else
                 {

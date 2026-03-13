@@ -4,9 +4,7 @@ import basewindow.BaseFile;
 import tanks.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 
 public class SavedFilesList extends ButtonList
@@ -24,7 +22,7 @@ public class SavedFilesList extends ButtonList
     public boolean drawOpenFileButton = false;
 
     Button openFolder = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () ->
-            Game.game.fileManager.openFileManager(this.directory), "Open folder in file manager");
+        Game.game.fileManager.openFileManager(this.directory), "Open folder in file manager");
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover)
     {
@@ -37,13 +35,13 @@ public class SavedFilesList extends ButtonList
     }
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile,
-            Button> auxiliarySetup)
+        Button> auxiliarySetup)
     {
         this(dir, page, xOffset, yOffset, behavior, hover, auxiliarySetup, ".tanks");
     }
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile,
-            Button> auxiliarySetup, String ext)
+        Button> auxiliarySetup, String ext)
     {
         super(new ArrayList<>(), page, xOffset, yOffset);
 
@@ -82,8 +80,7 @@ public class SavedFilesList extends ButtonList
                 if (p.endsWith(extension))
                     files.add(p);
             }
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             Game.exitToCrash(e);
         }

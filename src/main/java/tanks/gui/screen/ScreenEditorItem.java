@@ -1,18 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.gui.Button;
-import tanks.gui.ITrigger;
-import tanks.gui.SelectorItemIcon;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.tankson.FieldPointer;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
+import tanks.*;
+import tanks.gui.*;
+import tanks.item.*;
+import tanks.tankson.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -66,8 +58,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 f.stopWriting();
 
                 return true;
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 Game.exitToCrash(e);
             }
@@ -159,8 +150,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 this.objectEditorScreen.currentTab = null;
                 this.objectEditorScreen.title += " item";
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -183,7 +173,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
 
                 // Item name, icon, cooldown
                 FieldPointer<Item> ip = new FieldPointer<>(screen.target.get(), screen.target.getType().getField("item"));
-                for (Field f : i.getClass().getFields())
+                for (Field f: i.getClass().getFields())
                 {
                     Property p = f.getAnnotation(Property.class);
                     if (f.getDeclaringClass().equals(Item.class))
@@ -201,7 +191,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
 
                 // Move the cooldown to be after stack size and max stack size
                 ITrigger cooldown = this.uiElements.remove(this.uiElements.size() - 1);
-                for (Field f : this.screen.fields)
+                for (Field f: this.screen.fields)
                 {
                     Property p = f.getAnnotation(Property.class);
                     if (p != null && p.category().equals(this.category) && !p.id().equals("item"))
@@ -212,7 +202,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 this.uiElements.add(cooldown);
 
                 // Other per-item settings
-                for (Field f : i.getClass().getFields())
+                for (Field f: i.getClass().getFields())
                 {
                     if (!f.getDeclaringClass().equals(Item.class))
                     {
@@ -223,8 +213,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                         }
                     }
                 }
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }

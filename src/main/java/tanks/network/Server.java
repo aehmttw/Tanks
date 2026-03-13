@@ -35,22 +35,22 @@ public class Server
         {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
-            .channel(NioServerSocketChannel.class)
-            .childHandler(new ChannelInitializer<SocketChannel>()
-            {
-                @Override
-                public void initChannel(SocketChannel ch) {
-                    ch.pipeline().addLast(new ServerHandler(instance));
-                }
-            })
-            .option(ChannelOption.SO_BACKLOG, 128)
-            .childOption(ChannelOption.SO_KEEPALIVE, true);
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<SocketChannel>()
+                {
+                    @Override
+                    public void initChannel(SocketChannel ch)
+                    {
+                        ch.pipeline().addLast(new ServerHandler(instance));
+                    }
+                })
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             channel = b.bind(port).sync();
 
             channel.channel().closeFuture().sync();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             if (ScreenPartyHost.isServer)
             {
@@ -58,8 +58,7 @@ public class Server
                 e.printStackTrace();
                 Game.screen = new ScreenHostingEnded(e.getLocalizedMessage());
             }
-        }
-        finally
+        } finally
         {
             close();
         }
@@ -72,7 +71,7 @@ public class Server
 
     public void close(String reason)
     {
-        synchronized(this.connections)
+        synchronized (this.connections)
         {
             for (int i = 0; i < this.connections.size(); i++)
             {

@@ -72,8 +72,7 @@ public class Tanks
                             Runtime.getRuntime().exit(0);
                             return;
                         }
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         e.printStackTrace();
                     }
@@ -88,11 +87,11 @@ public class Tanks
                 {
                     // Creates and configures the LWJGL window.
                     Game.game.window = new LWJGLWindow(
-                            "Tanks",
-                            1400, 900 + Drawing.drawing.statsHeight,
-                            Game.absoluteDepthBase,
-                            new GameUpdater(), new GameDrawer(), new GameWindowHandler(),
-                            Game.vsync, !Panel.showMouseTarget
+                        "Tanks",
+                        1400, 900 + Drawing.drawing.statsHeight,
+                        Game.absoluteDepthBase,
+                        new GameUpdater(), new GameDrawer(), new GameWindowHandler(),
+                        Game.vsync, !Panel.showMouseTarget
                     );
                     Game.game.window.antialiasingEnabled = Game.antialiasing;
 
@@ -112,8 +111,7 @@ public class Tanks
                 Game.postInitScript();
 
                 Game.game.window.run();
-            }
-            catch (Throwable t)
+            } catch (Throwable t)
             {
                 fail(t);
             }
@@ -140,12 +138,12 @@ public class Tanks
             props.append(sr).append(": ").append(pr.get(sr)).append("\n");
 
         String errorMsg = "Oh noes!\n" +
-                "Tanks ran into a problem and was unable to start :(\n\n" +
-                "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n" +
-                "If you would like support regarding this issue, you may join the Tanks Discord via the following link:\n" +
-                "https://discord.gg/aWPaJD3\n\n" +
-                "Crash details:\n" +
-                s.toString() + "\n";
+            "Tanks ran into a problem and was unable to start :(\n\n" +
+            "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n" +
+            "If you would like support regarding this issue, you may join the Tanks Discord via the following link:\n" +
+            "https://discord.gg/aWPaJD3\n\n" +
+            "Crash details:\n" +
+            s.toString() + "\n";
 
         Game.logger.println(errorMsg + "System properties:\n" + props + "\n");
         System.err.println(errorMsg);

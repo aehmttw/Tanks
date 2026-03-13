@@ -1,9 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.tank.*;
@@ -31,8 +29,7 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
             String t = f.nextLine();
             f.stopReading();
             this.oldTank = (tank instanceof TankPlayable ? TankPlayer.fromString(t) : TankAIControlled.fromString(t));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

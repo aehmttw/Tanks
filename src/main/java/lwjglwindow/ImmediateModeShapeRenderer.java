@@ -293,7 +293,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             double ox = Math.cos(i) * sX / 2;
             double oy = Math.sin(i) * sY / 2;
             glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2, y + ox * this.window.bby1 + oy * this.window.bby2,
-                    z + ox * this.window.bbz1 + oy * this.window.bbz2);
+                z + ox * this.window.bbz1 + oy * this.window.bbz2);
         }
 
         glEnd();
@@ -326,7 +326,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             double ox = Math.cos(i) * sX / 2;
             double oy = Math.sin(i) * sY / 2;
             glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2 + oZ * this.window.bbx3, y + ox * this.window.bby1 + oy * this.window.bby2 + oZ * this.window.bby3,
-                    z + ox * this.window.bbz1 + oy * this.window.bbz2 + oZ * this.window.bbz3);
+                z + ox * this.window.bbz1 + oy * this.window.bbz2 + oZ * this.window.bbz3);
         }
 
         glEnd();
@@ -479,7 +479,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
      * +16 hide left face<br>
      * +32 hide right face<br>
      * +64 draw on top<br>
-     * */
+     *
+     */
     public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options, String texture)
     {
         if (!this.window.batchMode)

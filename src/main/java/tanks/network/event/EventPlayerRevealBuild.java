@@ -2,9 +2,7 @@ package tanks.network.event;
 
 import tanks.Game;
 import tanks.Movable;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayable;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
 
 import io.netty.buffer.ByteBuf;
 

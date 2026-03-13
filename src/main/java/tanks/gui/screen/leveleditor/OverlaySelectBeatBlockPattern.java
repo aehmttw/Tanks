@@ -26,7 +26,7 @@ public class OverlaySelectBeatBlockPattern extends ScreenLevelEditorOverlay
         {
             int j = i;
             groups[i] = new Button(this.centerX - 135 + i % 4 * 90, this.centerY - 45 + i / 4 * 90, buttonSize, buttonSize,
-                    "", () -> selector.setMetadata(editor, editor.mousePlaceable, (j % 4) * 2 + j / 4));
+                "", () -> selector.setMetadata(editor, editor.mousePlaceable, (j % 4) * 2 + j / 4));
         }
 
         this.musicInstruments = true;

@@ -44,7 +44,7 @@ public class ScreenOutOfMemory extends ScreenCrashed
         String extText = extensions == 0 ? "" : extensions == 1 ? " (with 1 extension)" : " (with " + extensions + " extensions)";
 
         drawing.setInterfaceFontSize(24);
-        drawing.displayInterfaceText(50, 560,  false, "Game version: " + Game.version + extText);
+        drawing.displayInterfaceText(50, 560, false, "Game version: " + Game.version + extText);
 
         this.chatroom.draw();
         this.quit.draw();

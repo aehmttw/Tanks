@@ -112,7 +112,7 @@ public class Drawing
         TankPlayer.controlStick = new Joystick(150, Drawing.drawing.interfaceSizeY - 150, 200);
         TankPlayer.shootStick = new Joystick(Drawing.drawing.interfaceSizeX - 150, Drawing.drawing.interfaceSizeY - 150, 200);
         TankPlayer.mineButton = new Button(Drawing.drawing.interfaceSizeX - 300, Drawing.drawing.interfaceSizeY - 75, 60, 60, "",
-                () -> Drawing.drawing.playVibration("heavyClick"));
+            () -> Drawing.drawing.playVibration("heavyClick"));
 
         TankPlayer.shootStick.clickIntensities[0] = 1.0;
         TankPlayer.shootStick.mobile = false;
@@ -562,7 +562,7 @@ public class Drawing
 
         double drawZ = z * scale;
 
-        Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, u1, v1, u2, v2, "/images/" + img, false,  depth);
+        Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, u1, v1, u2, v2, "/images/" + img, false, depth);
     }
 
     public void drawImage(double rotation, String img, double x, double y, double z, double sizeX, double sizeY)
@@ -1351,7 +1351,7 @@ public class Drawing
         double sizeY = 14;
 
         double endX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
-                Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+            Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
         if (x + sizeX + xPadding * 2 - 14 > endX)
             x -= x + sizeX + xPadding * 2 - 14 - endX;
 
@@ -1590,7 +1590,7 @@ public class Drawing
         else if (Panel.panel.pastPlayerTime.size() > 1)
         {
             double frac = Math.min(1, (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) /
-                    (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
+                (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
             x = Panel.panel.pastPlayerX.get(0) * (1 - frac) + Panel.panel.pastPlayerX.get(1) * frac;
         }
 
@@ -1599,7 +1599,7 @@ public class Drawing
         double result = (x - (Panel.windowWidth) / scale / 2);
 
         double margin = Obstacle.draw_size / Game.tile_size *
-                Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeX * Game.tile_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
+            Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeX * Game.tile_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
 
         boolean less = result < -margin;
         boolean greater = result + (Panel.windowWidth) / scale > sizeX + margin;
@@ -1642,7 +1642,7 @@ public class Drawing
         else if (Panel.panel.pastPlayerTime.size() > 1)
         {
             double frac = Math.min(1, (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) /
-                    (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
+                (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
             y = Panel.panel.pastPlayerY.get(0) * (1 - frac) + Panel.panel.pastPlayerY.get(1) * frac;
         }
 
@@ -1651,7 +1651,7 @@ public class Drawing
         double result = (y - (Panel.windowHeight - statsHeight) / scale / 2);
 
         double margin = Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeY * Game.tile_size *
-                Drawing.drawing.scale - (Panel.windowHeight - Drawing.drawing.statsHeight))) / 2;
+            Drawing.drawing.scale - (Panel.windowHeight - Drawing.drawing.statsHeight))) / 2;
 
         boolean less = result < -margin;
         boolean greater = result + (Panel.windowHeight - statsHeight) / scale > sizeY + margin;
@@ -1709,26 +1709,26 @@ public class Drawing
     }
 
     /**
-     *  Gets interface coordinate position of left/right edge of screen
+     * Gets interface coordinate position of left/right edge of screen
      */
     public double getInterfaceEdgeX(boolean right)
     {
         if (right)
             return (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
-                    Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+                Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
         else
             return (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
-                    Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+                Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
     }
 
     /**
-     *  Gets interface coordinate position of top/bottom edge of screen
+     * Gets interface coordinate position of top/bottom edge of screen
      */
     public double getInterfaceEdgeY(boolean bottom)
     {
         if (bottom)
             return ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 +
-                    Drawing.drawing.interfaceSizeY;
+                Drawing.drawing.interfaceSizeY;
         else
             return -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
     }

@@ -1,9 +1,7 @@
 package tanksonline.screen;
 
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.TextBox;
-import tanks.gui.UUIDTextBox;
+import tanks.gui.*;
 import tanks.gui.screen.ScreenOnline;
 import tanks.gui.screen.ScreenOverlayOnline;
 import tanks.network.event.online.*;
@@ -77,7 +75,7 @@ public abstract class ScreenLayout
             ScreenOnline.Text t = this.texts.get(i);
 
             if (t != null)
-               this.player.sendEvent(new EventAddText(i, t));
+                this.player.sendEvent(new EventAddText(i, t));
         }
 
         for (int i = 0; i < this.buttons.size(); i++)

@@ -2,9 +2,7 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.ButtonObject;
+import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
@@ -111,7 +109,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
             }
             else
             {
-                addButton = new Button(x, y, 50, 50, "+",  () ->
+                addButton = new Button(x, y, 50, 50, "+", () ->
                 {
                     ScreenAddSavedTankBuild s = new ScreenAddSavedTankBuild(this, this.editor.level.playerBuilds);
                     s.drawBehindScreen = true;

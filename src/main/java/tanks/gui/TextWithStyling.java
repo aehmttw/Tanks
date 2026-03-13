@@ -70,7 +70,7 @@ public class TextWithStyling
 
     public TextWithStyling shadowColor()
     {
-        double[] output = new double[] {this.colorR - 50, this.colorG - 50, this.colorB - 50};
+        double[] output = new double[]{this.colorR - 50, this.colorG - 50, this.colorB - 50};
 
         for (int i = 0; i < 3; i++)
         {

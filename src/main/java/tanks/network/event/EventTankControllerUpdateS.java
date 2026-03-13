@@ -1,9 +1,7 @@
 package tanks.network.event;
 
 import tanks.Game;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayerController;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
 
 import io.netty.buffer.ByteBuf;
 

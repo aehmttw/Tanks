@@ -345,8 +345,7 @@ public abstract class ShaderProgram
                     }
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }

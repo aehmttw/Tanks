@@ -1,9 +1,7 @@
 package tanks;
 
 import basewindow.IBatchRenderableObject;
-import tanks.obstacle.Face;
-import tanks.obstacle.ISolidObject;
-import tanks.obstacle.Obstacle;
+import tanks.obstacle.*;
 
 import java.util.*;
 
@@ -121,11 +119,11 @@ public class Chunk
     {
         int side = dir.index();
         Face f = new Face(null,
-                convert(chunkX + Face.x1[side], l, true),
-                convert(chunkY + Face.y1[side], l, false),
-                convert(chunkX + Face.x2[side], l, true),
-                convert(chunkY + Face.y2[side], l, false),
-                dir, true, true);
+            convert(chunkX + Face.x1[side], l, true),
+            convert(chunkY + Face.y1[side], l, false),
+            convert(chunkX + Face.x2[side], l, true),
+            convert(chunkY + Face.y2[side], l, false),
+            dir, true, true);
         borderFaces[side] = f;
         faces.getSide(dir.opposite().index()).add(f);
     }
@@ -238,7 +236,7 @@ public class Chunk
         for (Chunk c: chunkList)
         {
             if (Game.isOrdered(true, x1, c.chunkX, x2) &&
-                    Game.isOrdered(true, y1, c.chunkY, y2))
+                Game.isOrdered(true, y1, c.chunkY, y2))
                 chunkCache.add(c);
         }
         return chunkCache;
@@ -338,7 +336,7 @@ public class Chunk
         for (Chunk chunk: chunkList)
         {
             if ((chunk.chunkX - x1) * (chunk.chunkX - x1) +
-                    (chunk.chunkY - y1) * (chunk.chunkY - y1) <= cRad * cRad)
+                (chunk.chunkY - y1) * (chunk.chunkY - y1) <= cRad * cRad)
                 chunkCache.add(chunk);
         }
         return chunkCache;
@@ -439,9 +437,9 @@ public class Chunk
                 {
                     Drawing.drawing.setColor(50, 50, 255);
                     drawClampedRect(
-                            Game.currentLevel != null ? Game.currentLevel : defaultLevel,
-                            f.startX, f.startY,
-                            f.endX, f.endY
+                        Game.currentLevel != null ? Game.currentLevel : defaultLevel,
+                        f.startX, f.startY,
+                        f.endX, f.endY
                     );
                 }
                 else
@@ -453,11 +451,11 @@ public class Chunk
 
                     Drawing.drawing.setColor(255, 255, 0);
                     drawClampedRect(
-                            Game.currentLevel != null ? Game.currentLevel : defaultLevel,
-                            x + sX * Face.x1[i],
-                            y + sY * Face.y1[i],
-                            x + sX * (Face.x2[i] - Face.x1[i]),
-                            y + sY * (Face.y2[i] - Face.y1[i])
+                        Game.currentLevel != null ? Game.currentLevel : defaultLevel,
+                        x + sX * Face.x1[i],
+                        y + sY * Face.y1[i],
+                        x + sX * (Face.x2[i] - Face.x1[i]),
+                        y + sY * (Face.y2[i] - Face.y1[i])
                     );
                 }
                 i += 1;

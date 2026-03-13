@@ -2,9 +2,7 @@ package tanks;
 
 import tanks.tank.Tank;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class ErrorHandler<K, V>
 {

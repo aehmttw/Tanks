@@ -124,8 +124,7 @@ public class TanksON
         try
         {
             return Double.parseDouble(s.s.substring(start, s.index));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             return (double) error(e.toString(), s);
         }
@@ -255,7 +254,7 @@ public class TanksON
         else if (o instanceof AbstractCollection)
         {
             StringBuilder s = new StringBuilder("[");
-            for (Object el : (AbstractCollection<?>) o)
+            for (Object el: (AbstractCollection<?>) o)
             {
                 s.append(toString(el)).append(",");
             }
@@ -285,7 +284,7 @@ public class TanksON
             if (keys.remove("obj_type"))
                 keys.add(0, "obj_type");
 
-            for (String el : keys)
+            for (String el: keys)
             {
                 s.append("\"").append(convertString(el)).append("\":").append(toString(h.get(el))).append(",");
             }

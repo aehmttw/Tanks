@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.ChatBox;
 import tanks.gui.screen.ScreenPartyLobby;
 
 import io.netty.buffer.ByteBuf;

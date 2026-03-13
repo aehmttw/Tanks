@@ -55,7 +55,9 @@ public class Button implements IDrawable, ITrigger
     public boolean justPressed = false;
 
     public boolean enabled = true;
-    /** Whether you can click the button while it's disabled */
+    /**
+     * Whether you can click the button while it's disabled
+     */
     public boolean disabledClick = false;
 
     public double disabledColR = 200;
@@ -104,19 +106,25 @@ public class Button implements IDrawable, ITrigger
 
     //public String sound = "click.ogg";
 
-    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
+    /**
+     * If set to true and is part of an online service, pressing the button sends the player to a loading screen
+     */
     public boolean wait = false;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = left
      * 0 = middle
-     * 1 = right*/
+     * 1 = right
+     */
     public int xAlignment = 0;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = top
      * 0 = middle
-     * 1 = bottom*/
+     * 1 = bottom
+     */
     public int yAlignment = 0;
 
     public Button(double x, double y, double sX, double sY, String text, Runnable f)
@@ -166,7 +174,9 @@ public class Button implements IDrawable, ITrigger
 
     public static class Toggle extends Button
     {
-        private static final Runnable emptyFunction = () -> {};
+        private static final Runnable emptyFunction = () ->
+        {
+        };
 
         public Function<Boolean, String> getText = b -> b ? ScreenOptions.onText : ScreenOptions.offText;
         public Consumer<Boolean> setter;
@@ -410,7 +420,7 @@ public class Button implements IDrawable, ITrigger
             double my = Drawing.drawing.getInterfaceMouseY();
 
             boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1),
-                    Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
+                Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
 
             if (handled)
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
@@ -486,7 +496,7 @@ public class Button implements IDrawable, ITrigger
         }
 
         selected = (mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
-        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2  && my < posY + sizeY / 2);
+        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
 
         if (selected && valid)
         {

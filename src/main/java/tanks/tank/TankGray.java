@@ -4,6 +4,7 @@ import tanks.Game;
 
 /**
  * A primitive mobile tank
+ *
  * @see TankBrown
  */
 public class TankGray extends TankAIControlled

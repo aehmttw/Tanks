@@ -39,8 +39,7 @@ public class Extension
         try
         {
             Game.game.window.createImage(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -56,8 +55,7 @@ public class Extension
         {
             if (Game.game.window.soundsEnabled)
                 Game.game.window.soundPlayer.createSound(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -73,8 +71,7 @@ public class Extension
         {
             if (Game.game.window.soundsEnabled)
                 Game.game.window.soundPlayer.createMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -90,8 +87,7 @@ public class Extension
         {
             if (Game.game.window.soundsEnabled)
                 Game.game.window.soundPlayer.loadMusic(path, this.jarFile.getInputStream(this.jarFile.getEntry(path)));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -143,8 +139,7 @@ public class Extension
 
                 return strings;
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             return null;

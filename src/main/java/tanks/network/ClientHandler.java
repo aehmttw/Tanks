@@ -1,8 +1,6 @@
 package tanks.network;
 
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenOverlayOnline;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.event.*;

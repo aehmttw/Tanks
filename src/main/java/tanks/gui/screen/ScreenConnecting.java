@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.network.Client;
 
@@ -37,8 +35,7 @@ public class ScreenConnecting extends Screen
             try
             {
                 thread.interrupt();
-            }
-            catch (Exception ignored)
+            } catch (Exception ignored)
             {
 
             }
@@ -95,8 +92,8 @@ public class ScreenConnecting extends Screen
             double frac = (System.currentTimeMillis() / 1000.0 * speed + i / 100.0) % 1;
             double s = (i % (max * 1.0 / parts)) / 10.0 * parts;
             Drawing.drawing.fillInterfaceOval(this.centerX + size * Math.cos(frac * Math.PI * 2),
-                    this.centerY - this.objYSpace * 5 / 12 + size * Math.sin(frac * Math.PI * 2),
-                    s * dotSize, s * dotSize);
+                this.centerY - this.objYSpace * 5 / 12 + size * Math.sin(frac * Math.PI * 2),
+                s * dotSize, s * dotSize);
         }
     }
 

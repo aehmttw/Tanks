@@ -179,7 +179,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
         if ((this.timer <= 0 || destroy) && !ScreenPartyLobby.isClient)
             this.explode();
 
-        int beepTime = ((int)this.timer / 10);
+        int beepTime = ((int) this.timer / 10);
         if (this.timer <= 150 && beepTime % 2 == 1 && this.lastBeep != beepTime && this.tank == Game.playerTank)
         {
             Drawing.drawing.playSound("beep.ogg", 1f);

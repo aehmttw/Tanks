@@ -4,7 +4,6 @@ import basewindow.Color;
 import tanks.Game;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
 

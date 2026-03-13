@@ -3,11 +3,8 @@ package tanks.tank;
 import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
-import tanks.bullet.BulletPropertyCategory;
 import tanks.gui.ChatMessage;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.item.Item;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
@@ -94,8 +91,8 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
     public static ArrayList<Movable> getMovablesInExplosion(double posX, double posY, double radius)
     {
         movablesCache.clear();
-        for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
-            for (Movable o : c.movables)    // Movables are in any chunk that their hitboxes touch
+        for (Chunk c: Chunk.getChunksInRadius(posX, posY, radius))
+            for (Movable o: c.movables)    // Movables are in any chunk that their hitboxes touch
                 if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < Math.pow(radius + o.getSize() / 2, 2))
                     movablesCache.add(o);
         return movablesCache;

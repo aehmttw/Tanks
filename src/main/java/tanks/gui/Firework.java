@@ -635,7 +635,7 @@ public class Firework extends Movable
     }
 
     @Override
-    public void draw() { }
+    public void draw() {}
 
     public static class FireworkPosition
     {

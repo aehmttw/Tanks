@@ -2,9 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.InputCodes;
 import tanks.*;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.SelectorMusic;
+import tanks.gui.*;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;

@@ -7,9 +7,7 @@ import tanks.gui.screen.ScreenGame;
 import tanks.minigames.Arcade;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.TrackRenderer;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
-import tanks.tank.Turret;
+import tanks.tank.*;
 
 public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderableObject
 {
@@ -286,7 +284,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             double opacity = (rawOpacity * 255) / 4;
 
             double green = Math.min(255, (255 - 255.0 * (this.age / 20.0)));
-            drawing.setColor(255, green, 0,  Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
+            drawing.setColor(255, green, 0, Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
 
             if (Game.enable3d)
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -434,7 +432,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             double opacity = (rawOpacity * 255) / 4;
 
             double red = Math.min(255, (128 - 128.0 * (this.age / 20.0)));
-            drawing.setColor(red / 2, 0, red,  Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
+            drawing.setColor(red / 2, 0, red, Math.min(255, Math.max(0, (opacity * opacityMultiplier))));
 
             if (Game.enable3d)
                 drawing.fillOval(this.posX, this.posY, this.posZ, size, size);
@@ -494,7 +492,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 this.posZ -= Panel.frameFrequency / 2;
 
             this.color.set(Math.max(this.color.red - Panel.frameFrequency, 0), Math.max(this.color.green - Panel.frameFrequency, 0),
-                    Math.max(this.color.blue - Panel.frameFrequency, 0));
+                Math.max(this.color.blue - Panel.frameFrequency, 0));
         }
         else if (this.type == EffectType.glow)
         {
@@ -694,7 +692,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     public Effect setColorWithNoise(double r, double g, double b, double noise)
     {
         this.color.set(Math.max(0, Math.min(255, r + (Math.random() - 0.5) * noise)), Math.max(0, Math.min(255, g + (Math.random() - 0.5) * noise)),
-                Math.max(0, Math.min(255, b + (Math.random() - 0.5) * noise)));
+            Math.max(0, Math.min(255, b + (Math.random() - 0.5) * noise)));
         return this;
     }
 
@@ -942,7 +940,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 collided = this.posZ <= this.gridHeight;
 
                 if (collided && prevGridX >= 0 && prevGridX < Game.currentSizeX && prevGridY >= 0 && prevGridY < Game.currentSizeY &&
-                        this.gridHeight > Math.max(5, Chunk.getOrDefault(prevGridX, prevGridY).height()))
+                    this.gridHeight > Math.max(5, Chunk.getOrDefault(prevGridX, prevGridY).height()))
                 {
                     collidedX = this.prevGridX != x;
                     collidedY = this.prevGridY != y;
@@ -1014,7 +1012,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 if (Game.enable3d)
                 {
                     e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size,
-                            this.posZ, EffectType.piece);
+                        this.posZ, EffectType.piece);
                     e.color.set(255, Math.random() * 255, 0);
                     e.glowColor.set(e.color);
                     e.vZ = Math.random() + 1;
@@ -1031,7 +1029,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             if (Game.enable3d && Math.random() < Panel.frameFrequency * Game.effectMultiplier * 0.1 * (2 - this.posZ / Game.tile_size))
             {
                 Effect e2 = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Game.tile_size, this.posY + (Math.random() - 0.5) * Game.tile_size,
-                        this.posZ - Game.tile_size / 4, EffectType.obstaclePiece3d);
+                    this.posZ - Game.tile_size / 4, EffectType.obstaclePiece3d);
                 e2.addPolarMotion(Math.random() * 2 * Math.PI, Math.random());
                 double col = (this.color.red + this.color.green + this.color.blue) / 3;
                 e2.color.set(col, col, col);
@@ -1047,6 +1045,6 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     {
         Drawing.drawing.setColor(0, 0, 0, 64);
         Drawing.drawing.trackRenderer.addRect(this, this.posX, this.posY, this.posZ, size * Obstacle.draw_size / Game.tile_size,
-                size * Obstacle.draw_size / Game.tile_size, angle);
+            size * Obstacle.draw_size / Game.tile_size, angle);
     }
 }

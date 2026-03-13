@@ -52,7 +52,7 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
 
             team.teamColor.red = Integer.parseInt(teamRed.inputText);
         },
-                0, 0, 255, 1);
+            0, 0, 255, 1);
 
         teamRed.allowLetters = false;
         teamRed.allowSpaces = false;
@@ -67,7 +67,7 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
 
             team.teamColor.green = Integer.parseInt(teamGreen.inputText);
         },
-                0, 0, 255, 1);
+            0, 0, 255, 1);
 
         teamGreen.allowLetters = false;
         teamGreen.allowSpaces = false;
@@ -82,7 +82,7 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
 
             team.teamColor.blue = Integer.parseInt(teamBlue.inputText);
         },
-                0, 0, 255, 1);
+            0, 0, 255, 1);
 
         teamBlue.allowLetters = false;
         teamBlue.allowSpaces = false;

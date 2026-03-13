@@ -1,11 +1,7 @@
 package tanks.network.event;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Player;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenOverlayChat;
-import tanks.gui.screen.ScreenPartyHost;
+import tanks.*;
+import tanks.gui.screen.*;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
 import tanks.translation.Translation;

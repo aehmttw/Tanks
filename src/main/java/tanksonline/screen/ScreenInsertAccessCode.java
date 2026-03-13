@@ -45,8 +45,7 @@ public class ScreenInsertAccessCode extends ScreenLayout
                 }
 
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
 
         }

@@ -29,8 +29,7 @@ public class ComputerFile extends BaseFile
             while ((line = scanner.readLine()) != null)
                 s.append(line).append("\n");
             return s.toString();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             throw new RuntimeException(e);
         }
@@ -166,8 +165,7 @@ public class ComputerFile extends BaseFile
 
             return true;
 
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             e.printStackTrace();
             return false;

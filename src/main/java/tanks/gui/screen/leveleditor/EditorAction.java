@@ -2,9 +2,7 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankSpawnMarker;
+import tanks.tank.*;
 
 import java.util.ArrayList;
 

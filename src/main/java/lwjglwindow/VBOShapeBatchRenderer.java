@@ -1,11 +1,7 @@
 package lwjglwindow;
 
-import basewindow.BaseShapeBatchRenderer;
-import basewindow.IBatchRenderableObject;
-import basewindow.ShaderGroup;
-import basewindow.transformation.Rotation;
-import basewindow.transformation.Scale;
-import basewindow.transformation.Translation;
+import basewindow.*;
+import basewindow.transformation.*;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
@@ -562,7 +558,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
 
     public void moveFloat(FloatBuffer b, int mul, int off, int rem)
     {
-        b.put(this.size * mul + off,  b.get(rem * mul + off));
+        b.put(this.size * mul + off, b.get(rem * mul + off));
         b.put(rem * mul + off, 0f);
     }
 

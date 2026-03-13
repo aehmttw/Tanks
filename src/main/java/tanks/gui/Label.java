@@ -16,16 +16,20 @@ public class Label implements IDrawable
     public boolean centered = true;
     public boolean rightAligned = false;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = left
      * 0 = middle
-     * 1 = right*/
+     * 1 = right
+     */
     public int xAlignment = 0;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = top
      * 0 = middle
-     * 1 = bottom*/
+     * 1 = bottom
+     */
     public int yAlignment = 0;
 
     public Label(double x, double y, double size, String text)

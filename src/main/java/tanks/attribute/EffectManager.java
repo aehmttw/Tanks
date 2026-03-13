@@ -3,14 +3,10 @@ package tanks.attribute;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.event.EventStatusEffectBegin;
-import tanks.network.event.EventStatusEffectDeteriorate;
-import tanks.network.event.EventStatusEffectEnd;
+import tanks.network.event.*;
 import tanks.tank.Tank;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 
 public class EffectManager
 {
@@ -19,7 +15,9 @@ public class EffectManager
 
     public Movable movable;
 
-    public BiConsumer<AttributeModifier, Boolean> addAttributeCallback = (a, b) -> {};
+    public BiConsumer<AttributeModifier, Boolean> addAttributeCallback = (a, b) ->
+    {
+    };
 
     public HashSet<String> attributeImmunities = new HashSet<>();
     public ArrayList<AttributeModifier> attributes = new ArrayList<>();
@@ -196,7 +194,7 @@ public class EffectManager
             StatusEffect.Instance i = prop.instance;
 
             if (i.age < i.deteriorationAge && i.age + frameFrequency >= i.deteriorationAge && ScreenPartyHost.isServer &&
-                    (this.movable instanceof Bullet || this.movable instanceof Tank))
+                (this.movable instanceof Bullet || this.movable instanceof Tank))
             {
                 Game.eventsOut.add(new EventStatusEffectDeteriorate(this.movable, s, i.duration - i.deteriorationAge));
             }
@@ -244,7 +242,9 @@ public class EffectManager
         return value;
     }
 
-    /** Returns the attribute modifier object of the same type, or null if it doesn't exist.
+    /**
+     * Returns the attribute modifier object of the same type, or null if it doesn't exist.
+     *
      * @apiNote The attribute modifier object returned is mutable. Create a copy using
      * {@link AttributeModifier#copy copy} if you want to modify it, and make sure to
      * {@link AttributeModifier#recycle recycle} it when you're done.

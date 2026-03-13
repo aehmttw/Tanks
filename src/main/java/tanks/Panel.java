@@ -50,7 +50,9 @@ public class Panel
     public static TextBox selectedTextBox;
     public static Button draggedButton;
 
-    /** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.*/
+    /**
+     * Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.
+     */
     public static double frameFrequency = 1;
 
     public int frames = 0;
@@ -102,7 +104,9 @@ public class Panel
 
     public boolean lastFocused = true;
 
-    /** Set to a directory to have the game screenshot the next frame and save it to that directory */
+    /**
+     * Set to a directory to have the game screenshot the next frame and save it to that directory
+     */
     public String saveScreenshotDir = null;
 
     public static void initialize()
@@ -133,8 +137,7 @@ public class Panel
             Game.game.shaderTracks.initialize();
             Firework.shader.initialize();
             Firework.trailShader.initialize();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -179,7 +182,7 @@ public class Panel
         Game.dummyTank = new TankDummy("dummy", 0, 0, 0);
         Game.dummyTank.team = null;
 
-        for (Extension e : Game.extensionRegistry.extensions)
+        for (Extension e: Game.extensionRegistry.extensions)
             e.loadResources();
 
         Game.screen = new ScreenIntro();
@@ -229,8 +232,7 @@ public class Panel
             {
                 Game.game.window.screenshot(saveScreenshotDir, false);
                 saveScreenshotDir = null;
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -248,8 +250,7 @@ public class Panel
                 {
                     String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
                     notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) + "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.", 1200, 400));
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -360,8 +361,7 @@ public class Panel
                             stackedEventsIn.put(IStackableEvent.f(NetworkEventMap.get(e.getClass()) + IStackableEvent.f(((IStackableEvent) e).getIdentifier())), (IStackableEvent) e);
                         else
                             Game.eventsIn.get(i).execute();
-                    }
-                    catch (Exception ex)
+                    } catch (Exception ex)
                     {
                         handleEventError(e, ex);
                     }
@@ -376,8 +376,7 @@ public class Panel
             try
             {
                 e.execute();
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 handleEventError(e, ex);
             }
@@ -404,7 +403,7 @@ public class Panel
 
                     ScreenPartyHost.includedPlayers.remove(ScreenPartyHost.disconnectedPlayers.get(i));
 
-                    for (Player p : Game.players)
+                    for (Player p: Game.players)
                     {
                         if (p.clientID.equals(ScreenPartyHost.disconnectedPlayers.get(i)))
                         {
@@ -472,7 +471,7 @@ public class Panel
                             ArrayList<TankPlayer.ShopTankBuild> owned = new ArrayList<>();
                             for (TankPlayer.ShopTankBuild sb: ((ScreenGame) Game.screen).builds)
                             {
-                                if (((TankPlayerBot)m).player.ownedBuilds.contains(sb.name))
+                                if (((TankPlayerBot) m).player.ownedBuilds.contains(sb.name))
                                     owned.add(sb);
                             }
                             int b = (int) (Math.random() * owned.size());
@@ -492,13 +491,13 @@ public class Panel
         if (!(Game.screen instanceof ScreenInfo))
         {
             if (!(Game.screen instanceof ScreenGame) || Panel.zoomTarget < 0 ||
-                    ((Game.playerTank == null || Game.playerTank.destroy) && (((ScreenGame) Game.screen).spectatingTank == null)) || !((ScreenGame) Game.screen).playing)
+                ((Game.playerTank == null || Game.playerTank.destroy) && (((ScreenGame) Game.screen).spectatingTank == null)) || !((ScreenGame) Game.screen).playing)
                 this.zoomTimer -= 0.01 * Panel.frameFrequency;
         }
 
         if (((Game.playerTank != null && !Game.playerTank.destroy) || (Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).spectatingTank != null)) && !ScreenGame.finished
-                && (Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale || Game.followingCam)
-                && Game.screen instanceof ScreenGame && (((ScreenGame) (Game.screen)).playing || ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && Game.startTime < Game.currentLevel.startTime)))
+            && (Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale || Game.followingCam)
+            && Game.screen instanceof ScreenGame && (((ScreenGame) (Game.screen)).playing || ((ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && Game.startTime < Game.currentLevel.startTime)))
         {
             Drawing.drawing.enableMovingCamera = Drawing.drawing.unzoomedScale < Drawing.drawing.interfaceScale;
 
@@ -545,8 +544,8 @@ public class Panel
             if (Drawing.drawing.movingCamera)
             {
                 if (!(Game.screen instanceof ScreenGame) || (Panel.zoomTarget < 0 && !Panel.autoZoom) ||
-                        ((Game.playerTank == null || Game.playerTank.destroy) && (((ScreenGame) Game.screen).spectatingTank == null)) ||
-                        !((ScreenGame) Game.screen).playing)
+                    ((Game.playerTank == null || Game.playerTank.destroy) && (((ScreenGame) Game.screen).spectatingTank == null)) ||
+                    !((ScreenGame) Game.screen).playing)
                     this.zoomTimer += 0.02 * Panel.frameFrequency;
 
                 double mul = Panel.zoomTarget;
@@ -848,8 +847,7 @@ public class Panel
 
                 this.continuation = null;
                 this.continuationMusic = false;
-            }
-            catch (LoadingTerrainContinuation c)
+            } catch (LoadingTerrainContinuation c)
             {
                 if (this.continuation == null)
                     this.continuationStartTime = System.currentTimeMillis();
@@ -902,7 +900,7 @@ public class Panel
             {
                 Notification n = notifications.get(i);
                 if (i > 0)
-                    n.age = Math.max(0, Math.min(n.age, notifications.get(i-1).age - 25));
+                    n.age = Math.max(0, Math.min(n.age, notifications.get(i - 1).age - 25));
                 sy += n.draw(sy);
 
                 if (notifications.get(i).age > notifications.get(i).duration + notifications.get(i).removeDuration)
@@ -1143,7 +1141,7 @@ public class Panel
         allocatedThisSecond += Math.max(0, used - lastMemory);
         lastMemory = used;
 
-        Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " +  used / 1048576 + "/" + total / 1048576 + "MB (" + Math.round(allocatedLastSecond / 104857.6) / 10. + " MB/s)");
+        Game.game.window.fontRenderer.drawString(boundary + 150, offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, "Memory used: " + used / 1048576 + "/" + total / 1048576 + "MB (" + Math.round(allocatedLastSecond / 104857.6) / 10. + " MB/s)");
 
         if (ScreenPartyLobby.isClient && !Game.connectedToOnline)
         {

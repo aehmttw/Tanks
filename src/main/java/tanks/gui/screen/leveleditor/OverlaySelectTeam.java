@@ -1,8 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Team;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.leveleditor.selector.SelectorChoice;

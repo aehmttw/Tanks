@@ -53,8 +53,7 @@ public class TerrainRenderer
 
             Game.game.shaderInstances.put(this.outsideShader.getClass(), this.outsideShader);
             Game.game.shaderInstances.put(this.introShader.getClass(), this.introShader);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             Game.exitToCrash(e);
@@ -83,8 +82,7 @@ public class TerrainRenderer
             s.initialize();
             Game.game.shaderInstances.put(shaderClass, s);
             return s;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
             return null;
@@ -475,11 +473,11 @@ public class TerrainRenderer
 
     public void reset()
     {
-        for (HashMap<Integer, RegionRenderer> h : this.renderers.values())
-            for (RegionRenderer r : h.values())
+        for (HashMap<Integer, RegionRenderer> h: this.renderers.values())
+            for (RegionRenderer r: h.values())
                 r.renderer.free();
 
-        for (RegionRenderer r : this.outOfBoundsRenderers.values())
+        for (RegionRenderer r: this.outOfBoundsRenderers.values())
             r.renderer.free();
 
         this.renderers.clear();
@@ -491,7 +489,7 @@ public class TerrainRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
-        for (RegionRenderer s : renderers.values())
+        for (RegionRenderer s: renderers.values())
         {
             double sX = asPreview ? previewWidth : Game.currentSizeX;
             double x = xOffset * Game.tile_size * sX + offX;
@@ -553,10 +551,10 @@ public class TerrainRenderer
         }
         else
         {
-            for (Obstacle o : Game.redrawObstacles)
+            for (Obstacle o: Game.redrawObstacles)
                 drawObstacle(o);
 
-            for (Game.GroundTile t : Game.redrawGroundTiles)
+            for (Game.GroundTile t: Game.redrawGroundTiles)
                 this.drawTile(t.x, t.y);
 
             Game.redrawObstacles.clear();
@@ -621,7 +619,7 @@ public class TerrainRenderer
         {
             for (int i = 0; i < 10; i++)
             {
-                for (Class<? extends ShaderGroup> s : this.renderers.keySet())
+                for (Class<? extends ShaderGroup> s: this.renderers.keySet())
                 {
                     try
                     {
@@ -631,8 +629,7 @@ public class TerrainRenderer
                             configureShader(s);
                             this.drawMap(this.renderers.get(s), 0, 0);
                         }
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }
@@ -701,19 +698,19 @@ public class TerrainRenderer
 
                 double extra = getExtra(x, y);
                 this.addBox(t,
-                        x * Game.tile_size,
-                        y * Game.tile_size,
-                        -extra, Game.tile_size, Game.tile_size,
-                        extra + depth, o, false);
+                    x * Game.tile_size,
+                    y * Game.tile_size,
+                    -extra, Game.tile_size, Game.tile_size,
+                    extra + depth, o, false);
             }
         }
         else
         {
             this.addBox(t,
-                    x * Game.tile_size,
-                    y * Game.tile_size,
-                    0, Game.tile_size, Game.tile_size,
-                    0, BaseShapeRenderer.hide_neg_z, false);
+                x * Game.tile_size,
+                y * Game.tile_size,
+                0, Game.tile_size, Game.tile_size,
+                0, BaseShapeRenderer.hide_neg_z, false);
         }
 
         if (!this.staged)
@@ -728,10 +725,10 @@ public class TerrainRenderer
                     Game.tile_size + depth, BaseShapeRenderer.hide_neg_z, true);
             else
                 this.addBox(t,
-                        x * Game.tile_size,
-                        y * Game.tile_size,
-                        0, Game.tile_size, Game.tile_size,
-                        0, BaseShapeRenderer.hide_neg_z, true);
+                    x * Game.tile_size,
+                    y * Game.tile_size,
+                    0, Game.tile_size, Game.tile_size,
+                    0, BaseShapeRenderer.hide_neg_z, true);
         }
     }
 
@@ -754,7 +751,7 @@ public class TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        for (Obstacle o : Game.obstacles)
+        for (Obstacle o: Game.obstacles)
             o.postOverride();
 
         if (stagedCount == 0)
@@ -816,7 +813,6 @@ public class TerrainRenderer
 
         o.draw();
     }
-
 
 
     public static class RegionRenderer

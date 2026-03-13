@@ -23,19 +23,19 @@ public class SteamSharedLibraryLoader
     private static final boolean IS_64_BIT;
 
     private static final String SHARED_LIBRARY_EXTRACT_DIRECTORY = System.getProperty(
-            "com.codedisaster.steamworks.SharedLibraryExtractDirectory", "steamworks4j");
+        "com.codedisaster.steamworks.SharedLibraryExtractDirectory", "steamworks4j");
 
     private static final String SHARED_LIBRARY_EXTRACT_PATH = System.getProperty(
-            "com.codedisaster.steamworks.SharedLibraryExtractPath", null);
+        "com.codedisaster.steamworks.SharedLibraryExtractPath", null);
 
     private static final String SDK_REDISTRIBUTABLE_BIN_PATH = System.getProperty(
-            "com.codedisaster.steamworks.SDKRedistributableBinPath", "sdk/redistributable_bin");
+        "com.codedisaster.steamworks.SDKRedistributableBinPath", "sdk/redistributable_bin");
 
     private static final String SDK_LIBRARY_PATH = System.getProperty(
-            "com.codedisaster.steamworks.SDKLibraryPath", "sdk/public/steam/lib");
+        "com.codedisaster.steamworks.SDKLibraryPath", "sdk/public/steam/lib");
 
     static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(
-            "com.codedisaster.steamworks.Debug", "false"));
+        "com.codedisaster.steamworks.Debug", "false"));
 
     static
     {
@@ -126,7 +126,7 @@ public class SteamSharedLibraryLoader
             String librarySystemName = getPlatformLibName(libraryName);
 
             File librarySystemPath = discoverExtractLocation(
-                    SHARED_LIBRARY_EXTRACT_DIRECTORY + "/" + Version.getVersion(), librarySystemName);
+                SHARED_LIBRARY_EXTRACT_DIRECTORY + "/" + Version.getVersion(), librarySystemName);
 
             if (libraryPath == null)
             {
@@ -152,8 +152,7 @@ public class SteamSharedLibraryLoader
 
             String absolutePath = librarySystemPath.getCanonicalPath();
             System.load(absolutePath);
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             throw new SteamException(e);
         }
@@ -162,7 +161,7 @@ public class SteamSharedLibraryLoader
     private static void extractLibrary(File librarySystemPath, String librarySystemName) throws IOException
     {
         extractLibrary(librarySystemPath,
-                SteamSharedLibraryLoader.class.getResourceAsStream("/" + librarySystemName));
+            SteamSharedLibraryLoader.class.getResourceAsStream("/" + librarySystemName));
     }
 
     private static void extractLibrary(File librarySystemPath, File librarySourcePath) throws IOException
@@ -184,8 +183,7 @@ public class SteamSharedLibraryLoader
                     output.write(buffer, 0, length);
                 }
                 output.close();
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 /*
                     Extracting the library may fail, for example because 'nativeFile' already exists and is in
@@ -195,8 +193,7 @@ public class SteamSharedLibraryLoader
                 {
                     throw e;
                 }
-            }
-            finally
+            } finally
             {
                 input.close();
             }
@@ -245,8 +242,7 @@ public class SteamSharedLibraryLoader
                     return path;
                 }
             }
-        }
-        catch (IOException ignored)
+        } catch (IOException ignored)
         {
 
         }
@@ -303,12 +299,10 @@ public class SteamSharedLibraryLoader
         {
             new FileOutputStream(testFile).close();
             return canExecute(testFile);
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             return false;
-        }
-        finally
+        } finally
         {
             testFile.delete();
         }
@@ -328,8 +322,7 @@ public class SteamSharedLibraryLoader
             {
                 return file.canExecute();
             }
-        }
-        catch (Exception ignored)
+        } catch (Exception ignored)
         {
 
         }

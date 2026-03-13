@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenPartyCrusadeInterlevel;
 import tanks.network.NetworkUtils;
 

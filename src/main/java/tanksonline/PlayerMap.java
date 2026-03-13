@@ -103,8 +103,7 @@ public class PlayerMap
             }
 
             pw.close();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             Game.logger.println(players.toString());
@@ -149,8 +148,7 @@ public class PlayerMap
                                 setupPlayer(id, s);
                                 PlayerMap.instance.getPlayer(id).registered = true;
                             }
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
                             System.out.println("Failed to parse: " + in);
                             e.printStackTrace();
@@ -158,8 +156,7 @@ public class PlayerMap
                     }
 
                     br.close();
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     e.printStackTrace();
                 }
@@ -173,14 +170,14 @@ public class PlayerMap
             HashMap<Long, UploadedLevel> map = new HashMap<>();
             ArrayList<Long> times = new ArrayList<>();
 
-            for (Path p : ds)
+            for (Path p: ds)
             {
                 if (p.toString().contains(".DS_Store"))
                     continue;
 
                 DirectoryStream<Path> ds2 = Files.newDirectoryStream(p);
 
-                for (Path p2 : ds2)
+                for (Path p2: ds2)
                 {
                     if (p2.toString().endsWith(".tanks"))
                     {
@@ -203,8 +200,7 @@ public class PlayerMap
             }
 
             ds.close();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -213,7 +209,7 @@ public class PlayerMap
         {
             DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(access_codes_dir));
 
-            for (Path p : ds)
+            for (Path p: ds)
             {
                 if (p.toString().endsWith(".tanks"))
                 {
@@ -223,8 +219,7 @@ public class PlayerMap
             }
 
             ds.close();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }

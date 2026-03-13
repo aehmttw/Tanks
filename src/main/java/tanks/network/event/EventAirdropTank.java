@@ -4,9 +4,7 @@ import basewindow.Color;
 import tanks.Game;
 import tanks.Team;
 import tanks.network.NetworkUtils;
-import tanks.tank.Crate;
-import tanks.tank.Tank;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
 
 import io.netty.buffer.ByteBuf;
 

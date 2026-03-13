@@ -61,8 +61,7 @@ public class Translation
             }
 
             f.stopReading();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

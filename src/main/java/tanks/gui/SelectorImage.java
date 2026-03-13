@@ -68,11 +68,11 @@ public class SelectorImage extends Selector
                 //Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.65, 0, 0, 0, 80, false);
             else
                 TextBox.drawTallGlow(this.posX - sizeX / 2 + sizeY * 7 / 8, this.posY + 5, this.sizeY * (3.0 / 4 + m), this.sizeY * m, sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
-                //Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
+            //Button.drawGlow(this.posX, this.posY + 5, this.sizeX - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();

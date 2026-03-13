@@ -44,8 +44,7 @@ public class Client
             ChannelFuture f = b.connect(host, port).sync(); // (5)
             // Wait until the connection is closed.
             f.channel().closeFuture().sync();
-        }
-        finally
+        } finally
         {
             workerGroup.shutdownGracefully();
         }

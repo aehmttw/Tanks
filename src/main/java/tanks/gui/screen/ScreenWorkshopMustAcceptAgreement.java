@@ -18,8 +18,7 @@ public class ScreenWorkshopMustAcceptAgreement extends ScreenWorkshopActionResul
         try
         {
             Game.game.window.openLink(new URL("https://steamcommunity.com/sharedfiles/workshoplegalagreement"));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

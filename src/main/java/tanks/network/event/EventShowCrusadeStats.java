@@ -1,8 +1,6 @@
 package tanks.network.event;
 
-import tanks.Crusade;
-import tanks.CrusadePlayer;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 
@@ -52,9 +50,10 @@ public class EventShowCrusadeStats extends PersonalEvent
             if (cp != null)
             {
                 s.append(cp.player.clientID).append("/").append(cp.player.username).append(":")
-                        .append(cp.tankKills.toString()).append("/").append(cp.tankDeaths.toString()).append("/")
-                        .append(cp.itemUses.toString()).append("/").append(cp.itemHits.toString()).append("/")
-                        .append(cp.coins).append("/").append(cp.player.remainingLives).append("/").append(Crusade.currentCrusade.currentLevel + levelExtra).append("/").append(Crusade.currentCrusade.timePassed).append("\n");
+                    .append(cp.tankKills.toString()).append("/").append(cp.tankDeaths.toString()).append("/")
+                    .append(cp.itemUses.toString()).append("/").append(cp.itemHits.toString()).append("/")
+                    .append(cp.coins).append("/").append(cp.player.remainingLives).append("/").append(Crusade.currentCrusade.currentLevel + levelExtra).append("/")
+                    .append(Crusade.currentCrusade.timePassed).append("\n");
             }
         }
 

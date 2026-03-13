@@ -97,8 +97,8 @@ public abstract class Screen implements IBatchRenderableObject
 
         double frac = 0;
 
-        if (this instanceof ScreenGame || this instanceof ILevelPreviewScreen || (this instanceof IOverlayScreen
-                && !(this instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) this).isOverlayEnabled())))
+        if (this instanceof ScreenGame || this instanceof ILevelPreviewScreen || (this instanceof IOverlayScreen &&
+            !(this instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) this).isOverlayEnabled())))
             frac = Obstacle.draw_size / Game.tile_size;
 
         if (this.forceInBounds)
@@ -113,7 +113,7 @@ public abstract class Screen implements IBatchRenderableObject
                 mul = 2;
 
             Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
-                    mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+                mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
             Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue, 255.0 * size);
             Drawing.drawing.fillBackgroundRect(this, Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
@@ -208,7 +208,9 @@ public abstract class Screen implements IBatchRenderableObject
         }
     }
 
-    /** Setup all light info in Panel.lights to be sent to the shader */
+    /**
+     * Setup all light info in Panel.lights to be sent to the shader
+     */
     public void setupLights()
     {
 

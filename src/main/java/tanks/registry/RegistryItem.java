@@ -42,8 +42,7 @@ public class RegistryItem
             try
             {
                 return item.getConstructor().newInstance();
-            }
-            catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e)
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e)
             {
                 e.printStackTrace();
                 return null;

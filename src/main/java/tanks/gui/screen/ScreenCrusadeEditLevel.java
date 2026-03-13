@@ -5,9 +5,7 @@ import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankSpawnMarker;
+import tanks.tank.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -134,60 +132,61 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         }
     });
 
-    public Button saveLevelConfirm = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Save level", new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
-
-            boolean success = false;
-            if (!file.exists())
+    public Button saveLevelConfirm = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Save level",
+        new Runnable()
             {
-                try
+                @Override
+                public void run()
                 {
-                    if (file.create())
-                    {
-                        file.startWriting();
-                        String ls = level.levelString;
-                        StringBuilder tanks = new StringBuilder("\ntanks\n");
-                        if (previous2.crusade.customTanks.size() > 0)
-                        {
-                            for (TankAIControlled t: previous2.crusade.customTanks)
-                                tanks.append(t.toString()).append("\n");
+                    BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
 
-                            ls = ls + tanks;
-                        }
-                        file.println(ls);
-                        if (!level.buildOverrides.isEmpty())
+                    boolean success = false;
+                    if (!file.exists())
+                    {
+                        try
                         {
-                            file.println("builds\n");
-                            for (TankPlayer.ShopTankBuild b: level.buildOverrides)
+                            if (file.create())
                             {
-                                file.println(b.toString() + "\n");
+                                file.startWriting();
+                                String ls = level.levelString;
+                                StringBuilder tanks = new StringBuilder("\ntanks\n");
+                                if (previous2.crusade.customTanks.size() > 0)
+                                {
+                                    for (TankAIControlled t: previous2.crusade.customTanks)
+                                        tanks.append(t.toString()).append("\n");
+
+                                    ls = ls + tanks;
+                                }
+                                file.println(ls);
+                                if (!level.buildOverrides.isEmpty())
+                                {
+                                    file.println("builds\n");
+                                    for (TankPlayer.ShopTankBuild b: level.buildOverrides)
+                                    {
+                                        file.println(b.toString() + "\n");
+                                    }
+                                }
+                                file.stopWriting();
+                                success = true;
                             }
+                        } catch (IOException e)
+                        {
+                            e.printStackTrace(Game.logger);
+                            e.printStackTrace();
                         }
-                        file.stopWriting();
-                        success = true;
+                    }
+
+                    if (success)
+                    {
+                        saveLevelConfirm.enabled = false;
+                        saved = true;
+                        saveLevelConfirm.setText("Level saved!");
                     }
                 }
-                catch (IOException e)
-                {
-                    e.printStackTrace(Game.logger);
-                    e.printStackTrace();
-                }
-            }
+            });
 
-            if (success)
-            {
-                saveLevelConfirm.enabled = false;
-                saved = true;
-                saveLevelConfirm.setText("Level saved!");
-            }
-        }
-    });
-
-    public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> saveMenu = false);
+    public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back",
+        () -> saveMenu = false);
 
     public ScreenCrusadeEditLevel(Crusade.CrusadeLevel level, int in, ScreenCrusadeEditor s2)
     {
@@ -232,16 +231,16 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
             next.enabled = insertionIndex < previous2.crusade.levels.size();
             prev.enabled = insertionIndex > 0;
-        }
-                , "");
+        },
+            "");
 
         levelName = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, this.objWidth, this.objHeight, "Level save name", () ->
         {
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             updateSaveButton();
-        }
-                , level.levelName.replace("_", " "));
+        },
+            level.levelName.replace("_", " "));
 
         levelName.enableCaps = true;
 

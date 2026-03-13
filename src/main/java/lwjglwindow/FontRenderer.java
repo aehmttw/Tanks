@@ -46,7 +46,7 @@ public class FontRenderer extends BaseFontRenderer
                 "pqrstuvwxyz{|}~`" +
                 "âăîşţàçæèéêëïôœù" +
                 "úûüÿáíóñ¡¿äöå",
-                new int[]
+            new int[]
                 {
                     3, 2, 4, 5, 5, 6, 5, 2, 3, 3, 4, 5, 2, 5, 2, 5,
                     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 5, 5, 5, 5,
@@ -120,9 +120,9 @@ public class FontRenderer extends BaseFontRenderer
         }
 
         this.window.shapeRenderer.drawImage(x, y - sY * 16, z, sX * 32 * font.size, sY * 32 * font.size,
-                col / font.size, (row * font.hSpace) / font.size,
-                (col + width / 8f) / font.size, (row * font.hSpace + 2) / font.size,
-                font.image, false, depthtest);
+            col / font.size, (row * font.hSpace) / font.size,
+            (col + width / 8f) / font.size, (row * font.hSpace + 2) / font.size,
+            font.image, false, depthtest);
         return width;
     }
 

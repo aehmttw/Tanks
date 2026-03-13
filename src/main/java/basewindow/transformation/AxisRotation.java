@@ -46,6 +46,6 @@ public class AxisRotation extends Transformation
 
     public static void transformRoll(BaseWindow window, double roll)
     {
-        transform(window, Math.cos(roll), -Math.sin(roll), 0, 0,  Math.sin(roll), Math.cos(roll), 0, 0,  0, 0, 1, 0, 0, 0, 0, 1);
+        transform(window, Math.cos(roll), -Math.sin(roll), 0, 0,  Math.sin(roll), Math.cos(roll), 0, 0,  0, 0, 1, 0,  0, 0, 0, 1);
     }
 }

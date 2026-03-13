@@ -3,10 +3,7 @@ package tanks.obstacle;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
-import tanks.gui.screen.ICrusadePreviewScreen;
-import tanks.gui.screen.ILevelPreviewScreen;
-import tanks.gui.screen.IOverlayScreen;
-import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.*;
 import tanks.network.event.EventObstacleShrubberyBurn;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.rendering.ShaderShrubbery;
@@ -73,7 +70,8 @@ public class ObstacleShrubbery extends Obstacle
     {
         this.finalHeight = this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128));
 
-        if (!Game.enable3d && (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen || Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing))
+        if (!Game.enable3d && (Game.screen instanceof ILevelPreviewScreen || Game.screen instanceof ICrusadePreviewScreen || Game.screen instanceof IOverlayScreen ||
+            Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).playing))
         {
             this.height = 127;
             setUpdate(true);
@@ -102,15 +100,16 @@ public class ObstacleShrubbery extends Obstacle
     public void draw3dOutline(double r, double g, double b, double a)
     {
         Drawing.drawing.setColor(r, g, b, a);
-        Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size, this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)));
+        Drawing.drawing.fillBox(this.posX, this.posY, 0, Game.tile_size, Game.tile_size,
+            this.baseGroundHeight + Game.tile_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)));
     }
 
     public boolean isInside(double x, double y)
     {
         return (x >= this.posX - Game.tile_size / 2 &&
-                x <= this.posX + Game.tile_size / 2 &&
-                y >= this.posY - Game.tile_size / 2 &&
-                y <= this.posY + Game.tile_size / 2);
+            x <= this.posX + Game.tile_size / 2 &&
+            y >= this.posY - Game.tile_size / 2 &&
+            y <= this.posY + Game.tile_size / 2);
     }
 
     @Override
@@ -123,10 +122,10 @@ public class ObstacleShrubbery extends Obstacle
                 for (int y = -1; y <= 1; y++)
                 {
                     ((Tank) m).canHidePoints[x + 1][y + 1] = ((Tank) m).canHidePoints[x + 1][y + 1] ||
-                            this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x);
+                        this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x);
 
                     ((Tank) m).hiddenPoints[x + 1][y + 1] = ((Tank) m).hiddenPoints[x + 1][y + 1] ||
-                            (this.height >= 240 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
+                        (this.height >= 240 && this.isInside(m.posX + ((Tank) m).size * 0.5 * x, m.posY + ((Tank) m).size * 0.5 * x));
                 }
             }
         }
@@ -140,7 +139,8 @@ public class ObstacleShrubbery extends Obstacle
 
             Effect e;
             if (Game.enable3d)
-                e = Effect.createNewEffect(this.posX, this.posY, this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)), Effect.EffectType.bushBurn);
+                e = Effect.createNewEffect(this.posX, this.posY, this.baseGroundHeight + draw_size * (0.2 + this.heightMultiplier * (1 - (255 - this.height) / 128)),
+                    Effect.EffectType.bushBurn);
             else
                 e = Effect.createNewEffect(this.posX, this.posY, this.height, Effect.EffectType.bushBurn);
 
@@ -163,7 +163,8 @@ public class ObstacleShrubbery extends Obstacle
         {
             if (Math.random() < Panel.frameFrequency / Math.pow(((Bullet) m).size, 2) * 20 * Game.effectMultiplier)
             {
-                Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Obstacle.draw_size, this.posY + (Math.random() - 0.5) * Obstacle.draw_size, this.getTileHeight() * (Math.random() * 0.8 + 0.2), Effect.EffectType.piece);
+                Effect e = Effect.createNewEffect(this.posX + (Math.random() - 0.5) * Obstacle.draw_size, this.posY + (Math.random() - 0.5) * Obstacle.draw_size,
+                    this.getTileHeight() * (Math.random() * 0.8 + 0.2), Effect.EffectType.piece);
                 e.vX = m.vX * (Math.random() * 0.5 + 0.5);
                 e.vY = m.vY * (Math.random() * 0.5 + 0.5);
                 e.vZ = Math.random() * m.getSpeed() / 8;
@@ -182,7 +183,8 @@ public class ObstacleShrubbery extends Obstacle
                 double distsq = Math.pow(m.posX - Game.playerTank.posX, 2) + Math.pow(m.posY - Game.playerTank.posY, 2);
 
                 double radius = 62500;
-                if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy && !(m instanceof BulletInstant))
+                if (distsq <= radius && Math.random() < Panel.frameFrequency * 0.1 && speed > 0 && Game.playerTank != null && !Game.playerTank.destroy &&
+                    !(m instanceof BulletInstant))
                 {
                     int sound = (int) (Math.random() * 4 + 1);
                     Drawing.drawing.playSound("leaves" + sound + ".ogg", (float) (speed / 3.0f) + 0.5f, (float) (speed * 0.05 * (radius - distsq) / radius));

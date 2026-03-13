@@ -1,9 +1,7 @@
 package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
-import tanks.gui.Button;
-import tanks.gui.TextBox;
-import tanks.gui.TextBoxSlider;
+import tanks.gui.*;
 import tanks.gui.screen.Screen;
 
 public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
@@ -32,8 +30,8 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             screenLevelEditor.level.colorVar.red = Double.parseDouble(colorVarRed.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
-        }
-                , screenLevelEditor.level.color.red, 0, 255, 1);
+        },
+            screenLevelEditor.level.color.red, 0, 255, 1);
 
         colorRed.allowLetters = false;
         colorRed.allowSpaces = false;
@@ -55,8 +53,8 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             screenLevelEditor.level.colorVar.green = Double.parseDouble(colorVarGreen.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
-        }
-                , screenLevelEditor.level.color.green, 0, 255, 1);
+        },
+            screenLevelEditor.level.color.green, 0, 255, 1);
 
         colorGreen.allowLetters = false;
         colorGreen.allowSpaces = false;
@@ -78,8 +76,8 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
             screenLevelEditor.level.colorVar.blue = Double.parseDouble(colorVarBlue.inputText);
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
-        }
-                , screenLevelEditor.level.color.blue, 0, 255, 1);
+        },
+            screenLevelEditor.level.color.blue, 0, 255, 1);
 
         colorBlue.allowLetters = false;
         colorBlue.allowSpaces = false;
@@ -97,8 +95,8 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
-        }
-                , (int) screenLevelEditor.level.colorVar.red + "");
+        },
+            (int) screenLevelEditor.level.colorVar.red + "");
 
         colorVarRed.allowLetters = false;
         colorVarRed.allowSpaces = false;
@@ -114,8 +112,8 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
-        }
-                , (int) screenLevelEditor.level.colorVar.green + "");
+        },
+            (int) screenLevelEditor.level.colorVar.green + "");
 
         colorVarGreen.allowLetters = false;
         colorVarGreen.allowSpaces = false;
@@ -131,8 +129,8 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
 
             screenLevelEditor.level.reloadTiles();
             Drawing.drawing.terrainRenderer.reset();
-        }
-                , (int) screenLevelEditor.level.colorVar.blue + "");
+        },
+            (int) screenLevelEditor.level.colorVar.blue + "");
 
         colorVarBlue.allowLetters = false;
         colorVarBlue.allowSpaces = false;

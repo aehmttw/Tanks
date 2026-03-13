@@ -1,9 +1,6 @@
 package tanksonline;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.UUID;
 
 public class UploadedLevel
@@ -13,7 +10,7 @@ public class UploadedLevel
     public UUID creator;
     public long time;
 
-    public enum UploadResult {success, nameTaken, error}
+    public enum UploadResult { success, nameTaken, error }
 
     public UploadedLevel(String name, String level, UUID creator, long time)
     {
@@ -40,8 +37,7 @@ public class UploadedLevel
             {
                 System.out.println("Attempted to load an inexistent level: " + f);
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -66,8 +62,7 @@ public class UploadedLevel
             }
             else
                 return UploadResult.nameTaken;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             return UploadResult.error;

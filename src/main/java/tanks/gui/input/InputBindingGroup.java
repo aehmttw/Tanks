@@ -67,7 +67,7 @@ public class InputBindingGroup
         if (input1.inputType == null)
             return input2.getInputName();
         if ((input1.getInputName().startsWith("Left") && input2.getInputName().startsWith("Right")) ||
-                (input2.getInputName().startsWith("Left") && input1.getInputName().startsWith("Right")))
+            (input2.getInputName().startsWith("Left") && input1.getInputName().startsWith("Right")))
             return Game.formatString(input1.getInputName().replace("Left ", "").replace("Right ", ""));
         return Translation.translate("%s or %s", Translation.translate(input1.getInputName()), Translation.translate(input2.getInputName()));
     }

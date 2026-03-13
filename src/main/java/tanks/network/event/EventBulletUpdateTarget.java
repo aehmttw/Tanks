@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.bullet.Bullet;
 import tanks.tank.Tank;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventBulletUpdateTarget extends PersonalEvent
 {

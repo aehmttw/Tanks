@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.network.event.EventShareLevel;
@@ -95,11 +92,12 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             this.name = levelName.inputText;
-        }
-                , name.replace("_", " "));
+        },
+            name.replace("_", " "));
         levelName.enableCaps = true;
 
-        description = new TextBox(320, this.back.posY, 590, this.objHeight, "Description", () -> {
+        description = new TextBox(320, this.back.posY, 590, this.objHeight, "Description", () ->
+        {
 
         }, "");
         description.enableCaps = true;

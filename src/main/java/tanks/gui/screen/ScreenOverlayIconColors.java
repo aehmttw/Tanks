@@ -1,12 +1,7 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Level;
-import tanks.Panel;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.SelectorColor;
-import tanks.gui.SelectorItemIcon;
+import tanks.*;
+import tanks.gui.*;
 
 import java.util.ArrayList;
 
@@ -57,7 +52,10 @@ public class ScreenOverlayIconColors
                     Button b = new Button(0, 0, 45, 45, "", () ->
                     {
                         this.colorSelector = new SelectorColor(selectorScreen.centerX + selectorScreen.objXSpace / 2, selectorScreen.centerY - selectorScreen.objYSpace * 3, selectorScreen.objWidth, selectorScreen.objHeight, "Layer",
-                                selectorScreen.objYSpace * 1.5, selector.selectedIcon.colors.get(finalI), selector.selectedIcon.alphas.get(finalI), () -> {selector.itemBeingEdited.autoIcon = false; });
+                            selectorScreen.objYSpace * 1.5, selector.selectedIcon.colors.get(finalI), selector.selectedIcon.alphas.get(finalI), () ->
+                        {
+                            selector.itemBeingEdited.autoIcon = false;
+                        });
                         this.selectedLayer = c2;
                     });
                     b.imageSizeX = 45;
@@ -159,13 +157,13 @@ public class ScreenOverlayIconColors
 
             Drawing.drawing.setColor(this.colorButtons.buttons.get(this.selectedLayer).imageColor);
             Drawing.drawing.drawInterfaceImage(this.colorButtons.buttons.get(this.selectedLayer).image,
-                    selectorScreen.centerX - selectorScreen.objXSpace / 2, this.selectorScreen.centerY - selectorScreen.objYSpace * 2.5,
-                    128, 128);
+                selectorScreen.centerX - selectorScreen.objXSpace / 2, this.selectorScreen.centerY - selectorScreen.objYSpace * 2.5,
+                128, 128);
 
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.drawInterfaceImage(this.selector.selectedIcon,
-                    selectorScreen.centerX - selectorScreen.objXSpace / 2, this.selectorScreen.centerY + selectorScreen.objYSpace * 0.5,
-                    128, 128);
+                selectorScreen.centerX - selectorScreen.objXSpace / 2, this.selectorScreen.centerY + selectorScreen.objYSpace * 0.5,
+                128, 128);
         }
 
         Button first = this.colorButtons.buttons.get(0);
@@ -190,10 +188,10 @@ public class ScreenOverlayIconColors
                 Drawing.drawing.setColor(0, 0, 0, 64);
 
             Drawing.drawing.fillInterfaceRect((first.posX + this.colorButtons.buttons.get(1).posX) / 2,
-                    first.posY, 2, first.sizeY);
+                first.posY, 2, first.sizeY);
 
             Drawing.drawing.fillInterfaceRect((last.posX + this.colorButtons.buttons.get(this.colorButtons.buttons.size() - 2).posX) / 2,
-                    first.posY, 2, first.sizeY);
+                first.posY, 2, first.sizeY);
 
         }
     }

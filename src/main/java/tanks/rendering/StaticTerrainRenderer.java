@@ -1,11 +1,7 @@
 package tanks.rendering;
 
-import basewindow.BaseShapeBatchRenderer;
-import basewindow.IBatchRenderableObject;
-import basewindow.ShaderGroup;
-import tanks.Chunk;
-import tanks.Drawing;
-import tanks.Game;
+import basewindow.*;
+import tanks.*;
 import tanks.gui.screen.ILevelPreviewScreen;
 import tanks.gui.screen.ScreenGame;
 import tanks.obstacle.Obstacle;
@@ -27,8 +23,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
             Game.game.shaderInstances.put(ds.getClass(), ds);
 
             this.outsideShader = Game.game.shaderOutOfBounds;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             Game.exitToCrash(e);
@@ -227,7 +222,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
     public void reset()
     {
-        for (RegionRenderer r : this.renderers.values())
+        for (RegionRenderer r: this.renderers.values())
         {
             r.renderer.free();
         }
@@ -327,7 +322,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
         for (int i = 0; i < 10; i++)
         {
-            for (Class<? extends ShaderGroup> s : this.renderers.keySet())
+            for (Class<? extends ShaderGroup> s: this.renderers.keySet())
             {
                 try
                 {
@@ -337,8 +332,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
                         configureShader(s);
                         this.drawMap(this.renderers.get(s), 0, 0);
                     }
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -353,7 +347,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        for (Obstacle o : Game.obstacles)
+        for (Obstacle o: Game.obstacles)
             o.postOverride();
 
         for (int i = 0; i < Game.currentSizeX; i++)

@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Effect;
 import tanks.Game;
 import tanks.tank.Tank;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventBulletStunEffect extends PersonalEvent
 {

@@ -3,18 +3,11 @@ package tanks.hotbar;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.item.DefaultItemIcons;
-import tanks.item.Item;
-import tanks.item.ItemEmpty;
-import tanks.item.ItemIcon;
+import tanks.gui.screen.*;
+import tanks.item.*;
 import tanks.minigames.Arcade;
 import tanks.network.ServerHandler;
-import tanks.network.event.EventSetItem;
-import tanks.network.event.EventSetItemBarSlot;
-import tanks.network.event.EventSetItemCount;
+import tanks.network.event.*;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
 
@@ -88,7 +81,7 @@ public class ItemBar
         Item.ItemStack<?> i = item.getCopy();
         i.player = this.player;
         int emptyAmount = 0;
-        for (Item.ItemStack<?> slot : this.slots)
+        for (Item.ItemStack<?> slot: this.slots)
         {
             if (slot.item.name.equals(i.item.name) || slot.isEmpty)
                 emptyAmount += i.maxStackSize - slot.stackSize;
@@ -99,7 +92,8 @@ public class ItemBar
 
         for (int x = 0; x < this.slots.length; x++)
         {
-            if (this.slots[x].item.name.equals(i.item.name) && ((this.slots[x].stackSize >= this.slots[x].maxStackSize && this.slots[x].maxStackSize > 0) || this.slots[x].stackSize == 0))
+            if (this.slots[x].item.name.equals(i.item.name) && ((this.slots[x].stackSize >= this.slots[x].maxStackSize &&
+                this.slots[x].maxStackSize > 0) || this.slots[x].stackSize == 0))
                 continue;
 
             if (this.slots[x].item.name.equals(i.item.name))
@@ -210,7 +204,7 @@ public class ItemBar
 
             if (ScreenPartyHost.isServer)
             {
-                for (ServerHandler sh : ScreenPartyHost.server.connections)
+                for (ServerHandler sh: ScreenPartyHost.server.connections)
                 {
                     if (sh.player.equals(this.player))
                         sh.queueEvent(new EventSetItemBarSlot(-1));
@@ -436,7 +430,7 @@ public class ItemBar
             {
                 if (s.destroy)
                 {
-                    Drawing.drawing.setColor(255, 255, 255, 1.27 * (100 - this.player.hotbar.percentHidden) );
+                    Drawing.drawing.setColor(255, 255, 255, 1.27 * (100 - this.player.hotbar.percentHidden));
                     Drawing.drawing.drawInterfaceImage("noitem.png", x, y, size, size);
                 }
                 else if (s.item.icon != null)
@@ -524,7 +518,7 @@ public class ItemBar
 
         TankPlayer p = ((TankPlayer) this.player.tank);
         int count = items + p.abilities.size();
-        double opacity = player.hotbar.circleVisibility / player.hotbar.circleVisibilityMax * Math.min(1,  player.hotbar.circlePersistenceVisibility + Math.max(0, (400 - timeSinceSwitch) / 200));
+        double opacity = player.hotbar.circleVisibility / player.hotbar.circleVisibilityMax * Math.min(1, player.hotbar.circlePersistenceVisibility + Math.max(0, (400 - timeSinceSwitch) / 200));
 
         for (int i = 0; i < count; i++)
         {

@@ -3,26 +3,17 @@ package tanks.minigames;
 import tanks.*;
 import tanks.attribute.StatusEffect;
 import tanks.bullet.Bullet;
-import tanks.gui.screen.IDarkScreen;
-import tanks.gui.screen.ScreenArcadeBonuses;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.hotbar.Hotbar;
 import tanks.item.Item;
 import tanks.item.ItemShield;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
-import tanks.tank.Crate;
-import tanks.tank.IServerPlayerTank;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
+import tanks.tank.*;
 import tanks.translation.Translation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 public class Arcade extends Minigame
 {
@@ -39,7 +30,11 @@ public class Arcade extends Minigame
     public static final int rampage_duration = 500;
     public static final int rampage_exit_duration = 200;
     public static final int max_power = 8;
-    public static String[] rampage_titles = new String[]{"Rampage!", "Extra rampage!", "Super rampage!", "Mega rampage!!", "Giga rampage!!", "Insane rampage!!", "Ultimate rampage!!!", "Godlike rampage!!!"};
+    public static String[] rampage_titles = new String[]
+        {
+            "Rampage!", "Extra rampage!", "Super rampage!", "Mega rampage!!", "Giga rampage!!", "Insane rampage!!",
+            "Ultimate rampage!!!", "Godlike rampage!!!"
+        };
 
     public ArrayList<Tank> spawnedTanks = new ArrayList<>();
     public ArrayList<Tank> spawnedFrenzyTanks = new ArrayList<>();
@@ -101,7 +96,7 @@ public class Arcade extends Minigame
         if (!ScreenPartyLobby.isClient)
         {
             int id = 0;
-            for (String si : items)
+            for (String si: items)
             {
                 Item.ItemStack<?> i = Item.ItemStack.fromString(null, si);
                 itemNumbers.put(i.item.name, id + 1);
@@ -133,7 +128,7 @@ public class Arcade extends Minigame
         }
         else
         {
-            for (String si : items)
+            for (String si: items)
             {
                 this.clientShop.add(new Item.ShopItem(Item.ItemStack.fromString(null, si)));
             }
@@ -247,7 +242,7 @@ public class Arcade extends Minigame
 
             lastHit = age;
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Tank)
                 {
@@ -350,7 +345,7 @@ public class Arcade extends Minigame
             ArrayList<Player> alivePlayers = new ArrayList<>();
             ArrayList<Player> totalPlayers = new ArrayList<>();
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof IServerPlayerTank)
                 {
@@ -395,7 +390,7 @@ public class Arcade extends Minigame
             {
                 Game.eventsOut.add(new EventArcadeClearMovables());
 
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof Crate && (((Crate) m).tank instanceof IServerPlayerTank))
                         continue;
@@ -410,7 +405,7 @@ public class Arcade extends Minigame
                 {
                     deathCount++;
 
-                    for (Player p : this.includedPlayers)
+                    for (Player p: this.includedPlayers)
                     {
                         if (!totalPlayers.contains(p))
                         {
@@ -587,7 +582,8 @@ public class Arcade extends Minigame
 
             Drawing.drawing.setInterfaceFontSize(20 * mul);
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, frac * 255);
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 2.5, Drawing.drawing.interfaceSizeY / 2 + 33 * mul + 2.5, "+%d points!", power * 5);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 2.5, Drawing.drawing.interfaceSizeY / 2 + 33 * mul + 2.5, "+%d points!",
+                power * 5);
             Drawing.drawing.setColor(col[0], col[1], col[2], frac * 255);
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 33 * mul, "+%d points!", power * 5);
         }
@@ -607,7 +603,8 @@ public class Arcade extends Minigame
             col[1] = 100;
             Drawing.drawing.setInterfaceFontSize(30 * mul);
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, frac * 255);
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 2.5, Drawing.drawing.interfaceSizeY / 2 + 40 * mul + 2.5, "Destroy as many tanks as you can!");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 2.5, Drawing.drawing.interfaceSizeY / 2 + 40 * mul + 2.5,
+                "Destroy as many tanks as you can!");
             Drawing.drawing.setColor(col[0], col[1], col[2], frac * 255);
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 40 * mul, "Destroy as many tanks as you can!");
         }
@@ -696,7 +693,8 @@ public class Arcade extends Minigame
 
                 for (Movable m: Game.movables)
                 {
-                    if ((m instanceof IServerPlayerTank) && (Math.pow(m.posX - (x * Game.tile_size), 2) + Math.pow(m.posY - (y * Game.tile_size), 2) <= Math.pow(Game.tile_size * 5, 2)))
+                    if ((m instanceof IServerPlayerTank) && (Math.pow(m.posX - (x * Game.tile_size), 2) + Math.pow(m.posY - (y * Game.tile_size), 2) <= Math.pow(Game.tile_size * 5,
+                        2)))
                     {
                         found = false;
                         break;
@@ -718,7 +716,7 @@ public class Arcade extends Minigame
         while (e.name.equals("blue") || e.name.equals("red") || (!frenzy && e.weight < 1.0 / Math.max(1, chain - 2)))
             e = Game.registryTank.getRandomTank(this.random);
 
-        Tank t = e.getTank(destX, destY, (int)(this.random.nextDouble() * 4));
+        Tank t = e.getTank(destX, destY, (int) (this.random.nextDouble() * 4));
         t.team = Game.enemyTeamNoFF;
 
         double h = this.random.nextDouble() * 400 + 800;
@@ -804,7 +802,8 @@ public class Arcade extends Minigame
         else
             Drawing.drawing.setColor(0, 0, 0, alpha);
 
-        double posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 175;
+        double posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
+            Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 175;
         double posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;
 
         Drawing.drawing.setInterfaceFontSize(36 * (1 + 0.25 * frac));
@@ -921,7 +920,8 @@ public class Arcade extends Minigame
         if (chain > 0)
         {
             Drawing.drawing.setColor(col[0], col[1], col[2], chainOpacity * frac * 255, 255);
-            Drawing.drawing.fillPartialRing(x, y, Game.playerTank.posZ + Game.tile_size / 2, size + pulse, thickness + pulse * 2, 0.5 - Math.max(0, 1 - (this.age - lh) / rampage_duration), Math.max(0, 1 - (this.age - lh) / rampage_duration));
+            Drawing.drawing.fillPartialRing(x, y, Game.playerTank.posZ + Game.tile_size / 2, size + pulse, thickness + pulse * 2,
+                0.5 - Math.max(0, 1 - (this.age - lh) / rampage_duration), Math.max(0, 1 - (this.age - lh) / rampage_duration));
 
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, chainOpacity * frac * 255, 255);
             Drawing.drawing.fillOval(x - size / 2 + thickness / 4, y, Game.playerTank.posZ + Game.tile_size / 2, 18 + pulse, 18 + pulse, false, false);

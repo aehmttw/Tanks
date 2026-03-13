@@ -1,16 +1,14 @@
 package tanksonline;
 
+import tanks.gui.screen.ScreenPartyHost;
+import tanks.network.SynchronizedList;
+import tanks.network.event.EventKick;
+
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import tanks.network.event.EventKick;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.SynchronizedList;
 
 public class TanksOnlineServer
 {
@@ -37,29 +35,28 @@ public class TanksOnlineServer
         {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>()
+                .channel(NioServerSocketChannel.class)
+                .childHandler(new ChannelInitializer<SocketChannel>()
+                {
+                    @Override
+                    public void initChannel(SocketChannel ch)
                     {
-                        @Override
-                        public void initChannel(SocketChannel ch) {
-                            ch.pipeline().addLast(new TanksOnlineServerHandler(instance));
-                        }
-                    })
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+                        ch.pipeline().addLast(new TanksOnlineServerHandler(instance));
+                    }
+                })
+                .option(ChannelOption.SO_BACKLOG, 128)
+                .childOption(ChannelOption.SO_KEEPALIVE, true);
 
             channel = b.bind(port).sync();
 
             channel.channel().closeFuture().sync();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             if (ScreenPartyHost.isServer)
             {
                 e.printStackTrace();
             }
-        }
-        finally
+        } finally
         {
             close();
         }

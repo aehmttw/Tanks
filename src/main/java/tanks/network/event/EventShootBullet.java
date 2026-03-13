@@ -1,16 +1,14 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Panel;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletInstant;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventShootBullet extends PersonalEvent
 {
@@ -81,13 +79,14 @@ public class EventShootBullet extends PersonalEvent
                 if (t2 instanceof TankAIControlled)
                     sb = ((TankAIControlled) t2).bulletItem;
                 else if (t2 instanceof TankPlayer)
-                    sb = ((ItemBullet.ItemStackBullet)(((TankPlayer) t2).abilities.get(-this.item - 1)));
+                    sb = ((ItemBullet.ItemStackBullet) (((TankPlayer) t2).abilities.get(-this.item - 1)));
             }
 
             if (sb == null)
                 return;
 
-            Bullet b = sb.item.bullet.getClass().getConstructor(double.class, double.class, Tank.class, boolean.class, ItemBullet.ItemStackBullet.class).newInstance(this.posX, this.posY, t, false, sb);
+            Bullet b = sb.item.bullet.getClass().getConstructor(double.class, double.class, Tank.class, boolean.class, ItemBullet.ItemStackBullet.class)
+                .newInstance(this.posX, this.posY, t, false, sb);
             b.posZ = posZ;
             b.vX = vX;
             b.vY = vY;
@@ -107,8 +106,7 @@ public class EventShootBullet extends PersonalEvent
 
             if (!(b instanceof BulletInstant))
                 Game.movables.add(b);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }

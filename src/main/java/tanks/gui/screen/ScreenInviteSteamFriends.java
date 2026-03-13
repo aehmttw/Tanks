@@ -1,11 +1,12 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamFriends;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 import tanks.network.FriendsMixin;
+
+import com.codedisaster.steamworks.SteamFriends;
 
 import java.util.ArrayList;
 
@@ -51,7 +52,9 @@ public class ScreenInviteSteamFriends extends Screen
                     newName.append(c);
             }
 
-            Button b = new Button(0, 0, this.objWidth, this.objHeight, "", () -> {});
+            Button b = new Button(0, 0, this.objWidth, this.objHeight, "", () ->
+            {
+            });
             b.function = () ->
             {
                 Game.steamNetworkHandler.matchmaking.inviteUserToLobby(Game.steamNetworkHandler.currentLobby, d.friendUserIDs.get(i));

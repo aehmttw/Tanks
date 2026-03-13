@@ -1,10 +1,7 @@
 package tanks.gui;
 
 import basewindow.BaseShapeBatchRenderer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.rendering.ShaderFireworkExplosion;
 import tanks.rendering.ShaderFireworkExplosionTrail;
 
@@ -14,7 +11,8 @@ public class Firework extends Movable
 {
     public static final double trail_length = 50;
 
-    public enum FireworkType {rocket, particle, particle_group, trail, flash}
+    public enum FireworkType { rocket, particle, particle_group, trail, flash }
+
     public FireworkType type;
 
     public double age = 0;
@@ -637,7 +635,7 @@ public class Firework extends Movable
     }
 
     @Override
-    public void draw() { }
+    public void draw() {}
 
     public static class FireworkPosition
     {

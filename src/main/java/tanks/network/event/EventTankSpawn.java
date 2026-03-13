@@ -1,12 +1,11 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Team;
 import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankSpawn extends PersonalEvent
 {

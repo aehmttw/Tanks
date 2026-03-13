@@ -1,11 +1,7 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBoxInstant;
+import tanks.*;
+import tanks.gui.*;
 
 public class ScreenShareCrusade extends Screen
 {
@@ -56,14 +52,14 @@ public class ScreenShareCrusade extends Screen
 
         boolean party = ScreenPartyLobby.isClient || ScreenPartyHost.isServer;
         allCrusades = new SavedFilesList(Game.homedir + Game.crusadeDir, ScreenCrusades.page, 0, party ? -60 : -30,
-                (name, file) ->
-                {
-                    ScreenCrusadePreview sc = new ScreenCrusadePreview(new Crusade(file, name), Game.screen, true);
-                    if (!(previous instanceof ScreenSteamWorkshop))
-                        sc.setOffset(sc.objHeight);
-                    Game.screen = sc;
+            (name, file) ->
+            {
+                ScreenCrusadePreview sc = new ScreenCrusadePreview(new Crusade(file, name), Game.screen, true);
+                if (!(previous instanceof ScreenSteamWorkshop))
+                    sc.setOffset(sc.objHeight);
+                Game.screen = sc;
 
-                }, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+            }, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
         this.allCrusades.drawOpenFileButton = true;
         crusades = allCrusades.clone();

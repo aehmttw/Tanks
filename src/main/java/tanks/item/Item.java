@@ -3,10 +3,7 @@ package tanks.item;
 import basewindow.Color;
 import tanks.*;
 import tanks.bullet.*;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 import tanks.tankson.*;
 
 @TanksONable("item")
@@ -118,7 +115,7 @@ public abstract class Item extends GameObject
     }
 
     @TanksONable("item_stack")
-    public static abstract class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>, ITanksONEditable
+    public abstract static class ItemStack<T extends Item> implements ICopyable<ItemStack<T>>, ITanksONEditable
     {
         @Property(id = "item", name = "Item")
         public T item;
@@ -141,9 +138,9 @@ public abstract class Item extends GameObject
          * Creates a new item stack with given parameters. Make sure if you extend this class you provide the same
          * constructor parameters in your subclass.
          *
-         * @param p player
+         * @param p    player
          * @param item item
-         * @param max max stack size, set to 0 or negative for infinite
+         * @param max  max stack size, set to 0 or negative for infinite
          */
         public ItemStack(Player p, T item, int max)
         {
@@ -160,8 +157,7 @@ public abstract class Item extends GameObject
                 ItemStack<T> i = (ItemStack<T>) this.getClass().getConstructor(Player.class, item.getClass(), int.class).newInstance(this.player, this.item, this.maxStackSize);
                 this.clonePropertiesTo(i);
                 return i;
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -325,6 +321,8 @@ public abstract class Item extends GameObject
                     case "homing":
                         bullet.bullet = DefaultItems.homing_rocket.bullet.getCopy();
                         break;
+                    default:
+                        break;
                 }
 
                 switch (p[8])
@@ -350,13 +348,15 @@ public abstract class Item extends GameObject
                     case "ember":
                         bullet.bullet.effect = BulletEffect.ember.getCopy();
                         break;
+                    default:
+                        break;
                 }
 
                 bullet.bullet.speed = Double.parseDouble(p[9]);
 
                 if (p[7].equals("arc"))
                 {
-                    ((BulletArc)bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
+                    ((BulletArc) bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
                     if (bullet.bullet.effect.trailEffects.isEmpty() && !bullet.bullet.effect.enableParticles)
                         bullet.bullet.effect = BulletEffect.long_trail.getCopy();
                 }
@@ -379,7 +379,7 @@ public abstract class Item extends GameObject
                 if (p[7].equals("flamethrower") || p[7].equals("air"))
                 {
                     bullet.bullet.lifespan *= Double.parseDouble(p[14]) / Bullet.bullet_size;
-                    ((BulletGas)(bullet.bullet)).endSize *= Double.parseDouble(p[14]) / Bullet.bullet_size;
+                    ((BulletGas) (bullet.bullet)).endSize *= Double.parseDouble(p[14]) / Bullet.bullet_size;
                 }
                 else
                     bullet.bullet.size = Double.parseDouble(p[14]);

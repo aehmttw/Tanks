@@ -1,11 +1,10 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamResult;
-import com.codedisaster.steamworks.SteamUGCDetails;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
+
+import com.codedisaster.steamworks.*;
 
 public class ScreenWorkshopLevelDownloadFailed extends Screen
 {
@@ -21,14 +20,16 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
 
     public static final double votePosY = Drawing.drawing.interfaceSizeY - 125;
 
-    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580 + this.objXSpace, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Back", new Runnable()
-    {
-        @Override
-        public void run()
+    public Button back = new Button(Drawing.drawing.interfaceSizeX - 580 + this.objXSpace, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "Back",
+        new Runnable()
         {
-            Game.screen = screen;
+            @Override
+            public void run()
+            {
+                Game.screen = screen;
+            }
         }
-    });
+    );
 
     public Button more = new Button(200, Drawing.drawing.interfaceSizeY - 50, this.objWidth, this.objHeight, "More by this user", () ->
     {
@@ -37,7 +38,10 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
         Game.steamNetworkHandler.workshop.search(null, 0, 18, workshopDetails.getOwnerID(), null, Game.steamNetworkHandler.workshop.searchByScore);
     });
 
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () ->
+    {
+        confirmingDelete = false;
+    });
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {

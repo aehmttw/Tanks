@@ -1,8 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorBeatPattern;
 import tanks.rendering.ShaderBeatBlocks;
@@ -17,7 +15,10 @@ public class ObstacleBeatBlock extends ObstacleStackable
     public double beatFrequency = 1;
     public boolean alternate;
 
-    public double outlineColorR, outlineColorG, outlineColorB;
+    public double outlineColorR;
+    public double outlineColorG;
+    public double outlineColorB;
+
     public boolean refreshHitboxes = false;
 
     protected boolean lastOn = false;
@@ -113,7 +114,7 @@ public class ObstacleBeatBlock extends ObstacleStackable
                 if (stackHeight % 1 == 0)
                 {
                     byte o = (byte) (option | this.getOptionsByte(((i + 1) + stackHeight % 1.0) * Game.tile_size));
-                    drawBox( i * Game.tile_size + this.startHeight * Game.tile_size, o);
+                    drawBox(i * Game.tile_size + this.startHeight * Game.tile_size, o);
                 }
                 else
                 {
@@ -159,7 +160,8 @@ public class ObstacleBeatBlock extends ObstacleStackable
             drawing.setColor(this.outlineColorR * (1 - flash), this.outlineColorG * (1 - flash), this.outlineColorB * (1 - flash), this.colorA, this.glow);
             drawing.fillRect(this, this.posX, this.posY, f * size, f * size);
 
-            drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash) + 255 * flash, this.colorB * (1 - flash) + 255 * flash, this.colorA, this.glow);
+            drawing.setColor(this.colorR * (1 - flash) + 255 * flash, this.colorG * (1 - flash) + 255 * flash, this.colorB * (1 - flash) + 255 * flash, this.colorA,
+                this.glow);
             drawing.fillRect(this, this.posX, this.posY, f * size * 0.9, f * size * 0.9);
         }
     }
@@ -182,7 +184,8 @@ public class ObstacleBeatBlock extends ObstacleStackable
         float cy = (float) this.posY;
         float cz = (float) Game.sampleTerrainGroundHeight(this.posX, this.posY);
 
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92, Game.tile_size * 0.92, o, false, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY, z + Game.tile_size * 0.04, Game.tile_size * 0.92, Game.tile_size * 0.92,
+            Game.tile_size * 0.92, o, false, cx, cy, cz);
 
         Drawing.drawing.setColor(outlineColorR, outlineColorG, outlineColorB);
         double thickness = 2;
@@ -193,15 +196,23 @@ public class ObstacleBeatBlock extends ObstacleStackable
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY, z, thickness, Game.tile_size, thickness, (byte) 0, true, cx, cy, cz);
         Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY, z, thickness, Game.tile_size, thickness, (byte) 0, true, cx, cy, cz);
 
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY - dist, z + Game.tile_size - thickness, Game.tile_size, thickness, thickness, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY + dist, z + Game.tile_size - thickness, Game.tile_size, thickness, thickness, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY, z + Game.tile_size - thickness, thickness, Game.tile_size, thickness, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY, z + Game.tile_size - thickness, thickness, Game.tile_size, thickness, (byte) 0, true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY - dist, z + Game.tile_size - thickness, Game.tile_size, thickness, thickness,
+            (byte) 0, true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX, this.posY + dist, z + Game.tile_size - thickness, Game.tile_size, thickness, thickness,
+            (byte) 0, true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY, z + Game.tile_size - thickness, thickness, Game.tile_size, thickness,
+            (byte) 0, true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY, z + Game.tile_size - thickness, thickness, Game.tile_size, thickness,
+            (byte) 0, true, cx, cy, cz);
 
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY - dist, z, thickness, thickness, Game.tile_size, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY - dist, z, thickness, thickness, Game.tile_size, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY + dist, z, thickness, thickness, Game.tile_size, (byte) 0, true, cx, cy, cz);
-        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY + dist, z, thickness, thickness, Game.tile_size, (byte) 0, true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY - dist, z, thickness, thickness, Game.tile_size, (byte) 0,
+            true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY - dist, z, thickness, thickness, Game.tile_size, (byte) 0,
+            true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX - dist, this.posY + dist, z, thickness, thickness, Game.tile_size, (byte) 0,
+            true, cx, cy, cz);
+        Drawing.drawing.terrainRenderer.addBoxWithCenter(this, this.posX + dist, this.posY + dist, z, thickness, thickness, Game.tile_size, (byte) 0,
+            true, cx, cy, cz);
     }
 
     public void initialize()

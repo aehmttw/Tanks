@@ -1,8 +1,9 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamUGC;
 import tanks.Drawing;
 import tanks.Game;
+
+import com.codedisaster.steamworks.SteamUGC;
 
 public class ScreenDownloadInfo extends Screen
 {
@@ -32,7 +33,8 @@ public class ScreenDownloadInfo extends Screen
 
         Drawing.drawing.setInterfaceFontSize(24);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Downloading level...");
-        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%dB / %dB)", 100.0 * i.getBytesDownloaded() / i.getBytesTotal(), i.getBytesDownloaded(), i.getBytesTotal()));
+        Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%dB / %dB)",
+            100.0 * i.getBytesDownloaded() / i.getBytesTotal(), i.getBytesDownloaded(), i.getBytesTotal()));
 
         if (System.currentTimeMillis() - startTime > 500)
         {
@@ -41,13 +43,15 @@ public class ScreenDownloadInfo extends Screen
             if (time <= 50)
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "Just a moment...");
             else
-                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left", Game.timeInterval(0, (long) time + 1000, true));
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left",
+                    Game.timeInterval(0, (long) time + 1000, true));
         }
 
         Drawing.drawing.setColor(0, 0, 0, 64);
         Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * i.getBytesDownloaded() / i.getBytesTotal());
+        Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5,
+            1.0 * i.getBytesDownloaded() / i.getBytesTotal());
 
     }
 }

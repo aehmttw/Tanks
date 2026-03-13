@@ -4,9 +4,7 @@ import basewindow.BaseFile;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
+import tanks.item.*;
 import tanks.network.ServerHandler;
 import tanks.network.event.*;
 import tanks.tank.*;
@@ -109,8 +107,7 @@ public class Crusade
                 }
 
                 f.stopReading();
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -148,8 +145,7 @@ public class Crusade
             this.initialize(list, name);
 
             f.stopReading();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             this.error = e;
         }
@@ -312,7 +308,7 @@ public class Crusade
             availableBuilds.add(b.name);
         }
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             if (crusadePlayers.get(player) != null)
             {
@@ -329,7 +325,7 @@ public class Crusade
             }
         }
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             if (crusadePlayers.get(player) == null)
             {
@@ -370,7 +366,7 @@ public class Crusade
 
         ArrayList<TankPlayer.ShopTankBuild> builds = this.getBuildsShop();
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             CrusadePlayer cp = crusadePlayers.get(player);
             player.hotbar.coins = cp.coins;
@@ -425,7 +421,7 @@ public class Crusade
 
         if (ScreenPartyHost.isServer)
         {
-            for (ServerHandler sh : ScreenPartyHost.server.connections)
+            for (ServerHandler sh: ScreenPartyHost.server.connections)
             {
                 if (sh.player != null)
                 {
@@ -434,7 +430,8 @@ public class Crusade
                     for (int in = 0; in < sh.player.hotbar.itemBar.slots.length; in++)
                         sh.queueEvent(new EventSetItem(sh.player, in, sh.player.hotbar.itemBar.slots[in]));
 
-                    Game.eventsOut.add(new EventSetSelectedItems(sh.player.hotbar.itemBar.selected, sh.player.hotbar.itemBar.selectedPrimaryAbility, sh.player.hotbar.itemBar.selectedSecondaryAbility));
+                    Game.eventsOut.add(new EventSetSelectedItems(sh.player.hotbar.itemBar.selected, sh.player.hotbar.itemBar.selectedPrimaryAbility,
+                        sh.player.hotbar.itemBar.selectedSecondaryAbility));
                 }
             }
         }
@@ -463,7 +460,7 @@ public class Crusade
         {
             this.lose = true;
 
-            for (Player player : Game.players)
+            for (Player player: Game.players)
             {
                 if (player.remainingLives > 0)
                 {
@@ -486,7 +483,7 @@ public class Crusade
                 {
                     this.lifeGained = true;
 
-                    for (Player player : Game.players)
+                    for (Player player: Game.players)
                     {
                         player.remainingLives++;
                     }
@@ -504,15 +501,14 @@ public class Crusade
                 {
                     Crusade.currentCrusade.livingTankIDs.clear();
 
-                    for (Movable m : Game.movables)
+                    for (Movable m: Game.movables)
                     {
                         if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
                             Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
                     }
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

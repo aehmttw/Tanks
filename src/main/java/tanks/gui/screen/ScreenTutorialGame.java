@@ -28,8 +28,7 @@ public class ScreenTutorialGame extends ScreenGame
             f.println("Tanks: The Crusades tutorial");
             f.println("Skipped " + new Date().toString());
             f.stopWriting();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

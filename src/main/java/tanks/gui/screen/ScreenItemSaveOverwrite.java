@@ -1,9 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.item.Item;
 
@@ -27,8 +25,7 @@ public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundS
             String t = f.nextLine();
             f.stopReading();
             this.oldItem = Item.ItemStack.fromString(null, t);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

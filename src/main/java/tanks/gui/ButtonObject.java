@@ -1,9 +1,6 @@
 package tanks.gui;
 
-import tanks.BiConsumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawableForInterface;
+import tanks.*;
 import tanks.obstacle.Obstacle;
 import tanks.translation.Translation;
 

@@ -15,8 +15,7 @@ public class ScreenAbout extends Screen
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks"));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -28,8 +27,7 @@ public class ScreenAbout extends Screen
         try
         {
             Game.game.window.openLink(new URL(discord_link));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -59,8 +57,7 @@ public class ScreenAbout extends Screen
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks/tree/master/src/main/java/licenses"));
-    }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -72,8 +69,7 @@ public class ScreenAbout extends Screen
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks/blob/master/LICENSE.md"));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -85,8 +81,7 @@ public class ScreenAbout extends Screen
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks/blob/master/PRIVACY.md"));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }

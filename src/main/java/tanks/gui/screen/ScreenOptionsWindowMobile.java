@@ -21,15 +21,16 @@ public class ScreenOptionsWindowMobile extends Screen
                 showStats.setText(infoBarText, ScreenOptions.offText);
         }
     },
-            "Shows the following information---" +
-                    "at the bottom of the screen:---" +
-                    "---" +
-                    "Game version---" +
-                    "Framerate---" +
-                    "Network latency (if in a party)---" +
-                    "Memory usage");
+        "Shows the following information---" +
+            "at the bottom of the screen:---" +
+            "---" +
+            "Game version---" +
+            "Framerate---" +
+            "Network latency (if in a party)---" +
+            "Memory usage");
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 240, this.objWidth, this.objHeight, "Back",
+        () -> Game.screen = new ScreenOptions());
 
     public ScreenOptionsWindowMobile()
     {

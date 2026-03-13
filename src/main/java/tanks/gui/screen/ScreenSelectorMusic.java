@@ -1,13 +1,8 @@
 package tanks.gui.screen;
 
 import basewindow.InputCodes;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.SelectorMusic;
+import tanks.*;
+import tanks.gui.*;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;

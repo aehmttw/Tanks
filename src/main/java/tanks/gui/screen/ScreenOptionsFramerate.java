@@ -36,7 +36,7 @@ public class ScreenOptionsFramerate extends Screen
             Game.game.window.setVsync(Game.vsync);
         }
     },
-            "Limits framerate to your screen's refresh rate------May fix issues with screen tearing");
+        "Limits framerate to your screen's refresh rate------May fix issues with screen tearing");
 
 
     TextBoxSlider maxFPS = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace * 0, this.objWidth, this.objHeight, "Framerate limit", new Runnable()
@@ -52,8 +52,8 @@ public class ScreenOptionsFramerate extends Screen
 
             Game.maxFPS = Integer.parseInt(maxFPS.inputText);
         }
-    }
-            , Game.maxFPS, 10, 240, 10);
+    },
+        Game.maxFPS, 10, 240, 10);
 
 
     Button unlimited = new Button(this.centerX, this.centerY + this.objYSpace * 1, this.objWidth, this.objHeight, "Unlimited", new Runnable()
@@ -66,7 +66,7 @@ public class ScreenOptionsFramerate extends Screen
             Game.game.window.setVsync(Game.vsync);
         }
     },
-            "Disables the framerate limit------May cause issues with inconsistent game speed");
+        "Disables the framerate limit------May cause issues with inconsistent game speed");
 
     Button manual = new Button(this.centerX, this.centerY - this.objYSpace * 0.25, this.objWidth, this.objHeight, "Manual limit", new Runnable()
     {
@@ -80,7 +80,7 @@ public class ScreenOptionsFramerate extends Screen
             Game.game.window.setVsync(Game.vsync);
         }
     },
-            "Set a manual framerate limit");
+        "Set a manual framerate limit");
 
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptionsGraphics());
@@ -145,7 +145,7 @@ public class ScreenOptionsFramerate extends Screen
         if (Game.vsync)
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: \u00A7200100000255V-Sync");
         else if (Game.maxFPS > 0)
-            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: %s", (Object)("\u00A7000200000255" + Game.maxFPS));
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: %s", (Object) ("\u00A7000200000255" + Game.maxFPS));
         else
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: \u00A7000100200255unlimited");
 

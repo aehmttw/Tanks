@@ -9,10 +9,7 @@ import tanks.network.ConnectedPlayer;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 public class Player
 {
@@ -28,8 +25,10 @@ public class Player
     public long lastNudge = 0;
 
     public static final Color default_primary = new Color(0, 150, 255, 255);
-    public static final Color default_secondary = new Color(Turret.calculateSecondaryColor(default_primary.red), Turret.calculateSecondaryColor(default_primary.green), Turret.calculateSecondaryColor(default_primary.blue), 255);
-    public static final Color default_tertiary = new Color((default_primary.red + default_secondary.red) / 2, (default_primary.green + default_secondary.green) / 2, (default_primary.blue + default_secondary.blue) / 2, 255);
+    public static final Color default_secondary = new Color(Turret.calculateSecondaryColor(default_primary.red), Turret.calculateSecondaryColor(default_primary.green),
+        Turret.calculateSecondaryColor(default_primary.blue), 255);
+    public static final Color default_tertiary = new Color((default_primary.red + default_secondary.red) / 2, (default_primary.green + default_secondary.green) / 2,
+        (default_primary.blue + default_secondary.blue) / 2, 255);
 
     public Color color = new Color().set(default_primary);
     public Color color2 = new Color().set(default_secondary);
@@ -128,7 +127,7 @@ public class Player
                 String itemName = sec[0];
                 int count = Integer.parseInt(sec[1]);
 
-                for (Item.ShopItem it : shop)
+                for (Item.ShopItem it: shop)
                 {
                     if (it.itemStack.item.name.equals(itemName))
                     {
@@ -140,8 +139,7 @@ public class Player
             }
 
             return c;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("Failed to load saved crusade progress (log file includes contents): ");
             e.printStackTrace();
@@ -154,8 +152,7 @@ public class Player
                 f.startReading();
                 while (f.hasNextLine())
                     Game.logger.println(f.nextLine());
-            }
-            catch (Exception e2)
+            } catch (Exception e2)
             {
                 e2.printStackTrace();
             }

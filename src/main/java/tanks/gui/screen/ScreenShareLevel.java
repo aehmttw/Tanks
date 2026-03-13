@@ -2,9 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBoxInstant;
+import tanks.gui.*;
 
 public class ScreenShareLevel extends Screen
 {
@@ -54,15 +52,15 @@ public class ScreenShareLevel extends Screen
         boolean party = ScreenPartyLobby.isClient || ScreenPartyHost.isServer;
 
         allLevels = new SavedFilesList(Game.homedir + Game.levelDir, ScreenSavedLevels.page, 0, party ? -60 : -30,
-                (name, file) ->
+            (name, file) ->
+            {
+                ScreenPreviewShareLevel sc = new ScreenPreviewShareLevel(name, Game.screen);
+                if (Game.loadLevel(file, sc))
                 {
-                    ScreenPreviewShareLevel sc = new ScreenPreviewShareLevel(name, Game.screen);
-                    if (Game.loadLevel(file, sc))
-                    {
-                        sc.level = Game.currentLevel;
-                        Game.screen = sc;
-                    }
-                }, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
+                    sc.level = Game.currentLevel;
+                    Game.screen = sc;
+                }
+            }, (file) -> "Last modified---" + Game.timeInterval(file.lastModified(), System.currentTimeMillis()) + " ago");
 
         this.allLevels.drawOpenFileButton = true;
         levels = allLevels.clone();

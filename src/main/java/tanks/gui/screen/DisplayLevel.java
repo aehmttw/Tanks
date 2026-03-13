@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class DisplayLevel
 {
     @SuppressWarnings("unchecked")
-    protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[])(new ArrayList[10]);
+    protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[]) (new ArrayList[10]);
 
     public ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
@@ -60,7 +60,7 @@ public class DisplayLevel
 
             if (Game.glowEnabled)
             {
-                for (IDrawable d : this.drawables[i])
+                for (IDrawable d: this.drawables[i])
                 {
                     if (d instanceof IDrawableWithGlow && ((IDrawableWithGlow) d).isGlowEnabled())
                         ((IDrawableWithGlow) d).drawGlow();

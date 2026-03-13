@@ -16,21 +16,21 @@ public class PosedModelPose implements IPosedModelFrame
     {
         double time = 0;
 
-        for (String line : lines)
+        for (String line: lines)
         {
             if (line.startsWith("rotation "))
             {
                 String[] s = line.split(" ");
 
-                this.getBone(s[1]).rotation = new PosedBone.BoneRotationPose
-                        (time, Math.toRadians(Double.parseDouble(s[2])), Math.toRadians(Double.parseDouble(s[3])), Math.toRadians(Double.parseDouble(s[4])));
+                this.getBone(s[1]).rotation = new PosedBone.BoneRotationPose(
+                    time, Math.toRadians(Double.parseDouble(s[2])), Math.toRadians(Double.parseDouble(s[3])), Math.toRadians(Double.parseDouble(s[4])));
             }
             else if (line.startsWith("translation "))
             {
                 String[] s = line.split(" ");
 
-                this.getBone(s[1]).translation = new PosedBone.BoneTranslationPose
-                        (time, Double.parseDouble(s[2]), Double.parseDouble(s[3]), Double.parseDouble(s[4]));
+                this.getBone(s[1]).translation = new PosedBone.BoneTranslationPose(
+                    time, Double.parseDouble(s[2]), Double.parseDouble(s[3]), Double.parseDouble(s[4]));
             }
         }
     }
@@ -72,7 +72,7 @@ public class PosedModelPose implements IPosedModelFrame
             this.translation.apply(b, frac);
         }
 
-        public static abstract class BonePose
+        public abstract static class BonePose
         {
             public double time;
 

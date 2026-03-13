@@ -1,17 +1,14 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import com.codedisaster.steamworks.SteamMatchmaking;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.hotbar.Hotbar;
 import tanks.network.SteamNetworkHandler;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
-import tanks.tank.Turret;
+import tanks.tank.*;
 import tanks.translation.Translation;
+
+import com.codedisaster.steamworks.SteamMatchmaking;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -58,11 +55,14 @@ public class ScreenOptions extends Screen
     );
 
 
-    Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options", () -> Game.screen = new ScreenOptionsMultiplayer());
+    Button multiplayerOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Multiplayer options",
+        () -> Game.screen = new ScreenOptionsMultiplayer());
 
-    Button graphicsOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Graphics options", () -> Game.screen = new ScreenOptionsGraphics());
+    Button graphicsOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Graphics options",
+        () -> Game.screen = new ScreenOptionsGraphics());
 
-    Button soundOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Sound options", () -> Game.screen = new ScreenOptionsSound());
+    Button soundOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Sound options",
+        () -> Game.screen = new ScreenOptionsSound());
 
     Button inputOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY, this.objWidth, this.objHeight, "Input options", () ->
     {
@@ -80,12 +80,16 @@ public class ScreenOptions extends Screen
             Game.screen = new ScreenOptionsPersonalize();
     });
 
-    Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
-    Button interfaceOptionsMobile = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Interface options", () -> Game.screen = new ScreenOptionsWindowMobile());
+    Button interfaceOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Window options",
+        () -> Game.screen = new ScreenOptionsWindow());
+    Button interfaceOptionsMobile = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0, this.objWidth, this.objHeight, "Interface options",
+        () -> Game.screen = new ScreenOptionsWindowMobile());
 
-    Button speedrunOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options", () -> Game.screen = new ScreenOptionsSpeedrun());
+    Button speedrunOptions = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Speedrunning options",
+        () -> Game.screen = new ScreenOptionsSpeedrun());
 
-    Button miscOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Miscellaneous options", () -> Game.screen = new ScreenOptionsMisc());
+    Button miscOptions = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Miscellaneous options",
+        () -> Game.screen = new ScreenOptionsMisc());
 
     Button openFolder = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Open game folder", () ->
     {
@@ -141,7 +145,8 @@ public class ScreenOptions extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Options");
 
         if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale > personalize.sizeX - 240)
-            Drawing.drawing.setInterfaceFontSize(this.titleSize * (personalize.sizeX - 240) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale));
+            Drawing.drawing.setInterfaceFontSize(this.titleSize * (personalize.sizeX - 240) /
+                (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.player.username) / Drawing.drawing.interfaceScale));
 
         if (Game.player.color.red * 0.2126 + Game.player.color.green * 0.7152 + Game.player.color.blue * 0.0722 > 230 && !Game.player.username.isEmpty())
         {
@@ -180,10 +185,9 @@ public class ScreenOptions extends Screen
         try
         {
             Game.game.fileManager.getFile(path).create();
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
-            Game.logger.println (new Date().toString() + " (syserr) file permissions are broken! cannot initialize options file.");
+            Game.logger.println(new Date().toString() + " (syserr) file permissions are broken! cannot initialize options file.");
             System.exit(1);
         }
 
@@ -276,8 +280,7 @@ public class ScreenOptions extends Screen
             f.println("auto_load_extensions=" + Game.autoLoadExtensions);
             f.println("debug_mode=" + alwaysDebug);
             f.stopWriting();
-        }
-        catch (FileNotFoundException e)
+        } catch (FileNotFoundException e)
         {
             Game.exitToCrash(e);
         }
@@ -379,7 +382,7 @@ public class ScreenOptions extends Screen
                         Game.soundVolume = Float.parseFloat(optionLine[1]);
                         break;
                     case "music_volume":
-                        Game.musicVolume =  Float.parseFloat(optionLine[1]);
+                        Game.musicVolume = Float.parseFloat(optionLine[1]);
                         break;
                     case "auto_start":
                         Game.autostart = Boolean.parseBoolean(optionLine[1]);
@@ -532,6 +535,8 @@ public class ScreenOptions extends Screen
                         if (alwaysDebug)
                             Game.debug = true;
                         break;
+                    default:
+                        break;
                 }
             }
 
@@ -559,10 +564,9 @@ public class ScreenOptions extends Screen
             {
                 Turret.setTertiary(Game.player.color, Game.player.color2, Game.player.color3);
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
-            Game.logger.println (new Date().toString() + " Options file is nonexistent or broken, using default:");
+            Game.logger.println(new Date().toString() + " Options file is nonexistent or broken, using default:");
             e.printStackTrace(Game.logger);
             System.err.println("Failed to load options!");
             e.printStackTrace();

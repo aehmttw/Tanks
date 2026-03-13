@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.generator.LevelGeneratorVersus;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
@@ -65,8 +62,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
             Game.currentLevel.loadLevel();
 
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e.getCause());
         }
@@ -215,6 +211,6 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             previous.rankingsOverlay.draw();
 
         if (!ScreenInterlevel.fromMinigames)
-           save.draw();
+            save.draw();
     }
 }

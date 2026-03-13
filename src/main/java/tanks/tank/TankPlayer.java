@@ -1,32 +1,20 @@
 package tanks.tank;
 
-import basewindow.Color;
-import basewindow.InputCodes;
-import basewindow.InputPoint;
+import basewindow.*;
 import tanks.*;
 import tanks.attribute.AttributeModifier;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletAirStrike;
-import tanks.bullet.BulletArc;
-import tanks.bullet.BulletGas;
+import tanks.bullet.*;
 import tanks.gui.Button;
 import tanks.gui.Joystick;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
-import tanks.gui.screen.ScreenTitle;
+import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.Item;
 import tanks.item.ItemBullet;
 import tanks.network.ConnectedPlayer;
-import tanks.network.event.EventLayMine;
-import tanks.network.event.EventShootBullet;
-import tanks.network.event.EventUpdateEliminatedPlayers;
-import tanks.tankson.Property;
-import tanks.tankson.Serializer;
-import tanks.tankson.TanksONable;
+import tanks.network.event.*;
+import tanks.tankson.*;
 
 import static tanks.tank.TankPropertyCategory.general;
 
@@ -70,8 +58,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
     public double mouseY;
 
     public static Color default_primary_color = new Color(0, 150, 255, 255);
-    public static Color default_secondary_color = new Color((int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150), (int) Turret.calculateSecondaryColor(255), 255);
-    public static Color default_tertiary_color = new Color((default_primary_color.red + default_secondary_color.red) / 2, (default_primary_color.green + default_secondary_color.green) / 2, (default_primary_color.blue + default_secondary_color.blue) / 2, 255);
+    public static Color default_secondary_color = new Color((int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150),
+        (int) Turret.calculateSecondaryColor(255), 255);
+    public static Color default_tertiary_color = new Color((default_primary_color.red + default_secondary_color.red) / 2,
+        (default_primary_color.green + default_secondary_color.green) / 2, (default_primary_color.blue + default_secondary_color.blue) / 2, 255);
 
     public static final int max_abilities = 5;
 
@@ -338,7 +328,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
                 if (!shootStickEnabled || shootStickHidden)
                 {
-                    for (int i : Game.game.window.touchPoints.keySet())
+                    for (int i: Game.game.window.touchPoints.keySet())
                     {
                         InputPoint p = Game.game.window.touchPoints.get(i);
 
@@ -366,8 +356,8 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
                             this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
                         }
 
-                        distSq = Math.pow(px - Drawing.drawing.gameToInterfaceCoordsX(this.posX), 2)
-                                + Math.pow(py - Drawing.drawing.gameToInterfaceCoordsY(this.posY), 2);
+                        distSq = Math.pow(px - Drawing.drawing.gameToInterfaceCoordsX(this.posX), 2) +
+                            Math.pow(py - Drawing.drawing.gameToInterfaceCoordsY(this.posY), 2);
 
                         if (distSq <= Math.pow(this.touchCircleSize / 4, 2) || p.tag.equals("aim"))
                         {
@@ -745,7 +735,8 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
     @TanksONable("shop_build")
     public static class ShopTankBuild extends TankPlayer
     {
-        @TankBuildProperty @Property(id = "price", name = "Price", category = general)
+        @TankBuildProperty
+        @Property(id = "price", name = "Price", category = general)
         public int price;
 
         public ShopTankBuild()
@@ -771,13 +762,15 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
     @TanksONable("crusade_shop_build")
     public static class CrusadeShopTankBuild extends ShopTankBuild
     {
-        @TankBuildProperty @Property(id = "unlock_level", name = "Unlocks after level", category = general, miscType = Property.MiscType.defaultBuildForbidden)
+        @TankBuildProperty
+        @Property(id = "unlock_level", name = "Unlocks after level", category = general, miscType = Property.MiscType.defaultBuildForbidden)
         public int levelUnlock;
 
         public CrusadeShopTankBuild()
         {
 
         }
+
         public CrusadeShopTankBuild(TankPlayable p)
         {
             p.copyPropertiesTo(this);

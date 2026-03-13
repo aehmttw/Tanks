@@ -1,13 +1,8 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Consumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.gui.Button;
-import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBoxInstant;
+import tanks.*;
+import tanks.gui.*;
 import tanks.item.Item;
 import tanks.translation.Translation;
 
@@ -91,41 +86,39 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
         this.previousScreen = previousScreen;
 
         allItems = new SavedFilesList(Game.homedir + Game.itemDir, itemPage, 0, -30,
-                (name, file) ->
+            (name, file) ->
+            {
+                try
                 {
-                    try
-                    {
-                        file.startReading();
-                        Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
-                        file.stopReading();
-                        onComplete.accept(i);
-                    }
-                    catch (Exception e)
-                    {
-                        Game.exitToCrash(e);
-                    }
-                }, (file) -> null,
-                (file, b) ->
+                    file.startReading();
+                    Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
+                    file.stopReading();
+                    onComplete.accept(i);
+                } catch (Exception e)
                 {
-                    try
-                    {
-                        file.startReading();
-                        Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
-                        file.stopReading();
+                    Game.exitToCrash(e);
+                }
+            }, (file) -> null,
+            (file, b) ->
+            {
+                try
+                {
+                    file.startReading();
+                    Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
+                    file.stopReading();
 
-                        b.itemIcon = i.item.icon;
-                        b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
-                        b.imageSizeX = b.sizeY;
-                        b.imageSizeY = b.sizeY;
+                    b.itemIcon = i.item.icon;
+                    b.imageXOffset = -b.sizeX / 2 + b.sizeY / 2 + 10;
+                    b.imageSizeX = b.sizeY;
+                    b.imageSizeY = b.sizeY;
 
-                        if (!itemClass.isAssignableFrom(i.getClass()) && !itemClass.isAssignableFrom(i.item.getClass()))
-                            b.text = null;
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                });
+                    if (!itemClass.isAssignableFrom(i.getClass()) && !itemClass.isAssignableFrom(i.item.getClass()))
+                        b.text = null;
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            });
 
         ArrayList<String> items = Game.game.fileManager.getInternalFileContents("/items/items.tanks");
 

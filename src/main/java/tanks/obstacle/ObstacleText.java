@@ -1,8 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 
 public class ObstacleText extends Obstacle
 {

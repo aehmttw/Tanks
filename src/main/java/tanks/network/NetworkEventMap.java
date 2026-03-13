@@ -16,8 +16,7 @@ public class NetworkEventMap
         try
         {
             c.getConstructor();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(new RuntimeException("The network event " + c + " does not have a no-parameter constructor. Please give it one."));
         }

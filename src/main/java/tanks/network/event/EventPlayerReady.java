@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyHost;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPlayerReady extends PersonalEvent
 {

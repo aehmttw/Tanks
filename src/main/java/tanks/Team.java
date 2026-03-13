@@ -7,15 +7,15 @@ import tanks.tankson.TanksONable;
 @TanksONable("team")
 public class Team
 {
-    @Property(id="enable_color", name="Enable Color")
+    @Property(id = "enable_color", name = "Enable Color")
     public boolean enableColor;
 
-    @Property(id="team_color", name="Team Color")
+    @Property(id = "team_color", name = "Team Color")
     public Color teamColor = new Color();
 
-    @Property(id="friendly_fire", name="Friendly Fire")
+    @Property(id = "friendly_fire", name = "Friendly Fire")
     public boolean friendlyFire = true;
-    @Property(id="name", name="Name")
+    @Property(id = "name", name = "Name")
     public String name;
 
     public static double[] returnColor = new double[3];
@@ -71,14 +71,6 @@ public class Team
             return setTeamColor(m.team.teamColor.red, m.team.teamColor.green, m.team.teamColor.blue);
     }
 
-    protected static double[] setTeamColor(double r, double g, double b)
-    {
-        returnColor[0] = r;
-        returnColor[1] = g;
-        returnColor[2] = b;
-        return returnColor;
-    }
-
     public static double[] getObjectColor(double[] col, double r, double g, double b, Movable m)
     {
         if (m.team == null)
@@ -87,6 +79,14 @@ public class Team
             return setTeamColor(col, r, g, b);
         else
             return setTeamColor(col, m.team.teamColor.red, m.team.teamColor.green, m.team.teamColor.blue);
+    }
+
+    protected static double[] setTeamColor(double r, double g, double b)
+    {
+        returnColor[0] = r;
+        returnColor[1] = g;
+        returnColor[2] = b;
+        return returnColor;
     }
 
     protected static double[] setTeamColor(double[] col, double r, double g, double b)

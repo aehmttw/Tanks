@@ -23,7 +23,7 @@ public class ScreenEditorMine extends ScreenEditorTanksONable<Mine>
         this.iconPrefix = "mineeditor";
 
         Tab tab = new Tab(this, "Mine properties", MinePropertyCategory.mine);
-        new Tab(this, "Colors", MinePropertyCategory.colors).rows = 3;
+        int ignore = new Tab(this, "Colors", MinePropertyCategory.colors).rows = 3;
 
         this.setTab(tab);
     }

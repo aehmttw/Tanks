@@ -1,14 +1,11 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
+import tanks.*;
 import tanks.network.NetworkUtils;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.HashSet;
 

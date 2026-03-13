@@ -1,10 +1,8 @@
 package lwjglwindow;
 
 import basewindow.*;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
+
+import org.lwjgl.opengl.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -112,8 +110,7 @@ public class ShaderUtil extends BaseShaderUtil
             }
 
             return shader;
-        }
-        catch (Exception exc)
+        } catch (Exception exc)
         {
             ARBShaderObjects.glDeleteObjectARB(shader);
             throw exc;
@@ -151,8 +148,7 @@ public class ShaderUtil extends BaseShaderUtil
                         try
                         {
                             u.bind();
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
                             // If you get this, it means one of your shader uniforms doesn't have a corresponding
                             // GLSL uniform. This could happen if the uniform is unused and is thus optimized out by the GLSL compiler.
@@ -184,8 +180,7 @@ public class ShaderUtil extends BaseShaderUtil
                             if (!((f.getAnnotation(OnlyBaseUniform.class) != null && this.program instanceof ShaderShadowMap) ||
                                 (f.getAnnotation(OnlyShadowMapUniform.class) != null && this.program instanceof ShaderBase)))
                                 u.bind(this.program instanceof ShaderShadowMap);
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
                             // If you get this, it means one of your shader uniforms in a ShaderGroup class doesn't have a corresponding
                             // GLSL uniform. This could happen if you only use the uniform in the base or shadow map shader of the group
@@ -298,7 +293,7 @@ public class ShaderUtil extends BaseShaderUtil
         this.enabledAttributes.clear();
     }
 
-    public static abstract class LWJGLUniform implements ShaderProgram.IUniform
+    public abstract static class LWJGLUniform implements ShaderProgram.IUniform
     {
         protected int flag;
         protected String name;

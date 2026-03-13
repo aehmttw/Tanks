@@ -23,22 +23,21 @@ public class ScreenLanguage extends Screen
         this.musicID = "menu";
 
         languages = new SavedFilesList(Game.homedir + Game.languagesPath, page, 0, -30,
-                (name, file) ->
-                {
-                    changeLanguage(new Translation(file));
-                }, (file) -> null, (file, button) ->
-                {
-                    try
-                    {
-                        file.startReading();
-                        button.text = file.nextLine();
-                        file.stopReading();
-                    }
-                    catch (Exception e)
-                    {
+            (name, file) ->
+            {
+                changeLanguage(new Translation(file));
+            }, (file) -> null, (file, button) ->
+        {
+            try
+            {
+                file.startReading();
+                button.text = file.nextLine();
+                file.stopReading();
+            } catch (Exception e)
+            {
 
-                    }
-                }, ".lang");
+            }
+        }, ".lang");
 
         languages.buttons.add(0, new Button(0, 0, 350, 40, "English", () ->
         {
@@ -71,7 +70,7 @@ public class ScreenLanguage extends Screen
         ));*/
 
         languages.buttons.add(3, new Button(0, 0, 350, 40, "简体中文", () ->
-                changeLanguage(new Translation("zhcn.lang"))
+            changeLanguage(new Translation("zhcn.lang"))
         ));
 
         languages.sortButtons();

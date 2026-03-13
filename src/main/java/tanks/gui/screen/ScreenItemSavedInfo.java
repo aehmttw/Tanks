@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 
 public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScreen

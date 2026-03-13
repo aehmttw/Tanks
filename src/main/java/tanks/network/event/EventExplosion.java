@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.tank.Explosion;
 import tanks.tank.TankAIControlled;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventExplosion extends PersonalEvent
 {

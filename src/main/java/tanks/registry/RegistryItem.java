@@ -1,9 +1,6 @@
 package tanks.registry;
 
-import tanks.item.DefaultItemIcons;
-import tanks.item.Item;
-import tanks.item.ItemEmpty;
-import tanks.item.ItemIcon;
+import tanks.item.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -45,8 +42,7 @@ public class RegistryItem
             try
             {
                 return item.getConstructor().newInstance();
-            }
-            catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e)
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e)
             {
                 e.printStackTrace();
                 return null;

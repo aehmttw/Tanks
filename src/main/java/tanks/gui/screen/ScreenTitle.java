@@ -17,8 +17,10 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
     public int chain;
 
-    public double lCenterX, lCenterY;
-    public double rCenterX, rCenterY;
+    public double lCenterX;
+    public double lCenterY;
+    public double rCenterX;
+    public double rCenterY;
 
     protected int[] inputs = new int[11];
     protected int inputCount = 0;
@@ -123,10 +125,10 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
     @Override
     public void update()
     {
-        languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-                + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
-        languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
-                + Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+        languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
+            Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
+        languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 +
+            Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
 
         if (!this.controlPlayer)
         {
@@ -306,7 +308,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
             this.logo.hidden = true;
             this.logo.team = Game.playerTeam;
             this.logo.maxSpeed *= 1.5;
-            ((ItemBullet)(this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
+            ((ItemBullet) (this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
             Game.playerTank = logo;
             Game.movables.add(this.logo);
             this.controlPlayer = false;
@@ -327,10 +329,10 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
     public void drawWithoutBackground()
     {
-        languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-                + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
-        languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
-                + Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+        languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
+            Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
+        languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 +
+            Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
 
         if (this.logo == null)
         {
@@ -344,7 +346,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
             this.logo.invulnerable = true;
             this.logo.hidden = true;
             this.logo.maxSpeed *= 1.5;
-            ((ItemBullet)(this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
+            ((ItemBullet) (this.logo.abilities.get(0).item)).bullet.speed *= 1.5;
             Game.playerTank = logo;
             this.logo.team = Game.playerTeam;
 
@@ -375,11 +377,13 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
         if (Game.player.enableTertiaryColor)
             Drawing.drawing.setColor(Game.player.color3);
         else
-            Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color.red), Turret.calculateSecondaryColor(Game.player.color.green), Turret.calculateSecondaryColor(Game.player.color.blue));
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color.red), Turret.calculateSecondaryColor(Game.player.color.green),
+                Turret.calculateSecondaryColor(Game.player.color.blue));
         Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
         Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
 
-        Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color2.red), Turret.calculateSecondaryColor(Game.player.color2.green), Turret.calculateSecondaryColor(Game.player.color2.blue));
+        Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color2.red), Turret.calculateSecondaryColor(Game.player.color2.green),
+            Turret.calculateSecondaryColor(Game.player.color2.blue));
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
 
@@ -422,7 +426,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
     @Override
     public void drawPostMouse()
     {
-        if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT)) && Drawing.drawing.interfaceScaleZoom == 1)
+        if (!this.controlPlayer && (Game.game.window.pressedKeys.contains(KEY_LEFT_SHIFT) || Game.game.window.pressedKeys.contains(KEY_RIGHT_SHIFT)) &&
+            Drawing.drawing.interfaceScaleZoom == 1)
             this.logo.draw();
     }
 

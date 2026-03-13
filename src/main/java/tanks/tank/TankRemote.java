@@ -104,12 +104,11 @@ public class TankRemote extends Tank
 
         try
         {
-            for (Field field : fieldsToClone)
+            for (Field field: fieldsToClone)
             {
                 field.set(this, field.get(t));
             }
-        }
-        catch (IllegalAccessException e)
+        } catch (IllegalAccessException e)
         {
             throw new RuntimeException(e);
         }
@@ -119,7 +118,7 @@ public class TankRemote extends Tank
     {
         fieldsToClone = new ArrayList<>();
 
-        for (Field field : Tank.class.getFields())
+        for (Field field: Tank.class.getFields())
         {
             if (field.getAnnotation(Property.class) != null && !field.getName().equals("name"))
                 fieldsToClone.add(field);

@@ -1,20 +1,14 @@
 package tanks;
 
-import basewindow.BaseWindow;
-import basewindow.InputCodes;
-import basewindow.ShaderGroup;
+import basewindow.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.ScreenElement;
-import tanks.gui.screen.ScreenCrusadeDetails;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import tanks.obstacle.Face;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.TerrainRenderer;
-import tanks.tank.IAvoidObject;
-import tanks.tank.Mine;
-import tanks.tank.Ray;
+import tanks.tank.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,30 +27,30 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_Q);
 
             notifications.add(new ScreenElement.Notification("Debug keybinds, press \u00A7255127000255F3\u00A7r with: \n " +
-                    "\u00A7255127000255Q\u00A7r -> show help \n " +
-                    "\u00A7255127000255B\u00A7r -> draw collision boxes \n " +
-                    "\u00A7255127000255V\u00A7r -> reload tiles \n " +
-                    "\u00A7255127000255K\u00A7r -> log pressed keys to console \n " +
-                    "\u00A7255127000255D\u00A7r -> clear the chat \n " +
-                    "\u00A7255127000255A\u00A7r -> reload terrain renderer \n " +
-                    "\u00A7255127000255P\u00A7r -> toggle pause on lost focus \n " +
-                    "\u00A7255127000255T\u00A7r -> reload shader \n " +
-                    "\u00A7255127000255.\u00A7r -> perform a GC \n " +
-                    "\u00A7255127000255Hold\u00A7r -> show tile coordinates \n " +
-                    "\u00A7255127000255Hold + S\u00A7r -> show mouse coordinates \n " +
-                    "\u00A7255127000255Hold + Shift + S\u00A7r -> show offset mouse coordinates and scales \n " +
-                    "\u00A7255127000255Hold + 1\u00A7r -> show tile details \n " +
-                    "\u00A7255127000255Hold + 2\u00A7r -> show movable metadata \n " +
-                    "\u00A7255127000255Hold + 3\u00A7r -> show obstacle metadata \n " +
-                    "\u00A7255127000255F12\u00A7r -> Crash the game", 2000, 350));
+                "\u00A7255127000255Q\u00A7r -> show help \n " +
+                "\u00A7255127000255B\u00A7r -> draw collision boxes \n " +
+                "\u00A7255127000255V\u00A7r -> reload tiles \n " +
+                "\u00A7255127000255K\u00A7r -> log pressed keys to console \n " +
+                "\u00A7255127000255D\u00A7r -> clear the chat \n " +
+                "\u00A7255127000255A\u00A7r -> reload terrain renderer \n " +
+                "\u00A7255127000255P\u00A7r -> toggle pause on lost focus \n " +
+                "\u00A7255127000255T\u00A7r -> reload shader \n " +
+                "\u00A7255127000255.\u00A7r -> perform a GC \n " +
+                "\u00A7255127000255Hold\u00A7r -> show tile coordinates \n " +
+                "\u00A7255127000255Hold + S\u00A7r -> show mouse coordinates \n " +
+                "\u00A7255127000255Hold + Shift + S\u00A7r -> show offset mouse coordinates and scales \n " +
+                "\u00A7255127000255Hold + 1\u00A7r -> show tile details \n " +
+                "\u00A7255127000255Hold + 2\u00A7r -> show movable metadata \n " +
+                "\u00A7255127000255Hold + 3\u00A7r -> show obstacle metadata \n " +
+                "\u00A7255127000255F12\u00A7r -> Crash the game", 2000, 350));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_B))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_B);
             Game.drawFaces = !Game.drawFaces;
-            notifications.add(new ScreenElement.Notification("Collision boxes: \u00a7255127000255"
-                    + (Game.drawFaces ? "shown" : "hidden"), 800));
+            notifications.add(new ScreenElement.Notification("Collision boxes: \u00a7255127000255" +
+                (Game.drawFaces ? "shown" : "hidden"), 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_V))
@@ -67,23 +61,23 @@ public class DebugKeybinds
             else
                 Chunk.populateChunks(Chunk.defaultLevel);
             notifications.add(new ScreenElement.Notification(Game.currentLevel != null ? "Reloaded tiles with current level" :
-                    "Reloaded tiles with default level", 800));
+                "Reloaded tiles with default level", 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_P))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_P);
             Game.pauseOnLostFocus = !Game.pauseOnLostFocus;
-            notifications.add(new ScreenElement.Notification("Pause on lost focus: \u00a7255127000255"
-                    + (Game.pauseOnLostFocus ? "enabled" : "disabled"), 800));
+            notifications.add(new ScreenElement.Notification("Pause on lost focus: \u00a7255127000255" +
+                (Game.pauseOnLostFocus ? "enabled" : "disabled"), 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_G))
         {
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_G);
             Chunk.debug = !Chunk.debug;
-            notifications.add(new ScreenElement.Notification("Chunk borders: \u00a7255127000255"
-                    + (Chunk.debug ? "shown" : "hidden"), 800));
+            notifications.add(new ScreenElement.Notification("Chunk borders: \u00a7255127000255" +
+                (Chunk.debug ? "shown" : "hidden"), 800));
         }
 
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_K))
@@ -137,7 +131,7 @@ public class DebugKeybinds
             Game.game.window.pressedKeys.remove((Integer) InputCodes.KEY_T);
 
             HashMap<Class<? extends ShaderGroup>, ShaderGroup> newShaders = new HashMap<>();
-            for (Map.Entry<Class<? extends ShaderGroup>, ShaderGroup> entry : Game.game.shaderInstances.entrySet())
+            for (Map.Entry<Class<? extends ShaderGroup>, ShaderGroup> entry: Game.game.shaderInstances.entrySet())
             {
                 try
                 {
@@ -145,18 +139,16 @@ public class DebugKeybinds
                     try
                     {
                         s = entry.getKey().getConstructor(BaseWindow.class)
-                                .newInstance(Game.game.window);
-                    }
-                    catch (NoSuchMethodException e)
+                            .newInstance(Game.game.window);
+                    } catch (NoSuchMethodException e)
                     {
                         s = entry.getKey().getConstructor(BaseWindow.class, String.class)
-                                .newInstance(Game.game.window, entry.getValue().name);
+                            .newInstance(Game.game.window, entry.getValue().name);
                     }
 
                     s.initialize();
                     newShaders.put(entry.getKey(), s);
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     throw new RuntimeException(e);
                 }
@@ -183,13 +175,15 @@ public class DebugKeybinds
         Drawing.drawing.setColor(brightness, brightness, brightness);
         Drawing.drawing.setInterfaceFontSize(16);
 
-        double mx = Game.game.window.absoluteMouseX, my = Game.game.window.absoluteMouseY;
+        double mx = Game.game.window.absoluteMouseX;
+        double my = Game.game.window.absoluteMouseY;
 
         String text;
         if (Game.game.window.pressedKeys.contains(InputCodes.KEY_S))
         {
             if (Game.game.window.shift)
-                text = "(" + (int) (mx - Game.screen.getOffsetX()) + ", " + (int) (my - Game.screen.getOffsetY()) + ")  " + Drawing.drawing.interfaceScale + ", " + Drawing.drawing.interfaceScaleZoom;
+                text = "(" + (int) (mx - Game.screen.getOffsetX()) + ", " + (int) (my - Game.screen.getOffsetY()) + ")  " + Drawing.drawing.interfaceScale + ", " +
+                    Drawing.drawing.interfaceScaleZoom;
             else
                 text = "(" + Math.round(Drawing.drawing.getMouseX()) + ", " + Math.round(Drawing.drawing.getMouseY()) + ")";
         }
@@ -198,7 +192,8 @@ public class DebugKeybinds
             int posX = (int) (((Math.round(Drawing.drawing.getMouseX() / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2) - 25) / 50);
             int posY = (int) (((Math.round(Drawing.drawing.getMouseY() / Game.tile_size + 0.5) * Game.tile_size - Game.tile_size / 2) - 25) / 50);
 
-            if (Game.screen instanceof ScreenLevelEditor) {
+            if (Game.screen instanceof ScreenLevelEditor)
+            {
                 posX = (int) (((ScreenLevelEditor) Game.screen).mousePlaceable.posX / Game.tile_size - 0.5);
                 posY = (int) (((ScreenLevelEditor) Game.screen).mousePlaceable.posY / Game.tile_size - 0.5);
             }
@@ -228,13 +223,14 @@ public class DebugKeybinds
                     }
 
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 30, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            String.format("O: %s SO: %s E: %s", t1.fullObstacle != null ? t1.fullObstacle.name : "none", t1.surfaceObstacle != null ? t1.surfaceObstacle.name : "none", t1.extraObstacle != null ? t1.extraObstacle.name : "none"));
+                        String.format("O: %s SO: %s E: %s", t1.fullObstacle != null ? t1.fullObstacle.name : "none",
+                            t1.surfaceObstacle != null ? t1.surfaceObstacle.name : "none", t1.extraObstacle != null ? t1.extraObstacle.name : "none"));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 50, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            String.format("H: %.0f GH: %.0f E: %.0f, D: %.1f", t1.height(), t1.groundHeight(), TerrainRenderer.getExtra(posX, posY), t1.depth));
+                        String.format("H: %.0f GH: %.0f E: %.0f, D: %.1f", t1.height(), t1.groundHeight(), TerrainRenderer.getExtra(posX, posY), t1.depth));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 70, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            String.format("C: (%.0f, %.0f, %.0f)", t1.colR, t1.colG, t1.colB));
+                        String.format("C: (%.0f, %.0f, %.0f)", t1.colR, t1.colG, t1.colB));
                     Game.game.window.fontRenderer.drawString(mx + 10, my + 90, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            String.format("TS: %b BS: %b U: %b", t1.tankSolid(), t1.bulletSolid(), Game.obstaclesToUpdate.contains(t1.obstacle())));
+                        String.format("TS: %b BS: %b U: %b", t1.tankSolid(), t1.bulletSolid(), Game.obstaclesToUpdate.contains(t1.obstacle())));
                     if (c != null && t1.obstacle() != null && !c.obstacles.contains(t1.obstacle()))
                     {
                         Drawing.drawing.setColor(255, 0, 0);
@@ -250,7 +246,8 @@ public class DebugKeybinds
             }
             else if (Game.game.window.pressedKeys.contains(InputCodes.KEY_3))
             {
-                double finalMx = mx, finalMy = my;
+                double finalMx = mx;
+                double finalMy = my;
                 Chunk.runIfTilePresent(Drawing.drawing.getMouseX(), Drawing.drawing.getMouseY(), t ->
                 {
                     if (t.fullObstacle == null)
@@ -259,7 +256,7 @@ public class DebugKeybinds
                     Drawing.drawing.setColor(brightness, brightness, brightness);
                     Drawing.drawing.setInterfaceFontSize(16);
                     Game.game.window.fontRenderer.drawString(finalMx + 10, finalMy + 30, Drawing.drawing.fontSize, Drawing.drawing.fontSize,
-                            "M: " + t.fullObstacle.getMetadata());
+                        "M: " + t.fullObstacle.getMetadata());
                 });
             }
         }
@@ -279,7 +276,7 @@ public class DebugKeybinds
 
         if (Game.drawAvoidObjects)
         {
-            for (IAvoidObject o : Game.avoidObjects)
+            for (IAvoidObject o: Game.avoidObjects)
             {
                 if (!(o instanceof GameObject)) continue;
                 Drawing.drawing.setColor(255, 0, 0, 50);
@@ -289,7 +286,7 @@ public class DebugKeybinds
 
         if (Game.showUpdatingObstacles)
         {
-            for (Obstacle o : Game.obstaclesToUpdate)
+            for (Obstacle o: Game.obstaclesToUpdate)
                 o.draw3dOutline(255, 255, 0);
         }
     }

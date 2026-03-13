@@ -2,9 +2,7 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.SearchBoxInstant;
+import tanks.gui.*;
 import tanks.minigames.Minigame;
 
 import java.lang.reflect.InvocationTargetException;
@@ -46,7 +44,7 @@ public class ScreenMinigames extends Screen
 
         ArrayList<Button> buttons = new ArrayList<>();
 
-        for (String name : Game.registryMinigame.minigames.keySet())
+        for (String name: Game.registryMinigame.minigames.keySet())
         {
             buttons.add(new Button(0, 0, 0, 0, name, () ->
             {
@@ -55,8 +53,7 @@ public class ScreenMinigames extends Screen
                     ScreenInterlevel.fromMinigames = true;
                     Minigame m = Game.registryMinigame.getEntry(name).getConstructor().newInstance();
                     m.loadLevel();
-                }
-                catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
+                } catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
                 {
                     Game.exitToCrash(e.getCause());
                 }

@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBoxSlider;
 
@@ -60,8 +58,8 @@ public class ScreenOptionsSound extends Screen
             else
                 Drawing.drawing.stopMusic();
         }
-    }
-            , Math.round(Game.musicVolume * 100f), 0, 100, 1);
+    },
+        Math.round(Game.musicVolume * 100f), 0, 100, 1);
 
 
     TextBoxSlider soundVolume = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace * 1.25, this.objWidth, this.objHeight, "Sound volume", new Runnable()
@@ -76,8 +74,8 @@ public class ScreenOptionsSound extends Screen
 
             Game.soundsEnabled = Game.soundVolume > 0;
         }
-    }
-            , Math.round(Game.soundVolume * 100f), 0, 100, 1);
+    },
+        Math.round(Game.soundVolume * 100f), 0, 100, 1);
 
     Button layeredMusic = new Button(this.centerX, this.centerY + this.objYSpace * 1.25, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -92,12 +90,12 @@ public class ScreenOptionsSound extends Screen
                 layeredMusic.setText(layeredMusicText, ScreenOptions.offText);
         }
     },
-            "When layered music is enabled, different---" +
-                    "instruments will be added to the soundtrack---" +
-                    "based on criteria such as remaining tank---" +
-                    "types or arcade rampage level.--- ---" +
-                    "This may cause lag and desynchronization---" +
-                    "of music on some devices.");
+        "When layered music is enabled, different---" +
+            "instruments will be added to the soundtrack---" +
+            "based on criteria such as remaining tank---" +
+            "types or arcade rampage level.--- ---" +
+            "This may cause lag and desynchronization---" +
+            "of music on some devices.");
 
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions()

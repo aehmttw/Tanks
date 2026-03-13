@@ -4,14 +4,9 @@ import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.TextWithStyling;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.Face;
-import tanks.obstacle.ISolidObject;
-import tanks.obstacle.Obstacle;
+import tanks.obstacle.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Ray extends GameObject
@@ -28,24 +23,47 @@ public class Ray extends GameObject
      */
     public static Ray cacheRay = new Ray();
 
-    public double size, tankHitSizeMul;
+    public double size;
+    public double tankHitSizeMul;
 
-    public int bounces, bouncyBounces;
-    public double vX, vY, angle;
-    public double startX, startY;
+    public int bounces;
+    public int bouncyBounces;
 
-    public boolean enableBounciness, asBullet, trace, dotted;
-    public boolean ignoreTanks, ignoreBullets, ignoreDestructible, ignoreShootThrough;
+    public double vX;
+    public double vY;
+    public double angle;
 
-    public double speed, age, range;
-    public int maxChunkCheck, traceAge;
+    public double startX;
+    public double startY;
 
-    public Tank tank, targetTank;
+    public boolean enableBounciness;
+    public boolean asBullet;
+    public boolean trace;
+    public boolean dotted;
+
+    public boolean ignoreTanks;
+    public boolean ignoreBullets;
+    public boolean ignoreDestructible;
+    public boolean ignoreShootThrough;
+
+    public double speed;
+    public double age;
+    public double range;
+
+    public int maxChunkCheck;
+    public int traceAge;
+
+    public Tank tank;
+    public Tank targetTank;
+
     public double targetTankSizeMul;
 
     public ArrayList<Double> bounceX = new ArrayList<>();
     public ArrayList<Double> bounceY = new ArrayList<>();
-    public double targetX, targetY;
+
+    public double targetX;
+    public double targetY;
+
     public boolean acquiredTarget = false;
 
     /**
@@ -151,7 +169,7 @@ public class Ray extends GameObject
             }
             else if (obj instanceof Movable)
             {
-                for (Chunk c : ((Movable) obj).getCurrentChunks())
+                for (Chunk c: ((Movable) obj).getCurrentChunks())
                 {
                     if (!c.movables.contains(obj))
                         errorChunkCache.add(c);
@@ -168,10 +186,10 @@ public class Ray extends GameObject
             if (Game.framework != Game.Framework.libgdx)
             {
                 System.err.printf("-----Ray collision face owner error-----%n" +
-                                "%s not in %s%n",
-                        gameObjectString(obj),
-                        info.stream().map(Chunk::toString)
-                                .collect(Collectors.joining(", "))
+                        "%s not in %s%n",
+                    gameObjectString(obj),
+                    info.stream().map(Chunk::toString)
+                        .collect(Collectors.joining(", "))
                 );
             }
             else
@@ -187,6 +205,123 @@ public class Ray extends GameObject
         this.targetTank = targetTank;
         this.targetTankSizeMul = mul;
         return this.getTarget();
+    }
+
+    public Movable getTarget()
+    {
+        acquiredTarget = true;
+
+        if (isOutOfBounds() || testInsideObstacle())
+            return null;
+
+        if (!ignoreTanks)
+        {
+            for (Movable m: Movable.getSquareCollision(this))
+            {
+                if (m instanceof Tank && m != this.tank)
+                    return m;
+            }
+        }
+
+        this.bounceX.add(posX);
+        this.bounceY.add(posY);
+
+        boolean firstBounce = this.targetTank == null;
+        Movable target = null;
+
+        while (this.bounces >= 0 && this.bouncyBounces >= 0)
+        {
+            totalChunksChecked = 0;
+            Chunk current = Chunk.getChunk(posX, posY);
+            if (current == null)
+                break;
+
+            checkCollision(current, firstBounce);
+
+            this.age += result.t;
+
+            firstBounce = false;
+
+            if (result.collisionFace == null)
+                break;
+
+            double dx = result.collisionX - posX;
+            double dy = result.collisionY - posY;
+
+            double dist = Math.sqrt(dx * dx + dy * dy);
+            if (this.range < dist)
+            {
+                result.collisionX = posX + dx * range / dist;
+                result.collisionY = posY + dy * range / dist;
+                this.bounces = -1;
+            }
+            else
+                this.range -= dist;
+
+            this.posX = result.collisionX;
+            this.posY = result.collisionY;
+
+            if (Chunk.debug && trace)
+            {
+                debugTexts.add(new DebugText(
+                    "@", bounces, bouncyBounces, 16,
+                    posX, posY
+                ));
+
+                String symbol = result.collisionFace.direction.isNonZeroY() ? "|" : "-";
+                debugTexts.add(new DebugText(
+                    symbol, bounces, bouncyBounces, 16,
+                    result.collisionFace.startX, result.collisionFace.startY
+                ));
+                debugTexts.add(new DebugText(
+                    symbol, bounces, bouncyBounces, 16,
+                    result.collisionFace.endX, result.collisionFace.endY
+                ));
+            }
+
+            ISolidObject obj = result.collisionFace.owner;
+            if (obj instanceof GameObject)
+                ghostFaceHandler.checkForErrors((GameObject) obj);
+
+            if (obj instanceof Movable)
+            {
+                this.targetX = result.collisionX;
+                this.targetY = result.collisionY;
+                bounceX.add(result.collisionX);
+                bounceY.add(result.collisionY);
+
+                target = (Movable) obj;
+                break;
+            }
+
+            if (obj instanceof Obstacle && ((Obstacle) obj).bouncy)
+                this.bouncyBounces--;
+            else if (obj instanceof Obstacle && !((Obstacle) obj).allowBounce)
+                this.bounces = -1;
+            else
+                this.bounces--;
+
+            bounceX.add(result.collisionX);
+            bounceY.add(result.collisionY);
+
+            if (this.bounces >= 0)
+            {
+                if (result.corner)
+                {
+                    this.vX = -this.vX;
+                    this.vY = -this.vY;
+                }
+                else if (!result.collisionFace.direction.isNonZeroX())
+                    this.vY = -this.vY;
+                else
+                    this.vX = -this.vX;
+
+                this.angle = Movable.getPolarDirection(this.vX, this.vY);
+            }
+        }
+
+        renderTraceEffect();
+        return target;
     }
 
     public boolean isInSight(Movable target)
@@ -275,122 +410,6 @@ public class Ray extends GameObject
     public static final Result result = new Result();
     private static final Result tempResult = new Result();
 
-    public Movable getTarget()
-    {
-        acquiredTarget = true;
-
-        if (isOutOfBounds() || testInsideObstacle())
-            return null;
-
-        if (!ignoreTanks)
-        {
-            for (Movable m : Movable.getSquareCollision(this))
-            {
-                if (m instanceof Tank && m != this.tank)
-                    return m;
-            }
-        }
-
-        this.bounceX.add(posX);
-        this.bounceY.add(posY);
-
-        boolean firstBounce = this.targetTank == null;
-        Movable target = null;
-
-        while (this.bounces >= 0 && this.bouncyBounces >= 0)
-        {
-            totalChunksChecked = 0;
-            Chunk current = Chunk.getChunk(posX, posY);
-            if (current == null)
-                break;
-
-            checkCollision(current, firstBounce);
-
-            this.age += result.t;
-
-            firstBounce = false;
-
-            if (result.collisionFace == null)
-                break;
-
-            double dx = result.collisionX - posX, dy = result.collisionY - posY;
-
-            double dist = Math.sqrt(dx * dx + dy * dy);
-            if (this.range < dist)
-            {
-                result.collisionX = posX + dx * range / dist;
-                result.collisionY = posY + dy * range / dist;
-                this.bounces = -1;
-            }
-            else
-                this.range -= dist;
-
-            this.posX = result.collisionX;
-            this.posY = result.collisionY;
-
-            if (Chunk.debug && trace)
-            {
-                debugTexts.add(new DebugText(
-                    "@", bounces, bouncyBounces, 16,
-                    posX, posY
-                ));
-
-                String symbol = result.collisionFace.direction.isNonZeroY() ? "|" : "-";
-                debugTexts.add(new DebugText(
-                    symbol, bounces, bouncyBounces, 16,
-                    result.collisionFace.startX, result.collisionFace.startY
-                ));
-                debugTexts.add(new DebugText(
-                    symbol, bounces, bouncyBounces, 16,
-                    result.collisionFace.endX, result.collisionFace.endY
-                ));
-            }
-
-            ISolidObject obj = result.collisionFace.owner;
-            if (obj instanceof GameObject)
-                ghostFaceHandler.checkForErrors((GameObject) obj);
-
-            if (obj instanceof Movable)
-            {
-                this.targetX = result.collisionX;
-                this.targetY = result.collisionY;
-                bounceX.add(result.collisionX);
-                bounceY.add(result.collisionY);
-
-                target = (Movable) obj;
-                break;
-            }
-
-            if (obj instanceof Obstacle && ((Obstacle) obj).bouncy)
-                this.bouncyBounces--;
-            else if (obj instanceof Obstacle && !((Obstacle) obj).allowBounce)
-                this.bounces = -1;
-            else
-                this.bounces--;
-
-            bounceX.add(result.collisionX);
-            bounceY.add(result.collisionY);
-
-            if (this.bounces >= 0)
-            {
-                if (result.corner)
-                {
-                    this.vX = -this.vX;
-                    this.vY = -this.vY;
-                }
-                else if (!result.collisionFace.direction.isNonZeroX())
-                    this.vY = -this.vY;
-                else
-                    this.vX = -this.vX;
-
-                this.angle = Movable.getPolarDirection(this.vX, this.vY);
-            }
-        }
-
-        renderTraceEffect();
-        return target;
-    }
-
     public void renderTraceEffect()
     {
         if (!trace || !ScreenGame.isUpdatingGame())
@@ -445,8 +464,10 @@ public class Ray extends GameObject
         {
             double moveXBase = Chunk.chunkSize * Game.tile_size * Math.cos(angle);
             double moveYBase = Chunk.chunkSize * Game.tile_size * Math.sin(angle);
-            double moveX = moveXBase * chunksChecked, moveXPrev = moveXBase * Math.max(0, chunksChecked - 1);
-            double moveY = moveYBase * chunksChecked, moveYPrev = moveYBase * Math.max(0, chunksChecked - 1);
+            double moveX = moveXBase * chunksChecked;
+            double moveXPrev = moveXBase * Math.max(0, chunksChecked - 1);
+            double moveY = moveYBase * chunksChecked;
+            double moveYPrev = moveYBase * Math.max(0, chunksChecked - 1);
 
             chunksAdded = 0;
             startingChunk = current;
@@ -499,8 +520,11 @@ public class Ray extends GameObject
 
                 if (result.collisionFace != null)
                 {
-                    double x = result.collisionX, y = result.collisionY, bound = size / 2;
-                    for (Chunk c : Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
+                    double x = result.collisionX;
+                    double y = result.collisionY;
+                    double bound = size / 2;
+
+                    for (Chunk c: Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
                     {
                         if (c == chunk)
                             continue;
@@ -533,11 +557,12 @@ public class Ray extends GameObject
         Face collisionFace = null;
         double t = Double.MAX_VALUE;
         boolean corner = false;
-        double collisionX = 0, collisionY = 0;
+        double collisionX = 0;
+        double collisionY = 0;
 
         if (vX > 0)
         {
-            for (Face f : chunk.faces.leftFaces)
+            for (Face f: chunk.faces.leftFaces)
             {
                 double size = this.size;
 
@@ -566,7 +591,7 @@ public class Ray extends GameObject
         }
         else if (vX < 0)
         {
-            for (Face f : chunk.faces.rightFaces)
+            for (Face f: chunk.faces.rightFaces)
             {
                 double size = this.size;
 
@@ -594,7 +619,7 @@ public class Ray extends GameObject
 
         if (vY > 0)
         {
-            for (Face f : chunk.faces.topFaces)
+            for (Face f: chunk.faces.topFaces)
             {
                 double size = this.size;
 
@@ -628,7 +653,7 @@ public class Ray extends GameObject
         }
         else if (vY < 0)
         {
-            for (Face f : chunk.faces.bottomFaces)
+            for (Face f: chunk.faces.bottomFaces)
             {
                 double size = this.size;
 
@@ -701,7 +726,8 @@ public class Ray extends GameObject
     private static class DebugText
     {
         public TextWithStyling text;
-        public double posX, posY;
+        public double posX;
+        public double posY;
 
         public DebugText(String text, int bounces, int bouncyBounces, int fontSize, double posX, double posY)
         {
@@ -719,14 +745,17 @@ public class Ray extends GameObject
 
     public static void drawDebug()
     {
-        for (DebugText t : debugTexts)
+        for (DebugText t: debugTexts)
             t.draw();
         debugTexts.clear();
     }
 
     public static final class Result
     {
-        private double t, collisionX, collisionY;
+        private double t;
+        private double collisionX;
+        private double collisionY;
+
         private Face collisionFace;
         private boolean corner;
 

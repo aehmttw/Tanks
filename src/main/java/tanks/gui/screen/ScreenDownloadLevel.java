@@ -37,8 +37,7 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
                         file.stopWriting();
                         success = true;
                     }
-                }
-                catch (IOException e)
+                } catch (IOException e)
                 {
                     e.printStackTrace(Game.logger);
                     e.printStackTrace();
@@ -67,8 +66,8 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             updateDownloadButton();
-        }
-                , name.replace("_", " "));
+        },
+            name.replace("_", " "));
 
         levelName.enableCaps = true;
 
@@ -91,18 +90,18 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
     {
         this.levelDisplay.draw();
 
-        for (int i : this.shapes.keySet())
+        for (int i: this.shapes.keySet())
             this.shapes.get(i).draw();
 
         Drawing.drawing.setColor(0, 0, 0);
 
-        for (int i : this.texts.keySet())
+        for (int i: this.texts.keySet())
             this.texts.get(i).draw();
 
-        for (int i : this.buttons.keySet())
+        for (int i: this.buttons.keySet())
             this.buttons.get(i).draw();
 
-        for (int i : this.textboxes.keySet())
+        for (int i: this.textboxes.keySet())
             this.textboxes.get(i).draw();
 
         this.download.draw();

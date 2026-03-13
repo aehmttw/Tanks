@@ -60,12 +60,11 @@ public class ScreenParty extends Screen
             {
                 Game.port = Integer.parseInt(port.inputText);
                 ScreenOptions.saveOptions(Game.homedir);
-            }
-            catch (Exception ignored) { }
+            } catch (Exception ignored) { }
             port.inputText = Game.port + "";
         }
     },
-            Game.port + "", "Sets port for multiplayer------Make sure all players are using---the same port");
+        Game.port + "", "Sets port for multiplayer------Make sure all players are using---the same port");
 
     @Override
     public void update()

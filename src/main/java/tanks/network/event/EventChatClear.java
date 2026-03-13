@@ -1,7 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.gui.screen.ScreenPartyLobby;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventChatClear extends PersonalEvent
 {

@@ -1,19 +1,17 @@
 package tanks.network;
 
-import com.codedisaster.steamworks.*;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.*;
 import tanks.network.event.INetworkEvent;
 
+import com.codedisaster.steamworks.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SteamNetworkHandler
@@ -95,8 +93,7 @@ public class SteamNetworkHandler
                     Method m = Class.forName("com.codedisaster.steamworks.SteamUtilsNative").getDeclaredMethod("getIPCountry");
                     m.setAccessible(true);
                     matchmaking.setLobbyData(currentLobby, "country", m.invoke(null).toString());
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -312,8 +309,7 @@ public class SteamNetworkHandler
                 if (!state.isConnectionActive() && !state.isConnecting())
                     queueClose(id);
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -361,8 +357,7 @@ public class SteamNetworkHandler
                 networking.sendP2PPacket(steamIDReceiver, packetSendBuffer, type, defaultChannel);
                 return steamIDReceiver;
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -503,19 +498,20 @@ public class SteamNetworkHandler
             this.requestLobbies(null);
 
             return true;
-        }
-        catch (SteamException e)
+        } catch (SteamException e)
         {
             if (e.getMessage().equals("Native libraries not loaded.\n" +
-                    "Ensure to call SteamAPI.loadLibraries() first!")) {
+                "Ensure to call SteamAPI.loadLibraries() first!"))
+            {
                 System.out.println("Running without SteamAPI: Non-Steam Build");
                 return false;
-            } else {
+            }
+            else
+            {
                 e.printStackTrace();
                 return false;
             }
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             e.printStackTrace();
             return false;

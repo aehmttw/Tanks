@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPlaySound extends PersonalEvent
 {
@@ -46,8 +47,7 @@ public class EventPlaySound extends PersonalEvent
             try
             {
                 Drawing.drawing.playSound(this.sound, this.pitch, this.volume);
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 System.out.println("Invalid sound: " + this.sound);
             }

@@ -10,10 +10,7 @@ import tanks.tankson.MetadataProperty;
 import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
@@ -21,11 +18,25 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public HashSet<Chunk> prevChunks = new HashSet<>();
     private EffectManager em;
 
-    public double lastPosX, lastPosY, lastPosZ = 0;
-    public double vX, vY, vZ = 0;
-    public double lastFinalVX, lastFinalVY, lastFinalVZ;
-    public double lastVX, lastVY, lastVZ;
-    public double lastOriginalVX, lastOriginalVY, lastOriginalVZ;
+    public double lastPosX;
+    public double lastPosY;
+    public double lastPosZ = 0;
+
+    public double vX;
+    public double vY;
+    public double vZ = 0;
+
+    public double lastFinalVX;
+    public double lastFinalVY;
+    public double lastFinalVZ;
+
+    public double lastVX;
+    public double lastVY;
+    public double lastVZ;
+
+    public double lastOriginalVX;
+    public double lastOriginalVY;
+    public double lastOriginalVZ;
 
     private double lastSize = Integer.MAX_VALUE;
 
@@ -107,7 +118,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         ArrayList<Chunk> cache = getTouchingChunks();
         recordData("refreshFaces");
 
-        for (Chunk c : prevChunks)
+        for (Chunk c: prevChunks)
         {
             if (!cache.contains(c))
             {
@@ -119,7 +130,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         prevChunks.retainAll(cache);
         updateFaces();
 
-        for (Chunk c : getCurrentChunks())
+        for (Chunk c: getCurrentChunks())
         {
             if (prevChunks.add(c))
                 onEnterChunk(c);
@@ -196,7 +207,9 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     }
 
-    /** Alias for {@link #getEffectManager()} */
+    /**
+     * Alias for {@link #getEffectManager()}
+     */
     public EffectManager em()
     {
         return getEffectManager();
@@ -251,6 +264,11 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         return fastAtan(this.vZ / this.getSpeed());
     }
 
+    public static double getPolarPitch(double vX, double vY, double vZ)
+    {
+        return fastAtan(vZ / getSpeed(vX, vY));
+    }
+
     public double getLastPolarDirection()
     {
         return getPolarDirection(this.lastVX, this.lastVY);
@@ -297,11 +315,6 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public static double getSpeed(double vX, double vY)
     {
         return Math.sqrt(vX * vX + vY * vY);
-    }
-
-    public static double getPolarPitch(double vX, double vY, double vZ)
-    {
-        return fastAtan(vZ / getSpeed(vX, vY));
     }
 
     public double getSpeed()
@@ -354,16 +367,19 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         this.posY = y1;
     }
 
-    /** Field to cache the movable array for reuse */
+    /**
+     * Field to cache the movable array for reuse
+     */
     private static final HashSet<Movable> movableOut = new HashSet<>();
 
     public static HashSet<Movable> getCircleCollision(GameObject self)
     {
         movableOut.clear();
-        double x = self.posX, y = self.posY;
+        double x = self.posX;
+        double y = self.posY;
 
-        for (Chunk c : Chunk.getChunksInRadius(x, y, self.getSize()))
-            for (Movable m : c.movables)
+        for (Chunk c: Chunk.getChunksInRadius(x, y, self.getSize()))
+            for (Movable m: c.movables)
                 if (m != self && !m.skipNextUpdate && !m.destroy &&
                     GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
                     movableOut.add(m);
@@ -375,40 +391,47 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     {
         movableOut.clear();
         double bound = self.getSize() / 2 + Game.tile_size / 2;
-        double x = self.posX, y = self.posY;
+        double x = self.posX;
+        double y = self.posY;
 
-        for (Chunk c : Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
+        for (Chunk c: Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
         {
-            for (Movable m : c.movables)
+            for (Movable m: c.movables)
             {
-                if (m != self && !m.skipNextUpdate && !m.destroy && Math.abs(m.posX - x) < (self.getSize() + m.getSize()) / 2
-                    && Math.abs(m.posY - y) < (self.getSize() + m.getSize()) / 2)
+                if (m != self && !m.skipNextUpdate && !m.destroy && Math.abs(m.posX - x) < (self.getSize() + m.getSize()) / 2 &&
+                    Math.abs(m.posY - y) < (self.getSize() + m.getSize()) / 2)
                     movableOut.add(m);
             }
         }
         return movableOut;
     }
 
-    /** Expects all pixel coordinates.
-     * @return all the movables within the specified range */
+    /**
+     * Expects all pixel coordinates.
+     *
+     * @return all the movables within the specified range
+     */
     public static HashSet<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
     {
         movableOut.clear();
-        for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
-            for (Movable m : c.movables)
+        for (Chunk c: Chunk.getChunksInRange(x1, y1, x2, y2))
+            for (Movable m: c.movables)
                 if (Game.isOrdered(true, x1, m.posX, x2) && Game.isOrdered(true, y1, m.posY, y2))
                     movableOut.add(m);
         return movableOut;
     }
 
 
-    /** Expects all pixel coordinates.
-     * @return all the movables within a certain radius of the position */
+    /**
+     * Expects all pixel coordinates.
+     *
+     * @return all the movables within a certain radius of the position
+     */
     public static HashSet<Movable> getMovablesInRadius(double posX, double posY, double radius)
     {
         movableOut.clear();
-        for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
-            for (Movable m : c.movables)
+        for (Chunk c: Chunk.getChunksInRadius(posX, posY, radius))
+            for (Movable m: c.movables)
                 if (Movable.sqDistBetw(m.posX, m.posY, posX, posY) < radius * radius)
                     movableOut.add(m);
         return movableOut;
@@ -416,7 +439,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     public static Movable findMovable(double x, double y)
     {
-        for (Movable m : Movable.getMovablesInRadius(x, y, 1))
+        for (Movable m: Movable.getMovablesInRadius(x, y, 1))
             return m;
         return null;
     }
@@ -443,7 +466,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
                 if (f.getType().equals(double.class))
                     f.set(this, (double) (f.get(this)) * Math.random() * 1.5 + 0.5);
                 else if (f.getType().equals(int.class))
-                    f.set(this, (int) ((int)(f.get(this)) * Math.random() * 1.5 + 0.5));
+                    f.set(this, (int) ((int) (f.get(this)) * Math.random() * 1.5 + 0.5));
                 else if (f.getType().isEnum())
                 {
                     Enum[] els = ((Enum) f.get(this)).getClass().getEnumConstants();
@@ -454,8 +477,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
                     ((Movable) (f.get(this))).randomize();
                 }
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -480,16 +502,16 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
             if (Game.framework != Game.Framework.libgdx)
             {
                 System.err.println("-----Movable sync error-----\n" + info.stream().map(m ->
-                        {
-                            boolean inGameMovables = Game.movables.contains(m);
-                            return String.format("%s: %sGame.movables, %s",
-                                    gameObjectString(m),
-                                    inGameMovables ? "*" : "!",
-                                    Chunk.chunkList.stream().filter(c -> c.movables.contains(m) != inGameMovables)
-                                            .map(c -> (c.movables.contains(m) ? "*" : "!") + c)
-                                            .collect(Collectors.joining(", "))
-                            );
-                        }
+                    {
+                        boolean inGameMovables = Game.movables.contains(m);
+                        return String.format("%s: %sGame.movables, %s",
+                            gameObjectString(m),
+                            inGameMovables ? "*" : "!",
+                            Chunk.chunkList.stream().filter(c -> c.movables.contains(m) != inGameMovables)
+                                .map(c -> (c.movables.contains(m) ? "*" : "!") + c)
+                                .collect(Collectors.joining(", "))
+                        );
+                    }
                 ).collect(Collectors.joining("\n")));
             }
             else
@@ -514,8 +536,14 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public static class DebugData
     {
         public String name;
-        public double posX, posY, lastPosX, lastPosY, size;
-        public ArrayList<Chunk> touchedChunks, prevChunks;
+        public double posX;
+        public double posY;
+        public double lastPosX;
+        public double lastPosY;
+        public double size;
+
+        public ArrayList<Chunk> touchedChunks;
+        public ArrayList<Chunk> prevChunks;
 
         public DebugData(Movable b, String name)
         {

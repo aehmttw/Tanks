@@ -1,9 +1,6 @@
 package tanks.bullet;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.gui.screen.ScreenGame;
 import tanks.item.ItemBullet;
@@ -18,19 +15,25 @@ public class BulletArc extends Bullet
     public double angle;
     public static final double gravity = 0.1;
 
-    @Property(id = "min_air_time", minValue = 0.0, name = "Minimum air time", category = BulletPropertyCategory.firing, desc = "The minimum time the bullet must spend in air before it lands \n \n 1 time unit = 0.01 seconds")
+    @Property(id = "min_air_time", minValue = 0.0, name = "Minimum air time", category = BulletPropertyCategory.firing,
+        desc = "The minimum time the bullet must spend in air before it lands \n \n 1 time unit = 0.01 seconds")
     public double minAirTime = 0;
 
-    @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing, desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
+    @Property(id = "min_range", minValue = 0.0, name = "Minimum range", category = BulletPropertyCategory.firing,
+        desc = "The minimum distance this bullet may land from the tank that fired it \n \n 1 tile = 50 units")
     public double minRange = 0;
 
-    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,  desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
+    @Property(id = "max_range", minValue = 0.0, name = "Maximum range", category = BulletPropertyCategory.firing,
+        desc = "The maximum distance this bullet may land from the tank that fired it. Set to 0 for unlimited. \n \n 1 tile = 50 units")
     public double maxRange = 0;
 
-    @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing, desc = "The maximum distance between the target aim location and where the bullet actually lands, relative to the distance traveled by the bullet. Larger values are less accurate. \n \n A value of 1 corresponds to the bullet landing off by up to one tile per tile traveled.")
+    @Property(id = "accuracy_spread_circle", minValue = 0.0, name = "Landing accuracy spread", category = BulletPropertyCategory.firing,
+        desc = "The maximum distance between the target aim location and where the bullet actually lands, relative to the distance traveled by the bullet. " +
+            "Larger values are less accurate. \n \n A value of 1 corresponds to the bullet landing off by up to one tile per tile traveled.")
     public double accuracySpreadCircle = 0;
 
-    @Property(id = "bounciness", minValue = 0.0, name = "Bounciness", category = BulletPropertyCategory.travel, desc = "How high the bullet should bounce as a fraction of its initial height")
+    @Property(id = "bounciness", minValue = 0.0, name = "Bounciness", category = BulletPropertyCategory.travel,
+        desc = "How high the bullet should bounce as a fraction of its initial height")
     public double bounciness = 0.75;
 
     protected double warningIndicatorTime = 100;

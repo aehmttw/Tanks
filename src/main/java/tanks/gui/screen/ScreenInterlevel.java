@@ -44,17 +44,18 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
             Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
             Game.currentLevel.loadLevel();
 
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e.getCause());
         }
     });
 
-    Button replayTutorial = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Try again", () -> new Tutorial().loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen)
+    Button replayTutorial = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Try again",
+        () -> new Tutorial().loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen)
     );
 
-    Button replayTutorial2 = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Try again", () -> new Tutorial().loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen)
+    Button replayTutorial2 = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Try again",
+        () -> new Tutorial().loadTutorial(!Panel.win && tutorialInitial, Game.game.window.touchscreen)
     );
 
     Button quitTutorial = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Exit", () ->
@@ -71,11 +72,11 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
         Crusade.currentCrusade.loadLevel();
         Crusade.currentCrusade.replay = true;
         Game.screen = new ScreenGame(Crusade.currentCrusade);
-    }
-            , "You will not gain extra lives---"
-            + "from replaying a level you've already cleared.---"
-            + "However, you can still earn coins!---"
-            + "You will still lose a life if you're destroyed.");
+    },
+        "You will not gain extra lives---" +
+        "from replaying a level you've already cleared.---" +
+        "However, you can still earn coins!---" +
+        "You will still lose a life if you're destroyed.");
 
     Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
     {
@@ -174,8 +175,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
             f.println("Tanks: The Crusades tutorial");
             f.println("Completed " + new Date().toString());
             f.stopWriting();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -197,8 +197,8 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
         Game.cleanUp();
         Panel.panel.zoomTimer = 0;
         Game.screen = new ScreenPlaySingleplayer();
-    }
-            , "Your crusade progress will be saved.");
+    },
+        "Your crusade progress will be saved.");
 
     @Override
     public void update()
@@ -313,7 +313,6 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
         }
 
 
-
         if (Crusade.crusadeMode)
             if (Crusade.currentCrusade.lose || Crusade.currentCrusade.win)
                 this.allowClose = false;
@@ -334,10 +333,10 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
     {
         this.drawDefaultBackground();
 
-        save.posX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-                + Drawing.drawing.interfaceSizeX - 50 * Drawing.drawing.interfaceScaleZoom - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
-        save.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
-                + Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+        save.posX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
+            Drawing.drawing.interfaceSizeX - 50 * Drawing.drawing.interfaceScaleZoom - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+        save.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 +
+            Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
 
         if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
             this.fireworksDisplay.draw();

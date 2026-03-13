@@ -17,8 +17,7 @@ public class GameUpdater implements IUpdater
 
             for (Extension e: Game.extensionRegistry.extensions)
                 e.update();
-        }
-        catch (Throwable e)
+        } catch (Throwable e)
         {
             if (e instanceof GameCrashedException)
                 Game.displayCrashScreen(((GameCrashedException) e).originalException);

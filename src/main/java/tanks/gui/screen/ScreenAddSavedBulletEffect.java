@@ -4,9 +4,7 @@ import basewindow.BaseFile;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
-import tanks.gui.Button;
-import tanks.gui.SavedFilesList;
-import tanks.gui.SearchBoxInstant;
+import tanks.gui.*;
 
 import java.util.ArrayList;
 
@@ -79,37 +77,35 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
         this.previousScreen = previousScreen;
 
         allEffects = new SavedFilesList(Game.homedir + Game.bulletEffectsDir, page, 0, -30,
-                (name, file) ->
+            (name, file) ->
+            {
+                try
                 {
-                    try
-                    {
-                        file.startReading();
-                        BulletEffect e = BulletEffect.fromString(file.nextLine());
-                        file.stopReading();
-                        onComplete.accept(e);
-                    }
-                    catch (Exception e)
-                    {
-                        Game.exitToCrash(e);
-                    }
-                }, (file) -> null,
-                (file, b) ->
+                    file.startReading();
+                    BulletEffect e = BulletEffect.fromString(file.nextLine());
+                    file.stopReading();
+                    onComplete.accept(e);
+                } catch (Exception e)
                 {
-                    try
-                    {
-                        file.startReading();
-                        b.miscData.put("effect", BulletEffect.fromString(file.nextLine()));
-                        b.miscData.put("name", b.text);
-                        b.miscData.put("particles", new ArrayList<>());
-                        b.miscData.put("removeParticles", new ArrayList<>());
-                        b.text = "";
-                        file.stopReading();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                });
+                    Game.exitToCrash(e);
+                }
+            }, (file) -> null,
+            (file, b) ->
+            {
+                try
+                {
+                    file.startReading();
+                    b.miscData.put("effect", BulletEffect.fromString(file.nextLine()));
+                    b.miscData.put("name", b.text);
+                    b.miscData.put("particles", new ArrayList<>());
+                    b.miscData.put("removeParticles", new ArrayList<>());
+                    b.text = "";
+                    file.stopReading();
+                } catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            });
 
         ArrayList<String> effects = Game.game.fileManager.getInternalFileContents("/bullet_effects/bullet_effects.tanks");
 
@@ -220,7 +216,8 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
             if (!Game.game.window.drawingShadow)
             {
                 Button b = effects.buttons.get(i);
-                ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size, (ArrayList<Effect>) b.miscData.get("particles"), (ArrayList<Effect>) b.miscData.get("removeParticles"), 1, true);
+                ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size,
+                    (ArrayList<Effect>) b.miscData.get("particles"), (ArrayList<Effect>) b.miscData.get("removeParticles"), 1, true);
             }
         }
 

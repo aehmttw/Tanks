@@ -1,17 +1,12 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.bullet.*;
 import tanks.gui.*;
 import tanks.item.ItemBullet;
 import tanks.registry.RegistryBullet;
 import tanks.tank.Turret;
-import tanks.tankson.FieldPointer;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
+import tanks.tankson.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -19,7 +14,9 @@ import java.util.Random;
 
 public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
 {
-    public Selector bulletTypes = new Selector(this.centerX + 300, 60, this.objWidth, this.objHeight, "Bullet type", Game.registryBullet.getEntryNames(), () -> {});
+    public Selector bulletTypes = new Selector(this.centerX + 300, 60, this.objWidth, this.objHeight, "Bullet type", Game.registryBullet.getEntryNames(), () ->
+    {
+    });
 
     public Tab col1;
     public Tab col2;
@@ -67,8 +64,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 target.get().clonePropertiesTo(b);
                 this.setupLayoutParameters();
                 setTarget(b);
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -101,7 +97,11 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                         ((TextBox) el).silent = true;
                         Runnable func = ((TextBox) el).function;
                         Bullet t = target.get();
-                        ((TextBox) el).function = () -> { func.run(); Drawing.drawing.playSound(t.shotSound, (float) (t.pitch + (Math.random() - 0.5) * t.pitchVariation), (float) t.soundVolume); };
+                        ((TextBox) el).function = () ->
+                        {
+                            func.run();
+                            Drawing.drawing.playSound(t.shotSound, (float) (t.pitch + (Math.random() - 0.5) * t.pitchVariation), (float) t.soundVolume);
+                        };
                     }
 
                     this.uiElements.add(el);
@@ -318,7 +318,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 setColorText(enable);
             }
         },
-                "If off, the color will be picked based---on the tank which shot the bullet");
+            "If off, the color will be picked based---on the tank which shot the bullet");
 
         public void setColorText(boolean enable)
         {

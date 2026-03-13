@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 
 import java.net.URL;
@@ -81,8 +79,7 @@ public class ScreenCrashed extends Screen
         try
         {
             Game.game.window.openLink(new URL(ScreenAbout.discord_link));
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -142,7 +139,7 @@ public class ScreenCrashed extends Screen
         drawing.displayInterfaceText(50, 230, false, "If you see this screen again, restart the game.");
         drawing.displayInterfaceText(50, 290, false, "Also, you may want to report this crash!");
 
-        drawing.displayInterfaceText(50, 350,  false, "Crash details:");
+        drawing.displayInterfaceText(50, 350, false, "Crash details:");
 
         double boxWidth = 1300;
         double width = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashMessage) / Drawing.drawing.interfaceScale;
@@ -160,9 +157,9 @@ public class ScreenCrashed extends Screen
         String extText = extensions == 0 ? "" : extensions == 1 ? " (with 1 extension)" : " (with " + extensions + " extensions)";
 
         drawing.setInterfaceFontSize(24);
-        drawing.displayInterfaceText(50, 440,  false, "Game version: " + Game.version + extText + " " + Game.game.window.buildDate);
+        drawing.displayInterfaceText(50, 440, false, "Game version: " + Game.version + extText + " " + Game.game.window.buildDate);
 
-        drawing.displayInterfaceText(50, 500,  false, "Check the crash report file for more information: ");
+        drawing.displayInterfaceText(50, 500, false, "Check the crash report file for more information: ");
         drawing.drawInterfaceText(50, 530, Game.homedir.replace("\\", "/") + Game.crashesPath + Game.crashTime + ".crash", false);
 
         this.quit.draw();

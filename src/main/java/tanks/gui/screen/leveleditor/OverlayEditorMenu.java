@@ -1,8 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
 import tanks.gui.screen.Screen;

@@ -14,16 +14,22 @@ public class SelectorNumber extends MetadataSelector
 
     public String format = "%.1f";
 
-    /** Interval: [min, max). Just like <code>for</code> loops. */
+    /**
+     * Interval: [min, max). Just like <code>for</code> loops.
+     */
     public double min = -99999999;
     public double max = 99999999;
     public double step = 1;
 
-    /** When a metadata keybind is pressed, set the number to the minimum value if it is above the maximum value,
-     * or the maximum value if it is below the minimum value. */
+    /**
+     * When a metadata keybind is pressed, set the number to the minimum value if it is above the maximum value,
+     * or the maximum value if it is below the minimum value.
+     */
     public boolean wrap = false;
 
-    /** When inputted from a text box, rounds it to the nearest number divisible to <code>step</code>. */
+    /**
+     * When inputted from a text box, rounds it to the nearest number divisible to <code>step</code>.
+     */
     public boolean forceStep = true;
     public boolean allowDecimals = false;
 

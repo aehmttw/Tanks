@@ -1,7 +1,10 @@
 package lwjglwindow;
 
 import basewindow.*;
-import basewindow.transformation.*;
+import basewindow.transformation.Matrix4;
+import basewindow.transformation.Transformation;
+import tanks.Game;
+
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
 import org.lwjgl.BufferUtils;
@@ -9,15 +12,14 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
-import tanks.Game;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.nio.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import javax.imageio.ImageIO;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -89,8 +91,7 @@ public class LWJGLWindow extends BaseWindow
         {
             this.soundPlayer = new SoundPlayer(this);
             this.soundsEnabled = true;
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             this.soundsEnabled = false;
             System.out.println("Failed to enable sounds");
@@ -157,8 +158,7 @@ public class LWJGLWindow extends BaseWindow
                     count++;
                 }
             }
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             e.printStackTrace(Game.logger);
             e.printStackTrace();
@@ -237,7 +237,8 @@ public class LWJGLWindow extends BaseWindow
         glfwSetDropCallback(window, (windowHandle, count, names) ->
         {
             List<String> droppedFiles = new ArrayList<>(count);
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++)
+            {
                 long namePtr = MemoryUtil.memGetAddress(names + ((long) i * Pointer.POINTER_SIZE));
                 String fileName = MemoryUtil.memUTF8(namePtr);
                 droppedFiles.add(fileName);
@@ -291,18 +292,15 @@ public class LWJGLWindow extends BaseWindow
                 String line;
                 while ((line = reader.readLine()) != null)
                     source.append(line).append('\n');
-            }
-            catch (Exception exc)
+            } catch (Exception exc)
             {
                 exception = exc;
-            }
-            finally
+            } finally
             {
                 try
                 {
                     reader.close();
-                }
-                catch (Exception exc)
+                } catch (Exception exc)
                 {
                     if (innerExc == null)
                         innerExc = exc;
@@ -313,18 +311,15 @@ public class LWJGLWindow extends BaseWindow
 
             if (innerExc != null)
                 throw innerExc;
-        }
-        catch (Exception exc)
+        } catch (Exception exc)
         {
             exception = exc;
-        }
-        finally
+        } finally
         {
             try
             {
                 in.close();
-            }
-            catch (Exception exc)
+            } catch (Exception exc)
             {
                 if (exception == null)
                     exception = exc;
@@ -345,8 +340,7 @@ public class LWJGLWindow extends BaseWindow
         {
             this.shaderDefault = new ShaderGroup(this, "default");
             this.shaderDefault.initialize();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
             System.exit(0);
@@ -507,7 +501,8 @@ public class LWJGLWindow extends BaseWindow
             float[] d2 = new float[1];
             glfwGetMonitorContentScale(glfwGetPrimaryMonitor(), d, d2);
 
-            glfwSetWindowMonitor(this.window, glfwGetPrimaryMonitor(), 0, 0, (int) (this.vidmode.width() * d[0]), (int) (this.vidmode.height() * d2[0]), this.vidmode.refreshRate());
+            glfwSetWindowMonitor(this.window, glfwGetPrimaryMonitor(), 0, 0, (int) (this.vidmode.width() * d[0]), (int) (this.vidmode.height() * d2[0]),
+                this.vidmode.refreshRate());
         }
         else
             glfwSetWindowMonitor(this.window, NULL, this.prevPosX[0], this.prevPosY[0], this.prevSizeX[0], this.prevSizeY[0], this.vidmode.refreshRate());
@@ -607,13 +602,11 @@ public class LWJGLWindow extends BaseWindow
                 textures.put(image, id);
                 textureSX.put(image, decoder.getWidth());
                 textureSY.put(image, decoder.getHeight());
-            }
-            finally
+            } finally
             {
                 in.close();
             }
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             System.err.println("Failed to load: " + image);
             e.printStackTrace();
@@ -664,7 +657,7 @@ public class LWJGLWindow extends BaseWindow
 
         ByteBuffer buf = ByteBuffer.allocateDirect(4 * p);
 
-        for (double[] l : this.scaledLights)
+        for (double[] l: this.scaledLights)
         {
             double x = l[0];
             double y = l[1];
@@ -734,8 +727,7 @@ public class LWJGLWindow extends BaseWindow
 
             if (!mac)
                 glfwSetWindowIcon(window, imagebuf);
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -748,8 +740,7 @@ public class LWJGLWindow extends BaseWindow
              Scanner scanner = new Scanner(in, java.nio.charset.StandardCharsets.UTF_8.name()))
         {
             result = scanner.useDelimiter("\\A").next();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -933,10 +924,13 @@ public class LWJGLWindow extends BaseWindow
     public void transform(Matrix4 m)
     {
         double[][] matrix = m.values;
-        double[] d = new double[]{matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3],
+        double[] d = new double[]
+            {
+                matrix[0][0], matrix[0][1], matrix[0][2], matrix[0][3],
                 matrix[1][0], matrix[1][1], matrix[1][2], matrix[1][3],
                 matrix[2][0], matrix[2][1], matrix[2][2], matrix[2][3],
-                matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]};
+                matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]
+            };
         glMultMatrixd(d);
     }
 
@@ -1378,13 +1372,13 @@ public class LWJGLWindow extends BaseWindow
                     for (int y = image.getHeight() - 1; y >= 0; y--)
                     {
                         int i = (x + w * y) * 4;
-                        image.setRGB(x, image.getHeight() - 1 - y, (((buffer.get(i) & 0xFF) & 0x0ff) << 16) | (((buffer.get(i + 1) & 0xFF) & 0x0ff) << 8) | ((buffer.get(i + 2) & 0xFF) & 0x0ff));
+                        image.setRGB(x, image.getHeight() - 1 - y,
+                            (((buffer.get(i) & 0xFF) & 0x0ff) << 16) | (((buffer.get(i + 1) & 0xFF) & 0x0ff) << 8) | ((buffer.get(i + 2) & 0xFF) & 0x0ff));
                     }
                 }
 
                 ImageIO.write(image, "png", f);
-            }
-            catch (IOException e)
+            } catch (IOException e)
             {
                 throw new RuntimeException(e);
             }

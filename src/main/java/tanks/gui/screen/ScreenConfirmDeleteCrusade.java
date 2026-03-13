@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.Button;
 
 public class ScreenConfirmDeleteCrusade extends Screen

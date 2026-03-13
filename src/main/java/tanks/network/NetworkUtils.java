@@ -1,6 +1,7 @@
 package tanks.network;
 
 import basewindow.Color;
+
 import io.netty.buffer.ByteBuf;
 
 import java.nio.charset.Charset;

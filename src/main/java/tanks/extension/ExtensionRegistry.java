@@ -3,15 +3,10 @@ package tanks.extension;
 import basewindow.BaseFile;
 import tanks.Game;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 import java.util.jar.JarFile;
 
 public class ExtensionRegistry
@@ -55,8 +50,7 @@ public class ExtensionRegistry
                 }
 
                 in.stopReading();
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -67,7 +61,7 @@ public class ExtensionRegistry
                 {
                     ArrayList<String> files = Game.game.fileManager.getFile(Game.homedir + Game.extensionDir).getSubfiles();
 
-                    for (String file : files)
+                    for (String file: files)
                     {
                         String j = file.substring(file.replace("\\", "/").lastIndexOf("/") + 1);
                         Class<? extends Extension> c = loadExtensionClass(j, null);
@@ -83,8 +77,7 @@ public class ExtensionRegistry
                     this.extensions.add(e);
                     System.out.println("loaded extension: " + e.name);
                 }
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -114,15 +107,13 @@ public class ExtensionRegistry
                         Scanner s = new Scanner(new InputStreamReader(i));
                         Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(s.nextLine());
                         return clasz;
-                    }
-                    catch (Exception e)
+                    } catch (Exception e)
                     {
                         System.err.println("Failed to load extension into classpath " + jar);
                         e.printStackTrace();
                     }
                 }
-            }
-            catch (Exception ignored) { }
+            } catch (Exception ignored) { }
         }
 
         return null;
@@ -157,8 +148,7 @@ public class ExtensionRegistry
             f.println("# (Extensions will be loaded in the order listed here)");
 
             f.stopWriting();
-        }
-        catch (Exception e)
+        } catch (Exception e)
         {
             Game.exitToCrash(e);
         }

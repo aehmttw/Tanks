@@ -67,7 +67,8 @@ public class AccessCode
             {
                 System.out.println("Attempted to load an inexistent access code: " + f);
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -95,7 +96,8 @@ public class AccessCode
 
             pw.close();
             return true;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             return false;

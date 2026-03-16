@@ -55,7 +55,8 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
                 f.stopWriting();
 
                 return true;
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 Game.exitToCrash(e);
             }
@@ -102,7 +103,8 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
 
             this.maxAmount.posX = this.centerX + this.objXSpace * 0.5;
             this.maxAmount.posY = this.centerY + this.objYSpace * 1;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

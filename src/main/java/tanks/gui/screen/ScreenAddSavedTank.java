@@ -348,7 +348,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 b.text = l;
 
                 this.tankButtons.add(b);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 System.err.println("Failed to load a custom tank from file: " + l);
                 e.printStackTrace();
@@ -390,7 +391,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 b.disabledColG = 160;
                 b.disabledColB = 60;
                 b.text = l;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 System.err.println("Failed to load a custom tank build from file: " + l);
                 e.printStackTrace();
@@ -417,7 +419,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 if (p.endsWith(".tanks"))
                     files.add(p);
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Game.exitToCrash(e);
         }

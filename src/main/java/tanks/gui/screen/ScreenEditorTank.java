@@ -34,7 +34,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                 f.stopWriting();
 
                 return true;
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 Game.exitToCrash(e);
             }
@@ -475,7 +476,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                     Field f = Tank.class.getField("secondaryColor");
                     this.colorPicker = (SelectorColor) screen.getUIElementForField(new FieldPointer<>(target.get(), f), f.getAnnotation(Property.class));
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -655,11 +657,11 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             {
                 Game.screen = new ScreenInfo(Game.screen, "Note!",
                     new String[]
-                    {
-                        "The base tank cooldown you picked is",
-                        "less than the tank's bullet's cooldown.", "",
-                        "The greater cooldown value will be used."
-                    }
+                        {
+                            "The base tank cooldown you picked is",
+                            "less than the tank's bullet's cooldown.", "",
+                            "The greater cooldown value will be used."
+                        }
                 );
             }
         }
@@ -671,10 +673,10 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
                 {
                     Game.screen = new ScreenInfo(Game.screen, "Note!",
                         new String[]
-                        {
-                            "Predictive firing is only effective",
-                            "with straight or alternate aiming behavior."
-                        }
+                            {
+                                "Predictive firing is only effective",
+                                "with straight or alternate aiming behavior."
+                            }
                     );
                 }
             }

@@ -92,12 +92,12 @@ public class ScreenOptionsWindow extends Screen
 
         width = new TextBox(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 4, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.25, this.objWidth * 0.45,
             this.objHeight, "Width", () ->
-            {
-                if (width.inputText.length() <= 2)
-                    width.inputText = (int) Game.game.window.absoluteWidth + "";
-                else
-                    Game.game.window.setResolution(Integer.parseInt(width.inputText), (int) Game.game.window.absoluteHeight);
-            },
+        {
+            if (width.inputText.length() <= 2)
+                width.inputText = (int) Game.game.window.absoluteWidth + "";
+            else
+                Game.game.window.setResolution(Integer.parseInt(width.inputText), (int) Game.game.window.absoluteHeight);
+        },
             "");
 
         width.allowLetters = false;
@@ -108,12 +108,12 @@ public class ScreenOptionsWindow extends Screen
 
         height = new TextBox(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace * 3 / 4, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.25,
             this.objWidth * 0.45, this.objHeight, "Height", () ->
-            {
-                if (height.inputText.length() <= 2)
-                    height.inputText = (int) Game.game.window.absoluteWidth + "";
-                else
-                    Game.game.window.setResolution((int) Game.game.window.absoluteWidth, Integer.parseInt(height.inputText));
-            },
+        {
+            if (height.inputText.length() <= 2)
+                height.inputText = (int) Game.game.window.absoluteWidth + "";
+            else
+                Game.game.window.setResolution((int) Game.game.window.absoluteWidth, Integer.parseInt(height.inputText));
+        },
             "");
 
         height.allowLetters = false;

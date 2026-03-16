@@ -37,7 +37,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 f.stopWriting();
 
                 return true;
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 Game.exitToCrash(e);
             }
@@ -630,7 +631,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                     Field f = Tank.class.getField("secondaryColor");
                     this.colorPicker = (SelectorColor) screen.getUIElementForField(new FieldPointer<>(target.get(), f), f.getAnnotation(Property.class));
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }

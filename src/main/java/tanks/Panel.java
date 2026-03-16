@@ -137,7 +137,8 @@ public class Panel
             Game.game.shaderTracks.initialize();
             Firework.shader.initialize();
             Firework.trailShader.initialize();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -232,7 +233,8 @@ public class Panel
             {
                 Game.game.window.screenshot(saveScreenshotDir, false);
                 saveScreenshotDir = null;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -252,7 +254,8 @@ public class Panel
                     notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) +
                         "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.",
                         1200, 400));
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -365,7 +368,8 @@ public class Panel
                                 .getIdentifier())), (IStackableEvent) e);
                         else
                             Game.eventsIn.get(i).execute();
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         handleEventError(e, ex);
                     }
@@ -380,7 +384,8 @@ public class Panel
             try
             {
                 e.execute();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 handleEventError(e, ex);
             }
@@ -859,7 +864,8 @@ public class Panel
 
                 this.continuation = null;
                 this.continuationMusic = false;
-            } catch (LoadingTerrainContinuation c)
+            }
+            catch (LoadingTerrainContinuation c)
             {
                 if (this.continuation == null)
                     this.continuationStartTime = System.currentTimeMillis();

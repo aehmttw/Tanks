@@ -17,7 +17,8 @@ public class GameDrawer implements IDrawer
 
             for (Extension e: Game.extensionRegistry.extensions)
                 e.draw();
-        } catch (Throwable e)
+        }
+        catch (Throwable e)
         {
             if (e instanceof GameCrashedException)
                 Game.displayCrashScreen(((GameCrashedException) e).originalException);

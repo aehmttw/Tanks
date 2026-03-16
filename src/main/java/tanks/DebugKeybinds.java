@@ -140,7 +140,8 @@ public class DebugKeybinds
                     {
                         s = entry.getKey().getConstructor(BaseWindow.class)
                             .newInstance(Game.game.window);
-                    } catch (NoSuchMethodException e)
+                    }
+                    catch (NoSuchMethodException e)
                     {
                         s = entry.getKey().getConstructor(BaseWindow.class, String.class)
                             .newInstance(Game.game.window, entry.getValue().name);
@@ -148,7 +149,8 @@ public class DebugKeybinds
 
                     s.initialize();
                     newShaders.put(entry.getKey(), s);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     throw new RuntimeException(e);
                 }

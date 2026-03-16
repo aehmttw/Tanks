@@ -85,7 +85,8 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
                     BulletEffect e = BulletEffect.fromString(file.nextLine());
                     file.stopReading();
                     onComplete.accept(e);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -101,7 +102,8 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
                     b.miscData.put("removeParticles", new ArrayList<>());
                     b.text = "";
                     file.stopReading();
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }

@@ -33,7 +33,8 @@ import java.util.*;
 
 public class Game
 {
-    public enum Framework { lwjgl, libgdx }
+    public enum Framework
+    {lwjgl, libgdx}
 
     public static Framework framework;
 
@@ -491,7 +492,8 @@ public class Game
         try
         {
             Game.registryGenerator.generators.put(name, generator.getConstructor().newInstance());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -648,7 +650,8 @@ public class Game
             {
                 game.fileManager.getFile(homedir + logPath).create();
                 Game.logger = new PrintStream(new FileOutputStream(homedir + logPath, true));
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 System.err.println("Failed to create logfile: " + homedir + logPath);
                 e.printStackTrace();
@@ -722,7 +725,8 @@ public class Game
                 uuidFile.println("The file can be used by online services. Deleting or modifying");
                 uuidFile.println("the file or its contents can cause loss of online data.");
                 uuidFile.stopWriting();
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 e.printStackTrace();
                 System.exit(1);
@@ -734,7 +738,8 @@ public class Game
             uuidFile.startReading();
             Game.computerID = UUID.fromString(uuidFile.nextLine());
             uuidFile.stopReading();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace();
             System.exit(1);
@@ -743,7 +748,8 @@ public class Game
         try
         {
             Game.logger = new PrintStream(new FileOutputStream(homedir + logPath, true));
-        } catch (FileNotFoundException e)
+        }
+        catch (FileNotFoundException e)
         {
             Game.logger = System.err;
             Game.logger.println(new Date() + " (syswarn) logfile not found despite existence of tanks directory! using stderr instead.");
@@ -1061,7 +1067,8 @@ public class Game
                     f.println(s + ": " + p.get(s));
 
                 f.stopWriting();
-            } catch (Exception ex) { ex.printStackTrace(); }
+            }
+            catch (Exception ex) { ex.printStackTrace(); }
         }
 
         if (e instanceof OutOfMemoryError)
@@ -1075,7 +1082,8 @@ public class Game
             {
                 Crusade.currentCrusade.crusadePlayers.get(Game.player).saveCrusade();
             }
-        } catch (Exception e1)
+        }
+        catch (Exception e1)
         {
             e1.printStackTrace(Game.logger);
             e1.printStackTrace();
@@ -1379,7 +1387,8 @@ public class Game
 
             f.stopReading();
             return true;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.screen = new ScreenFailedToLoadLevel(f.path, line.toString(), e, Game.screen);
             return false;
@@ -1465,7 +1474,8 @@ public class Game
         try
         {
             return Game.game.fileManager.getInternalFileContents("/version.txt").get(0);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             return "Unknown";
         }
@@ -1479,7 +1489,8 @@ public class Game
         try
         {
             return Game.game.fileManager.getInternalFileContents("/hash.txt").get(0);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             return "";
         }

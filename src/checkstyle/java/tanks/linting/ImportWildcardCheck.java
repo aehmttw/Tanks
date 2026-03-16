@@ -1,16 +1,8 @@
 package tanks.linting;
 
-import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
-import com.puppycrawl.tools.checkstyle.api.FullIdent;
-import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.api.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Custom Checkstyle check for import wildcard rules:
@@ -29,12 +21,14 @@ import java.util.Set;
  */
 public class ImportWildcardCheck extends AbstractCheck
 {
-    /** Maximum specific imports allowed per package before a wildcard is required. */
+    /**
+     * Maximum specific imports allowed per package before a wildcard is required.
+     */
     private int maxImportsBeforeWildcard = 3;
 
     // --- per-file state ---
     private final Map<String, List<DetailAST>> specificImports = new LinkedHashMap<>();
-    private final Set<String>                  wildcardPackages = new HashSet<>();
+    private final Set<String> wildcardPackages = new HashSet<>();
 
     // -----------------------------------------------------------------
     // Configuration
@@ -58,7 +52,7 @@ public class ImportWildcardCheck extends AbstractCheck
     @Override
     public int[] getDefaultTokens()
     {
-        return new int[] {TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
+        return new int[]{TokenTypes.IMPORT, TokenTypes.STATIC_IMPORT};
     }
 
     @Override
@@ -70,7 +64,7 @@ public class ImportWildcardCheck extends AbstractCheck
     @Override
     public int[] getRequiredTokens()
     {
-        return new int[] {};
+        return new int[]{};
     }
 
     @Override
@@ -128,7 +122,7 @@ public class ImportWildcardCheck extends AbstractCheck
     @Override
     public void finishTree(DetailAST rootAST)
     {
-        for (Map.Entry<String, List<DetailAST>> entry : specificImports.entrySet())
+        for (Map.Entry<String, List<DetailAST>> entry: specificImports.entrySet())
         {
             final String pkgKey = entry.getKey();          // may start with "static:"
             final List<DetailAST> imports = entry.getValue();
@@ -137,7 +131,7 @@ public class ImportWildcardCheck extends AbstractCheck
             if (wildcardPackages.contains(pkgKey))
             {
                 // Specific imports that duplicate a wildcard
-                for (DetailAST imp : imports)
+                for (DetailAST imp: imports)
                 {
                     log(imp, "Import is redundant; ''{0}.*'' is already imported.", pkgDisplay);
                 }

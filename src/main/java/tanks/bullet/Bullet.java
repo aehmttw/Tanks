@@ -375,7 +375,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
             this.reboundSuccessor = b;
             return b;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

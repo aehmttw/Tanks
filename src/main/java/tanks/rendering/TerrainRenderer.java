@@ -53,7 +53,8 @@ public class TerrainRenderer
 
             Game.game.shaderInstances.put(this.outsideShader.getClass(), this.outsideShader);
             Game.game.shaderInstances.put(this.introShader.getClass(), this.introShader);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             Game.exitToCrash(e);
@@ -82,7 +83,8 @@ public class TerrainRenderer
             s.initialize();
             Game.game.shaderInstances.put(shaderClass, s);
             return s;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
             return null;
@@ -631,7 +633,8 @@ public class TerrainRenderer
                             configureShader(s);
                             this.drawMap(this.renderers.get(s), 0, 0);
                         }
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }

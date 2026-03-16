@@ -7,7 +7,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AttributeModifier
 {
-    public enum Operation { add, multiply }
+    public enum Operation
+    {add, multiply}
 
     // Object recycling system
     private static final Queue<AttributeModifier> recycleQueue = new ConcurrentLinkedQueue<>();

@@ -1972,7 +1972,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             file.startWriting();
             file.println(level.toString());
             file.stopWriting();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Game.exitToCrash(e);
         }
@@ -2007,7 +2008,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 mousePlaceable = n;
 
                 handlePlace(handled, true, false, true, false, true, true);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -2039,7 +2041,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                     currentPlaceable = Placeable.playerTank;
 
                 handlePlace(handled, true, false, true, false, true, true);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -2711,7 +2714,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                         obstacles.add(o);
                         Game.removeObstacles.add(o);
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -2760,7 +2764,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                             Game.removeMovables.add(t);
                         }
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -2873,7 +2878,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         return this.spawns;
     }
 
-    public enum Placeable { enemyTank, playerTank, obstacle }
+    public enum Placeable
+    {enemyTank, playerTank, obstacle}
 
     @Override
     public double getOffsetX()
@@ -2893,7 +2899,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         return Drawing.drawing.unzoomedScale * zoom;
     }
 
-    public enum SymmetryType { none, flipHorizontal, flipVertical, flipBoth, flip8, rot180, rot90 }
+    public enum SymmetryType
+    {none, flipHorizontal, flipVertical, flipBoth, flip8, rot180, rot90}
 
     @Override
     public void onAttemptClose()

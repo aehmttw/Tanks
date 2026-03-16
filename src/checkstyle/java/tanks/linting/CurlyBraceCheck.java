@@ -1,8 +1,6 @@
 package tanks.linting;
 
-import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
-import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.api.*;
 
 /**
  * Custom Checkstyle check for curly brace placement:
@@ -18,24 +16,34 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  */
 public class CurlyBraceCheck extends AbstractCheck
 {
-    /** Message emitted when the left curly brace is not alone on its line in a multi-line block. */
+    /**
+     * Message emitted when the left curly brace is not alone on its line in a multi-line block.
+     */
     static final String MSG_LEFT_CURLY =
         "Left curly brace must be alone on its line when block spans multiple lines";
 
-    /** Message emitted when the right curly brace is not alone on its line in a multi-line block. */
+    /**
+     * Message emitted when the right curly brace is not alone on its line in a multi-line block.
+     */
     static final String MSG_RIGHT_CURLY =
         "Right curly brace must be alone on its line when block spans multiple lines";
+
+    /**
+     * Message emitted when 'catch' or 'finally' follows '}' on the same line.
+     */
+    static final String MSG_CATCH_SAME_LINE =
+        "''catch''/''finally'' must be on a new line after the closing brace";
 
     @Override
     public int[] getDefaultTokens()
     {
         return new int[]
-        {
-            TokenTypes.SLIST,
-            TokenTypes.OBJBLOCK,
-            TokenTypes.ARRAY_INIT,
-            TokenTypes.LITERAL_SWITCH,
-        };
+            {
+                TokenTypes.SLIST,
+                TokenTypes.OBJBLOCK,
+                TokenTypes.ARRAY_INIT,
+                TokenTypes.LITERAL_SWITCH,
+            };
     }
 
     @Override
@@ -47,7 +55,7 @@ public class CurlyBraceCheck extends AbstractCheck
     @Override
     public int[] getRequiredTokens()
     {
-        return new int[] {};
+        return new int[]{};
     }
 
     @Override
@@ -127,7 +135,8 @@ public class CurlyBraceCheck extends AbstractCheck
 
     /**
      * Checks that the right curly brace has only whitespace before it on its line.
-     * Trailing content (e.g. "while" in do-while, or a comment) is permitted.
+     * Trailing content (e.g. "while" in do-while, or a comment) is permitted,
+     * but "catch" and "finally" are not — they must appear on the next line.
      */
     private void checkRightCurly(DetailAST rcurly, String[] lines)
     {
@@ -142,6 +151,11 @@ public class CurlyBraceCheck extends AbstractCheck
         if (!beforeClean)
         {
             log(rcurly, MSG_RIGHT_CURLY);
+        }
+        final String after = line.substring(colNo + 1).trim();
+        if (after.matches("(catch|finally)\\b.*"))
+        {
+            log(rcurly, MSG_CATCH_SAME_LINE);
         }
     }
 }

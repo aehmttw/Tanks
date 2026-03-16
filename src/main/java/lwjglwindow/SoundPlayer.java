@@ -409,7 +409,8 @@ public class SoundPlayer extends BaseSoundPlayer
             //Retreive the extra information that was stored in the buffers by the function
             channels = channelsBuffer.get(0);
             sampleRate = sampleRateBuffer.get(0);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.err.println("Failed to create sound " + path);
             e.printStackTrace();
@@ -476,7 +477,8 @@ public class SoundPlayer extends BaseSoundPlayer
             //Retreive the extra information that was stored in the buffers by the function
             channels = channelsBuffer.get(0);
             sampleRate = sampleRateBuffer.get(0);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException("Failed to create music " + path);
         }

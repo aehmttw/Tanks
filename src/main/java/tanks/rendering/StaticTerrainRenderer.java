@@ -23,7 +23,8 @@ public class StaticTerrainRenderer extends TerrainRenderer
             Game.game.shaderInstances.put(ds.getClass(), ds);
 
             this.outsideShader = Game.game.shaderOutOfBounds;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             Game.exitToCrash(e);
@@ -332,7 +333,8 @@ public class StaticTerrainRenderer extends TerrainRenderer
                         configureShader(s);
                         this.drawMap(this.renderers.get(s), 0, 0);
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }

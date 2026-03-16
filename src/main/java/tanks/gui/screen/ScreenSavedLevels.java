@@ -221,7 +221,8 @@ public class ScreenSavedLevels extends Screen
                     while (file.hasNextLine())
                         b.append(file.nextLine()).append("\n");
                     validation.accept(String.join("\n", b.toString()));
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     e.printStackTrace(System.err);
                     failed.add(file);

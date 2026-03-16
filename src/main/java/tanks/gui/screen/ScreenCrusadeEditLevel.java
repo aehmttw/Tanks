@@ -134,56 +134,57 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
 
     public Button saveLevelConfirm = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, this.objWidth, this.objHeight, "Save level",
         new Runnable()
+        {
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
+                BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
+
+                boolean success = false;
+                if (!file.exists())
                 {
-                    BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName.inputText.replace(" ", "_") + ".tanks");
-
-                    boolean success = false;
-                    if (!file.exists())
+                    try
                     {
-                        try
+                        if (file.create())
                         {
-                            if (file.create())
+                            file.startWriting();
+                            String ls = level.levelString;
+                            StringBuilder tanks = new StringBuilder("\ntanks\n");
+                            if (previous2.crusade.customTanks.size() > 0)
                             {
-                                file.startWriting();
-                                String ls = level.levelString;
-                                StringBuilder tanks = new StringBuilder("\ntanks\n");
-                                if (previous2.crusade.customTanks.size() > 0)
-                                {
-                                    for (TankAIControlled t: previous2.crusade.customTanks)
-                                        tanks.append(t.toString()).append("\n");
+                                for (TankAIControlled t: previous2.crusade.customTanks)
+                                    tanks.append(t.toString()).append("\n");
 
-                                    ls = ls + tanks;
-                                }
-                                file.println(ls);
-                                if (!level.buildOverrides.isEmpty())
-                                {
-                                    file.println("builds\n");
-                                    for (TankPlayer.ShopTankBuild b: level.buildOverrides)
-                                    {
-                                        file.println(b.toString() + "\n");
-                                    }
-                                }
-                                file.stopWriting();
-                                success = true;
+                                ls = ls + tanks;
                             }
-                        } catch (IOException e)
-                        {
-                            e.printStackTrace(Game.logger);
-                            e.printStackTrace();
+                            file.println(ls);
+                            if (!level.buildOverrides.isEmpty())
+                            {
+                                file.println("builds\n");
+                                for (TankPlayer.ShopTankBuild b: level.buildOverrides)
+                                {
+                                    file.println(b.toString() + "\n");
+                                }
+                            }
+                            file.stopWriting();
+                            success = true;
                         }
                     }
-
-                    if (success)
+                    catch (IOException e)
                     {
-                        saveLevelConfirm.enabled = false;
-                        saved = true;
-                        saveLevelConfirm.setText("Level saved!");
+                        e.printStackTrace(Game.logger);
+                        e.printStackTrace();
                     }
                 }
-            });
+
+                if (success)
+                {
+                    saveLevelConfirm.enabled = false;
+                    saved = true;
+                    saveLevelConfirm.setText("Level saved!");
+                }
+            }
+        });
 
     public Button cancelSave = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back",
         () -> saveMenu = false);

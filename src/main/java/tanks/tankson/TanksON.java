@@ -124,7 +124,8 @@ public class TanksON
         try
         {
             return Double.parseDouble(s.s.substring(start, s.index));
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             return (double) error(e.toString(), s);
         }

@@ -25,10 +25,9 @@ import static tanks.tank.TankPropertyCategory.*;
 @TanksONable("tank")
 public class TankAIControlled extends Tank implements ITankField
 {
-    /**
-     * The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims.
-     */
-    protected enum RotationPhase { clockwise, counter_clockwise, aiming, recalculating }
+    /** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims. */
+    protected enum RotationPhase
+    {clockwise, counter_clockwise, aiming, recalculating}
 
     // The following are properties which are used externally to determine the behavior settings of the tank.
     // Simple modifications of tanks can just change these values to produce a desired behavior.
@@ -38,29 +37,21 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = firingGeneral, id = "bullet", name = "Bullet")
     public ItemBullet.ItemStackBullet bulletItem = new ItemBullet.ItemStackBullet(null, DefaultItems.basic_bullet.getCopy(), 0);
 
-    /**
-     * The mine a tank uses. If you want to change this, make sure to use setMine() because it also updates the mineItem.
-     */
+    /** The mine a tank uses. If you want to change this, make sure to use setMine() because it also updates the mineItem. */
     @Property(category = mines, id = "mine", name = "Mine")
     public ItemMine.ItemStackMine mineItem = new ItemMine.ItemStackMine(null, DefaultItems.basic_mine.getCopy(), 0);
 
     @Property(category = movementGeneral, id = "enable_movement", name = "Can move")
     public boolean enableMovement = true;
 
-    /**
-     * Chance per frame to change direction
-     */
+    /** Chance per frame to change direction */
     @Property(category = movementIdle, id = "motion_change_chance", name = "Turn chance", minValue = 0.0, desc = "Chance of the tank to change the direction in which it is moving")
     public double turnChance = 0.01;
-    /**
-     * Time waited when changing direction of motion
-     */
+    /** Time waited when changing direction of motion */
     @Property(category = movementIdle, id = "turn_pause_time", name = "Turn pause time", minValue = 0.0,
         desc = "Time the tank pauses when changing directions \n \n 1 time unit = 0.01 seconds")
     public double turnPauseTime = 15;
-    /**
-     * Multiplier of time the tank will hide in a shrub
-     */
+    /** Multiplier of time the tank will hide in a shrub */
     @Property(category = movementIdle, id = "bush_hide_time", name = "Bush hide time", minValue = 0.0,
         desc = "Time the tank will stop moving to hide in bushes \n \n 1 time unit = 0.01 seconds")
     public double bushHideTime = 350;
@@ -88,7 +79,8 @@ public class TankAIControlled extends Tank implements ITankField
      * Intersect = move away
      * from where bullet path will intersect tank; less accurate
      */
-    public enum BulletAvoidBehavior { intersect, back_off, dodge, aggressive_dodge, back_off_dodge }
+    public enum BulletAvoidBehavior
+    {intersect, back_off, dodge, aggressive_dodge, back_off_dodge}
 
     @Property(category = movementAvoid, id = "bullet_avoid_behavior", name = "Bullet avoid behavior", desc = "Method the tank will use to avoid bullets \n " +
         "\n Intersect: move away from where the bullet will hit the tank (less accurate) " +
@@ -97,40 +89,28 @@ public class TankAIControlled extends Tank implements ITankField
         "\n Aggressive dodge: move at an angle toward the bullet " +
         "\n Back off dodge: back off if there is space behind, dodge otherwise")
     public BulletAvoidBehavior bulletAvoidBehavior = BulletAvoidBehavior.intersect;
-    /**
-     * How close the tank needs to get to a mine to avoid it
-     */
+    /** How close the tank needs to get to a mine to avoid it */
     @Property(category = movementAvoid, id = "mine_avoid_sensitivity", name = "Mine sight radius",
         desc = "If the tank is within this fraction of a mine's radius, it will move away from the mine")
     public double mineAvoidSensitivity = 1.5;
-    /**
-     * Time which the tank will avoid a bullet after the bullet is no longer aiming at the tank
-     */
+    /** Time which the tank will avoid a bullet after the bullet is no longer aiming at the tank */
     @Property(category = movementAvoid, id = "bullet_avoid_timer_base", name = "Bullet flee time",
         desc = "Time the tank will continue fleeing from a bullet until after it is no longer deemed a threat \n \n 1 time unit = 0.01 seconds")
     public double bulletAvoidTimerBase = 30;
 
-    /**
-     * If enabled, the tank may actively seek out enemies
-     */
+    /** If enabled, the tank may actively seek out enemies */
     @Property(category = movementPathfinding, id = "enable_pathfinding", name = "Seek targets",
         desc = "If enabled, the tank may decide to navigate through the level towards its target. If this tank can lay mines, it may also use them to get to the target.")
     public boolean enablePathfinding = false;
-    /**
-     * Chance per frame to seek the target enemy
-     */
+    /** Chance per frame to seek the target enemy */
     @Property(category = movementPathfinding, id = "seek_chance", minValue = 0.0, maxValue = 1.0, name = "Seek chance",
         desc = "Chance for this tank to decide to start navigating to its target")
     public double seekChance = 0.001;
-    /**
-     * If set to true, when enters line of sight of target enemy, will stop pathfinding to it
-     */
+    /** If set to true, when enters line of sight of target enemy, will stop pathfinding to it */
     @Property(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight",
         desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight")
     public boolean stopSeekingOnSight = false;
-    /**
-     * Increasing this value increases how stubborn the tank is in following a path
-     */
+    /** Increasing this value increases how stubborn the tank is in following a path */
     @Property(category = movementPathfinding, id = "seek_timer_base", minValue = 0.0, name = "Seek patience",
         desc = "If this tank is blocked from navigating its path for this amount of time, it will abandon the navigation \n \n 1 time unit = 0.01 seconds")
     public double seekTimerBase = 200;
@@ -144,21 +124,16 @@ public class TankAIControlled extends Tank implements ITankField
      * Backwind = move at a 45 degree angle away target enemy
      * Keep Distance = stay a particular distance away from the target enemy
      */
-    public enum TargetEnemySightBehavior { approach, flee, strafe, sidewind, backwind, keep_distance }
+    public enum TargetEnemySightBehavior
+    {approach, flee, strafe, sidewind, backwind, keep_distance}
 
-    /**
-     * When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight
-     */
+    /** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight */
     @Property(category = movementOnSight, id = "enable_looking_at_target_enemy", name = "Test sight",
         desc = "When enabled, the tank will test if its target is in its line of sight, and react accordingly")
     public boolean enableLookingAtTargetEnemy = true;
-    /**
-     * When set to true, will call reactToTargetEnemySight() when an unobstructed line of sight to the target enemy can be made
-     */
+    /** When set to true, will call reactToTargetEnemySight() when an unobstructed line of sight to the target enemy can be made */
     public boolean enableTargetEnemyReaction = true;
-    /**
-     * Type of behavior tank should have if its target enemy is in line of sight
-     */
+    /** Type of behavior tank should have if its target enemy is in line of sight */
     @Property(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight \n " +
         "Approach - move directly toward the target \n " +
         "Flee - move directly away from the target \n " +
@@ -290,7 +265,8 @@ public class TankAIControlled extends Tank implements ITankField
      * Alternate means that the tank will switch between shooting straight at the target enemy and using the reflect AI with every shot.
      * Wander means that the tank will randomly rotate and shoot only if it detects the target enemy
      */
-    public enum ShootAI { none, sprinkler, wander, straight, homing, alternate, reflect }
+    public enum ShootAI
+    {none, sprinkler, wander, straight, homing, alternate, reflect}
 
     /**
      * Type of shooting AI to use
@@ -358,9 +334,9 @@ public class TankAIControlled extends Tank implements ITankField
     public boolean enableDefensiveFiring = false;
     @Property(category = firingBehavior, id = "defensive_fire_urgency", name = "Deflection urgency",
         desc = "The random cooldown between firing bullets will be reduced by this fraction when the tank is deflecting incoming bullets. \n \n " +
-        "For example, if a tank has a bullet base cooldown of 100, random cooldown of 50, and defensive firing urgency of 0.8, it will normally shoot every 100-150 time units," +
-        " but when it is trying to deflect an incoming bullet, it will shoot every 100-110 time units, since the random cooldown is reduced by the urgency factor of 0.8," +
-        " from 50 to 10. \n \n 1 time unit = 0.01 seconds")
+            "For example, if a tank has a bullet base cooldown of 100, random cooldown of 50, and defensive firing urgency of 0.8, it will normally shoot every 100-150 time units," +
+            " but when it is trying to deflect an incoming bullet, it will shoot every 100-110 time units, since the random cooldown is reduced by the urgency factor of 0.8," +
+            " from 50 to 10. \n \n 1 time unit = 0.01 seconds")
     public double defensiveFiringUrgency = 1;
     /**
      * Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets
@@ -371,7 +347,7 @@ public class TankAIControlled extends Tank implements ITankField
 
     @Property(category = firingBehavior, id = "ignore_range", name = "Ignore range limits",
         desc = "When enabled, will still try to shoot bullets when target enemies are outside of the bullet's range. This is useful for tanks with block bullets," +
-        " since the blocks can form a barricade.")
+            " since the blocks can form a barricade.")
     public boolean ignoreRange = false;
 
     /**
@@ -2894,7 +2870,8 @@ public class TankAIControlled extends Tank implements ITankField
             this.spawnedTanks.add(t);
 
             Game.spawnTank(t, this);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -3227,7 +3204,8 @@ public class TankAIControlled extends Tank implements ITankField
                     Game.effects.add(e);
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -3252,7 +3230,8 @@ public class TankAIControlled extends Tank implements ITankField
 
     public static class Tile
     {
-        public enum Type { empty, destructible, solid }
+        public enum Type
+        {empty, destructible, solid}
 
         public Tile parent;
 
@@ -3640,7 +3619,8 @@ public class TankAIControlled extends Tank implements ITankField
 
                 s = s.substring(s.indexOf(";") + 1);
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.logger.println("Failed to load tank: " + original);
             System.err.println("Failed to load tank: " + original);
@@ -3735,7 +3715,8 @@ public class TankAIControlled extends Tank implements ITankField
                         f.set(t, f.get(this));
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -3811,7 +3792,8 @@ public class TankAIControlled extends Tank implements ITankField
             t.overridePrimaryColor = true;
             t.overrideSecondaryColor = true;
             t.overrideTertiaryColor = true;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -3872,7 +3854,8 @@ public class TankAIControlled extends Tank implements ITankField
                     }
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -3917,7 +3900,8 @@ public class TankAIControlled extends Tank implements ITankField
                     }
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -3984,7 +3968,8 @@ public class TankAIControlled extends Tank implements ITankField
                     }
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

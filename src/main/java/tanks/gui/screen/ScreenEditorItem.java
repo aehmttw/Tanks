@@ -58,7 +58,8 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 f.stopWriting();
 
                 return true;
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 Game.exitToCrash(e);
             }
@@ -150,7 +151,8 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 this.objectEditorScreen.currentTab = null;
                 this.objectEditorScreen.title += " item";
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -213,7 +215,8 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                         }
                     }
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }

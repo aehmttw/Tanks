@@ -50,7 +50,8 @@ public class Server
             channel = b.bind(port).sync();
 
             channel.channel().closeFuture().sync();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             if (ScreenPartyHost.isServer)
             {
@@ -58,7 +59,8 @@ public class Server
                 e.printStackTrace();
                 Game.screen = new ScreenHostingEnded(e.getLocalizedMessage());
             }
-        } finally
+        }
+        finally
         {
             close();
         }

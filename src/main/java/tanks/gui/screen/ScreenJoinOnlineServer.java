@@ -67,7 +67,8 @@ public class ScreenJoinOnlineServer extends Screen
                             Client.connect("localhost", Game.port, true, connectionID);
                         else
                             Client.connect(ipaddress, port, true, connectionID);
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         if (Game.screen == s && Client.connectionID == connectionID)
                         {

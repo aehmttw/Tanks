@@ -103,7 +103,8 @@ public class PlayerMap
             }
 
             pw.close();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             Game.logger.println(players.toString());
@@ -148,7 +149,8 @@ public class PlayerMap
                                 setupPlayer(id, s);
                                 PlayerMap.instance.getPlayer(id).registered = true;
                             }
-                        } catch (Exception e)
+                        }
+                        catch (Exception e)
                         {
                             System.out.println("Failed to parse: " + in);
                             e.printStackTrace();
@@ -156,7 +158,8 @@ public class PlayerMap
                     }
 
                     br.close();
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }
@@ -200,7 +203,8 @@ public class PlayerMap
             }
 
             ds.close();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -219,7 +223,8 @@ public class PlayerMap
             }
 
             ds.close();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }

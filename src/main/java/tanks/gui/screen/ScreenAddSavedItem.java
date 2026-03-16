@@ -94,7 +94,8 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
                     Item.ItemStack<?> i = Item.ItemStack.fromString(null, file.nextLine());
                     file.stopReading();
                     onComplete.accept(i);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -114,7 +115,8 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
 
                     if (!itemClass.isAssignableFrom(i.getClass()) && !itemClass.isAssignableFrom(i.item.getClass()))
                         b.text = null;
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }

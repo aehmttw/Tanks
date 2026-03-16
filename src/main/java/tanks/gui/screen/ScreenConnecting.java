@@ -35,7 +35,8 @@ public class ScreenConnecting extends Screen
             try
             {
                 thread.interrupt();
-            } catch (Exception ignored)
+            }
+            catch (Exception ignored)
             {
 
             }

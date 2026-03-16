@@ -32,7 +32,8 @@ public class ComputerFileManager extends BaseFileManager
             }
 
             return al;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             return al;
@@ -56,7 +57,8 @@ public class ComputerFileManager extends BaseFileManager
         try
         {
             Runtime.getRuntime().exec(cmd);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }

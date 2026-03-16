@@ -107,13 +107,13 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
 
     public Button addItem = new Button(Drawing.drawing.interfaceSizeX / 2 + add_offset, Drawing.drawing.interfaceSizeY / 2 + titleOffset, this.objHeight, this.objHeight,
         "+", new Runnable()
+    {
+        @Override
+        public void run()
         {
-            @Override
-            public void run()
-            {
-                itemSelector.setScreen();
-            }
-        },
+            itemSelector.setScreen();
+        }
+    },
         "Add an item");
 
     public Button addBuild = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + add_offset, Drawing.drawing.interfaceSizeY / 2 + titleOffset, this.objHeight,
@@ -214,7 +214,8 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
                         ii, false, sc::refreshButtons), Game.screen);
                     s.onComplete = sc::refreshButtons;
                     Game.screen = s;
-                } catch (NoSuchFieldException e)
+                }
+                catch (NoSuchFieldException e)
                 {
                     Game.exitToCrash(e);
                 }
@@ -331,7 +332,8 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
                         crusade.crusadeShopItems, crusade.crusadeShopItems.size() - 1, false, this::refreshButtons), this);
                     s.onComplete = this::refreshButtons;
                     Game.screen = s;
-                } catch (NoSuchFieldException e)
+                }
+                catch (NoSuchFieldException e)
                 {
                     e.printStackTrace();
                 }
@@ -762,7 +764,8 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             }
 
             f.stopWriting();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

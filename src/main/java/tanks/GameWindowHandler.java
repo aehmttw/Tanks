@@ -36,7 +36,8 @@ public class GameWindowHandler implements IWindowHandler
             {
                 Crusade.currentCrusade.quit();
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

@@ -80,7 +80,8 @@ public class SavedFilesList extends ButtonList
                 if (p.endsWith(extension))
                     files.add(p);
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Game.exitToCrash(e);
         }

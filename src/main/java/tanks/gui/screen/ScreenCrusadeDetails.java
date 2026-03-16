@@ -198,7 +198,8 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
                     }
 
                     f.stopReading();
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Game.exitToCrash(e);
                 }

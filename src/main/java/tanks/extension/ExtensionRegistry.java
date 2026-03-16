@@ -50,7 +50,8 @@ public class ExtensionRegistry
                 }
 
                 in.stopReading();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -77,7 +78,8 @@ public class ExtensionRegistry
                     this.extensions.add(e);
                     System.out.println("loaded extension: " + e.name);
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -107,13 +109,15 @@ public class ExtensionRegistry
                         Scanner s = new Scanner(new InputStreamReader(i));
                         Class<? extends Extension> clasz = (Class<? extends Extension>) loader.loadClass(s.nextLine());
                         return clasz;
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         System.err.println("Failed to load extension into classpath " + jar);
                         e.printStackTrace();
                     }
                 }
-            } catch (Exception ignored) { }
+            }
+            catch (Exception ignored) {}
         }
 
         return null;
@@ -148,7 +152,8 @@ public class ExtensionRegistry
             f.println("# (Extensions will be loaded in the order listed here)");
 
             f.stopWriting();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

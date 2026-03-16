@@ -185,7 +185,8 @@ public class ScreenOptions extends Screen
         try
         {
             Game.game.fileManager.getFile(path).create();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Game.logger.println(new Date().toString() + " (syserr) file permissions are broken! cannot initialize options file.");
             System.exit(1);
@@ -280,7 +281,8 @@ public class ScreenOptions extends Screen
             f.println("auto_load_extensions=" + Game.autoLoadExtensions);
             f.println("debug_mode=" + alwaysDebug);
             f.stopWriting();
-        } catch (FileNotFoundException e)
+        }
+        catch (FileNotFoundException e)
         {
             Game.exitToCrash(e);
         }
@@ -564,7 +566,8 @@ public class ScreenOptions extends Screen
             {
                 Turret.setTertiary(Game.player.color, Game.player.color2, Game.player.color3);
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.logger.println(new Date().toString() + " Options file is nonexistent or broken, using default:");
             e.printStackTrace(Game.logger);

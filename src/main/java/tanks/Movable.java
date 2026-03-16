@@ -477,7 +477,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
                     ((Movable) (f.get(this))).randomize();
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

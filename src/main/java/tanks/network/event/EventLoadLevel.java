@@ -86,7 +86,8 @@ public class EventLoadLevel extends PersonalEvent
 
             Game.currentLevel.startTime = startTime;
             Game.currentLevel.loadLevel();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.screen = new ScreenFailedToLoadLevel("Level is remote!", level, e, new ScreenPartyLobby());
         }

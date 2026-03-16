@@ -4,10 +4,11 @@ package tanks.minigames;
  *
  * What a horrible File. We should be loading this from TanksON. I don't like Code just being game data, and I'd much rather load this from a file.
  * This is syntactically Ugly and just should not be how this is dealt with going forward. LevelsON and CrusadesON will help deal with this.
- *
+ * <p>
  * -- Ghostlypi
  *
- * */
+ *
+ */
 
 public class CastleRampage extends RampageTrial
 {

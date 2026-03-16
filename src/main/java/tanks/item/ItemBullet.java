@@ -120,7 +120,8 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
                     if (this.stackSize <= 0 && !unlimited)
                         this.destroy = true;
                 }
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }

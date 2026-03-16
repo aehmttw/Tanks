@@ -297,7 +297,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             {
                 Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
                 Game.currentLevel.loadLevel();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -318,21 +319,21 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     Button edit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace / 2, this.objWidth, this.objHeight,
         "Edit the level", () ->
-        {
-            Game.cleanUp();
-            ScreenLevelEditor s = new ScreenLevelEditor(name, Game.currentLevel);
-            Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name), s);
-            Game.screen = s;
-        }
+    {
+        Game.cleanUp();
+        ScreenLevelEditor s = new ScreenLevelEditor(name, Game.currentLevel);
+        Game.loadLevel(Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + name), s);
+        Game.screen = s;
+    }
     );
 
     Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight,
         "Quit", () ->
-        {
-            Game.cleanUp();
-            Panel.panel.zoomTimer = 0;
-            Game.screen = new ScreenPlaySingleplayer();
-        }
+    {
+        Game.cleanUp();
+        Panel.panel.zoomTimer = 0;
+        Game.screen = new ScreenPlaySingleplayer();
+    }
     );
 
     Button quitHigherPos = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit",
@@ -404,32 +405,32 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     Button quitPartyGame = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace * 1.5, this.objWidth, this.objHeight,
         "Back to party", () ->
-        {
-            Game.cleanUp();
-            System.gc();
-            Panel.panel.zoomTimer = 0;
-            Game.screen = ScreenPartyHost.activeScreen;
-            ScreenPartyHost.readyPlayers.clear();
-            ScreenPartyHost.includedPlayers.clear();
-            Game.eventsOut.add(new EventReturnToLobby());
-            versus = false;
-        }
+    {
+        Game.cleanUp();
+        System.gc();
+        Panel.panel.zoomTimer = 0;
+        Game.screen = ScreenPartyHost.activeScreen;
+        ScreenPartyHost.readyPlayers.clear();
+        ScreenPartyHost.includedPlayers.clear();
+        Game.eventsOut.add(new EventReturnToLobby());
+        versus = false;
+    }
     );
 
     Button exitParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace / 2, this.objWidth, this.objHeight,
         "Leave party", () ->
-        {
-            Game.cleanUp();
-            System.gc();
-            Panel.panel.zoomTimer = 0;
-            Drawing.drawing.playSound("leave.ogg");
-            ScreenPartyLobby.isClient = false;
-            Game.screen = new ScreenJoinParty();
+    {
+        Game.cleanUp();
+        System.gc();
+        Panel.panel.zoomTimer = 0;
+        Drawing.drawing.playSound("leave.ogg");
+        ScreenPartyLobby.isClient = false;
+        Game.screen = new ScreenJoinParty();
 
-            Client.handler.close();
+        Client.handler.close();
 
-            ScreenPartyLobby.connections.clear();
-        }
+        ScreenPartyLobby.connections.clear();
+    }
     );
 
     Button quitCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight, "Quit", () ->
@@ -443,12 +444,12 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     Button quitCrusadeFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight,
         "Quit", () ->
-        {
-            Crusade.currentCrusade.quit();
-            Game.cleanUp();
-            Panel.panel.zoomTimer = 0;
-            Game.screen = new ScreenPlaySingleplayer();
-        },
+    {
+        Crusade.currentCrusade.quit();
+        Game.cleanUp();
+        Panel.panel.zoomTimer = 0;
+        Game.screen = new ScreenPlaySingleplayer();
+    },
         "Note! You will lose a life for quitting---in the middle of a level------Since you do not have any other lives left,---your progress will be lost!");
 
     Button restartCrusade = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Restart the level", () ->
@@ -496,17 +497,17 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     Button quitCrusadeParty = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight,
         "Back to party", () ->
-        {
-            Crusade.currentCrusade.retry = true;
-            Crusade.currentCrusade.quit();
-            Panel.panel.zoomTimer = 0;
-            Game.cleanUp();
+    {
+        Crusade.currentCrusade.retry = true;
+        Crusade.currentCrusade.quit();
+        Panel.panel.zoomTimer = 0;
+        Game.cleanUp();
 
-            Game.screen = ScreenPartyHost.activeScreen;
-            ScreenPartyHost.readyPlayers.clear();
-            ScreenPartyHost.includedPlayers.clear();
-            Game.eventsOut.add(new EventReturnToLobby());
-        },
+        Game.screen = ScreenPartyHost.activeScreen;
+        ScreenPartyHost.readyPlayers.clear();
+        ScreenPartyHost.includedPlayers.clear();
+        Game.eventsOut.add(new EventReturnToLobby());
+    },
         "Note! All players will lose a life for---quitting in the middle of a level.");
 
 
@@ -550,19 +551,19 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
     Button quitCrusadePartyFinalLife = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + this.objYSpace, this.objWidth, this.objHeight,
         "Back to party", () ->
-        {
-            Crusade.currentCrusade.retry = true;
-            Crusade.crusadeMode = false;
-            Crusade.currentCrusade = null;
+    {
+        Crusade.currentCrusade.retry = true;
+        Crusade.crusadeMode = false;
+        Crusade.currentCrusade = null;
 
-            Panel.panel.zoomTimer = 0;
-            Game.cleanUp();
-            System.gc();
-            Game.screen = ScreenPartyHost.activeScreen;
-            ScreenPartyHost.readyPlayers.clear();
-            ScreenPartyHost.includedPlayers.clear();
-            Game.eventsOut.add(new EventReturnToLobby());
-        },
+        Panel.panel.zoomTimer = 0;
+        Game.cleanUp();
+        System.gc();
+        Game.screen = ScreenPartyHost.activeScreen;
+        ScreenPartyHost.readyPlayers.clear();
+        ScreenPartyHost.includedPlayers.clear();
+        Game.eventsOut.add(new EventReturnToLobby());
+    },
         "Note! All players will lose a life for---quitting in the middle of a level.------Since nobody has any other lives left,---the crusade will end!");
 
 

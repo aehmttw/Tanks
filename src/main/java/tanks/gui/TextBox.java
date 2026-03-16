@@ -615,7 +615,8 @@ public class TextBox implements IDrawable, ITrigger
                         inputText = (int) this.minValue + "";
                 }
             }
-        } catch (Exception ignored) { }
+        }
+        catch (Exception ignored) {}
     }
 
     public void inputKey(char key)

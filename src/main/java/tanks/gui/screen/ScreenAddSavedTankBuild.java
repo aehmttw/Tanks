@@ -141,7 +141,8 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
                 b.disabledColG = 160;
                 b.disabledColB = 60;
                 b.text = l;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 System.err.println("Failed to load a custom tank build from file: " + l);
                 e.printStackTrace();
@@ -291,7 +292,8 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
                 b.disabledColB = 60;
                 b.disabledColG = 160;
                 b.text = l;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 System.err.println("Failed to load a custom tank from file: " + l);
                 e.printStackTrace();
@@ -319,7 +321,8 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
                 if (p.endsWith(".tanks"))
                     files.add(p);
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Game.exitToCrash(e);
         }

@@ -37,7 +37,8 @@ public class ScreenDownloadLevel extends ScreenOnline implements ILevelPreviewSc
                         file.stopWriting();
                         success = true;
                     }
-                } catch (IOException e)
+                }
+                catch (IOException e)
                 {
                     e.printStackTrace(Game.logger);
                     e.printStackTrace();

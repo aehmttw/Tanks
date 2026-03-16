@@ -44,7 +44,8 @@ public class ScreenJoinParty extends Screen
             {
                 if (clientThread != null && clientThread.isAlive())
                     clientThread.interrupt();
-            } catch (Exception ignored) { }
+            }
+            catch (Exception ignored) {}
 
             Game.screen = new ScreenParty();
         }
@@ -112,7 +113,8 @@ public class ScreenJoinParty extends Screen
                             try
                             {
                                 Thread.sleep(25);
-                            } catch (InterruptedException e)
+                            }
+                            catch (InterruptedException e)
                             {
                                 e.printStackTrace();
                             }
@@ -169,7 +171,8 @@ public class ScreenJoinParty extends Screen
                 try
                 {
                     id = Integer.parseInt(ipText.substring("steam:".length()));
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     ScreenConnecting s = new ScreenConnecting(clientThread);
                     Game.screen = s;
@@ -265,7 +268,8 @@ public class ScreenJoinParty extends Screen
                         Client.connect("localhost", Game.port, false, connectionID);
                     else
                         Client.connect(ipaddress, port, false, connectionID);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     if (Game.screen == s && Client.connectionID == connectionID)
                     {

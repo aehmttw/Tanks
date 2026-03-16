@@ -60,7 +60,8 @@ public class ScreenParty extends Screen
             {
                 Game.port = Integer.parseInt(port.inputText);
                 ScreenOptions.saveOptions(Game.homedir);
-            } catch (Exception ignored) { }
+            }
+            catch (Exception ignored) {}
             port.inputText = Game.port + "";
         }
     },

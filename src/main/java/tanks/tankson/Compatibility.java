@@ -196,7 +196,8 @@ public class Compatibility
         try
         {
             return b ? f.getType().getConstructor().newInstance() : null;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }

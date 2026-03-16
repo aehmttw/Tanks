@@ -107,7 +107,8 @@ public class Crusade
                 }
 
                 f.stopReading();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }
@@ -145,7 +146,8 @@ public class Crusade
             this.initialize(list, name);
 
             f.stopReading();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             this.error = e;
         }
@@ -508,7 +510,8 @@ public class Crusade
                     }
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

@@ -33,7 +33,8 @@ public class FieldPointer<T> extends Pointer<T>
         try
         {
             field.set(object, val);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }
@@ -45,7 +46,8 @@ public class FieldPointer<T> extends Pointer<T>
         try
         {
             return (T) field.get(object);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }

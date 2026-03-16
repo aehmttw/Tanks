@@ -106,7 +106,8 @@ public class EventShootBullet extends PersonalEvent
 
             if (!(b instanceof BulletInstant))
                 Game.movables.add(b);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }

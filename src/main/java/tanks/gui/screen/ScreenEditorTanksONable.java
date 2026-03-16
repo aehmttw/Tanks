@@ -69,7 +69,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
         try
         {
             setTarget(target.getType().newInstance());
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             throw new RuntimeException(e);
         }
@@ -384,10 +385,12 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         }
 
                         t.inputText = f.get().toString();
-                    } catch (NumberFormatException e)
+                    }
+                    catch (NumberFormatException e)
                     {
                         t.inputText = t.previousInputText;
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }
@@ -425,7 +428,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         }
 
                         t.inputText = f.get().toString();
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         t.inputText = f.get() + "";
                     }
@@ -473,7 +477,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         Object old = f.get();
                         f.cast().set(emblems[t.selectedOption]);
                         validateChangedProperty(f, p, old);
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         Game.exitToCrash(ex);
                     }
@@ -511,7 +516,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         Object old = f.get();
                         f.cast().set(sounds.get(t.selectedOption));
                         validateChangedProperty(f, p, old);
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         Game.exitToCrash(ex);
                     }
@@ -566,7 +572,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         b.set(!b.get());
                         validateChangedProperty(f, p, old);
                         t.optionText = b.get() ? "Yes" : "No";
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }
@@ -599,7 +606,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         Object old = f.get();
                         f.cast().set(values[t.selectedOption]);
                         validateChangedProperty(f, p, old);
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         Game.exitToCrash(ex);
                     }
@@ -656,7 +664,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         Object old = f.get();
                         ((Pointer<IModel>) f).set(finalModels[t.selectedOption]);
                         validateChangedProperty(f, p, old);
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         Game.exitToCrash(ex);
                     }
@@ -746,7 +755,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                         Object old = f.get();
                         ((Pointer<TankModels.TankSkin>) f).set(finalSkins[t.selectedOption]);
                         validateChangedProperty(f, p, old);
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         Game.exitToCrash(ex);
                     }
@@ -788,7 +798,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                             f.cast().set(t.inputText);
                             validateChangedProperty(f, p, old);
                         }
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         Game.exitToCrash(e);
                     }
@@ -911,7 +922,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
                 return s;
             }
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -1046,7 +1058,8 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
             else
                 b.optionText = "\u00A7127000000255none";
 
-        } catch (NoSuchFieldException ex)
+        }
+        catch (NoSuchFieldException ex)
         {
             Game.exitToCrash(ex);
         }

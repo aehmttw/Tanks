@@ -77,7 +77,8 @@ public class RegistryTank
                     t.musicTracks = new HashSet<>();
 
                 return t;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
                 return null;

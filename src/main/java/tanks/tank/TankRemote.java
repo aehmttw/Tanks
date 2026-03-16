@@ -108,7 +108,8 @@ public class TankRemote extends Tank
             {
                 field.set(this, field.get(t));
             }
-        } catch (IllegalAccessException e)
+        }
+        catch (IllegalAccessException e)
         {
             throw new RuntimeException(e);
         }

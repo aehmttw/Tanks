@@ -50,13 +50,15 @@ public class TanksOnlineServer
             channel = b.bind(port).sync();
 
             channel.channel().closeFuture().sync();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             if (ScreenPartyHost.isServer)
             {
                 e.printStackTrace();
             }
-        } finally
+        }
+        finally
         {
             close();
         }

@@ -23,7 +23,7 @@ public class Model implements IModel
 
     public HashMap<String, String> currentSkin = new HashMap<>();
 
-    public double[] bonesMatrix = new double[]{1, 0, 0,  0, 1, 0,  0, 0, 1};
+    public double[] bonesMatrix = new double[]{1, 0, 0, 0, 1, 0, 0, 0, 1};
 
     public Model(BaseWindow window, BaseFileManager fileManager, String dir)
     {

@@ -10,7 +10,8 @@ public class InputBinding
      */
     public static int doubleClickTime = 300;
 
-    public enum InputType { keyboard, mouse }
+    public enum InputType
+    {keyboard, mouse}
 
     public int input;
     public InputType inputType;

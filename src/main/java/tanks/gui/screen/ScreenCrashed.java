@@ -79,7 +79,8 @@ public class ScreenCrashed extends Screen
         try
         {
             Game.game.window.openLink(new URL(ScreenAbout.discord_link));
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }

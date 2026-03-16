@@ -64,7 +64,8 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
                 target.get().clonePropertiesTo(b);
                 this.setupLayoutParameters();
                 setTarget(b);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }

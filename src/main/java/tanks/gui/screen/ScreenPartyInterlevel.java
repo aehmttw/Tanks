@@ -62,7 +62,8 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
             Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
             Game.currentLevel.loadLevel();
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e.getCause());
         }

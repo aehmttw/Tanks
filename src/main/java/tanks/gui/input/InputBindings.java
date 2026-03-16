@@ -132,7 +132,8 @@ public class InputBindings
             }
 
             file.stopWriting();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -178,7 +179,8 @@ public class InputBindings
             }
 
             file.stopReading();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

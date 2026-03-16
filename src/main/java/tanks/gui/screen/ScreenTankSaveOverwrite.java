@@ -29,7 +29,8 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
             String t = f.nextLine();
             f.stopReading();
             this.oldTank = (tank instanceof TankPlayable ? TankPlayer.fromString(t) : TankAIControlled.fromString(t));
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

@@ -67,7 +67,8 @@ public class ScreenCrusades extends Screen
 
             Crusade c = new Crusade(f, name);
             Game.screen = new ScreenCrusadeDetails(c);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             Game.exitToCrash(e);
         }

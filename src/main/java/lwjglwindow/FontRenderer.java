@@ -173,7 +173,8 @@ public class FontRenderer extends BaseFontRenderer
                     int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
                     int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
                     this.window.setColor(r, g, b, a * opacity);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     continue;
                 }
@@ -225,7 +226,8 @@ public class FontRenderer extends BaseFontRenderer
                     int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
                     int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
                     this.window.setColor(r, g, b, a * opacity);
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     continue;
                 }

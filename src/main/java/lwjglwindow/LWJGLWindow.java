@@ -91,7 +91,8 @@ public class LWJGLWindow extends BaseWindow
         {
             this.soundPlayer = new SoundPlayer(this);
             this.soundsEnabled = true;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             this.soundsEnabled = false;
             System.out.println("Failed to enable sounds");
@@ -158,7 +159,8 @@ public class LWJGLWindow extends BaseWindow
                     count++;
                 }
             }
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             e.printStackTrace(Game.logger);
             e.printStackTrace();
@@ -292,15 +294,18 @@ public class LWJGLWindow extends BaseWindow
                 String line;
                 while ((line = reader.readLine()) != null)
                     source.append(line).append('\n');
-            } catch (Exception exc)
+            }
+            catch (Exception exc)
             {
                 exception = exc;
-            } finally
+            }
+            finally
             {
                 try
                 {
                     reader.close();
-                } catch (Exception exc)
+                }
+                catch (Exception exc)
                 {
                     if (innerExc == null)
                         innerExc = exc;
@@ -311,15 +316,18 @@ public class LWJGLWindow extends BaseWindow
 
             if (innerExc != null)
                 throw innerExc;
-        } catch (Exception exc)
+        }
+        catch (Exception exc)
         {
             exception = exc;
-        } finally
+        }
+        finally
         {
             try
             {
                 in.close();
-            } catch (Exception exc)
+            }
+            catch (Exception exc)
             {
                 if (exception == null)
                     exception = exc;
@@ -340,7 +348,8 @@ public class LWJGLWindow extends BaseWindow
         {
             this.shaderDefault = new ShaderGroup(this, "default");
             this.shaderDefault.initialize();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
             System.exit(0);
@@ -602,11 +611,13 @@ public class LWJGLWindow extends BaseWindow
                 textures.put(image, id);
                 textureSX.put(image, decoder.getWidth());
                 textureSY.put(image, decoder.getHeight());
-            } finally
+            }
+            finally
             {
                 in.close();
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.err.println("Failed to load: " + image);
             e.printStackTrace();
@@ -727,7 +738,8 @@ public class LWJGLWindow extends BaseWindow
 
             if (!mac)
                 glfwSetWindowIcon(window, imagebuf);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -740,7 +752,8 @@ public class LWJGLWindow extends BaseWindow
              Scanner scanner = new Scanner(in, java.nio.charset.StandardCharsets.UTF_8.name()))
         {
             result = scanner.useDelimiter("\\A").next();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -1378,7 +1391,8 @@ public class LWJGLWindow extends BaseWindow
                 }
 
                 ImageIO.write(image, "png", f);
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 throw new RuntimeException(e);
             }

@@ -157,7 +157,8 @@ public abstract class Item extends GameObject
                 ItemStack<T> i = (ItemStack<T>) this.getClass().getConstructor(Player.class, item.getClass(), int.class).newInstance(this.player, this.item, this.maxStackSize);
                 this.clonePropertiesTo(i);
                 return i;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Game.exitToCrash(e);
             }

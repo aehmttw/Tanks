@@ -44,7 +44,8 @@ public final class Serializer
                 Object o = c.getConstructor().newInstance();
                 defaults.put(c, o);
                 return o;
-            } catch (Exception ignore)
+            }
+            catch (Exception ignore)
             {
                 return null;
             }
@@ -101,7 +102,8 @@ public final class Serializer
                 try
                 {
                     p.put("item_type", ((Item) o).getClass().getField("item_class_name").get(null));
-                } catch (Exception ignore)
+                }
+                catch (Exception ignore)
                 {
                 }
             else if (o instanceof Bullet)
@@ -143,7 +145,8 @@ public final class Serializer
                         else
                             p.put(getid(f), f.get(o));
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     throw new RuntimeException(e);
                 }
@@ -241,7 +244,8 @@ public final class Serializer
                     {
                         if (f.getAnnotation(Property.class) != null && !equivalent(f.get(a), f.get(b)))
                             return false;
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         throw new RuntimeException(e);
                     }
@@ -276,7 +280,8 @@ public final class Serializer
                 {
                     processed.add("bullet_type");
                     o = Game.registryBullet.getEntry((String) m.get("bullet_type")).bullet.newInstance();
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     throw new RuntimeException(e);
                 }
@@ -291,7 +296,8 @@ public final class Serializer
                 {
                     processed.add("item_type");
                     o = Game.registryItem.getEntry((String) m.get("item_type")).item.getConstructor().newInstance();
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     throw new RuntimeException(e);
                 }
@@ -362,7 +368,8 @@ public final class Serializer
                         try
                         {
                             f.set(o, parseObject((Map<String, Object>) o3));
-                        } catch (ClassCastException | IllegalArgumentException e)
+                        }
+                        catch (ClassCastException | IllegalArgumentException e)
                         {
                             conversions.add(f);
                             conversionTargets.add(o3);
@@ -414,7 +421,8 @@ public final class Serializer
                         f.set(o, m.get(getid(f)));
                     else
                         f.set(o, m.get(getid(f)));
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     System.err.println(f + " " + getid(f));
                     throw new RuntimeException(e);
@@ -430,7 +438,8 @@ public final class Serializer
             try
             {
                 f.set(o, Compatibility.convert(f, o, o3));
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 System.out.println(getid(f));
                 throw new RuntimeException(e);
@@ -451,17 +460,20 @@ public final class Serializer
             {
                 Field f = o.getClass().getField(Compatibility.convert(k));
                 f.set(o, Compatibility.compatibility_table.get(k).apply(o, m.get(k)));
-            } catch (ClassCastException e)
+            }
+            catch (ClassCastException e)
             {
                 try
                 {
                     Field f = o.getClass().getField(Compatibility.convert(k));
                     f.set(o, Compatibility.convert(f, o, m.get(k)));
-                } catch (NoSuchFieldException | IllegalAccessException f)
+                }
+                catch (NoSuchFieldException | IllegalAccessException f)
                 {
                     throw new RuntimeException(f);
                 }
-            } catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
+            }
+            catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
             {
                 System.out.println("Unconvertable field found! " + k);
                 e.printStackTrace();

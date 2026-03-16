@@ -315,7 +315,8 @@ public abstract class BaseWindow
             s.set();
             this.currentShaderGroup = s.group;
             this.currentShader = s;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }

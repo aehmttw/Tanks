@@ -213,7 +213,8 @@ public class ScreenPartyHost extends Screen
             {
                 server = new Server(Game.port);
                 server.run();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 e.printStackTrace();
             }
@@ -228,7 +229,8 @@ public class ScreenPartyHost extends Screen
             try
             {
                 ip = Translation.translate("Your Local IP Address: %s (Port: %d)", Inet4Address.getLocalHost().getHostAddress(), Game.port);
-            } catch (UnknownHostException e)
+            }
+            catch (UnknownHostException e)
             {
                 ip = Translation.translate("Connect to a non-cellular data network to play with others!");
             }
@@ -456,7 +458,8 @@ public class ScreenPartyHost extends Screen
                                 Drawing.drawing.setColor(0, 0, 0);
                                 Drawing.drawing.drawInterfaceText(this.centerX - w - 255, y, server.connections.get(i).lastLatency + "ms", true);
                             }
-                        } catch (Exception e)
+                        }
+                        catch (Exception e)
                         {
 
                         }

@@ -80,7 +80,8 @@ public abstract class GameObject
                     }
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

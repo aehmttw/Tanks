@@ -154,7 +154,8 @@ public class SteamSharedLibraryLoader
 
             String absolutePath = librarySystemPath.getCanonicalPath();
             System.load(absolutePath);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             throw new SteamException(e);
         }
@@ -185,7 +186,8 @@ public class SteamSharedLibraryLoader
                     output.write(buffer, 0, length);
                 }
                 output.close();
-            } catch (IOException e)
+            }
+            catch (IOException e)
             {
                 /*
                     Extracting the library may fail, for example because 'nativeFile' already exists and is in
@@ -195,7 +197,8 @@ public class SteamSharedLibraryLoader
                 {
                     throw e;
                 }
-            } finally
+            }
+            finally
             {
                 input.close();
             }
@@ -244,7 +247,8 @@ public class SteamSharedLibraryLoader
                     return path;
                 }
             }
-        } catch (IOException ignored)
+        }
+        catch (IOException ignored)
         {
 
         }
@@ -301,10 +305,12 @@ public class SteamSharedLibraryLoader
         {
             new FileOutputStream(testFile).close();
             return canExecute(testFile);
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             return false;
-        } finally
+        }
+        finally
         {
             testFile.delete();
         }
@@ -324,7 +330,8 @@ public class SteamSharedLibraryLoader
             {
                 return file.canExecute();
             }
-        } catch (Exception ignored)
+        }
+        catch (Exception ignored)
         {
 
         }

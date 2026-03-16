@@ -44,7 +44,8 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
             Game.currentLevel = Game.currentLevel.getClass().getConstructor().newInstance();
             Game.currentLevel.loadLevel();
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e.getCause());
         }
@@ -74,9 +75,9 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
         Game.screen = new ScreenGame(Crusade.currentCrusade);
     },
         "You will not gain extra lives---" +
-        "from replaying a level you've already cleared.---" +
-        "However, you can still earn coins!---" +
-        "You will still lose a life if you're destroyed.");
+            "from replaying a level you've already cleared.---" +
+            "However, you can still earn coins!---" +
+            "You will still lose a life if you're destroyed.");
 
     Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
     {
@@ -175,7 +176,8 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
             f.println("Tanks: The Crusades tutorial");
             f.println("Completed " + new Date().toString());
             f.stopWriting();
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

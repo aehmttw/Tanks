@@ -1,8 +1,6 @@
 package tanks.linting;
 
-import com.puppycrawl.tools.checkstyle.api.AbstractCheck;
-import com.puppycrawl.tools.checkstyle.api.DetailAST;
-import com.puppycrawl.tools.checkstyle.api.TokenTypes;
+import com.puppycrawl.tools.checkstyle.api.*;
 
 /**
  * Custom Checkstyle check for colon spacing:
@@ -19,16 +17,20 @@ import com.puppycrawl.tools.checkstyle.api.TokenTypes;
  */
 public class ColonSpacingCheck extends AbstractCheck
 {
-    /** Message key emitted when a ternary ':' is missing its preceding space. */
+    /**
+     * Message key emitted when a ternary ':' is missing its preceding space.
+     */
     static final String MSG_TERNARY_MISSING_SPACE = "Missing space before ternary ':'";
 
-    /** Message key emitted when a non-ternary ':' has an unwanted preceding space. */
+    /**
+     * Message key emitted when a non-ternary ':' has an unwanted preceding space.
+     */
     static final String MSG_NON_TERNARY_SPACE = "Space before ':' in non-ternary context";
 
     @Override
     public int[] getDefaultTokens()
     {
-        return new int[] {TokenTypes.COLON};
+        return new int[]{TokenTypes.COLON};
     }
 
     @Override
@@ -40,14 +42,14 @@ public class ColonSpacingCheck extends AbstractCheck
     @Override
     public int[] getRequiredTokens()
     {
-        return new int[] {};
+        return new int[]{};
     }
 
     @Override
     public void visitToken(DetailAST ast)
     {
         final int lineNo = ast.getLineNo();
-        final int colNo  = ast.getColumnNo(); // 0-based
+        final int colNo = ast.getColumnNo(); // 0-based
         final String[] lines = getLines();
 
         if (lineNo < 1 || lineNo > lines.length)

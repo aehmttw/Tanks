@@ -49,7 +49,8 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
                 f.stopWriting();
 
                 return true;
-            } catch (IOException ex)
+            }
+            catch (IOException ex)
             {
                 Game.exitToCrash(ex);
             }

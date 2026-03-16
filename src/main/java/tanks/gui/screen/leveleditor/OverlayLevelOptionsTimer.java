@@ -22,7 +22,8 @@ public class OverlayLevelOptionsTimer extends ScreenLevelEditorOverlay
             try
             {
                 screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 minutes.inputText = "" + (int) (screenLevelEditor.level.timer / 6000);
             }
@@ -42,7 +43,8 @@ public class OverlayLevelOptionsTimer extends ScreenLevelEditorOverlay
             try
             {
                 screenLevelEditor.level.timer = Integer.parseInt(minutes.inputText) * 6000 + Integer.parseInt(seconds.inputText) * 100;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 seconds.inputText = "" + ((int) screenLevelEditor.level.timer % 6000) / 100;
             }

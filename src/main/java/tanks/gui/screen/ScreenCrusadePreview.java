@@ -89,7 +89,8 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
                         file.stopWriting();
                         success = true;
                     }
-                } catch (IOException e)
+                }
+                catch (IOException e)
                 {
                     e.printStackTrace(Game.logger);
                     e.printStackTrace();

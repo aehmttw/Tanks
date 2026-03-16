@@ -42,7 +42,8 @@ public interface ICopyable<T>
                 for (int i = 0; i < fields.size(); i++)
                     copyTo(m, fields.get(i));
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -77,7 +78,8 @@ public interface ICopyable<T>
             {
                 f.set(m, v);
             }
-        } catch (Exception ignored) { }
+        }
+        catch (Exception ignored) {}
     }
 
     /**
@@ -92,7 +94,8 @@ public interface ICopyable<T>
             T t = (T) this.getClass().getConstructor().newInstance();
             this.clonePropertiesTo(t);
             return t;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

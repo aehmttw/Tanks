@@ -126,7 +126,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, new Color().set((Color) v));
                         else
                             f.set(m, v);
-                    } catch (Exception ignored) { }
+                    }
+                    catch (Exception ignored) {}
                 }
             }
 
@@ -135,7 +136,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             {
                 m.abilities.add(s.getCopy());
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -164,7 +166,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, ((ICopyable<?>) v).getCopy());
                         else
                             f.set(m, v);
-                    } catch (Exception ignored) { }
+                    }
+                    catch (Exception ignored) {}
                 }
             }
 
@@ -190,7 +193,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                 m.emblemColor.set(this.emblemColor);
 
             m.buildName = this.name;
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -219,7 +223,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                             f.set(m, ((ICopyable<?>) v).getCopy());
                         else
                             f.set(m, v);
-                    } catch (Exception ignored) { }
+                    }
+                    catch (Exception ignored) {}
                 }
             }
 
@@ -288,7 +293,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                     }
                 }
             }
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

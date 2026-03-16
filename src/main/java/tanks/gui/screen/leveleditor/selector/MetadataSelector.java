@@ -30,7 +30,8 @@ public abstract class MetadataSelector
             }
 
             this.metadataField.set(o, value);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }
@@ -41,7 +42,8 @@ public abstract class MetadataSelector
         try
         {
             return this.metadataField.get(o);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Game.exitToCrash(e);
         }

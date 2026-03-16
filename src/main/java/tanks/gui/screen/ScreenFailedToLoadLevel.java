@@ -61,7 +61,8 @@ public class ScreenFailedToLoadLevel extends Screen
                 f.println(o + ": " + p.get(o));
 
             f.stopWriting();
-        } catch (Exception ex) { ex.printStackTrace(); }
+        }
+        catch (Exception ex) { ex.printStackTrace(); }
     }
 
     Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()

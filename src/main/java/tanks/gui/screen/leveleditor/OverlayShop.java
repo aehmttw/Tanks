@@ -64,7 +64,8 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
                         screenLevelEditor.level.shop.size() - 1, false, this::refreshItems), this);
                     s.onComplete = this::refreshItems;
                     Game.screen = s;
-                } catch (NoSuchFieldException e)
+                }
+                catch (NoSuchFieldException e)
                 {
                     e.printStackTrace();
                 }
@@ -179,7 +180,8 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
                         false, this::refreshItems), Game.screen);
                     s.onComplete = this::refreshItems;
                     Game.screen = s;
-                } catch (NoSuchFieldException e)
+                }
+                catch (NoSuchFieldException e)
                 {
                     Game.exitToCrash(e);
                 }

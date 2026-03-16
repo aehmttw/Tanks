@@ -72,7 +72,8 @@ public class Tanks
                             Runtime.getRuntime().exit(0);
                             return;
                         }
-                    } catch (Exception e)
+                    }
+                    catch (Exception e)
                     {
                         e.printStackTrace();
                     }
@@ -111,7 +112,8 @@ public class Tanks
                 Game.postInitScript();
 
                 Game.game.window.run();
-            } catch (Throwable t)
+            }
+            catch (Throwable t)
             {
                 fail(t);
             }

@@ -33,7 +33,8 @@ public class ScreenLanguage extends Screen
                 file.startReading();
                 button.text = file.nextLine();
                 file.stopReading();
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
 
             }

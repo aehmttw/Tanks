@@ -4,7 +4,7 @@ import basewindow.BaseWindow;
 
 public class AxisRotation extends Transformation
 {
-    public enum Axis {yaw, pitch, roll}
+    public enum Axis { yaw, pitch, roll }
 
     public Axis axis;
     public double angle;

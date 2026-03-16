@@ -29,7 +29,8 @@ public class UUIDTextBox extends TextBox
             return;
         }
 
-        if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SUPER) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SUPER))
+        if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_CONTROL) ||
+            Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SUPER) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SUPER))
         {
             if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_C))
             {
@@ -66,7 +67,7 @@ public class UUIDTextBox extends TextBox
 
         ArrayList<Character> texts = Game.game.window.getRawTextKeys();
 
-        for (char key : texts)
+        for (char key: texts)
         {
             String text = Character.toString(key);
             inputKey(Game.game.window.translateTextKey(key), text);

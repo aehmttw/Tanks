@@ -83,19 +83,23 @@ public class TextBox implements IDrawable, ITrigger
     public boolean enabled = true;
     public boolean silent = false;
 
-    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
+    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen */
     public boolean wait = false;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = left
      * 0 = middle
-     * 1 = right*/
+     * 1 = right
+     */
     public int xAlignment = 0;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = top
      * 0 = middle
-     * 1 = bottom*/
+     * 1 = bottom
+     */
     public int yAlignment = 0;
 
     public TextBox(double x, double y, double sX, double sY, String text, Runnable f, String defaultText)
@@ -153,7 +157,7 @@ public class TextBox implements IDrawable, ITrigger
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -166,8 +170,8 @@ public class TextBox implements IDrawable, ITrigger
             if (this.inputText.length() >= this.maxChars || (allowDoubles && inputText.toLowerCase(Locale.ROOT).contains("infinity")))
             {
                 drawing.setColor(this.selectedFullColorR * (1 - this.flashAnimation) + this.selectedFullFlashColorR * flashAnimation,
-                        this.selectedFullColorG * (1 - this.flashAnimation) + this.selectedFullFlashColorG * flashAnimation,
-                        this.selectedFullColorB * (1 - this.flashAnimation) + this.selectedFullFlashColorB * flashAnimation);
+                    this.selectedFullColorG * (1 - this.flashAnimation) + this.selectedFullFlashColorG * flashAnimation,
+                    this.selectedFullColorB * (1 - this.flashAnimation) + this.selectedFullFlashColorB * flashAnimation);
             }
             else
                 drawing.setColor(this.selectedColorR, this.selectedColorG, this.selectedColorB);
@@ -195,12 +199,14 @@ public class TextBox implements IDrawable, ITrigger
             {
                 if (infoSelected && !Game.game.window.touchscreen)
                 {
-                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0,
+                        0, 0, 80, false);
                     Drawing.drawing.setColor(0, 0, 255);
                     Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
                 }
                 else
-                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0,
+                        0, 0, 100, false);
             }
 
             if (infoSelected && !Game.game.window.touchscreen)
@@ -222,8 +228,10 @@ public class TextBox implements IDrawable, ITrigger
 
         if (selected && Game.game.window.touchscreen)
         {
-            Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
-            Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+            Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4,
+                0.6, 0, 0, 0, 100, false);
+            Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16 + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4,
+                0.6, 0, 0, 0, 100, false);
         }
 
         if (selected && inputText.length() > 0)
@@ -232,12 +240,14 @@ public class TextBox implements IDrawable, ITrigger
             {
                 if (clearSelected && !Game.game.window.touchscreen)
                 {
-                    Button.drawGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
+                    Button.drawGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0,
+                        0, 0, 80, false);
                     Drawing.drawing.setColor(127, 0, 0);
                     Drawing.drawing.fillInterfaceGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
                 }
                 else
-                    Button.drawGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
+                    Button.drawGlow(this.posX - this.sizeX / 2 + this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0,
+                        0, 0, 100, false);
             }
 
             if (!clearSelected || Game.game.window.touchscreen)
@@ -257,10 +267,12 @@ public class TextBox implements IDrawable, ITrigger
         {
             drawing.setColor(255, 255, 255);
             drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-            drawing.drawInterfaceImage("icons/paste.png", this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
+            drawing.drawInterfaceImage("icons/paste.png", this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2,
+                this.sizeY * 1 / 2);
 
             drawing.fillInterfaceOval(this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 3 / 4, this.sizeY * 3 / 4);
-            drawing.drawInterfaceImage("icons/copy.png", this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2, this.sizeY * 1 / 2);
+            drawing.drawInterfaceImage("icons/copy.png", this.posX + this.sizeX / 2 - this.sizeY * 3 / 2, this.posY - sizeY * 13 / 16, this.sizeY * 1 / 2,
+                this.sizeY * 1 / 2);
         }
     }
 
@@ -268,7 +280,8 @@ public class TextBox implements IDrawable, ITrigger
     {
         double size = this.sizeY * 0.6;
         if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale > this.sizeX - 80)
-            Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) / Drawing.drawing.interfaceScale));
+            Drawing.drawing.setInterfaceFontSize(size * (this.sizeX - 80) / (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, inputText) /
+                Drawing.drawing.interfaceScale));
 
         if (selected)
             Drawing.drawing.drawInterfaceText(posX, posY, inputText + "\u00a7127127127255_");
@@ -288,7 +301,8 @@ public class TextBox implements IDrawable, ITrigger
             double mx = Drawing.drawing.getInterfaceMouseX();
             double my = Drawing.drawing.getInterfaceMouseY();
 
-            boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1), Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1), null);
+            boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1),
+                Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1), null);
 
             if (handled)
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
@@ -315,9 +329,9 @@ public class TextBox implements IDrawable, ITrigger
 
         if (selected)
         {
-            double frac = Math.max(0, Math.round(Drawing.drawing.interfaceScale * (this.posY + 30) + Math.max(0, Panel.windowHeight - Drawing.drawing.statsHeight
-                    - Drawing.drawing.interfaceSizeY * Drawing.drawing.interfaceScale) / 2) - Game.game.window.absoluteHeight * Game.game.window.keyboardFraction)
-                    / Game.game.window.absoluteHeight;
+            double frac = Math.max(0, Math.round(Drawing.drawing.interfaceScale * (this.posY + 30) + Math.max(0, Panel.windowHeight - Drawing.drawing.statsHeight -
+                Drawing.drawing.interfaceSizeY * Drawing.drawing.interfaceScale) / 2) - Game.game.window.absoluteHeight * Game.game.window.keyboardFraction) /
+                Game.game.window.absoluteHeight;
             Game.game.window.keyboardOffset = Math.min(frac, Game.game.window.keyboardOffset + 0.04 * Panel.frameFrequency * frac);
             Game.game.window.showKeyboard = true;
             this.checkKeys();
@@ -429,7 +443,8 @@ public class TextBox implements IDrawable, ITrigger
                 Drawing.drawing.playSound("bullet_explode.ogg", 2f, 0.3f);
             }
 
-            if (selected && valid && mx > posX + sizeX / 2 - sizeY * 2 && mx < posX + sizeX / 2 - sizeY && my > posY - sizeY / 2 - sizeY * 13 / 16 && my < posY + sizeY / 2 - sizeY * 13 / 16)
+            if (selected && valid && mx > posX + sizeX / 2 - sizeY * 2 && mx < posX + sizeX / 2 - sizeY && my > posY - sizeY / 2 - sizeY * 13 / 16 && my < posY + sizeY /
+                2 - sizeY * 13 / 16)
             {
                 this.copy();
                 handled = true;
@@ -502,7 +517,8 @@ public class TextBox implements IDrawable, ITrigger
     public void submitEffect()
     {
         for (int i = 0; i < 0.2 * (this.sizeX + this.sizeY) * Game.effectMultiplier; i++)
-            Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects, Math.random() * 4, 0.8, 0.25);
+            Button.addEffect(this.posX, this.posY, this.sizeX - this.sizeY * (1 - 0.8), this.sizeY * 0.8, this.glowEffects, Math.random() * 4, 0.8,
+                0.25);
     }
 
     public void revert()
@@ -533,7 +549,8 @@ public class TextBox implements IDrawable, ITrigger
         Game.game.window.pressedKeys.clear();
         Game.game.window.validPressedKeys.clear();
 
-        if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SUPER) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SUPER))
+        if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_CONTROL) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_CONTROL) ||
+            Game.game.window.textPressedKeys.contains(InputCodes.KEY_LEFT_SUPER) || Game.game.window.textPressedKeys.contains(InputCodes.KEY_RIGHT_SUPER))
         {
             if (Game.game.window.textPressedKeys.contains(InputCodes.KEY_C))
             {
@@ -557,7 +574,7 @@ public class TextBox implements IDrawable, ITrigger
             }
         }
 
-        for (char key : texts)
+        for (char key: texts)
         {
             inputKey(key);
         }
@@ -597,7 +614,7 @@ public class TextBox implements IDrawable, ITrigger
                 }
             }
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) { }
     }
 
     public void inputKey(char key)
@@ -787,26 +804,34 @@ public class TextBox implements IDrawable, ITrigger
             drawing.setColor(r, g, b, a);
             drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY, 0);
             drawing.setColor(r, g, b, 0);
-            drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 15) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 15) / 30.0 * Math.PI) * size, 0);
-            drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 16) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 16) / 30.0 * Math.PI) * size, 0);
+            drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 15) / 30.0 * Math.PI) * size,
+                posY + sizeY * Math.sin((i + 15) / 30.0 * Math.PI) * size, 0);
+            drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 16) / 30.0 * Math.PI) * size,
+                posY + sizeY * Math.sin((i + 16) / 30.0 * Math.PI) * size, 0);
 
             drawing.setColor(r, g, b, a);
             drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY, 0);
             drawing.setColor(r, g, b, 0);
-            drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i) / 30.0 * Math.PI) * size, 0);
-            drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 1) / 30.0 * Math.PI) * size, posY + sizeY * Math.sin((i + 1) / 30.0 * Math.PI) * size, 0);
+            drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i) / 30.0 * Math.PI) * size,
+                posY + sizeY * Math.sin((i) / 30.0 * Math.PI) * size, 0);
+            drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 1) / 30.0 * Math.PI) * size,
+                posY + sizeY * Math.sin((i + 1) / 30.0 * Math.PI) * size, 0);
 
             drawing.setColor(r, g, b, a);
             drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2, posY - extra, 0);
             drawing.setColor(r, g, b, 0);
-            drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 30) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 30) / 30.0 * Math.PI) * size, 0);
-            drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 31) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 31) / 30.0 * Math.PI) * size, 0);
+            drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 30) / 30.0 * Math.PI) * size,
+                posY - extra + sizeY * Math.sin((i + 30) / 30.0 * Math.PI) * size, 0);
+            drawing.addInterfaceVertex(posX - sizeX / 2 + sizeY / 2 + sizeY * Math.cos((i + 31) / 30.0 * Math.PI) * size,
+                posY - extra + sizeY * Math.sin((i + 31) / 30.0 * Math.PI) * size, 0);
 
             drawing.setColor(r, g, b, a);
             drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2, posY - extra, 0);
             drawing.setColor(r, g, b, 0);
-            drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 45) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 45) / 30.0 * Math.PI) * size, 0);
-            drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 46) / 30.0 * Math.PI) * size, posY - extra + sizeY * Math.sin((i + 46) / 30.0 * Math.PI) * size, 0);
+            drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 45) / 30.0 * Math.PI) * size,
+                posY - extra + sizeY * Math.sin((i + 45) / 30.0 * Math.PI) * size, 0);
+            drawing.addInterfaceVertex(posX + sizeX / 2 - sizeY / 2 + sizeY * Math.cos((i + 46) / 30.0 * Math.PI) * size,
+                posY - extra + sizeY * Math.sin((i + 46) / 30.0 * Math.PI) * size, 0);
         }
 
         Game.game.window.shapeRenderer.setBatchMode(false, false, false, glow);

@@ -1,15 +1,9 @@
 package tanks.gui;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenInfo;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.tank.Tank;
 
 import java.util.ArrayList;
@@ -84,7 +78,7 @@ public class SelectorDrawable extends Button
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -189,7 +183,7 @@ public class SelectorDrawable extends Button
         }
 
         selected = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
-        infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
 
         if (selected && valid)
         {

@@ -1,8 +1,6 @@
 package tanks.rendering;
 
-import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
-import basewindow.ShaderGroup;
+import basewindow.*;
 
 public class ShaderTracks extends ShaderGroup
 {

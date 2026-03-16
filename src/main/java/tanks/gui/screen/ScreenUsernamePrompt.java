@@ -12,7 +12,8 @@ public class ScreenUsernamePrompt extends Screen
         this.musicID = "menu";
     }
 
-    Button gotoOptions = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "My profile", () -> Game.screen = new ScreenOptionsPersonalize(true)
+    Button gotoOptions = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "My profile",
+        () -> Game.screen = new ScreenOptionsPersonalize(true)
     );
 
     Button quit = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenPlay()

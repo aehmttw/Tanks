@@ -28,7 +28,7 @@ public class ScreenOptionsMultiplayer extends Screen
                 chatFilter.setText(chatFilterText, ScreenOptions.offText);
         }
     },
-            "Filters chat of potentially---inappropriate words");
+        "Filters chat of potentially---inappropriate words");
 
     Button autoReady = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -43,7 +43,7 @@ public class ScreenOptionsMultiplayer extends Screen
                 autoReady.setText(autoReadyText, ScreenOptions.offText);
         }
     },
-            "When enabled, automatically presses---the ready button if there is no shop");
+        "When enabled, automatically presses---the ready button if there is no shop");
 
     Button showPublicPartyCount = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -58,7 +58,7 @@ public class ScreenOptionsMultiplayer extends Screen
                 showPublicPartyCount.setText(publicPartyCount, ScreenOptions.offText);
         }
     },
-            "When enabled, the multiplayer button---will show the number of running Steam---public parties, if there are any");
+        "When enabled, the multiplayer button---will show the number of running Steam---public parties, if there are any");
 
 
     Button hostOptions = new Button(this.centerX, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "Party host options", () -> Game.screen = new ScreenOptionsPartyHost(), "Options for parties you host");

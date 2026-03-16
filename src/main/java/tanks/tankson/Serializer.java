@@ -1,16 +1,16 @@
 package tanks.tankson;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.util.*;
-
 import basewindow.Color;
 import tanks.Game;
 import tanks.Team;
 import tanks.bullet.*;
 import tanks.item.Item;
 import tanks.tank.*;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
 
 public final class Serializer
 {
@@ -110,11 +110,12 @@ public final class Serializer
                 p.put("bullet_type", ((Bullet) o).typeName);
 
 
-            for (Field f : o.getClass().getFields())
+            for (Field f: o.getClass().getFields())
             {
                 try
                 {
-                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion || o instanceof Trail) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
+                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion ||
+                        o instanceof Trail) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
                     {
                         Object o2 = f.get(o);
                         if (o2 != null && isTanksONable(f))
@@ -126,7 +127,7 @@ public final class Serializer
                             if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
                             {
                                 ArrayList<Map<String, Object>> o3s = new ArrayList<>();
-                                for (Object o3 : ((ArrayList) o2))
+                                for (Object o3: ((ArrayList) o2))
                                 {
                                     o3s.add(toMap(o3));
                                 }
@@ -237,7 +238,7 @@ public final class Serializer
                 if (!a.getClass().equals(b.getClass()))
                     return false;
 
-                for (Field f : a.getClass().getFields())
+                for (Field f: a.getClass().getFields())
                 {
                     try
                     {
@@ -353,7 +354,7 @@ public final class Serializer
 
         ArrayList<Field> conversions = new ArrayList<>();
         ArrayList<Object> conversionTargets = new ArrayList<>();
-        for (Field f : o.getClass().getFields())
+        for (Field f: o.getClass().getFields())
         {
             if (f.isAnnotationPresent(Property.class) && m.containsKey(getid(f)))
             {
@@ -381,7 +382,7 @@ public final class Serializer
                         if (!arr.isEmpty() && (arr.get(0) instanceof Map))
                         {
                             ArrayList o3s = new ArrayList();
-                            for (Map o3 : ((ArrayList<Map>) m.get(getid(f))))
+                            for (Map o3: ((ArrayList<Map>) m.get(getid(f))))
                             {
                                 o3s.add(parseObject(o3));
                             }
@@ -447,7 +448,7 @@ public final class Serializer
 
         Set<String> unused = new HashSet<>(m.keySet());
         unused.removeAll(processed);
-        for (String k : unused)
+        for (String k: unused)
         {
             if (Compatibility.unused_table.containsKey(k))
             {

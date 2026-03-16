@@ -2,18 +2,12 @@ package tanks.gui.screen;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.ChatBox;
-import tanks.gui.ChatMessage;
-import tanks.network.Client;
-import tanks.network.ConnectedPlayer;
-import tanks.network.SynchronizedList;
+import tanks.gui.*;
+import tanks.network.*;
 import tanks.tank.Tank;
 import tanks.translation.Translation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public class ScreenPartyLobby extends Screen
 {
@@ -49,20 +43,24 @@ public class ScreenPartyLobby extends Screen
         this.musicID = "menu";
     }
 
-    Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, this.objWidth, this.objHeight, "Leave party", () -> Game.screen = new ScreenConfirmLeaveParty());
-    Button options = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Options", () -> Game.screen = new ScreenOptions());
+    Button exit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 270, this.objWidth, this.objHeight, "Leave party",
+        () -> Game.screen = new ScreenConfirmLeaveParty());
+    Button options = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Options",
+        () -> Game.screen = new ScreenOptions());
 
     Button nextUsernamePage = new Button(Drawing.drawing.interfaceSizeX / 2 + username_x_offset,
-            Drawing.drawing.interfaceSizeY / 2 + username_y_offset + username_spacing * (1 + entries_per_page), 300, 30, "Next page", () -> usernamePage++
+        Drawing.drawing.interfaceSizeY / 2 + username_y_offset + username_spacing * (1 + entries_per_page), 300, 30, "Next page", () -> usernamePage++
     );
 
     Button previousUsernamePage = new Button(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 + username_y_offset,
-            300, 30, "Previous page", () -> usernamePage--
+        300, 30, "Previous page", () -> usernamePage--
     );
 
-    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Upload", () -> Game.screen = new ScreenShareSelect());
+    Button share = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 180, this.objWidth, this.objHeight, "Upload",
+        () -> Game.screen = new ScreenShareSelect());
 
-    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Download", () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
+    Button shared = new Button(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 120, this.objWidth, this.objHeight, "Download",
+        () -> Game.screen = new ScreenSharedSummary(sharedLevels, sharedCrusades));
 
     Button toggleIP = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () -> Game.showIP = !Game.showIP, "Toggle showing IP address");
 
@@ -115,9 +113,11 @@ public class ScreenPartyLobby extends Screen
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 270, title);
 
         if (connections != null && connections.size() > 1)
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "%d players in this party:", connections.size());
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220,
+                "%d players in this party:", connections.size());
         else
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220, "1 player in this party:");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + username_x_offset, Drawing.drawing.interfaceSizeY / 2 - 220,
+                "1 player in this party:");
 
 
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 190, Drawing.drawing.interfaceSizeY / 2 - 220, "Level and crusade sharing:");
@@ -140,7 +140,8 @@ public class ScreenPartyLobby extends Screen
 
             if (connections != null)
             {
-                for (int i = (int) (this.usernamePage * entries_per_page + Math.signum(this.usernamePage)); i < Math.min(((this.usernamePage + 1) * entries_per_page + 1), connections.size()); i++)
+                for (int i = (int) (this.usernamePage * entries_per_page + Math.signum(this.usernamePage));
+                     i < Math.min(((this.usernamePage + 1) * entries_per_page + 1), connections.size()); i++)
                 {
                     ConnectedPlayer c = connections.get(i);
                     if (c.username != null)

@@ -1,10 +1,10 @@
 package tanksonline.screen;
 
 import tanks.Game;
-import tanks.network.event.online.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.ScreenOnline;
+import tanks.network.event.online.*;
 import tanksonline.TanksOnlineServerHandler;
 
 public abstract class ScreenSpecial extends ScreenLayout

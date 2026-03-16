@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A tank which speeds up its allies and becomes explosive as a last stand
- */
+/** A tank which speeds up its allies and becomes explosive as a last stand */
 public class TankGold extends TankAIControlled
 {
     public TankGold(String name, double x, double y, double angle)

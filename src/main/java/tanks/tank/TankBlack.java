@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A smart, very fast tank which fires rockets
- */
+/** A smart, very fast tank which fires rockets */
 public class TankBlack extends TankAIControlled
 {
     public TankBlack(String name, double x, double y, double angle)

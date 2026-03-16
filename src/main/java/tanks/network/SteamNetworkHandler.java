@@ -1,19 +1,17 @@
 package tanks.network;
 
-import com.codedisaster.steamworks.*;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.screen.*;
 import tanks.network.event.INetworkEvent;
 
+import com.codedisaster.steamworks.*;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SteamNetworkHandler
@@ -507,10 +505,13 @@ public class SteamNetworkHandler
         catch (SteamException e)
         {
             if (e.getMessage().equals("Native libraries not loaded.\n" +
-                    "Ensure to call SteamAPI.loadLibraries() first!")) {
+                "Ensure to call SteamAPI.loadLibraries() first!"))
+            {
                 System.out.println("Running without SteamAPI: Non-Steam Build");
                 return false;
-            } else {
+            }
+            else
+            {
                 e.printStackTrace();
                 return false;
             }

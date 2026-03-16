@@ -1,8 +1,6 @@
 package tanks.bullet;
 
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.item.ItemShield;
+import tanks.item.*;
 import tanks.tank.Explosion;
 import tanks.tank.Mine;
 import tanks.translation.Translation;
@@ -101,7 +99,7 @@ public class DefaultItems
         sniper_rocket.bullet.bounces = 2;
         sniper_rocket.bullet.maxLiveBullets = 4;
         sniper_rocket.cooldownBase = 50;
-        sniper_rocket.bullet.effect =  BulletEffect.fire_trail.getCopy();
+        sniper_rocket.bullet.effect = BulletEffect.fire_trail.getCopy();
         sniper_rocket.bullet.shotSound = "shoot_power.ogg";
         sniper_rocket.name = Translation.translate("Sniper rocket");
         sniper_rocket.setAutomaticIcon();
@@ -110,7 +108,7 @@ public class DefaultItems
         void_rocket.bullet.speed *= 2;
         void_rocket.bullet.bounces = 0;
         void_rocket.bullet.maxLiveBullets = 5;
-        void_rocket.bullet.effect =  BulletEffect.dark_fire.getCopy();
+        void_rocket.bullet.effect = BulletEffect.dark_fire.getCopy();
         void_rocket.name = Translation.translate("Void rocket");
         void_rocket.setAutomaticIcon();
 
@@ -118,7 +116,7 @@ public class DefaultItems
         homing_rocket.bullet.speed *= 2;
         homing_rocket.bullet.bounces = 0;
         homing_rocket.bullet.maxLiveBullets = 3;
-        homing_rocket.bullet.effect =  BulletEffect.fire.getCopy();
+        homing_rocket.bullet.effect = BulletEffect.fire.getCopy();
         homing_rocket.bullet.homingSharpness = 1.0 / 5.5;
         homing_rocket.cooldownBase = 100;
         homing_rocket.name = Translation.translate("Homing rocket");

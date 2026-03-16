@@ -2,27 +2,18 @@ package tanks.bullet;
 
 import basewindow.Color;
 import tanks.*;
-import tanks.attribute.AttributeModifier;
-import tanks.attribute.EffectManager;
-import tanks.attribute.StatusEffect;
+import tanks.attribute.*;
 import tanks.gui.ChatMessage;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.item.ItemBullet;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleStackable;
 import tanks.tank.*;
-import tanks.tankson.ICopyable;
-import tanks.tankson.ITanksONEditable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 @TanksONable("bullet")
 public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
@@ -51,18 +42,21 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public boolean respectXRay = true;
 
-    @Property(id = "bounces", minValue = 0.0, name = "Bounces", category = BulletPropertyCategory.travel, desc = "The bullet will bounce off blocks this many times before being destroyed on impact")
+    @Property(id = "bounces", minValue = 0.0, name = "Bounces", category = BulletPropertyCategory.travel,
+        desc = "The bullet will bounce off blocks this many times before being destroyed on impact")
     public int bounces = 1;
     public int bouncyBounces = 100;
 
     public double ageFrac = 0;
 
-    @Property(id = "override_color", name = "Custom primary color", desc = "If disabled, the bullet will use the color of the tank which fired it", miscType = Property.MiscType.colorRGB)
+    @Property(id = "override_color", name = "Custom primary color", desc = "If disabled, the bullet will use the color of the tank which fired it",
+        miscType = Property.MiscType.colorRGB)
     public boolean overrideBaseColor;
     @Property(id = "color", name = "Primary", category = BulletPropertyCategory.appearanceBaseColor, miscType = Property.MiscType.colorRGB)
     public Color baseColor = new Color();
 
-    @Property(id = "override_color2", name = "Custom secondary color", desc = "If disabled, the bullet will use the color of the tank which fired it", miscType = Property.MiscType.colorRGB)
+    @Property(id = "override_color2", name = "Custom secondary color", desc = "If disabled, the bullet will use the color of the tank which fired it",
+        miscType = Property.MiscType.colorRGB)
     public boolean overrideOutlineColor;
     @Property(id = "color2", name = "Secondary", category = BulletPropertyCategory.appearanceOutlineColor, miscType = Property.MiscType.colorRGB)
     public Color outlineColor = new Color();
@@ -82,30 +76,37 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public Tank tank;
 
-    @Property(id = "damage", name = "Damage", category = BulletPropertyCategory.impact, desc = "A damage of 1.0 will destroy the default player tank. Set to negative to heal tanks.")
+    @Property(id = "damage", name = "Damage", category = BulletPropertyCategory.impact,
+        desc = "A damage of 1.0 will destroy the default player tank. Set to negative to heal tanks.")
     public double damage = 1;
 
-    @Property(id = "max_extra_health", minValue = 0.0, name = "Max extra hitpoints", category = BulletPropertyCategory.impact, desc = "Applicable if damage is negative: this bullet will not heal a tank to more than its default hitpoints plus 'max extra hitpoints'")
+    @Property(id = "max_extra_health", minValue = 0.0, name = "Max extra hitpoints", category = BulletPropertyCategory.impact,
+        desc = "Applicable if damage is negative: this bullet will not heal a tank to more than its default hitpoints plus 'max extra hitpoints'")
     public double maxExtraHealth = 1;
 
-    @Property(id = "knockback_tank", name = "Tank knockback", category = BulletPropertyCategory.impact, desc = "The amount this bullet will knock back tanks it hits. Knockback is automatically scaled by this bullet's velocity and the tank's size. \n \n " +
+    @Property(id = "knockback_tank", name = "Tank knockback", category = BulletPropertyCategory.impact,
+        desc = "The amount this bullet will knock back tanks it hits. Knockback is automatically scaled by this bullet's velocity and the tank's size. \n \n " +
             "A knockback value of 1 means the bullet will add its velocity to a tank of standard size. Knockback scales inversely to tank size squared.")
     public double tankHitKnockback = 0;
 
-    @Property(id = "knockback_bullet", name = "Bullet knockback", category = BulletPropertyCategory.impact, desc = "The amount this bullet will knock back other bullets it collides with, instead of destroying them. Knockback is automatically scaled by this bullet's velocity both bullets' sizes. \n \n " +
-            "A bullet with a knockback value of 1 will stop another bullet in a head-on collision if both bullets have the same size and speed. Knockback scales by ratio of bullet size squared.")
+    @Property(id = "knockback_bullet", name = "Bullet knockback", category = BulletPropertyCategory.impact,
+        desc = "The amount this bullet will knock back other bullets it collides with, instead of destroying them. Knockback is automatically scaled by this bullet's " +
+            "velocity both bullets' sizes. \n \n A bullet with a knockback value of 1 will stop another bullet in a head-on collision if both bullets have the same size " +
+            "and speed. Knockback scales by ratio of bullet size squared.")
     public double bulletHitKnockback = 0;
 
     @Property(id = "explosion", name = "Explosion", category = BulletPropertyCategory.impact, nullable = true, desc = "The explosion produced when this bullet is destroyed")
     public Explosion hitExplosion = null;
 
-    @Property(id = "stun", minValue = 0.0, name = "Stun duration", category = BulletPropertyCategory.impact, desc = "Will prevent a tank from moving for this much time on impact \n \n 1 time unit = 0.01 seconds")
+    @Property(id = "stun", minValue = 0.0, name = "Stun duration", category = BulletPropertyCategory.impact,
+        desc = "Will prevent a tank from moving for this much time on impact \n \n 1 time unit = 0.01 seconds")
     public double hitStun = 0;
 
     @Property(id = "freezing", name = "Freezing", category = BulletPropertyCategory.impact, desc = "If set, will create a circle of freezing when this bullet is destroyed")
     public boolean freezing = false;
 
-    @Property(id = "boosting", name = "Boosting", category = BulletPropertyCategory.impact, desc = "If set, will boost the speed of tanks hit. Boost duration scales with bullet size.")
+    @Property(id = "boosting", name = "Boosting", category = BulletPropertyCategory.impact,
+        desc = "If set, will boost the speed of tanks hit. Boost duration scales with bullet size.")
     public boolean boosting = false;
 
     @Property(id = "destroy_blocks", name = "Destroys blocks", category = BulletPropertyCategory.impact, desc = "If set, will destroy breakable blocks the bullet collides with.")
@@ -128,19 +129,23 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     /** If bullet should return to original speed if blown to a slower speed by something like wind */
     public boolean revertSpeed = true;
 
-    @Property(id = "lifespan", minValue = 0.0, name = "Lifespan", category = BulletPropertyCategory.travel, desc = "After this long, the bullet will destroy itself automatically. Set to 0 for unlimited lifespan. \n \n 1 time unit = 0.01 seconds")
+    @Property(id = "lifespan", minValue = 0.0, name = "Lifespan", category = BulletPropertyCategory.travel,
+        desc = "After this long, the bullet will destroy itself automatically. Set to 0 for unlimited lifespan. \n \n 1 time unit = 0.01 seconds")
     public double lifespan = 0;
 
     /** If true, this selected bullet will show a ray when the aim keybind is pressed */
     public boolean showDefaultTrace = true;
 
-    @Property(id = "range", minValue = 0.0, name = "Range", category = BulletPropertyCategory.travel, desc = "If the bullet goes farther than this distance from where it was initially fired, it will destroy itself automatically. Set to 0 for unlimited range. \n \n 1 tile = 50 units")
+    @Property(id = "range", minValue = 0.0, name = "Range", category = BulletPropertyCategory.travel,
+        desc = "If the bullet goes farther than this distance from where it was initially fired, it will destroy itself automatically. Set to 0 for unlimited range. \n \n " +
+            "1 tile = 50 units")
     public double range = 0;
 
     @Property(id = "heavy", name = "Heavy", category = BulletPropertyCategory.travel, desc = "Heavy bullets will pass through tanks and non-heavy bullets without being destroyed")
     public boolean heavy = false;
 
-    @Property(id = "collide_obstacles", name = "Block collision", category = BulletPropertyCategory.travel, desc = "If disabled, the bullet will pass through blocks but still collide with the edges of the level")
+    @Property(id = "collide_obstacles", name = "Block collision", category = BulletPropertyCategory.travel,
+        desc = "If disabled, the bullet will pass through blocks but still collide with the edges of the level")
     public boolean obstacleCollision = true;
     public boolean edgeCollision = true;
 
@@ -158,16 +163,22 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     @Property(id = "bush_burn", name = "Burns shrubbery", category = BulletPropertyCategory.travel, desc = "If enabled, the bullet will remove shrubbery it passes through")
     public boolean burnsBushes = false;
 
-    @Property(id = "bush_lower", name = "Lowers shrubbery", category = BulletPropertyCategory.travel, desc = "If enabled, the bullet will lower shrubbery it passes through, revealing their contents \n If disabled, the bullet will make leaf particle effects as it exits shrubbery")
+    @Property(id = "bush_lower", name = "Lowers shrubbery", category = BulletPropertyCategory.travel,
+        desc = "If enabled, the bullet will lower shrubbery it passes through, revealing their contents \n " +
+            "If disabled, the bullet will make leaf particle effects as it exits shrubbery")
     public boolean lowersBushes = true;
 
-    @Property(id = "homing_sharpness", name = "Homing strength", category = BulletPropertyCategory.travel, desc = "If nonzero, the bullet will change direction when a nearby enemy tank is in line of sight. Greater values will result in sharper turns. Negative values result in the bullet moving away from the tank.")
+    @Property(id = "homing_sharpness", name = "Homing strength", category = BulletPropertyCategory.travel,
+        desc = "If nonzero, the bullet will change direction when a nearby enemy tank is in line of sight. Greater values will result in sharper turns. " +
+            "Negative values result in the bullet moving away from the tank.")
     public double homingSharpness = 0;
 
-    @Property(id = "chain_count", minValue = 0.0, name = "Max chain", category = BulletPropertyCategory.travel, desc = "Once this bullet hits a tank or bullet, it will fire again from the hit target towards another nearby enemy up to this many times")
+    @Property(id = "chain_count", minValue = 0.0, name = "Max chain", category = BulletPropertyCategory.travel,
+        desc = "Once this bullet hits a tank or bullet, it will fire again from the hit target towards another nearby enemy up to this many times")
     public int rebounds = 0;
 
-    @Property(id = "chain_delay", minValue = 0.0, name = "Chain delay", category = BulletPropertyCategory.travel, desc = "The time between hitting a tank or bullet and firing itself again \n \n 1 time unit = 0.01 seconds")
+    @Property(id = "chain_delay", minValue = 0.0, name = "Chain delay", category = BulletPropertyCategory.travel,
+        desc = "The time between hitting a tank or bullet and firing itself again \n \n 1 time unit = 0.01 seconds")
     public double reboundDelay = 10;
 
     public Tank homingTarget = null;
@@ -179,7 +190,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public ItemBullet.ItemStackBullet item;
 
-    @Property(id = "max_live_bullets", minValue = 0.0, name = "Max live bullets", category = BulletPropertyCategory.firing, desc = "The maximum number of this bullet fired by one tank that can be onscreen at a time")
+    @Property(id = "max_live_bullets", minValue = 0.0, name = "Max live bullets", category = BulletPropertyCategory.firing,
+        desc = "The maximum number of this bullet fired by one tank that can be onscreen at a time")
     public int maxLiveBullets = 5;
 
     @Property(id = "recoil", name = "Recoil", category = BulletPropertyCategory.firing)
@@ -188,10 +200,12 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     @Property(id = "shot_count", minValue = 1.0, name = "Shot count", category = BulletPropertyCategory.firing, desc = "The number of bullets fired at once")
     public int shotCount = 1;
 
-    @Property(id = "multishot_spread_angle", minValue = 0.0, maxValue = 360, name = "Multishot spread angle", category = BulletPropertyCategory.firing, desc = "The angle spread in degrees of multiple bullets fired at once")
+    @Property(id = "multishot_spread_angle", minValue = 0.0, maxValue = 360, name = "Multishot spread angle", category = BulletPropertyCategory.firing,
+        desc = "The angle spread in degrees of multiple bullets fired at once")
     public double multishotSpread = 0;
 
-    @Property(id = "accuracy_spread_angle", minValue = 0.0, name = "Accuracy spread angle", category = BulletPropertyCategory.firing, desc = "The size of the random inaccuracy angle variation of a bullet when fired, in degrees. Larger values are less accurate.")
+    @Property(id = "accuracy_spread_angle", minValue = 0.0, name = "Accuracy spread angle", category = BulletPropertyCategory.firing,
+        desc = "The size of the random inaccuracy angle variation of a bullet when fired, in degrees. Larger values are less accurate.")
     public double accuracySpread = 0;
 
     public boolean canMultiDamage = false;
@@ -207,9 +221,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public boolean affectsMaxLiveBullets;
 
-    /**
-     * Movables collided with this bullet to prevent double collisions
-     */
+    /** Movables collided with this bullet to prevent double collisions */
     public ArrayList<Movable> inside = new ArrayList<>();
     public ArrayList<Movable> insideOld = new ArrayList<>();
 
@@ -338,7 +350,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         try
         {
             Bullet b = this.getClass().getConstructor(double.class, double.class, Tank.class, boolean.class, ItemBullet.ItemStackBullet.class)
-                    .newInstance(m.posX, m.posY, this.tank, false, this.item);
+                .newInstance(m.posX, m.posY, this.tank, false, this.item);
             this.clonePropertiesTo(b);
             b.iPosZ = this.posZ;
             b.posZ = this.posZ;
@@ -364,9 +376,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         return null;
     }
 
-    /**
-     * Triggered when colliding with an obstacle or map edge and having no bounces left
-     */
+    /** Triggered when colliding with an obstacle or map edge and having no bounces left */
     public void collidedWithNothing()
     {
 
@@ -585,9 +595,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         this.vY = 0;
     }
 
-    /**
-     * When 2 bullets that knock bullets collide, an elastic collision takes place, with mass scaling by bullet knockback.
-     */
+    /** When 2 bullets that knock bullets collide, an elastic collision takes place, with mass scaling by bullet knockback. */
     public void collideBounce(Bullet b)
     {
         double toAngle = this.getAngleInDirection(b.posX, b.posY);
@@ -751,7 +759,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
             double s = this.useCustomWallCollision ? this.wallCollisionSize : this.size;
             double bound = s / 2 + Game.tile_size / 2;
 
-            for (Obstacle o : Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
+            for (Obstacle o: Obstacle.getObstaclesInRange(posX - bound, posY - bound, posX + bound, posY + bound))
             {
                 if ((!o.bulletCollision && !o.checkForObjects) || (o instanceof ObstacleStackable && ((ObstacleStackable) o).startHeight > 1))
                     continue;
@@ -919,7 +927,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
         this.inside.clear();
 
-        for (Movable m : getSquareCollision(this))
+        for (Movable m: getSquareCollision(this))
         {
             if (!(m instanceof Tank) || m.destroy || ((Tank) m).size <= 0)
                 continue;
@@ -939,7 +947,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
             this.inside.add(t);
         }
-        for (Movable m : getCircleCollision(this))
+        for (Movable m: getCircleCollision(this))
         {
             if (!(m instanceof Bullet || m instanceof Mine))
                 continue;
@@ -1114,9 +1122,11 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
             double v = this.homingSharpness > 0 ? 1 : -1;
 
             if (Game.enable3d)
-                e.set3dPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, Math.PI * 0.1 * (Math.random() - 0.5), this.size / 50.0 * (12 + Math.random() * 4) * v);
+                e.set3dPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01,
+                    Math.PI * 0.1 * (Math.random() - 0.5), this.size / 50.0 * (12 + Math.random() * 4) * v);
             else
-                e.setPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01, this.size / 50.0 * (12 + Math.random() * 4) * v);
+                e.setPolarMotion(Math.PI + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY) + (Math.random() - 0.5) * 0.01,
+                    this.size / 50.0 * (12 + Math.random() * 4) * v);
 
             Game.effects.add(e);
         }
@@ -1149,7 +1159,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public void initTrails()
     {
-        this.trails = (ArrayList<Trail>[])(new ArrayList[this.effect.trailEffects.size()]);
+        this.trails = (ArrayList<Trail>[]) (new ArrayList[this.effect.trailEffects.size()]);
 
         for (int i = 0; i < this.trails.length; i++)
             this.trails[i] = new ArrayList<>();
@@ -1196,7 +1206,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
                 boolean eligible = false;
                 if (m1 instanceof Tank && this.isHarmful() != Team.isAllied(this, m1))
                     eligible = true;
-                else if ((m1 instanceof Bullet && ((Bullet) m1).enableCollision && ((Bullet) m1).bulletCollision && ((Bullet) m1).delay <= 0) && this.bulletCollision && !Team.isAllied(this, m1))
+                else if ((m1 instanceof Bullet && ((Bullet) m1).enableCollision && ((Bullet) m1).bulletCollision && ((Bullet) m1).delay <= 0) &&
+                    this.bulletCollision && !Team.isAllied(this, m1))
                     eligible = true;
                 else if (m1 instanceof Mine && this.mineCollision && !Team.isAllied(this, m1))
                     eligible = true;
@@ -1266,12 +1277,12 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         if (!this.destroy && this.revertSpeed)
         {
             double frac = Math.pow(0.999, frameFrequency);
-            this.setPolarMotion(this.getPolarDirection(), this.getSpeed() * frac + this.speed * (1 -frac));
+            this.setPolarMotion(this.getPolarDirection(), this.getSpeed() * frac + this.speed * (1 - frac));
         }
 
         boolean noTrails = true;
 
-        for (ArrayList<Trail> trails : this.trails)
+        for (ArrayList<Trail> trails: this.trails)
         {
             double trailLength = 0;
             for (int i = 0; i < trails.size(); i++)
@@ -1354,7 +1365,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
         this.age += frameFrequency;
 
-        if (((this.age > lifespan && this.lifespan > 0) || (this.range > 0 && Math.pow(this.originX - this.posX, 2) + Math.pow(this.originY - posY, 2) > this.range * this.range)) && !this.destroy)
+        if (((this.age > lifespan && this.lifespan > 0) ||
+            (this.range > 0 && Math.pow(this.originX - this.posX, 2) + Math.pow(this.originY - posY, 2) > this.range * this.range)) && !this.destroy)
         {
             this.pop();
             this.collisionX = this.posX;
@@ -1393,7 +1405,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     public void updateTrails()
     {
         if (!this.effect.trailEffects.isEmpty() && !this.addedTrail && !this.destroy &&
-                (GameObject.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (this.trail3d && GameObject.absoluteAngleBetween(this.getPolarPitch(), this.lastTrailPitch) >= 0.1)))
+            (GameObject.absoluteAngleBetween(this.getPolarDirection(), this.lastTrailAngle) >= 0.001 || (this.trail3d && GameObject.absoluteAngleBetween(this.getPolarPitch(),
+                this.lastTrailPitch) >= 0.1)))
         {
             this.addTrail(true);
         }
@@ -1436,17 +1449,21 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
             Trail t = this.effect.trailEffects.get(i);
 
             if (!this.trail3d || !Game.enable3d)
-                this.addTrailObj(i, new Trail(this, this.speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle,
-                    t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle, t.backCircle), redirect);
+                this.addTrailObj(i, new Trail(this, this.speed, x, y, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth,
+                    this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, t.frontColor.red, t.frontColor.green,
+                    t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle,
+                    t.backCircle), redirect);
             else
-                this.addTrailObj(i, new Trail3D(this, this.speed, x, y, z, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth, this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, this.lastTrailPitch,
-                        t.frontColor.red, t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity, t.frontCircle, t.backCircle), redirect);
+                this.addTrailObj(i, new Trail3D(this, this.speed, x, y, z, this.size * speed / 3.125 * t.delay, this.size / 2 * t.backWidth,
+                    this.size / 2 * t.frontWidth, this.size * speed / 3.125 * t.maxLength, this.lastTrailAngle, this.lastTrailPitch, t.frontColor.red,
+                    t.frontColor.green, t.frontColor.blue, t.frontColor.alpha, t.backColor.red, t.backColor.green, t.backColor.blue, t.backColor.alpha, t.glow, t.luminosity,
+                    t.frontCircle, t.backCircle), redirect);
         }
     }
 
     public void stopTrails()
     {
-        for (ArrayList<Trail> trail : this.trails)
+        for (ArrayList<Trail> trail: this.trails)
         {
             if (trail.size() > 0)
             {
@@ -1556,9 +1573,9 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         if (this.trails == null)
             this.initTrails();
 
-        for (ArrayList<Trail> trail : this.trails)
+        for (ArrayList<Trail> trail: this.trails)
         {
-            for (Trail t : trail)
+            for (Trail t: trail)
             {
                 t.draw();
             }
@@ -1637,7 +1654,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
             double d = Math.min((1 - this.destroyTimer / this.maxDestroyTimer) * 2, 1);
 
             Drawing.drawing.setColor(this.baseColor.red, this.baseColor.green, this.baseColor.blue, frac * 255 * d, 1);
-            Drawing.drawing.drawImage(frac * Math.PI / 2 + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY), "cursor.png", this.homingTarget.posX, this.homingTarget.posY, s, s);
+            Drawing.drawing.drawImage(frac * Math.PI / 2 + this.getAngleInDirection(this.homingTarget.posX, this.homingTarget.posY), "cursor.png",
+                this.homingTarget.posX, this.homingTarget.posY, s, s);
 
             if (Game.glowEnabled)
             {
@@ -1779,19 +1797,24 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         if (!this.effect.overrideGlowColor)
         {
             if (this.overrideOutlineColor)
-                Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : this.effect.luminance);
+                Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity,
+                    this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : this.effect.luminance);
             else
-                Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : this.effect.luminance);
+                Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity,
+                    255, this.effect.glowGlowy ? 1 : this.effect.luminance);
         }
         else
-            Drawing.drawing.setColor(this.effect.glowColor.red * this.effect.glowIntensity, this.effect.glowColor.green * this.effect.glowIntensity, this.effect.glowColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : this.effect.luminance);
+            Drawing.drawing.setColor(this.effect.glowColor.red * this.effect.glowIntensity, this.effect.glowColor.green * this.effect.glowIntensity,
+                this.effect.glowColor.blue * this.effect.glowIntensity, 255, this.effect.glowGlowy ? 1 : this.effect.luminance);
 
         Drawing.drawing.fillInterfaceGlow(start, y, size * this.effect.glowSize, size * this.effect.glowSize, !this.effect.glowGlowy);
 
         if (this.overrideOutlineColor)
-            Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity, this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.luminance);
+            Drawing.drawing.setColor(this.outlineColor.red * this.effect.glowIntensity, this.outlineColor.green * this.effect.glowIntensity,
+                this.outlineColor.blue * this.effect.glowIntensity, 255, this.effect.luminance);
         else
-            Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity, 255, this.effect.luminance);
+            Drawing.drawing.setColor(turret.red * this.effect.glowIntensity, turret.green * this.effect.glowIntensity, turret.blue * this.effect.glowIntensity,
+                255, this.effect.luminance);
 
         Drawing.drawing.fillInterfaceOval(start, y, size, size);
 

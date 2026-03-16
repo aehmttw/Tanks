@@ -3,16 +3,10 @@ package tanks.hotbar;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenGame;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.item.ItemShield;
+import tanks.item.*;
 import tanks.minigames.Minigame;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
-import tanks.tank.TankModels;
-import tanks.tank.TankPlayerController;
-import tanks.tank.Turret;
+import tanks.tank.*;
 import tanks.translation.Translation;
 
 import java.text.DecimalFormat;
@@ -237,7 +231,8 @@ public class Hotbar
                 if (Game.playerTank != null && !Game.playerTank.destroy && Game.playerTank.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
                     ib = (ItemBullet.ItemStackBullet) Game.playerTank.getPrimaryAbility();
 
-                if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
+                if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots &&
+                    this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
                     ib = (ItemBullet.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
 
                 if (ib != null)
@@ -279,7 +274,7 @@ public class Hotbar
             Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, Math.min(1, Math.max(0, 1 - ammo2)));
 
             Drawing.drawing.setColor(0, 200, 255, (100 - this.percentHidden) * 2.55);
-            Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5,  Math.min(1, Math.max(0, 1 - ammo)));
+            Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, Math.min(1, Math.max(0, 1 - ammo)));
 
             Drawing.drawing.setColor(0, 255, 255, (100 - this.percentHidden) * 2.55);
             Drawing.drawing.fillInterfaceProgressRect(x, y, bar_width, 5, Math.min(1, Math.max(0, -ammo2 * max)));
@@ -311,7 +306,8 @@ public class Hotbar
                     if (Game.playerTank.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
                         m = (ItemMine.ItemStackMine) Game.playerTank.getSecondaryAbility();
 
-                    if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
+                    if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots &&
+                        this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
                         m = (ItemMine.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
 
                     if (m != null)
@@ -350,16 +346,17 @@ public class Hotbar
             if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255, (100 - this.percentHidden) * 2.55);
 
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 100 + percentHidden - verticalOffset, "Coins: %d", coins);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 100 + percentHidden - verticalOffset,
+                "Coins: %d", coins);
         }
 
         if (this.enabledRemainingEnemies)
         {
             int count = 0;
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
-                if (m instanceof Tank && !Team.isAllied(Game.playerTank, m) && !m.destroy && ((Tank)m).mandatoryKill)
+                if (m instanceof Tank && !Team.isAllied(Game.playerTank, m) && !m.destroy && ((Tank) m).mandatoryKill)
                     count++;
             }
 
@@ -497,7 +494,8 @@ public class Hotbar
                     timeSinceHealthChange = 0;
             }
 
-            double opacity = circleVisibility / circleVisibilityMax * Math.min(1, (Game.playerTank.health == 0 ? 0 : this.circlePersistenceVisibility) + Math.max(0, 2 - timeSinceHealthChange / healthFadeTime));
+            double opacity = circleVisibility / circleVisibilityMax * Math.min(1, (Game.playerTank.health == 0 ? 0 : this.circlePersistenceVisibility) +
+                Math.max(0, 2 - timeSinceHealthChange / healthFadeTime));
             Drawing.drawing.setColor(0, 0, 0, 128 * opacity);
 
             if (Level.isDark())
@@ -526,10 +524,11 @@ public class Hotbar
             if (shields > 0)
             {
                 Drawing.drawing.setColor(255, 0, 0, 255 * opacity, 255);
-                Drawing.drawing.fillOval(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, z, 18, 18, 0, false, false);
+                Drawing.drawing.fillOval(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, z, 18, 18, 0, false,
+                    false);
                 Drawing.drawing.setFontSize(12);
                 Drawing.drawing.setColor(255, 255, 255, 255 * opacity, 255);
-                Drawing.drawing.drawText(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, z,  shields + "", false);
+                Drawing.drawing.drawText(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, z, shields + "", false);
             }
         }
 
@@ -561,9 +560,9 @@ public class Hotbar
 
         int enemyCount = 0;
         int alliedCount = 0;
-        for (Movable m : Game.movables)
+        for (Movable m: Game.movables)
         {
-            if (m instanceof Tank && !m.destroy && ((Tank)m).mandatoryKill)
+            if (m instanceof Tank && !m.destroy && ((Tank) m).mandatoryKill)
             {
                 if (!Team.isAllied(Game.playerTank, m))
                     enemyCount++;
@@ -587,9 +586,10 @@ public class Hotbar
         lastAllies = alliedCount;
         lastEnemies = enemyCount;
 
-        double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility);
+        double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility);
         double opacityCoins = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility + Math.max(0, 20 - timeSinceCoinsChange / 50));
-        double opacityAllies = circleVisibility / circleVisibilityMax * Math.min(1, ((alliedCount > 1) ? this.circlePersistenceVisibility : 0) + Math.max(0, 20 - timeSinceAlliesChange / 50));
+        double opacityAllies = circleVisibility / circleVisibilityMax * Math.min(1, ((alliedCount > 1) ? this.circlePersistenceVisibility : 0) +
+            Math.max(0, 20 - timeSinceAlliesChange / 50));
         double opacityEnemies = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility + Math.max(0, 20 - timeSinceEnemiesChange / 50));
 
         Drawing.drawing.setInterfaceFontSize(24);
@@ -635,7 +635,8 @@ public class Hotbar
             double y = (Drawing.drawing.getInterfaceEdgeY(true) - 17.5 - verticalOffset);
 
             Drawing.drawing.setColor(255, 255, 255, opacityCoins * 255);
-            Drawing.drawing.drawInterfaceImage("coin.png", x + (coinsWidth + iconSpace / 2) * opacityCoins, y, opacityCoins * iconSize, opacityCoins * iconSize);
+            Drawing.drawing.drawInterfaceImage("coin.png", x + (coinsWidth + iconSpace / 2) * opacityCoins, y, opacityCoins * iconSize,
+                opacityCoins * iconSize);
 
             Drawing.drawing.setInterfaceFontSize(24 * opacityCoins);
             Drawing.drawing.setColor(255, 100, 0, opacityCoins * 255);
@@ -652,7 +653,8 @@ public class Hotbar
             drawTankIcon(x + (enemiesWidth + iconSpace / 2 + 3) * opacityEnemies, y, 255, 0, 0, opacityEnemies, 22 * opacityEnemies);
 
             Drawing.drawing.setInterfaceFontSize(24 * opacityEnemies);
-            Drawing.drawing.setColor(Turret.calculateSecondaryColor(255), Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(0), opacityEnemies * 255);
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(255), Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(0),
+                opacityEnemies * 255);
             Drawing.drawing.drawInterfaceText(x + 1, y + 1, enemyCount + "", false);
             Drawing.drawing.setColor(255, 0, 0, opacityEnemies * 255);
             Drawing.drawing.drawInterfaceText(x - 1, y - 1, "" + enemyCount, false);
@@ -666,7 +668,8 @@ public class Hotbar
             drawTankIcon(x + (alliesWidth + iconSpace / 2 + 3) * opacityAllies, y, 0, 150, 255, opacityAllies, 22 * opacityAllies);
 
             Drawing.drawing.setInterfaceFontSize(24 * opacityAllies);
-            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255), opacityAllies * 255);
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(0), Turret.calculateSecondaryColor(150), Turret.calculateSecondaryColor(255),
+                opacityAllies * 255);
             Drawing.drawing.drawInterfaceText(x + 1, y + 1, alliedCount + "", false);
             Drawing.drawing.setColor(0, 150, 255, opacityAllies * 255);
             Drawing.drawing.drawInterfaceText(x - 1, y - 1, "" + alliedCount, false);
@@ -719,7 +722,8 @@ public class Hotbar
         if (Game.playerTank != null && !Game.playerTank.destroy && Game.playerTank.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
             ib = (ItemBullet.ItemStackBullet) Game.playerTank.getPrimaryAbility();
 
-        if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots && this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
+        if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots &&
+            this.itemBar.slots[this.itemBar.selected] instanceof ItemBullet.ItemStackBullet)
             ib = (ItemBullet.ItemStackBullet) this.itemBar.slots[this.itemBar.selected];
 
         if (Game.playerTank instanceof TankPlayerController && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).playing)
@@ -855,7 +859,8 @@ public class Hotbar
             if (Game.playerTank.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
                 m = (ItemMine.ItemStackMine) Game.playerTank.getSecondaryAbility();
 
-            if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots && this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
+            if (this.enabledItemBar && this.itemBar.selected != -1 && this.itemBar.selected < hotbarSlots &&
+                this.itemBar.slots[this.itemBar.selected] instanceof ItemMine.ItemStackMine)
                 m = (ItemMine.ItemStackMine) this.itemBar.slots[this.itemBar.selected];
 
             if (m != null)
@@ -893,7 +898,7 @@ public class Hotbar
                 timeSinceMineChange = 0;
 
             lastCooldownFrac2 = cooldownFrac2;
-            double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
+            double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
 
             double ms = 2;
             Drawing.drawing.setColor(255, 0, 0, opacity1 * 255, 255);
@@ -970,20 +975,22 @@ public class Hotbar
 
             lastCooldownFrac2 = cooldownFrac2;
 
-            double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1,  this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
+            double opacity1 = circleVisibility / circleVisibilityMax * Math.min(1, this.circlePersistenceVisibility + Math.max(0, 2 - timeSinceMineChange / mcooldown));
 
             double ms = 2;
 
             double frac = 1 - cooldownFrac2;
 
             Drawing.drawing.setColor(140, 140, 140, opacity1 * 255, 255);
-            Drawing.drawing.drawImage("shield_icon.png", Game.playerTank.posX, Game.playerTank.posY, z, 18 * ms, 18 * ms, false, 0, 0, 1, 1 - frac);
+            Drawing.drawing.drawImage("shield_icon.png", Game.playerTank.posX, Game.playerTank.posY, z, 18 * ms, 18 * ms, false, 0, 0, 1,
+                1 - frac);
 
             Drawing.drawing.setColor(255, 255, 255, opacity1 * 255, 255);
             if (Game.playerTank.baseHealth + s.item.max <= Game.playerTank.health)
                 Drawing.drawing.setColor(180, 180, 180, opacity1 * 255, 255);
 
-            Drawing.drawing.drawImage("shield_icon.png", Game.playerTank.posX, Game.playerTank.posY - 18 * ms * (frac - 1), z, 18 * ms, 18 * ms, false, 0, 1 - frac, 1, 1);
+            Drawing.drawing.drawImage("shield_icon.png", Game.playerTank.posX, Game.playerTank.posY - 18 * ms * (frac - 1), z, 18 * ms, 18 * ms, false,
+                0, 1 - frac, 1, 1);
 
             Drawing.drawing.setColor(0, 0, 0, opacity1 * 255, 255);
             Drawing.drawing.setFontSize(6 * ms);

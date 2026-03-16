@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A stationary tank which shoots stunning electricity that arcs between targets
- */
+/** A stationary tank which shoots stunning electricity that arcs between targets */
 public class TankBlue extends TankAIControlled
 {
     public TankBlue(String name, double x, double y, double angle)

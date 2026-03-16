@@ -2,29 +2,27 @@ package tanks.attribute;
 
 import tanks.Panel;
 
-import java.util.HashMap;
-import java.util.Queue;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AttributeModifier
 {
-    public enum Operation {add, multiply}
+    public enum Operation { add, multiply }
 
     // Object recycling system
     private static final Queue<AttributeModifier> recycleQueue = new ConcurrentLinkedQueue<>();
     private static final int MAX_POOL_SIZE = 2000; // Prevent memory leaks from excessive pooling
 
-    /**An unique name for the modifier, to prevent double effects*/
+    /** An unique name for the modifier, to prevent double effects */
     public String name = UUID.randomUUID().toString();
 
-    /**Duration of the Attribute Modifier, leave at 0 for indefinite duration*/
+    /** Duration of the Attribute Modifier, leave at 0 for indefinite duration */
     public double duration = 0;
 
-    /**Age at which the Attribute starts to wear off*/
+    /** Age at which the Attribute starts to wear off */
     public double deteriorationAge = 0;
 
-    /**Age at which the Attribute is at full strength*/
+    /** Age at which the Attribute is at full strength */
     public double warmupAge = 0;
 
     public double value;
@@ -102,9 +100,7 @@ public class AttributeModifier
         return this;
     }
 
-    /**
-     * Factory method to obtain an AttributeModifier instance, either from the recycle pool or create new
-     */
+    /** Factory method to obtain an AttributeModifier instance, either from the recycle pool or create new */
     public static AttributeModifier newInstance(Type type, Operation op, double amount)
     {
         AttributeModifier modifier = recycleQueue.poll();
@@ -113,9 +109,7 @@ public class AttributeModifier
         return new AttributeModifier().set(type, op, amount);
     }
 
-    /**
-     * Factory method to obtain an AttributeModifier instance with a specific name
-     */
+    /** Factory method to obtain an AttributeModifier instance with a specific name */
     public static AttributeModifier newInstance(String name, Type type, Operation op, double amount)
     {
         AttributeModifier modifier = newInstance(type, op, amount);
@@ -125,6 +119,7 @@ public class AttributeModifier
 
     /**
      * Creates a copy of an AttributeModifier instance
+     *
      * @apiNote Remember to {@link #recycle(AttributeModifier) recycle} the copy when you're done with it
      */
     public static AttributeModifier copy(AttributeModifier a)
@@ -139,9 +134,7 @@ public class AttributeModifier
         return copy;
     }
 
-    /**
-     * Recycle this AttributeModifier instance for reuse
-     */
+    /** Recycle this AttributeModifier instance for reuse */
     public static void recycle(AttributeModifier modifier)
     {
         if (modifier == null || !modifier.expired)

@@ -110,7 +110,7 @@ public class CrusadePlayer
             {
                 Crusade.currentCrusade.livingTankIDs.clear();
 
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof Tank && !m.destroy && ((Tank) m).crusadeID >= 0)
                         Crusade.currentCrusade.livingTankIDs.add(((Tank) m).crusadeID);
@@ -150,7 +150,7 @@ public class CrusadePlayer
             f.println(this.coins + "");
 
             StringBuilder items = new StringBuilder();
-            for (Item.ItemStack<?> i : this.itemBar.slots)
+            for (Item.ItemStack<?> i: this.itemBar.slots)
             {
                 items.append(i.item.name).append(",").append(i.stackSize).append("|");
             }

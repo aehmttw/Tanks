@@ -1,9 +1,7 @@
 package tanks.tank;
 
 import basewindow.Color;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
 import tanks.item.ItemBullet;
@@ -57,7 +55,7 @@ public class Turret extends Movable
             ItemBullet.ItemStackBullet ib = null;
             if (this.tank instanceof TankPlayable)
                 ib = ((TankPlayable) this.tank).getFirstBullet();
-            else if  (this.tank instanceof TankRemote)
+            else if (this.tank instanceof TankRemote)
                 ib = ((TankPlayable) ((TankRemote) this.tank).tank).getFirstBullet();
 
             if (ib != null)
@@ -108,6 +106,9 @@ public class Turret extends Movable
         }
     }
 
+    @Override
+    public void draw() {}
+
     public void drawBarrel(boolean forInterface, boolean in3d, double baseSize, double length, double thickness, double rotation, double vAngle)
     {
         if (forInterface)
@@ -128,9 +129,6 @@ public class Turret extends Movable
 
     @Override
     public void update() {}
-
-    @Override
-    public void draw() {}
 
     public static double calculateSecondaryColor(double input)
     {

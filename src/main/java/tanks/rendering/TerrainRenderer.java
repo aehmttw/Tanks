@@ -1,10 +1,7 @@
 package tanks.rendering;
 
 import basewindow.*;
-import tanks.Chunk;
-import tanks.Direction;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.ScreenIntro;
 import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
@@ -315,10 +312,9 @@ public class TerrainRenderer
         }
     }
 
-    /**
-     * Different rendering method, easier to use if you want the shrinking/growing blocks animation to work properly but maybe a bit slower
-     */
-    public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy, float cz)
+    /** Different rendering method, easier to use if you want the shrinking/growing blocks animation to work properly but maybe a bit slower */
+    public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy,
+                                 float cz)
     {
         x -= sX / 2;
         y -= sY / 2;
@@ -478,11 +474,11 @@ public class TerrainRenderer
 
     public void reset()
     {
-        for (HashMap<Integer, RegionRenderer> h : this.renderers.values())
-            for (RegionRenderer r : h.values())
+        for (HashMap<Integer, RegionRenderer> h: this.renderers.values())
+            for (RegionRenderer r: h.values())
                 r.renderer.free();
 
-        for (RegionRenderer r : this.outOfBoundsRenderers.values())
+        for (RegionRenderer r: this.outOfBoundsRenderers.values())
             r.renderer.free();
 
         this.renderers.clear();
@@ -494,7 +490,7 @@ public class TerrainRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
-        for (RegionRenderer s : renderers.values())
+        for (RegionRenderer s: renderers.values())
         {
             double sX = asPreview ? previewWidth : Game.currentSizeX;
             double x = xOffset * Game.tile_size * sX + offX;
@@ -510,7 +506,8 @@ public class TerrainRenderer
             if (in)
             {
                 if (s.shader instanceof RendererShader)
-                    s.renderer.settings(((RendererShader) s.shader).depthTest && Game.enable3d, ((RendererShader) s.shader).glow, ((RendererShader) s.shader).depthMask && Game.enable3d);
+                    s.renderer.settings(((RendererShader) s.shader).depthTest && Game.enable3d, ((RendererShader) s.shader).glow,
+                        ((RendererShader) s.shader).depthMask && Game.enable3d);
                 else
                     s.renderer.settings(Game.enable3d, false, Game.enable3d);
 
@@ -556,10 +553,10 @@ public class TerrainRenderer
         }
         else
         {
-            for (Obstacle o : Game.redrawObstacles)
+            for (Obstacle o: Game.redrawObstacles)
                 drawObstacle(o);
 
-            for (Game.GroundTile t : Game.redrawGroundTiles)
+            for (Game.GroundTile t: Game.redrawGroundTiles)
                 this.drawTile(t.x, t.y);
 
             Game.redrawObstacles.clear();
@@ -624,7 +621,7 @@ public class TerrainRenderer
         {
             for (int i = 0; i < 10; i++)
             {
-                for (Class<? extends ShaderGroup> s : this.renderers.keySet())
+                for (Class<? extends ShaderGroup> s: this.renderers.keySet())
                 {
                     try
                     {
@@ -704,19 +701,19 @@ public class TerrainRenderer
 
                 double extra = getExtra(x, y);
                 this.addBox(t,
-                        x * Game.tile_size,
-                        y * Game.tile_size,
-                        -extra, Game.tile_size, Game.tile_size,
-                        extra + depth, o, false);
+                    x * Game.tile_size,
+                    y * Game.tile_size,
+                    -extra, Game.tile_size, Game.tile_size,
+                    extra + depth, o, false);
             }
         }
         else
         {
             this.addBox(t,
-                    x * Game.tile_size,
-                    y * Game.tile_size,
-                    0, Game.tile_size, Game.tile_size,
-                    0, BaseShapeRenderer.hide_neg_z, false);
+                x * Game.tile_size,
+                y * Game.tile_size,
+                0, Game.tile_size, Game.tile_size,
+                0, BaseShapeRenderer.hide_neg_z, false);
         }
 
         if (!this.staged)
@@ -731,10 +728,10 @@ public class TerrainRenderer
                     Game.tile_size + depth, BaseShapeRenderer.hide_neg_z, true);
             else
                 this.addBox(t,
-                        x * Game.tile_size,
-                        y * Game.tile_size,
-                        0, Game.tile_size, Game.tile_size,
-                        0, BaseShapeRenderer.hide_neg_z, true);
+                    x * Game.tile_size,
+                    y * Game.tile_size,
+                    0, Game.tile_size, Game.tile_size,
+                    0, BaseShapeRenderer.hide_neg_z, true);
         }
     }
 
@@ -757,7 +754,7 @@ public class TerrainRenderer
         double s = Obstacle.draw_size;
         Obstacle.draw_size = Game.tile_size;
 
-        for (Obstacle o : Game.obstacles)
+        for (Obstacle o: Game.obstacles)
             o.postOverride();
 
         if (stagedCount == 0)
@@ -821,12 +818,13 @@ public class TerrainRenderer
     }
 
 
-
     public static class RegionRenderer
     {
         public BaseShapeBatchRenderer renderer;
         public ShaderGroup shader;
-        public int posX, posY, num;
+        public int posX;
+        public int posY;
+        public int num;
 
         public RegionRenderer(int x, int y, ShaderGroup s, int num)
         {

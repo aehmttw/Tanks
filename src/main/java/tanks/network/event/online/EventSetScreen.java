@@ -1,10 +1,11 @@
 package tanks.network.event.online;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenUploadLevel;
 import tanks.network.NetworkUtils;
 import tanks.network.event.PersonalEvent;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventSetScreen extends PersonalEvent
 {

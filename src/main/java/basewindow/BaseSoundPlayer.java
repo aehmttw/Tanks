@@ -13,6 +13,8 @@ public abstract class BaseSoundPlayer
 
     public abstract void loadMusic(String path);
 
+    public abstract void loadMusic(String path, InputStream in);
+
     public abstract void playSound(String path);
 
     public abstract void playSound(String path, float pitch);
@@ -46,6 +48,4 @@ public abstract class BaseSoundPlayer
     public abstract void createSound(String path, InputStream in);
 
     public abstract void createMusic(String path, InputStream in);
-
-    public abstract void loadMusic(String path, InputStream in);
 }

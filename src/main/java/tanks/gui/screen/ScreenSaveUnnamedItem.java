@@ -1,20 +1,12 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.bullet.Bullet;
-import tanks.gui.Button;
-import tanks.gui.SelectorImage;
-import tanks.gui.TextBox;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
+import tanks.gui.*;
+import tanks.item.*;
 import tanks.tank.Mine;
-import tanks.tankson.FieldPointer;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
+import tanks.tankson.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -122,8 +114,8 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
             if (itemName.inputText.equals(""))
                 itemName.inputText = itemName.previousInputText;
             updateSaveButton();
-        }
-                , itemStack.item.name);
+        },
+            itemStack.item.name);
 
         itemName.enableCaps = true;
         updateSaveButton();

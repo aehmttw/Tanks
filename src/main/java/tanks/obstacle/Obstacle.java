@@ -17,14 +17,10 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public boolean tankCollision = true;
     public boolean bulletCollision = true;
 
-    /**
-     * If set to true, AI tanks will treat this block as breakable and shoot at it if there are tanks behind it
-     */
+    /** If set to true, AI tanks will treat this block as breakable and shoot at it if there are tanks behind it */
     public boolean shouldShootThrough = false;
 
-    /**
-     * If set to a nonnegative value, will override how much AI controlled tanks will avoid pathfinding over this
-     */
+    /** If set to a nonnegative value, will override how much AI controlled tanks will avoid pathfinding over this */
     public int unfavorability = -1;
 
     /**
@@ -32,8 +28,10 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
      * Ground = replaces the ground tile, can have blocks/tanks on top
      * Top = can be placed on top of a ground tile, can have tanks inside
      * Extra = can be placed anywhere without a full tile, can have tanks inside
-     * */
+     *
+     */
     public enum ObstacleType { full, ground, top, extra }
+
     public ObstacleType type = ObstacleType.top;
 
     public double startHeight = 0;
@@ -45,9 +43,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public boolean allowBounce = true;
     public boolean replaceTiles = true;
 
-    /**
-     * If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles.
-     */
+    /** If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles. */
     public boolean batchDraw = true;
     public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
     public Class<? extends ShaderGroup> tileRenderer = ShaderGroup.class;
@@ -175,7 +171,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
     }
 
-    /** Only for visual effects which are to be handled by each client separately*/
+    /** Only for visual effects which are to be handled by each client separately */
     public void onObjectEntryLocal(Movable m)
     {
 
@@ -235,10 +231,10 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     /**
      * Draws the tile under the obstacle if it needs to be drawn differently than when not covered by an obstacle
      *
-     * @param r Red
-     * @param g Green
-     * @param b Blue
-     * @param d Tile height
+     * @param r     Red
+     * @param g     Green
+     * @param b     Blue
+     * @param d     Tile height
      * @param extra The deepest tile next to the current tile, used to render sides underground
      */
     public void drawTile(IBatchRenderableObject tile, double r, double g, double b, double d, double extra)
@@ -250,7 +246,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public void refreshSelfAndNeighbors()
     {
         updateFaces();
-        for (Obstacle o : getNeighbors())
+        for (Obstacle o: getNeighbors())
             o.onNeighborUpdate();
     }
 
@@ -269,12 +265,11 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
     /**
      * @return height of tile in terms of drawing, for things like block particle collision
-     * */
+     *
+     */
     public abstract double getTileHeight();
 
-    /**
-     * @return how deep the edges of the tile span - for example, ice tiles go down to -15, but most tiles only go down to 0
-     */
+    /** @return how deep the edges of the tile span - for example, ice tiles go down to -15, but most tiles only go down to 0 */
     public double getEdgeDrawDepth()
     {
         return 0;
@@ -282,7 +277,8 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
     /**
      * Returns height of tile in terms of where objects like mines or treads should be drawn on top of it
-     * */
+     *
+     */
     public double getGroundHeight()
     {
         return -1000;
@@ -430,25 +426,31 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     /** Field to cache the obstacle array for reuse */
     private static final ArrayList<Obstacle> obstacleOut = new ArrayList<>();
 
-    /** Expects all pixel coordinates.
-     * @return all the obstacles within the specified range */
+    /**
+     * Expects all pixel coordinates.
+     *
+     * @return all the obstacles within the specified range
+     */
     public static ArrayList<Obstacle> getObstaclesInRange(double x1, double y1, double x2, double y2)
     {
         obstacleOut.clear();
-        for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
-            for (Obstacle o : c.obstacles)
+        for (Chunk c: Chunk.getChunksInRange(x1, y1, x2, y2))
+            for (Obstacle o: c.obstacles)
                 if (Game.isOrdered(true, x1, o.posX, x2) && Game.isOrdered(true, y1, o.posY, y2))
                     obstacleOut.add(o);
         return obstacleOut;
     }
 
-    /** Expects all pixel coordinates.
-     * @return all the obstacles within a certain radius of the position */
+    /**
+     * Expects all pixel coordinates.
+     *
+     * @return all the obstacles within a certain radius of the position
+     */
     public static ArrayList<Obstacle> getObstaclesInRadius(double posX, double posY, double radius)
     {
         obstacleOut.clear();
-        for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
-            for (Obstacle o : c.obstacles)
+        for (Chunk c: Chunk.getChunksInRadius(posX, posY, radius))
+            for (Obstacle o: c.obstacles)
                 if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < radius * radius)
                     obstacleOut.add(o);
         return obstacleOut;

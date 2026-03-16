@@ -15,42 +15,42 @@ public class StatusEffect
     public static HashMap<String, StatusEffect> statusEffectRegistry = new HashMap<>();
 
     public static final StatusEffect ice = new StatusEffect("ice", new AttributeModifier[]
-    {
-        AttributeModifier.newInstance("ice_accel", AttributeModifier.acceleration, AttributeModifier.Operation.multiply, -0.75),
-                AttributeModifier.newInstance("ice_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.875),
-                AttributeModifier.newInstance("ice_max_speed", AttributeModifier.max_speed, AttributeModifier.Operation.multiply, 3)
-    });
+        {
+            AttributeModifier.newInstance("ice_accel", AttributeModifier.acceleration, AttributeModifier.Operation.multiply, -0.75),
+            AttributeModifier.newInstance("ice_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.875),
+            AttributeModifier.newInstance("ice_max_speed", AttributeModifier.max_speed, AttributeModifier.Operation.multiply, 3)
+        });
 
     public static final StatusEffect snow_velocity = new StatusEffect("snow_velocity", new AttributeModifier[]
-    {
-        AttributeModifier.newInstance("snow_velocity", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.25),
-    });
+        {
+            AttributeModifier.newInstance("snow_velocity", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.25),
+        });
 
     public static final StatusEffect snow_friction = new StatusEffect("snow_friction", new AttributeModifier[]
-    {
-        AttributeModifier.newInstance("snow_friction", AttributeModifier.friction, AttributeModifier.Operation.multiply, 4)
-    });
+        {
+            AttributeModifier.newInstance("snow_friction", AttributeModifier.friction, AttributeModifier.Operation.multiply, 4)
+        });
 
 
     public static final StatusEffect mud = new StatusEffect("mud", new AttributeModifier[]
-    {
-        AttributeModifier.newInstance("mud", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.5)
-    });
+        {
+            AttributeModifier.newInstance("mud", AttributeModifier.velocity, AttributeModifier.Operation.multiply, -0.5)
+        });
 
 
     public static final StatusEffect boost_tank = new StatusEffect("boost_tank", new AttributeModifier[]
-    {
-        AttributeModifier.newInstance("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3),
-                AttributeModifier.newInstance("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1),
-                AttributeModifier.newInstance("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75),
-                AttributeModifier.newInstance("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1)
-    });
+        {
+            AttributeModifier.newInstance("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 3),
+            AttributeModifier.newInstance("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1),
+            AttributeModifier.newInstance("boost_slip", AttributeModifier.friction, AttributeModifier.Operation.multiply, -0.75),
+            AttributeModifier.newInstance("boost_effect", AttributeModifier.ember_effect, AttributeModifier.Operation.add, 1)
+        });
 
     public static final StatusEffect boost_bullet = new StatusEffect("boost_bullet", new AttributeModifier[]
-            {
-                    AttributeModifier.newInstance("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 1),
-                    AttributeModifier.newInstance("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1)
-            });
+        {
+            AttributeModifier.newInstance("boost_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, 1),
+            AttributeModifier.newInstance("boost_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, 1)
+        });
 
     public static final StatusEffect[] arcade_rampage = createArcadeRampage();
 
@@ -61,13 +61,14 @@ public class StatusEffect
         for (int i = 0; i < Arcade.max_power; i++)
         {
             s[i] = new StatusEffect("rampage", "rampage_" + (i + 1), new AttributeModifier[]
-                    {
-                            AttributeModifier.newInstance("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
-                            AttributeModifier.newInstance("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
-                            AttributeModifier.newInstance("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)
-                    });
+                {
+                    AttributeModifier.newInstance("rampage_speed", AttributeModifier.velocity, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                    AttributeModifier.newInstance("rampage_glow", AttributeModifier.glow, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                    AttributeModifier.newInstance("rampage_reload", AttributeModifier.reload, AttributeModifier.Operation.multiply, (i + 1) / 5.0),
+                    AttributeModifier.newInstance("rampage_recoil", AttributeModifier.recoil, AttributeModifier.Operation.multiply, 1.0 / (1 + (i + 1) / 5.0) - 1),
+                    AttributeModifier.newInstance("rampage_bullet_speed", AttributeModifier.bullet_speed, AttributeModifier.Operation.multiply, (i + 1) / 5.0)
+                }
+            );
         }
 
         return s;
@@ -82,13 +83,13 @@ public class StatusEffect
         public StatusEffect effect;
         public double age;
 
-        /**Duration of the Attribute Modifier, leave at 0 for indefinite duration*/
+        /** Duration of the Attribute Modifier, leave at 0 for indefinite duration */
         public double duration;
 
-        /**Age at which the Attribute starts to wear off*/
+        /** Age at which the Attribute starts to wear off */
         public double deteriorationAge;
 
-        /**Age at which the Attribute is at full strength*/
+        /** Age at which the Attribute is at full strength */
         public double warmupAge;
 
         private Instance() {}
@@ -120,9 +121,7 @@ public class StatusEffect
             }
         }
 
-        /**
-         * Reset this Instance to default state for reuse
-         */
+        /** Reset this Instance to default state for reuse */
         private void reset()
         {
             this.effect = null;

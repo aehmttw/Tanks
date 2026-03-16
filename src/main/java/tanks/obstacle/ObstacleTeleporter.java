@@ -9,15 +9,13 @@ import tanks.tankson.MetadataProperty;
 
 import java.util.ArrayList;
 
-/**
- * A teleporter which randomly transports the player to another teleporter in the level
- */
+/** A teleporter which randomly transports the player to another teleporter in the level */
 public class ObstacleTeleporter extends Obstacle
 {
     public double cooldown;
     public double brightness = 1;
 
-    @MetadataProperty(id="group_id", name = "Group ID", image="id.png", selector = SelectorGroupID.selector_name, keybind = "editor.groupID")
+    @MetadataProperty(id = "group_id", name = "Group ID", image = "id.png", selector = SelectorGroupID.selector_name, keybind = "editor.groupID")
     public int groupID = 0;
 
     public Effect glow;
@@ -82,7 +80,7 @@ public class ObstacleTeleporter extends Obstacle
 
             Drawing.drawing.setColor(this.colorR * (2 - this.brightness) / 2, this.colorG * (2 - this.brightness) / 2, this.colorB * (2 - this.brightness) / 2, 255, (2 - this.brightness) / 2);
             Drawing.drawing.fillOval(this.posX, this.posY, height + 6, draw_size * 5 / 8, draw_size * 5 / 8, true, false);
-            Drawing.drawing.setColor(this.brightness * this.colorR + 255 * (1 - this.brightness), this.brightness * this.colorG + 255 * (1 - this.brightness), this.brightness * this.colorB  + 255 * (1 - this.brightness), 255, (2 - this.brightness) / 2);
+            Drawing.drawing.setColor(this.brightness * this.colorR + 255 * (1 - this.brightness), this.brightness * this.colorG + 255 * (1 - this.brightness), this.brightness * this.colorB + 255 * (1 - this.brightness), 255, (2 - this.brightness) / 2);
             Drawing.drawing.fillOval(this.posX, this.posY, height + 7, draw_size / 2, draw_size / 2, true, false);
 
             if (Game.fancyTerrain)
@@ -106,7 +104,7 @@ public class ObstacleTeleporter extends Obstacle
             Drawing.drawing.setColor(this.colorR * (2 - this.brightness) / 2, this.colorG * (2 - this.brightness) / 2, this.colorB * (2 - this.brightness) / 2, 255, (2 - this.brightness) / 2);
 
             Drawing.drawing.fillOval(this.posX, this.posY, draw_size * 5 / 8, draw_size * 5 / 8);
-            Drawing.drawing.setColor(this.brightness * this.colorR + 255 * (1 - this.brightness), this.brightness * this.colorG + 255 * (1 - this.brightness), this.brightness * this.colorB  + 255 * (1 - this.brightness), 255, (2 - this.brightness) / 2);
+            Drawing.drawing.setColor(this.brightness * this.colorR + 255 * (1 - this.brightness), this.brightness * this.colorG + 255 * (1 - this.brightness), this.brightness * this.colorB + 255 * (1 - this.brightness), 255, (2 - this.brightness) / 2);
             Drawing.drawing.fillOval(this.posX, this.posY, draw_size / 2, draw_size / 2);
         }
     }

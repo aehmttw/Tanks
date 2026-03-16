@@ -23,19 +23,19 @@ public class SteamSharedLibraryLoader
     private static final boolean IS_64_BIT;
 
     private static final String SHARED_LIBRARY_EXTRACT_DIRECTORY = System.getProperty(
-            "com.codedisaster.steamworks.SharedLibraryExtractDirectory", "steamworks4j");
+        "com.codedisaster.steamworks.SharedLibraryExtractDirectory", "steamworks4j");
 
     private static final String SHARED_LIBRARY_EXTRACT_PATH = System.getProperty(
-            "com.codedisaster.steamworks.SharedLibraryExtractPath", null);
+        "com.codedisaster.steamworks.SharedLibraryExtractPath", null);
 
     private static final String SDK_REDISTRIBUTABLE_BIN_PATH = System.getProperty(
-            "com.codedisaster.steamworks.SDKRedistributableBinPath", "sdk/redistributable_bin");
+        "com.codedisaster.steamworks.SDKRedistributableBinPath", "sdk/redistributable_bin");
 
     private static final String SDK_LIBRARY_PATH = System.getProperty(
-            "com.codedisaster.steamworks.SDKLibraryPath", "sdk/public/steam/lib");
+        "com.codedisaster.steamworks.SDKLibraryPath", "sdk/public/steam/lib");
 
     static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(
-            "com.codedisaster.steamworks.Debug", "false"));
+        "com.codedisaster.steamworks.Debug", "false"));
 
     static
     {
@@ -72,6 +72,8 @@ public class SteamSharedLibraryLoader
                 return "lib" + libName + ".so";
             case MacOS:
                 return "lib" + libName + ".dylib";
+            default:
+                break;
         }
 
         throw new RuntimeException("Unknown host architecture");
@@ -126,7 +128,7 @@ public class SteamSharedLibraryLoader
             String librarySystemName = getPlatformLibName(libraryName);
 
             File librarySystemPath = discoverExtractLocation(
-                    SHARED_LIBRARY_EXTRACT_DIRECTORY + "/" + Version.getVersion(), librarySystemName);
+                SHARED_LIBRARY_EXTRACT_DIRECTORY + "/" + Version.getVersion(), librarySystemName);
 
             if (libraryPath == null)
             {
@@ -162,7 +164,7 @@ public class SteamSharedLibraryLoader
     private static void extractLibrary(File librarySystemPath, String librarySystemName) throws IOException
     {
         extractLibrary(librarySystemPath,
-                SteamSharedLibraryLoader.class.getResourceAsStream("/" + librarySystemName));
+            SteamSharedLibraryLoader.class.getResourceAsStream("/" + librarySystemName));
     }
 
     private static void extractLibrary(File librarySystemPath, File librarySourcePath) throws IOException

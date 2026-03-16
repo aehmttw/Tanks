@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A fast tank which rapidly fires many small, low-damage bullets
- */
+/** A fast tank which rapidly fires many small, low-damage bullets */
 public class TankDarkGreen extends TankAIControlled
 {
     public TankDarkGreen(String name, double x, double y, double angle)

@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Firework;
 
 import java.util.ArrayList;

@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 
@@ -84,8 +82,8 @@ public class ScreenCrusadeOptions extends Screen
                 startingLives.inputText = crusade.startingLives + "";
             else
                 crusade.startingLives = Integer.parseInt(startingLives.inputText);
-        }
-                , crusade.startingLives + "");
+        },
+            crusade.startingLives + "");
 
         startingLives.allowLetters = false;
         startingLives.allowSpaces = false;
@@ -99,8 +97,8 @@ public class ScreenCrusadeOptions extends Screen
                 bonusLifeFrequency.inputText = crusade.bonusLifeFrequency + "";
             else
                 crusade.bonusLifeFrequency = Integer.parseInt(bonusLifeFrequency.inputText);
-        }
-                , crusade.bonusLifeFrequency + "");
+        },
+            crusade.bonusLifeFrequency + "");
 
         bonusLifeFrequency.allowLetters = false;
         bonusLifeFrequency.allowSpaces = false;

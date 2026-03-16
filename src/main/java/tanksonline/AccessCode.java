@@ -1,12 +1,7 @@
 package tanksonline;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import java.io.*;
+import java.util.*;
 
 public class AccessCode
 {
@@ -94,7 +89,7 @@ public class AccessCode
             pw.println(maxUses);
             pw.println(comment);
 
-            for (TanksOnlinePlayer player : this.players)
+            for (TanksOnlinePlayer player: this.players)
             {
                 pw.println(player.id);
             }

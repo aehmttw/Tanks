@@ -1,7 +1,5 @@
 package basewindow;
 
-import tanks.Game;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

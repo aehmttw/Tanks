@@ -1,19 +1,13 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Consumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.*;
 import tanks.item.Item;
 import tanks.item.ItemIcon;
 import tanks.registry.RegistryItem;
 import tanks.tank.*;
-import tanks.tankson.ArrayListIndexPointer;
-import tanks.tankson.FieldPointer;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
+import tanks.tankson.*;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -68,7 +62,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
     }
     );
 
-    public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth, Drawing.drawing.objHeight, "Ok", () -> message = null);
+    public Button dismissMessage = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + Drawing.drawing.objHeight, Drawing.drawing.objWidth,
+        Drawing.drawing.objHeight, "Ok", () -> message = null);
 
     @Override
     public void setupTabs()
@@ -175,7 +170,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 TankBuildProperty p1 = f.getAnnotation(TankBuildProperty.class);
 
                 if (p1 != null && p != null && ((p1.category().equals("default") && p.category().equals(this.category)) || p1.category().equals(this.category)) &&
-                !(target instanceof ArrayListIndexPointer && ((ArrayListIndexPointer<T>) target).getIndex() == 0 && p.miscType() == Property.MiscType.defaultBuildForbidden))
+                    !(target instanceof ArrayListIndexPointer && ((ArrayListIndexPointer<T>) target).getIndex() == 0 && p.miscType() == Property.MiscType.defaultBuildForbidden))
                 {
                     if (p.miscType() == Property.MiscType.description)
                     {
@@ -399,17 +394,20 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
             Drawing.drawing.setColor(80, 80, 80);
             Drawing.drawing.fillInterfaceOval(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
-            Drawing.drawing.setColor(tank.secondaryColor.red * preview.glowIntensity, tank.secondaryColor.green * preview.glowIntensity, tank.secondaryColor.blue * preview.glowIntensity, 255, 1);
+            Drawing.drawing.setColor(tank.secondaryColor.red * preview.glowIntensity, tank.secondaryColor.green * preview.glowIntensity,
+                tank.secondaryColor.blue * preview.glowIntensity, 255, 1);
             Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.glowSize / 4, s * 1.5 * preview.glowSize / 4);
             Drawing.drawing.setColor(255, 255, 255, 255 * preview.lightIntensity, 1);
-            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.lightSize / 4, s * 1.5 * preview.lightSize / 4, false, true);
+            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * preview.lightSize / 4, s * 1.5 * preview.lightSize / 4,
+                false, true);
 
             Drawing.drawing.setColor(0, 0, 0, 64);
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    Drawing.drawing.fillInterfaceRect(margin + (i - 1) * s * tank.trackSpacing, screen.centerY + 60 + space * 3 + (j - 0.5) * s * 0.6, s / 5, s / 5);
+                    Drawing.drawing.fillInterfaceRect(margin + (i - 1) * s * tank.trackSpacing, screen.centerY + 60 + space * 3 + (j - 0.5) * s * 0.6, s / 5,
+                        s / 5);
                 }
             }
         }
@@ -453,7 +451,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 setColorText(enable);
             }
         },
-                "Overrides a player's selection of color---for this part with a specified color.");
+            "Overrides a player's selection of color---for this part with a specified color.");
 
         Button autoColor = new Button(0, 0, this.screen.objWidth, this.screen.objHeight, "Auto-calculate color", () ->
         {
@@ -553,13 +551,14 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
             if (!tank.overrideEmblemColor)
                 tank.emblemColor.set(TankPlayer.default_secondary_color);
 
-            if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||  (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
+            if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||
+                (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
             {
                 this.colorPicker.update();
 
                 if ((this.colorIndex == 2 && tank.overridePrimaryColor) ||
-                        (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
-                        (this.colorIndex == 4 && (tank.overrideSecondaryColor || tank.overridePrimaryColor)))
+                    (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
+                    (this.colorIndex == 4 && (tank.overrideSecondaryColor || tank.overridePrimaryColor)))
                     autoColor.update();
             }
 
@@ -589,13 +588,14 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
 
             super.drawUIElements();
 
-            if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||  (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
+            if ((this.colorIndex == 1 && tank.overridePrimaryColor) || (this.colorIndex == 2 && tank.overrideSecondaryColor) ||
+                (this.colorIndex == 3 && tank.overrideTertiaryColor) || (this.colorIndex == 4 && tank.emblem != null && tank.overrideEmblemColor))
             {
                 this.colorPicker.draw();
 
                 if ((this.colorIndex == 2 && tank.overridePrimaryColor) ||
-                        (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
-                        (this.colorIndex == 4 && (tank.overrideSecondaryColor || tank.overridePrimaryColor)))
+                    (this.colorIndex == 3 && tank.overridePrimaryColor && tank.overrideSecondaryColor) ||
+                    (this.colorIndex == 4 && (tank.overrideSecondaryColor || tank.overridePrimaryColor)))
                     autoColor.draw();
             }
         }
@@ -604,7 +604,7 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
         public void addFields()
         {
             this.uiElements.clear();
-            for (Field f : this.screen.fields)
+            for (Field f: this.screen.fields)
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.category().equals(this.category))
@@ -678,7 +678,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                     i.stackSize = 0;
                     target.get().abilities.add(i);
 
-                    ScreenEditorItem s = new ScreenEditorItem(new ArrayListIndexPointer<>((Class<Item.ItemStack<?>>)(Class<?>) Item.ItemStack.class, target.get().abilities, target.get().abilities.size() - 1), screen);
+                    ScreenEditorItem s = new ScreenEditorItem(new ArrayListIndexPointer<>((Class<Item.ItemStack<?>>) (Class<?>) Item.ItemStack.class, target.get().abilities,
+                        target.get().abilities.size() - 1), screen);
                     s.onComplete = () ->
                     {
                         uiElements.clear();
@@ -689,7 +690,8 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                     Game.screen = s;
                 };
 
-                Game.screen = new ScreenAddSavedItem(screen, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
+                Game.screen = new ScreenAddSavedItem(screen, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]),
+                    Game.registryItem.getEntry(itemSelector.selectedOption).item);
             });
 
             itemSelector.itemIcons = itemImages;
@@ -709,19 +711,37 @@ public class ScreenEditorPlayerTankBuild<T extends TankPlayer> extends ScreenEdi
                 int j = i;
                 Property p = new Property()
                 {
-                    @Override public Class<? extends Annotation> annotationType() { return Property.class; }
-                    @Override public String id() { return "ability_" + (j + 1); }
-                    @Override public String name() { return "Ability " + (j + 1); }
-                    @Override public String desc() { return ""; }
-                    @Override public String category() { return ""; }
-                    @Override public MiscType miscType() { return MiscType.none; }
-                    @Override public boolean nullable() { return false; }
-                    @Override public double minValue() { return 0; }
-                    @Override public double maxValue() { return 0; }
+                    @Override
+                    public Class<? extends Annotation> annotationType() { return Property.class; }
+
+                    @Override
+                    public String id() { return "ability_" + (j + 1); }
+
+                    @Override
+                    public String name() { return "Ability " + (j + 1); }
+
+                    @Override
+                    public String desc() { return ""; }
+
+                    @Override
+                    public String category() { return ""; }
+
+                    @Override
+                    public MiscType miscType() { return MiscType.none; }
+
+                    @Override
+                    public boolean nullable() { return false; }
+
+                    @Override
+                    public double minValue() { return 0; }
+
+                    @Override
+                    public double maxValue() { return 0; }
                 };
-                SelectorDrawable s = (SelectorDrawable) getUIElementForField(new ArrayListIndexPointer<>((Class<Item.ItemStack<?>>)(Class<?>) Item.ItemStack.class, t.abilities, i), p);
+                SelectorDrawable s = (SelectorDrawable) getUIElementForField(new ArrayListIndexPointer<>((Class<Item.ItemStack<?>>) (Class<?>) Item.ItemStack.class,
+                    t.abilities, i), p);
                 s.sizeX *= 1.5;
-                s.imageXOffset = - s.sizeX / 2 + s.sizeY / 2;
+                s.imageXOffset = -s.sizeX / 2 + s.sizeY / 2;
                 this.uiElements.add(s);
 
                 Button delete = new Button(-1000, -1000, 60, 60, "x", () ->

@@ -1,13 +1,13 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Player;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventSendTankColors extends PersonalEvent
 {

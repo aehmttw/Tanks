@@ -1,10 +1,7 @@
 package tanks.gui;
 
 import basewindow.InputPoint;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 
 public class TextBoxSlider extends TextBox
 {
@@ -97,7 +94,7 @@ public class TextBoxSlider extends TextBox
 
             if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();

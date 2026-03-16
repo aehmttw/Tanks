@@ -1,15 +1,15 @@
 package tanks.obstacle;
 
-import tanks.Chunk;
-import tanks.Direction;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.tank.Tank;
 import tanks.tank.TankAIControlled;
 
 public class Face implements Comparable<Face>
 {
-    public double startX, startY, endX, endY;
+    public double startX;
+    public double startY;
+    public double endX;
+    public double endY;
 
     /**
      * The <code>startX</code> of a length 1 face, where index <code>i</code> of the array corresponds to
@@ -36,8 +36,12 @@ public class Face implements Comparable<Face>
 
     public ISolidObject owner;
     public Direction direction;
-    public boolean solidTank, solidBullet;
-    public boolean valid = true, lastValid = false;
+
+    public boolean solidTank;
+    public boolean solidBullet;
+
+    public boolean valid = true;
+    public boolean lastValid = false;
 
     public Face(ISolidObject o, Direction direction, boolean tank, boolean bullet)
     {
@@ -59,31 +63,31 @@ public class Face implements Comparable<Face>
             return;
 
         Drawing d = Drawing.drawing;
-        for (Chunk c : Chunk.chunkList)
+        for (Chunk c: Chunk.chunkList)
         {
             Drawing.drawing.setFontSize(5);
-            for (Face f : c.faces.topFaces)
+            for (Face f: c.faces.topFaces)
             {
                 if (shouldHide(f)) continue;
                 d.setColor(150, 50, 50, f.solidTank ? 127 : 64);
                 d.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
             }
 
-            for (Face f : c.faces.bottomFaces)
+            for (Face f: c.faces.bottomFaces)
             {
                 if (shouldHide(f)) continue;
                 d.setColor(255, 50, 50, f.solidTank ? 127 : 64);
                 d.fillRect(0.5 * (f.endX + f.startX), f.startY, f.endX - f.startX, 5);
             }
 
-            for (Face f : c.faces.leftFaces)
+            for (Face f: c.faces.leftFaces)
             {
                 if (shouldHide(f)) continue;
                 d.setColor(50, 50, 150, f.solidTank ? 127 : 64);
                 d.fillRect(f.startX, 0.5 * (f.endY + f.startY), 5, f.endY - f.startY);
             }
 
-            for (Face f : c.faces.rightFaces)
+            for (Face f: c.faces.rightFaces)
             {
                 if (shouldHide(f)) continue;
                 d.setColor(50, 50, 255, f.solidTank ? 127 : 64);
@@ -94,7 +98,8 @@ public class Face implements Comparable<Face>
 
     public static boolean shouldHide(Face f)
     {
-        return (f.owner instanceof Tank && (((Tank) f.owner).canHide && ((Tank) f.owner).hidden)) || (f.owner instanceof TankAIControlled && ((TankAIControlled) f.owner).invisible);
+        return (f.owner instanceof Tank && (((Tank) f.owner).canHide && ((Tank) f.owner).hidden)) ||
+            (f.owner instanceof TankAIControlled && ((TankAIControlled) f.owner).invisible);
     }
 
     public int compareTo(Face f)

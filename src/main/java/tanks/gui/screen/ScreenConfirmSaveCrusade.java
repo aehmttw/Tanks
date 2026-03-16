@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 
 public class ScreenConfirmSaveCrusade extends Screen implements IBlankBackgroundScreen

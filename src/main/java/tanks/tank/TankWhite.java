@@ -2,9 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * An invisible smart tank.
- */
+/** An invisible smart tank. */
 public class TankWhite extends TankAIControlled
 {
     public TankWhite(String name, double x, double y, double angle)

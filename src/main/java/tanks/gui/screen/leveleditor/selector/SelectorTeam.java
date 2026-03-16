@@ -1,11 +1,7 @@
 package tanks.gui.screen.leveleditor.selector;
 
-import tanks.Game;
-import tanks.GameObject;
-import tanks.Team;
-import tanks.gui.screen.leveleditor.OverlayEditTeam;
-import tanks.gui.screen.leveleditor.OverlaySelectTeam;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.*;
+import tanks.gui.screen.leveleditor.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -4,9 +4,7 @@ import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.BulletEffect;
 
-/**
- * A small, primitive tank which shoots tiny, low damage bullets
- */
+/** A small, primitive tank which shoots tiny, low damage bullets */
 public class TankMini extends TankAIControlled
 {
     public TankMini(String name, double x, double y, double angle)

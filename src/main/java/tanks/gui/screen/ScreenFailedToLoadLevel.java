@@ -1,9 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.GameCrashedException;
+import tanks.*;
 import tanks.gui.Button;
 
 import java.util.Date;
@@ -64,7 +62,7 @@ public class ScreenFailedToLoadLevel extends Screen
 
             f.stopWriting();
         }
-        catch (Exception ex) {ex.printStackTrace(); }
+        catch (Exception ex) { ex.printStackTrace(); }
     }
 
     Button quit = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 300, this.objWidth, this.objHeight, "Back", new Runnable()
@@ -75,7 +73,7 @@ public class ScreenFailedToLoadLevel extends Screen
             Game.screen = screen;
         }
     }
-            );
+    );
 
     @Override
     public void update()
@@ -93,12 +91,17 @@ public class ScreenFailedToLoadLevel extends Screen
 
         if (!ScreenPartyLobby.isClient || Game.connectedToOnline)
         {
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90, "This could be caused by a glitch in the editor,");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 90,
+                "This could be caused by a glitch in the editor,");
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 60, "or by corruption of the level file.");
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "If you manually modified the level file, please undo your changes.");
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, "If this is not the case, please report the error!");
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, "Check the report file for more information: ");
-            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120, Game.homedir.replace("\\", "/") + Game.crashesPath + lvl + "-" + hashcode + ".crash");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+                "If you manually modified the level file, please undo your changes.");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30,
+                "If this is not the case, please report the error!");
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90,
+                "Check the report file for more information: ");
+            Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 120,
+                Game.homedir.replace("\\", "/") + Game.crashesPath + lvl + "-" + hashcode + ".crash");
         }
         else
         {

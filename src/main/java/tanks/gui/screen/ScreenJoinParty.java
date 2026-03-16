@@ -1,16 +1,13 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamID;
-import com.codedisaster.steamworks.SteamNetworking;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
-import tanks.gui.Button;
-import tanks.gui.ChatBox;
-import tanks.gui.TextBox;
+import tanks.*;
+import tanks.gui.*;
 import tanks.network.Client;
 import tanks.network.event.EventChat;
 import tanks.network.event.EventSendClientDetails;
+
+import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.SteamNetworking;
 
 import java.util.UUID;
 
@@ -48,7 +45,7 @@ public class ScreenJoinParty extends Screen
                 if (clientThread != null && clientThread.isAlive())
                     clientThread.interrupt();
             }
-            catch (Exception ignored) {}
+            catch (Exception ignored) { }
 
             Game.screen = new ScreenParty();
         }
@@ -63,16 +60,18 @@ public class ScreenJoinParty extends Screen
         Game.screen = new ScreenWaitingLobbyList();
     });
 
-    Button acceptInvite = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.75, this.objWidth, this.objHeight, "Accept party invite!", () ->
-    {
-        ScreenJoinParty s = this;
-        String s1 = s.ip.inputText;
-        s.ip.inputText = "lobby:" + Long.toHexString(Game.steamLobbyInvite);
-        Game.steamLobbyInvite = -1;
-        s.join.function.run();
-        s.ip.inputText = s1;
-        Game.lastOfflineScreen = new ScreenTitle();
-    });
+    Button acceptInvite = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.75, this.objWidth, this.objHeight, "Accept party invite!",
+        () ->
+        {
+            ScreenJoinParty s = this;
+            String s1 = s.ip.inputText;
+            s.ip.inputText = "lobby:" + Long.toHexString(Game.steamLobbyInvite);
+            Game.steamLobbyInvite = -1;
+            s.join.function.run();
+            s.ip.inputText = s1;
+            Game.lastOfflineScreen = new ScreenTitle();
+        }
+    );
 
 
     public Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
@@ -80,7 +79,8 @@ public class ScreenJoinParty extends Screen
         @Override
         public void run()
         {
-            ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 30, Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () -> Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText)));
+            ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 30,
+                Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () -> Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText)));
 
             Game.lastOfflineScreen = Game.screen;
 
@@ -120,7 +120,8 @@ public class ScreenJoinParty extends Screen
                             }
                         }
 
-                        SteamID target = Game.steamNetworkHandler.send(Game.steamNetworkHandler.currentLobby, new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
+                        SteamID target = Game.steamNetworkHandler.send(Game.steamNetworkHandler.currentLobby,
+                            new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
 
                         while (true)
                         {
@@ -186,7 +187,8 @@ public class ScreenJoinParty extends Screen
                     Panel.forceRefreshMusic = true;
                 }
 
-                SteamID target = Game.steamNetworkHandler.send(id, new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
+                SteamID target = Game.steamNetworkHandler.send(id,
+                    new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
 
                 clientThread = new Thread(new Runnable()
                 {
@@ -300,8 +302,8 @@ public class ScreenJoinParty extends Screen
             Game.lastParty = ip.inputText;
             ScreenOptions.saveOptions(Game.homedir);
         }
-    }
-            , Game.lastParty, "You can find this on the---party host's screen");
+    },
+        Game.lastParty, "You can find this on the---party host's screen");
 
     @Override
     public void update()

@@ -3,15 +3,10 @@ package tanks.extension;
 import basewindow.BaseFile;
 import tanks.Game;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 import java.util.jar.JarFile;
 
 public class ExtensionRegistry
@@ -67,7 +62,7 @@ public class ExtensionRegistry
                 {
                     ArrayList<String> files = Game.game.fileManager.getFile(Game.homedir + Game.extensionDir).getSubfiles();
 
-                    for (String file : files)
+                    for (String file: files)
                     {
                         String j = file.substring(file.replace("\\", "/").lastIndexOf("/") + 1);
                         Class<? extends Extension> c = loadExtensionClass(j, null);

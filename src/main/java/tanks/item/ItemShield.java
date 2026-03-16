@@ -1,9 +1,6 @@
 package tanks.item;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.network.event.EventTankUpdateHealth;
 import tanks.tank.Tank;
 import tanks.tankson.ICopyable;
@@ -13,10 +10,12 @@ public class ItemShield extends Item implements ICopyable<ItemShield>
 {
     public static final String item_class_name = "shield";
 
-    @Property(id = "health_boost", name = "Hitpoint boost", desc = "This item will instantly add this many hitpoints to the tank using it \n \n The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
+    @Property(id = "health_boost", name = "Hitpoint boost", desc = "This item will instantly add this many hitpoints to the tank using it \n \n " +
+        "The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double amount = 1;
 
-    @Property(id = "max_extra_health", name = "Max extra hitpoints", desc = "This item will not heal a tank to more than its default hitpoints plus 'max extra hitpoints' \n \n The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
+    @Property(id = "max_extra_health", name = "Max extra hitpoints", desc = "This item will not heal a tank to more than its default hitpoints plus 'max extra hitpoints' \n \n " +
+        "The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double max = 5;
 
     public ItemShield()

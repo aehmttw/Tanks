@@ -38,8 +38,8 @@ public class Tutorial extends Minigame
     public Tutorial()
     {
         super("{50,18,235,207,166,20,20,20|" +
-                "27-10...14,37-7...11,12-0...13-hard,13...22-7-hard,27-0...9-hard,27-15...17-hard,37-0...6-hard,37-12...17-hard,23...26-7-hole|" +
-                "5-7-player-1}");
+            "27-10...14,37-7...11,12-0...13-hard,13...22-7-hard,27-0...9-hard,27-15...17-hard,37-0...6-hard,37-12...17-hard,23...26-7-hole|" +
+            "5-7-player-1}");
 
         this.customLevelEnd = true;
     }
@@ -326,7 +326,7 @@ public class Tutorial extends Minigame
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Game.tile_size * 2.5, "Destroy all enemy tanks to win!");
 
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
-            Drawing.drawing.setColor(0, 0, 0, 255  * this.stepAnimation);
+            Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
             Drawing.drawing.drawText(20 * Game.tile_size, 13.5 * Game.tile_size, "Shoot these enemy tanks!");
 
             Drawing.drawing.setColor(255, 127, 0, 64);
@@ -408,7 +408,7 @@ public class Tutorial extends Minigame
             Drawing.drawing.setFontSize(24 * this.stepAnimation);
             Drawing.drawing.setColor(0, 0, 0, 255 * this.stepAnimation);
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Mine)
                 {

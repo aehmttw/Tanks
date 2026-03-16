@@ -1,11 +1,12 @@
 package tanks.network;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 

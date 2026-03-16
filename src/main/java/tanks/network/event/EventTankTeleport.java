@@ -1,11 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleTeleporter;
 import tanks.tank.Tank;
 import tanks.tank.TeleporterOrb;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankTeleport extends PersonalEvent
 {
@@ -97,7 +98,7 @@ public class EventTankTeleport extends PersonalEvent
 
             if (o instanceof ObstacleTeleporter && ((o.posX == this.iX && o.posY == this.iY) || (o.posX == this.dX && o.posY == this.dY)))
             {
-                ((ObstacleTeleporter)o).cooldown = 500;
+                ((ObstacleTeleporter) o).cooldown = 500;
             }
         }
     }

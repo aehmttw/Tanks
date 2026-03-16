@@ -124,7 +124,7 @@ public abstract class ShaderProgram
         public abstract void bind();
     }
 
-    public static abstract class Uniform implements IUniform
+    public abstract static class Uniform implements IUniform
     {
         protected int flag;
         protected String name;
@@ -272,15 +272,13 @@ public abstract class ShaderProgram
         boolean getTranspose();
     }
 
-    /**
-     * You must be using this shader to do this!
-     */
+    /** You must be using this shader to do this! */
     public void copyUniformsFrom(ShaderProgram s, Class<? extends ShaderProgram> c)
     {
         try
         {
             Field[] fields = getFields(c);
-            for (Field f : fields)
+            for (Field f: fields)
             {
                 if (IUniform.class.isAssignableFrom(f.getType()))
                 {

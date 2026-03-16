@@ -1,10 +1,7 @@
 package tanks.gui;
 
 import basewindow.InputPoint;
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.translation.Translation;
 
 public class SearchBox extends TextBox
@@ -45,7 +42,7 @@ public class SearchBox extends TextBox
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();

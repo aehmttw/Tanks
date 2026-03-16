@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 
 public class ScreenTestFireworks extends Screen implements IDarkScreen
@@ -11,7 +9,8 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
 
     public DisplayFireworks fireworksDisplay = new DisplayFireworks();
 
-    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenTestDebug());
+    Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 150, this.objWidth, this.objHeight, "Back",
+        () -> Game.screen = new ScreenTestDebug());
 
     Button fireworksMode = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 90, this.objWidth, this.objHeight, "", new Runnable()
     {

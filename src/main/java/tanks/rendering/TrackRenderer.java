@@ -70,7 +70,7 @@ public class TrackRenderer
 
         s.setColor(r1, g1, b1, a, g);
         if (Game.screen instanceof ScreenGame)
-            s.setAttribute(shader.addTime, (float) ((ScreenGame)(Game.screen)).age);
+            s.setAttribute(shader.addTime, (float) ((ScreenGame) (Game.screen)).age);
         else
             s.setAttribute(shader.addTime, (float) Game.screen.screenAge);
 
@@ -105,7 +105,8 @@ public class TrackRenderer
 
             boolean in = false;
             int c = 3;
-            outer: for (int i = 0; i < c; i++)
+            outer:
+            for (int i = 0; i < c; i++)
             {
                 for (int j = 0; j < c; j++)
                 {

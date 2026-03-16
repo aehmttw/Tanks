@@ -1,15 +1,13 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventShareCrusade extends PersonalEvent
 {

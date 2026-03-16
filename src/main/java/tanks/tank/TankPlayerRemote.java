@@ -2,17 +2,12 @@ package tanks.tank;
 
 import tanks.*;
 import tanks.attribute.AttributeModifier;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletAirStrike;
-import tanks.bullet.BulletArc;
-import tanks.bullet.DefaultItems;
+import tanks.bullet.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
+import tanks.item.*;
 import tanks.network.ConnectedPlayer;
 import tanks.network.event.*;
 
@@ -277,7 +272,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         lastMaxLiveMines = mlm;
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions, double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions,
+                                 double time, long receiveTime)
     {
         if (this.destroy)
             return;
@@ -318,11 +314,11 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                 double dVY = vY - this.lastVY;
                 double changeVelocitySq = dVX * dVX + dVY * dVY;
 
-                if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
-                        && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
-                        && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
-                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001)
-                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVY) < 0.001)))
+                if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001 &&
+                    !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001 &&
+                        Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY) &&
+                        (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001) &&
+                        (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVY) < 0.001)))
                 {
                     double changeVelocity = Math.sqrt(changeVelocitySq);
 

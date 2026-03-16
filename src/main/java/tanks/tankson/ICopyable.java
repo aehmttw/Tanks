@@ -13,6 +13,7 @@ public interface ICopyable<T>
 {
     /**
      * Clone this object's properties to another object
+     *
      * @param m the another object
      * @return the same object passed to it, for convenience
      */
@@ -27,7 +28,7 @@ public interface ICopyable<T>
             ArrayList<Field> fields = copyFields.get((Class<? extends ICopyable<?>>) m.getClass());
             if (fields.isEmpty())
             {
-                for (Field f : m.getClass().getFields())
+                for (Field f: m.getClass().getFields())
                 {
                     Property p = f.getAnnotation(Property.class);
                     if (p == null) continue;
@@ -60,7 +61,7 @@ public interface ICopyable<T>
                 f.set(m, ((ICopyable<?>) v).getCopy());
             }
             else if (v instanceof Color)
-                ((Color)f.get(m)).set((Color) v);
+                ((Color) f.get(m)).set((Color) v);
             else if (v instanceof ArrayList)
             {
                 f.set(m, new ArrayList<>());
@@ -78,11 +79,12 @@ public interface ICopyable<T>
                 f.set(m, v);
             }
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) { }
     }
 
     /**
      * Gets a template copy of this, not to be added to the game field but to be used as a template
+     *
      * @return a template copy
      */
     default T getCopy()

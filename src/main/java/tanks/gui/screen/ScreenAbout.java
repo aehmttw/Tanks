@@ -59,7 +59,7 @@ public class ScreenAbout extends Screen
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks/tree/master/src/main/java/licenses"));
-    }
+        }
         catch (Exception e)
         {
             e.printStackTrace();

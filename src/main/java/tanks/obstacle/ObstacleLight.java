@@ -1,15 +1,13 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawableLightSource;
+import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorColor;
 import tanks.gui.screen.leveleditor.selector.SelectorLuminosity;
 import tanks.tankson.MetadataProperty;
 
 public class ObstacleLight extends Obstacle implements IDrawableLightSource
 {
-    /** 7 values, first 3 are automatically set to coords, 4th is brightness, 5-7 are color*/
+    /** 7 values, first 3 are automatically set to coords, 4th is brightness, 5-7 are color */
     public double[] lightInfo;
 
     @MetadataProperty(id = "luminosity", name = "Luminosity", selector = SelectorLuminosity.selector_name, image = "block_luminosity.png", keybind = "editor.height")

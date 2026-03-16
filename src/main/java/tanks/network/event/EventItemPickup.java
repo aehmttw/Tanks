@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.ItemDrop;
 import tanks.tank.Tank;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventItemPickup extends PersonalEvent
 {

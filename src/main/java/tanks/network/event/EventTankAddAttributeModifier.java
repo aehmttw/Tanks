@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.attribute.AttributeModifier;
 import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankAddAttributeModifier extends PersonalEvent
 {

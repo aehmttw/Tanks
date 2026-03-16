@@ -2,9 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * A primitive stationary tank
- */
+/** A primitive stationary tank */
 public class TankBrown extends TankAIControlled
 {
 

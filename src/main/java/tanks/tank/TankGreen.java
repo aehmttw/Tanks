@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A deadly stationary tank which shoots rockets that bounce twice
- */
+/** A deadly stationary tank which shoots rockets that bounce twice */
 public class TankGreen extends TankAIControlled
 {
     public TankGreen(String name, double x, double y, double angle)

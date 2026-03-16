@@ -9,7 +9,8 @@ import java.util.Random;
 
 public class LevelGeneratorVersus extends LevelGenerator
 {
-    public static String generateLevelString() {
+    public static String generateLevelString()
+    {
         return generateLevelString(-1);
     }
 
@@ -32,8 +33,8 @@ public class LevelGeneratorVersus extends LevelGenerator
         if (Game.players.size() > 40)
             size *= 2;
 
-        int height = (int)(18 * size);
-        int width = (int)(28 * size);
+        int height = (int) (18 * size);
+        int width = (int) (28 * size);
         double amountWalls = 12 * size * size;
 
         int walls = (int) (random.nextDouble() * amountWalls + 4);
@@ -46,9 +47,9 @@ public class LevelGeneratorVersus extends LevelGenerator
         if (random.nextDouble() < 0.2)
             shade = 30;
 
-        int r = (int)(random.nextDouble() * 50) + shade;
-        int g = (int)(random.nextDouble() * 50) + shade;
-        int b = (int)(random.nextDouble() * 50) + shade;
+        int r = (int) (random.nextDouble() * 50) + shade;
+        int g = (int) (random.nextDouble() * 50) + shade;
+        int b = (int) (random.nextDouble() * 50) + shade;
 
         double heavyTerrain = 1;
 
@@ -328,7 +329,7 @@ public class LevelGeneratorVersus extends LevelGenerator
                         {
                             for (int y1 = y - 2; y1 <= yEnd + 2; y1++)
                             {
-                                if (cells[Math.max(0, Math.min(width-1, x1))][Math.max(0, Math.min(height-1, y1))])
+                                if (cells[Math.max(0, Math.min(width - 1, x1))][Math.max(0, Math.min(height - 1, y1))])
                                 {
                                     stop = true;
                                     break;
@@ -605,7 +606,7 @@ public class LevelGeneratorVersus extends LevelGenerator
                 int x1 = (int) (random.nextDouble() * width);
                 int y1 = (int) (random.nextDouble() * height);
 
-                int panelSize = (int)(random.nextDouble() * 3) + 1;
+                int panelSize = (int) (random.nextDouble() * 3) + 1;
 
                 for (int x = x1; x < x1 + panelSize; x++)
                 {
@@ -658,7 +659,7 @@ public class LevelGeneratorVersus extends LevelGenerator
                     if (!s.toString().endsWith(","))
                         s.append(",");
 
-                    s.append(x).append("-").append(y).append("-light-").append((int)(random.nextDouble() * 5 + 1) / 2.0);
+                    s.append(x).append("-").append(y).append("-light-").append((int) (random.nextDouble() * 5 + 1) / 2.0);
                 }
             }
         }
@@ -851,7 +852,7 @@ public class LevelGeneratorVersus extends LevelGenerator
 
             for (int a = -bound; a <= bound; a++)
                 for (int j = -bound; j <= bound; j++)
-                    cells[Math.max(0, Math.min(width - 1, x+a))][Math.max(0, Math.min(height - 1, y+j))] = true;
+                    cells[Math.max(0, Math.min(width - 1, x + a))][Math.max(0, Math.min(height - 1, y + j))] = true;
 
             s.append(x).append("-").append(y).append("-");
             s.append("player");

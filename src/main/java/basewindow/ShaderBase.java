@@ -6,7 +6,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public Uniform1i depthTexture;
     public UniformMatrix4 biasMatrix;
     public UniformMatrix4 lightViewProjectionMatrix;
-//    public Uniform3f lightVec;
+    //    public Uniform3f lightVec;
     public Uniform1b depthtest;
     public Uniform1f glow;
     public Uniform1i shadowres;
@@ -14,7 +14,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public Uniform1f glowLight;
     public Uniform1f shade;
     public Uniform1f glowShade;
-//    public Uniform1f edgeLight;
+    //    public Uniform1f edgeLight;
 //    public Uniform1f edgeCutoff;
 //    public Uniform1f minBrightness;
 //    public Uniform1f maxBrightness;

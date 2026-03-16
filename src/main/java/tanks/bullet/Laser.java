@@ -1,10 +1,7 @@
 package tanks.bullet;
 
 import basewindow.Color;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.IDrawableWithGlow;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.tank.Tank;
 
@@ -87,8 +84,10 @@ public class Laser extends Movable implements IDrawableWithGlow
 
                 for (int i = 10; i < 30; i++)
                 {
-                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac),
+                        Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac),
+                        Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
                     Drawing.drawing.addVertex(this.frontX, this.frontY, this.frontZ);
                 }
 
@@ -111,8 +110,10 @@ public class Laser extends Movable implements IDrawableWithGlow
 
                 for (int i = 30; i < 50; i++)
                 {
-                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac),
+                        Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac),
+                        Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
                     Drawing.drawing.addVertex(this.backX, this.backY, this.backZ);
                 }
 
@@ -154,8 +155,10 @@ public class Laser extends Movable implements IDrawableWithGlow
                 for (int i = 10; i < 30; i++)
                 {
                     Drawing.drawing.setColor(this.glowColor, 0, 1);
-                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac),
+                        mul * Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.frontX, this.frontY, this.frontZ, mul * Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac),
+                        mul * Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
                     Drawing.drawing.setColor(this.glowColor, 255 * this.glowIntensity, 1);
                     Drawing.drawing.addVertex(this.frontX, this.frontY, this.frontZ);
                 }
@@ -190,8 +193,10 @@ public class Laser extends Movable implements IDrawableWithGlow
                 for (int i = 30; i < 50; i++)
                 {
                     Drawing.drawing.setColor(this.glowColor, 0, 1);
-                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
-                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), mul * Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * Math.cos(i / 20.0 * Math.PI + angle) * width * (1 - frac),
+                        mul * Math.sin(i / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
+                    Drawing.drawing.addFacingVertex(this.backX, this.backY, this.backZ, mul * Math.cos((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac),
+                        mul * Math.sin((i + 1) / 20.0 * Math.PI + angle) * width * (1 - frac), 0);
                     Drawing.drawing.setColor(this.glowColor, 255 * this.glowIntensity, 1);
                     Drawing.drawing.addVertex(this.backX, this.backY, this.backZ);
                 }

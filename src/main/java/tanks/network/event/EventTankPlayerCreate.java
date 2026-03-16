@@ -1,19 +1,15 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
-import tanks.Crusade;
-import tanks.Game;
-import tanks.Player;
-import tanks.Team;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.*;
+import tanks.gui.screen.*;
 import tanks.minigames.Arcade;
 import tanks.minigames.RampageTrial;
 import tanks.network.ConnectedPlayer;
 import tanks.network.NetworkUtils;
 import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 

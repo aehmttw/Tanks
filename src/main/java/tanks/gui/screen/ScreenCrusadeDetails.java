@@ -1,10 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
 import tanks.translation.Translation;
@@ -97,7 +94,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
     });
 
     Button showRecordButton = new Button(this.centerX + Drawing.drawing.baseInterfaceSizeX * 0.35 - 30, this.centerY + this.objYSpace * 4, 30, 30, "i", () ->
-            Game.screen = new ScreenCrusadeStats(crusade, this), "View best run");
+        Game.screen = new ScreenCrusadeStats(crusade, this), "View best run");
 
 
     public ScreenCrusadeDetails(Crusade c)
@@ -327,7 +324,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
 
             Drawing.drawing.setInterfaceFontSize(24);
 
-            for (String s : this.description)
+            for (String s: this.description)
             {
                 Drawing.drawing.displayInterfaceText(this.centerX, pos + this.textOffset, s);
                 pos += this.objYSpace * 0.5;

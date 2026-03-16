@@ -1,11 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Panel;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerController;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankControllerUpdateC extends PersonalEvent implements IStackableEvent
 {
@@ -57,7 +55,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         b.writeDouble(this.mY);
         b.writeBoolean(this.action1);
         b.writeBoolean(this.action2);
-        for (boolean quickAction : this.quickActions)
+        for (boolean quickAction: this.quickActions)
         {
             b.writeBoolean(quickAction);
         }
@@ -79,7 +77,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         this.action2 = b.readBoolean();
         for (int i = 0; i < this.quickActions.length; i++)
         {
-           this.quickActions[i] = b.readBoolean();
+            this.quickActions[i] = b.readBoolean();
         }
         this.time = b.readDouble();
     }
@@ -91,7 +89,8 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
 
         if (t instanceof TankPlayerRemote && ((TankPlayerRemote) t).player.clientID.equals(this.clientID))
         {
-            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.quickActions, this.time, this.sysTime);
+            ((TankPlayerRemote) t).controllerUpdate(this.posX, this.posY, this.vX, this.vY, this.angle, this.mX, this.mY, this.action1, this.action2, this.quickActions, this.time,
+                this.sysTime);
         }
     }
 

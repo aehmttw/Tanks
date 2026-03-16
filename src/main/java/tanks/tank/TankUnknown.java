@@ -5,7 +5,8 @@ import tanks.Game;
 
 /**
  * This is the tank that appears whenever an invalid ID is specified. It is useful for debugging purposes.
- * */
+ *
+ */
 public class TankUnknown extends Tank
 {
     public TankUnknown(String name, double x, double y, double angle)

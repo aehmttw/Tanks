@@ -3,9 +3,7 @@ package main;
 import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import tanks.*;
-import tanksonline.CommandExecutor;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlineServer;
+import tanksonline.*;
 
 public class TanksMacApp
 {
@@ -38,8 +36,9 @@ public class TanksMacApp
 
             if (Game.framework == Game.Framework.lwjgl)
             {
-                Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(), new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
-                ((LWJGLWindow)Game.game.window).antialiasingEnabled = Game.antialiasing;
+                Game.game.window = new LWJGLWindow("Tanks", 1400, 900 + Drawing.drawing.statsHeight, Game.absoluteDepthBase, new GameUpdater(), new GameDrawer(),
+                    new GameWindowHandler(), Game.vsync, !Panel.showMouseTarget);
+                ((LWJGLWindow) Game.game.window).antialiasingEnabled = Game.antialiasing;
             }
 
             Game.game.window.run();

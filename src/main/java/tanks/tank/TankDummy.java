@@ -2,9 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * A dummy tank used to practice your aim
- */
+/** A dummy tank used to practice your aim */
 public class TankDummy extends TankAIControlled
 {
     public TankDummy(String name, double x, double y, double angle)

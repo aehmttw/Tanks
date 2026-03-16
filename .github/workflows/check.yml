@@ -32,6 +32,10 @@ jobs:
       - name: Build
         run: ./gradlew build
 
+      - name: Lint
+        run: |
+          ./gradlew lint || echo "::warning::Checkstyle found violations. See the checkstyle-report artifact for details."
+
       - name: Determine artifact name
         id: find_artifact
         run: |
@@ -43,6 +47,13 @@ jobs:
         with:
           name: ${{ steps.find_artifact.outputs.artifact_name }}
           path: build/libs/*.jar
+
+      - name: Upload lint report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: checkstyle-report
+          path: build/reports/checkstyle/
 
 #  codacy:
 #    name: Codacy

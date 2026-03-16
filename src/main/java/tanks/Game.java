@@ -1,10 +1,6 @@
 package tanks;
 
-import basewindow.BaseFile;
-import basewindow.BaseFileManager;
-import basewindow.BaseWindow;
-import basewindow.ShaderGroup;
-import com.codedisaster.steamworks.SteamMatchmaking;
+import basewindow.*;
 import tanks.bullet.*;
 import tanks.extension.Extension;
 import tanks.extension.ExtensionRegistry;
@@ -21,31 +17,24 @@ import tanks.gui.screen.leveleditor.selector.*;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
 import tanks.item.*;
-import tanks.minigames.ArcadeBeatBlocks;
-import tanks.minigames.ArcadeClassic;
-import tanks.minigames.Minigame;
-import tanks.network.Client;
-import tanks.network.NetworkEventMap;
-import tanks.network.SteamNetworkHandler;
-import tanks.network.SynchronizedList;
+import tanks.minigames.*;
+import tanks.network.*;
 import tanks.network.event.*;
 import tanks.network.event.online.*;
 import tanks.obstacle.*;
 import tanks.registry.*;
-import tanks.rendering.ShaderGroundIntro;
-import tanks.rendering.ShaderGroundOutOfBounds;
-import tanks.rendering.ShaderTracks;
+import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import com.codedisaster.steamworks.SteamMatchmaking;
+
+import java.io.*;
 import java.util.*;
 
 public class Game
 {
-    public enum Framework {lwjgl, libgdx}
+    public enum Framework { lwjgl, libgdx }
+
     public static Framework framework;
 
     public static final double tile_size = 50;
@@ -76,18 +65,15 @@ public class Game
      */
     public static Queue<Effect> tracks = new LinkedList<>();
 
-    /**
-     * Obstacles that need to change how they look next frame
-     */
+    /** Obstacles that need to change how they look next frame */
     public static HashSet<Obstacle> redrawObstacles = new HashSet<>();
 
-    /**
-     * Ground tiles that need to be redrawn due to obstacles being added/removed over them
-     */
+    /** Ground tiles that need to be redrawn due to obstacles being added/removed over them */
     public static class GroundTile
     {
         public int x;
         public int y;
+
         public GroundTile(int x, int y)
         {
             this.x = x;
@@ -128,7 +114,7 @@ public class Game
     public static Team playerTeamNoFF = new Team("ally", false);
     public static Team enemyTeamNoFF = new Team("enemy", false);
 
-    /** Use this if you want to spawn a mine not allied with any tank, or such*/
+    /** Use this if you want to spawn a mine not allied with any tank, or such */
     public static Tank dummyTank;
 
     public static int currentSizeX = 28;
@@ -294,9 +280,26 @@ public class Game
     public static String directoryPath = "/.tanks";
 
     // initialized in initScript()
-    public static String logPath, extensionRegistryPath, optionsPath, controlsPath, tutorialPath, uuidPath, levelDir;
-    public static String crusadeDir, savedCrusadePath, itemDir, bulletEffectsDir;
-    public static String tankDir, buildDir, extensionDir, crashesPath, screenshotsPath, resourcesPath, languagesPath;
+    public static String logPath;
+    public static String extensionRegistryPath;
+    public static String optionsPath;
+    public static String controlsPath;
+    public static String tutorialPath;
+    public static String uuidPath;
+    public static String levelDir;
+
+    public static String crusadeDir;
+    public static String savedCrusadePath;
+    public static String itemDir;
+    public static String bulletEffectsDir;
+
+    public static String tankDir;
+    public static String buildDir;
+    public static String extensionDir;
+    public static String crashesPath;
+    public static String screenshotsPath;
+    public static String resourcesPath;
+    public static String languagesPath;
 
     public static float soundVolume = 1f;
     public static float musicVolume = 0.5f;
@@ -520,7 +523,8 @@ public class Game
         Panel.initialize();
         Game.exitToTitle();
 
-        Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "", () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
+        Hotbar.toggle = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY - 20, 150, 40, "",
+            () -> Game.player.hotbar.persistent = !Game.player.hotbar.persistent);
 
         steamNetworkHandler = new SteamNetworkHandler();
         if (!disableSteam)
@@ -587,7 +591,9 @@ public class Game
         registerItem(ItemMine.class, ItemMine.item_class_name, DefaultItemIcons.mine.getCopy());
         registerItem(ItemShield.class, ItemShield.item_class_name, DefaultItemIcons.shield.getCopy());
 
-        registerMinigame(ArcadeClassic.class, "Arcade mode", "A gamemode which gets crazier as you---destroy more tanks.------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
+        registerMinigame(ArcadeClassic.class, "Arcade mode",
+            "A gamemode which gets crazier as you---destroy more tanks." +
+                "------Featuring a score mechanic, unlimited---lives, a time limit, item drops, and---end-game bonuses!");
         registerMinigame(ArcadeBeatBlocks.class, "Beat arcade mode", "Arcade mode but with beat blocks!");
 //      registerMinigame(CastleRampage.class, "Rampage trial", "Beat the level as fast as you can---with unlimited lives and rampages!");
 //      registerMinigame(TeamDeathmatch.class, "Team deathmatch", "something");
@@ -734,7 +740,7 @@ public class Game
 
         try
         {
-            Game.logger = new PrintStream(new FileOutputStream (homedir + logPath, true));
+            Game.logger = new PrintStream(new FileOutputStream(homedir + logPath, true));
         }
         catch (FileNotFoundException e)
         {
@@ -765,7 +771,8 @@ public class Game
 
         if (!enableExtensions && extraExtensions != null)
         {
-            System.err.println("Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. Only extensions provided to launchWithExtensions() will be used.");
+            System.err.println("Notice: The game has been launched from Tanks.launchWithExtensions() with extensions in options.txt disabled. " +
+                "Only extensions provided to launchWithExtensions() will be used.");
         }
 
         for (Extension e: extensionRegistry.extensions)
@@ -810,7 +817,7 @@ public class Game
 
     public static void addMovable(Movable m)
     {
-        for (Chunk c : m.getTouchingChunks())
+        for (Chunk c: m.getTouchingChunks())
             c.addMovable(m);
 
         Game.movables.add(m);
@@ -830,7 +837,7 @@ public class Game
      * Adds a tank to the game's movables list and generates/registers a network ID for it after it was spawned by another tank.
      * Use this if you want to spawn computer-controlled tanks from another tank if you are not connected to a server.
      *
-     * @param tank the tank to add
+     * @param tank   the tank to add
      * @param parent the tank that is spawning the tank
      */
     public static void spawnTank(Tank tank, Tank parent)
@@ -872,7 +879,7 @@ public class Game
         if (refresh)
             redraw(o);
 
-        for (Obstacle o1 : o.getNeighbors())
+        for (Obstacle o1: o.getNeighbors())
             o1.onNeighborUpdate();
     }
 
@@ -883,7 +890,7 @@ public class Game
 
         for (int i = 0; i < username.length(); i++)
         {
-            if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(username.toLowerCase().substring(i, i+1)))
+            if (!"abcdefghijklmnopqrstuvwxyz1234567890_".contains(username.toLowerCase().substring(i, i + 1)))
             {
                 return true;
             }
@@ -1054,7 +1061,7 @@ public class Game
 
                 f.stopWriting();
             }
-            catch (Exception ex) {ex.printStackTrace(); }
+            catch (Exception ex) { ex.printStackTrace(); }
         }
 
         if (e instanceof OutOfMemoryError)
@@ -1108,6 +1115,7 @@ public class Game
     {
         return getObstacle((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
     }
+
     public static void removeObstacle(Obstacle o)
     {
         Drawing.drawing.terrainRenderer.remove(o);

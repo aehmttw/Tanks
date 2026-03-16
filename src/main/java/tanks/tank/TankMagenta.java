@@ -2,9 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * A medium-speed smart tank
- */
+/** A medium-speed smart tank */
 public class TankMagenta extends TankAIControlled
 {
     public TankMagenta(String name, double x, double y, double angle)

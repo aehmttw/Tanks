@@ -1,10 +1,7 @@
 package tanks.bullet;
 
 import basewindow.Color;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.network.event.EventBulletReboundIndicator;
 
 public class BulletReboundIndicator extends Movable

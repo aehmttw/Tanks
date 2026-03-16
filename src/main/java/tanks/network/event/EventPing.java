@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.network.ClientHandler;
 import tanks.network.ServerHandler;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPing extends PersonalEvent implements IServerThreadEvent, IClientThreadEvent
 {

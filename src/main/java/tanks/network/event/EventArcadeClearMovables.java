@@ -1,11 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.Movable;
-import tanks.tank.Crate;
-import tanks.tank.TankPlayerController;
-import tanks.tank.TankRemote;
+import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventArcadeClearMovables extends PersonalEvent
 {
@@ -27,9 +26,10 @@ public class EventArcadeClearMovables extends PersonalEvent
     {
         if (this.clientID == null)
         {
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
-                if (m instanceof Crate && ((((Crate) m).tank instanceof TankRemote && ((TankRemote) ((Crate) m).tank).name.equals("player")) || ((Crate) m).tank instanceof TankPlayerController))
+                if (m instanceof Crate && ((((Crate) m).tank instanceof TankRemote && ((TankRemote) ((Crate) m).tank).name.equals("player")) ||
+                    ((Crate) m).tank instanceof TankPlayerController))
                     continue;
 
                 m.destroy = true;

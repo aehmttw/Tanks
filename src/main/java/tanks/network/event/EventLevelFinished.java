@@ -1,7 +1,8 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.gui.screen.ScreenGame;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventLevelFinished extends PersonalEvent
 {
@@ -20,8 +21,8 @@ public class EventLevelFinished extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b) { }
+    public void write(ByteBuf b) {}
 
     @Override
-    public void read(ByteBuf b) { }
+    public void read(ByteBuf b) {}
 }

@@ -65,7 +65,7 @@ public class ScreenParty extends Screen
             port.inputText = Game.port + "";
         }
     },
-            Game.port + "", "Sets port for multiplayer------Make sure all players are using---the same port");
+        Game.port + "", "Sets port for multiplayer------Make sure all players are using---the same port");
 
     @Override
     public void update()

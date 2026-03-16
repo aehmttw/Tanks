@@ -28,12 +28,12 @@ public class ShaderGroup
 
     public void initialize() throws Exception
     {
-        this.shaderShadowMap.setUp
-                ("/shaders/shadow_map.vert", new String[]{"/shaders/main_default.vert"},
-                "/shaders/shadow_map.frag", null);
-        this.shaderBase.setUp
-                ("/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
-                "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
+        this.shaderShadowMap.setUp(
+            "/shaders/shadow_map.vert", new String[]{"/shaders/main_default.vert"},
+            "/shaders/shadow_map.frag", null);
+        this.shaderBase.setUp(
+            "/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
+            "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
     }
 
     public void setVertexBuffer(int id)
@@ -144,7 +144,7 @@ public class ShaderGroup
         void bind(boolean shadow);
     }
 
-    public static abstract class GroupPrimitiveUniform<T, U extends ShaderProgram.IPrimitiveUniform<T>> implements IGroupUniform
+    public abstract static class GroupPrimitiveUniform<T, U extends ShaderProgram.IPrimitiveUniform<T>> implements IGroupUniform
     {
         protected U baseUniform;
         protected U shadowMapUniform;
@@ -173,7 +173,7 @@ public class ShaderGroup
         }
     }
 
-    public static abstract class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
+    public abstract static class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
     {
         protected T baseUniform;
         protected T shadowMapUniform;
@@ -201,29 +201,29 @@ public class ShaderGroup
         }
     }
 
-    public static class Uniform1b extends GroupPrimitiveUniform<Boolean, ShaderProgram.Uniform1b> { }
+    public static class Uniform1b extends GroupPrimitiveUniform<Boolean, ShaderProgram.Uniform1b> {}
 
-    public static class Uniform1i extends GroupPrimitiveUniform<Integer, ShaderProgram.Uniform1i> { }
+    public static class Uniform1i extends GroupPrimitiveUniform<Integer, ShaderProgram.Uniform1i> {}
 
-    public static class Uniform2i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform2i> { }
+    public static class Uniform2i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform2i> {}
 
-    public static class Uniform3i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform3i> { }
+    public static class Uniform3i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform3i> {}
 
-    public static class Uniform4i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform4i> { }
+    public static class Uniform4i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform4i> {}
 
-    public static class Uniform1f extends GroupPrimitiveUniform<Float, ShaderProgram.Uniform1f> { }
+    public static class Uniform1f extends GroupPrimitiveUniform<Float, ShaderProgram.Uniform1f> {}
 
-    public static class Uniform2f extends GroupPrimitiveUniform<float[], ShaderProgram.Uniform2f> { }
+    public static class Uniform2f extends GroupPrimitiveUniform<float[], ShaderProgram.Uniform2f> {}
 
-    public static class Uniform3f extends GroupPrimitiveUniform<float[], ShaderProgram.Uniform3f> { }
+    public static class Uniform3f extends GroupPrimitiveUniform<float[], ShaderProgram.Uniform3f> {}
 
-    public static class Uniform4f extends GroupPrimitiveUniform<float[], ShaderProgram.Uniform4f> { }
+    public static class Uniform4f extends GroupPrimitiveUniform<float[], ShaderProgram.Uniform4f> {}
 
-    public static class UniformMatrix2 extends GroupMatrixUniform<ShaderProgram.UniformMatrix2> { }
+    public static class UniformMatrix2 extends GroupMatrixUniform<ShaderProgram.UniformMatrix2> {}
 
-    public static class UniformMatrix3 extends GroupMatrixUniform<ShaderProgram.UniformMatrix3> { }
+    public static class UniformMatrix3 extends GroupMatrixUniform<ShaderProgram.UniformMatrix3> {}
 
-    public static class UniformMatrix4 extends GroupMatrixUniform<ShaderProgram.UniformMatrix4> { }
+    public static class UniformMatrix4 extends GroupMatrixUniform<ShaderProgram.UniformMatrix4> {}
 
     @Override
     public String toString()

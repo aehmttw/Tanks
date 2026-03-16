@@ -1,8 +1,6 @@
 package tanks.gui;
 
-import tanks.BiConsumer;
-import tanks.Drawing;
-import tanks.Level;
+import tanks.*;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -66,14 +64,15 @@ public class ButtonList
 
     public BiConsumer<Integer, Integer> reorderBehavior;
 
-    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
-    {
-        @Override
-        public void run()
+    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page",
+        new Runnable()
         {
-            page++;
+            @Override
+            public void run()
+            {
+                page++;
+            }
         }
-    }
     );
 
     public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()
@@ -337,7 +336,7 @@ public class ButtonList
                 Drawing.drawing.setColor(0, 0, 0);
 
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + xOffset, 20 + Drawing.drawing.interfaceSizeY / 2 + yOffset + controlsYOffset + ((rows + 1) / 2.0) * this.objYSpace,
-                    Translation.translate("Page %d of %d", (page + 1), (buttons.size() / (rows * columns) + Math.min(1, buttons.size() % (rows * columns)))));
+                Translation.translate("Page %d of %d", (page + 1), (buttons.size() / (rows * columns) + Math.min(1, buttons.size() % (rows * columns)))));
 
             previous.draw();
             next.draw();

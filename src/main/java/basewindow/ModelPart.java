@@ -8,7 +8,7 @@ public abstract class ModelPart implements IModel
     public Shape[] shapes;
     public Model parent;
 
-    public static abstract class Shape
+    public abstract static class Shape
     {
         public double brightness = 1;
         public Point[] points;

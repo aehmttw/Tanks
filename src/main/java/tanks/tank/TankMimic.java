@@ -2,9 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * A tank which mimics the closest tank it sees
- */
+/** A tank which mimics the closest tank it sees */
 public class TankMimic extends TankAIControlled
 {
     public TankMimic(String name, double x, double y, double angle)

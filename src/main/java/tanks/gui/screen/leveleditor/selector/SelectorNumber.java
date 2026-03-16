@@ -19,8 +19,10 @@ public class SelectorNumber extends MetadataSelector
     public double max = 99999999;
     public double step = 1;
 
-    /** When a metadata keybind is pressed, set the number to the minimum value if it is above the maximum value,
-     * or the maximum value if it is below the minimum value. */
+    /**
+     * When a metadata keybind is pressed, set the number to the minimum value if it is above the maximum value,
+     * or the maximum value if it is below the minimum value.
+     */
     public boolean wrap = false;
 
     /** When inputted from a text box, rounds it to the nearest number divisible to <code>step</code>. */

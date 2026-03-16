@@ -2,10 +2,7 @@ package tanks.gui;
 
 import basewindow.BaseFile;
 import basewindow.transformation.Translation;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
 

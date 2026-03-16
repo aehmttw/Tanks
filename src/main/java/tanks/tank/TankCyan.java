@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A support tank which shoots freezing bullets that deal low damage
- */
+/** A support tank which shoots freezing bullets that deal low damage */
 public class TankCyan extends TankAIControlled
 {
     public TankCyan(String name, double x, double y, double angle)

@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.tank.Tank;
@@ -103,10 +101,22 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
             this.linkedTanksNotCopied.add(b);
         }
 
-        this.nextCopiedPage = new Button(this.centerX + 550, this.row2Y, 60, 60, "", () -> { this.copiedPage++; });
-        this.prevCopiedPage = new Button(this.centerX - 550, this.row2Y, 60, 60, "", () -> { this.copiedPage--; });
-        this.nextNotCopiedPage = new Button(this.centerX + 550, this.row3Y, 60, 60, "", () -> { this.notCopiedPage++; });
-        this.prevNotCopiedPage = new Button(this.centerX - 550, this.row3Y, 60, 60, "", () -> { this.notCopiedPage--; });
+        this.nextCopiedPage = new Button(this.centerX + 550, this.row2Y, 60, 60, "", () ->
+        {
+            this.copiedPage++;
+        });
+        this.prevCopiedPage = new Button(this.centerX - 550, this.row2Y, 60, 60, "", () ->
+        {
+            this.copiedPage--;
+        });
+        this.nextNotCopiedPage = new Button(this.centerX + 550, this.row3Y, 60, 60, "", () ->
+        {
+            this.notCopiedPage++;
+        });
+        this.prevNotCopiedPage = new Button(this.centerX - 550, this.row3Y, 60, 60, "", () ->
+        {
+            this.notCopiedPage--;
+        });
 
         this.nextCopiedPage.image = "icons/forward.png";
         this.nextCopiedPage.imageSizeX = 35;

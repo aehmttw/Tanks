@@ -36,8 +36,8 @@ public class OverlaySelectColor extends ScreenLevelEditorOverlay
             int g = (color / (256)) % 256;
             int b = color % 256;
             this.selectorColor.setMetadata(screenLevelEditor, screenLevelEditor.mousePlaceable, r * 256 * 256 + g * 256 + b);
-        }
-                , (initColor / (256 * 256)) % 256, 0, 255, 1);
+        },
+            (initColor / (256 * 256)) % 256, 0, 255, 1);
 
         colorRed.allowLetters = false;
         colorRed.allowSpaces = false;
@@ -56,8 +56,8 @@ public class OverlaySelectColor extends ScreenLevelEditorOverlay
             int g = Integer.parseInt(colorGreen.inputText);
             int b = color % 256;
             this.selectorColor.setMetadata(screenLevelEditor, screenLevelEditor.mousePlaceable, r * 256 * 256 + g * 256 + b);
-        }
-                , (initColor / 256) % 256, 0, 255, 1);
+        },
+            (initColor / 256) % 256, 0, 255, 1);
 
         colorGreen.allowLetters = false;
         colorGreen.allowSpaces = false;
@@ -76,8 +76,8 @@ public class OverlaySelectColor extends ScreenLevelEditorOverlay
             int g = (color / (256)) % 256;
             int b = Integer.parseInt(colorBlue.inputText);
             this.selectorColor.setMetadata(screenLevelEditor, screenLevelEditor.mousePlaceable, r * 256 * 256 + g * 256 + b);
-        }
-                , initColor % 256, 0, 255, 1);
+        },
+            initColor % 256, 0, 255, 1);
 
         colorBlue.allowLetters = false;
         colorBlue.allowSpaces = false;

@@ -52,7 +52,8 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         screenLevelEditor.paused = true;
 
         this.selector = selector;
-        textBox = new TextBox(this.centerX, this.centerY + 15, 350, 40, this.selector.metadataProperty.name(), this::submit, this.selector.numberString(screenLevelEditor.mousePlaceable));
+        textBox = new TextBox(this.centerX, this.centerY + 15, 350, 40, this.selector.metadataProperty.name(), this::submit,
+            this.selector.numberString(screenLevelEditor.mousePlaceable));
 
         textBox.allowLetters = false;
         textBox.allowSpaces = false;

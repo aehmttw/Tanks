@@ -1,8 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Crusade;
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
 
@@ -39,8 +37,8 @@ public class ScreenSharedCrusades extends Screen
                 ScreenCrusadePreview sc = new ScreenCrusadePreview(c, Game.screen, false);
                 sc.setOffset(sc.objHeight);
                 Game.screen = sc;
-            }
-                    , "Shared by " + l.creator));
+            },
+                "Shared by " + l.creator));
         }
 
         sharedCrusades = new ButtonList(buttons, page, 0, -60);

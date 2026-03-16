@@ -1,9 +1,6 @@
 package tanks.gui;
 
-import basewindow.Color;
-import basewindow.IModel;
-import basewindow.InputCodes;
-import basewindow.InputPoint;
+import basewindow.*;
 import tanks.*;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.*;
@@ -18,7 +15,10 @@ public class Button implements IDrawable, ITrigger
     public Runnable function;
     public Runnable doubleClickFunc = null;
     public InputBindingGroup keybind;
-    public double posX, posY, sizeX, sizeY;
+    public double posX;
+    public double posY;
+    public double sizeX;
+    public double sizeY;
 
     public double age = 0;
     public double lastClick = 0;
@@ -26,7 +26,10 @@ public class Button implements IDrawable, ITrigger
 
     public boolean draggable;
     public String dragTooltip = null;
-    public double clickX, clickY, origX, origY;
+    public double clickX;
+    public double clickY;
+    public double origX;
+    public double origY;
     public boolean isDragging;
     public Consumer<Button> whileDragging;
     public BiConsumer<Button, Boolean> finishDrag;
@@ -101,19 +104,23 @@ public class Button implements IDrawable, ITrigger
 
     //public String sound = "click.ogg";
 
-    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
+    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen */
     public boolean wait = false;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = left
      * 0 = middle
-     * 1 = right*/
+     * 1 = right
+     */
     public int xAlignment = 0;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = top
      * 0 = middle
-     * 1 = bottom*/
+     * 1 = bottom
+     */
     public int yAlignment = 0;
 
     public Button(double x, double y, double sX, double sY, String text, Runnable f)
@@ -163,7 +170,9 @@ public class Button implements IDrawable, ITrigger
 
     public static class Toggle extends Button
     {
-        private static final Runnable emptyFunction = () -> {};
+        private static final Runnable emptyFunction = () ->
+        {
+        };
 
         public Function<Boolean, String> getText = b -> b ? ScreenOptions.onText : ScreenOptions.offText;
         public Consumer<Boolean> setter;
@@ -186,7 +195,8 @@ public class Button implements IDrawable, ITrigger
             this(x, y, sX, sY, text, f, setter, getter, null);
         }
 
-        public Toggle(double x, double y, double sX, double sY, String text, Runnable f, Consumer<Boolean> setter, Producer<Boolean> getter, String hoverText, Object... hoverTextOptions)
+        public Toggle(double x, double y, double sX, double sY, String text, Runnable f, Consumer<Boolean> setter, Producer<Boolean> getter, String hoverText,
+                      Object... hoverTextOptions)
         {
             super(x, y, sX, sY, text, f, hoverText, hoverTextOptions);
             this.setter = setter;
@@ -240,7 +250,7 @@ public class Button implements IDrawable, ITrigger
 
             if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -405,7 +415,8 @@ public class Button implements IDrawable, ITrigger
             double mx = Drawing.drawing.getInterfaceMouseX();
             double my = Drawing.drawing.getInterfaceMouseY();
 
-            boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1), Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
+            boolean handled = checkMouse(mx, my, Game.game.window.pressedButtons.contains(InputCodes.MOUSE_BUTTON_1),
+                Game.game.window.validPressedButtons.contains(InputCodes.MOUSE_BUTTON_1));
 
             if (handled)
                 Game.game.window.validPressedButtons.remove((Integer) InputCodes.MOUSE_BUTTON_1);
@@ -480,8 +491,8 @@ public class Button implements IDrawable, ITrigger
             sizeY += 20;
         }
 
-        selected = (mx > posX - sizeX/2 && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
-        infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+        selected = (mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
+        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
 
         if (selected && valid)
         {

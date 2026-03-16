@@ -1,8 +1,9 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.minigames.Arcade;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventArcadeRampage extends PersonalEvent
 {

@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Game;
 import tanks.bullet.BulletReboundIndicator;
 import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventBulletReboundIndicator extends PersonalEvent
 {
@@ -35,17 +36,17 @@ public class EventBulletReboundIndicator extends PersonalEvent
     public void read(ByteBuf b)
     {
         this.indicator = new BulletReboundIndicator(
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble(),
-                b.readDouble());
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble(),
+            b.readDouble());
     }
 
     @Override

@@ -38,7 +38,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
                 vibrations.setText(vibrationsText, ScreenOptions.offText);
         }
     },
-            "When enabled, your device---will vibrate a little as---feedback for interacting with---joysticks, buttons, etc...------Not supported on all devices");
+        "When enabled, your device---will vibrate a little as---feedback for interacting with---joysticks, buttons, etc...------Not supported on all devices");
 
     Button mobile = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -57,7 +57,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
             TankPlayer.controlStickMobile = TankPlayer.controlStick.mobile;
         }
     },
-            "When enabled, the movement joystick---can be dragged around the screen.---It will also jump to your---finger when you select it.");
+        "When enabled, the movement joystick---can be dragged around the screen.---It will also jump to your---finger when you select it.");
 
     Button snap = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -76,7 +76,7 @@ public class ScreenOptionsInputTouchscreen extends Screen
             TankPlayer.controlStickSnap = TankPlayer.controlStick.snap;
         }
     },
-            "When enabled, the movement joystick---will return to its initial position---upon being released. It will also---jump to your finger when you---select it.");
+        "When enabled, the movement joystick---will return to its initial position---upon being released. It will also---jump to your finger when you---select it.");
 
     Button dualJoysticks = new Button(this.centerX, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -106,7 +106,8 @@ public class ScreenOptionsInputTouchscreen extends Screen
             }
         }
     },
-            "Single joystick: Use one joystick---to move, and tap on the screen to shoot.---Double tap the player to lay a mine.------Dual joysticks: Use a second joystick---to shoot, includes a mine button.");
+        "Single joystick: Use one joystick---to move, and tap on the screen to shoot.---Double tap the player to lay a mine." +
+            "------Dual joysticks: Use a second joystick---to shoot, includes a mine button.");
 
 
     public ScreenOptionsInputTouchscreen()

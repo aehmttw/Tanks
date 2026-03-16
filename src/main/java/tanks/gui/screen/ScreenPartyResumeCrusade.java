@@ -14,13 +14,13 @@ public class ScreenPartyResumeCrusade extends Screen
         this.music = "menu_4.ogg";
         this.musicID = "menu";
 
-        for (Player player : Game.players)
+        for (Player player: Game.players)
         {
             if (player.remainingLives >= 1)
                 players++;
             else
             {
-                for (CrusadePlayer cp : Crusade.currentCrusade.disconnectedPlayers)
+                for (CrusadePlayer cp: Crusade.currentCrusade.disconnectedPlayers)
                 {
                     if (cp.player.clientID.equals(player.clientID) && cp.player.remainingLives >= 1)
                     {

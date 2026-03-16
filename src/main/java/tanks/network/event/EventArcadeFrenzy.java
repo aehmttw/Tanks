@@ -1,9 +1,10 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.minigames.Arcade;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventArcadeFrenzy extends PersonalEvent
 {

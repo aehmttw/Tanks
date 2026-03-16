@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.BiConsumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.screen.leveleditor.OverlayObjectMenu;
@@ -24,7 +21,8 @@ public class ScreenTankLoadOverwrite extends Screen implements IBlankBackgroundS
     public ButtonObject tankButton;
     public ButtonObject oldTankButton;
 
-    public ScreenTankLoadOverwrite(OverlayObjectMenu ts, TankAIControlled tank, Pointer<TankAIControlled> oldTank, BiConsumer<TankAIControlled, Pointer<TankAIControlled>> editFunc, ArrayList<TankAIControlled> customTanks, ArrayList<TankAIControlled> savedTanks)
+    public ScreenTankLoadOverwrite(OverlayObjectMenu ts, TankAIControlled tank, Pointer<TankAIControlled> oldTank, BiConsumer<TankAIControlled, Pointer<TankAIControlled>> editFunc,
+                                   ArrayList<TankAIControlled> customTanks, ArrayList<TankAIControlled> savedTanks)
     {
         this.previous = ts;
         this.music = this.previous.music;

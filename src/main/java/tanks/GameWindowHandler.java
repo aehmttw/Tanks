@@ -1,10 +1,7 @@
 package tanks;
 
 import basewindow.IWindowHandler;
-import tanks.gui.screen.ScreenGame;
-import tanks.gui.screen.ScreenOptions;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 
 public class GameWindowHandler implements IWindowHandler
 {

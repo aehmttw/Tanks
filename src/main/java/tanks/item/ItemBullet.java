@@ -12,7 +12,7 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
 {
     public static final String item_class_name = "bullet";
 
-    @Property(id="bullet", category = "none")
+    @Property(id = "bullet", category = "none")
     public Bullet bullet;
 
     public ItemBullet()
@@ -69,8 +69,8 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
 
                 if (this.item.bullet.shotSound != null && this.item.bullet.soundVolume > 0)
                     Drawing.drawing.playGlobalSound(this.item.bullet.shotSound,
-                            (float) (this.item.bullet.pitch * (1 - (Math.random() * 0.5) * this.item.bullet.pitchVariation)),
-                            (float) this.item.bullet.soundVolume);
+                        (float) (this.item.bullet.pitch * (1 - (Math.random() * 0.5) * this.item.bullet.pitchVariation)),
+                        (float) this.item.bullet.soundVolume);
 
                 for (int i = 0; i < q; i++)
                 {
@@ -85,7 +85,7 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
                     }
 
                     Bullet b = this.item.bullet.getClass().getConstructor(double.class, double.class, Tank.class, boolean.class, ItemStackBullet.class)
-                            .newInstance(m.posX, m.posY, m, true, this);
+                        .newInstance(m.posX, m.posY, m, true, this);
                     this.item.bullet.clonePropertiesTo(b);
                     b.setColorFromTank();
 
@@ -130,9 +130,9 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
         @Override
         public boolean usable(Tank t)
         {
-            return t != null
-                    && (this.item.bullet.maxLiveBullets <= 0 || this.liveBullets <= this.item.bullet.maxLiveBullets - this.item.bullet.shotCount)
-                    && !(this.cooldown > 0);
+            return t != null &&
+                (this.item.bullet.maxLiveBullets <= 0 || this.liveBullets <= this.item.bullet.maxLiveBullets - this.item.bullet.shotCount) &&
+                !(this.cooldown > 0);
         }
     }
 }

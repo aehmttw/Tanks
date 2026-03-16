@@ -11,8 +11,7 @@ public class Firework extends Movable
 {
     public static final double trail_length = 50;
 
-    public enum FireworkType
-    {rocket, particle, particle_group, trail, flash}
+    public enum FireworkType { rocket, particle, particle_group, trail, flash }
 
     public FireworkType type;
 

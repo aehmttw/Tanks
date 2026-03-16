@@ -125,7 +125,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                         else
                             f.set(m, v);
                     }
-                    catch (Exception ignored) {}
+                    catch (Exception ignored) { }
                 }
             }
 
@@ -165,7 +165,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                         else
                             f.set(m, v);
                     }
-                    catch (Exception ignored) {}
+                    catch (Exception ignored) { }
                 }
             }
 
@@ -222,7 +222,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                         else
                             f.set(m, v);
                     }
-                    catch (Exception ignored) {}
+                    catch (Exception ignored) { }
                 }
             }
 

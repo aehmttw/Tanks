@@ -117,7 +117,7 @@ public class ExtensionRegistry
                     }
                 }
             }
-            catch (Exception ignored) {}
+            catch (Exception ignored) { }
         }
 
         return null;

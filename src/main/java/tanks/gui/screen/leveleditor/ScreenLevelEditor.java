@@ -2878,8 +2878,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         return this.spawns;
     }
 
-    public enum Placeable
-    {enemyTank, playerTank, obstacle}
+    public enum Placeable { enemyTank, playerTank, obstacle }
 
     @Override
     public double getOffsetX()
@@ -2899,8 +2898,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         return Drawing.drawing.unzoomedScale * zoom;
     }
 
-    public enum SymmetryType
-    {none, flipHorizontal, flipVertical, flipBoth, flip8, rot180, rot90}
+    public enum SymmetryType { none, flipHorizontal, flipVertical, flipBoth, flip8, rot180, rot90 }
 
     @Override
     public void onAttemptClose()

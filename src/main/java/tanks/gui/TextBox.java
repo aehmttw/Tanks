@@ -614,7 +614,7 @@ public class TextBox implements IDrawable, ITrigger
                 }
             }
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) { }
     }
 
     public void inputKey(char key)

@@ -43,8 +43,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         tutorialProgress
     }
 
-    public enum State
-    {live, removed, recycle}
+    public enum State { live, removed, recycle }
 
     public EffectType type;
     public Color color = new Color();

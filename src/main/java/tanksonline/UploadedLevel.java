@@ -10,8 +10,7 @@ public class UploadedLevel
     public UUID creator;
     public long time;
 
-    public enum UploadResult
-    {success, nameTaken, error}
+    public enum UploadResult { success, nameTaken, error }
 
     public UploadedLevel(String name, String level, UUID creator, long time)
     {

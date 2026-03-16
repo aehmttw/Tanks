@@ -107,13 +107,13 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
 
     public Button addItem = new Button(Drawing.drawing.interfaceSizeX / 2 + add_offset, Drawing.drawing.interfaceSizeY / 2 + titleOffset, this.objHeight, this.objHeight,
         "+", new Runnable()
-    {
-        @Override
-        public void run()
         {
-            itemSelector.setScreen();
-        }
-    },
+            @Override
+            public void run()
+            {
+                itemSelector.setScreen();
+            }
+        },
         "Add an item");
 
     public Button addBuild = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace + add_offset, Drawing.drawing.interfaceSizeY / 2 + titleOffset, this.objHeight,

@@ -26,8 +26,7 @@ import static tanks.tank.TankPropertyCategory.*;
 public class TankAIControlled extends Tank implements ITankField
 {
     /** The type which shows what direction the tank is moving. Clockwise and Counter Clockwise are for idle, while Aiming is for when the tank aims. */
-    protected enum RotationPhase
-    {clockwise, counter_clockwise, aiming, recalculating}
+    protected enum RotationPhase { clockwise, counter_clockwise, aiming, recalculating }
 
     // The following are properties which are used externally to determine the behavior settings of the tank.
     // Simple modifications of tanks can just change these values to produce a desired behavior.
@@ -47,10 +46,12 @@ public class TankAIControlled extends Tank implements ITankField
     /** Chance per frame to change direction */
     @Property(category = movementIdle, id = "motion_change_chance", name = "Turn chance", minValue = 0.0, desc = "Chance of the tank to change the direction in which it is moving")
     public double turnChance = 0.01;
+
     /** Time waited when changing direction of motion */
     @Property(category = movementIdle, id = "turn_pause_time", name = "Turn pause time", minValue = 0.0,
         desc = "Time the tank pauses when changing directions \n \n 1 time unit = 0.01 seconds")
     public double turnPauseTime = 15;
+
     /** Multiplier of time the tank will hide in a shrub */
     @Property(category = movementIdle, id = "bush_hide_time", name = "Bush hide time", minValue = 0.0,
         desc = "Time the tank will stop moving to hide in bushes \n \n 1 time unit = 0.01 seconds")
@@ -79,8 +80,7 @@ public class TankAIControlled extends Tank implements ITankField
      * Intersect = move away
      * from where bullet path will intersect tank; less accurate
      */
-    public enum BulletAvoidBehavior
-    {intersect, back_off, dodge, aggressive_dodge, back_off_dodge}
+    public enum BulletAvoidBehavior { intersect, back_off, dodge, aggressive_dodge, back_off_dodge }
 
     @Property(category = movementAvoid, id = "bullet_avoid_behavior", name = "Bullet avoid behavior", desc = "Method the tank will use to avoid bullets \n " +
         "\n Intersect: move away from where the bullet will hit the tank (less accurate) " +
@@ -89,10 +89,12 @@ public class TankAIControlled extends Tank implements ITankField
         "\n Aggressive dodge: move at an angle toward the bullet " +
         "\n Back off dodge: back off if there is space behind, dodge otherwise")
     public BulletAvoidBehavior bulletAvoidBehavior = BulletAvoidBehavior.intersect;
+
     /** How close the tank needs to get to a mine to avoid it */
     @Property(category = movementAvoid, id = "mine_avoid_sensitivity", name = "Mine sight radius",
         desc = "If the tank is within this fraction of a mine's radius, it will move away from the mine")
     public double mineAvoidSensitivity = 1.5;
+
     /** Time which the tank will avoid a bullet after the bullet is no longer aiming at the tank */
     @Property(category = movementAvoid, id = "bullet_avoid_timer_base", name = "Bullet flee time",
         desc = "Time the tank will continue fleeing from a bullet until after it is no longer deemed a threat \n \n 1 time unit = 0.01 seconds")
@@ -102,14 +104,17 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = movementPathfinding, id = "enable_pathfinding", name = "Seek targets",
         desc = "If enabled, the tank may decide to navigate through the level towards its target. If this tank can lay mines, it may also use them to get to the target.")
     public boolean enablePathfinding = false;
+
     /** Chance per frame to seek the target enemy */
     @Property(category = movementPathfinding, id = "seek_chance", minValue = 0.0, maxValue = 1.0, name = "Seek chance",
         desc = "Chance for this tank to decide to start navigating to its target")
     public double seekChance = 0.001;
+
     /** If set to true, when enters line of sight of target enemy, will stop pathfinding to it */
     @Property(category = movementPathfinding, id = "stop_seeking_on_sight", name = "Stop on sight",
         desc = "If enabled, navigation to target will end when the this tank enters the target's line of sight")
     public boolean stopSeekingOnSight = false;
+
     /** Increasing this value increases how stubborn the tank is in following a path */
     @Property(category = movementPathfinding, id = "seek_timer_base", minValue = 0.0, name = "Seek patience",
         desc = "If this tank is blocked from navigating its path for this amount of time, it will abandon the navigation \n \n 1 time unit = 0.01 seconds")
@@ -124,15 +129,16 @@ public class TankAIControlled extends Tank implements ITankField
      * Backwind = move at a 45 degree angle away target enemy
      * Keep Distance = stay a particular distance away from the target enemy
      */
-    public enum TargetEnemySightBehavior
-    {approach, flee, strafe, sidewind, backwind, keep_distance}
+    public enum TargetEnemySightBehavior { approach, flee, strafe, sidewind, backwind, keep_distance }
 
     /** When set to true, will shoot a ray at the target enemy and enable reactions when the target enemy is in sight */
     @Property(category = movementOnSight, id = "enable_looking_at_target_enemy", name = "Test sight",
         desc = "When enabled, the tank will test if its target is in its line of sight, and react accordingly")
     public boolean enableLookingAtTargetEnemy = true;
+
     /** When set to true, will call reactToTargetEnemySight() when an unobstructed line of sight to the target enemy can be made */
     public boolean enableTargetEnemyReaction = true;
+
     /** Type of behavior tank should have if its target enemy is in line of sight */
     @Property(category = movementOnSight, id = "target_enemy_sight_behavior", name = "Reaction", desc = "How the tank should react upon line of sight \n " +
         "Approach - move directly toward the target \n " +
@@ -142,10 +148,12 @@ public class TankAIControlled extends Tank implements ITankField
         "Backwind - zig-zag away from the target \n " +
         "Keep distance - move to or away from the target until at a specific distance to it")
     public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;
+
     /** If set to strafe upon seeing the target enemy, chance to change orbit direction */
     @Property(category = movementOnSight, id = "strafe_direction_change_chance", minValue = 0.0, maxValue = 1.0, name = "Strafe frequency",
         desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
     public double strafeDirectionChangeChance = 0.01;
+
     /** If set to keep a distance, the tank will maintain that distance from its target upon sight */
     @Property(category = movementOnSight, id = "target_sight_distance", minValue = 0.0, name = "Target distance",
         desc = "If set to keep distance on line of sight, how far away the tank will try to sit from its target \n \n 1 tile = 50 units")
@@ -155,8 +163,10 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank",
         desc = "When set, the tank will transform into this tank upon entering line of sight with its target", nullable = true)
     public ITankField sightTransformTankField = null;
+
     /** Don't set this. It's automatically set by resolving "sightTransformTankField" which may be a reference! */
     private TankAIControlled sightTransformTank = null;
+
     /** Time for tank to revert after losing line of sight */
     @Property(category = transformationOnSight, id = "sight_transformation_revert_time", minValue = 0.0, name = "Sight revert time",
         desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
@@ -166,12 +176,15 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank",
         desc = "When set, the tank will transform into this tank when its health is at or below the health threshold", nullable = true)
     public ITankField healthTransformTankField = null;
+
     /** Don't set this. It's automatically set by resolving "healthTransformTankField" which may be a reference! */
     private TankAIControlled healthTransformTank = null;
+
     /** Health threshold to transform */
     @Property(category = transformationOnHealth, id = "transform_health_threshold", minValue = 0.0, name = "Hitpoint threshold",
         desc = "Amount of health this tank must have equal to or less than to transform")
     public double transformHealthThreshold = 0;
+
     /** If set, the tank will seek and transform into other tanks in line of sight */
     @Property(category = transformationMimic, id = "transform_mimic", name = "Mimic", desc = "When enabled, the tank will mimic other nearby tanks it sees")
     public boolean transformMimic = false;
@@ -180,6 +193,7 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = transformationMimic, id = "mimic_revert_time", minValue = 0.0, name = "Mimic revert time",
         desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
     public double mimicRevertTime = 200;
+
     /** Range tanks must be in to be mimicked */
     @Property(category = transformationMimic, id = "mimic_range", minValue = 0.0, name = "Mimic range", desc = "Maximum distance between this tank and a tank it mimics")
     public double mimicRange = Game.tile_size * 12;
@@ -192,6 +206,7 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = mines, id = "mine_timer_base", minValue = 0.0, name = "Base cooldown",
         desc = "Minimum time between laying mines \n \n 1 time unit = 0.01 seconds")
     public double mineTimerBase = 2000;
+
     /** Random factor in calculating time to lay a mine, multiplied by this.random.nextDouble() and added to mineTimerBase */
     @Property(category = mines, id = "mine_timer_random", minValue = 0.0, name = "Random cooldown",
         desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n 1 time unit = 0.01 seconds")
@@ -202,18 +217,22 @@ public class TankAIControlled extends Tank implements ITankField
         desc = "Minimum time between firing bullets \n \n Note: if the bullet's base cooldown is longer than the tank's base cooldown, the bullet's cooldown will be used \n \n " +
             "1 time unit = 0.01 seconds")
     public double cooldownBase = 60;
+
     /** Random factor in calculating time between shooting bullets, multiplied by this.random.nextDouble() and added to cooldownBase */
     @Property(category = firingGeneral, id = "cooldown_random", minValue = 0.0, name = "Random cooldown",
         desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets")
     public double cooldownRandom = 20;
+
     /** After every successive shot, cooldown will go down by this fraction */
     @Property(category = firingGeneral, id = "cooldown_speedup", minValue = 0.0, name = "Cooldown speedup",
         desc = "After every shot fired towards the same target, the cooldown will be decreased by this fraction of its current value")
     public double cooldownSpeedup = 0;
+
     /** Cooldown resets after no shots for this much time */
     @Property(category = firingGeneral, id = "cooldown_revert_time", minValue = 0.0, name = "Revert time",
         desc = "If the tank is unable to fire for this much time, the effects of cooldown speedup will reset \n \n 1 time unit = 0.01 seconds")
     public double cooldownRevertTime = 300;
+
     /** If set, the tank will charge a shot and wait its cooldown on the spot as it prepares to shoot */
     @Property(category = firingGeneral, id = "charge_up", name = "Charge up",
         desc = "If enabled, the tank will only wait its cooldown while aiming at an enemy tank, playing a charge up animation")
@@ -229,8 +248,7 @@ public class TankAIControlled extends Tank implements ITankField
      * Alternate means that the tank will switch between shooting straight at the target enemy and using the reflect AI with every shot.
      * Wander means that the tank will randomly rotate and shoot only if it detects the target enemy
      */
-    public enum ShootAI
-    {none, sprinkler, wander, straight, homing, alternate, reflect}
+    public enum ShootAI { none, sprinkler, wander, straight, homing, alternate, reflect }
 
     /** Type of shooting AI to use */
     @Property(category = firingBehavior, id = "shoot_ai_type", name = "Aiming behavior", desc = "Behavior for aiming and firing at targets \n \n " +
@@ -247,6 +265,7 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = firingBehavior, id = "aim_accuracy_offset", minValue = 0.0, name = "Inaccuracy",
         desc = "Random angle added to bullet trajectory upon shooting to make things more unpredictable")
     public double aimAccuracyOffset = 0.2;
+
     /** Threshold angle difference needed between angle and aimAngle to count as touching the target enemy */
     public double aimThreshold = 0.05;
 
@@ -254,6 +273,7 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = firingBehavior, id = "turret_idle_timer_base", minValue = 0.0, name = "Turret base timer",
         desc = "Minimum time the turret will idly rotate in one direction before changing direction \n \n 1 time unit = 0.01 seconds")
     public double turretIdleTimerBase = 25;
+
     /** Random factor in calculating time to randomly change idle direction, multiplied by this.random.nextDouble() and added to turretIdleTimerBase */
     @Property(category = firingBehavior, id = "turret_idle_timer_random", minValue = 0.0, name = "Turret random timer",
         desc = "A random percentage between 0% and 100% of this time value is added to the turret base rotation timer to get the time between changing idle rotation direction " +
@@ -264,6 +284,7 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = firingBehavior, id = "turret_idle_speed", minValue = 0.0, name = "Idle turret speed",
         desc = "Speed the turret turns at when not actively aiming at a target")
     public double turretIdleSpeed = 0.005;
+
     /** Speed at which the turret moves while aiming at a target enemy */
     @Property(category = firingBehavior, id = "turret_aim_speed", minValue = 0.0, name = "Aim turret speed",
         desc = "Speed the turret turns at when actively aiming toward a target")
@@ -274,16 +295,18 @@ public class TankAIControlled extends Tank implements ITankField
         desc = "When enabled, will use the current velocity of the target to predict and fire towards its future position \n \n " +
             "Only works with straight or alternate aiming behavior!")
     public boolean enablePredictiveFiring = true;
+
     /** When set to true, will shoot at bullets aiming towards the tank */
     @Property(category = firingBehavior, id = "enable_defensive_firing", name = "Deflect bullets",
         desc = "When enabled, will shoot at incoming bullet threats to deflect them \n \n Does not work with wander or sprinkler aiming behavior!")
     public boolean enableDefensiveFiring = false;
     @Property(category = firingBehavior, id = "defensive_fire_urgency", name = "Deflection urgency",
-        desc = "The random cooldown between firing bullets will be reduced by this fraction when the tank is deflecting incoming bullets. \n \n " +
-            "For example, if a tank has a bullet base cooldown of 100, random cooldown of 50, and defensive firing urgency of 0.8, it will normally shoot every 100-150 time units," +
+        desc = "The random cooldown between firing bullets will be reduced by this fraction when the tank is deflecting incoming bullets. \n \n For example," +
+            " if a tank has a bullet base cooldown of 100, random cooldown of 50, and defensive firing urgency of 0.8, it will normally shoot every 100-150 time units," +
             " but when it is trying to deflect an incoming bullet, it will shoot every 100-110 time units, since the random cooldown is reduced by the urgency factor of 0.8," +
             " from 50 to 10. \n \n 1 time unit = 0.01 seconds")
     public double defensiveFiringUrgency = 1;
+
     /** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets */
     @Property(category = firingBehavior, id = "aim_ignore_destructible", name = "Through walls",
         desc = "When enabled, will shoot at destructible blocks if the target is hiding behind them. This is useful for tanks with explosive bullets.")
@@ -297,10 +320,12 @@ public class TankAIControlled extends Tank implements ITankField
     /** Number of bullets in bullet fan */
     @Property(category = firingPattern, id = "shot_round_count", minValue = 1.0, name = "Shots per round", desc = "Number of bullets to fire per round")
     public int shotRoundCount = 1;
+
     /** Time to fire a full fan */
     @Property(category = firingPattern, id = "shot_round_time", minValue = 0.0, name = "Round time", desc = "Amount of time it takes to fire a full round of bullets \n \n " +
         "1 time unit = 0.01 seconds")
     public double shootRoundTime = 60;
+
     /** Spread of a round */
     @Property(category = firingPattern, id = "shot_round_spread", minValue = 0.0, name = "Round spread", desc = "Total angle of spread of a round")
     public double shotRoundSpread = 36;
@@ -330,13 +355,16 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = spawning, id = "spawned_tanks", name = "Spawned tanks", desc = "Tanks which will be spawned by this tank as support",
         miscType = Property.MiscType.spawnedTanks)
     public ArrayList<SpawnedTankEntry> spawnedTankEntries = new ArrayList<>();
+
     /** Tanks spawned on initial load */
     @Property(category = spawning, id = "spawned_initial_count", minValue = 0.0, name = "Initial count", desc = "Number of tanks spawned immediately when this tank is created")
     public int spawnedInitialCount = 4;
+
     /** Max number of spawned tanks */
     @Property(category = spawning, id = "spawned_max_count", minValue = 0.0, name = "Max count",
         desc = "Maximum number of spawned tanks from this tank that can be on the field at once")
     public int spawnedMaxCount = 6;
+
     /** Chance for this tank to spawn another tank */
     @Property(category = spawning, id = "spawn_chance", minValue = 0.0, maxValue = 1.0, name = "Spawn chance", desc = "Chance for this tank to spawn another tank")
     public double spawnChance = 0.003;
@@ -345,17 +373,21 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = lastStand, id = "enable_suicide", name = "Last stand",
         desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and destroy itself.")
     public boolean enableSuicide = false;
+
     @Property(category = lastStand, id = "suicide_explosion", name = "Destroy explosion",
         desc = "When destroying itself from its last stand ability, the tank will explode with this explosion.", nullable = true)
     public Explosion suicideExplosion = new Explosion();
+
     /** Base factor in calculating suicide timer: base + random * Math.random() */
     @Property(category = lastStand, id = "suicide_timer_base", minValue = 0.0, name = "Base timer",
         desc = "Minimum time this tank will charge at its enemy before blowing up \n \n 1 time unit = 0.01 seconds")
     public double suicideTimerBase = 500;
+
     /** Random factor in calculating suicide timer: base + random * Math.random() */
     @Property(category = lastStand, id = "suicide_timer_random", minValue = 0.0, name = "Random timer",
         desc = "A random fraction of this value is added to the base timer to get the time this tank will charge before exploding \n \n 1 time unit = 0.01 seconds")
     public double suicideTimerRandom = 250;
+
     /** Suicidal mode maximum speed increase */
     @Property(category = lastStand, id = "suicide_speed_boost", name = "Speed boost", desc = "Maximum increase in speed while charging as a last stand")
     public double suicideSpeedBoost = 3;
@@ -3018,8 +3050,7 @@ public class TankAIControlled extends Tank implements ITankField
 
     public static class Tile
     {
-        public enum Type
-        {empty, destructible, solid}
+        public enum Type { empty, destructible, solid }
 
         public Tile parent;
 

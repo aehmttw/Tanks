@@ -36,7 +36,7 @@ public class ScreenConnectionCheck extends Screen
                 {
                     ip = Inet4Address.getLocalHost().getHostAddress();
                 }
-                catch (UnknownHostException ignored) {}
+                catch (UnknownHostException ignored) { }
 
                 if (!ip.contains("%"))
                     Game.screen = screen;

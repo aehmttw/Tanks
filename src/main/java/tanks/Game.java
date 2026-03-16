@@ -33,8 +33,7 @@ import java.util.*;
 
 public class Game
 {
-    public enum Framework
-    {lwjgl, libgdx}
+    public enum Framework { lwjgl, libgdx }
 
     public static Framework framework;
 

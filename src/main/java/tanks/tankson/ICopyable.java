@@ -79,7 +79,7 @@ public interface ICopyable<T>
                 f.set(m, v);
             }
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) { }
     }
 
     /**

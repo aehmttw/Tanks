@@ -45,7 +45,7 @@ public class ScreenJoinParty extends Screen
                 if (clientThread != null && clientThread.isAlive())
                     clientThread.interrupt();
             }
-            catch (Exception ignored) {}
+            catch (Exception ignored) { }
 
             Game.screen = new ScreenParty();
         }

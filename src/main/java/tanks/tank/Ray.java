@@ -14,13 +14,9 @@ public class Ray extends GameObject
     public static double min_trace_size = 5;
 
     public static int chunksAdded;
-    /**
-     * Caches the chunks to avoid creating new temp objects
-     */
+    /** Caches the chunks to avoid creating new temp objects */
     public static Chunk[] chunkCache = new Chunk[40];
-    /**
-     * Caches the ray to avoid creating new temp objects
-     */
+    /** Caches the ray to avoid creating new temp objects */
     public static Ray cacheRay = new Ray();
 
     public double size;
@@ -66,35 +62,25 @@ public class Ray extends GameObject
 
     public boolean acquiredTarget = false;
 
-    /**
-     * Set this and use {@linkplain #chunkComparator} to sort the chunks by manhattan distance from this chunk
-     */
+    /** Set this and use {@linkplain #chunkComparator} to sort the chunks by manhattan distance from this chunk */
     private static Chunk startingChunk = Chunk.zeroChunk;
 
-    /**
-     * Method references don't allocate new objects; however lambdas do (they create temp classes)
-     */
+    /** Method references don't allocate new objects; however lambdas do (they create temp classes) */
     private static int keyExtractor(Chunk c)
     {
         return c.manhattanDist(startingChunk);
     }
 
-    /**
-     * Comparator that sorts the chunks by manhattan distance from {@linkplain #startingChunk}
-     */
+    /** Comparator that sorts the chunks by manhattan distance from {@linkplain #startingChunk} */
     private static final Comparator<Chunk> chunkComparator = (o1, o2) -> keyExtractor(o1) - keyExtractor(o2);
 
-    /**
-     * Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}
-     */
+    /** Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()} */
     public static Ray newRay(double x, double y, double angle, int bounces, Tank tank)
     {
         return newRay(x, y, angle, bounces, tank, 10);
     }
 
-    /**
-     * Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()}
-     */
+    /** Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()} */
     public static Ray newRay(double x, double y, double angle, int bounces, Tank tank, double speed)
     {
         return cacheRay.set(x, y, angle, bounces, tank, speed);

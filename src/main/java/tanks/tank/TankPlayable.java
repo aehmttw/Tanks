@@ -105,9 +105,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
         return Serializer.toTanksON(this);
     }
 
-    /**
-     * Fully copies properties unlike "clone" - useful for making a template from another template
-     */
+    /** Fully copies properties unlike "clone" - useful for making a template from another template */
     public TankPlayable copyPropertiesTo(TankPlayable m)
     {
         try

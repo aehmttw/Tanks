@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A short-range tank which shoots fire
- */
+/** A short-range tank which shoots fire */
 public class TankOrange extends TankAIControlled
 {
     public TankOrange(String name, double x, double y, double angle)

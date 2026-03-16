@@ -207,9 +207,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     }
 
-    /**
-     * Alias for {@link #getEffectManager()}
-     */
+    /** Alias for {@link #getEffectManager()} */
     public EffectManager em()
     {
         return getEffectManager();
@@ -367,9 +365,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         this.posY = y1;
     }
 
-    /**
-     * Field to cache the movable array for reuse
-     */
+    /** Field to cache the movable array for reuse */
     private static final HashSet<Movable> movableOut = new HashSet<>();
 
     public static HashSet<Movable> getCircleCollision(GameObject self)

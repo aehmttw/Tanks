@@ -8,9 +8,7 @@ import tanks.gui.screen.leveleditor.ScreenLevelEditor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-/**
- * @param <V> The class of the object being selected. (e.g. {@code Team} for team selectors)
- */
+/** @param <V> The class of the object being selected. (e.g. {@code Team} for team selectors) */
 public class SelectorChoice<V> extends MetadataSelector
 {
     public ArrayList<V> choices = new ArrayList<>();

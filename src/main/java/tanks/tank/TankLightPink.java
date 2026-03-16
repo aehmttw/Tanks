@@ -2,9 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * A tank which gets angry on line of sight
- */
+/** A tank which gets angry on line of sight */
 public class TankLightPink extends TankAIControlled
 {
     public TankLightPink(String name, double x, double y, double angle)

@@ -14,24 +14,16 @@ public class AttributeModifier
     private static final Queue<AttributeModifier> recycleQueue = new ConcurrentLinkedQueue<>();
     private static final int MAX_POOL_SIZE = 2000; // Prevent memory leaks from excessive pooling
 
-    /**
-     * An unique name for the modifier, to prevent double effects
-     */
+    /** An unique name for the modifier, to prevent double effects */
     public String name = UUID.randomUUID().toString();
 
-    /**
-     * Duration of the Attribute Modifier, leave at 0 for indefinite duration
-     */
+    /** Duration of the Attribute Modifier, leave at 0 for indefinite duration */
     public double duration = 0;
 
-    /**
-     * Age at which the Attribute starts to wear off
-     */
+    /** Age at which the Attribute starts to wear off */
     public double deteriorationAge = 0;
 
-    /**
-     * Age at which the Attribute is at full strength
-     */
+    /** Age at which the Attribute is at full strength */
     public double warmupAge = 0;
 
     public double value;
@@ -46,53 +38,29 @@ public class AttributeModifier
 
     public static HashMap<String, Type> attributeModifierTypes = new HashMap<>();
 
-    /**
-     * Changes the speed at which objects move
-     */
+    /** Changes the speed at which objects move */
     public static final Type velocity = new Type("velocity");
-    /**
-     * Changes the speed at which status effects run out
-     */
+    /** Changes the speed at which status effects run out */
     public static final Type clock_speed = new Type("clock_speed");
-    /**
-     * Affects ability of tanks to slow down
-     */
+    /** Affects ability of tanks to slow down */
     public static final Type friction = new Type("friction");
-    /**
-     * Affects ability of tanks to speed up
-     */
+    /** Affects ability of tanks to speed up */
     public static final Type acceleration = new Type("acceleration");
-    /**
-     * Changes the maximum speed a tank may move at
-     */
+    /** Changes the maximum speed a tank may move at */
     public static final Type max_speed = new Type("max_speed");
-    /**
-     * When applied to a tank, its bullets will spawn boosted
-     */
+    /** When applied to a tank, its bullets will spawn boosted */
     public static final Type bullet_boost = new Type("bullet_boost");
-    /**
-     * Changes glow of an object
-     */
+    /** Changes glow of an object */
     public static final Type glow = new Type("glow");
-    /**
-     * Causes objects to spawn a particle trail of embers
-     */
+    /** Causes objects to spawn a particle trail of embers */
     public static final Type ember_effect = new Type("effect");
-    /**
-     * When applied to a tank, its bullets will have their speed modified
-     */
+    /** When applied to a tank, its bullets will have their speed modified */
     public static final Type bullet_speed = new Type("bullet_speed");
-    /**
-     * When applied to a tank, its cooldown will change accordingly
-     */
+    /** When applied to a tank, its cooldown will change accordingly */
     public static final Type reload = new Type("reload");
-    /**
-     * When applied to a tank, its bullet recoil will change accordingly
-     */
+    /** When applied to a tank, its bullet recoil will change accordingly */
     public static final Type recoil = new Type("recoil");
-    /**
-     * When applied to a tank, its will show a green shield indicating health was added via a heal ray
-     */
+    /** When applied to a tank, its will show a green shield indicating health was added via a heal ray */
     public static final Type healray = new Type("healray");
 
     public static class Type
@@ -133,9 +101,7 @@ public class AttributeModifier
         return this;
     }
 
-    /**
-     * Factory method to obtain an AttributeModifier instance, either from the recycle pool or create new
-     */
+    /** Factory method to obtain an AttributeModifier instance, either from the recycle pool or create new */
     public static AttributeModifier newInstance(Type type, Operation op, double amount)
     {
         AttributeModifier modifier = recycleQueue.poll();
@@ -144,9 +110,7 @@ public class AttributeModifier
         return new AttributeModifier().set(type, op, amount);
     }
 
-    /**
-     * Factory method to obtain an AttributeModifier instance with a specific name
-     */
+    /** Factory method to obtain an AttributeModifier instance with a specific name */
     public static AttributeModifier newInstance(String name, Type type, Operation op, double amount)
     {
         AttributeModifier modifier = newInstance(type, op, amount);
@@ -171,9 +135,7 @@ public class AttributeModifier
         return copy;
     }
 
-    /**
-     * Recycle this AttributeModifier instance for reuse
-     */
+    /** Recycle this AttributeModifier instance for reuse */
     public static void recycle(AttributeModifier modifier)
     {
         if (modifier == null || !modifier.expired)

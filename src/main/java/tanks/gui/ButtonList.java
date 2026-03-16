@@ -15,14 +15,10 @@ public class ButtonList
     public boolean arrowsEnabled = false;
     public boolean reorder = false;
 
-    /**
-     * This many elements at the start cannot be reordered
-     */
+    /** This many elements at the start cannot be reordered */
     public int fixedFirstElements = 0;
 
-    /**
-     * This many elements at the end cannot be reordered
-     */
+    /** This many elements at the end cannot be reordered */
     public int fixedLastElements = 0;
 
     public int page;
@@ -56,14 +52,10 @@ public class ButtonList
     public double imageG = 255;
     public double imageB = 255;
 
-    /**
-     * If set, text will be white if the level is dark
-     */
+    /** If set, text will be white if the level is dark */
     public boolean defaultDarkMode = true;
 
-    /**
-     * If set, text will be white unconditionally
-     */
+    /** If set, text will be white unconditionally */
     public boolean manualDarkMode = false;
 
     public boolean translate = false;

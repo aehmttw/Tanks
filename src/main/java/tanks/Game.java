@@ -66,14 +66,10 @@ public class Game
      */
     public static Queue<Effect> tracks = new LinkedList<>();
 
-    /**
-     * Obstacles that need to change how they look next frame
-     */
+    /** Obstacles that need to change how they look next frame */
     public static HashSet<Obstacle> redrawObstacles = new HashSet<>();
 
-    /**
-     * Ground tiles that need to be redrawn due to obstacles being added/removed over them
-     */
+    /** Ground tiles that need to be redrawn due to obstacles being added/removed over them */
     public static class GroundTile
     {
         public int x;
@@ -119,9 +115,7 @@ public class Game
     public static Team playerTeamNoFF = new Team("ally", false);
     public static Team enemyTeamNoFF = new Team("enemy", false);
 
-    /**
-     * Use this if you want to spawn a mine not allied with any tank, or such
-     */
+    /** Use this if you want to spawn a mine not allied with any tank, or such */
     public static Tank dummyTank;
 
     public static int currentSizeX = 28;
@@ -1188,9 +1182,7 @@ public class Game
         return Chunk.getIfPresent(x, y, 0d, Chunk.Tile::edgeDepth);
     }
 
-    /**
-     * @return The depth that the tile renders with; not affected by obstacles
-     */
+    /** @return The depth that the tile renders with; not affected by obstacles */
     public static double sampleTerrainGroundHeight(double px, double py)
     {
         return Chunk.getIfPresent(px, py, 0d, Chunk.Tile::tileDepth);
@@ -1466,9 +1458,7 @@ public class Game
         level.loadLevel();
     }
 
-    /**
-     * Please use {@link #version Game.version} instead.
-     */
+    /** Please use {@link #version Game.version} instead. */
     public static String readVersionFromFile()
     {
         try
@@ -1481,9 +1471,7 @@ public class Game
         }
     }
 
-    /**
-     * Please use {@link BaseWindow#buildDate Game.game.window.buildDate} instead.
-     */
+    /** Please use {@link BaseWindow#buildDate Game.game.window.buildDate} instead. */
     public static String readHashFromFile()
     {
         try

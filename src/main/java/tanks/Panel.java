@@ -50,9 +50,7 @@ public class Panel
     public static TextBox selectedTextBox;
     public static Button draggedButton;
 
-    /**
-     * Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate.
-     */
+    /** Important value used in calculating game speed. Larger values are set when the frames are lower, and game speed is increased to compensate. */
     public static double frameFrequency = 1;
 
     public int frames = 0;
@@ -104,9 +102,7 @@ public class Panel
 
     public boolean lastFocused = true;
 
-    /**
-     * Set to a directory to have the game screenshot the next frame and save it to that directory
-     */
+    /** Set to a directory to have the game screenshot the next frame and save it to that directory */
     public String saveScreenshotDir = null;
 
     public static void initialize()

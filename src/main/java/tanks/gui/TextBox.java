@@ -83,9 +83,7 @@ public class TextBox implements IDrawable, ITrigger
     public boolean enabled = true;
     public boolean silent = false;
 
-    /**
-     * If set to true and is part of an online service, pressing the button sends the player to a loading screen
-     */
+    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen */
     public boolean wait = false;
 
     /**

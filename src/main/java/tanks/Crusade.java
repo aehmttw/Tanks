@@ -78,9 +78,7 @@ public class Crusade
 
     public String description = null;
 
-    /**
-     * Used for internal built-in crusades
-     */
+    /** Used for internal built-in crusades */
     public Crusade(ArrayList<String> levelArray, String name, String file)
     {
         internal = true;

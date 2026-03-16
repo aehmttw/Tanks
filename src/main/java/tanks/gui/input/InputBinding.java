@@ -5,9 +5,7 @@ import tanks.Panel;
 
 public class InputBinding
 {
-    /**
-     * In milliseconds because {@code System.currentTimeMillis()} is used.
-     */
+    /** In milliseconds because {@code System.currentTimeMillis()} is used. */
     public static int doubleClickTime = 300;
 
     public enum InputType

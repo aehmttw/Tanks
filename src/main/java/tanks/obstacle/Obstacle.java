@@ -17,14 +17,10 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public boolean tankCollision = true;
     public boolean bulletCollision = true;
 
-    /**
-     * If set to true, AI tanks will treat this block as breakable and shoot at it if there are tanks behind it
-     */
+    /** If set to true, AI tanks will treat this block as breakable and shoot at it if there are tanks behind it */
     public boolean shouldShootThrough = false;
 
-    /**
-     * If set to a nonnegative value, will override how much AI controlled tanks will avoid pathfinding over this
-     */
+    /** If set to a nonnegative value, will override how much AI controlled tanks will avoid pathfinding over this */
     public int unfavorability = -1;
 
     /**
@@ -48,16 +44,12 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public boolean allowBounce = true;
     public boolean replaceTiles = true;
 
-    /**
-     * If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles.
-     */
+    /** If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles. */
     public boolean batchDraw = true;
     public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
     public Class<? extends ShaderGroup> tileRenderer = ShaderGroup.class;
 
-    /**
-     * Obstacles with different render numbers can have different values for their uniforms
-     */
+    /** Obstacles with different render numbers can have different values for their uniforms */
     public int rendererNumber = 0;
     public int tileRendererNumber = 0;
 
@@ -180,9 +172,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
 
     }
 
-    /**
-     * Only for visual effects which are to be handled by each client separately
-     */
+    /** Only for visual effects which are to be handled by each client separately */
     public void onObjectEntryLocal(Movable m)
     {
 
@@ -280,9 +270,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
      */
     public abstract double getTileHeight();
 
-    /**
-     * @return how deep the edges of the tile span - for example, ice tiles go down to -15, but most tiles only go down to 0
-     */
+    /** @return how deep the edges of the tile span - for example, ice tiles go down to -15, but most tiles only go down to 0 */
     public double getEdgeDrawDepth()
     {
         return 0;
@@ -436,9 +424,7 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
         }
     }
 
-    /**
-     * Field to cache the obstacle array for reuse
-     */
+    /** Field to cache the obstacle array for reuse */
     private static final ArrayList<Obstacle> obstacleOut = new ArrayList<>();
 
     /**

@@ -18,9 +18,7 @@ import tanks.tankson.*;
 
 import static tanks.tank.TankPropertyCategory.general;
 
-/**
- * A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client.
- */
+/** A tank that is controlled by the player. TankPlayerController is used instead if we are connected to a party as a client. */
 @TanksONable("player_tank")
 public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServerPlayerTank
 {

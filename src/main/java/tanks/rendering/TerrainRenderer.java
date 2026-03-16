@@ -312,9 +312,7 @@ public class TerrainRenderer
         }
     }
 
-    /**
-     * Different rendering method, easier to use if you want the shrinking/growing blocks animation to work properly but maybe a bit slower
-     */
+    /** Different rendering method, easier to use if you want the shrinking/growing blocks animation to work properly but maybe a bit slower */
     public void addBoxWithCenter(IBatchRenderableObject o, double x, double y, double z, double sX, double sY, double sZ, byte options, boolean alternate, float cx, float cy,
                                  float cz)
     {

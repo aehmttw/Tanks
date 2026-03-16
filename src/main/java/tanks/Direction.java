@@ -15,33 +15,25 @@ public enum Direction
 
     private static final Direction[] values = Direction.values();
 
-    /**
-     * Returns true if {@linkplain #x()} is nonzero.
-     */
+    /** Returns true if {@linkplain #x()} is nonzero. */
     public boolean isNonZeroX()
     {
         return x() != 0;
     }
 
-    /**
-     * Returns true if {@linkplain #y()} is nonzero.
-     */
+    /** Returns true if {@linkplain #y()} is nonzero. */
     public boolean isNonZeroY()
     {
         return y() != 0;
     }
 
-    /**
-     * Returns true if {@linkplain #x()} and {@linkplain #y()} are both nonzero.
-     */
+    /** Returns true if {@linkplain #x()} and {@linkplain #y()} are both nonzero. */
     public boolean isDiagonal()
     {
         return x() != 0 && y() != 0;
     }
 
-    /**
-     * Returns the direction opposite to this direction.
-     */
+    /** Returns the direction opposite to this direction. */
     public Direction opposite()
     {
         int offset = ordinal() >= 4 ? 4 : 0;
@@ -65,17 +57,13 @@ public enum Direction
         return this.ordinal();
     }
 
-    /**
-     * Returns the x component of the direction's vector.
-     */
+    /** Returns the x component of the direction's vector. */
     public int x()
     {
         return X[this.ordinal()];
     }
 
-    /**
-     * Returns the y component of the direction's vector.
-     */
+    /** Returns the y component of the direction's vector. */
     public int y()
     {
         return Y[this.ordinal()];

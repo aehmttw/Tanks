@@ -83,19 +83,13 @@ public class StatusEffect
         public StatusEffect effect;
         public double age;
 
-        /**
-         * Duration of the Attribute Modifier, leave at 0 for indefinite duration
-         */
+        /** Duration of the Attribute Modifier, leave at 0 for indefinite duration */
         public double duration;
 
-        /**
-         * Age at which the Attribute starts to wear off
-         */
+        /** Age at which the Attribute starts to wear off */
         public double deteriorationAge;
 
-        /**
-         * Age at which the Attribute is at full strength
-         */
+        /** Age at which the Attribute is at full strength */
         public double warmupAge;
 
         private Instance() {}
@@ -127,9 +121,7 @@ public class StatusEffect
             }
         }
 
-        /**
-         * Reset this Instance to default state for reuse
-         */
+        /** Reset this Instance to default state for reuse */
         private void reset()
         {
             this.effect = null;

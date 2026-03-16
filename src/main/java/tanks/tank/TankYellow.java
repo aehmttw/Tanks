@@ -2,9 +2,7 @@ package tanks.tank;
 
 import tanks.Game;
 
-/**
- * A tank which lays many {@link Mine}s.
- */
+/** A tank which lays many {@link Mine}s. */
 public class TankYellow extends TankAIControlled
 {
     public TankYellow(String name, double x, double y, double angle)

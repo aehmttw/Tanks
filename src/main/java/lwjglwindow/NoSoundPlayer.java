@@ -4,9 +4,7 @@ import basewindow.BaseSoundPlayer;
 
 import java.io.InputStream;
 
-/**
- * Does nothing, useful if you don't have a sound device plugged in!
- */
+/** Does nothing, useful if you don't have a sound device plugged in! */
 public class NoSoundPlayer extends BaseSoundPlayer
 {
     public LWJGLWindow window;

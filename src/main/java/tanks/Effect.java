@@ -107,9 +107,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         return Effect.createNewEffect(x, y, 0, type);
     }
 
-    /**
-     * Use Effect.createNewEffect(double x, double y, Effect.EffectType type) instead of this because it can refurbish and reuse old effects
-     */
+    /** Use Effect.createNewEffect(double x, double y, Effect.EffectType type) instead of this because it can refurbish and reuse old effects */
     protected Effect()
     {
         super(0, 0);

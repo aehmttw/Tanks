@@ -55,9 +55,7 @@ public class Button implements IDrawable, ITrigger
     public boolean justPressed = false;
 
     public boolean enabled = true;
-    /**
-     * Whether you can click the button while it's disabled
-     */
+    /** Whether you can click the button while it's disabled */
     public boolean disabledClick = false;
 
     public double disabledColR = 200;
@@ -106,9 +104,7 @@ public class Button implements IDrawable, ITrigger
 
     //public String sound = "click.ogg";
 
-    /**
-     * If set to true and is part of an online service, pressing the button sends the player to a loading screen
-     */
+    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen */
     public boolean wait = false;
 
     /**

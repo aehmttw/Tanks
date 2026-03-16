@@ -1708,9 +1708,7 @@ public class Drawing
         return ((Game.game.window.absoluteHeight - statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
     }
 
-    /**
-     * Gets interface coordinate position of left/right edge of screen
-     */
+    /** Gets interface coordinate position of left/right edge of screen */
     public double getInterfaceEdgeX(boolean right)
     {
         if (right)
@@ -1721,9 +1719,7 @@ public class Drawing
                 Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
     }
 
-    /**
-     * Gets interface coordinate position of top/bottom edge of screen
-     */
+    /** Gets interface coordinate position of top/bottom edge of screen */
     public double getInterfaceEdgeY(boolean bottom)
     {
         if (bottom)

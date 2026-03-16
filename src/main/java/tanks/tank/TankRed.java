@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A stationary tank which shoots lasers.
- */
+/** A stationary tank which shoots lasers. */
 public class TankRed extends TankAIControlled
 {
     public TankRed(String name, double x, double y, double angle)

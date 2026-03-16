@@ -2,9 +2,7 @@ package tanks.rendering;
 
 import basewindow.BaseWindow;
 
-/**
- * Default shader for the ground tiles under obstacles
- */
+/** Default shader for the ground tiles under obstacles */
 public class ShaderGroundObstacle extends RendererShader implements IObstacleSizeShader
 {
     public Uniform1f obstacleSizeFrac;

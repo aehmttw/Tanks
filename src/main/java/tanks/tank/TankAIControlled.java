@@ -142,67 +142,45 @@ public class TankAIControlled extends Tank implements ITankField
         "Backwind - zig-zag away from the target \n " +
         "Keep distance - move to or away from the target until at a specific distance to it")
     public TargetEnemySightBehavior targetEnemySightBehavior = TargetEnemySightBehavior.approach;
-    /**
-     * If set to strafe upon seeing the target enemy, chance to change orbit direction
-     */
+    /** If set to strafe upon seeing the target enemy, chance to change orbit direction */
     @Property(category = movementOnSight, id = "strafe_direction_change_chance", minValue = 0.0, maxValue = 1.0, name = "Strafe frequency",
         desc = "If set to strafe on line of sight, chance the tank should change the direction it is strafing around the target")
     public double strafeDirectionChangeChance = 0.01;
-    /**
-     * If set to keep a distance, the tank will maintain that distance from its target upon sight
-     */
+    /** If set to keep a distance, the tank will maintain that distance from its target upon sight */
     @Property(category = movementOnSight, id = "target_sight_distance", minValue = 0.0, name = "Target distance",
         desc = "If set to keep distance on line of sight, how far away the tank will try to sit from its target \n \n 1 tile = 50 units")
     public double targetSightDistance = Game.tile_size * 6;
 
-    /**
-     * Tank to transform into
-     */
+    /** Tank to transform into */
     @Property(category = transformationOnSight, id = "sight_transform_tank", name = "Transformation tank",
         desc = "When set, the tank will transform into this tank upon entering line of sight with its target", nullable = true)
     public ITankField sightTransformTankField = null;
-    /**
-     * Don't set this. It's automatically set by resolving "sightTransformTankField" which may be a reference!
-     */
+    /** Don't set this. It's automatically set by resolving "sightTransformTankField" which may be a reference! */
     private TankAIControlled sightTransformTank = null;
-    /**
-     * Time for tank to revert after losing line of sight
-     */
+    /** Time for tank to revert after losing line of sight */
     @Property(category = transformationOnSight, id = "sight_transformation_revert_time", minValue = 0.0, name = "Sight revert time",
         desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
     public double sightTransformRevertTime = 500;
 
-    /**
-     * Tank to transform into
-     */
+    /** Tank to transform into */
     @Property(category = transformationOnHealth, id = "health_transform_tank", name = "Transformation tank",
         desc = "When set, the tank will transform into this tank when its health is at or below the health threshold", nullable = true)
     public ITankField healthTransformTankField = null;
-    /**
-     * Don't set this. It's automatically set by resolving "healthTransformTankField" which may be a reference!
-     */
+    /** Don't set this. It's automatically set by resolving "healthTransformTankField" which may be a reference! */
     private TankAIControlled healthTransformTank = null;
-    /**
-     * Health threshold to transform
-     */
+    /** Health threshold to transform */
     @Property(category = transformationOnHealth, id = "transform_health_threshold", minValue = 0.0, name = "Hitpoint threshold",
         desc = "Amount of health this tank must have equal to or less than to transform")
     public double transformHealthThreshold = 0;
-    /**
-     * If set, the tank will seek and transform into other tanks in line of sight
-     */
+    /** If set, the tank will seek and transform into other tanks in line of sight */
     @Property(category = transformationMimic, id = "transform_mimic", name = "Mimic", desc = "When enabled, the tank will mimic other nearby tanks it sees")
     public boolean transformMimic = false;
 
-    /**
-     * Time for tank to revert after losing line of sight
-     */
+    /** Time for tank to revert after losing line of sight */
     @Property(category = transformationMimic, id = "mimic_revert_time", minValue = 0.0, name = "Mimic revert time",
         desc = "After this much time has passed without the target in line of sight, the tank will revert back to its original form \n \n 1 time unit = 0.01 seconds")
     public double mimicRevertTime = 200;
-    /**
-     * Range tanks must be in to be mimicked
-     */
+    /** Range tanks must be in to be mimicked */
     @Property(category = transformationMimic, id = "mimic_range", minValue = 0.0, name = "Mimic range", desc = "Maximum distance between this tank and a tank it mimics")
     public double mimicRange = Game.tile_size * 12;
 
@@ -210,47 +188,33 @@ public class TankAIControlled extends Tank implements ITankField
     public boolean enableMineLaying = true;
 
     //public double mineFuseLength = 1000;
-    /**
-     * Minimum time to lay a mine, added to mineTimerRandom * this.random.nextDouble()
-     */
+    /** Minimum time to lay a mine, added to mineTimerRandom * this.random.nextDouble() */
     @Property(category = mines, id = "mine_timer_base", minValue = 0.0, name = "Base cooldown",
         desc = "Minimum time between laying mines \n \n 1 time unit = 0.01 seconds")
     public double mineTimerBase = 2000;
-    /**
-     * Random factor in calculating time to lay a mine, multiplied by this.random.nextDouble() and added to mineTimerBase
-     */
+    /** Random factor in calculating time to lay a mine, multiplied by this.random.nextDouble() and added to mineTimerBase */
     @Property(category = mines, id = "mine_timer_random", minValue = 0.0, name = "Random cooldown",
         desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between laying mines \n \n 1 time unit = 0.01 seconds")
     public double mineTimerRandom = 4000;
 
-    /**
-     * Minimum time in between shooting bullets, added to cooldownRandom * this.random.nextDouble()
-     */
+    /** Minimum time in between shooting bullets, added to cooldownRandom * this.random.nextDouble() */
     @Property(category = firingGeneral, id = "cooldown_base", minValue = 0.0, name = "Base cooldown",
         desc = "Minimum time between firing bullets \n \n Note: if the bullet's base cooldown is longer than the tank's base cooldown, the bullet's cooldown will be used \n \n " +
             "1 time unit = 0.01 seconds")
     public double cooldownBase = 60;
-    /**
-     * Random factor in calculating time between shooting bullets, multiplied by this.random.nextDouble() and added to cooldownBase
-     */
+    /** Random factor in calculating time between shooting bullets, multiplied by this.random.nextDouble() and added to cooldownBase */
     @Property(category = firingGeneral, id = "cooldown_random", minValue = 0.0, name = "Random cooldown",
         desc = "A random percentage between 0% and 100% of this time value is added to the base cooldown to get the time between firing bullets")
     public double cooldownRandom = 20;
-    /**
-     * After every successive shot, cooldown will go down by this fraction
-     */
+    /** After every successive shot, cooldown will go down by this fraction */
     @Property(category = firingGeneral, id = "cooldown_speedup", minValue = 0.0, name = "Cooldown speedup",
         desc = "After every shot fired towards the same target, the cooldown will be decreased by this fraction of its current value")
     public double cooldownSpeedup = 0;
-    /**
-     * Cooldown resets after no shots for this much time
-     */
+    /** Cooldown resets after no shots for this much time */
     @Property(category = firingGeneral, id = "cooldown_revert_time", minValue = 0.0, name = "Revert time",
         desc = "If the tank is unable to fire for this much time, the effects of cooldown speedup will reset \n \n 1 time unit = 0.01 seconds")
     public double cooldownRevertTime = 300;
-    /**
-     * If set, the tank will charge a shot and wait its cooldown on the spot as it prepares to shoot
-     */
+    /** If set, the tank will charge a shot and wait its cooldown on the spot as it prepares to shoot */
     @Property(category = firingGeneral, id = "charge_up", name = "Charge up",
         desc = "If enabled, the tank will only wait its cooldown while aiming at an enemy tank, playing a charge up animation")
     public boolean chargeUp = false;
@@ -268,9 +232,7 @@ public class TankAIControlled extends Tank implements ITankField
     public enum ShootAI
     {none, sprinkler, wander, straight, homing, alternate, reflect}
 
-    /**
-     * Type of shooting AI to use
-     */
+    /** Type of shooting AI to use */
     @Property(category = firingBehavior, id = "shoot_ai_type", name = "Aiming behavior", desc = "Behavior for aiming and firing at targets \n \n " +
         "None: do not shoot at all \n " +
         "Sprinkler: rotate randomly and continuously shoot \n " +
@@ -281,54 +243,38 @@ public class TankAIControlled extends Tank implements ITankField
         "Homing: like reflect, but recommended for homing bullets")
     public ShootAI shootAIType;
 
-    /**
-     * Larger values decrease accuracy but make the tank behavior more unpredictable
-     */
+    /** Larger values decrease accuracy but make the tank behavior more unpredictable */
     @Property(category = firingBehavior, id = "aim_accuracy_offset", minValue = 0.0, name = "Inaccuracy",
         desc = "Random angle added to bullet trajectory upon shooting to make things more unpredictable")
     public double aimAccuracyOffset = 0.2;
-    /**
-     * Threshold angle difference needed between angle and aimAngle to count as touching the target enemy
-     */
+    /** Threshold angle difference needed between angle and aimAngle to count as touching the target enemy */
     public double aimThreshold = 0.05;
 
-    /**
-     * Minimum time to randomly change idle direction, added to turretIdleTimerRandom * this.random.nextDouble()
-     */
+    /** Minimum time to randomly change idle direction, added to turretIdleTimerRandom * this.random.nextDouble() */
     @Property(category = firingBehavior, id = "turret_idle_timer_base", minValue = 0.0, name = "Turret base timer",
         desc = "Minimum time the turret will idly rotate in one direction before changing direction \n \n 1 time unit = 0.01 seconds")
     public double turretIdleTimerBase = 25;
-    /**
-     * Random factor in calculating time to randomly change idle direction, multiplied by this.random.nextDouble() and added to turretIdleTimerBase
-     */
+    /** Random factor in calculating time to randomly change idle direction, multiplied by this.random.nextDouble() and added to turretIdleTimerBase */
     @Property(category = firingBehavior, id = "turret_idle_timer_random", minValue = 0.0, name = "Turret random timer",
         desc = "A random percentage between 0% and 100% of this time value is added to the turret base rotation timer to get the time between changing idle rotation direction " +
             "\n \n 1 time unit = 0.01 seconds")
     public double turretIdleTimerRandom = 500;
 
-    /**
-     * Speed at which the turret moves while idle
-     */
+    /** Speed at which the turret moves while idle */
     @Property(category = firingBehavior, id = "turret_idle_speed", minValue = 0.0, name = "Idle turret speed",
         desc = "Speed the turret turns at when not actively aiming at a target")
     public double turretIdleSpeed = 0.005;
-    /**
-     * Speed at which the turret moves while aiming at a target enemy
-     */
+    /** Speed at which the turret moves while aiming at a target enemy */
     @Property(category = firingBehavior, id = "turret_aim_speed", minValue = 0.0, name = "Aim turret speed",
         desc = "Speed the turret turns at when actively aiming toward a target")
     public double turretAimSpeed = 0.03;
 
-    /**
-     * When set to true, will calculate target enemy velocity when shooting. Only effective when shootAIType is straight!
-     */
+    /** When set to true, will calculate target enemy velocity when shooting. Only effective when shootAIType is straight! */
     @Property(category = firingBehavior, id = "enable_predictive_firing", name = "Predictive",
         desc = "When enabled, will use the current velocity of the target to predict and fire towards its future position \n \n " +
             "Only works with straight or alternate aiming behavior!")
     public boolean enablePredictiveFiring = true;
-    /**
-     * When set to true, will shoot at bullets aiming towards the tank
-     */
+    /** When set to true, will shoot at bullets aiming towards the tank */
     @Property(category = firingBehavior, id = "enable_defensive_firing", name = "Deflect bullets",
         desc = "When enabled, will shoot at incoming bullet threats to deflect them \n \n Does not work with wander or sprinkler aiming behavior!")
     public boolean enableDefensiveFiring = false;
@@ -338,9 +284,7 @@ public class TankAIControlled extends Tank implements ITankField
             " but when it is trying to deflect an incoming bullet, it will shoot every 100-110 time units, since the random cooldown is reduced by the urgency factor of 0.8," +
             " from 50 to 10. \n \n 1 time unit = 0.01 seconds")
     public double defensiveFiringUrgency = 1;
-    /**
-     * Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets
-     */
+    /** Will look through destructible walls when set to true for bullet shooting, recommended for explosive bullets */
     @Property(category = firingBehavior, id = "aim_ignore_destructible", name = "Through walls",
         desc = "When enabled, will shoot at destructible blocks if the target is hiding behind them. This is useful for tanks with explosive bullets.")
     public boolean aimIgnoreDestructible = false;
@@ -350,20 +294,14 @@ public class TankAIControlled extends Tank implements ITankField
             " since the blocks can form a barricade.")
     public boolean ignoreRange = false;
 
-    /**
-     * Number of bullets in bullet fan
-     */
+    /** Number of bullets in bullet fan */
     @Property(category = firingPattern, id = "shot_round_count", minValue = 1.0, name = "Shots per round", desc = "Number of bullets to fire per round")
     public int shotRoundCount = 1;
-    /**
-     * Time to fire a full fan
-     */
+    /** Time to fire a full fan */
     @Property(category = firingPattern, id = "shot_round_time", minValue = 0.0, name = "Round time", desc = "Amount of time it takes to fire a full round of bullets \n \n " +
         "1 time unit = 0.01 seconds")
     public double shootRoundTime = 60;
-    /**
-     * Spread of a round
-     */
+    /** Spread of a round */
     @Property(category = firingPattern, id = "shot_round_spread", minValue = 0.0, name = "Round spread", desc = "Total angle of spread of a round")
     public double shotRoundSpread = 36;
 
@@ -392,53 +330,37 @@ public class TankAIControlled extends Tank implements ITankField
     @Property(category = spawning, id = "spawned_tanks", name = "Spawned tanks", desc = "Tanks which will be spawned by this tank as support",
         miscType = Property.MiscType.spawnedTanks)
     public ArrayList<SpawnedTankEntry> spawnedTankEntries = new ArrayList<>();
-    /**
-     * Tanks spawned on initial load
-     */
+    /** Tanks spawned on initial load */
     @Property(category = spawning, id = "spawned_initial_count", minValue = 0.0, name = "Initial count", desc = "Number of tanks spawned immediately when this tank is created")
     public int spawnedInitialCount = 4;
-    /**
-     * Max number of spawned tanks
-     */
+    /** Max number of spawned tanks */
     @Property(category = spawning, id = "spawned_max_count", minValue = 0.0, name = "Max count",
         desc = "Maximum number of spawned tanks from this tank that can be on the field at once")
     public int spawnedMaxCount = 6;
-    /**
-     * Chance for this tank to spawn another tank
-     */
+    /** Chance for this tank to spawn another tank */
     @Property(category = spawning, id = "spawn_chance", minValue = 0.0, maxValue = 1.0, name = "Spawn chance", desc = "Chance for this tank to spawn another tank")
     public double spawnChance = 0.003;
 
-    /**
-     * Whether the tank should commit suicide when there are no allied tanks on the field
-     */
+    /** Whether the tank should commit suicide when there are no allied tanks on the field */
     @Property(category = lastStand, id = "enable_suicide", name = "Last stand",
         desc = "When enabled and there are no allied tanks on the field, this tank will charge at the nearest enemy and destroy itself.")
     public boolean enableSuicide = false;
     @Property(category = lastStand, id = "suicide_explosion", name = "Destroy explosion",
         desc = "When destroying itself from its last stand ability, the tank will explode with this explosion.", nullable = true)
     public Explosion suicideExplosion = new Explosion();
-    /**
-     * Base factor in calculating suicide timer: base + random * Math.random()
-     */
+    /** Base factor in calculating suicide timer: base + random * Math.random() */
     @Property(category = lastStand, id = "suicide_timer_base", minValue = 0.0, name = "Base timer",
         desc = "Minimum time this tank will charge at its enemy before blowing up \n \n 1 time unit = 0.01 seconds")
     public double suicideTimerBase = 500;
-    /**
-     * Random factor in calculating suicide timer: base + random * Math.random()
-     */
+    /** Random factor in calculating suicide timer: base + random * Math.random() */
     @Property(category = lastStand, id = "suicide_timer_random", minValue = 0.0, name = "Random timer",
         desc = "A random fraction of this value is added to the base timer to get the time this tank will charge before exploding \n \n 1 time unit = 0.01 seconds")
     public double suicideTimerRandom = 250;
-    /**
-     * Suicidal mode maximum speed increase
-     */
+    /** Suicidal mode maximum speed increase */
     @Property(category = lastStand, id = "suicide_speed_boost", name = "Speed boost", desc = "Maximum increase in speed while charging as a last stand")
     public double suicideSpeedBoost = 3;
 
-    /**
-     * Range which rays will be used to detect a tank after being locked on to it. Larger values detect motion better but are less accurate.
-     */
+    /** Range which rays will be used to detect a tank after being locked on to it. Larger values detect motion better but are less accurate. */
     public double searchRange = 0.3;
 
     public String shotSound = null;
@@ -446,333 +368,205 @@ public class TankAIControlled extends Tank implements ITankField
     // The following are values which are internally used for carrying out behavior.
     // These values change constantly during the course of the game.
 
-    /**
-     * Used for tanks which do not use the straight AI, when detecting the target enemy with a ray. Tells the tank to aim towards the found target angle.
-     */
+    /** Used for tanks which do not use the straight AI, when detecting the target enemy with a ray. Tells the tank to aim towards the found target angle. */
     protected boolean aim = false;
 
-    /**
-     * If just stopped aiming
-     */
+    /** If just stopped aiming */
     protected boolean stoppedAiming = false;
 
-    /**
-     * True for when a tank just laid a mine
-     */
+    /** True for when a tank just laid a mine */
     protected boolean laidMine = false;
 
-    /**
-     * Alternates for tanks with the alternate AI. Tells tanks to shoot with reflection and then to shoot straight.
-     */
+    /** Alternates for tanks with the alternate AI. Tells tanks to shoot with reflection and then to shoot straight. */
     protected boolean straightShoot = false;
 
-    /**
-     * If a direct line of sight to the target enemy exists, set to true
-     */
+    /** If a direct line of sight to the target enemy exists, set to true */
     protected boolean seesTargetEnemy = false;
 
-    /**
-     * Stores distances to obstacles or tanks in 8 directions
-     */
+    /** Stores distances to obstacles or tanks in 8 directions */
     protected double[] distances = new double[8];
 
-    /**
-     * Stores distances to obstacles or tanks in 32 directions
-     */
+    /** Stores distances to obstacles or tanks in 32 directions */
     protected double[] fleeDistances = new double[32];
 
-    /**
-     * Stores directions a tank may flee from a bullet, relative to that bullet's direction
-     */
+    /** Stores directions a tank may flee from a bullet, relative to that bullet's direction */
     protected double[] fleeDirections = new double[fleeDistances.length];
 
-    /**
-     * Cooldown before the tank will turn again if it's running into a wall
-     */
+    /** Cooldown before the tank will turn again if it's running into a wall */
     protected double gentleTurnCooldown = 0;
 
-    /**
-     * Time in which the tank will follow its initial flee path from a mine
-     */
+    /** Time in which the tank will follow its initial flee path from a mine */
     protected double mineFleeTimer = 0;
 
-    /**
-     * Used only in non-straight AI tanks. When detecting the target enemy, set to the angle necessary to hit them. This angle is added to random offsets to search for the target enemy moving.
-     */
+    /** Used only in non-straight AI tanks. When detecting the target enemy, set to the angle necessary to hit them. This angle is added to random offsets to search for the target enemy moving. */
     protected double lockedAngle = 0;
 
-    /**
-     * Used only in non-straight AI tanks. Angle at which the tank is searching with its aim ray for the target enemy
-     */
+    /** Used only in non-straight AI tanks. Angle at which the tank is searching with its aim ray for the target enemy */
     protected double searchAngle = 0;
 
-    /**
-     * Angle at which the tank aims after having found its target (if non-straight AI, found with a ray, otherwise just the angle to the tank)
-     */
+    /** Angle at which the tank aims after having found its target (if non-straight AI, found with a ray, otherwise just the angle to the tank) */
     protected double aimAngle = 0;
 
-    /**
-     * Distance to target; only used for arc bullet shooting tanks
-     */
+    /** Distance to target; only used for arc bullet shooting tanks */
     protected double distance = 0;
 
-    /**
-     * Direction in which the tank moves when idle
-     */
+    /** Direction in which the tank moves when idle */
     protected double direction;
 
-    /**
-     * When enabled, the current motion direction will be kept until the tank decides to change direction
-     */
+    /** When enabled, the current motion direction will be kept until the tank decides to change direction */
     protected boolean overrideDirection = false;
 
-    /**
-     * Direction in which the tank moves to avoid a bullet that will hit it
-     */
+    /** Direction in which the tank moves to avoid a bullet that will hit it */
     protected double avoidDirection = 0;
 
-    /**
-     * Time until the tank will change its idle turret's direction
-     */
+    /** Time until the tank will change its idle turret's direction */
     protected double idleTimer;
 
-    /**
-     * Time between shooting bullets
-     */
+    /** Time between shooting bullets */
     protected double cooldown = 250;
 
-    /**
-     * Inaccuracy of next shot
-     */
+    /** Inaccuracy of next shot */
     protected double shotOffset = 0;
 
-    /**
-     * Time until the next mine will be laid
-     */
+    /** Time until the next mine will be laid */
     protected double mineTimer = -1;
 
-    /**
-     * Time which the tank will aim at its lockedAngle until giving up and continuing to search
-     */
+    /** Time which the tank will aim at its lockedAngle until giving up and continuing to search */
     protected double aimTimer = 0;
 
-    /**
-     * Time the tank will continue to avoid a bullet
-     */
+    /** Time the tank will continue to avoid a bullet */
     protected double avoidTimer = 0;
 
-    /**
-     * Time until reverting transformation
-     */
+    /** Time until reverting transformation */
     protected double transformRevertTimer = 0;
 
-    /**
-     * Set if the tank will eventually turn back into the original tank it was
-     */
+    /** Set if the tank will eventually turn back into the original tank it was */
     protected boolean willRevertTransformation = true;
 
-    /**
-     * Nearest bullet aiming at this tank, if avoid timer is > than 0
-     */
+    /** Nearest bullet aiming at this tank, if avoid timer is > than 0 */
     protected Bullet nearestBullet;
 
-    /**
-     * Time until the nearest threat bullet will strike
-     */
+    /** Time until the nearest threat bullet will strike */
     protected double nearestBulletDist;
 
-    /**
-     * Nearest deflectable bullet aiming at this tank, if avoid timer is > than 0
-     */
+    /** Nearest deflectable bullet aiming at this tank, if avoid timer is > than 0 */
     protected Bullet nearestBulletDeflect;
 
-    /**
-     * Time until the nearest deflectable threat bullet will strike
-     */
+    /** Time until the nearest deflectable threat bullet will strike */
     protected double nearestBulletDeflectDist;
 
-    /**
-     * Number of bullet threats that will hit this tank
-     */
+    /** Number of bullet threats that will hit this tank */
     protected int bulletThreatCount;
 
-    /**
-     * Disable offset to shoot a bullet
-     */
+    /** Disable offset to shoot a bullet */
     protected boolean disableOffset = false;
 
-    /**
-     * Direction added to the bullet's direction to flee a bullet, possibly mirrored
-     */
+    /** Direction added to the bullet's direction to flee a bullet, possibly mirrored */
     protected double fleeDirection = Math.PI / 4;
 
-    /**
-     * Phase the tank is searching in, not used for straight AI
-     */
+    /** Phase the tank is searching in, not used for straight AI */
     protected RotationPhase searchPhase = RotationPhase.clockwise;
 
-    /**
-     * Phase the tank turret is idling in, not used for straight AI
-     */
+    /** Phase the tank turret is idling in, not used for straight AI */
     protected RotationPhase idlePhase = RotationPhase.clockwise;
 
-    /**
-     * Time until the tank will continue motion
-     */
+    /** Time until the tank will continue motion */
     protected double motionPauseTimer = 0;
 
-    /**
-     * Normally the nearest tank not on this tank's team. This is the tank that this tank will fight.
-     */
+    /** Normally the nearest tank not on this tank's team. This is the tank that this tank will fight. */
     protected Movable targetEnemy;
 
-    /**
-     * Tank that this tank is trying to mimic
-     */
+    /** Tank that this tank is trying to mimic */
     protected Movable mimicTarget = null;
 
-    /**
-     * True if can find an enemy
-     */
+    /** True if can find an enemy */
     protected boolean hasTarget = true;
 
-    /**
-     * If true, charges towards nearest enemy and explodes
-     */
+    /** If true, charges towards nearest enemy and explodes */
     public boolean suicidal = false;
 
-    /**
-     * Direction to strafe around target enemy, if set to strafe mode on sight
-     */
+    /** Direction to strafe around target enemy, if set to strafe mode on sight */
     protected double strafeDirection = Math.PI / 2;
 
-    /**
-     * True while the tank is actively seeking out an enemy
-     */
+    /** True while the tank is actively seeking out an enemy */
     protected boolean currentlySeeking = false;
 
-    /**
-     * Set to a value to temporarily pause the tank from seeking
-     */
+    /** Set to a value to temporarily pause the tank from seeking */
     protected double seekPause = 0;
 
-    /**
-     * Upon reaching zero, the current target path is abandoned
-     */
+    /** Upon reaching zero, the current target path is abandoned */
     protected double seekTimer = 0;
 
-    /**
-     * Describes the path the tank is currently following
-     */
+    /** Describes the path the tank is currently following */
     protected ArrayList<Tile> path;
 
     /* Accelerations */
     protected double aX;
     protected double aY;
 
-    /**
-     * Tanks that this tank has spawned
-     */
+    /** Tanks that this tank has spawned */
     protected ArrayList<Tank> spawnedTanks = new ArrayList<>();
 
-    /**
-     * Time until the tank will commit suicide
-     */
+    /** Time until the tank will commit suicide */
     public double timeUntilDeath;
 
-    /**
-     * The random number generator the tank uses to make decisions
-     */
+    /** The random number generator the tank uses to make decisions */
     protected Random random;
 
-    /**
-     * Progress of a shooting fan for tanks firing multiple bullets per round
-     */
+    /** Progress of a shooting fan for tanks firing multiple bullets per round */
     protected double shootTimer = 0;
 
-    /**
-     * Number of shots fired in the current round
-     */
+    /** Number of shots fired in the current round */
     protected int shots = 0;
 
-    /**
-     * Whether shooting in a fan
-     */
+    /** Whether shooting in a fan */
     protected boolean shootingInFan = false;
 
-    /**
-     * 1 or -1, indicating direction of fan being fired
-     */
+    /** 1 or -1, indicating direction of fan being fired */
     protected int fanDirection;
 
-    /**
-     * True if the tank charged up this frame
-     */
+    /** True if the tank charged up this frame */
     protected boolean justCharged = false;
 
-    /**
-     * Used to calculate cooldown when it goes down for each shot (when cooldownSpeedup is not zero)
-     */
+    /** Used to calculate cooldown when it goes down for each shot (when cooldownSpeedup is not zero) */
     protected int cooldownStacks = 0;
 
-    /**
-     * Time passed since we last had a target ready to shoot at, used to reset cooldown stacks
-     */
+    /** Time passed since we last had a target ready to shoot at, used to reset cooldown stacks */
     protected double cooldownIdleTime = 0;
 
-    /**
-     * Fan round inaccuracy
-     */
+    /** Fan round inaccuracy */
     protected double fanOffset;
 
-    /**
-     * Time until mimicking ends
-     */
+    /** Time until mimicking ends */
     protected double mimicRevertCounter = this.mimicRevertTime;
 
-    /**
-     * Mimic laser effect
-     */
+    /** Mimic laser effect */
     protected Laser laser;
 
-    /**
-     * Tank this tank is transformed into
-     */
+    /** Tank this tank is transformed into */
     protected TankAIControlled transformTank = null;
 
-    /**
-     * True if able to mimic other tanks
-     */
+    /** True if able to mimic other tanks */
     protected boolean canCurrentlyMimic = true;
 
     protected Color baseColor = new Color();
     protected double baseMaxSpeed;
 
-    /**
-     * Set if tank transformed in the last frame
-     */
+    /** Set if tank transformed in the last frame */
     public boolean justTransformed = false;
 
     protected double lastCooldown = this.cooldown;
 
-    /**
-     * Whether to use rays for AI calculation this frame. Don't need to every frame to save on performance.
-     */
+    /** Whether to use rays for AI calculation this frame. Don't need to every frame to save on performance. */
     protected boolean useRaysThisFrame = false;
 
-    /**
-     * How often to shoot rays for AI calculations.
-     */
+    /** How often to shoot rays for AI calculations. */
     protected double rayFrequency = 5;
 
-    /**
-     * The time since rays were used. Initially randomized to spread things out.
-     */
+    /** The time since rays were used. Initially randomized to spread things out. */
     protected double timeSinceRaysUsed = Math.random() * rayFrequency;
 
-    /**
-     * Last stored distance from the tank to a wall in its direction of motion
-     */
+    /** Last stored distance from the tank to a wall in its direction of motion */
     protected double lastDistanceToWall = 1000;
 
     // Predicted position target enemy will collide into a wall
@@ -931,9 +725,7 @@ public class TankAIControlled extends Tank implements ITankField
         super.update();
     }
 
-    /**
-     * Prepare to fire a bullet
-     */
+    /** Prepare to fire a bullet */
     public void shoot(boolean deflecting)
     {
         if (this.suicidal)
@@ -1129,9 +921,7 @@ public class TankAIControlled extends Tank implements ITankField
         return true;
     }
 
-    /**
-     * Actually fire a bullet
-     */
+    /** Actually fire a bullet */
     public void fireBullet(Bullet b, double speed, double offset)
     {
         if (this.shotSound != null)
@@ -3220,9 +3010,7 @@ public class TankAIControlled extends Tank implements ITankField
         this.tryPossess();
     }
 
-    /**
-     * Called after updating but before applying motion. Intended to be overridden.
-     */
+    /** Called after updating but before applying motion. Intended to be overridden. */
     public void preMotionUpdate()
     {
 
@@ -3813,9 +3601,7 @@ public class TankAIControlled extends Tank implements ITankField
         return this;
     }
 
-    /**
-     * Populates a given (empty) hashset with the names of all tanks included as links by this tank or other tanks it uses (spawns, transforms into)
-     */
+    /** Populates a given (empty) hashset with the names of all tanks included as links by this tank or other tanks it uses (spawns, transforms into) */
     //TODO: There's probably a much better way to do this involving tankson traversal, but that is kind of its own can of worms...
     public void getAllLinkedTankNames(HashSet<String> explored)
     {
@@ -3861,9 +3647,7 @@ public class TankAIControlled extends Tank implements ITankField
         }
     }
 
-    /**
-     * Removes linked tanks that do not link to any existing tank
-     */
+    /** Removes linked tanks that do not link to any existing tank */
     //TODO: There's probably a much better way to do this involving tankson traversal, but that is kind of its own can of worms...
     public void removeBrokenLinks()
     {

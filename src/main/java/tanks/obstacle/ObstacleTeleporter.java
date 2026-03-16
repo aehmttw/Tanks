@@ -9,9 +9,7 @@ import tanks.tankson.MetadataProperty;
 
 import java.util.ArrayList;
 
-/**
- * A teleporter which randomly transports the player to another teleporter in the level
- */
+/** A teleporter which randomly transports the player to another teleporter in the level */
 public class ObstacleTeleporter extends Obstacle
 {
     public double cooldown;

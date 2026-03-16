@@ -69,9 +69,7 @@ public abstract class Tank extends Movable implements ISolidObject
     public HashSet<ClippedTile> clippedTiles = new HashSet<>();
     public HashSet<ClippedTile> stillClippedTiles = new HashSet<>();
 
-    /**
-     * If spawned by another tank, set to the tank that spawned this tank
-     */
+    /** If spawned by another tank, set to the tank that spawned this tank */
     protected Tank parent = null;
 
     @TankBuildProperty
@@ -129,21 +127,15 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = appearanceGeneral, id = "size", name = "Tank size", minValue = 0.0, desc = "1 tile = 50 units")
     public double size;
 
-    /**
-     * When set to true, the tank will vanish when the level begins
-     */
+    /** When set to true, the tank will vanish when the level begins */
     @TankBuildProperty
     @Property(category = appearanceGeneral, id = "invisible", name = "Invisible")
     public boolean invisible = false;
 
-    /**
-     * Changes when the tank's visibility state changes, indicating whether the tank is visible on screen
-     */
+    /** Changes when the tank's visibility state changes, indicating whether the tank is visible on screen */
     public boolean currentlyVisible = true;
 
-    /**
-     * Time this tank has been invisible for
-     */
+    /** Time this tank has been invisible for */
     public double timeInvisible = 0;
 
     @TankBuildProperty
@@ -167,9 +159,7 @@ public abstract class Tank extends Movable implements ISolidObject
         desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
     public double luminance = 0.5;
 
-    /**
-     * Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled.
-     */
+    /** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
     @Property(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = Property.MiscType.colorRGB)
     public boolean enableSecondaryColor = false;
     @TankBuildProperty
@@ -184,9 +174,7 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = appearanceTurretBarrel, id = "multiple_turrets", name = "Multiple turrets", desc = "If enabled, the turret will reflect the bullet multishot count")
     public boolean multipleTurrets = true;
 
-    /**
-     * Important: tertiary color values will not be used unless this option is set to true!
-     */
+    /** Important: tertiary color values will not be used unless this option is set to true! */
     @Property(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = Property.MiscType.colorRGB)
     public boolean enableTertiaryColor = false;
     @TankBuildProperty
@@ -200,13 +188,9 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = appearanceTracks, id = "track_spacing", name = "Track spacing", minValue = 0.0)
     public double trackSpacing = 0.4;
 
-    /**
-     * Age in frames
-     */
+    /** Age in frames */
     protected double age = 0;
-    /**
-     * A tank will spawn other tanks on the second frame it updates if it was spawned by another tank, to prevent infinite loop for recursively spawning tanks
-     */
+    /** A tank will spawn other tanks on the second frame it updates if it was spawned by another tank, to prevent infinite loop for recursively spawning tanks */
     protected boolean readyForInitialSpawn = true;
 
     public double drawAge = 0;
@@ -235,16 +219,12 @@ public abstract class Tank extends Movable implements ISolidObject
 
     public boolean droppedFromCrate = false;
 
-    /**
-     * Whether this tank needs to be destroyed before the level ends.
-     */
+    /** Whether this tank needs to be destroyed before the level ends. */
     @TankBuildProperty
     @Property(category = general, id = "mandatory_kill", name = "Must be destroyed", desc = "Whether the tank needs to be destroyed to clear the level")
     public boolean mandatoryKill = true;
 
-    /**
-     * Used for custom tanks, see /music/tank for built-in tanks
-     */
+    /** Used for custom tanks, see /music/tank for built-in tanks */
     @Property(category = general, id = "music", name = "Music tracks", miscType = Property.MiscType.music)
     public HashSet<String> musicTracks = new HashSet<>();
 

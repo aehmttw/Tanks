@@ -3,9 +3,7 @@ package tanks.rendering;
 import basewindow.BaseWindow;
 import tanks.obstacle.ObstacleBeatBlock;
 
-/**
- * Shader for the ground tiles under beat blocks
- */
+/** Shader for the ground tiles under beat blocks */
 public class ShaderGroundObstacleBeatBlock extends RendererShader implements IObstacleSizeShader, IUpdatedShader
 {
     public Uniform1f obstacleSizeFrac;

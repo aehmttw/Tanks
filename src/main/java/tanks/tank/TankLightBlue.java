@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A tank which blows strong air currents
- */
+/** A tank which blows strong air currents */
 public class TankLightBlue extends TankAIControlled
 {
     public TankLightBlue(String name, double x, double y, double angle)

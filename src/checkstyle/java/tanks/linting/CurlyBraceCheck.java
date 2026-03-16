@@ -16,21 +16,15 @@ import com.puppycrawl.tools.checkstyle.api.*;
  */
 public class CurlyBraceCheck extends AbstractCheck
 {
-    /**
-     * Message emitted when the left curly brace is not alone on its line in a multi-line block.
-     */
+    /** Message emitted when the left curly brace is not alone on its line in a multi-line block. */
     static final String MSG_LEFT_CURLY =
         "Left curly brace must be alone on its line when block spans multiple lines";
 
-    /**
-     * Message emitted when the right curly brace is not alone on its line in a multi-line block.
-     */
+    /** Message emitted when the right curly brace is not alone on its line in a multi-line block. */
     static final String MSG_RIGHT_CURLY =
         "Right curly brace must be alone on its line when block spans multiple lines";
 
-    /**
-     * Message emitted when 'catch' or 'finally' follows '}' on the same line.
-     */
+    /** Message emitted when 'catch' or 'finally' follows '}' on the same line. */
     static final String MSG_CATCH_SAME_LINE =
         "''catch''/''finally'' must be on a new line after the closing brace";
 

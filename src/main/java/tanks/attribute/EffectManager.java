@@ -22,9 +22,7 @@ public class EffectManager
     public HashSet<String> attributeImmunities = new HashSet<>();
     public ArrayList<AttributeModifier> attributes = new ArrayList<>();
 
-    /**
-     * Linear search function to find status effect property by status effect reference
-     */
+    /** Linear search function to find status effect property by status effect reference */
     private StatusEffectProperty findStatusEffectProperty(StatusEffect statusEffect)
     {
         for (int i = 0; i < statusEffectProperties.size(); i++)

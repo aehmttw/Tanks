@@ -67,9 +67,7 @@ public class Selector implements IDrawable, ITrigger
 
     //public String sound = "click.ogg";
 
-    /**
-     * If set to true and is part of an online service, pressing the button sends the player to a loading screen
-     */
+    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen */
     public boolean wait = false;
 
     /**

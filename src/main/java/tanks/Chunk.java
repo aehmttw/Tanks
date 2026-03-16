@@ -27,15 +27,11 @@ public class Chunk
     public final HashSet<Obstacle> obstacles = new HashSet<>();
     public final HashSet<Movable> movables = new HashSet<>();
 
-    /**
-     * Stores faces of Movables, which are updated every frame
-     */
+    /** Stores faces of Movables, which are updated every frame */
     public final FaceList faces = new FaceList(this);
     public final Tile[][] tileGrid = new Tile[chunkSize][chunkSize];
 
-    /**
-     * The variable that caches the previous call to {@link Chunk#getChunk}
-     */
+    /** The variable that caches the previous call to {@link Chunk#getChunk} */
     private static Chunk prevChunk;
 
     public Chunk(Level l, Random r, int x, int y)
@@ -128,9 +124,7 @@ public class Chunk
         faces.getSide(dir.opposite().index()).add(f);
     }
 
-    /**
-     * Helper to convert chunk coordinates to game coordinates and clamp it to the level size.
-     */
+    /** Helper to convert chunk coordinates to game coordinates and clamp it to the level size. */
     private static double convert(int chunk, Level l, boolean isX)
     {
         return Math.max(isX ? l.startX : l.startY, Math.min(isX ? l.sizeX : l.sizeY, chunk * Chunk.chunkSize)) * Game.tile_size;
@@ -316,17 +310,13 @@ public class Chunk
         return func.apply(t);
     }
 
-    /**
-     * Expects all pixel coordinates.
-     */
+    /** Expects all pixel coordinates. */
     public static ArrayList<Chunk> getChunksInRadius(double x1, double y1, double radius)
     {
         return getChunksInRadius((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), radius / Game.tile_size);
     }
 
-    /**
-     * Expects all tile coordinates.
-     */
+    /** Expects all tile coordinates. */
     public static ArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
     {
         chunkCache.clear();
@@ -365,9 +355,7 @@ public class Chunk
         return (int) (pix / Game.tile_size) % chunkSize;
     }
 
-    /**
-     * Automatically converts to chunk coordinates.
-     */
+    /** Automatically converts to chunk coordinates. */
     public Tile getChunkTile(int posX, int posY)
     {
         if (posX < 0 || posY < 0)
@@ -376,9 +364,7 @@ public class Chunk
         return tileGrid[posX % chunkSize][posY % chunkSize];
     }
 
-    /**
-     * Automatically converts to tile coordinates and then chunk coordinates.
-     */
+    /** Automatically converts to tile coordinates and then chunk coordinates. */
     public Tile getChunkTile(double posX, double posY)
     {
         if (posX < 0 || posX >= Game.currentSizeX * Game.tile_size || posY < 0 || posY >= Game.currentSizeY * Game.tile_size)
@@ -394,9 +380,7 @@ public class Chunk
             t.add(o);
     }
 
-    /**
-     * Expects tile coordinates.
-     */
+    /** Expects tile coordinates. */
     public static Tile getTile(int tileX, int tileY)
     {
         Chunk c = getChunk(tileX, tileY);
@@ -405,9 +389,7 @@ public class Chunk
         return c.getChunkTile(tileX, tileY);
     }
 
-    /**
-     * Expects pixel coordinates.
-     */
+    /** Expects pixel coordinates. */
     public static Tile getTile(double posX, double posY)
     {
         Chunk c = getChunk(posX, posY);
@@ -509,25 +491,19 @@ public class Chunk
                 addChunk(x + startX, y + startY, new Chunk(l, r, x, y));
     }
 
-    /**
-     * Expects pixel coordinates.
-     */
+    /** Expects pixel coordinates. */
     public static Chunk getChunk(double posX, double posY)
     {
         return getChunk((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
     }
 
-    /**
-     * Expects tile coordinates.
-     */
+    /** Expects tile coordinates. */
     public static Chunk getChunk(int tileX, int tileY)
     {
         return getChunkCoords(tileX / Chunk.chunkSize, tileY / Chunk.chunkSize);
     }
 
-    /**
-     * Expects chunk coordinates.
-     */
+    /** Expects chunk coordinates. */
     public static Chunk getChunkCoords(int chunkX, int chunkY)
     {
         if (prevChunk != null && prevChunk.chunkX == chunkX && prevChunk.chunkY == chunkY)
@@ -559,21 +535,13 @@ public class Chunk
     {
         public final Chunk chunk;
 
-        /**
-         * dynamic x, static y
-         */
+        /** dynamic x, static y */
         public final ArrayList<Face> topFaces = new ArrayList<>();
-        /**
-         * dynamic x, static y
-         */
+        /** dynamic x, static y */
         public final ArrayList<Face> bottomFaces = new ArrayList<>();
-        /**
-         * static x, dynamic y
-         */
+        /** static x, dynamic y */
         public final ArrayList<Face> leftFaces = new ArrayList<>();
-        /**
-         * static x, dynamic y
-         */
+        /** static x, dynamic y */
         public final ArrayList<Face> rightFaces = new ArrayList<>();
 
         public FaceList(Chunk chunk)
@@ -667,9 +635,7 @@ public class Chunk
         public double colB;
         public double depth;
 
-        /**
-         * For use in level loading only
-         */
+        /** For use in level loading only */
         public boolean solidTank;
 
         public double height()

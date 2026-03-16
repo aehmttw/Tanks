@@ -21,9 +21,7 @@ import java.util.*;
  */
 public class ImportWildcardCheck extends AbstractCheck
 {
-    /**
-     * Maximum specific imports allowed per package before a wildcard is required.
-     */
+    /** Maximum specific imports allowed per package before a wildcard is required. */
     private int maxImportsBeforeWildcard = 3;
 
     // --- per-file state ---

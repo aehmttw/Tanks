@@ -49,9 +49,7 @@ public class SoundPlayer extends BaseSoundPlayer
     public long musicStart = 0;
     protected ArrayList<String> removeTracks = new ArrayList<>();
 
-    /**
-     * Warning! This will give an exception if there are no audio devices plugged into the computer!
-     */
+    /** Warning! This will give an exception if there are no audio devices plugged into the computer! */
     public SoundPlayer(LWJGLWindow window)
     {
         String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);

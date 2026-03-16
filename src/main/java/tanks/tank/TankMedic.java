@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A tank which adds extra health to its allies and becomes explosive as a last stand
- */
+/** A tank which adds extra health to its allies and becomes explosive as a last stand */
 public class TankMedic extends TankAIControlled
 {
     public TankMedic(String name, double x, double y, double angle)

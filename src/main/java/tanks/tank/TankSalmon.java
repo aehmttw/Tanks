@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A tank which fires homing rockets
- */
+/** A tank which fires homing rockets */
 public class TankSalmon extends TankAIControlled
 {
     public TankSalmon(String name, double x, double y, double angle)

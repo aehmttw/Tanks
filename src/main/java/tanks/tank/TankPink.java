@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A tank which spawns mini tanks and shoots 2-bounce rockets
- */
+/** A tank which spawns mini tanks and shoots 2-bounce rockets */
 public class TankPink extends TankAIControlled
 {
     public TankPink(String name, double x, double y, double angle)

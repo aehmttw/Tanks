@@ -126,18 +126,14 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     @Property(id = "speed", name = "Speed", category = BulletPropertyCategory.travel)
     public double speed = 25.0 / 8;
 
-    /**
-     * If bullet should return to original speed if blown to a slower speed by something like wind
-     */
+    /** If bullet should return to original speed if blown to a slower speed by something like wind */
     public boolean revertSpeed = true;
 
     @Property(id = "lifespan", minValue = 0.0, name = "Lifespan", category = BulletPropertyCategory.travel,
         desc = "After this long, the bullet will destroy itself automatically. Set to 0 for unlimited lifespan. \n \n 1 time unit = 0.01 seconds")
     public double lifespan = 0;
 
-    /**
-     * If true, this selected bullet will show a ray when the aim keybind is pressed
-     */
+    /** If true, this selected bullet will show a ray when the aim keybind is pressed */
     public boolean showDefaultTrace = true;
 
     @Property(id = "range", minValue = 0.0, name = "Range", category = BulletPropertyCategory.travel,
@@ -189,9 +185,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     public Tank homingPrevTarget = null;
     public double homingTargetTime = 0;
 
-    /**
-     * If true, homing won't make sounds or particles
-     */
+    /** If true, homing won't make sounds or particles */
     public boolean homingSilent = false;
 
     public ItemBullet.ItemStackBullet item;
@@ -227,9 +221,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public boolean affectsMaxLiveBullets;
 
-    /**
-     * Movables collided with this bullet to prevent double collisions
-     */
+    /** Movables collided with this bullet to prevent double collisions */
     public ArrayList<Movable> inside = new ArrayList<>();
     public ArrayList<Movable> insideOld = new ArrayList<>();
 
@@ -384,9 +376,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         return null;
     }
 
-    /**
-     * Triggered when colliding with an obstacle or map edge and having no bounces left
-     */
+    /** Triggered when colliding with an obstacle or map edge and having no bounces left */
     public void collidedWithNothing()
     {
 
@@ -605,9 +595,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         this.vY = 0;
     }
 
-    /**
-     * When 2 bullets that knock bullets collide, an elastic collision takes place, with mass scaling by bullet knockback.
-     */
+    /** When 2 bullets that knock bullets collide, an elastic collision takes place, with mass scaling by bullet knockback. */
     public void collideBounce(Bullet b)
     {
         double toAngle = this.getAngleInDirection(b.posX, b.posY);

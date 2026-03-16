@@ -3,9 +3,7 @@ package tanks.item;
 import tanks.Player;
 import tanks.tank.Tank;
 
-/**
- * Used as a dummy item for when blocks explode because tanks run into them
- */
+/** Used as a dummy item for when blocks explode because tanks run into them */
 public class ItemDummyBlockExplosion extends Item
 {
     public static ItemDummyBlockExplosion dummy_explosion = new ItemDummyBlockExplosion();

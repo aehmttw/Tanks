@@ -208,9 +208,7 @@ public abstract class Screen implements IBatchRenderableObject
         }
     }
 
-    /**
-     * Setup all light info in Panel.lights to be sent to the shader
-     */
+    /** Setup all light info in Panel.lights to be sent to the shader */
     public void setupLights()
     {
 

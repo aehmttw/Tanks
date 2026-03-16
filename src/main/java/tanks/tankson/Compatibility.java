@@ -13,9 +13,7 @@ import java.util.Map;
 
 public class Compatibility
 {
-    /**
-     * Add a static initializer to initialize compatibility table if necessary
-     */
+    /** Add a static initializer to initialize compatibility table if necessary */
     public static final HashMap<String, BiFunction<Object, Object, Object>> compatibility_table = new HashMap<>();
 
     public static final HashMap<Class<?>, BiFunction<Field, Object, Object>> general_table = new HashMap<>();

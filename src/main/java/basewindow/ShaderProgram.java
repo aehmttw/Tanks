@@ -272,9 +272,7 @@ public abstract class ShaderProgram
         boolean getTranspose();
     }
 
-    /**
-     * You must be using this shader to do this!
-     */
+    /** You must be using this shader to do this! */
     public void copyUniformsFrom(ShaderProgram s, Class<? extends ShaderProgram> c)
     {
         try

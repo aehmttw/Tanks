@@ -448,8 +448,7 @@ public class Level
             if (s.charAt(i) == '{' || s.charAt(i) == '[')
             {
                 if (depth == 0)
-                    if (i - 2 >= 0 && s.charAt(i - 1) == '/' && s.charAt(i - 2) == '*') { }
-                    else
+                    if (i - 2 < 0 || s.charAt(i - 1) != '/' || s.charAt(i - 2) != '*')
                         last = i;
 
                 depth++;

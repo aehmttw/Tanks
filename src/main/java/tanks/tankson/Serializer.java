@@ -166,7 +166,8 @@ public final class Serializer
         return shebang + TanksON.toString(toMap(o));
     }
 
-    public static Object fromTanksON(String s){
+    public static Object fromTanksON(String s)
+    {
         Pattern pattern = Pattern.compile("^/\\*TANKSON v(\\d+\\.\\d+)\\*/");
         Matcher m = pattern.matcher(s);
         float version = 1.0f;

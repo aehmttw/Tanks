@@ -23,6 +23,17 @@ public final class Serializer
 
     public static HashMap<String, Tank> userTanks = new HashMap<>();
 
+    public static float getVersion(String s)
+    {
+        Pattern pattern = Pattern.compile("^/\\*TANKSON v(\\d+\\.\\d+)\\*/");
+        Matcher m = pattern.matcher(s);
+        float version = 1.0f;
+        if (m.find())
+            version = Float.parseFloat(m.group(1));
+
+        return version;
+    }
+
     public static Class<?> getCorrectClass(Object o)
     {
         if (o instanceof TankAIControlled)
@@ -168,13 +179,8 @@ public final class Serializer
 
     public static Object fromTanksON(String s)
     {
-        Pattern pattern = Pattern.compile("^/\\*TANKSON v(\\d+\\.\\d+)\\*/");
-        Matcher m = pattern.matcher(s);
-        float version = 1.0f;
-        if (m.find())
-            version = Float.parseFloat(m.group(1));
 
-        if (version <= TANKSON_VERSION)
+        if (getVersion(s) <= TANKSON_VERSION)
         {
             Object o = TanksON.parseObject(s);
             if (o instanceof Map)
@@ -184,7 +190,7 @@ public final class Serializer
         }
         else
         {
-            throw new RuntimeException("Unknown TanksON Version " + version + ". You may be running an older version of Tanks with a newer game file.");
+            throw new RuntimeException("Unknown TanksON Version " + getVersion(s) + ". You may be running an older version of Tanks with a newer game file.");
         }
     }
 

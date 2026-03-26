@@ -11,9 +11,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class Serializer
 {
+
+    public static float TANKSON_VERSION = 1.1f;
 
     public static HashMap<Class<?>, Object> defaults = new HashMap<>();
 
@@ -158,16 +162,29 @@ public final class Serializer
 
     public static String toTanksON(Object o)
     {
-        return TanksON.toString(toMap(o));
+        String shebang = "/*TANKSON v" + TANKSON_VERSION + "*/";
+        return shebang + TanksON.toString(toMap(o));
     }
 
-    public static Object fromTanksON(String s)
-    {
-        Object o = TanksON.parseObject(s);
-        if (o instanceof Map)
-            return parseObject((Map<String, Object>) o);
+    public static Object fromTanksON(String s){
+        Pattern pattern = Pattern.compile("^/\\*TANKSON v(\\d+\\.\\d+)\\*/");
+        Matcher m = pattern.matcher(s);
+        float version = 1.0f;
+        if (m.find())
+            version = Float.parseFloat(m.group(1));
+
+        if (version <= TANKSON_VERSION)
+        {
+            Object o = TanksON.parseObject(s);
+            if (o instanceof Map)
+                return parseObject((Map<String, Object>) o);
+            else
+                throw new RuntimeException("Unexpected type of object: " + o.toString());
+        }
         else
-            throw new RuntimeException("Unexpected type of object: " + o.toString());
+        {
+            throw new RuntimeException("Unknown TanksON Version " + version + ". You may be running an older version of Tanks with a newer game file.");
+        }
     }
 
     public static boolean equivalent(Object a, Object b)

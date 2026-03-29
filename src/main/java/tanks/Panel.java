@@ -3,11 +3,9 @@ package tanks;
 import basewindow.InputCodes;
 import tanks.extension.Extension;
 import tanks.gui.*;
-import tanks.gui.ScreenElement.CenterMessage;
-import tanks.gui.ScreenElement.Notification;
+import tanks.gui.ScreenElement.*;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+import tanks.gui.screen.leveleditor.*;
 import tanks.item.Item;
 import tanks.network.*;
 import tanks.network.event.*;
@@ -16,8 +14,7 @@ import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class Panel
 {
@@ -909,6 +906,15 @@ public class Panel
         {
             Drawing.drawing.terrainRenderer.allowPartialLoading = true;
             this.drawBar();
+        }
+
+        if (Game.recordEventData && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
+        {
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.setInterfaceFontSize(16);
+            double y = Drawing.drawing.getInterfaceEdgeY(true) - 20;
+            for (String s : MessageReader.eventBytesPerSecText)
+                Drawing.drawing.drawUncenteredInterfaceText(10, y -= 20, s);
         }
 
         if (!notifications.isEmpty())

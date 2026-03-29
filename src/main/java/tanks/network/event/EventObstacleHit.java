@@ -29,26 +29,6 @@ public class EventObstacleHit extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-
-        b.writeDouble(this.bulletX);
-        b.writeDouble(this.bulletY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-
-        this.bulletX = b.readDouble();
-        this.bulletY = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID != null)

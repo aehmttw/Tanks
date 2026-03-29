@@ -26,24 +26,6 @@ public class EventTankControllerAddVelocity extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeDouble(this.vX);
-        b.writeDouble(this.vY);
-        b.writeBoolean(this.recoil);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.vX = b.readDouble();
-        this.vY = b.readDouble();
-        this.recoil = b.readBoolean();
-    }
-
-    @Override
     public void execute()
     {
         Tank t = Tank.idMap.get(this.tank);

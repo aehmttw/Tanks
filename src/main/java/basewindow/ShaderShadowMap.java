@@ -15,9 +15,9 @@ public class ShaderShadowMap extends ShaderProgram implements IBaseShader
 
     public void renderVBO(int vertexBufferID, int colorBufferID, int texBufferID, int normalBufferID, int numberIndices)
     {
-        this.util.setVertexBuffer(vertexBufferID);
-        this.util.setTexCoordBuffer(texBufferID);
-        this.util.drawVBO(numberIndices);
+        this.window.vboRenderer.setVertexBuffer(vertexBufferID);
+        this.window.vboRenderer.setTexCoordBuffer(texBufferID);
+        this.window.vboRenderer.drawVBO(numberIndices);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package basewindow;
 
 import basewindow.transformation.*;
-import tanks.Game;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +16,7 @@ public abstract class BaseWindow
 
     public BaseShapeRenderer shapeRenderer;
     public BaseFontRenderer fontRenderer;
+    public BaseVBORenderer vboRenderer;
 
     public boolean angled = false;
     public double pointWidth = -1, pointHeight = -1;
@@ -107,13 +107,15 @@ public abstract class BaseWindow
     public ModelPart.ShapeDrawer shapeDrawer;
 
     public ShaderGroup shaderDefault;
+    public ShaderGroup shaderBones;
 
-    public ShaderBones shaderBaseBones;
-    public ShaderShadowMapBones shaderShadowMapBones;
+//    public ShaderGroup currentShaderGroup;
+//    public ShaderProgram currentShader;
+    public ShaderGroup.ShaderStage currentShaderStage;
+    public RenderPass currentRenderPass;
 
-    public ShaderGroup currentShaderGroup;
-
-    public ShaderProgram currentShader;
+    public RenderPass defaultShadowPass = new RenderPass("shadow");
+    public RenderPass defaultDrawPass = new RenderPass("draw");
 
     // capsLock and numLock do not work on mac (glfw limitation) :(
     public boolean shift = false;
@@ -290,39 +292,23 @@ public abstract class BaseWindow
 
     public abstract void setForceModelGlow(boolean glow);
 
-    public void setShader(ShaderBase s)
+    public void setShader(ShaderGroup s1)
     {
-        ShaderBase old = null;
-        if (this.currentShaderGroup != null)
-            old = this.currentShaderGroup.shaderBase;
+        ShaderGroup.ShaderStage s = s1.stages.get(this.currentRenderPass);
+        ShaderGroup.ShaderStage old = null;
+        if (s.group == this.currentShaderStage.group)
+            old = this.currentShaderStage;
 
-        try
-        {
-            s.set();
-            this.currentShaderGroup = s.group;
-            this.currentShader = s;
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        s.shader.set();
+        this.currentShaderStage = s;
 
-        if (old != null)
-            s.copyUniformsFrom(old, ShaderBase.class);
+        if (old != null && old.renderPass == s.renderPass)
+            s.shader.copyUniformsFrom(old.shader, old.shader.getClass());
     }
 
-    public void setShader(ShaderShadowMap s)
+    public void executeRenderPass(RenderPass r)
     {
-        ShaderShadowMap old = null;
-        if (this.currentShaderGroup != null)
-            old = this.currentShaderGroup.shaderShadowMap;
 
-        s.set();
-        this.currentShaderGroup = s.group;
-        this.currentShader = s;
-
-        if (old != null)
-            s.copyUniformsFrom(old, ShaderShadowMap.class);
     }
 
     public void setupKeyCodes()

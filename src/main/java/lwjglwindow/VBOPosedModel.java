@@ -71,12 +71,9 @@ public class VBOPosedModel extends PosedModel
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)
     {
-        if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderBaseBones);
-        else
-            this.model.window.setShader(this.model.window.shaderShadowMapBones);
+        this.model.window.setShader(this.model.window.shaderBones);
 
-        IBoneShader shader = (IBoneShader) this.model.window.currentShader;
+        IBoneShader shader = (IBoneShader) this.model.window.currentShaderStage;
 
         for (PoseBone b: this.bones)
         {
@@ -131,21 +128,15 @@ public class VBOPosedModel extends PosedModel
 
         ((LWJGLWindow)this.model.window).setDrawOptions(false, false, true);
 
-        if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderDefault.shaderBase);
-        else
-            this.model.window.setShader(this.model.window.shaderDefault.shaderShadowMap);
+        this.model.window.setShader(this.model.window.shaderDefault);
     }
 
     @Override
     public void draw(double posX, double posY, double sX, double sY, double yaw)
     {
-        if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderBaseBones);
-        else
-            this.model.window.setShader(this.model.window.shaderShadowMapBones);
+        this.model.window.setShader(this.model.window.shaderBones);
 
-        IBoneShader shader = (IBoneShader) this.model.window.currentShader;
+        IBoneShader shader = (IBoneShader) this.model.window.currentShaderStage;
 
         for (ModelPart mo: this.model.models)
         {
@@ -180,10 +171,7 @@ public class VBOPosedModel extends PosedModel
             glPopMatrix();
         }
 
-        if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderDefault.shaderBase);
-        else
-            this.model.window.setShader(this.model.window.shaderDefault.shaderShadowMap);
+        this.model.window.setShader(this.model.window.shaderDefault);
     }
 
     @Override

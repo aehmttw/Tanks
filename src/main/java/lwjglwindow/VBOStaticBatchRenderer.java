@@ -242,16 +242,16 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         if (!staged)
             this.stage();
 
-        this.shader.setVertexBuffer(vertVBO);
-        this.shader.setColorBuffer(colVBO);
-        this.shader.setTexCoordBuffer(texVBO);
-        this.shader.setNormalBuffer(normVBO);
+        this.window.vboRenderer.setVertexBuffer(vertVBO);
+        this.window.vboRenderer.setColorBuffer(colVBO);
+        this.window.vboRenderer.setTexCoordBuffer(texVBO);
+        this.window.vboRenderer.setNormalBuffer(normVBO);
 
         for (ShaderGroup.Attribute a: this.shader.attributes)
         {
             int attributeId = this.attributeToId.get(a);
             AttributeProperty prop = this.attributeProperties.get(attributeId);
-            this.shader.setCustomBuffer(a, prop.vboId, a.count);
+            this.window.vboRenderer.setCustomBuffer(a, prop.vboId, a.count);
         }
 
         glMatrixMode(GL_MODELVIEW);
@@ -278,7 +278,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
 
         this.window.setColor(255, 255, 255, 255, this.colorGlow);
 
-        this.shader.drawVBO(this.vertices.limit() / 3);
+        this.window.vboRenderer.drawVBO(this.vertices.limit() / 3);
 
         window.disableDepthtest();
         window.disableTexture();

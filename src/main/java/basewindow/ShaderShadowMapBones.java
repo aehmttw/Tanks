@@ -27,10 +27,10 @@ public class ShaderShadowMapBones extends ShaderShadowMap implements IBaseShader
     {
         this.bonesEnabled.set(true);
 
-        this.util.setVertexBuffer(vertexBufferID);
-        this.util.setTexCoordBuffer(texBufferID);
-        this.util.setCustomBuffer(bones, boneBufferID, 4);
-        this.util.drawVBO(numberIndices);
+        this.window.vboRenderer.setVertexBuffer(vertexBufferID);
+        this.window.vboRenderer.setTexCoordBuffer(texBufferID);
+        this.window.vboRenderer.setCustomBuffer(bones, boneBufferID, 4);
+        this.window.vboRenderer.drawVBO(numberIndices);
 
         this.bonesEnabled.set(false);
     }

@@ -302,7 +302,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
         if (!(Game.screen instanceof ILevelPreviewScreen))
         {
-            this.outsideShader.set();
+            Game.game.window.setShader(this.outsideShader);
 
             float size = (float) (Obstacle.draw_size / Game.tile_size);
             if (!(Game.screen instanceof ScreenGame))
@@ -345,7 +345,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
             }
         }
 
-        Game.game.window.shaderDefault.set();
+        Game.game.window.setShader(Game.game.window.shaderDefault);
     }
 
     public void stageBackground()

@@ -42,12 +42,12 @@ public class ShaderBones extends ShaderBase implements IBaseShader, IBoneShader
         this.bonesEnabled.set(true);
         //this.useNormal.set(normalBufferID != 0);
 
-        this.util.setVertexBuffer(vertexBufferID);
-        this.util.setColorBuffer(colorBufferID);
-        this.util.setTexCoordBuffer(texBufferID);
-        this.util.setNormalBuffer(normalBufferID);
-        this.util.setCustomBuffer(bones, boneBufferID, 4);
-        this.util.drawVBO(numberIndices);
+        this.window.vboRenderer.setVertexBuffer(vertexBufferID);
+        this.window.vboRenderer.setColorBuffer(colorBufferID);
+        this.window.vboRenderer.setTexCoordBuffer(texBufferID);
+        this.window.vboRenderer.setNormalBuffer(normalBufferID);
+        this.window.vboRenderer.setCustomBuffer(bones, boneBufferID, 4);
+        this.window.vboRenderer.drawVBO(numberIndices);
 
         this.vbo.set(false);
         //this.useNormal.set(false);

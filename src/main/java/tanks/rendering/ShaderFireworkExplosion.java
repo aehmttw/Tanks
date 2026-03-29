@@ -1,23 +1,24 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
+import basewindow.ShaderGroupShadowDraw;
+import basewindow.StageExclusiveUniform;
 
 public class ShaderFireworkExplosion extends RendererShader
 {
     public Attribute2f offset;
     public Attribute1f maxAge;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f time;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f fireworkGlow;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform3f gravity;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform4f color;
 
     public ShaderFireworkExplosion(BaseWindow w)

@@ -1,11 +1,12 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
+import basewindow.ShaderGroupShadowDraw;
+import basewindow.StageExclusiveUniform;
 
 public class ShaderGroundColor extends RendererShader implements IObstacleSizeShader, IGroundColorShader
 {
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f obstacleSizeFrac;
     public Attribute3f groundColor;
 

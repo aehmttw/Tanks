@@ -589,7 +589,7 @@ public class TerrainRenderer
 
         if (Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit)
         {
-            this.introShader.set();
+            Game.game.window.setShader(this.introShader);
             this.introShader.setSize((float) (Obstacle.draw_size / Game.tile_size));
             this.introShader.d3.set(Game.enable3d);
 
@@ -597,13 +597,13 @@ public class TerrainRenderer
                 for (int y = yStart; y <= yEnd; y++)
                     this.drawMap(this.outOfBoundsRenderers, x, y);
 
-            Game.game.window.shaderDefault.set();
+            Game.game.window.setShader(Game.game.window.shaderDefault);
             return;
         }
 
         if (!(Game.screen instanceof ILevelPreviewScreen) && !(Game.screen instanceof IConditionalOverlayScreen && ((IConditionalOverlayScreen) Game.screen).isOverlayEnabled()))
         {
-            this.outsideShader.set();
+            Game.game.window.setShader(this.outsideShader);
 
             float size = (float) (Obstacle.draw_size / Game.tile_size);
             if (!(Game.screen instanceof ScreenGame || Game.screen instanceof ScreenExit))
@@ -643,13 +643,13 @@ public class TerrainRenderer
             }
         }
 
-        Game.game.window.shaderDefault.set();
+        Game.game.window.setShader(Game.game.window.shaderDefault);
     }
 
     public void configureShader(Class<? extends ShaderGroup> sg)
     {
         ShaderGroup so = this.getShader(sg);
-        so.set();
+        Game.game.window.setShader(so);
 
         if (so instanceof IObstacleSizeShader)
             ((IObstacleSizeShader) so).setSize((float) (Obstacle.draw_size / Game.tile_size));

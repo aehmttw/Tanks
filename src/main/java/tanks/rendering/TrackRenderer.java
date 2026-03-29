@@ -136,7 +136,7 @@ public class TrackRenderer
 
     public void draw()
     {
-        this.shader.set();
+        Game.game.window.setShader(this.shader);
 
         float max = (float) getMaxTrackAge();
 
@@ -146,7 +146,7 @@ public class TrackRenderer
 
         this.drawMap(this.renderers, 0, 0);
 
-        Game.game.window.shaderDefault.set();
+        Game.game.window.setShader(Game.game.window.shaderDefault);
     }
 
     public static double getMaxTrackAge()

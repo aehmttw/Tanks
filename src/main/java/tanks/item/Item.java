@@ -253,7 +253,7 @@ public abstract class Item extends GameObject
 
         public static ItemStack<?> fromString(Player p, String s)
         {
-            if (!s.startsWith("{") && Serializer.getVersion(s) < 1.1)
+            if (!s.startsWith("{"))
                 return fromStringLegacy(p, s);
 
             ItemStack<?> i = (ItemStack<?>) Serializer.fromTanksON(s);

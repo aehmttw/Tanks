@@ -19,16 +19,4 @@ public class EventChatClear extends PersonalEvent
             ScreenPartyLobby.chat.clear();
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-
-    }
 }

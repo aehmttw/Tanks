@@ -48,40 +48,6 @@ public class EventAddShape extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.id);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeDouble(this.sizeX);
-        b.writeDouble(this.sizeY);
-        b.writeInt(this.type);
-        b.writeDouble(this.colorR);
-        b.writeDouble(this.colorG);
-        b.writeDouble(this.colorB);
-        b.writeDouble(this.colorA);
-        b.writeInt(this.xAlignment);
-        b.writeInt(this.yAlignment);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.sizeX = b.readDouble();
-        this.sizeY = b.readDouble();
-        this.type = b.readInt();
-        this.colorR = b.readDouble();
-        this.colorG = b.readDouble();
-        this.colorB = b.readDouble();
-        this.colorA = b.readDouble();
-        this.xAlignment = b.readInt();
-        this.yAlignment = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null && Game.screen instanceof ScreenOnline)

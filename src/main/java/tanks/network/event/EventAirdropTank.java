@@ -46,22 +46,4 @@ public class EventAirdropTank extends EventTankCreate
             Game.movables.add(new Crate(new TankRemote(t), height));
         }
     }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        super.read(b);
-        NetworkUtils.readColor(b, this.color);
-        NetworkUtils.readColor(b, this.color2);
-        this.height = b.readDouble();
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        super.write(b);
-        NetworkUtils.writeColor(b, this.color);
-        NetworkUtils.writeColor(b, this.color2);
-        b.writeDouble(this.height);
-    }
 }

@@ -23,20 +23,6 @@ public class EventItemPickup extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.itemDrop);
-        b.writeInt(this.tank);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.itemDrop = b.readInt();
-        this.tank = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (clientID == null && ItemDrop.idMap.get(itemDrop) != null && Tank.idMap.get(tank) != null)

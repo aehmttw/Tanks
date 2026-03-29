@@ -1,11 +1,8 @@
 package tanks.network.event;
 
 import tanks.Game;
-import tanks.item.Item;
-import tanks.item.ItemMine;
+import tanks.item.*;
 import tanks.tank.*;
-
-import io.netty.buffer.ByteBuf;
 
 public class EventLayMine extends PersonalEvent
 {
@@ -80,25 +77,5 @@ public class EventLayMine extends PersonalEvent
 
             Mine.idMap.put(id, m);
         }
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.id);
-        b.writeInt(this.tank);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeInt(this.item);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
-        this.tank = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.item = b.readInt();
     }
 }

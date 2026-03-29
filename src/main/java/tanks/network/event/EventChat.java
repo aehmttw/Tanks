@@ -53,18 +53,6 @@ public class EventChat extends PersonalEvent implements IChatEvent
 
     }
 
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.message);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.message = NetworkUtils.readString(b);
-    }
-
     public static boolean isStringValid(String s)
     {
         for (int i = 0; i < s.length(); i++)

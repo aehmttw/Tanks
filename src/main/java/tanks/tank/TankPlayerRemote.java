@@ -272,8 +272,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         lastMaxLiveMines = mlm;
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions,
-                                 double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, int quickActions, double time, long receiveTime)
     {
         if (this.destroy)
             return;
@@ -462,7 +461,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             {
                 for (int i = 0; i < this.abilities.size(); i++)
                 {
-                    if (quickActions[i])
+                    if ((quickActions >> i) % 2 == 1)
                         this.quickAction(i);
                 }
             }

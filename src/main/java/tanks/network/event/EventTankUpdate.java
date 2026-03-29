@@ -34,30 +34,6 @@ public class EventTankUpdate extends PersonalEvent implements IStackableEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeDouble(this.vX);
-        b.writeDouble(this.vY);
-        b.writeDouble(this.angle);
-        b.writeDouble(this.pitch);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.vX = b.readDouble();
-        this.vY = b.readDouble();
-        this.angle = b.readDouble();
-        this.pitch = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         Tank t = Tank.idMap.get(this.tank);

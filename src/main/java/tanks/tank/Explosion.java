@@ -217,6 +217,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
             for (Obstacle o: Obstacle.getObstaclesInRadius(posX, posY, radius + Game.tile_size / 2))
             {
                 if (!o.destructible) continue;
+                Game.eventsOut.add(new EventObstacleDestroy(o.posX, o.posY, o.name, posX, posY, radius));
                 o.onDestroy(this);
                 o.playDestroyAnimation(this.posX, this.posY, this.radius);
             }

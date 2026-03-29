@@ -195,7 +195,7 @@ public class ItemBar
             if (destroy)
                 Game.eventsOut.add(new EventSetItem(this.player, this.selected, this.slots[this.selected]));
             else
-                Game.eventsOut.add(new EventSetItemCount(this.slots[this.selected].stackSize, this.player.clientID, this.selected));
+                Game.eventsOut.add(new EventSetItemCount(this.player, this.selected, this.slots[this.selected].stackSize));
         }
 
         if (destroy && Game.currentLevel instanceof Arcade)

@@ -223,16 +223,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
         this.sendEvent(e, true);
     }
 
-    public HashMap<String, Integer> eventFrequencies = new HashMap<>();
-
     public synchronized void sendEvent(INetworkEvent e, boolean flush)
     {
-        String n = e.getClass().getSimpleName();
-        if (!eventFrequencies.containsKey(n))
-            eventFrequencies.put(n, 0);
-
-        eventFrequencies.put(n, eventFrequencies.get(n) + 1);
-
         if (steamID != null)
         {
             SteamNetworking.P2PSend sendType = SteamNetworking.P2PSend.ReliableWithBuffering;
@@ -254,8 +246,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
         e.write(b);
 
         ByteBuf b2 = ctx.channel().alloc().buffer();
-        b2.writeInt(b.readableBytes());
-        MessageReader.upstreamBytes += b.readableBytes() + 4;
+        int rb = b.readableBytes();
+        b2.writeInt(rb);
+        MessageReader.upstreamBytes += rb + 4;
+        MessageReader.eventBytes.put(i, MessageReader.eventBytes.getOrDefault(i, 0) + rb + 4);
         MessageReader.updateLastMessageTime();
         b2.writeBytes(b);
 

@@ -6,15 +6,15 @@ public class MonitoredArrayListIndexPointer<T> extends ArrayListIndexPointer<T>
 {
     public Runnable onEdit;
 
-    public MonitoredArrayListIndexPointer(ArrayList<T> l, int i, Runnable onEdit)
+    public MonitoredArrayListIndexPointer(Class<T> tClass, ArrayList<T> l, int i, Runnable onEdit)
     {
-        super(l, i);
+        super(tClass, l, i);
         this.onEdit = onEdit;
     }
 
-    public MonitoredArrayListIndexPointer(ArrayList<T> l, int i, boolean nullable, Runnable onEdit)
+    public MonitoredArrayListIndexPointer(Class<T> tClass, ArrayList<T> l, int i, boolean nullable, Runnable onEdit)
     {
-        super(l, i, nullable);
+        super(tClass, l, i, nullable);
         this.onEdit = onEdit;
     }
 
@@ -28,6 +28,6 @@ public class MonitoredArrayListIndexPointer<T> extends ArrayListIndexPointer<T>
     @Override
     public <U> Pointer<U> cast()
     {
-        return new MonitoredArrayListIndexPointer<>((ArrayList<U>) arrayList, index, nullable, onEdit);
+        return new MonitoredArrayListIndexPointer<U>((Class<U>) tClass, (ArrayList<U>) this.arrayList, this.index, this.nullable, this.onEdit);
     }
 }

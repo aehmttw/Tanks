@@ -4,7 +4,6 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
-import tanks.network.FriendsMixin;
 
 import java.util.ArrayList;
 

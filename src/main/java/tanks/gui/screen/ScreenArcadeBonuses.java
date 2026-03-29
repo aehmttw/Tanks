@@ -1,9 +1,6 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Panel;
+import tanks.*;
 import tanks.gui.Firework;
 import tanks.minigames.Arcade;
 import tanks.network.event.EventArcadeBonuses;
@@ -96,7 +93,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         }
 
         if (a.maxKillsPerFrame >= 2)
-            bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", (int)(a.maxKillsPerFrame * 7.5) / 5 * 5, 255, 127, 0));
+            bonuses.add(new Bonus(a.maxKillsPerFrame + "-kill explosion!", (int) (a.maxKillsPerFrame * 7.5) / 5 * 5, 255, 127, 0));
 
         if ((a.score + "").contains("69"))
             bonuses.add(new Bonus("Nice! ;)", 69, 230, 220, 190));
@@ -274,7 +271,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                 this.lastPoints = this.age;
             }
 
-            long fireworks =  ( (long)pointsPerFirework - 1 + bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value) / pointsPerFirework;
+            long fireworks = ((long) pointsPerFirework - 1 + bonuses.get(0).value + bonuses.get(1).value + bonuses.get(2).value) / pointsPerFirework;
             double maxFireworks = 1000;
             if (fireworks > maxFireworks)
             {
@@ -331,11 +328,11 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             drawing.displayInterfaceText(50, 260, false, "If you see this screen again, restart the game.");
             drawing.displayInterfaceText(50, 290, false, "Also, you may want to report this crash!");
 
-            drawing.displayInterfaceText(50, 350,  false, "Crash details:");
+            drawing.displayInterfaceText(50, 350, false, "Crash details:");
             drawing.drawInterfaceText(50, 380, "Error 404: Bonus not found!", false);
             drawing.drawInterfaceText(50, 410, "This isn't an actual crash lmao", false);
 
-            drawing.displayInterfaceText(50, 470,  false, "Check the crash report file for more information: ");
+            drawing.displayInterfaceText(50, 470, false, "Check the crash report file for more information: ");
             drawing.drawInterfaceText(50, 500, Game.homedir.replace("\\", "/") + Game.crashesPath + "lmaothisisnta.crash", false);
 
             Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
@@ -365,8 +362,8 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             {
                 int j = 2 - i;
                 Drawing.drawing.setColor(bonuses.get(j).red, bonuses.get(j).green, bonuses.get(j).blue, 255);
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4/6, bonuses.get(j).name);
-                Drawing.drawing.displayInterfaceText(this.centerX + this.objWidth - 60, this.centerY + (i - 1) * this.objYSpace * 4/6, bonuses.get(j).value + "");
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4 / 6, bonuses.get(j).name);
+                Drawing.drawing.displayInterfaceText(this.centerX + this.objWidth - 60, this.centerY + (i - 1) * this.objYSpace * 4 / 6, bonuses.get(j).value + "");
             }
         }
 
@@ -418,14 +415,16 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                     removeFireworks.add(f);
 
                     if (this.originalScore + this.bonuses.get(0).value + this.bonuses.get(1).value + this.bonuses.get(2).value > 0)
-                        this.score = Math.min(this.originalScore + this.bonuses.get(0).value + this.bonuses.get(1).value + this.bonuses.get(2).value, this.score + this.pointsPerFirework);
+                        this.score = Math.min(this.originalScore + this.bonuses.get(0).value + this.bonuses.get(1).value + this.bonuses.get(2).value,
+                            this.score + this.pointsPerFirework);
                     else
                         this.score = this.score + this.pointsPerFirework;
                     this.lastPoints = this.age;
                 }
             }
 
-            removeFireworks.forEach(spawnedFireworks::remove);
+            for (Firework f: removeFireworks)
+                spawnedFireworks.remove(f);
         }
     }
 
@@ -441,7 +440,8 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         else
             Drawing.drawing.setColor(0, 0, 0, alpha);
 
-        double posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 + Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 175;
+        double posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
+            Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 175;
         double posY = -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 + 50;
 
         posX = posX * (1 - heightFrac) + this.centerX * heightFrac;
@@ -453,7 +453,8 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
     }
 
-    public static void addEffect(double posX, double posY, double sizeX, double sizeY, ArrayList<Effect> glowEffects, double velocity, double mul, double max, double r, double g, double b)
+    public static void addEffect(double posX, double posY, double sizeX, double sizeY, ArrayList<Effect> glowEffects, double velocity, double mul, double max, double r, double g,
+                                 double b)
     {
         Effect e = Effect.createNewEffect(posX, posY, Effect.EffectType.interfacePieceSparkle);
         e.radius = Math.random() * 10 - 5;

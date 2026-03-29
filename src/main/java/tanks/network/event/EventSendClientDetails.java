@@ -5,155 +5,178 @@ import tanks.gui.ChatMessage;
 import tanks.gui.screen.*;
 import tanks.network.*;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.UUID;
 
 public class EventSendClientDetails extends PersonalEvent implements IServerThreadEvent
 {
-	public int version;
-	public UUID clientID;
-	public String username;
+    public int version;
+    public UUID clientID;
+    public String username;
 
-	public EventSendClientDetails()
-	{
-		
-	}
-	
-	public EventSendClientDetails(int version, UUID clientID, String username)
-	{
-		this.version = version;
-		this.clientID = clientID;
-		this.username = username;
-	}
+    public EventSendClientDetails()
+    {
 
-	@Override
-	public void execute()
-	{
-		
-	}
-	
-	@Override
-	public void execute(ServerHandler s)
-	{
-		if (Game.screen instanceof ScreenConnecting)
-		{
-			if (((ScreenConnecting) Game.screen).steamID != null)
-				Game.steamNetworkHandler.networking.closeP2PSessionWithUser(((ScreenConnecting) Game.screen).steamID);
+    }
 
-			return;
-		}
+    public EventSendClientDetails(int version, UUID clientID, String username)
+    {
+        this.version = version;
+        this.clientID = clientID;
+        this.username = username;
+    }
 
-		if (this.clientID == null || Game.isOnlineServer || !ScreenPartyHost.isServer)
-			return;
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.version);
+        NetworkUtils.writeString(b, clientID.toString());
+        NetworkUtils.writeString(b, username);
+    }
 
-		if (Game.screen instanceof IPartyGameScreen)
-		{
-			s.sendEventAndClose(new EventKick("Please wait for the current game to finish!"));
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.version = b.readInt();
+        this.clientID = UUID.fromString(NetworkUtils.readString(b));
+        this.username = NetworkUtils.readString(b);
+    }
 
-			Game.eventsIn.add(new EventPlaySound("join.ogg", 0.75f, 1.0f));
-			ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
-			Game.eventsOut.add(new EventChat("\u00A7255127000255" + this.username + " would like to join the party\u00A7000000000255"));
-			return;
-		}
+    @Override
+    public void execute()
+    {
 
+    }
 
-		if (this.version != Game.network_protocol)
-		{
-			s.sendEventAndClose(new EventKick("You must be using " + Game.version + " to join this party!"));
-			return;
-		}
+    @Override
+    public void execute(ServerHandler s)
+    {
+        if (Game.screen instanceof ScreenConnecting)
+        {
+            if (((ScreenConnecting) Game.screen).steamID != null)
+                Game.steamNetworkHandler.networking.closeP2PSessionWithUser(((ScreenConnecting) Game.screen).steamID);
 
-		if (Game.usernameInvalid(this.username) || this.username.equals(""))
-		{
-			s.sendEventAndClose(new EventKick("Invalid username!"));
-			return;
-		}
-		
-		s.clientID = this.clientID;
-	
-		if (Game.enableChatFilter)
-			s.username = Game.chatFilter.filterChat(this.username);
-		else
-			s.username = this.username;
-		
-		s.rawUsername = this.username;
+            return;
+        }
 
-		synchronized (s.server.connections)
-		{
-			for (int i = 0; i < s.server.connections.size(); i++)
-			{
-				if (this.clientID.equals(s.server.connections.get(i).clientID) && s.server.connections.get(i).initialized)
-				{
-					if (s.steamID == null)
-						s.sendEventAndClose(new EventKick("You are already in this party!"));
+        if (this.clientID == null || Game.isOnlineServer || !ScreenPartyHost.isServer)
+            return;
 
-					return;
-				}
-			}
+        if (this.version != Game.network_protocol)
+        {
+            s.sendEventAndClose(new EventKick("You must be using " + Game.version + " to join this party!"));
+            return;
+        }
 
-			if (!s.server.connections.contains(s))
-				s.server.connections.add(s);
-		}
+        if (Game.usernameInvalid(this.username) || this.username.equals(""))
+        {
+            s.sendEventAndClose(new EventKick("Invalid username!"));
+            return;
+        }
 
-		s.initialized = true;
+        s.clientID = this.clientID;
 
-		synchronized (ScreenPartyHost.disconnectedPlayers)
-		{
-			for (int i = 0; i < ScreenPartyHost.disconnectedPlayers.size(); i++)
-			{
-				if (ScreenPartyHost.disconnectedPlayers.get(i).equals(this.clientID))
-				{
-					ScreenPartyHost.disconnectedPlayers.remove(i);
-					i--;
-				}
-			}
-		}
+        if (Game.enableChatFilter)
+            s.username = Game.chatFilter.filterChat(this.username);
+        else
+            s.username = this.username;
 
-		Player p = new Player(this.clientID, this.username);
-		Game.players.add(p);
-		s.player = p;
+        s.rawUsername = this.username;
 
-		s.sendEvent(new EventConnectionSuccess());
-		s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(Game.clientID, Game.player.username), true));
-		s.sendEvent(new EventUpdateTankColors(Game.player));
+        synchronized (s.server.connections)
+        {
+            for (int i = 0; i < s.server.connections.size(); i++)
+            {
+                if (this.clientID.equals(s.server.connections.get(i).clientID) && s.server.connections.get(i).initialized)
+                {
+                    if (s.steamID == null)
+                        s.sendEventAndClose(new EventKick("You are already in this party!"));
 
-		if (Crusade.currentCrusade != null)
-			s.sendEvent(new EventBeginCrusade());
+                    return;
+                }
+            }
 
-		Game.eventsIn.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
-		
-		ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + s.username + " has joined the party\u00A7000000000255"));
+            if (!s.server.connections.contains(s))
+                s.server.connections.add(s);
+        }
 
-		for (ScreenPartyHost.SharedLevel l: ScreenPartyHost.activeScreen.sharedLevels)
-		{
-			EventShareLevel e = new EventShareLevel();
-			e.username = l.creator;
-			e.name = l.name;
-			e.level = l.level;
-			s.sendEvent(e);
-		}
+        if (s.player == null)
+        {
+            Player p = new Player(this.clientID, this.username);
+            s.player = p;
+        }
 
-		Game.eventsOut.add(new EventChat("\u00A7000127255255" + this.username + " has joined the party\u00A7000000000255"));
-		
-		for (int i = 0; i < s.server.connections.size(); i++)
-		{
-			ServerHandler h = s.server.connections.get(i);
+        if (Game.screen instanceof IPartyGameScreen)
+        {
+            s.pendingJoin = this;
+            s.sendEvent(new EventPendingJoinParty());
+            Game.eventsIn.add(new EventPlaySound("join.ogg", 0.75f, 1.0f));
+            ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7255127000255" + this.username + " will join the party after this level\u00A7000000000255"));
+            Game.eventsOut.add(new EventChat("\u00A7255127000255" + this.username + " will join the party after this level\u00A7000000000255"));
+            return;
+        }
 
-			if (h != s && h.clientID != null)
-			{
-				s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(h.clientID, h.rawUsername), true));
-				s.sendEvent(new EventUpdateTankColors(h.player));
-			}
-		}
+        boolean wasPending = s.pendingJoin != null;
+        s.pendingJoin = null;
+        s.initialized = true;
 
-		for (Player p1: Game.botPlayers)
-		{
-			s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(p1.clientID, p1.username, true), true));
-			s.sendEvent(new EventUpdateTankColors(p1));
-		}
+        synchronized (ScreenPartyHost.disconnectedPlayers)
+        {
+            for (int i = 0; i < ScreenPartyHost.disconnectedPlayers.size(); i++)
+            {
+                if (ScreenPartyHost.disconnectedPlayers.get(i).equals(this.clientID))
+                {
+                    ScreenPartyHost.disconnectedPlayers.remove(i);
+                    i--;
+                }
+            }
+        }
 
-		Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(s.clientID, s.rawUsername), true));
-		Game.eventsOut.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
+        Game.players.add(s.player);
 
-		s.joined = true;
-	}
+        s.sendEvent(new EventConnectionSuccess());
+        s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(Game.clientID, Game.player.username), true));
+        s.sendEvent(new EventUpdateTankColors(Game.player));
+
+        if (Crusade.currentCrusade != null)
+            s.sendEvent(new EventBeginCrusade());
+
+        Game.eventsIn.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
+
+        ScreenPartyHost.chat.add(0, new ChatMessage("\u00A7000127255255" + s.username + " has joined the party\u00A7000000000255"));
+
+        for (ScreenPartyHost.SharedLevel l: ScreenPartyHost.activeScreen.sharedLevels)
+        {
+            EventShareLevel e = new EventShareLevel();
+            e.username = l.creator;
+            e.name = l.name;
+            e.level = l.level;
+            s.sendEvent(e);
+        }
+
+        Game.eventsOut.add(new EventChat("\u00A7000127255255" + this.username + " has joined the party\u00A7000000000255"));
+        s.joined = true;
+
+        for (int i = 0; i < s.server.connections.size(); i++)
+        {
+            ServerHandler h = s.server.connections.get(i);
+
+            if ((h != s || wasPending) && h.clientID != null)
+            {
+                s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(h.clientID, h.rawUsername), true));
+                s.sendEvent(new EventUpdateTankColors(h.player));
+            }
+        }
+
+        for (Player p1: Game.botPlayers)
+        {
+            s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(p1.clientID, p1.username, true), true));
+            s.sendEvent(new EventUpdateTankColors(p1));
+        }
+
+        Game.eventsOut.add(new EventAnnounceConnection(new ConnectedPlayer(s.clientID, s.rawUsername), true));
+        Game.eventsOut.add(new EventPlaySound("join.ogg", 1.0f, 1.0f));
+
+    }
 }

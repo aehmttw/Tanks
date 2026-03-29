@@ -1,29 +1,19 @@
 package tanks.tankson;
 
 import basewindow.Color;
-import tanks.BiConsumer;
-import tanks.Game;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletEffect;
-import tanks.bullet.BulletGas;
+import tanks.*;
+import tanks.bullet.*;
 import tanks.item.ItemBullet;
-import tanks.item.ItemIcon;
 import tanks.item.ItemMine;
-import tanks.tank.Mine;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankModels;
+import tanks.tank.*;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 public class Compatibility
 {
-    /**
-     * Add a static initializer to initialize compatibility table if necessary
-     */
+    /** Add a static initializer to initialize compatibility table if necessary */
     public static final HashMap<String, BiFunction<Object, Object, Object>> compatibility_table = new HashMap<>();
 
     public static final HashMap<Class<?>, BiFunction<Field, Object, Object>> general_table = new HashMap<>();
@@ -73,16 +63,16 @@ public class Compatibility
         field_table.put("turret_model", "turretSkin");
 
         compatibility_table.put("color_model", (owner, a) ->
-               convertModelToSkin((String) a));
+            convertModelToSkin((String) a));
 
         compatibility_table.put("base_model", (owner, a) ->
-                convertModelToSkin((String) a));
+            convertModelToSkin((String) a));
 
         compatibility_table.put("turret_base_model", (owner, a) ->
-                convertModelToSkin((String) a));
+            convertModelToSkin((String) a));
 
         compatibility_table.put("turret_model", (owner, a) ->
-                convertModelToSkin((String) a));
+            convertModelToSkin((String) a));
 
         compatibility_table.put("effect", (owner, a) ->
         {
@@ -214,18 +204,18 @@ public class Compatibility
     public static TankModels.TankSkin convertModelToSkin(String model)
     {
         return Game.registryModelTank.tankSkins.get(model.replace("/models/", "")
-                .replace("/color/", "")
-                .replace("/base/", "")
-                .replace("/turret/", "")
-                .replace("/turretbase/", "")
-                .replace("tankarrow", "tank_arrow")
-                .replace("tankcamoflauge", "tank_camoflauge")
-                .replace("tankmimic", "tank_checkerboard")
-                .replace("tankcross", "tank_cross")
-                .replace("tankdiagonalstripes", "tank_diagonal_stripes")
-                .replace("tankfixed", "tank_fixed")
-                .replace("tankflames", "tank_flames")
-                .replace("tankhorizontalstripes", "tank_horizontal_stripes")
-                .replace("tankverticalstripes", "tank_vertical_stripes"));
+            .replace("/color/", "")
+            .replace("/base/", "")
+            .replace("/turret/", "")
+            .replace("/turretbase/", "")
+            .replace("tankarrow", "tank_arrow")
+            .replace("tankcamoflauge", "tank_camoflauge")
+            .replace("tankmimic", "tank_checkerboard")
+            .replace("tankcross", "tank_cross")
+            .replace("tankdiagonalstripes", "tank_diagonal_stripes")
+            .replace("tankfixed", "tank_fixed")
+            .replace("tankflames", "tank_flames")
+            .replace("tankhorizontalstripes", "tank_horizontal_stripes")
+            .replace("tankverticalstripes", "tank_vertical_stripes"));
     }
 }

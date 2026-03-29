@@ -1,11 +1,13 @@
 package tanks;
 
-import it.unimi.dsi.fastutil.objects.*;
-import tanks.attribute.*;
+import tanks.attribute.AttributeModifier;
+import tanks.attribute.EffectManager;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
-import tanks.tank.*;
-import tanks.tankson.*;
+import tanks.tank.IAvoidObject;
+import tanks.tank.NameTag;
+import tanks.tankson.MetadataProperty;
+import tanks.tankson.Property;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -13,49 +15,63 @@ import java.util.stream.Collectors;
 
 public abstract class Movable extends SolidGameObject implements IDrawableForInterface
 {
-	public ObjectArraySet<Chunk> prevChunks = new ObjectArraySet<>();
-	private EffectManager em;
+    public HashSet<Chunk> prevChunks = new HashSet<>();
+    private EffectManager em;
 
-	public double lastPosX, lastPosY, lastPosZ = 0;
-	public double vX, vY, vZ = 0;
-	public double lastFinalVX, lastFinalVY, lastFinalVZ;
-	public double lastVX, lastVY, lastVZ;
-	public double lastOriginalVX, lastOriginalVY, lastOriginalVZ;
+    public double lastPosX;
+    public double lastPosY;
+    public double lastPosZ = 0;
+
+    public double vX;
+    public double vY;
+    public double vZ = 0;
+
+    public double lastFinalVX;
+    public double lastFinalVY;
+    public double lastFinalVZ;
+
+    public double lastVX;
+    public double lastVY;
+    public double lastVZ;
+
+    public double lastOriginalVX;
+    public double lastOriginalVY;
+    public double lastOriginalVZ;
 
     private double lastSize = Integer.MAX_VALUE;
 
-	public double age = 0;
+    public double age = 0;
 
-	public boolean destroy = false;
-	public boolean dealsDamage = true;
+    public boolean destroy = false;
+    public boolean dealsDamage = true;
 
-	public NameTag nameTag;
-	public boolean showName = false;
+    public NameTag nameTag;
+    public boolean showName = false;
 
-	public boolean affectedByFrameFrequency = true;
+    public boolean affectedByFrameFrequency = true;
 
-	public boolean skipNextUpdate = false;
+    public boolean skipNextUpdate = false;
 
-	public int drawLevel = 3;
-	public boolean isRemote = false;
-	public boolean managedMotion = true;
+    public int drawLevel = 3;
+    public boolean isRemote = false;
+    public boolean managedMotion = true;
 
-	@MetadataProperty(id = "team", name = "Team", selector = SelectorTeam.selector_name, image = "team.png", keybind = "editor.team")
-	public Team team;
+    @MetadataProperty(id = "team", name = "Team", selector = SelectorTeam.selector_name, image = "team.png", keybind = "editor.team")
+    public Team team;
 
     private boolean firstFrame = true;
 
-	public Movable(double x, double y)
-	{
-		this.posX = x;
-		this.posY = y;
+    public Movable(double x, double y)
+    {
+        this.posX = x;
+        this.posY = y;
 
-		this.lastPosX = x;
-		this.lastPosY = y;
-	}
+        this.lastPosX = x;
+        this.lastPosY = y;
+    }
 
-	public void preUpdate()
-	{
+    public void preUpdate()
+    {
         updateChunks();
 
         if (firstFrame)
@@ -88,10 +104,10 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         this.lastPosZ = this.posZ;
     }
 
-	public void updateChunks()
-	{
-		if (!collisionChanged() && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
-			return;
+    public void updateChunks()
+    {
+        if (!collisionChanged() && posX == lastPosX && posY == lastPosY && getSize() == lastSize)
+            return;
 
         lastSize = getSize();
         refreshFacesAndChunks();
@@ -99,10 +115,10 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
 
     public void refreshFacesAndChunks()
     {
-        ObjectArrayList<Chunk> cache = getTouchingChunks();
+        ArrayList<Chunk> cache = getTouchingChunks();
         recordData("refreshFaces");
 
-        for (Chunk c : prevChunks)
+        for (Chunk c: prevChunks)
         {
             if (!cache.contains(c))
             {
@@ -114,7 +130,7 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         prevChunks.retainAll(cache);
         updateFaces();
 
-        for (Chunk c : getCurrentChunks())
+        for (Chunk c: getCurrentChunks())
         {
             if (prevChunks.add(c))
                 onEnterChunk(c);
@@ -129,16 +145,16 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     }
 
     public void onEnterChunk(Chunk c)
-	{
-		c.addMovable(this);
-	}
+    {
+        c.addMovable(this);
+    }
 
-	public void onLeaveChunk(Chunk c)
-	{
-		c.removeMovable(this);
-	}
+    public void onLeaveChunk(Chunk c)
+    {
+        c.removeMovable(this);
+    }
 
-    public ObjectArrayList<Chunk> getCurrentChunks()
+    public ArrayList<Chunk> getCurrentChunks()
     {
         double bound = getSize() / 2;
         return Chunk.getChunksInRange(
@@ -149,216 +165,217 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         );
     }
 
-    public ObjectArrayList<Chunk> getTouchingChunks()
-	{
-		return getCurrentChunks();
-	}
+    public ArrayList<Chunk> getTouchingChunks()
+    {
+        return getCurrentChunks();
+    }
 
     public void update()
-	{
+    {
         recordData("update");
 
-		double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
+        double frameFrequency = affectedByFrameFrequency ? Panel.frameFrequency : 1;
 
-		if (!destroy)
-		{
-			em().update();
+        if (!destroy)
+        {
+            em().update();
 
-			double vX2 = this.vX;
-			double vY2 = this.vY;
-			double vZ2 = this.vZ;
+            double vX2 = this.vX;
+            double vY2 = this.vY;
+            double vZ2 = this.vZ;
 
-			if (this.managedMotion)
-			{
-				// Apply velocity modifiers
-				vX2 = em.getAttributeValue(AttributeModifier.velocity, vX2);
-				vY2 = em.getAttributeValue(AttributeModifier.velocity, vY2);
-				vZ2 = em.getAttributeValue(AttributeModifier.velocity, vZ2);
+            if (this.managedMotion)
+            {
+                // Apply velocity modifiers
+                vX2 = em.getAttributeValue(AttributeModifier.velocity, vX2);
+                vY2 = em.getAttributeValue(AttributeModifier.velocity, vY2);
+                vZ2 = em.getAttributeValue(AttributeModifier.velocity, vZ2);
 
-				this.lastFinalVX = vX2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-				this.lastFinalVY = vY2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
-				this.lastFinalVZ = vZ2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+                this.lastFinalVX = vX2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+                this.lastFinalVY = vY2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
+                this.lastFinalVZ = vZ2 * ScreenGame.finishTimer / ScreenGame.finishTimerMax;
 
-				this.posX += this.lastFinalVX * frameFrequency;
-				this.posY += this.lastFinalVY * frameFrequency;
-				this.posZ += this.lastFinalVZ * frameFrequency;
-			}
-		}
-	}
+                this.posX += this.lastFinalVX * frameFrequency;
+                this.posY += this.lastFinalVY * frameFrequency;
+                this.posZ += this.lastFinalVZ * frameFrequency;
+            }
+        }
+    }
 
-	public void initEffectManager(EffectManager em)
-	{
+    public void initEffectManager(EffectManager em)
+    {
 
-	}
+    }
 
-	/** Alias for {@link #getEffectManager()} */
-	public EffectManager em()
-	{
-		return getEffectManager();
-	}
+    /** Alias for {@link #getEffectManager()} */
+    public EffectManager em()
+    {
+        return getEffectManager();
+    }
 
-	public EffectManager getEffectManager()
-	{
-		if (em == null)
-		{
-			em = new EffectManager(this);
-			initEffectManager(em);
-		}
-		return em;
-	}
+    public EffectManager getEffectManager()
+    {
+        if (em == null)
+        {
+            em = new EffectManager(this);
+            initEffectManager(em);
+        }
+        return em;
+    }
 
-	public void setMotionInDirection(double x, double y, double velocity)
-	{
+    public void setMotionInDirection(double x, double y, double velocity)
+    {
         double dx = x - this.posX;
         double dy = y - this.posY;
         double d = Math.sqrt(dx * dx + dy * dy);
         if (d == 0)
             return;
 
-		this.vX = velocity * dx / d;
-		this.vY = velocity * dy / d;
-	}
-
-	public void setMotionAwayFromDirection(double x, double y, double velocity)
-	{
-		setMotionInDirection(x, y, -velocity);
-	}
-
-	public void setMotionInDirectionWithOffset(double x, double y, double velocity, double a)
-	{
-		double angle = getAngleInDirection(x, y) + a;
-		this.vX = velocity * Math.cos(angle);
-		this.vY = velocity * Math.sin(angle);
-	}
-
-	public double getAngleInDirection(double x, double y)
-	{
-		return Movable.getPolarDirection(x - this.posX, y - this.posY);
-	}
-
-	public double getPolarDirection()
-	{
-        return getPolarDirection(this.vX, this.vY);
-	}
-
-	public double getPolarPitch()
-	{
-		return fastAtan(this.vZ / this.getSpeed());
-	}
-
-	public double getLastPolarDirection()
-	{
-		return getPolarDirection(this.lastVX, this.lastVY);
-	}
-
-	public void setPolarMotion(double angle, double velocity)
-	{
-		this.vX = velocity * Math.cos(angle);
-		this.vY = velocity * Math.sin(angle);
+        this.vX = velocity * dx / d;
+        this.vY = velocity * dy / d;
     }
 
-	public void set3dPolarMotion(double angle1, double angle2, double velocity)
-	{
-		this.vX = velocity * Math.cos(angle1) * Math.cos(angle2);
-		this.vY = velocity * Math.sin(angle1) * Math.cos(angle2);
-		this.vZ = velocity * Math.sin(angle2);
-	}
+    public void setMotionAwayFromDirection(double x, double y, double velocity)
+    {
+        setMotionInDirection(x, y, -velocity);
+    }
 
-	public void addPolarMotion(double angle, double velocity)
-	{
-		this.vX += velocity * Math.cos(angle);
-		this.vY += velocity * Math.sin(angle);
-	}
+    public void setMotionInDirectionWithOffset(double x, double y, double velocity, double a)
+    {
+        double angle = getAngleInDirection(x, y) + a;
+        this.vX = velocity * Math.cos(angle);
+        this.vY = velocity * Math.sin(angle);
+    }
 
-	public void add3dPolarMotion(double angle1, double angle2, double velocity)
-	{
-		this.vX += velocity * Math.cos(angle1) * Math.cos(angle2);
-		this.vY += velocity * Math.sin(angle1) * Math.cos(angle2);
-		this.vZ += velocity * Math.sin(angle2);
-	}
+    public double getAngleInDirection(double x, double y)
+    {
+        return Movable.getPolarDirection(x - this.posX, y - this.posY);
+    }
 
-	public void moveInDirection(double x, double y, double amount)
-	{
-		this.posX += amount * x;
-		this.posY += amount * y;
-	}
+    public double getPolarDirection()
+    {
+        return getPolarDirection(this.vX, this.vY);
+    }
 
-	public void moveInAngle(double a, double amount)
-	{
-		this.posX += amount * Math.cos(a);
-		this.posY += amount * Math.sin(a);
-	}
+    public double getPolarPitch()
+    {
+        return fastAtan(this.vZ / this.getSpeed());
+    }
 
-	public static double getSpeed(double vX, double vY)
-	{
-		return Math.sqrt(vX * vX + vY * vY);
-	}
+    public static double getPolarPitch(double vX, double vY, double vZ)
+    {
+        return fastAtan(vZ / getSpeed(vX, vY));
+    }
 
-	public static double getPolarPitch(double vX, double vY, double vZ)
-	{
-		return fastAtan(vZ / getSpeed(vX, vY));
-	}
+    public double getLastPolarDirection()
+    {
+        return getPolarDirection(this.lastVX, this.lastVY);
+    }
 
-	public double getSpeed()
-	{
-		return Math.sqrt(this.vX * this.vX + this.vY * this.vY);
-	}
+    public void setPolarMotion(double angle, double velocity)
+    {
+        this.vX = velocity * Math.cos(angle);
+        this.vY = velocity * Math.sin(angle);
+    }
 
-	public double getLastSpeed()
-	{
-		return Math.sqrt(this.lastVX * this.lastVX + this.lastVY * this.lastVY);
-	}
+    public void set3dPolarMotion(double angle1, double angle2, double velocity)
+    {
+        this.vX = velocity * Math.cos(angle1) * Math.cos(angle2);
+        this.vY = velocity * Math.sin(angle1) * Math.cos(angle2);
+        this.vZ = velocity * Math.sin(angle2);
+    }
 
-	public double getMotionInDirection(double angle)
-	{
-		return this.getSpeed() * Math.cos(this.getPolarDirection() - angle);
-	}
+    public void addPolarMotion(double angle, double velocity)
+    {
+        this.vX += velocity * Math.cos(angle);
+        this.vY += velocity * Math.sin(angle);
+    }
 
-	public double getLastMotionInDirection(double angle)
-	{
-		return this.getLastSpeed() * Math.cos(this.getLastPolarDirection() - angle);
-	}
+    public void add3dPolarMotion(double angle1, double angle2, double velocity)
+    {
+        this.vX += velocity * Math.cos(angle1) * Math.cos(angle2);
+        this.vY += velocity * Math.sin(angle1) * Math.cos(angle2);
+        this.vZ += velocity * Math.sin(angle2);
+    }
 
-	public void drawTeam()
-	{
-		Drawing.drawing.setFontSize(20);
-		if (this.team != null)
-			Drawing.drawing.drawText(this.posX, this.posY + 35, this.team.name);
-	}
+    public void moveInDirection(double x, double y, double amount)
+    {
+        this.posX += amount * x;
+        this.posY += amount * y;
+    }
 
-	public static double[] getLocationInDirection(double angle, double distance)
-	{
-		return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};
-	}
+    public void moveInAngle(double a, double amount)
+    {
+        this.posX += amount * Math.cos(a);
+        this.posY += amount * Math.sin(a);
+    }
 
-	public abstract void draw();
+    public static double getSpeed(double vX, double vY)
+    {
+        return Math.sqrt(vX * vX + vY * vY);
+    }
 
-	public double getSize()
-	{
-		return 0;
-	}
+    public double getSpeed()
+    {
+        return Math.sqrt(this.vX * this.vX + this.vY * this.vY);
+    }
 
-	public void drawAt(double x, double y)
-	{
-		double x1 = this.posX;
-		double y1 = this.posY;
-		this.posX = x;
-		this.posY = y;
-		this.draw();
-		this.posX = x1;
-		this.posY = y1;
-	}
+    public double getLastSpeed()
+    {
+        return Math.sqrt(this.lastVX * this.lastVX + this.lastVY * this.lastVY);
+    }
 
-	/** Field to cache the movable array for reuse */
-	private static final ObjectSet<Movable> movableOut = new ObjectArraySet<>();
+    public double getMotionInDirection(double angle)
+    {
+        return this.getSpeed() * Math.cos(this.getPolarDirection() - angle);
+    }
 
-    public static ObjectSet<Movable> getCircleCollision(GameObject self)
+    public double getLastMotionInDirection(double angle)
+    {
+        return this.getLastSpeed() * Math.cos(this.getLastPolarDirection() - angle);
+    }
+
+    public void drawTeam()
+    {
+        Drawing.drawing.setFontSize(20);
+        if (this.team != null)
+            Drawing.drawing.drawText(this.posX, this.posY + 35, this.team.name);
+    }
+
+    public static double[] getLocationInDirection(double angle, double distance)
+    {
+        return new double[]{distance * Math.cos(angle), distance * Math.sin(angle)};
+    }
+
+    public abstract void draw();
+
+    public double getSize()
+    {
+        return 0;
+    }
+
+    public void drawAt(double x, double y)
+    {
+        double x1 = this.posX;
+        double y1 = this.posY;
+        this.posX = x;
+        this.posY = y;
+        this.draw();
+        this.posX = x1;
+        this.posY = y1;
+    }
+
+    /** Field to cache the movable array for reuse */
+    private static final HashSet<Movable> movableOut = new HashSet<>();
+
+    public static HashSet<Movable> getCircleCollision(GameObject self)
     {
         movableOut.clear();
-        double x = self.posX, y = self.posY;
+        double x = self.posX;
+        double y = self.posY;
 
-        for (Chunk c : Chunk.getChunksInRadius(x, y, self.getSize()))
-            for (Movable m : c.movables)
+        for (Chunk c: Chunk.getChunksInRadius(x, y, self.getSize()))
+            for (Movable m: c.movables)
                 if (m != self && !m.skipNextUpdate && !m.destroy &&
                     GameObject.withinRadius(self, m, (self.getSize() + m.getSize()) / 2))
                     movableOut.add(m);
@@ -366,101 +383,111 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         return movableOut;
     }
 
-    public static ObjectSet<Movable> getSquareCollision(GameObject self)
+    public static HashSet<Movable> getSquareCollision(GameObject self)
     {
         movableOut.clear();
         double bound = self.getSize() / 2 + Game.tile_size / 2;
-        double x = self.posX, y = self.posY;
+        double x = self.posX;
+        double y = self.posY;
 
-        for (Chunk c : Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
+        for (Chunk c: Chunk.getChunksInRange(x - bound, y - bound, x + bound, y + bound))
         {
-            for (Movable m : c.movables)
+            for (Movable m: c.movables)
             {
-                if (m != self && !m.skipNextUpdate && !m.destroy && Math.abs(m.posX - x) < (self.getSize() + m.getSize()) / 2
-                    && Math.abs(m.posY - y) < (self.getSize() + m.getSize()) / 2)
+                if (m != self && !m.skipNextUpdate && !m.destroy && Math.abs(m.posX - x) < (self.getSize() + m.getSize()) / 2 &&
+                    Math.abs(m.posY - y) < (self.getSize() + m.getSize()) / 2)
                     movableOut.add(m);
             }
         }
         return movableOut;
     }
 
-	/** Expects all pixel coordinates.
-	 * @return all the movables within the specified range */
-	public static ObjectSet<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
-	{
-		movableOut.clear();
-        for (Chunk c : Chunk.getChunksInRange(x1, y1, x2, y2))
-            for (Movable m : c.movables)
+    /**
+     * Expects all pixel coordinates.
+     *
+     * @return all the movables within the specified range
+     */
+    public static HashSet<Movable> getMovablesInRange(double x1, double y1, double x2, double y2)
+    {
+        movableOut.clear();
+        for (Chunk c: Chunk.getChunksInRange(x1, y1, x2, y2))
+            for (Movable m: c.movables)
                 if (Game.isOrdered(true, x1, m.posX, x2) && Game.isOrdered(true, y1, m.posY, y2))
                     movableOut.add(m);
-		return movableOut;
-	}
+        return movableOut;
+    }
 
 
-	/** Expects all pixel coordinates.
-	 * @return all the movables within a certain radius of the position */
-	public static ObjectSet<Movable> getMovablesInRadius(double posX, double posY, double radius)
-	{
-		movableOut.clear();
-        for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
-            for (Movable m : c.movables)
+    /**
+     * Expects all pixel coordinates.
+     *
+     * @return all the movables within a certain radius of the position
+     */
+    public static HashSet<Movable> getMovablesInRadius(double posX, double posY, double radius)
+    {
+        movableOut.clear();
+        for (Chunk c: Chunk.getChunksInRadius(posX, posY, radius))
+            for (Movable m: c.movables)
                 if (Movable.sqDistBetw(m.posX, m.posY, posX, posY) < radius * radius)
                     movableOut.add(m);
-		return movableOut;
-	}
+        return movableOut;
+    }
 
-	public static Movable findMovable(double x, double y)
-	{
-		for (Movable m : Movable.getMovablesInRadius(x, y, 1))
-			return m;
-		return null;
-	}
+    public static Movable findMovable(double x, double y)
+    {
+        for (Movable m: Movable.getMovablesInRadius(x, y, 1))
+            return m;
+        return null;
+    }
 
-	public void drawForInterface(double x, double y)
-	{
-		this.drawAt(x, y);
-	}
+    public void drawForInterface(double x, double y)
+    {
+        this.drawAt(x, y);
+    }
 
-	public void setEffectManager(EffectManager em)
-	{
-		this.em = em;
-	}
+    public void setEffectManager(EffectManager em)
+    {
+        this.em = em;
+    }
 
-	public void randomize()
-	{
-		try
-		{
-			for (Field f: this.getClass().getFields())
-			{
-				if (f.getAnnotation(Property.class) == null || Math.random() < 0.999)
-					continue;
+    public void randomize()
+    {
+        try
+        {
+            for (Field f: this.getClass().getFields())
+            {
+                if (f.getAnnotation(Property.class) == null || Math.random() < 0.999)
+                    continue;
 
-				if (f.getType().equals(double.class))
-					f.set(this, (double) (f.get(this)) * Math.random() * 1.5 + 0.5);
-				else if (f.getType().equals(int.class))
-					f.set(this, (int) ((int)(f.get(this)) * Math.random() * 1.5 + 0.5));
-				else if (f.getType().isEnum())
-				{
-					Enum[] els = ((Enum) f.get(this)).getClass().getEnumConstants();
-					f.set(this, els[(int) (Math.random() * els.length)]);
-				}
-				else if (Movable.class.isAssignableFrom(f.getType()) && f.get(this) != null)
-				{
-					((Movable) (f.get(this))).randomize();
-				}
-			}
-		}
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
-		}
-	}
+                if (f.getType().equals(double.class))
+                    f.set(this, (double) (f.get(this)) * Math.random() * 1.5 + 0.5);
+                else if (f.getType().equals(int.class))
+                    f.set(this, (int) ((int) (f.get(this)) * Math.random() * 1.5 + 0.5));
+                else if (f.getType().isEnum())
+                {
+                    Enum[] els = ((Enum) f.get(this)).getClass().getEnumConstants();
+                    f.set(this, els[(int) (Math.random() * els.length)]);
+                }
+                else if (Movable.class.isAssignableFrom(f.getType()) && f.get(this) != null)
+                {
+                    ((Movable) (f.get(this))).randomize();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Game.exitToCrash(e);
+        }
+    }
 
     public static ErrorHandler<Movable, Collection<Movable>> movableSyncHandler = new ErrorHandler<Movable, Collection<Movable>>(200, 2)
     {
         @Override
         public Collection<Movable> containsErrors(Movable ignored)
         {
+            if (Game.framework == Game.Framework.libgdx)
+                return noErrorReturnValue();
+
             // compute symmetric difference (A xor B)
             Set<Movable> result = getDisjointMovables();
             return result.isEmpty() ? noErrorReturnValue() : result;
@@ -469,18 +496,23 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
         @Override
         public void handleError(Movable ignored, Collection<Movable> info)
         {
-            System.err.println("-----Movable sync error-----\n" + info.stream().map(m ->
-                {
-                    boolean inGameMovables = Game.movables.contains(m);
-                    return String.format("%s: %sGame.movables, %s",
-                        gameObjectString(m),
-                        inGameMovables ? "*" : "!",
-                        Chunk.chunkList.stream().filter(c -> c.movables.contains(m) != inGameMovables)
-                            .map(c -> (c.movables.contains(m) ? "*" : "!") + c)
-                            .collect(Collectors.joining(", "))
-                    );
-                }
-            ).collect(Collectors.joining("\n")));
+            if (Game.framework != Game.Framework.libgdx)
+            {
+                System.err.println("-----Movable sync error-----\n" + info.stream().map(m ->
+                    {
+                        boolean inGameMovables = Game.movables.contains(m);
+                        return String.format("%s: %sGame.movables, %s",
+                            gameObjectString(m),
+                            inGameMovables ? "*" : "!",
+                            Chunk.chunkList.stream().filter(c -> c.movables.contains(m) != inGameMovables)
+                                .map(c -> (c.movables.contains(m) ? "*" : "!") + c)
+                                .collect(Collectors.joining(", "))
+                        );
+                    }
+                ).collect(Collectors.joining("\n")));
+            }
+            else
+                System.err.println("movable sync error");
             if (!Game.disableErrorFixing && Game.currentLevel != null)
                 Game.currentLevel.reloadTiles();
         }
@@ -501,8 +533,14 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public static class DebugData
     {
         public String name;
-        public double posX, posY, lastPosX, lastPosY, size;
-        public ObjectArrayList<Chunk> touchedChunks, prevChunks;
+        public double posX;
+        public double posY;
+        public double lastPosX;
+        public double lastPosY;
+        public double size;
+
+        public ArrayList<Chunk> touchedChunks;
+        public ArrayList<Chunk> prevChunks;
 
         public DebugData(Movable b, String name)
         {
@@ -512,8 +550,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
             lastPosX = b.lastPosX;
             lastPosY = b.lastPosY;
             size = b.getSize();
-            touchedChunks = new ObjectArrayList<>(b.getTouchingChunks());
-            prevChunks = new ObjectArrayList<>(b.prevChunks);
+            touchedChunks = new ArrayList<>(b.getTouchingChunks());
+            prevChunks = new ArrayList<>(b.prevChunks);
         }
     }
 

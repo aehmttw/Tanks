@@ -1,9 +1,13 @@
 package tanks.network.event;
 
 import tanks.*;
-import tanks.gui.screen.ScreenPartyHost;
+import tanks.gui.screen.ScreenPartyLobby;
+import tanks.network.NetworkUtils;
 
-import java.util.*;
+import io.netty.buffer.ByteBuf;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class EventShowCrusadeStats extends PersonalEvent
 {
@@ -14,7 +18,7 @@ public class EventShowCrusadeStats extends PersonalEvent
 
     public EventShowCrusadeStats()
     {
-        if (!ScreenPartyHost.isServer)
+        if (ScreenPartyLobby.isClient)
             return;
 
         this.name = Crusade.currentCrusade.name;
@@ -46,9 +50,10 @@ public class EventShowCrusadeStats extends PersonalEvent
             if (cp != null)
             {
                 s.append(cp.player.clientID).append("/").append(cp.player.username).append(":")
-                        .append(cp.tankKills.toString()).append("/").append(cp.tankDeaths.toString()).append("/")
-                        .append(cp.itemUses.toString()).append("/").append(cp.itemHits.toString()).append("/")
-                        .append(cp.coins).append("/").append(cp.player.remainingLives).append("/").append(Crusade.currentCrusade.currentLevel + levelExtra).append("/").append(Crusade.currentCrusade.timePassed).append("\n");
+                    .append(cp.tankKills.toString()).append("/").append(cp.tankDeaths.toString()).append("/")
+                    .append(cp.itemUses.toString()).append("/").append(cp.itemHits.toString()).append("/")
+                    .append(cp.coins).append("/").append(cp.player.remainingLives).append("/").append(Crusade.currentCrusade.currentLevel + levelExtra).append("/")
+                    .append(Crusade.currentCrusade.timePassed).append("\n");
             }
         }
 
@@ -80,8 +85,8 @@ public class EventShowCrusadeStats extends PersonalEvent
             String[] parts3 = parts1[1].split("/");
             Player.parseStringIntHashMap(cp.tankKills, parts3[0]);
             Player.parseStringIntHashMap(cp.tankDeaths, parts3[1]);
-            Player.parseStringIntHashMap(cp.itemUses, parts3[2]);
-            Player.parseStringIntHashMap(cp.itemHits, parts3[3]);
+            Player.parseStringDoubleHashMap(cp.itemUses, parts3[2]);
+            Player.parseStringDoubleHashMap(cp.itemHits, parts3[3]);
 
             cp.coins = Integer.parseInt(parts3[4]);
             cp.player.remainingLives = Integer.parseInt(parts3[5]);
@@ -90,5 +95,23 @@ public class EventShowCrusadeStats extends PersonalEvent
 
             Crusade.currentCrusade.crusadePlayers.put(cp.player, cp);
         }
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        NetworkUtils.writeString(b, this.name);
+        NetworkUtils.writeString(b, this.levels);
+        NetworkUtils.writeString(b, this.stats);
+        NetworkUtils.writeString(b, this.crusade);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.name = NetworkUtils.readString(b);
+        this.levels = NetworkUtils.readString(b);
+        this.stats = NetworkUtils.readString(b);
+        this.crusade = NetworkUtils.readString(b);
     }
 }

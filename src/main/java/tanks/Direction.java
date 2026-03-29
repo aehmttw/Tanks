@@ -4,12 +4,14 @@ package tanks;
  * Represents a direction in the game.
  * Each direction has an associated {@linkplain #x()} and {@linkplain #y()}, which represents the direction's vector.
  * Each direction has an index, specified in {@linkplain #index()}.
- * */
+ *
+ */
 public enum Direction
 {
     up, right, down, left, upLeft, upRight, downLeft, downRight;
 
-    public static final int[] X = {0, 1, 0, -1, 0, 1, -1, 0, 1, -1}, Y = {-1, 0, 1, 0, 1, 0, 0, -1, 1, -1};
+    public static final int[] X = {0, 1, 0, -1, 0, 1, -1, 0, 1, -1};
+    public static final int[] Y = {-1, 0, 1, 0, 1, 0, 0, -1, 1, -1};
 
     private static final Direction[] values = Direction.values();
 
@@ -39,16 +41,17 @@ public enum Direction
     }
 
     /**
-     *  Returns the index of the direction, where:<br>
-     *  0 = up<br>
-     *  1 = right<br>
-     *  2 = down<br>
-     *  3 = left<br>
-     *  4 = upLeft<br>
-     *  5 = upRight<br>
-     *  6 = downLeft<br>
-     *  7 = downRight
-     * */
+     * Returns the index of the direction, where:<br>
+     * 0 = up<br>
+     * 1 = right<br>
+     * 2 = down<br>
+     * 3 = left<br>
+     * 4 = upLeft<br>
+     * 5 = upRight<br>
+     * 6 = downLeft<br>
+     * 7 = downRight
+     *
+     */
     public int index()
     {
         return this.ordinal();
@@ -69,7 +72,8 @@ public enum Direction
     /**
      * Returns the direction with the specified index,
      * as specified in {@linkplain #index()}.
-     * */
+     *
+     */
     public static Direction fromIndex(int i)
     {
         return values[i];

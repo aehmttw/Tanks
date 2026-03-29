@@ -2,20 +2,18 @@ package tanks.tankson;
 
 import basewindow.Color;
 import tanks.Game;
-import tanks.item.ItemBullet;
-import tanks.item.ItemIcon;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
+
+import static tanks.tankson.CopyableFields.copyFields;
 
 @SuppressWarnings("unchecked")
 public interface ICopyable<T>
 {
-    HashMap<Class<? extends ICopyable<?>>, ArrayList<Field>> copyFields = new HashMap<>();
-
     /**
      * Clone this object's properties to another object
+     *
      * @param m the another object
      * @return the same object passed to it, for convenience
      */
@@ -23,10 +21,14 @@ public interface ICopyable<T>
     {
         try
         {
-            ArrayList<Field> fields = copyFields.computeIfAbsent((Class<? extends ICopyable<?>>) m.getClass(), k -> new ArrayList<>());
+            // Do not use ComputeIfAbsent. This breaks the iOS compiler.
+            if (!copyFields.containsKey(m.getClass()))
+                copyFields.put((Class<? extends ICopyable<?>>) m.getClass(), new ArrayList<>());
+
+            ArrayList<Field> fields = copyFields.get((Class<? extends ICopyable<?>>) m.getClass());
             if (fields.isEmpty())
             {
-                for (Field f : m.getClass().getFields())
+                for (Field f: m.getClass().getFields())
                 {
                     Property p = f.getAnnotation(Property.class);
                     if (p == null) continue;
@@ -56,12 +58,10 @@ public interface ICopyable<T>
             Object v = f.get(this);
             if (v instanceof ICopyable)
             {
-                if (m instanceof ItemIcon)
-                    System.out.println("cloning item icon " + this.getClass());
                 f.set(m, ((ICopyable<?>) v).getCopy());
             }
             else if (v instanceof Color)
-                ((Color)f.get(m)).set((Color) v);
+                ((Color) f.get(m)).set((Color) v);
             else if (v instanceof ArrayList)
             {
                 f.set(m, new ArrayList<>());
@@ -76,16 +76,15 @@ public interface ICopyable<T>
             }
             else
             {
-                if (m instanceof ItemIcon)
-                    System.out.println("NOT! cloning item icon " + this.getClass());
                 f.set(m, v);
             }
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) { }
     }
 
     /**
      * Gets a template copy of this, not to be added to the game field but to be used as a template
+     *
      * @return a template copy
      */
     default T getCopy()

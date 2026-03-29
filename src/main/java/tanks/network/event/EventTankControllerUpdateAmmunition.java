@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.Game;
 import tanks.tank.TankPlayerController;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.UUID;
 
 public class EventTankControllerUpdateAmmunition extends PersonalEvent implements IStackableEvent

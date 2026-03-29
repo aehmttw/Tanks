@@ -1,8 +1,6 @@
 package tanks.gui;
 
-import tanks.BiConsumer;
-import tanks.Drawing;
-import tanks.Level;
+import tanks.*;
 import tanks.translation.Translation;
 
 import java.util.ArrayList;
@@ -48,6 +46,7 @@ public class ButtonList
     public double buttonYSpace = 60;
 
     public boolean shiftWhenNoPages = true;
+    public double noPageOffY = 0;
 
     public double imageR = 255;
     public double imageG = 255;
@@ -65,14 +64,15 @@ public class ButtonList
 
     public BiConsumer<Integer, Integer> reorderBehavior;
 
-    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page", new Runnable()
-    {
-        @Override
-        public void run()
+    public Button next = new Button(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2, this.objWidth, this.objHeight, "Next page",
+        new Runnable()
         {
-            page++;
+            @Override
+            public void run()
+            {
+                page++;
+            }
         }
-    }
     );
 
     public Button previous = new Button(Drawing.drawing.interfaceSizeX / 2 - this.objXSpace / 2, 0, this.objWidth, this.objHeight, "Previous page", new Runnable()
@@ -175,7 +175,7 @@ public class ButtonList
         this.first.imageSizeY = 20;
         this.first.imageXOffset = 0;
 
-        double oy = shiftWhenNoPages && (this.buttons.size() <= rows * columns) ? 30 : 0;
+        this.noPageOffY = shiftWhenNoPages && (this.buttons.size() <= rows * columns) ? 30 : 0;
 
         for (int i = 0; i < buttons.size(); i++)
         {
@@ -198,7 +198,7 @@ public class ButtonList
 
             double offset = -this.buttonXSpace / 2 * (cols - 1);
 
-            buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (r - (rs - 1) / 2.0) * this.buttonYSpace + oy;
+            buttons.get(i).posY = Drawing.drawing.interfaceSizeY / 2 + yOffset + (r - (rs - 1) / 2.0) * this.buttonYSpace + this.noPageOffY;
             buttons.get(i).posX = Drawing.drawing.interfaceSizeX / 2 + offset + c * this.buttonXSpace + xOffset;
             buttons.get(i).sizeX = this.buttonWidth;
             buttons.get(i).sizeY = this.buttonHeight;
@@ -336,7 +336,7 @@ public class ButtonList
                 Drawing.drawing.setColor(0, 0, 0);
 
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2 + xOffset, 20 + Drawing.drawing.interfaceSizeY / 2 + yOffset + controlsYOffset + ((rows + 1) / 2.0) * this.objYSpace,
-                    Translation.translate("Page %d of %d", (page + 1), (buttons.size() / (rows * columns) + Math.min(1, buttons.size() % (rows * columns)))));
+                Translation.translate("Page %d of %d", (page + 1), (buttons.size() / (rows * columns) + Math.min(1, buttons.size() % (rows * columns)))));
 
             previous.draw();
             next.draw();
@@ -393,8 +393,16 @@ public class ButtonList
         return s;
     }
 
+    // Do not replace this with a filter, it will break the iOS compiler.
     public void filter(String s)
     {
-        buttons.removeIf(b -> !b.text.toLowerCase().contains(s.toLowerCase()));
+        for (int i = 0; i < this.buttons.size(); i++)
+        {
+            if (!buttons.get(i).text.toLowerCase().contains(s.toLowerCase()))
+            {
+                buttons.remove(i);
+                i--;
+            }
+        }
     }
 }

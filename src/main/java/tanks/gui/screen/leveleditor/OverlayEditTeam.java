@@ -1,9 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Team;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.gui.screen.Screen;
@@ -14,7 +11,9 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     public TextBox teamName;
     public Team team;
 
-    public Runnable onEscape = () -> {};
+    public Runnable onEscape = () ->
+    {
+    };
 
     public OverlayEditTeam(Screen previous, ScreenLevelEditor screenLevelEditor, Team team)
     {
@@ -41,8 +40,8 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
             {
                 team.name = teamName.inputText;
             }
-        }
-                , team.name);
+        },
+            team.name);
 
         teamFriendlyFire.image = "shield.png";
         teamFriendlyFire.imageXOffset = -teamFriendlyFire.sizeX / 2 + teamFriendlyFire.sizeY / 2;
@@ -81,7 +80,7 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     }
     );
 
-    public Button teamFriendlyFire = new Button(this.centerX, this.centerY , this.objWidth, this.objHeight, "Friendly fire: on", new Runnable()
+    public Button teamFriendlyFire = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Friendly fire: on", new Runnable()
     {
         @Override
         public void run()
@@ -96,10 +95,9 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
     );
 
     public Button teamColor = new Button(this.centerX, this.centerY + this.objYSpace, this.objWidth, this.objHeight, "Team color", () ->
-        {
-            Game.screen = new OverlayEditTeamColor(Game.screen, editor, team);
-        }
-    );
+    {
+        Game.screen = new OverlayEditTeamColor(Game.screen, editor, team);
+    });
 
     @Override
     public void escape()
@@ -145,5 +143,11 @@ public class OverlayEditTeam extends ScreenLevelEditorOverlay
         if (team.enableColor)
             Drawing.drawing.setColor(team.teamColor);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace * 3, this.team.name);
+    }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.setUnscaledLayoutParameters();
     }
 }

@@ -1,12 +1,9 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.item.Item;
-import tanks.tankson.MonitoredArrayListIndexPointer;
 
 public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundScreen
 {

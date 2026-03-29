@@ -1,13 +1,15 @@
 package tanks.tank;
 
 import basewindow.Color;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import tanks.*;
-import tanks.gui.*;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemMine;
-import tanks.network.event.*;
+import tanks.network.event.EventMineChangeTimer;
+import tanks.network.event.EventMineRemove;
 import tanks.tankson.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @TanksONable("mine")
 public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITanksONEditable
@@ -18,7 +20,8 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     @Property(id = "explosion", name = "Explosion", category = MinePropertyCategory.mine)
     public Explosion explosion = new Explosion();
 
-    @Property(id = "timer", name = "Fuse length", desc = "The mine will explode this much time after it is placed \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
+    @Property(id = "timer", name = "Fuse length", desc = "The mine will explode this much time after it is placed \n \n 1 time unit = 0.01 seconds",
+        category = MinePropertyCategory.mine)
     public double timer = 1000;
 
     @Property(id = "size", name = "Size", category = MinePropertyCategory.mine)
@@ -29,14 +32,16 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public double outlineColorB;
     public double height = 0;
 
-    @Property(id = "triggered_timer", name = "Triggered fuse length", desc = "If an enemy tank is within this mine's radius, its fuse will be shortened to this length \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
+    @Property(id = "triggered_timer", name = "Triggered fuse length",
+        desc = "If an enemy tank is within this mine's radius, its fuse will be shortened to this length \n \n 1 time unit = 0.01 seconds", category = MinePropertyCategory.mine)
     public double triggeredTimer = 50;
 
     public Tank tank;
     public ItemMine.ItemStackMine item;
     public int lastBeep = Integer.MAX_VALUE;
 
-    @Property(id = "max_live_mines", name = "Max live mines", desc = "The maximum number of this mine placed by one tank that can be onscreen at a time", category = MinePropertyCategory.mine)
+    @Property(id = "max_live_mines", name = "Max live mines",
+        desc = "The maximum number of this mine placed by one tank that can be onscreen at a time", category = MinePropertyCategory.mine)
     public int maxLiveMines = 2;
 
     @Property(id = "color", name = "Initial color", miscType = Property.MiscType.colorRGB, category = MinePropertyCategory.colors)
@@ -48,7 +53,8 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public int networkID = -1;
 
     public static int currentID = 0;
-    public static Int2ObjectOpenHashMap<Mine> idMap = new Int2ObjectOpenHashMap<>();
+    public static ArrayList<Integer> freeIDs = new ArrayList<>();
+    public static HashMap<Integer, Mine> idMap = new HashMap<>();
 
     public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
 
@@ -87,23 +93,15 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
         if (!ScreenPartyLobby.isClient)
         {
-            this.networkID = currentID++;
-            idMap.put(this.networkID, this);
-        }
-
-        for (IFixedMenu m : ModAPI.menuGroup)
-        {
-            if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.mines_placed))
+            if (freeIDs.size() > 0)
+                this.networkID = freeIDs.remove(0);
+            else
             {
-                if (((Scoreboard) m).players.isEmpty())
-                    ((Scoreboard) m).addTeamScore(this.team, 1);
-
-                else if (this.tank instanceof TankPlayer)
-                    ((Scoreboard) m).addPlayerScore(((TankPlayer) this.tank).player, 1);
-
-                else if (this.tank instanceof TankPlayerRemote)
-                    ((Scoreboard) m).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
+                this.networkID = currentID;
+                currentID++;
             }
+
+            idMap.put(this.networkID, this);
         }
     }
 
@@ -184,7 +182,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
         if ((this.timer <= 0 || destroy) && !ScreenPartyLobby.isClient)
             this.explode();
 
-        int beepTime = ((int)this.timer / 10);
+        int beepTime = ((int) this.timer / 10);
         if (this.timer <= 150 && beepTime % 2 == 1 && this.lastBeep != beepTime && this.tank == Game.playerTank)
         {
             Drawing.drawing.playSound("beep.ogg", 1f);
@@ -221,6 +219,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
         if (!ScreenPartyLobby.isClient)
         {
+            freeIDs.add(this.networkID);
             idMap.remove(this.networkID);
 
             Explosion e = new Explosion(this);
@@ -282,7 +281,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
     public static void drawRange2D(double posX, double posY, double size, boolean inverted)
     {
-        int faces = (int) (size + 5);
+        int faces = Math.min((int) (size + 5), 10000);
         double r = Drawing.drawing.currentColorR;
         double g = Drawing.drawing.currentColorG;
         double b = Drawing.drawing.currentColorB;

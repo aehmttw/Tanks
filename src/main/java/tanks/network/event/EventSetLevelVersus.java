@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventSetLevelVersus extends PersonalEvent
 {
     public EventSetLevelVersus()

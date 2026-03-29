@@ -1,6 +1,5 @@
 package tanks;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import tanks.tank.Tank;
 
 import java.util.*;
@@ -18,8 +17,9 @@ public abstract class ErrorHandler<K, V>
 
     public static final ArrayList<ErrorHandler<?, ?>> errorHandlers = new ArrayList<>();
 
-    public final Object2IntOpenHashMap<K> errorCounts = new Object2IntOpenHashMap<>();
-    public double baseInterval, intervalTimer;
+    public final HashMap<K, Integer> errorCounts = new HashMap<>();
+    public double baseInterval;
+    public double intervalTimer;
     public int triggerCount;
 
     public ErrorHandler(double interval, int triggerCount)
@@ -45,14 +45,19 @@ public abstract class ErrorHandler<K, V>
         V info = containsErrors(obj);
         if (Objects.equals(info, noErrorReturnValue()))
         {
-            errorCounts.removeInt(obj);
+            errorCounts.remove(obj);
             return;
         }
 
-        if (errorCounts.addTo(obj, 1) >= triggerCount)
+        Integer i = errorCounts.get(obj);
+        if (i == null)
+            i = 0;
+        int count = i + 1;
+        errorCounts.put(obj, count);
+        if (count >= triggerCount)
         {
             handleError(obj, info);
-            errorCounts.removeInt(obj);
+            errorCounts.remove(obj);
         }
     }
 
@@ -68,5 +73,6 @@ public abstract class ErrorHandler<K, V>
     }
 
     public abstract V containsErrors(K obj);
+
     public abstract void handleError(K obj, V info);
 }

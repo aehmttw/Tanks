@@ -1,7 +1,10 @@
 package tanks.network.event;
 
 import tanks.Game;
-import tanks.obstacle.*;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleStackable;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventAddObstacleBullet extends PersonalEvent
 {
@@ -25,6 +28,28 @@ public class EventAddObstacleBullet extends PersonalEvent
         this.colorG = o.colorG;
         this.colorB = o.colorB;
         this.success = success;
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeDouble(this.posX);
+        b.writeDouble(this.posY);
+        b.writeDouble(this.colorR);
+        b.writeDouble(this.colorG);
+        b.writeDouble(this.colorB);
+        b.writeBoolean(this.success);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.posX = b.readDouble();
+        this.posY = b.readDouble();
+        this.colorR = b.readDouble();
+        this.colorG = b.readDouble();
+        this.colorB = b.readDouble();
+        this.success = b.readBoolean();
     }
 
     @Override

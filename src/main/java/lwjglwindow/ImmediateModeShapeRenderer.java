@@ -1,6 +1,7 @@
 package lwjglwindow;
 
 import basewindow.BaseShapeRenderer;
+
 import org.lwjgl.opengl.GL11;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -8,12 +9,12 @@ import static org.lwjgl.opengl.GL11.*;
 public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 {
     public LWJGLWindow window;
-    
+
     public ImmediateModeShapeRenderer(LWJGLWindow window)
     {
         this.window = window;
     }
-    
+
     public void fillOval(double x, double y, double sX, double sY)
     {
         x += sX / 2;
@@ -25,6 +26,34 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
             glVertex2d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2);
         glEnd();
+    }
+
+    @Override
+    public void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest)
+    {
+        if (depthTest)
+        {
+            this.window.enableDepthtest();
+
+            if (this.window.colorA < 1)
+                glDepthMask(false);
+        }
+
+        x += sX / 2;
+        y += sY / 2;
+
+        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5);
+
+        glBegin(GL_TRIANGLE_FAN);
+        for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
+            glVertex3d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2, z);
+        glEnd();
+
+        if (depthTest)
+        {
+            glDepthMask(true);
+            this.window.disableDepthtest();
+        }
     }
 
     public void fillGlow(double x, double y, double sX, double sY, boolean shade)
@@ -75,117 +104,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         if (!shade)
             this.window.setTransparentBlendFunc();
     }
-
-    @Override
-    public void fillOval(double x, double y, double z, double sX, double sY, boolean depthTest)
-    {
-        if (depthTest)
-        {
-            this.window.enableDepthtest();
-
-            if (this.window.colorA < 1)
-                glDepthMask(false);
-        }
-
-        x += sX / 2;
-        y += sY / 2;
-
-        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 4 + 5);
-
-        glBegin(GL_TRIANGLE_FAN);
-        for (double i = 0; i < Math.PI * 2; i += Math.PI * 2 / sides)
-            glVertex3d(x + Math.cos(i) * sX / 2, y + Math.sin(i) * sY / 2, z);
-        glEnd();
-
-        if (depthTest)
-        {
-            glDepthMask(true);
-            this.window.disableDepthtest();
-        }
-    }
-
-    @Override
-    public void fillRect(double x, double y, double z, double sX, double sY, boolean depthTest)
-    {
-        if (depthTest)
-        {
-            this.window.enableDepthtest();
-
-            if (this.window.colorA < 1)
-                glDepthMask(false);
-        }
-        else
-            this.window.disableDepthtest();
-
-        glBegin(GL_QUADS);
-        glVertex3d(x, y, z);
-        glVertex3d(x + sX, y, z);
-        glVertex3d(x + sX, y + sY, z);
-        glVertex3d(x, y + sY, z);
-        glEnd();
-
-        if (depthTest)
-        {
-            glDepthMask(true);
-            this.window.disableDepthtest();
-        }
-    }
-
-    @Override
-    public void fillPartialOval(double x, double y, double sX, double sY, double start, double end)
-    {
-        x += sX / 2;
-        y += sY / 2;
-
-        int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
-
-        glBegin(GL_TRIANGLES);
-        for (double i = 0; i < sides; i++)
-        {
-            double a = Math.PI * 2 * ((i / sides) * (end - start) + start);
-            double a1 = Math.PI * 2 * (((i + 1) / sides) * (end - start) + start);
-
-            glVertex2d(x + Math.cos(a) * sX / 2, y + Math.sin(a) * sY / 2);
-            glVertex2d(x + Math.cos(a1) * sX / 2, y + Math.sin(a1) * sY / 2);
-            glVertex2d(x, y);
-        }
-
-        glEnd();
-    }
-
-    @Override
-    public void fillPartialRing(double x, double y, double size, double thickness, double start, double end)
-    {
-        fillPartialRing(x, y, 0, size, thickness, start, end);
-    }
-
-    @Override
-    public void fillPartialRing(double x, double y, double z, double size, double thickness, double start, double end)
-    {
-        int sides = Math.max(4, (int) (2 * size) / 4 + 5);
-
-        glBegin(GL_TRIANGLES);
-        for (double i = 0; i < sides; i++)
-        {
-            double a = Math.PI * 2 * ((i / sides) * (end - start) + start);
-            double a1 = Math.PI * 2 * (((i + 1) / sides) * (end - start) + start);
-
-            glVertex3d(x + Math.cos(a) * size / 2, y + Math.sin(a) * size / 2, z);
-            double v = x + Math.cos(a1) * size / 2;
-            double v1 = y + Math.sin(a1) * size / 2;
-            glVertex3d(v, v1, z);
-            double v2 = Math.cos(a) * (size - thickness) / 2;
-            double v3 = Math.sin(a) * (size - thickness) / 2;
-            glVertex3d(x + v2, y + v3, z);
-
-            glVertex3d(v, v1, z);
-            glVertex3d(x + Math.cos(a1) * (size - thickness) / 2, y + Math.sin(a1) * (size - thickness) / 2, z);
-            glVertex3d(x + v2, y + v3, z);
-        }
-
-        glEnd();
-    }
-
 
     public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
     {
@@ -248,6 +166,112 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         }
     }
 
+    @Override
+    public void fillGlow(double x, double y, double sX, double sY)
+    {
+        this.fillGlow(x, y, sX, sY, false);
+    }
+
+    @Override
+    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
+    {
+        this.fillGlow(x, y, z, sX, sY, false, false);
+    }
+
+    @Override
+    public void fillRect(double x, double y, double z, double sX, double sY, boolean depthTest)
+    {
+        if (depthTest)
+        {
+            this.window.enableDepthtest();
+
+            if (this.window.colorA < 1)
+                glDepthMask(false);
+        }
+        else
+            this.window.disableDepthtest();
+
+        glBegin(GL_QUADS);
+        glVertex3d(x, y, z);
+        glVertex3d(x + sX, y, z);
+        glVertex3d(x + sX, y + sY, z);
+        glVertex3d(x, y + sY, z);
+        glEnd();
+
+        if (depthTest)
+        {
+            glDepthMask(true);
+            this.window.disableDepthtest();
+        }
+    }
+
+    public void fillRect(double x, double y, double sX, double sY)
+    {
+        glBegin(GL_TRIANGLE_FAN);
+
+        glVertex2d(x, y);
+        glVertex2d(x + sX, y);
+        glVertex2d(x + sX, y + sY);
+        glVertex2d(x, y + sY);
+
+        glEnd();
+    }
+
+    @Override
+    public void fillPartialOval(double x, double y, double sX, double sY, double start, double end)
+    {
+        x += sX / 2;
+        y += sY / 2;
+
+        int sides = Math.max(4, (int) (sX + sY) / 4 + 5);
+
+        glBegin(GL_TRIANGLES);
+        for (double i = 0; i < sides; i++)
+        {
+            double a = Math.PI * 2 * ((i / sides) * (end - start) + start);
+            double a1 = Math.PI * 2 * (((i + 1) / sides) * (end - start) + start);
+
+            glVertex2d(x + Math.cos(a) * sX / 2, y + Math.sin(a) * sY / 2);
+            glVertex2d(x + Math.cos(a1) * sX / 2, y + Math.sin(a1) * sY / 2);
+            glVertex2d(x, y);
+        }
+
+        glEnd();
+    }
+
+    @Override
+    public void fillPartialRing(double x, double y, double size, double thickness, double start, double end)
+    {
+        fillPartialRing(x, y, 0, size, thickness, start, end);
+    }
+
+    @Override
+    public void fillPartialRing(double x, double y, double z, double size, double thickness, double start, double end)
+    {
+        int sides = Math.max(4, (int) (2 * size) / 4 + 5);
+
+        glBegin(GL_TRIANGLES);
+        for (double i = 0; i < sides; i++)
+        {
+            double a = Math.PI * 2 * ((i / sides) * (end - start) + start);
+            double a1 = Math.PI * 2 * (((i + 1) / sides) * (end - start) + start);
+
+            glVertex3d(x + Math.cos(a) * size / 2, y + Math.sin(a) * size / 2, z);
+            double v = x + Math.cos(a1) * size / 2;
+            double v1 = y + Math.sin(a1) * size / 2;
+            glVertex3d(v, v1, z);
+            double v2 = Math.cos(a) * (size - thickness) / 2;
+            double v3 = Math.sin(a) * (size - thickness) / 2;
+            glVertex3d(x + v2, y + v3, z);
+
+            glVertex3d(v, v1, z);
+            glVertex3d(x + Math.cos(a1) * (size - thickness) / 2, y + Math.sin(a1) * (size - thickness) / 2, z);
+            glVertex3d(x + v2, y + v3, z);
+        }
+
+        glEnd();
+    }
+
     public void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest)
     {
         if (depthTest)
@@ -268,7 +292,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             double ox = Math.cos(i) * sX / 2;
             double oy = Math.sin(i) * sY / 2;
-            glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2, y + ox * this.window.bby1 + oy * this.window.bby2, z + ox * this.window.bbz1 + oy * this.window.bbz2);
+            glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2, y + ox * this.window.bby1 + oy * this.window.bby2,
+                z + ox * this.window.bbz1 + oy * this.window.bbz2);
         }
 
         glEnd();
@@ -300,7 +325,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         {
             double ox = Math.cos(i) * sX / 2;
             double oy = Math.sin(i) * sY / 2;
-            glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2 + oZ * this.window.bbx3, y + ox * this.window.bby1 + oy * this.window.bby2 + oZ * this.window.bby3, z + ox * this.window.bbz1 + oy * this.window.bbz2 + oZ * this.window.bbz3);
+            glVertex3d(x + ox * this.window.bbx1 + oy * this.window.bbx2 + oZ * this.window.bbx3, y + ox * this.window.bby1 + oy * this.window.bby2 + oZ * this.window.bby3,
+                z + ox * this.window.bbz1 + oy * this.window.bbz2 + oZ * this.window.bbz3);
         }
 
         glEnd();
@@ -313,26 +339,14 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     }
 
     @Override
-    public void fillGlow(double x, double y, double sX, double sY)
-    {
-        this.fillGlow(x, y, sX, sY, false);
-    }
-
-    @Override
-    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
-    {
-        this.fillGlow(x, y, z, sX, sY, false, false);
-    }
-
-    @Override
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest)
     {
-        this.fillFacingGlow(x, y, z, sX, sY, depthTest,false);
+        this.fillFacingGlow(x, y, z, sX, sY, depthTest, false);
     }
 
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
     {
-        this.fillFacingGlow(x, y, z, sX, sY, depthTest, shade,false);
+        this.fillFacingGlow(x, y, z, sX, sY, depthTest, shade, false);
     }
 
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
@@ -423,18 +437,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         }
     }
 
-    public void fillRect(double x, double y, double sX, double sY)
-    {
-        glBegin(GL_TRIANGLE_FAN);
-
-        glVertex2d(x, y);
-        glVertex2d(x + sX, y);
-        glVertex2d(x + sX, y + sY);
-        glVertex2d(x, y + sY);
-
-        glEnd();
-    }
-
     public void fillRoundedRect(double x, double y, double sX, double sY, double radius)
     {
         if (radius <= 0.2)
@@ -477,7 +479,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
      * +16 hide left face<br>
      * +32 hide right face<br>
      * +64 draw on top<br>
-     * */
+     *
+     */
     public void fillBox(double x, double y, double z, double sX, double sY, double sZ, byte options, String texture)
     {
         if (!this.window.batchMode)
@@ -815,7 +818,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glVertex2d(x, y + sY - width);
         glVertex2d(x + sX, y + sY - width);
         glVertex2d(x + sX, y + sY);
-        glVertex2d( x, y + sY);
+        glVertex2d(x, y + sY);
 
         glVertex2d(x + sX - width, y);
         glVertex2d(x + sX - width, y + sY - width);
@@ -1040,7 +1043,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         this.drawImage(x, y, z, sX, sY, u1, v1, u2, v2, image, rotation, scaled, true);
     }
 
-    public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest)
+    public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled,
+                          boolean depthtest)
     {
         if (this.window.drawingShadow)
             return;

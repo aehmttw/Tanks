@@ -2,6 +2,9 @@ package tanks.network.event;
 
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
+import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 
@@ -27,5 +30,17 @@ public class EventPlayerAutoReadyConfirm extends PersonalEvent
             if (Game.screen instanceof ScreenGame)
                 ((ScreenGame) Game.screen).ready = true;
         }
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        NetworkUtils.writeString(b, playerID.toString());
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.playerID = UUID.fromString(NetworkUtils.readString(b));
     }
 }

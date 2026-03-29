@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventLevelFinishedQuick extends PersonalEvent
 {
     public String winningTeam;

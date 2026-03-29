@@ -1,350 +1,356 @@
 package tanks.gui.screen;
 
-import com.codedisaster.steamworks.SteamID;
-import com.codedisaster.steamworks.SteamMatchmaking;
-import com.codedisaster.steamworks.SteamNetworking;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
-import tanks.gui.Button;
-import tanks.gui.TextBox;
+import tanks.*;
+import tanks.gui.*;
 import tanks.network.Client;
-import tanks.network.SteamNetworkHandler;
+import tanks.network.event.EventChat;
 import tanks.network.event.EventSendClientDetails;
+
+import com.codedisaster.steamworks.SteamID;
+import com.codedisaster.steamworks.SteamNetworking;
 
 import java.util.UUID;
 
 public class ScreenJoinParty extends Screen
 {
-	public Thread clientThread;
+    public Thread clientThread;
 
-	public ScreenJoinParty()
-	{
-		this.music = "menu_2.ogg";
-		this.musicID = "menu";
+    public ScreenJoinParty()
+    {
+        this.music = "menu_2.ogg";
+        this.musicID = "menu";
 
-		ip.allowDots = true;
-		ip.maxChars = 100;
-		ip.allowColons = true;
-		ip.lowerCase = true;
+        ip.allowDots = true;
+        ip.maxChars = 100;
+        ip.allowColons = true;
+        ip.lowerCase = true;
 
-		if (Game.steamNetworkHandler.initialized)
-		{
-			ip.posY += this.objYSpace;
-			join.posY += this.objYSpace;
-		}
-	}
-	
-	Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
-	{
-		@SuppressWarnings("deprecation")
-		@Override
-		public void run() 
-		{
-			try
-			{
-				if (clientThread != null && clientThread.isAlive())
-					clientThread.interrupt();
-			}
-			catch (Exception ignored) {}
+        if (Game.steamNetworkHandler.initialized)
+        {
+            ip.posY += this.objYSpace;
+            join.posY += this.objYSpace;
+        }
 
-			Game.screen = new ScreenParty();
-		}
-	}
-	);
+        Game.steamNetworkHandler.addPartyCountSubtext(steamLobbies);
+    }
 
-//	Button steam = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "Join Steam friends", () -> Game.screen = new ScreenJoinSteamFriends((ScreenJoinParty) Game.screen));
+    Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", new Runnable()
+    {
+        @SuppressWarnings("deprecation")
+        @Override
+        public void run()
+        {
+            try
+            {
+                if (clientThread != null && clientThread.isAlive())
+                    clientThread.interrupt();
+            }
+            catch (Exception ignored) { }
 
-	Button steamLobbies = new Button(this.centerX, this.centerY - this.objYSpace * 1.75, this.objWidth, this.objHeight, "Browse public parties", () ->
-	{
-		Game.steamNetworkHandler.requestLobbies(this);
-		Game.screen = new ScreenWaitingLobbyList();
-	});
+            Game.screen = new ScreenParty();
+        }
+    }
+    );
 
-	Button acceptInvite = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.75, this.objWidth, this.objHeight, "Accept party invite!", () ->
-	{
-		ScreenJoinParty s = this;
-		String s1 = s.ip.inputText;
-		s.ip.inputText = "lobby:" + Long.toHexString(Game.steamLobbyInvite);
-		Game.steamLobbyInvite = -1;
-		s.join.function.run();
-		s.ip.inputText = s1;
-		Game.lastOfflineScreen = new ScreenTitle();
-	});
+//  Button steam = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "Join Steam friends", () -> Game.screen = new ScreenJoinSteamFriends((ScreenJoinParty) Game.screen));
+
+    Button steamLobbies = new Button(this.centerX, this.centerY - this.objYSpace * 1.75, this.objWidth, this.objHeight, "Browse public parties", () ->
+    {
+        Game.steamNetworkHandler.requestLobbies(this);
+        Game.screen = new ScreenWaitingLobbyList();
+    });
+
+    Button acceptInvite = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.75, this.objWidth, this.objHeight, "Accept party invite!",
+        () ->
+        {
+            ScreenJoinParty s = this;
+            String s1 = s.ip.inputText;
+            s.ip.inputText = "lobby:" + Long.toHexString(Game.steamLobbyInvite);
+            Game.steamLobbyInvite = -1;
+            s.join.function.run();
+            s.ip.inputText = s1;
+            Game.lastOfflineScreen = new ScreenTitle();
+        }
+    );
 
 
-	public Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.lastOfflineScreen = Game.screen;
+    public Button join = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Join", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            ScreenPartyLobby.chatbox = new ChatBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.getInterfaceEdgeY(true) - 30,
+                Drawing.drawing.interfaceSizeX - 20, 40, Game.game.input.chat, () -> Game.eventsOut.add(new EventChat(ScreenPartyLobby.chatbox.inputText)));
 
-			ScreenSharedLevels.page = 0;
-			ScreenPartyLobby.chat.clear();
-			ScreenPartyLobby.sharedLevels.clear();
+            Game.lastOfflineScreen = Game.screen;
 
-			ScreenPartyLobby.connections.clear();
-			ScreenPartyLobby.connectedBots = 0;
-			Game.eventsOut.clear();
+            ScreenSharedLevels.page = 0;
+            ScreenPartyLobby.chat.clear();
+            ScreenPartyLobby.sharedLevels.clear();
 
-			String ipText = ip.inputText.trim();
+            ScreenPartyLobby.connections.clear();
+            ScreenPartyLobby.connectedBots = 0;
+            Game.eventsOut.clear();
 
-			if (ipText.startsWith("lobby:") && Game.steamNetworkHandler.initialized)
-			{
-				Game.steamNetworkHandler.joinParty(Long.parseLong(ipText.split(":")[1], 16));
-				ScreenConnecting s = new ScreenConnecting(clientThread);
-				Game.screen = s;
-				Client.connectionID = UUID.randomUUID();
+            String ipText = ip.inputText.trim();
 
-				clientThread = new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						UUID connectionID = Client.connectionID;
+            if (ipText.startsWith("lobby:") && Game.steamNetworkHandler.initialized)
+            {
+                Game.steamNetworkHandler.joinParty(Long.parseLong(ipText.split(":")[1], 16));
+                ScreenConnecting s = new ScreenConnecting(clientThread);
+                Game.screen = s;
+                Client.connectionID = UUID.randomUUID();
 
-						while (Game.steamNetworkHandler.currentLobby == null)
-						{
-							try
-							{
-								Thread.sleep(25);
-							}
-							catch (InterruptedException e)
-							{
-								e.printStackTrace();
-							}
-						}
+                clientThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        UUID connectionID = Client.connectionID;
 
-						SteamID target = Game.steamNetworkHandler.send(Game.steamNetworkHandler.currentLobby, new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
+                        while (Game.steamNetworkHandler.currentLobby == null)
+                        {
+                            try
+                            {
+                                Thread.sleep(25);
+                            }
+                            catch (InterruptedException e)
+                            {
+                                e.printStackTrace();
+                            }
+                        }
 
-						while (true)
-						{
-							if (target == null)
-								break;
+                        SteamID target = Game.steamNetworkHandler.send(Game.steamNetworkHandler.currentLobby,
+                            new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
 
-							SteamNetworking.P2PSessionState state = new SteamNetworking.P2PSessionState();
-							Game.steamNetworkHandler.networking.getP2PSessionState(target, state);
+                        while (true)
+                        {
+                            if (target == null)
+                                break;
 
-							if (!state.isConnecting() && !state.isConnectionActive())
-							{
-								sendToFail(s, connectionID);
-								break;
-							}
+                            SteamNetworking.P2PSessionState state = new SteamNetworking.P2PSessionState();
+                            Game.steamNetworkHandler.networking.getP2PSessionState(target, state);
 
-							if (state.isConnectionActive())
-							{
-								break;
-							}
-						}
-					}
+                            if (!state.isConnecting() && !state.isConnectionActive())
+                            {
+                                sendToFail(s, connectionID);
+                                break;
+                            }
 
-					public void sendToFail(ScreenConnecting s, UUID connectionID)
-					{
-						if (Game.screen == s && Client.connectionID == connectionID)
-						{
-							s.text = "Failed to connect";
-							s.finished = true;
+                            if (state.isConnectionActive())
+                            {
+                                break;
+                            }
+                        }
+                    }
 
-							s.music = "menu_1.ogg";
-							Drawing.drawing.playSound("leave.ogg");
+                    public void sendToFail(ScreenConnecting s, UUID connectionID)
+                    {
+                        if (Game.screen == s && Client.connectionID == connectionID)
+                        {
+                            s.text = "Failed to connect";
+                            s.finished = true;
 
-							Panel.forceRefreshMusic = true;
-						}
-					}
-				});
-				clientThread.setDaemon(true);
-				clientThread.start();
-				return;
-			}
+                            s.music = "menu_1.ogg";
+                            Drawing.drawing.playSound("leave.ogg");
 
-			if (ipText.startsWith("steam:") && Game.steamNetworkHandler.initialized)
-			{
-				Client.connectionID = UUID.randomUUID();
-				int id = 0;
+                            Panel.forceRefreshMusic = true;
+                        }
+                    }
+                });
+                clientThread.setDaemon(true);
+                clientThread.start();
+                return;
+            }
 
-				try
-				{
-					id = Integer.parseInt(ipText.substring("steam:".length()));
-				}
-				catch (Exception e)
-				{
-					ScreenConnecting s = new ScreenConnecting(clientThread);
-					Game.screen = s;
+            if (ipText.startsWith("steam:") && Game.steamNetworkHandler.initialized)
+            {
+                Client.connectionID = UUID.randomUUID();
+                int id = 0;
 
-					s.text = "Failed to connect";
-					s.exception = e.getLocalizedMessage();
-					s.finished = true;
+                try
+                {
+                    id = Integer.parseInt(ipText.substring("steam:".length()));
+                }
+                catch (Exception e)
+                {
+                    ScreenConnecting s = new ScreenConnecting(clientThread);
+                    Game.screen = s;
 
-					s.music = "menu_1.ogg";
-					Drawing.drawing.playSound("leave.ogg");
+                    s.text = "Failed to connect";
+                    s.exception = e.getLocalizedMessage();
+                    s.finished = true;
 
-					Panel.forceRefreshMusic = true;
-				}
+                    s.music = "menu_1.ogg";
+                    Drawing.drawing.playSound("leave.ogg");
 
-				SteamID target = Game.steamNetworkHandler.send(id, new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
+                    Panel.forceRefreshMusic = true;
+                }
 
-				clientThread = new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						UUID connectionID = Client.connectionID;
-						ScreenConnecting s = new ScreenConnecting(clientThread);
-						Game.screen = s;
-						s.steamID = target;
+                SteamID target = Game.steamNetworkHandler.send(id,
+                    new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
 
-						while (true)
-						{
-							if (target == null)
-							{
-								sendToFail(s, connectionID);
-								break;
-							}
+                clientThread = new Thread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        UUID connectionID = Client.connectionID;
+                        ScreenConnecting s = new ScreenConnecting(clientThread);
+                        Game.screen = s;
+                        s.steamID = target;
 
-							SteamNetworking.P2PSessionState state = new SteamNetworking.P2PSessionState();
-							Game.steamNetworkHandler.networking.getP2PSessionState(target, state);
+                        while (true)
+                        {
+                            if (target == null)
+                            {
+                                sendToFail(s, connectionID);
+                                break;
+                            }
 
-							if (!state.isConnecting() && !state.isConnectionActive())
-							{
-								sendToFail(s, connectionID);
-								break;
-							}
+                            SteamNetworking.P2PSessionState state = new SteamNetworking.P2PSessionState();
+                            Game.steamNetworkHandler.networking.getP2PSessionState(target, state);
 
-							if (state.isConnectionActive())
-								break;
-						}
-					}
+                            if (!state.isConnecting() && !state.isConnectionActive())
+                            {
+                                sendToFail(s, connectionID);
+                                break;
+                            }
 
-					public void sendToFail(ScreenConnecting s, UUID connectionID)
-					{
-						if (Game.screen == s && Client.connectionID == connectionID)
-						{
-							s.text = "Failed to connect";
-							s.finished = true;
+                            if (state.isConnectionActive())
+                                break;
+                        }
+                    }
 
-							s.music = "menu_1.ogg";
-							Drawing.drawing.playSound("leave.ogg");
+                    public void sendToFail(ScreenConnecting s, UUID connectionID)
+                    {
+                        if (Game.screen == s && Client.connectionID == connectionID)
+                        {
+                            s.text = "Failed to connect";
+                            s.finished = true;
 
-							Panel.forceRefreshMusic = true;
-						}
-					}
+                            s.music = "menu_1.ogg";
+                            Drawing.drawing.playSound("leave.ogg");
 
-				});
+                            Panel.forceRefreshMusic = true;
+                        }
+                    }
 
-				clientThread.setDaemon(true);
-				clientThread.start();
+                });
 
-				return;
-			}
+                clientThread.setDaemon(true);
+                clientThread.start();
 
-			clientThread = new Thread(() ->
-			{
-				ScreenConnecting s = new ScreenConnecting(clientThread);
-				Game.screen = s;
+                return;
+            }
 
-				UUID connectionID = UUID.randomUUID();
-				Client.connectionID = connectionID;
+            clientThread = new Thread(() ->
+            {
+                ScreenConnecting s = new ScreenConnecting(clientThread);
+                Game.screen = s;
 
-				try
-				{
-					String ipaddress = ipText;
-					int port = Game.port;
+                UUID connectionID = UUID.randomUUID();
+                Client.connectionID = connectionID;
 
-					if (ipText.contains(":"))
-					{
-						int colon = ipText.lastIndexOf(":");
-						ipaddress = ipText.substring(0, colon);
-						port = Integer.parseInt(ipText.substring(colon + 1));
-					}
+                try
+                {
+                    String ipaddress = ipText;
+                    int port = Game.port;
 
-					if (ipText.equals(""))
-						Client.connect("localhost", Game.port, false, connectionID);
-					else
-						Client.connect(ipaddress, port, false, connectionID);
-				}
-				catch (Exception e)
-				{
-					if (Game.screen == s && Client.connectionID == connectionID)
-					{
-						s.text = "Failed to connect";
-						s.exception = e.getLocalizedMessage();
-						s.finished = true;
+                    if (ipText.contains(":"))
+                    {
+                        int colon = ipText.lastIndexOf(":");
+                        ipaddress = ipText.substring(0, colon);
+                        port = Integer.parseInt(ipText.substring(colon + 1));
+                    }
 
-						s.music = "menu_1.ogg";
-						Drawing.drawing.playSound("leave.ogg");
+                    if (ipText.equals(""))
+                        Client.connect("localhost", Game.port, false, connectionID);
+                    else
+                        Client.connect(ipaddress, port, false, connectionID);
+                }
+                catch (Exception e)
+                {
+                    if (Game.screen == s && Client.connectionID == connectionID)
+                    {
+                        s.text = "Failed to connect";
+                        s.exception = e.getLocalizedMessage();
+                        s.finished = true;
 
-						Panel.forceRefreshMusic = true;
+                        s.music = "menu_1.ogg";
+                        Drawing.drawing.playSound("leave.ogg");
 
-						e.printStackTrace(Game.logger);
-						e.printStackTrace();
-					}
-				}
-			});
+                        Panel.forceRefreshMusic = true;
 
-			clientThread.setDaemon(true);
-			clientThread.start();
-		}
-	}
-	);
-	
-	public TextBox ip = new TextBox(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth * 16 / 7, this.objHeight, "Party IP Address", new Runnable()
-	{
-		@Override
-		public void run() 
-		{
-			Game.lastParty = ip.inputText;
-			ScreenOptions.saveOptions(Game.homedir);
-		}
-	}	
-			, Game.lastParty, "You can find this on the---party host's screen");
-	
-	@Override
-	public void update() 
-	{
-		ip.update();
-		join.update();
-		back.update();
+                        e.printStackTrace(Game.logger);
+                        e.printStackTrace();
+                    }
+                }
+            });
 
-		if (Game.steamNetworkHandler.initialized)
-		{
-//			steam.update();
+            clientThread.setDaemon(true);
+            clientThread.start();
+        }
+    }
+    );
 
-			if (Game.steamLobbyInvite != -1)
-			{
-				steamLobbies.posX = this.centerX - this.objXSpace / 2;
-				acceptInvite.update();
-			}
+    public TextBox ip = new TextBox(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth * 16 / 7, this.objHeight, "Party IP Address", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.lastParty = ip.inputText;
+            ScreenOptions.saveOptions(Game.homedir);
+        }
+    },
+        Game.lastParty, "You can find this on the---party host's screen");
 
-			steamLobbies.update();
-		}
-	}
+    @Override
+    public void update()
+    {
+        ip.update();
+        join.update();
+        back.update();
 
-	@Override
-	public void draw()
-	{
-		this.drawDefaultBackground();
-		join.draw();
-		ip.draw();
-		back.draw();
+        if (Game.steamNetworkHandler.initialized)
+        {
+//          steam.update();
 
-		if (Game.steamNetworkHandler.initialized)
-		{
-			steamLobbies.draw();
-//			steam.draw();
+            if (Game.steamLobbyInvite != -1)
+            {
+                steamLobbies.posX = this.centerX - this.objXSpace / 2;
+                acceptInvite.update();
+            }
 
-			if (Game.steamLobbyInvite != -1)
-				acceptInvite.draw();
+            steamLobbies.update();
+        }
+    }
 
-			Drawing.drawing.setInterfaceFontSize(this.textSize);
-			Drawing.drawing.displayInterfaceText(this.centerX, this.steamLobbies.posY - this.objYSpace * 0.75, "Join Steam parties");
-		}
+    @Override
+    public void draw()
+    {
+        this.drawDefaultBackground();
+        join.draw();
+        ip.draw();
+        back.draw();
 
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Join a party");
+        if (Game.steamNetworkHandler.initialized)
+        {
+            steamLobbies.draw();
+//          steam.draw();
 
-		Drawing.drawing.setInterfaceFontSize(this.textSize);
-		Drawing.drawing.displayInterfaceText(this.ip.posX, this.ip.posY - this.objYSpace * 1.25, "Join by IP");
-	}
+            if (Game.steamLobbyInvite != -1)
+                acceptInvite.draw();
+
+            Drawing.drawing.setInterfaceFontSize(this.textSize);
+            Drawing.drawing.displayInterfaceText(this.centerX, this.steamLobbies.posY - this.objYSpace * 0.75, "Join Steam parties");
+        }
+
+        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Join a party");
+
+        Drawing.drawing.setInterfaceFontSize(this.textSize);
+        Drawing.drawing.displayInterfaceText(this.ip.posX, this.ip.posY - this.objYSpace * 1.25, "Join by IP");
+    }
 }

@@ -1,12 +1,15 @@
 package tanks.network.event;
 
-import tanks.bullet.*;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletInstant;
 
-public class EventBulletInstantWaypoint extends PersonalEvent implements IStackableEvent
+import io.netty.buffer.ByteBuf;
+
+public class EventBulletInstantWaypoint extends PersonalEvent
 {
-    public int tank, bullet, targetIndex;
-    public double posX, posY;
-    public boolean zeroCooldown;
+    public int bullet;
+    public double posX;
+    public double posY;
 
 
     public EventBulletInstantWaypoint()
@@ -14,16 +17,28 @@ public class EventBulletInstantWaypoint extends PersonalEvent implements IStacka
 
     }
 
-    public EventBulletInstantWaypoint(BulletInstant b, double x, double y, int targetIndex)
+    public EventBulletInstantWaypoint(BulletInstant b, double x, double y)
     {
-        this.tank = b.tank.networkID;
         this.bullet = b.networkID;
-        this.zeroCooldown = b.item.item.cooldownBase <= 0;
-        this.targetIndex = targetIndex;
         this.posX = x;
         this.posY = y;
     }
 
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.bullet);
+        b.writeDouble(this.posX);
+        b.writeDouble(this.posY);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.bullet = b.readInt();
+        this.posX = b.readDouble();
+        this.posY = b.readDouble();
+    }
 
     @Override
     public void execute()
@@ -37,14 +52,4 @@ public class EventBulletInstantWaypoint extends PersonalEvent implements IStacka
         }
     }
 
-    @Override
-    public boolean isStackable()
-    {
-        return zeroCooldown;
-    }
-
-    public int getIdentifier()
-    {
-        return IStackableEvent.f(IStackableEvent.f(tank) + targetIndex);
-    }
 }

@@ -4,6 +4,8 @@ import tanks.Game;
 import tanks.gui.ButtonList;
 import tanks.gui.screen.ScreenGame;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.ArrayList;
 
 public class EventClearShop extends PersonalEvent
@@ -14,12 +16,22 @@ public class EventClearShop extends PersonalEvent
     }
 
     @Override
+    public void write(ByteBuf b)
+    {
+
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+
+    }
+
+    @Override
     public void execute()
     {
         if (Game.screen instanceof ScreenGame)
         {
-            ((ScreenGame) Game.screen).npcShopList = new ButtonList(new ArrayList<>(), 0, 0, (int) ScreenGame.shopOffset, -30);
-
             ((ScreenGame) Game.screen).shopList = new ButtonList(new ArrayList<>(), 0, 0, (int) ScreenGame.shopOffset, -30);
             ((ScreenGame) Game.screen).shopItemButtons = new ArrayList<>();
             ((ScreenGame) Game.screen).shop = new ArrayList<>();

@@ -1,11 +1,13 @@
 package tanks;
 
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import tanks.obstacle.*;
+import tanks.obstacle.Face;
+import tanks.obstacle.ISolidObject;
+
+import java.util.HashSet;
 
 public abstract class SolidGameObject extends GameObject implements ISolidObject
 {
-    public static ObjectArraySet<SolidGameObject> addFacesToChunks = new ObjectArraySet<>();
+    public static HashSet<SolidGameObject> addFacesToChunks = new HashSet<>();
 
     public Face[] faces;
     private boolean lastEnableCollision = false;
@@ -51,10 +53,10 @@ public abstract class SolidGameObject extends GameObject implements ISolidObject
         {
             Face f = this.faces[i];
             f.update(
-                    this.posX + s * (Face.x1[i] - 0.5),
-                    this.posY + s * (Face.y1[i] - 0.5),
-                    this.posX + s * (Face.x2[i] - 0.5),
-                    this.posY + s * (Face.y2[i] - 0.5)
+                this.posX + s * (Face.x1[i] - 0.5),
+                this.posY + s * (Face.y1[i] - 0.5),
+                this.posX + s * (Face.x2[i] - 0.5),
+                this.posY + s * (Face.y2[i] - 0.5)
             );
             f.updateCollision(isFaceValid(f), tankCollision(), bulletCollision());
             validChanged = validChanged || f.valid != f.lastValid;

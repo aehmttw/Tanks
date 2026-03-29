@@ -1,8 +1,9 @@
 package tanks.network.event.online;
 
-import io.netty.buffer.ByteBuf;
 import tanks.Panel;
 import tanks.network.event.PersonalEvent;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventRemoveMenuButton extends PersonalEvent
 {

@@ -1,8 +1,6 @@
 package lwjglwindow;
 
-import basewindow.BaseWindow;
-import basewindow.Model;
-import basewindow.ModelPart;
+import basewindow.*;
 import basewindow.transformation.AxisRotation;
 
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ public class ImmediateModeModelPart extends ModelPart
         double b = window.colorB * 255;
 
         boolean depthMask = true;
-        for (Shape shape : this.shapes)
+        for (Shape shape: this.shapes)
         {
             if (this.material != null)
             {
@@ -73,7 +71,7 @@ public class ImmediateModeModelPart extends ModelPart
         double b = window.colorB * 255;
 
         boolean depthMask = true;
-        for (Shape shape : this.shapes)
+        for (Shape shape: this.shapes)
         {
             if (this.material != null)
             {
@@ -117,9 +115,9 @@ public class ImmediateModeModelPart extends ModelPart
                 window.setTextureCoords(s.texCoords[index].x, s.texCoords[index].y);
 
             window.addVertex(
-                    (s.points[index].x * Math.cos(yaw) * sX - s.points[index].y * Math.sin(yaw) * sY) + posX,
-                    (s.points[index].y * Math.cos(yaw) * sY + s.points[index].x * Math.sin(yaw) * sX) + posY,
-                    s.points[index].z * sZ + posZ);
+                (s.points[index].x * Math.cos(yaw) * sX - s.points[index].y * Math.sin(yaw) * sY) + posX,
+                (s.points[index].y * Math.cos(yaw) * sY + s.points[index].x * Math.sin(yaw) * sX) + posY,
+                s.points[index].z * sZ + posZ);
         }
 
         public void addVertex(ModelPart m, Shape s, int index, double posX, double posY, double sX, double sY, double yaw)
@@ -128,8 +126,8 @@ public class ImmediateModeModelPart extends ModelPart
                 window.setTextureCoords(s.texCoords[index].x, s.texCoords[index].y);
 
             window.addVertex(
-                    (s.points[index].x * Math.cos(yaw) * sX - s.points[index].y * Math.sin(yaw) * sY) + posX,
-                    (s.points[index].y * Math.cos(yaw) * sY + s.points[index].x * Math.sin(yaw) * sX) + posY);
+                (s.points[index].x * Math.cos(yaw) * sX - s.points[index].y * Math.sin(yaw) * sY) + posX,
+                (s.points[index].y * Math.cos(yaw) * sY + s.points[index].x * Math.sin(yaw) * sX) + posY);
         }
 
         public void addVertex(ModelPart m, Shape s, int index, double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll)

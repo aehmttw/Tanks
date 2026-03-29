@@ -1,10 +1,12 @@
 package tanks.network.event.online;
 
-import io.netty.buffer.ByteBuf;
 import tanks.network.NetworkUtils;
 import tanks.network.event.PersonalEvent;
 import tanksonline.*;
-import tanksonline.screen.*;
+import tanksonline.screen.ScreenLayout;
+import tanksonline.screen.ScreenUploadFinished;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventUploadLevel extends PersonalEvent implements IOnlineServerEvent
 {
@@ -50,6 +52,12 @@ public class EventUploadLevel extends PersonalEvent implements IOnlineServerEven
     }
 
     @Override
+    public void execute()
+    {
+
+    }
+
+    @Override
     public void write(ByteBuf b)
     {
         NetworkUtils.writeString(b, this.name);
@@ -61,11 +69,5 @@ public class EventUploadLevel extends PersonalEvent implements IOnlineServerEven
     {
         this.name = NetworkUtils.readString(b);
         this.level = NetworkUtils.readString(b);
-    }
-
-    @Override
-    public void execute()
-    {
-
     }
 }

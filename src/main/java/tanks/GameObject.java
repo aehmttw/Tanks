@@ -5,11 +5,14 @@ import tanks.tank.Tank;
 import tanks.tankson.MetadataProperty;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public abstract class GameObject
 {
-    public double posX, posY, posZ;
+    public double posX;
+    public double posY;
+    public double posZ;
 
     public boolean draggable = false;
 
@@ -56,7 +59,7 @@ public abstract class GameObject
                 LinkedHashMap<String, MetadataSelector> props = new LinkedHashMap<>();
                 metadataPropertiesByClass.put(this.getClass(), props);
 
-                for (Field f : this.getClass().getFields())
+                for (Field f: this.getClass().getFields())
                 {
                     MetadataProperty a = f.getAnnotation(MetadataProperty.class);
                     if (a != null)
@@ -119,6 +122,7 @@ public abstract class GameObject
     }
 
     static double pi_over_4 = Math.PI / 4;
+
     static double fastAtan(double a)
     {
         if (a < -1 || a > 1)
@@ -150,9 +154,14 @@ public abstract class GameObject
         return Math.sqrt(sqDistBetw(x1, y1, x2, y2));
     }
 
+    public static double distanceBetween(final GameObject a, final GameObject b)
+    {
+        return distanceBetween(a.posX, a.posY, b.posX, b.posY);
+    }
+
     public static double sqDistBetw(double x1, double y1, double x2, double y2)
     {
-        return (x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2);
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
 
     public static double sqDistBetw(final GameObject a, final GameObject b)
@@ -165,14 +174,9 @@ public abstract class GameObject
         return sqDistBetw(a, b) < range * range;
     }
 
-    public static double distanceBetween(final GameObject a, final GameObject b)
-    {
-        return distanceBetween(a.posX, a.posY, b.posX, b.posY);
-    }
-
     public static double angleBetween(double a, double b)
     {
-        return (a - b + Math.PI * 3) % (Math.PI*2) - Math.PI;
+        return (a - b + Math.PI * 3) % (Math.PI * 2) - Math.PI;
     }
 
     public static double absoluteAngleBetween(double a, double b)

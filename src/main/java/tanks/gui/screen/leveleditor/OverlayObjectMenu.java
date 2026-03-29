@@ -1,8 +1,6 @@
 package tanks.gui.screen.leveleditor;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
 import tanks.gui.input.InputBindingGroup;
@@ -56,13 +54,13 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     }
     );
 
-    public Button playerItems = new Button(this.centerX - this.objXSpace / 2, this.centerY + 120, 350, 40, "Player items",
-            () -> Game.screen = new OverlayPlayerItems(Game.screen, editor),
-            "Adjust items which players start---with or which can be bought in the shop");
+    public Button playerItems = new Button(this.centerX - 190, this.centerY + 120, 350, 40, "Player items",
+        () -> Game.screen = new OverlayPlayerItems(Game.screen, editor),
+        "Adjust items which players start---with or which can be bought in the shop");
 
-    public Button playerBuilds = new Button(this.centerX + this.objXSpace / 2, this.centerY + 120, 350, 40, "Player builds",
-            () -> Game.screen = new OverlayPlayerBuilds(Game.screen, editor),
-            "Adjust or create new configurations---of stats for player tanks");
+    public Button playerBuilds = new Button(this.centerX + 190, this.centerY + 120, 350, 40, "Player builds",
+        () -> Game.screen = new OverlayPlayerBuilds(Game.screen, editor),
+        "Adjust or create new configurations---of stats for player tanks");
 
     public Button placePlayer = new Button(this.centerX - 380, this.centerY - 180, 350, 40, "Player", () ->
     {
@@ -90,7 +88,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     public Button editTank = new Button(0, 0, 40, 40, "", () ->
     {
         TankAIControlled t = editor.level.customTanks.get(editor.tankNum - Game.registryTank.tankEntries.size());
-        Pointer<TankAIControlled> p = new ArrayListIndexPointer<>(editor.level.customTanks, editor.tankNum - Game.registryTank.tankEntries.size());
+        Pointer<TankAIControlled> p = new ArrayListIndexPointer<>(TankAIControlled.class, editor.level.customTanks, editor.tankNum - Game.registryTank.tankEntries.size());
         ScreenEditorTank s = new ScreenEditorTank(p, this);
         s.onComplete = () ->
         {
@@ -110,7 +108,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
     }, "Sort tanks (irreversible)");
 
     public ButtonObject movePlayerButton;
-    public ButtonObject playerSpawnsButton = new ButtonObject(new TankSpawnMarker("player", 0, 0, 0), this.centerX + 50, this.centerY, 75, 75, () -> editor.movePlayer = false, "Add multiple player spawn points");
+    public ButtonObject playerSpawnsButton = new ButtonObject(new TankSpawnMarker("player", 0, 0, 0), this.centerX + 50, this.centerY, 75, 75,
+        () -> editor.movePlayer = false, "Add multiple player spawn points");
 
     public OverlayObjectMenu(Screen previous, ScreenLevelEditor editor)
     {
@@ -177,8 +176,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 editor.tankNum = j;
                 editor.setMousePlaceable();
                 this.loadMetadataButtons();
-            }
-                    , t.description);
+            },
+                t.description);
 
             if (t.description.isEmpty())
                 b.enableHover = false;
@@ -200,8 +199,8 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 editor.obstacleNum = j;
                 editor.setMousePlaceable();
                 this.loadMetadataButtons();
-            }
-                    , o.description);
+            },
+                o.description);
 
             if (o.description.isEmpty())
                 b.enableHover = false;
@@ -457,7 +456,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.setInterfaceFontSize(this.textSize);
                 Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
-                        Translation.translate("Page %d of %d", (editor.tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
+                    Translation.translate("Page %d of %d", (editor.tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
 
             }
 
@@ -495,7 +494,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.setInterfaceFontSize(this.textSize);
                 Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
-                        Translation.translate("Page %d of %d", (editor.obstaclePage + 1), (obstacleButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, obstacleButtons.size() % (objectButtonCols * objectButtonRows)))));
+                    Translation.translate("Page %d of %d", (editor.obstaclePage + 1), (obstacleButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, obstacleButtons.size() % (objectButtonCols * objectButtonRows)))));
             }
 
             for (int i = this.obstacleButtons.size() - 1; i >= 0; i--)
@@ -520,11 +519,12 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             return;
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY - 300, 1120, 60);
+        Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY - 330, 1200, 50);
 
-        Drawing.drawing.setInterfaceFontSize(24);
+        String s = text.replace("---", " ");
+        Drawing.drawing.setBoundedInterfaceFontSize(24, 1150, s);
         Drawing.drawing.setColor(255, 255, 255);
-        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 300, text.replace("---", " "));
+        Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - 330, s);
     }
 
     @Override
@@ -538,7 +538,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
             this.editor.setMousePlaceable();
         }
 
-        return new ArrayListIndexPointer<>(this.editor.level.customTanks, this.editor.level.customTanks.size() - 1);
+        return new ArrayListIndexPointer<>(TankAIControlled.class, this.editor.level.customTanks, this.editor.level.customTanks.size() - 1);
     }
 
     @Override
@@ -580,7 +580,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
 
         if (this.editor.mousePlaceable instanceof TankAIControlled)
         {
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof TankAIControlled && ((TankAIControlled) m).name.equals(name))
                     t.cloneProperties((TankAIControlled) m);
@@ -623,7 +623,7 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         {
             if (t1.renameLinkedTank(from, to))
             {
-                for (Movable m : Game.movables)
+                for (Movable m: Game.movables)
                 {
                     if (m instanceof TankAIControlled && ((TankAIControlled) m).name.equals(t1.name))
                         t1.cloneProperties((TankAIControlled) m);

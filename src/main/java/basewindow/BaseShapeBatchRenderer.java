@@ -27,6 +27,38 @@ public abstract class BaseShapeBatchRenderer
 
     public abstract void delete(IBatchRenderableObject o);
 
+    public abstract void beginAdd(IBatchRenderableObject o);
+
+    public abstract void addPoint(float x, float y, float z);
+
+    public abstract void setColor(float r, float g, float b, float a);
+
+    public void setColor(float r, float g, float b, float a, float glow)
+    {
+        this.setColor(r, g, b, a);
+        this.setGlow(glow);
+    }
+
+    public abstract void setGlow(float g);
+
+    public abstract void addAttribute(ShaderGroup.Attribute attribute);
+
+    public abstract void setAttribute(ShaderGroup.Attribute a, float... floats);
+
+    public abstract void settings(boolean depth);
+
+    public abstract void settings(boolean depth, boolean glow);
+
+    public abstract void settings(boolean depth, boolean glow, boolean depthMask);
+
+    public abstract void stage();
+
+    public abstract void draw();
+
+    public abstract void endModification();
+
+    public abstract void free();
+
     public void setPosition(double x, double y, double z)
     {
         if (Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(z))
@@ -50,38 +82,6 @@ public abstract class BaseShapeBatchRenderer
         this.pitch = pitch;
         this.roll = roll;
     }
-
-    public abstract void beginAdd(IBatchRenderableObject o);
-
-    public abstract void addPoint(float x, float y, float z);
-
-    public abstract void setColor(float r, float g, float b, float a);
-
-    public abstract void setGlow(float g);
-
-    public void setColor(float r, float g, float b, float a, float glow)
-    {
-        this.setColor(r, g, b, a);
-        this.setGlow(glow);
-    }
-
-    public abstract void addAttribute(ShaderGroup.Attribute attribute);
-
-    public abstract void setAttribute(ShaderGroup.Attribute a, float... floats);
-
-    public abstract void settings(boolean depth);
-
-    public abstract void settings(boolean depth, boolean glow);
-
-    public abstract void settings(boolean depth, boolean glow, boolean depthMask);
-
-    public abstract void stage();
-
-    public abstract void draw();
-
-    public abstract void endModification();
-
-    public abstract void free();
 
     public double rotateX(double px, double py, double posX, double rotation)
     {

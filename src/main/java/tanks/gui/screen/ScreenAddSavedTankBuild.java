@@ -1,25 +1,17 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.BiConsumer;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
-import tanks.gui.screen.leveleditor.OverlayObjectMenu;
 import tanks.gui.screen.leveleditor.OverlayPlayerBuilds;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayable;
-import tanks.tank.TankPlayer;
-import tanks.tankson.ArrayListIndexPointer;
+import tanks.tank.*;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 
 public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverlayScreen
 {
@@ -208,8 +200,8 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
                 };
                 s.drawBehindScreen = true;
                 Game.screen = s;
-            }
-                , t.description);
+            },
+                t.description);
 
             if (t.description.equals(""))
                 b.enableHover = false;
@@ -324,7 +316,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
         {
             ArrayList<String> ds = directory.getSubfiles();
 
-            for (String p : ds)
+            for (String p: ds)
             {
                 if (p.endsWith(".tanks"))
                     files.add(p);
@@ -348,9 +340,9 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
         double y = this.centerY - 100 + 100 * ((index / cols) % rows);
         ButtonObject b = new ButtonObject(t, x, y, 75, 75, () ->
         {
-            TankPlayer.ShopTankBuild clone = t instanceof TankAIControlled
-                    ? new TankPlayer.ShopTankBuild(((TankAIControlled) t).convertToPlayer(t.posX, t.posY, t.angle))
-                    : (TankPlayer.ShopTankBuild) ((TankPlayable) t).copyPropertiesTo(new TankPlayer.ShopTankBuild());
+            TankPlayer.ShopTankBuild clone = t instanceof TankAIControlled ?
+                new TankPlayer.ShopTankBuild(((TankAIControlled) t).convertToPlayer(t.posX, t.posY, t.angle)) :
+                (TankPlayer.ShopTankBuild) ((TankPlayable) t).copyPropertiesTo(new TankPlayer.ShopTankBuild());
             for (TankPlayer t1: this.buildsList)
             {
                 if (t1.name.equals(t.name))
@@ -371,8 +363,8 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
             };
             s.drawBehindScreen = true;
             Game.screen = s;
-        }
-                , desc);
+        },
+            desc);
 
         this.tankButtons.add(b);
         return b;
@@ -475,7 +467,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
-                    Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
+                Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
 
         }
 
@@ -493,7 +485,7 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
                     if (delete.selected)
                         ((ButtonObject) this.tankButtons.get(i)).tempDisableHover = true;
 
-                ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;
+                    ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;
                 }
 
                 tankButtons.get(i).draw();
@@ -552,6 +544,6 @@ public class ScreenAddSavedTankBuild extends Screen implements IConditionalOverl
     @Override
     public void onAttemptClose()
     {
-        ((Screen)this.tankScreen).onAttemptClose();
+        ((Screen) this.tankScreen).onAttemptClose();
     }
 }

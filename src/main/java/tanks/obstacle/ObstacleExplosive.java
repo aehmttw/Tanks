@@ -1,8 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.Item;
@@ -65,7 +63,8 @@ public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
             else
                 this.trigger = (Tank) m;
 
-            this.explode();
+            this.setUpdate(true);
+            this.timer = 0;
         }
     }
 
@@ -125,5 +124,14 @@ public class ObstacleExplosive extends ObstacleStackable implements IAvoidObject
     public double getSeverity(double posX, double posY)
     {
         return Math.sqrt(Math.pow(posX - this.posX, 2) + Math.pow(posY - this.posY, 2));
+    }
+
+    @Override
+    public void draw3dOutline(double r, double g, double b, double a)
+    {
+        super.draw3dOutline(r, g, b, a);
+
+        Drawing.drawing.setColor(255, 0, 0, 64);
+        Mine.drawRange2D(this.posX, this.posY, this.getRadius());
     }
 }

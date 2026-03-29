@@ -5,6 +5,8 @@ import tanks.attribute.StatusEffect;
 import tanks.bullet.Bullet;
 import tanks.tank.Tank;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventStatusEffectDeteriorate extends PersonalEvent
 {
     public boolean isTank;

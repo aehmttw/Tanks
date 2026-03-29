@@ -1,14 +1,7 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
-import tanks.gui.ButtonObject;
-import tanks.item.Item;
-import tanks.tank.Tank;
-
-import java.util.ArrayList;
 
 public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScreen
 {

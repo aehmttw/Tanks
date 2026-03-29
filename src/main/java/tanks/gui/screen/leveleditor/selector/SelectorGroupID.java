@@ -1,8 +1,5 @@
 package tanks.gui.screen.leveleditor.selector;
 
-import tanks.Game;
-import tanks.obstacle.Obstacle;
-
 import java.lang.reflect.Field;
 
 public class SelectorGroupID extends SelectorNumber

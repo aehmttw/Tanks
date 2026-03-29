@@ -6,7 +6,6 @@ import tanks.gui.Button;
 import tanks.gui.TextBoxSlider;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.ScreenOptions;
-import tanks.tank.TankDummy;
 import tanks.tank.TankPlayer;
 
 public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
@@ -52,8 +51,8 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
                 teamRed.inputText = "0";
 
             team.teamColor.red = Integer.parseInt(teamRed.inputText);
-        }
-                , 0, 0, 255, 1);
+        },
+            0, 0, 255, 1);
 
         teamRed.allowLetters = false;
         teamRed.allowSpaces = false;
@@ -67,8 +66,8 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
                 teamGreen.inputText = "0";
 
             team.teamColor.green = Integer.parseInt(teamGreen.inputText);
-        }
-                , 0, 0, 255, 1);
+        },
+            0, 0, 255, 1);
 
         teamGreen.allowLetters = false;
         teamGreen.allowSpaces = false;
@@ -82,8 +81,8 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
                 teamBlue.inputText = "0";
 
             team.teamColor.blue = Integer.parseInt(teamBlue.inputText);
-        }
-                , 0, 0, 255, 1);
+        },
+            0, 0, 255, 1);
 
         teamBlue.allowLetters = false;
         teamBlue.allowSpaces = false;
@@ -164,5 +163,11 @@ public class OverlayEditTeamColor extends ScreenLevelEditorOverlay
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - 270, "Team color: %s", this.team.name);
+    }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.setUnscaledLayoutParameters();
     }
 }

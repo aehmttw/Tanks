@@ -3,12 +3,10 @@ package tanks.gui.screen.leveleditor;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
-import tanks.gui.TextBox;
 import tanks.gui.TextBoxSlider;
 import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.Screen;
 import tanks.gui.screen.leveleditor.selector.SelectorColor;
-import tanks.gui.screen.leveleditor.selector.SelectorNumber;
 
 public class OverlaySelectColor extends ScreenLevelEditorOverlay
 {
@@ -38,8 +36,8 @@ public class OverlaySelectColor extends ScreenLevelEditorOverlay
             int g = (color / (256)) % 256;
             int b = color % 256;
             this.selectorColor.setMetadata(screenLevelEditor, screenLevelEditor.mousePlaceable, r * 256 * 256 + g * 256 + b);
-        }
-                , (initColor / (256 * 256)) % 256, 0, 255, 1);
+        },
+            (initColor / (256 * 256)) % 256, 0, 255, 1);
 
         colorRed.allowLetters = false;
         colorRed.allowSpaces = false;
@@ -58,8 +56,8 @@ public class OverlaySelectColor extends ScreenLevelEditorOverlay
             int g = Integer.parseInt(colorGreen.inputText);
             int b = color % 256;
             this.selectorColor.setMetadata(screenLevelEditor, screenLevelEditor.mousePlaceable, r * 256 * 256 + g * 256 + b);
-        }
-                , (initColor / 256) % 256, 0, 255, 1);
+        },
+            (initColor / 256) % 256, 0, 255, 1);
 
         colorGreen.allowLetters = false;
         colorGreen.allowSpaces = false;
@@ -78,8 +76,8 @@ public class OverlaySelectColor extends ScreenLevelEditorOverlay
             int g = (color / (256)) % 256;
             int b = Integer.parseInt(colorBlue.inputText);
             this.selectorColor.setMetadata(screenLevelEditor, screenLevelEditor.mousePlaceable, r * 256 * 256 + g * 256 + b);
-        }
-                , initColor % 256, 0, 255, 1);
+        },
+            initColor % 256, 0, 255, 1);
 
         colorBlue.allowLetters = false;
         colorBlue.allowSpaces = false;

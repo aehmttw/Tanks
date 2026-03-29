@@ -20,7 +20,7 @@ public class PosedModelAnimation implements IPosedModelFrame
     {
         double time = 0;
 
-        for (String line : lines)
+        for (String line: lines)
         {
             if (line.startsWith("duration "))
             {
@@ -33,15 +33,15 @@ public class PosedModelAnimation implements IPosedModelFrame
             {
                 String[] s = line.split(" ");
 
-                this.getBone(s[1]).rotationFrames.add(new AnimatedBone.AnimatedBoneRotationFrame
-                        (time, Math.toRadians(Double.parseDouble(s[2])), Math.toRadians(Double.parseDouble(s[3])), Math.toRadians(Double.parseDouble(s[4]))));
+                this.getBone(s[1]).rotationFrames.add(new AnimatedBone.AnimatedBoneRotationFrame(
+                    time, Math.toRadians(Double.parseDouble(s[2])), Math.toRadians(Double.parseDouble(s[3])), Math.toRadians(Double.parseDouble(s[4]))));
             }
             else if (line.startsWith("translation "))
             {
                 String[] s = line.split(" ");
 
-                this.getBone(s[1]).translationFrames.add(new AnimatedBone.AnimatedBoneTranslationFrame
-                        (time, Double.parseDouble(s[2]), -Double.parseDouble(s[3]), Double.parseDouble(s[4])));
+                this.getBone(s[1]).translationFrames.add(new AnimatedBone.AnimatedBoneTranslationFrame(
+                    time, Double.parseDouble(s[2]), -Double.parseDouble(s[3]), Double.parseDouble(s[4])));
             }
             else if (line.startsWith("interpolation "))
             {
@@ -105,7 +105,7 @@ public class PosedModelAnimation implements IPosedModelFrame
 
             AnimatedBoneRotationFrame last = defaultRotation;
 
-            for (AnimatedBoneRotationFrame f : this.rotationFrames)
+            for (AnimatedBoneRotationFrame f: this.rotationFrames)
             {
                 if (f.time <= time)
                 {
@@ -118,7 +118,8 @@ public class PosedModelAnimation implements IPosedModelFrame
                 index++;
             }
 
-            AnimatedBoneRotationFrame next = this.rotationFrames.get(getIndex(lastIndex + 1, this.rotationFrames.size()));;
+            AnimatedBoneRotationFrame next = this.rotationFrames.get(getIndex(lastIndex + 1, this.rotationFrames.size()));
+            ;
 
             if (next == last)
                 last.apply(b, frac);
@@ -143,7 +144,8 @@ public class PosedModelAnimation implements IPosedModelFrame
                 if (this.animation.cubic)
                 {
                     AnimatedBoneRotationFrame beforeLast = this.rotationFrames.get(getIndex(lastIndex - 1, this.rotationFrames.size()));
-                    AnimatedBoneRotationFrame afterNext = this.rotationFrames.get(getIndex(lastIndex + 2, this.rotationFrames.size()));;
+                    AnimatedBoneRotationFrame afterNext = this.rotationFrames.get(getIndex(lastIndex + 2, this.rotationFrames.size()));
+                    ;
 
                     beforeLast.applyCubic(b, frac2, frac, 0);
                     last.applyCubic(b, frac2, frac, 1);
@@ -168,7 +170,7 @@ public class PosedModelAnimation implements IPosedModelFrame
 
             AnimatedBoneTranslationFrame last = defaultTranslation;
 
-            for (AnimatedBoneTranslationFrame f : this.translationFrames)
+            for (AnimatedBoneTranslationFrame f: this.translationFrames)
             {
                 if (f.time <= time)
                 {
@@ -181,7 +183,8 @@ public class PosedModelAnimation implements IPosedModelFrame
                 index++;
             }
 
-            AnimatedBoneTranslationFrame next = this.translationFrames.get(getIndex(lastIndex + 1, this.translationFrames.size()));;
+            AnimatedBoneTranslationFrame next = this.translationFrames.get(getIndex(lastIndex + 1, this.translationFrames.size()));
+            ;
 
             if (next == last)
                 last.apply(b, frac);
@@ -206,7 +209,8 @@ public class PosedModelAnimation implements IPosedModelFrame
                 if (this.animation.cubic)
                 {
                     AnimatedBoneTranslationFrame beforeLast = this.translationFrames.get(getIndex(lastIndex - 1, this.translationFrames.size()));
-                    AnimatedBoneTranslationFrame afterNext = this.translationFrames.get(getIndex(lastIndex + 2, this.translationFrames.size()));;
+                    AnimatedBoneTranslationFrame afterNext = this.translationFrames.get(getIndex(lastIndex + 2, this.translationFrames.size()));
+                    ;
 
                     beforeLast.applyCubic(b, frac2, frac, 0);
                     last.applyCubic(b, frac2, frac, 1);
@@ -235,7 +239,7 @@ public class PosedModelAnimation implements IPosedModelFrame
             return in;
         }
 
-        public static abstract class AnimatedBoneFrame
+        public abstract static class AnimatedBoneFrame
         {
             public double time;
 

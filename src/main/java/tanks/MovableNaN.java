@@ -3,6 +3,7 @@ package tanks;
 public class MovableNaN extends Movable
 {
     public String sadFace = ":(";
+
     public MovableNaN(double x, double y)
     {
         super(x, y);

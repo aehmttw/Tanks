@@ -3,21 +3,16 @@ package main;
 import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import tanks.*;
-import tanks.Panel;
 import tanks.extension.Extension;
-import tanksonline.CommandExecutor;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlineServer;
+import tanksonline.*;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.FlowLayout;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Properties;
+import javax.swing.*;
 
 public class Tanks
 {
@@ -31,7 +26,7 @@ public class Tanks
 
         // Goes through arguments and applies specified settings.
         int i = 0;
-        for (String arg : args)
+        for (String arg: args)
         {
             if (arg.equals("online_server"))
                 Game.isOnlineServer = true;
@@ -93,11 +88,11 @@ public class Tanks
                 {
                     // Creates and configures the LWJGL window.
                     Game.game.window = new LWJGLWindow(
-                            "Tanks",
-                            1400, 900 + Drawing.drawing.statsHeight,
-                            Game.absoluteDepthBase,
-                            new GameUpdater(), new GameDrawer(), new GameWindowHandler(),
-                            Game.vsync, !Panel.showMouseTarget
+                        "Tanks",
+                        1400, 900 + Drawing.drawing.statsHeight,
+                        Game.absoluteDepthBase,
+                        new GameUpdater(), new GameDrawer(), new GameWindowHandler(),
+                        Game.vsync, !Panel.showMouseTarget
                     );
                     Game.game.window.antialiasingEnabled = Game.antialiasing;
 
@@ -109,7 +104,7 @@ public class Tanks
                     else if (f.exists())
                     {
                         String hash = Game.readHashFromFile();
-                        if (!hash.equals(""))
+                        if (!hash.equals("") && !hash.equals("release"))
                             Game.game.window.buildDate = "Build hash: " + hash;
                     }
                 }
@@ -145,12 +140,12 @@ public class Tanks
             props.append(sr).append(": ").append(pr.get(sr)).append("\n");
 
         String errorMsg = "Oh noes!\n" +
-                "Tanks ran into a problem and was unable to start :(\n\n" +
-                "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n" +
-                "If you would like support regarding this issue, you may join the Tanks Discord via the following link:\n" +
-                "https://discord.gg/aWPaJD3\n\n" +
-                "Crash details:\n" +
-                s.toString() + "\n";
+            "Tanks ran into a problem and was unable to start :(\n\n" +
+            "This may be caused by an error in the game, by launching the game incorrectly, or by missing drivers or unsupported hardware.\n\n" +
+            "If you would like support regarding this issue, you may join the Tanks Discord via the following link:\n" +
+            "https://discord.gg/aWPaJD3\n\n" +
+            "Crash details:\n" +
+            s.toString() + "\n";
 
         Game.logger.println(errorMsg + "System properties:\n" + props + "\n");
         System.err.println(errorMsg);
@@ -242,7 +237,7 @@ public class Tanks
     {
         Game.extraExtensions = extensions;
         Game.extraExtensionOrder = order;
-        
+
         // Append "no_relaunch" to the arguments.
         String[] newArgs = Arrays.copyOf(args, args.length + 1);
         newArgs[args.length] = "no_relaunch";

@@ -4,6 +4,8 @@ import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.obstacle.Obstacle;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventObstacleHit extends PersonalEvent
 {
     public double posX;

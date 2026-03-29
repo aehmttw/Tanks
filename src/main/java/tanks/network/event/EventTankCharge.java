@@ -1,34 +1,37 @@
 package tanks.network.event;
 
-import tanks.*;
+import tanks.Effect;
+import tanks.Game;
 import tanks.tank.Tank;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankCharge extends PersonalEvent implements IStackableEvent
 {
-	public int tank;
-	public double charge;
+    public int tank;
+    public double charge;
 
-	public EventTankCharge()
-	{
+    public EventTankCharge()
+    {
 
-	}
+    }
 
-	public EventTankCharge(int tank, double charge)
-	{
-		this.tank = tank;
-		this.charge = charge;
-	}
+    public EventTankCharge(int tank, double charge)
+    {
+        this.tank = tank;
+        this.charge = charge;
+    }
 
-	@Override
-	public void execute() 
-	{
-		if (this.clientID != null)
-			return;
+    @Override
+    public void execute()
+    {
+        if (this.clientID != null)
+            return;
 
-		Tank t = Tank.idMap.get(this.tank);
+        Tank t = Tank.idMap.get(this.tank);
 
-		if (t == null)
-			return;
+        if (t == null)
+            return;
 
         if (Math.random() * Game.effectMultiplier < charge && Game.effectsEnabled)
         {
@@ -38,11 +41,26 @@ public class EventTankCharge extends PersonalEvent implements IStackableEvent
 
             Game.effects.add(e);
         }
-	}
 
-	@Override
-	public int getIdentifier()
-	{
-		return this.tank;
-	}
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.tank);
+        b.writeDouble(this.charge);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.tank = b.readInt();
+        this.charge = b.readDouble();
+    }
+
+    @Override
+    public int getIdentifier()
+    {
+        return this.tank;
+    }
 }

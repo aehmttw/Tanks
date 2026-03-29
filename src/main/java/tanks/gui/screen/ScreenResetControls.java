@@ -19,7 +19,8 @@ public class ScreenResetControls extends Screen
     }
     );
 
-    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "No", () -> Game.screen = ScreenOverlayControls.lastControlsScreen
+    public Button cancel = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, this.objWidth, this.objHeight, "No",
+        () -> Game.screen = ScreenOverlayControls.lastControlsScreen
     );
 
     public ScreenResetControls(Screen s)

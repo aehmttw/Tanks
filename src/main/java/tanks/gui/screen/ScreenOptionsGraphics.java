@@ -22,6 +22,7 @@ public class ScreenOptionsGraphics extends Screen
 
     public static final String birdsEyeText = "\u00A7000100200255bird's-eye";
     public static final String angledText = "\u00A7200100000255angled";
+    public static final String orthographicText = "\u00A7100000200255orthographic";
 
     public static int viewNo = 0;
 
@@ -56,31 +57,20 @@ public class ScreenOptionsGraphics extends Screen
         {
             case 0:
                 altPerspective.setText(perspectiveText, birdsEyeText);
-
-                Game.angledView = false;
-                Game.followingCam = false;
-                Game.firstPerson = false;
                 break;
             case 1:
                 altPerspective.setText(perspectiveText, angledText);
-
-                Game.angledView = true;
-                Game.followingCam = false;
-                Game.firstPerson = false;
                 break;
             case 2:
-                altPerspective.setText(perspectiveText, "\u00a7200000000255third person");
-
-                Game.angledView = false;
-                Game.followingCam = true;
-                Game.firstPerson = false;
+                altPerspective.setText(perspectiveText, orthographicText);
                 break;
             case 3:
+                altPerspective.setText(perspectiveText, "\u00a7200000000255third person");
+                break;
+            case 4:
                 altPerspective.setText(perspectiveText, "\u00a7255000000255first person");
-
-                Game.angledView = false;
-                Game.followingCam = true;
-                Game.firstPerson = true;
+                break;
+            default:
                 break;
         }
 
@@ -188,7 +178,7 @@ public class ScreenOptionsGraphics extends Screen
             Game.resetTiles();
         }
     },
-            "Fancy terrain enables varied block---and ground colors------May impact performance on larger levels");
+        "Fancy terrain enables varied block---and ground colors------May impact performance on larger levels");
 
     Button bulletTrails = new Button(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -217,7 +207,7 @@ public class ScreenOptionsGraphics extends Screen
                 glow.setText(glowText, ScreenOptions.offText);
         }
     },
-            "Glow effects may significantly---impact performance");
+        "Glow effects may significantly---impact performance");
 
     Button graphics3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -237,7 +227,7 @@ public class ScreenOptionsGraphics extends Screen
             Game.resetTiles();
         }
     },
-            "3D graphics may impact performance");
+        "3D graphics may impact performance");
 
     Button ground3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -255,7 +245,7 @@ public class ScreenOptionsGraphics extends Screen
             Game.resetTiles();
         }
     },
-            "Enabling 3D ground may impact---performance in large levels");
+        "Enabling 3D ground may impact---performance in large levels");
 
 
     Button altPerspective = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
@@ -263,46 +253,10 @@ public class ScreenOptionsGraphics extends Screen
         @Override
         public void run()
         {
-            viewNo = (viewNo + 1);
-            if (!Game.debug)
-                viewNo = viewNo % 2;
-            else
-                viewNo = viewNo % 4;
-
-            switch (viewNo)
-            {
-                case 0:
-                    altPerspective.setText(perspectiveText, birdsEyeText);
-
-                    Game.angledView = false;
-                    Game.followingCam = false;
-                    Game.firstPerson = false;
-                    break;
-                case 1:
-                    altPerspective.setText(perspectiveText, angledText);
-
-                    Game.angledView = true;
-                    Game.followingCam = false;
-                    Game.firstPerson = false;
-                    break;
-                case 2:
-                    altPerspective.setText(perspectiveText, "\u00a7200000000255third person");
-
-                    Game.angledView = false;
-                    Game.followingCam = true;
-                    Game.firstPerson = false;
-                    break;
-                case 3:
-                    altPerspective.setText(perspectiveText, "\u00a7255000000255first person");
-
-                    Game.angledView = false;
-                    Game.followingCam = true;
-                    Game.firstPerson = true;
-                    break;
-            }
+            Game.screen = new ScreenSelectPerspective();
         }
     },
-            "Changes the angle at which---you view the game field");
+        "Changes the angle at which---you view the game field");
 
     Button antialiasing = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -322,7 +276,7 @@ public class ScreenOptionsGraphics extends Screen
             ScreenOptions.saveOptions(Game.homedir);
         }
     },
-            "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
+        "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
 
     Button tankTextures = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -337,7 +291,7 @@ public class ScreenOptionsGraphics extends Screen
                 tankTextures.setText(tankTexturesText, ScreenOptions.offText);
         }
     },
-            "Adds designs to the built-in tanks---which can help differentiate them");
+        "Adds designs to the built-in tanks---which can help differentiate them");
 
     Button xrayBullets = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -352,7 +306,7 @@ public class ScreenOptionsGraphics extends Screen
                 xrayBullets.setText(xrayBulletsText, ScreenOptions.offText);
         }
     },
-            "Shows indicators for bullets---hidden behind terrain");
+        "Shows indicators for bullets---hidden behind terrain");
 
     //Button window = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 2.5, this.objWidth, this.objHeight, "Window options", () -> Game.screen = new ScreenOptionsWindow());
 

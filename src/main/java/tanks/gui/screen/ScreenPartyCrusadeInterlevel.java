@@ -31,11 +31,11 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
             Game.screen = new ScreenGame(Crusade.currentCrusade);
             Crusade.currentCrusade.replay = true;
         }
-    }
-            , "You will not gain extra lives---"
-            + "from replaying a level you've already beaten.---"
-            + "However, you can still earn coins!---"
-            + "You will still lose a life if you die.");
+    },
+        "You will not gain extra lives---" +
+            "from replaying a level you've already beaten.---" +
+            "However, you can still earn coins!---" +
+            "You will still lose a life if you die.");
 
     Button nextLevel = new Button(this.centerX, this.centerY - this.objYSpace, this.objWidth, this.objHeight, "Next level", () ->
     {
@@ -164,7 +164,7 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
         this.fireworksDisplay = new DisplayFireworks(true, win ? 2 : 1);
 
         //if (lose)
-         //   this.music = "lose_crusade.ogg";
+        //   this.music = "lose_crusade.ogg";
 
         save.posX = Drawing.drawing.interfaceSizeX - Drawing.drawing.interfaceScaleZoom * 40;
         save.posY = Drawing.drawing.interfaceSizeY - 50 - Drawing.drawing.interfaceScaleZoom * 40;

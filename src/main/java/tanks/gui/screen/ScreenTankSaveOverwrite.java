@@ -1,15 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayable;
-import tanks.tank.TankPlayer;
+import tanks.tank.*;
 
 public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundScreen
 {

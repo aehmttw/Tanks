@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.Game;
 import tanks.minigames.Arcade;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventArcadeEnd extends PersonalEvent
 {
     public boolean win;

@@ -1,7 +1,10 @@
 package tanks.network.event;
 
-import tanks.*;
+import tanks.Drawing;
+import tanks.ItemDrop;
 import tanks.tank.Tank;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventItemPickup extends PersonalEvent
 {
@@ -18,6 +21,21 @@ public class EventItemPickup extends PersonalEvent
         this.itemDrop = id.networkID;
         this.tank = pickup.networkID;
     }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.itemDrop);
+        b.writeInt(this.tank);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.itemDrop = b.readInt();
+        this.tank = b.readInt();
+    }
+
     @Override
     public void execute()
     {

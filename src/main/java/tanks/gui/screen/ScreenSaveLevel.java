@@ -1,14 +1,15 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import com.codedisaster.steamworks.SteamFriends;
-import com.codedisaster.steamworks.SteamUGCDetails;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
 import tanks.tank.Tank;
 import tanks.tank.TankSpawnMarker;
+
+import com.codedisaster.steamworks.SteamFriends;
+import com.codedisaster.steamworks.SteamUGCDetails;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,7 +132,10 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         Game.steamNetworkHandler.workshop.search(null, 0, 18, workshopDetails.getOwnerID(), null, Game.steamNetworkHandler.workshop.searchByScore);
     });
 
-    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () -> { confirmingDelete = false; });
+    public Button cancelDelete = new Button(this.centerX, (int) (this.centerY + this.objYSpace), this.objWidth, this.objHeight, "No", () ->
+    {
+        confirmingDelete = false;
+    });
 
     public Button confirmDelete = new Button(this.centerX, (int) (this.centerY), this.objWidth, this.objHeight, "Yes", () ->
     {
@@ -169,6 +173,11 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         Game.steamNetworkHandler.friends.friends.activateGameOverlayToWebPage("steam://url/CommunityFilePage/" + Long.parseLong(workshopDetails.getPublishedFileID().toString(), 16), SteamFriends.OverlayToWebPageMode.Default);
     }, "View level page on Steam");
 
+    public Button favorite = new Button(Drawing.drawing.interfaceSizeX - 395, Drawing.drawing.interfaceSizeY - 200, this.objHeight, this.objHeight, "", () ->
+    {
+        Game.steamNetworkHandler.workshop.workshop.addItemToFavorites((int) ScreenInviteSteamFriends.game_id, workshopDetails.getPublishedFileID());
+    }, "");
+
     public ScreenSaveLevel(String name, String level, Screen s)
     {
         this(name, level, s, false);
@@ -194,8 +203,8 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
             if (levelName.inputText.equals(""))
                 levelName.inputText = levelName.previousInputText;
             updateDownloadButton();
-        }
-                , name.replace("_", " "));
+        },
+            name.replace("_", " "));
 
         levelName.enableCaps = true;
 
@@ -303,7 +312,8 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
                 Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.setInterfaceFontSize(24);
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "This level is not automatically drawn because");
-                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "it is large (size: %dx%d, tanks: %d) and may lag the game.", this.queuedLevel.sizeX, this.queuedLevel.sizeY, this.queuedLevel.tanks.size());
+                Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace / 2, "it is large (size: %dx%d, tanks: %d) and may lag the game.",
+                    this.queuedLevel.sizeX, this.queuedLevel.sizeY, this.queuedLevel.tanks.size());
                 this.reveal.draw();
             }
 

@@ -1,10 +1,7 @@
 package tanks.bullet;
 
 import basewindow.Color;
-import tanks.Effect;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.network.event.EventBulletReboundIndicator;
 
 public class BulletReboundIndicator extends Movable
@@ -30,13 +27,13 @@ public class BulletReboundIndicator extends Movable
             Game.eventsOut.add(new EventBulletReboundIndicator(this));
     }
 
-    public BulletReboundIndicator(double posX, double posY, double posZ, double size, double maxAge, Color c1, Color c2)
+    public BulletReboundIndicator(double posX, double posY, double posZ, double size, double maxAge, double r1, double g1, double b1, double r2, double g2, double b2)
     {
         super(posX, posY);
         this.posZ = posZ;
         this.size = size;
-        this.color = c1;
-        this.color2 = c2;
+        this.color.set(r1, g1, b1);
+        this.color2.set(r2, g2, b2);
         this.maxAge = maxAge;
     }
 

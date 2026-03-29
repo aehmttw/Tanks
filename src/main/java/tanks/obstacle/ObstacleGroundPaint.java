@@ -1,9 +1,9 @@
 package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
 import tanks.gui.screen.leveleditor.selector.SelectorColorAndNoise;
-import tanks.rendering.RendererDrawLayer;
 import tanks.rendering.ShaderGroundColor;
 import tanks.tankson.MetadataProperty;
 
@@ -38,7 +38,7 @@ public class ObstacleGroundPaint extends Obstacle
     public void draw3dOutline(double r, double g, double b, double a)
     {
         Drawing.drawing.setColor(r, g, b, a);
-        Drawing.drawing.fillRect(this.posX, this.posY,  Game.sampleTerrainGroundHeight(this.posX, this.posY), Obstacle.draw_size, Obstacle.draw_size, false);
+        Drawing.drawing.fillRect(this.posX, this.posY, Game.sampleTerrainGroundHeight(this.posX, this.posY), Obstacle.draw_size, Obstacle.draw_size, false);
     }
 
     @Override

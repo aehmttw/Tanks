@@ -1,8 +1,11 @@
 package tanks.network.event;
 
-import tanks.*;
+import tanks.Effect;
+import tanks.Game;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventTankMimicTransform extends PersonalEvent
 {
@@ -32,7 +35,7 @@ public class EventTankMimicTransform extends PersonalEvent
 
             if (this.target == this.tank)
             {
-                for (TankAIControlled t2 : Game.currentLevel.customTanks)
+                for (TankAIControlled t2: Game.currentLevel.customTanks)
                 {
                     if (t2.name.equals(t.name))
                     {
@@ -88,5 +91,19 @@ public class EventTankMimicTransform extends PersonalEvent
                 }
             }
         }
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.tank);
+        b.writeInt(this.target);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.tank = b.readInt();
+        this.target = b.readInt();
     }
 }

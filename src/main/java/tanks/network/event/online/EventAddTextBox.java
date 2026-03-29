@@ -1,11 +1,14 @@
 package tanks.network.event.online;
 
-import io.netty.buffer.ByteBuf;
-import tanks.*;
+import tanks.Drawing;
+import tanks.Game;
 import tanks.gui.TextBox;
-import tanks.gui.screen.*;
+import tanks.gui.screen.ScreenOnline;
+import tanks.gui.screen.ScreenOnlineWaiting;
 import tanks.network.NetworkUtils;
 import tanks.network.event.PersonalEvent;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventAddTextBox extends PersonalEvent
 {

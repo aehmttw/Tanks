@@ -1,10 +1,8 @@
 package tanks.gui.screen;
 
 import tanks.Drawing;
-import tanks.Game;
 import tanks.bullet.Bullet;
 import tanks.bullet.Trail;
-import tanks.tank.Mine;
 import tanks.tankson.Pointer;
 
 import java.util.ArrayList;

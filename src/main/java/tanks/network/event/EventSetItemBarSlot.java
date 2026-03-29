@@ -1,7 +1,10 @@
 package tanks.network.event;
 
-import tanks.*;
+import tanks.Game;
+import tanks.Player;
 import tanks.tank.TankPlayerRemote;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventSetItemBarSlot extends PersonalEvent implements IStackableEvent
 {
@@ -15,6 +18,18 @@ public class EventSetItemBarSlot extends PersonalEvent implements IStackableEven
     public EventSetItemBarSlot(int slot)
     {
         this.slot = slot;
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.slot);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.slot = b.readInt();
     }
 
     @Override

@@ -1,7 +1,11 @@
 package tanks.network.event;
 
-import tanks.*;
-import tanks.gui.screen.leveleditor.*;
+import tanks.Game;
+import tanks.Level;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventChangeBackgroundColor extends PersonalEvent
 {
@@ -27,6 +31,30 @@ public class EventChangeBackgroundColor extends PersonalEvent
         this.noiseR = noiseR;
         this.noiseG = noiseG;
         this.noiseB = noiseB;
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.colorR);
+        b.writeInt(this.colorG);
+        b.writeInt(this.colorB);
+
+        b.writeInt(this.noiseR);
+        b.writeInt(this.noiseG);
+        b.writeInt(this.noiseB);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.colorR = b.readInt();
+        this.colorG = b.readInt();
+        this.colorB = b.readInt();
+
+        this.noiseR = b.readInt();
+        this.noiseG = b.readInt();
+        this.noiseB = b.readInt();
     }
 
     @Override

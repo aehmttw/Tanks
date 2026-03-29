@@ -2,9 +2,7 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Game;
 import tanks.obstacle.Obstacle;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankSpawnMarker;
+import tanks.tank.*;
 
 import java.util.ArrayList;
 
@@ -317,7 +315,7 @@ public abstract class EditorAction
         @Override
         public void undo()
         {
-            for (Obstacle o : obstacles)
+            for (Obstacle o: obstacles)
                 Game.addObstacle(o);
             Game.movables.addAll(this.tanks);
             this.deselect.undo();
@@ -332,7 +330,7 @@ public abstract class EditorAction
             {
                 if (Game.movables.get(i) instanceof Tank)
                 {
-                    for (Tank o : this.tanks)
+                    for (Tank o: this.tanks)
                     {
                         if (Game.movables.get(i).equals(o))
                             Game.movables.remove(i);

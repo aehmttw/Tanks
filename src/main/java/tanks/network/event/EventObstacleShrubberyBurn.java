@@ -1,7 +1,11 @@
 package tanks.network.event;
 
-import tanks.*;
-import tanks.obstacle.*;
+import tanks.Effect;
+import tanks.Game;
+import tanks.obstacle.Obstacle;
+import tanks.obstacle.ObstacleShrubbery;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventObstacleShrubberyBurn extends PersonalEvent
 {
@@ -20,6 +24,20 @@ public class EventObstacleShrubberyBurn extends PersonalEvent
     }
 
     @Override
+    public void write(ByteBuf b)
+    {
+        b.writeDouble(this.posX);
+        b.writeDouble(this.posY);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.posX = b.readDouble();
+        this.posY = b.readDouble();
+    }
+
+    @Override
     public void execute()
     {
         if (this.clientID != null)
@@ -35,8 +53,8 @@ public class EventObstacleShrubberyBurn extends PersonalEvent
                 Effect e;
                 if (Game.enable3d)
                     e = (Effect.createNewEffect(this.posX, this.posY,
-                            Obstacle.draw_size * (0.25 + 0.75 * ((ObstacleShrubbery) o).heightMultiplier * (1 - (255 - ((ObstacleShrubbery) o).height) / 128)),
-                            Effect.EffectType.bushBurn));
+                        Obstacle.draw_size * (0.25 + 0.75 * ((ObstacleShrubbery) o).heightMultiplier * (1 - (255 - ((ObstacleShrubbery) o).height) / 128)),
+                        Effect.EffectType.bushBurn));
                 else
                     e = (Effect.createNewEffect(this.posX, this.posY, ((ObstacleShrubbery) o).height, Effect.EffectType.bushBurn));
 

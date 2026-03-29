@@ -2,6 +2,8 @@ package tanks.network.event;
 
 import tanks.Drawing;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventPlaySound extends PersonalEvent
 {
     public String sound;

@@ -5,6 +5,8 @@ import tanks.Player;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.network.ConnectedPlayer;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.UUID;
 
 public class EventUpdateTankColors extends PersonalEvent

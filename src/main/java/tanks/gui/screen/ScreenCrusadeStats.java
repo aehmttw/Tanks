@@ -2,28 +2,19 @@ package tanks.gui.screen;
 
 import basewindow.BaseFile;
 import tanks.*;
-import tanks.gui.Button;
-import tanks.gui.Selector;
-import tanks.gui.SpeedrunTimer;
+import tanks.gui.*;
 import tanks.item.Item;
-import tanks.item.ItemBullet;
 import tanks.item.ItemDummyBlockExplosion;
-import tanks.item.ItemMine;
 import tanks.obstacle.Obstacle;
 import tanks.registry.RegistryTank;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankPlayable;
-import tanks.tank.TankPlayer;
+import tanks.tank.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenChatboxScreen, ICrusadePreviewScreen
 {
-    public enum View {tanks, levels, items, misc};
+    public enum View { tanks, levels, items, misc }
+
     public View view = View.tanks;
     public View prevView = View.tanks;
 
@@ -226,7 +217,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         changePlayer = new Selector(this.centerX + 200, 80, this.objWidth, this.objHeight, "Player", playerNames, () ->
         {
             Game.screen = new ScreenCrusadeStats(crusade, playerObjects[changePlayer.selectedOption], false);
-            ((ScreenCrusadeStats)Game.screen).view = view;
+            ((ScreenCrusadeStats) Game.screen).view = view;
         });
 
         changePlayer.format = false;
@@ -284,9 +275,12 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             this.tanks.add(new TankEntry(this, kills, deaths));
 
         ArrayList<Entry> copy = new ArrayList<>(this.tanks);
-        assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).kills - ((TankEntry) o1).kills), (entry, rank) -> ((TankEntry) entry).killRank = rank);
-        assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).deaths - ((TankEntry) o1).deaths), (entry, rank) -> ((TankEntry) entry).deathRank = rank);
-        assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).coins * ((TankEntry) o2).kills - ((TankEntry) o1).coins * ((TankEntry) o1).kills), (entry, rank) -> ((TankEntry) entry).coinRank = rank);
+        assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).kills - ((TankEntry) o1).kills),
+            (entry, rank) -> ((TankEntry) entry).killRank = rank);
+        assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).deaths - ((TankEntry) o1).deaths),
+            (entry, rank) -> ((TankEntry) entry).deathRank = rank);
+        assignRanks(copy, (o1, o2) -> (int) Math.signum(((TankEntry) o2).coins * ((TankEntry) o2).kills - ((TankEntry) o1).coins * ((TankEntry) o1).kills),
+            (entry, rank) -> ((TankEntry) entry).coinRank = rank);
     }
 
     public void addLevels()
@@ -306,7 +300,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         }
         else
         {
-            for (Crusade.LevelPerformance l : crusade.performances)
+            for (Crusade.LevelPerformance l: crusade.performances)
             {
                 String name = "Battle " + (l.index + 1);
 
@@ -330,7 +324,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 if (!dir.exists())
                     dir.mkdirs();
 
-                BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/records/internal/" + crusade.name.replace(" ", "_").toLowerCase() + ".record");
+                BaseFile f = Game.game.fileManager.getFile(Game.homedir + Game.crusadeDir + "/records/internal/" + crusade.name.replace(" ",
+                    "_").toLowerCase() + ".record");
                 double bestTime = Double.MAX_VALUE;
 
                 if (f.exists())
@@ -364,7 +359,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                         f.create();
 
                     f.startWriting();
-                    for (Crusade.LevelPerformance l : crusade.performances)
+                    for (Crusade.LevelPerformance l: crusade.performances)
                     {
                         f.println(l.totalTime + "");
                     }
@@ -381,25 +376,41 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
         if (!onlyRecord)
         {
-            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.totalTime - ((LevelEntry) o1).level.totalTime), (entry, rank) -> ((LevelEntry) entry).timeRank = rank);
-            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.bestTime - ((LevelEntry) o1).level.bestTime), (entry, rank) -> ((LevelEntry) entry).clearRank = rank);
-            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.attempts - ((LevelEntry) o1).level.attempts), (entry, rank) -> ((LevelEntry) entry).triesRank = rank);
+            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.totalTime - ((LevelEntry) o1).level.totalTime),
+                (entry, rank) -> ((LevelEntry) entry).timeRank = rank);
+            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.bestTime - ((LevelEntry) o1).level.bestTime),
+                (entry, rank) -> ((LevelEntry) entry).clearRank = rank);
+            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).level.attempts - ((LevelEntry) o1).level.attempts),
+                (entry, rank) -> ((LevelEntry) entry).triesRank = rank);
         }
 
         if (recordExists)
         {
-            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).bestTime - ((LevelEntry) o1).bestTime), (entry, rank) -> ((LevelEntry) entry).bestTimeRank = rank);
-            assignRanks(copy, (o1, o2) -> (int) Math.signum(Math.abs(((LevelEntry) o2).timeDiff) - Math.abs(((LevelEntry) o1).timeDiff)), (entry, rank) -> ((LevelEntry) entry).timeDiffRank = rank);
+            assignRanks(copy, (o1, o2) -> (int) Math.signum(((LevelEntry) o2).bestTime - ((LevelEntry) o1).bestTime),
+                (entry, rank) -> ((LevelEntry) entry).bestTimeRank = rank);
+            assignRanks(copy, (o1, o2) -> (int) Math.signum(Math.abs(((LevelEntry) o2).timeDiff) - Math.abs(((LevelEntry) o1).timeDiff)),
+                (entry, rank) -> ((LevelEntry) entry).timeDiffRank = rank);
         }
     }
 
     public void addItems()
     {
-        for (TankPlayer.ShopTankBuild b: crusade.getBuildsShop())
+        for (TankPlayer.ShopTankBuild b: crusade.crusadeShopBuilds)
         {
             for (Item.ItemStack<?> i: b.abilities)
             {
                 this.addItem(i.item);
+            }
+        }
+
+        for (Crusade.CrusadeLevel cl: crusade.levels)
+        {
+            for (TankPlayer.ShopTankBuild b: cl.buildOverrides)
+            {
+                for (Item.ItemStack<?> i: b.abilities)
+                {
+                    this.addItem(i.item);
+                }
             }
         }
 
@@ -411,9 +422,14 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         this.addItem(ItemDummyBlockExplosion.dummy_explosion);
 
         ArrayList<Entry> copy = new ArrayList<>(this.items);
-        assignRanks(copy, (o1, o2) -> (int) Math.signum(((ItemEntry) o2).uses - ((ItemEntry) o1).uses), (entry, rank) -> ((ItemEntry) entry).useRank = rank);
-        assignRanks(copy, (o1, o2) -> (int) Math.signum(((ItemEntry) o2).hits - ((ItemEntry) o1).hits), (entry, rank) -> ((ItemEntry) entry).hitRank = rank);
-        assignRanks(copy, (o1, o2) -> (int) Math.signum(((ItemEntry) o2).hits * 1.0 / Math.max(1, ((ItemEntry) o2).uses) - ((ItemEntry) o1).hits * 1.0 / Math.max(1, ((ItemEntry) o1).uses)), (entry, rank) -> ((ItemEntry) entry).accuracyRank = rank);
+        assignRanks(copy, (o1, o2) -> (int) Math.signum(((ItemEntry) o2).uses - ((ItemEntry) o1).uses),
+            (entry, rank) -> ((ItemEntry) entry).useRank = rank);
+        assignRanks(copy, (o1, o2) -> (int) Math.signum(((ItemEntry) o2).hits - ((ItemEntry) o1).hits),
+            (entry, rank) -> ((ItemEntry) entry).hitRank = rank);
+        assignRanks(copy,
+            (o1, o2) -> (int) Math.signum(((ItemEntry) o2).hits * 1.0 / Math.max(1, ((ItemEntry) o2).uses) -
+                ((ItemEntry) o1).hits * 1.0 / Math.max(1, ((ItemEntry) o1).uses)),
+            (entry, rank) -> ((ItemEntry) entry).accuracyRank = rank);
     }
 
     public void addMisc()
@@ -433,8 +449,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public void addItem(Item i)
     {
-        int uses = this.player.getItemUses(i.name);
-        int hits = this.player.getItemHits(i.name);
+        double uses = this.player.getItemUses(i.name);
+        double hits = this.player.getItemHits(i.name);
 
         if (uses > 0 || hits > 0)
             this.items.add(new ItemEntry(i, uses, hits));
@@ -511,13 +527,17 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     Selector changePlayer;
 
 
-    Button viewTanks = new Button(this.centerX - this.objXSpace * 1.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Tanks", () -> view = View.tanks);
+    Button viewTanks = new Button(this.centerX - this.objXSpace * 1.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Tanks",
+        () -> view = View.tanks);
 
-    Button viewLevels = new Button(this.centerX - this.objXSpace * 0.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Battles", () -> view = View.levels);
+    Button viewLevels = new Button(this.centerX - this.objXSpace * 0.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Battles",
+        () -> view = View.levels);
 
-    Button viewItems = new Button(this.centerX + this.objXSpace * 0.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Items", () -> view = View.items);
+    Button viewItems = new Button(this.centerX + this.objXSpace * 0.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Items",
+        () -> view = View.items);
 
-    Button viewMisc = new Button(this.centerX + this.objXSpace * 1.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Summary", () -> view = View.misc);
+    Button viewMisc = new Button(this.centerX + this.objXSpace * 1.5, Drawing.drawing.interfaceSizeY - 90, this.objWidth * 0.65, this.objHeight, "Summary",
+        () -> view = View.misc);
 
     Button nextPage = new Button(this.centerX, 0, 500, 30, "Next page", () ->
     {
@@ -573,7 +593,10 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     }
     );
 
-    Button showRecordButton = new Button(-1000, -1000, 35, 35, "", () -> {this.showRecord = !this.showRecord; }, "Toggle showing best time");
+    Button showRecordButton = new Button(-1000, -1000, 35, 35, "", () ->
+    {
+        this.showRecord = !this.showRecord;
+    }, "Toggle showing best time");
 
     Button previousPage = new Button(this.centerX, 0, 500, 30, "Previous page", () ->
     {
@@ -691,10 +714,12 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 TankAIControlled t1 = this.customTanks.get(((TankEntry) this.tanks.get(this.tankType)).tank.name);
 
                 if (t1 == null)
-                    t = Game.registryTank.getEntry(((TankEntry) this.tanks.get(this.tankType)).tank.name).getTank(Drawing.drawing.sizeX * 1.4, Drawing.drawing.sizeY - 200, Math.PI);
+                    t = Game.registryTank.getEntry(((TankEntry) this.tanks.get(this.tankType)).tank.name).getTank(Drawing.drawing.sizeX * 1.4,
+                        Drawing.drawing.sizeY - 200, Math.PI);
                 else
                 {
-                    TankAIControlled t2 = new TankAIControlled("", Drawing.drawing.sizeX * 1.4, Drawing.drawing.sizeY - 200, 0, 0, 0, 0, Math.PI, TankAIControlled.ShootAI.none);
+                    TankAIControlled t2 = new TankAIControlled("", Drawing.drawing.sizeX * 1.4, Drawing.drawing.sizeY - 200, 0, 0, 0, 0, Math.PI,
+                        TankAIControlled.ShootAI.none);
                     t1.cloneProperties(t2);
                     t = t2;
                 }
@@ -1229,7 +1254,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             if (!Game.game.window.drawingShadow)
             {
-                for (Tank t : this.rollingTanks)
+                for (Tank t: this.rollingTanks)
                 {
                     t.draw();
                 }
@@ -1384,7 +1409,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
     public static void drawStatistic(double x, double y, String text, double rank, double r, double g, double b, double a, double size)
     {
-        drawStatistic(x, y, text, rank, r, g, b, a, size,false);
+        drawStatistic(x, y, text, rank, r, g, b, a, size, false);
     }
 
     public static void drawStatistic(double x, double y, String text, double rank, double r, double g, double b, double a, double size, boolean rightAligned)
@@ -1600,7 +1625,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             {
                 double o2 = (1 - this.screen.recordDisplayFrac) * -50;
 
-                drawStatistic(this.getXOffset() + Game.screen.centerX + l2 + 52 + o2, this.yPos, SpeedrunTimer.getTime(this.bestTime) + "", 1 - bestTimeRank, 255, 255, 255, a * a2, 24, true);
+                drawStatistic(this.getXOffset() + Game.screen.centerX + l2 + 52 + o2, this.yPos, SpeedrunTimer.getTime(this.bestTime) + "", 1 - bestTimeRank, 255,
+                    255, 255, a * a2, 24, true);
 
                 if (!screen.onlyRecord)
                 {
@@ -1640,13 +1666,15 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                         Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + l3, this.yPos, "-", false);
                     }
                     else
-                        drawStatistic(this.getXOffset() + Game.screen.centerX + l3 + 52 + o2, this.yPos, SpeedrunTimer.getTime(this.level.bestTime), 1 - clearRank, r, g, b, a * a2, 24, true);
+                        drawStatistic(this.getXOffset() + Game.screen.centerX + l3 + 52 + o2, this.yPos, SpeedrunTimer.getTime(this.level.bestTime), 1 - clearRank, r, g, b,
+                            a * a2, 24, true);
                 }
             }
 
             if (!screen.onlyRecord)
             {
-                drawStatistic(this.getXOffset() + Game.screen.centerX + l4 + 52, this.yPos, SpeedrunTimer.getTime(this.level.totalTime), 1 - timeRank, 255, 255, 255, a, 24, true);
+                drawStatistic(this.getXOffset() + Game.screen.centerX + l4 + 52, this.yPos, SpeedrunTimer.getTime(this.level.totalTime), 1 - timeRank, 255, 255,
+                    255, a, 24, true);
                 Drawing.drawing.setInterfaceFontSize(24);
             }
         }
@@ -1663,14 +1691,14 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     public static class ItemEntry extends Entry
     {
         public Item item;
-        public int uses;
-        public int hits;
+        public double uses;
+        public double hits;
 
         public double useRank;
         public double hitRank;
         public double accuracyRank;
 
-        public ItemEntry(Item i, int uses, int hits)
+        public ItemEntry(Item i, double uses, double hits)
         {
             this.item = i;
             this.uses = uses;
@@ -1701,7 +1729,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, "-");
             }
             else
-                drawStatistic(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, this.uses + "", 1 - this.useRank, 255, 255, 255, 255 * age / maxAge, 24);
+                drawStatistic(this.getXOffset() + Game.screen.centerX + items_2, this.yPos, (int) this.uses + "", 1 - this.useRank, 255, 255, 255,
+                    255 * age / maxAge, 24);
 
             if (!this.item.supportsHits)
             {
@@ -1709,7 +1738,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_3, this.yPos, "-");
             }
             else
-                drawStatistic(this.getXOffset() + Game.screen.centerX + items_3, this.yPos, this.hits + "", 1 - this.hitRank, 255, 255, 255, 255 * age / maxAge, 24);
+                drawStatistic(this.getXOffset() + Game.screen.centerX + items_3, this.yPos, (int) this.hits + "", 1 - this.hitRank, 255, 255, 255,
+                    255 * age / maxAge, 24);
 
             if (this.uses <= 0 || !this.item.supportsHits)
             {
@@ -1717,7 +1747,8 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
                 Drawing.drawing.drawInterfaceText(this.getXOffset() + Game.screen.centerX + items_4, this.yPos, "-");
             }
             else
-                drawStatistic(this.getXOffset() + Game.screen.centerX + items_4, this.yPos, (this.hits * 1000 / this.uses) / 10.0 + "%", 1 - this.accuracyRank, 255, 255, 255, 255 * age / maxAge, 24);
+                drawStatistic(this.getXOffset() + Game.screen.centerX + items_4, this.yPos, ((int) this.hits * 1000 / (int) this.uses) / 10.0 + "%",
+                    1 - this.accuracyRank, 255, 255, 255, 255 * age / maxAge, 24);
         }
     }
 

@@ -1,11 +1,16 @@
 package tanks.network.event;
 
-import tanks.*;
-import tanks.item.*;
+import tanks.Game;
+import tanks.Player;
+import tanks.item.Item;
+import tanks.item.ItemEmpty;
+import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 
-public class EventSetItem extends PersonalEvent implements IStackableEvent
+public class EventSetItem extends PersonalEvent
 {
     public String name;
     public UUID playerID;
@@ -27,6 +32,22 @@ public class EventSetItem extends PersonalEvent implements IStackableEvent
     }
 
     @Override
+    public void write(ByteBuf b)
+    {
+        NetworkUtils.writeString(b, this.playerID.toString());
+        b.writeInt(this.slot);
+        NetworkUtils.writeString(b, this.itemStackString);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.playerID = UUID.fromString(NetworkUtils.readString(b));
+        this.slot = b.readInt();
+        this.itemStackString = NetworkUtils.readString(b);
+    }
+
+    @Override
     public void execute()
     {
         if (this.clientID == null && this.playerID.equals(Game.clientID))
@@ -38,11 +59,5 @@ public class EventSetItem extends PersonalEvent implements IStackableEvent
 
             Game.player.hotbar.itemBar.slots[slot] = s;
         }
-    }
-
-    @Override
-    public int getIdentifier()
-    {
-        return IStackableEvent.f(playerID.hashCode()) + slot;
     }
 }

@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.bullet.Bullet;
 import tanks.tank.Tank;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventBulletUpdateTarget extends PersonalEvent
 {
     public int bullet;
@@ -21,6 +23,20 @@ public class EventBulletUpdateTarget extends PersonalEvent
             this.target = -1;
         else
             this.target = b.homingTarget.networkID;
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.bullet);
+        b.writeInt(this.target);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.bullet = b.readInt();
+        this.target = b.readInt();
     }
 
     @Override

@@ -2,18 +2,9 @@ package tanksonline;
 
 import tanks.Game;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.UUID;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
 
 public class PlayerMap
 {
@@ -182,14 +173,14 @@ public class PlayerMap
             HashMap<Long, UploadedLevel> map = new HashMap<>();
             ArrayList<Long> times = new ArrayList<>();
 
-            for (Path p : ds)
+            for (Path p: ds)
             {
                 if (p.toString().contains(".DS_Store"))
                     continue;
 
                 DirectoryStream<Path> ds2 = Files.newDirectoryStream(p);
 
-                for (Path p2 : ds2)
+                for (Path p2: ds2)
                 {
                     if (p2.toString().endsWith(".tanks"))
                     {
@@ -222,7 +213,7 @@ public class PlayerMap
         {
             DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(access_codes_dir));
 
-            for (Path p : ds)
+            for (Path p: ds)
             {
                 if (p.toString().endsWith(".tanks"))
                 {

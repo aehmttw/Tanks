@@ -1,6 +1,9 @@
 package tanks.network.event;
 
-import tanks.*;
+import tanks.AreaEffectFreeze;
+import tanks.Game;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventCreateFreezeEffect extends PersonalEvent
 {
@@ -16,6 +19,21 @@ public class EventCreateFreezeEffect extends PersonalEvent
     {
         this.posX = a.posX;
         this.posY = a.posY;
+    }
+
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeDouble(posX);
+        b.writeDouble(posY);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        posX = b.readDouble();
+        posY = b.readDouble();
     }
 
     @Override

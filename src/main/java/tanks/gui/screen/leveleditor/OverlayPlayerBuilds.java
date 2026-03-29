@@ -2,9 +2,7 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.ButtonObject;
+import tanks.gui.*;
 import tanks.gui.screen.*;
 import tanks.tank.TankPlayable;
 import tanks.tank.TankPlayer;
@@ -20,7 +18,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     public int cols = 10;
 
     public Button addButton;
-    
+
     public static int page = 0;
 
     public Button nextTankPage = new Button(this.centerX + 290, this.centerY + 60 * 3, 350, 40, "Next page", () -> page++);
@@ -30,7 +28,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
     public String[] reorderFail = new String[]{"The default player tank build must be free!"};
 
-    public Button reorder = new Button(this.centerX - this.objXSpace, this.centerY + 240, 350, 40, "Reorder", new Runnable()
+    public Button reorder = new Button(this.centerX - 380, this.centerY + 240, 350, 40, "Reorder", new Runnable()
     {
         @Override
         public void run()
@@ -111,7 +109,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
             }
             else
             {
-                addButton = new Button(x, y, 50, 50, "+",  () ->
+                addButton = new Button(x, y, 50, 50, "+", () ->
                 {
                     ScreenAddSavedTankBuild s = new ScreenAddSavedTankBuild(this, this.editor.level.playerBuilds);
                     s.drawBehindScreen = true;
@@ -153,7 +151,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
 
     public void editTank(int index)
     {
-        Pointer<TankPlayer.ShopTankBuild> p = new ArrayListIndexPointer<>(editor.level.playerBuilds, index);
+        Pointer<TankPlayer.ShopTankBuild> p = new ArrayListIndexPointer<>(TankPlayer.ShopTankBuild.class, editor.level.playerBuilds, index);
         ScreenEditorPlayerTankBuild s = new ScreenEditorPlayerTankBuild(p, this);
 
         if (editor.level.playerBuilds.size() == 1)
@@ -178,7 +176,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
         reorder.update();
         super.update();
     }
-    
+
     @Override
     public void draw()
     {
@@ -222,7 +220,7 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     public Pointer<TankPlayer.ShopTankBuild> addTank(TankPlayer.ShopTankBuild t, boolean select)
     {
         this.editor.level.playerBuilds.add(t);
-        return new ArrayListIndexPointer<>(this.editor.level.playerBuilds, this.editor.level.playerBuilds.size() - 1).cast();
+        return new ArrayListIndexPointer<>(TankPlayer.ShopTankBuild.class, this.editor.level.playerBuilds, this.editor.level.playerBuilds.size() - 1);
     }
 
     @Override

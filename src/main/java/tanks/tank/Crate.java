@@ -1,12 +1,7 @@
 package tanks.tank;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.obstacle.Obstacle;
-
-import java.util.Random;
 
 public class Crate extends Movable
 {

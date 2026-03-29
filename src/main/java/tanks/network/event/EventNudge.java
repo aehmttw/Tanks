@@ -1,10 +1,12 @@
 package tanks.network.event;
 
-import io.netty.buffer.ByteBuf;
 import tanks.*;
 import tanks.gui.screen.*;
-import tanks.network.*;
+import tanks.network.NetworkUtils;
+import tanks.network.ServerHandler;
 import tanks.translation.Translation;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventNudge extends PersonalEvent
 {
@@ -34,14 +36,11 @@ public class EventNudge extends PersonalEvent
             for (ServerHandler serverHandler: ScreenPartyHost.server.connections)
             {
                 Player p = serverHandler.player;
-                if (p.clientID.equals(this.clientID))
+                if (p.clientID != null && p.clientID.equals(this.clientID))
                 {
                     if (System.currentTimeMillis() - p.lastNudge < ScreenGame.ready_time_to_nudge * 9)
                     {
-                        for (int i = 0; i < 1000; i++)
-                        {
-                            serverHandler.sendEvent(new EventPlaySound("obliterate.ogg", 1, 1));
-                        }
+                        serverHandler.sendEvent(new EventPlaySound("obliterate.ogg", 1, 1));
                         serverHandler.sendEventAndClose(new EventKick("Don't exploit the nudge system!"));
                         return;
                     }

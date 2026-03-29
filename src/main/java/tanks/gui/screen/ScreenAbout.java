@@ -59,7 +59,7 @@ public class ScreenAbout extends Screen
         try
         {
             Game.game.window.openLink(new URL("https://github.com/aehmttw/Tanks/tree/master/src/main/java/licenses"));
-    }
+        }
         catch (Exception e)
         {
             e.printStackTrace();
@@ -158,7 +158,11 @@ public class ScreenAbout extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "About");
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s (%s)", Game.version, Game.readHashFromFile());
+
+        if (Game.game.window.buildDate.isEmpty())
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s", Game.version);
+        else
+            Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Version: %s %s", Game.version, Game.game.window.runningFromSource ? "(Running from source)" : "(" + Game.game.window.buildDate + ")");
 
         int extensions = Game.extensionRegistry.extensions.size();
         if (extensions > 0)

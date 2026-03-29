@@ -1,8 +1,6 @@
 package tanks.gui;
 
-import basewindow.IModel;
-import basewindow.InputCodes;
-import basewindow.InputPoint;
+import basewindow.*;
 import tanks.*;
 import tanks.gui.screen.ScreenInfo;
 import tanks.gui.screen.ScreenSelector;
@@ -69,19 +67,23 @@ public class Selector implements IDrawable, ITrigger
 
     //public String sound = "click.ogg";
 
-    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen*/
+    /** If set to true and is part of an online service, pressing the button sends the player to a loading screen */
     public boolean wait = false;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = left
      * 0 = middle
-     * 1 = right*/
+     * 1 = right
+     */
     public int xAlignment = 0;
 
-    /** For online service use with changing interface scales
+    /**
+     * For online service use with changing interface scales
      * -1 = top
      * 0 = middle
-     * 1 = bottom*/
+     * 1 = bottom
+     */
     public int yAlignment = 0;
 
     public Selector(double x, double y, double sX, double sY, String text, String[] o, Runnable f)
@@ -156,7 +158,7 @@ public class Selector implements IDrawable, ITrigger
 
             if (this.lastFrame == Panel.panel.ageFrames - 1)
             {
-                for (Effect e : this.glowEffects)
+                for (Effect e: this.glowEffects)
                 {
                     e.drawGlow();
                     e.draw();
@@ -214,6 +216,12 @@ public class Selector implements IDrawable, ITrigger
         {
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.drawInterfaceImage(images[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
+        }
+
+        if (itemIcons != null)
+        {
+            Drawing.drawing.setColor(255, 255, 255);
+            Drawing.drawing.drawInterfaceImage(itemIcons[selectedOption], this.posX - this.sizeX / 2 + this.sizeY / 2 + 10, this.posY, this.sizeY, this.sizeY);
         }
 
         if (models != null)
@@ -329,7 +337,7 @@ public class Selector implements IDrawable, ITrigger
         }
 
         selected = mx > posX - sizeX / 2 && mx < posX + sizeX / 2 && my > posY - sizeY / 2 - sizeY * 3 / 4 && my < posY + sizeY / 2;
-        infoSelected = (mx > posX + sizeX/2 - sizeY && mx < posX + sizeX/2 && my > posY - sizeY/2  && my < posY + sizeY/2);
+        infoSelected = (mx > posX + sizeX / 2 - sizeY && mx < posX + sizeX / 2 && my > posY - sizeY / 2 && my < posY + sizeY / 2);
 
         if (selected && valid)
         {
@@ -374,6 +382,9 @@ public class Selector implements IDrawable, ITrigger
 
         if (this.models != null)
             s.drawModels = true;
+
+        if (this.itemIcons != null)
+            s.drawItemIcons = true;
 
         s.drawBehindScreen = this.drawBehindScreen;
         Game.screen = s;

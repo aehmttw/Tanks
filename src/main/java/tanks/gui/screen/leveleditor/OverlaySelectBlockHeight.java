@@ -2,10 +2,10 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.gui.Button;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.Screen;
+import tanks.gui.screen.leveleditor.selector.SelectorStackHeight;
 import tanks.obstacle.ObstacleStackable;
 
 public class OverlaySelectBlockHeight extends ScreenLevelEditorOverlay

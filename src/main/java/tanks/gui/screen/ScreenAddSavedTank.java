@@ -11,9 +11,7 @@ import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 
 public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScreen
 {
@@ -141,8 +139,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                 };
                 s.drawBehindScreen = true;
                 Game.screen = s;
-            }
-                , t.description);
+            },
+                t.description);
 
             if (t.description.equals(""))
                 b.enableHover = false;
@@ -221,8 +219,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                     };
                     s.drawBehindScreen = true;
                     Game.screen = s;
-                }
-                        , desc);
+                },
+                    desc);
                 b.disabledColR = 127;
 
                 this.tankButtons.add(b);
@@ -270,7 +268,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                         ArrayList<TankAIControlled> inLevel = new ArrayList<>();
                         ArrayList<TankAIControlled> notInLevel = new ArrayList<>();
 
-                        for (TankAIControlled ta : tanks)
+                        for (TankAIControlled ta: tanks)
                         {
                             if (ta.name.equals(tank.name))
                                 continue;
@@ -282,7 +280,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                             }
                         }
 
-                        for (TankAIControlled ta : savedTanks)
+                        for (TankAIControlled ta: savedTanks)
                         {
                             if (ta.name.equals(tank.name))
                                 continue;
@@ -297,7 +295,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
 
                         final Pointer<TankAIControlled> p = p1 == null ? tankScreen.addTank(clone) : p1;
 
-                        for (TankAIControlled ta : notInLevel)
+                        for (TankAIControlled ta: notInLevel)
                         {
                             tankScreen.addTank(ta.instantiate(ta.name, ta.posX, ta.posY, ta.angle), false);
                         }
@@ -333,7 +331,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                         TankAIControlled t1 = Game.currentLevel.customTanks.get(i);
                         if (t1.name.equals(tt.name))
                         {
-                            duplicate = new ArrayListIndexPointer<>(Game.currentLevel.customTanks, i);
+                            duplicate = new ArrayListIndexPointer<>(TankAIControlled.class, Game.currentLevel.customTanks, i);
                             break;
                         }
                     }
@@ -342,8 +340,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                         resolve.accept(tt, null);
                     else
                         Game.screen = new ScreenTankLoadOverwrite((OverlayObjectMenu) this.tankScreen, tt, duplicate, resolve, Game.currentLevel.customTanks, savedTanks);
-                }
-                        , desc);
+                },
+                    desc);
                 b.disabledColR = 60;
                 b.disabledColB = 60;
                 b.disabledColG = 160;
@@ -416,7 +414,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         {
             ArrayList<String> ds = directory.getSubfiles();
 
-            for (String p : ds)
+            for (String p: ds)
             {
                 if (p.endsWith(".tanks"))
                     files.add(p);
@@ -474,8 +472,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             };
             s.drawBehindScreen = true;
             Game.screen = s;
-        }
-                , desc);
+        },
+            desc);
 
         this.tankButtons.add(b);
         return b;
@@ -578,7 +576,7 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
-                    Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
+                Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
 
         }
 
@@ -597,7 +595,8 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
                     if (delete.selected)
                         ((ButtonObject) this.tankButtons.get(i)).tempDisableHover = true;
 
-                ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;}
+                    ((ButtonObject) this.tankButtons.get(i)).drawBeforeTooltip = this.drawDelete;
+                }
 
                 tankButtons.get(i).draw();
             }
@@ -655,6 +654,6 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
     @Override
     public void onAttemptClose()
     {
-        ((Screen)this.tankScreen).onAttemptClose();
+        ((Screen) this.tankScreen).onAttemptClose();
     }
 }

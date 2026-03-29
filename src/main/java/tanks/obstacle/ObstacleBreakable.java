@@ -1,9 +1,6 @@
 package tanks.obstacle;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Movable;
-import tanks.Panel;
+import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.network.event.EventObstacleHit;
 

@@ -1,29 +1,29 @@
 package tanks.tank;
 
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
 import tanks.gui.ChatMessage;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
 import tanks.gui.screen.*;
 import tanks.item.Item;
 import tanks.minigames.Minigame;
 import tanks.network.event.*;
 import tanks.obstacle.Obstacle;
-import tanks.tankson.ICopyable;
-import tanks.tankson.ITanksONEditable;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
+
+import java.util.ArrayList;
 
 @TanksONable("explosion")
 public class Explosion extends Movable implements ICopyable<Explosion>, ITanksONEditable
 {
-    private static final ObjectArrayList<Movable> movablesCache = new ObjectArrayList<>();
+    private static final ArrayList<Movable> movablesCache = new ArrayList<>();
 
     @Property(id = "damage", name = "Damage", desc = "The default player tank has 1 hitpoint, and the default bullet does 1 hitpoint of damage")
     public double damage = 2;
+
+    @Property(id = "max_extra_health", minValue = 0.0, name = "Max extra hitpoints",
+        desc = "Applicable if damage is negative: this explosion will not heal a tank to more than its default hitpoints plus 'max extra hitpoints'")
+    public double maxExtraHealth = 1;
 
     @Property(id = "destroys_obstacles", name = "Destroys blocks")
     public boolean destroysObstacles = true;
@@ -89,11 +89,11 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
         super(0, 0);
     }
 
-    public static ObjectArrayList<Movable> getMovablesInExplosion(double posX, double posY, double radius)
+    public static ArrayList<Movable> getMovablesInExplosion(double posX, double posY, double radius)
     {
         movablesCache.clear();
-        for (Chunk c : Chunk.getChunksInRadius(posX, posY, radius))
-            for (Movable o : c.movables)    // Movables are in any chunk that their hitboxes touch
+        for (Chunk c: Chunk.getChunksInRadius(posX, posY, radius))
+            for (Movable o: c.movables)    // Movables are in any chunk that their hitboxes touch
                 if (Movable.sqDistBetw(o.posX, o.posY, posX, posY) < Math.pow(radius + o.getSize() / 2, 2))
                     movablesCache.add(o);
         return movablesCache;
@@ -245,6 +245,7 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
             if (!(Team.isAllied(this, m) && !this.team.friendlyFire) && !ScreenGame.finishedQuick)
             {
                 Tank t = (Tank) m;
+                double health = t.health;
                 boolean kill = t.damage(this.damage, this);
 
                 if (kill)
@@ -252,21 +253,6 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                     if (Game.currentLevel instanceof Minigame)
                     {
                         ((Minigame) Game.currentLevel).onKill(this.tank, t);
-
-                        for (IFixedMenu menu : ModAPI.menuGroup)
-                        {
-                            if (menu instanceof Scoreboard && ((Scoreboard) menu).objectiveType.equals(Scoreboard.objectiveTypes.kills))
-                            {
-                                if (!((Scoreboard) menu).teams.isEmpty())
-                                    ((Scoreboard) menu).addTeamScore(this.tank.team, 1);
-
-                                else if (this.tank instanceof TankPlayer && !((Scoreboard) menu).players.isEmpty())
-                                    ((Scoreboard) menu).addPlayerScore(((TankPlayer) this.tank).player, 1);
-
-                                else if (this.tank instanceof TankPlayerRemote && !((Scoreboard) menu).players.isEmpty())
-                                    ((Scoreboard) menu).addPlayerScore(((TankPlayerRemote) this.tank).player, 1);
-                            }
-                        }
 
                         if (((Minigame) Game.currentLevel).enableKillMessages && ScreenPartyHost.isServer)
                         {
@@ -297,8 +283,16 @@ public class Explosion extends Movable implements ICopyable<Explosion>, ITanksON
                             Game.eventsOut.add(new EventUpdateCoins(((TankPlayerRemote) this.tank).player));
                     }
                 }
-                else if (damage > 0)
-                    Drawing.drawing.playGlobalSound("damage.ogg");
+                else
+                {
+                    if (damage > 0)
+                        Drawing.drawing.playGlobalSound("damage.ogg");
+                    else if (damage < 0)
+                    {
+                        float pitch = (float) ((Math.min(t.health, t.baseHealth + this.maxExtraHealth) / (t.baseHealth + this.maxExtraHealth) / 2) + 1f) / 2;
+                        Drawing.drawing.playGlobalSound("heal_impact_2.ogg", pitch);
+                    }
+                }
             }
         }
         else if (m instanceof Mine && !m.destroy)

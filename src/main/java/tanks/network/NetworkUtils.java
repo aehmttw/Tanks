@@ -1,82 +1,55 @@
 package tanks.network;
 
 import basewindow.Color;
+
 import io.netty.buffer.ByteBuf;
-import tanks.*;
 
-import java.nio.charset.*;
-import java.util.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
-public class NetworkUtils 
+public class NetworkUtils
 {
-	public static final Charset charset = StandardCharsets.UTF_8;
-	
-	public static String readString(ByteBuf b)
-	{
-		int l = b.readInt();
+    public static final Charset charset = StandardCharsets.UTF_8;
 
-		if (l < 0)
-			return null;
-
-		return b.readCharSequence(l, charset).toString();
-	}
-	
-	public static void writeString(ByteBuf b, String s)
-	{
-		int extra = 0;
-
-		if (s == null)
-		{
-			b.writeInt(-1);
-			return;
-		}
-
-		for (int i = 0; i < s.length(); i++)
-			if (s.charAt(i) == '\u00A7')
-				extra++;
-		
-		b.writeInt(s.length() + extra);
-		b.writeCharSequence(s, charset);
-	}
-
-    public static void writeUUID(ByteBuf b, UUID u)
+    public static String readString(ByteBuf b)
     {
-        NetworkUtils.writeString(b, u == null ? null : u.toString());
+        int l = b.readInt();
+
+        if (l < 0)
+            return null;
+
+        return b.readCharSequence(l, charset).toString();
     }
 
-    public static UUID readUUID(ByteBuf b)
+    public static void writeString(ByteBuf b, String s)
     {
-        String s = NetworkUtils.readString(b);
-        return s == null ? null : UUID.fromString(s);
+        int extra = 0;
+
+        if (s == null)
+        {
+            b.writeInt(-1);
+            return;
+        }
+
+        for (int i = 0; i < s.length(); i++)
+            if (s.charAt(i) == '\u00A7')
+                extra++;
+
+        b.writeInt(s.length() + extra);
+        b.writeCharSequence(s, charset);
     }
 
-    public static <T> void writeCollection(ByteBuf b, Collection<T> l, BiConsumer<ByteBuf, T> write)
+    public static void readColor(ByteBuf b, Color c)
     {
-        b.writeInt(l.size());
-        for (T s: l)
-            write.accept(b, s);
+        c.red = b.readDouble();
+        c.green = b.readDouble();
+        c.blue = b.readDouble();
     }
 
-    public static <T, V extends Collection<T>> void readCollection(ByteBuf b, V list, Function<ByteBuf, T> read)
+    public static void writeColor(ByteBuf b, Color c)
     {
-        int size = b.readInt();
-        for (int i = 0; i < size; i++)
-            list.add(read.apply(b));
+        b.writeDouble(c.red);
+        b.writeDouble(c.green);
+        b.writeDouble(c.blue);
     }
-
-	public static Color readColor(ByteBuf b)
-	{
-        Color c = new Color();
-		c.red = b.readShort();
-		c.green = b.readShort();
-		c.blue = b.readShort();
-        return c;
-	}
-
-	public static void writeColor(ByteBuf b, Color c)
-	{
-        b.writeShort((int) c.red);
-		b.writeShort((int) c.green);
-		b.writeShort((int) c.blue);
-	}
 }

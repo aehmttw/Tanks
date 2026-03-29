@@ -1,14 +1,9 @@
 package tanks.gui.screen;
 
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
+import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonObject;
-import tanks.tank.ITankField;
-import tanks.tank.Tank;
-import tanks.tank.TankAIControlled;
-import tanks.tank.TankReference;
+import tanks.tank.*;
 import tanks.tankson.Pointer;
 import tanks.translation.Translation;
 
@@ -68,7 +63,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
             s.objName = objName;
 
             if (screen instanceof ScreenEditorTanksONable)
-                ((ScreenEditorTanksONable<?>)screen).clearMusicTracks();
+                ((ScreenEditorTanksONable<?>) screen).clearMusicTracks();
             Game.screen = s;
         }
     }, "");
@@ -193,7 +188,8 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
     public void update()
     {
         if (copy.hoverTextRaw.equals(""))
-            copy.setHoverText("Creating an editable copy will unlink the tank used---for the %s from the original---tank in the level. This allows you to modify the---%s independently of the tank---in the level.", this.objName, this.objName);
+            copy.setHoverText("Creating an editable copy will unlink the tank used---for the %s from the original---tank in the level." +
+                " This allows you to modify the---%s independently of the tank---in the level.", this.objName, this.objName);
 
         int pageCount = (this.tankButtons.size() - 1) / (this.objectButtonRows * this.objectButtonCols);
         if (tankPage > pageCount)
@@ -259,7 +255,7 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, nextTankPage.posY,
-                    Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
+                Translation.translate("Page %d of %d", (tankPage + 1), (tankButtons.size() / (objectButtonCols * objectButtonRows) + Math.min(1, tankButtons.size() % (objectButtonCols * objectButtonRows)))));
 
         }
 

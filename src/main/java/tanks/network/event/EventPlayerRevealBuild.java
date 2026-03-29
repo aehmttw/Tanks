@@ -1,7 +1,10 @@
 package tanks.network.event;
 
-import tanks.*;
+import tanks.Game;
+import tanks.Movable;
 import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 public class EventPlayerRevealBuild extends PersonalEvent
 {
@@ -20,9 +23,23 @@ public class EventPlayerRevealBuild extends PersonalEvent
     }
 
     @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(tank);
+        b.writeInt(build);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        tank = b.readInt();
+        build = b.readInt();
+    }
+
+    @Override
     public void execute()
     {
-        if (this.clientID == null && build >= 0 && build < Game.currentLevel.playerBuilds.size())
+        if (this.clientID == null && build >= 0 && Game.currentLevel != null && build < Game.currentLevel.playerBuilds.size())
         {
             for (Movable m: Game.movables)
             {

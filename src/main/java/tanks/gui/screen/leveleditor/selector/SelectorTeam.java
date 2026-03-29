@@ -1,13 +1,7 @@
 package tanks.gui.screen.leveleditor.selector;
 
-import tanks.Game;
-import tanks.GameObject;
-import tanks.Team;
-import tanks.gui.screen.leveleditor.OverlayEditTeam;
-import tanks.gui.screen.leveleditor.OverlaySelectTeam;
-import tanks.gui.screen.leveleditor.ScreenLevelEditor;
-import tanks.tank.Tank;
-import tanks.translation.Translation;
+import tanks.*;
+import tanks.gui.screen.leveleditor.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -68,7 +62,7 @@ public class SelectorTeam extends SelectorChoice<Team>
         if (editor != null)
             this.choices = editor.teams;
         else if (Game.currentLevel.enableTeams)
-            this.choices = Game.currentLevel.teamsList;
+            this.choices = new ArrayList<>(Game.currentLevel.teamsMap.values());
         else if (!Game.currentLevel.disableFriendlyFire)
             this.choices = new ArrayList<>(Arrays.asList(Game.playerTeam, Game.enemyTeam));
         else

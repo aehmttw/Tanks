@@ -1,19 +1,19 @@
 package tanks.gui;
 
 import basewindow.BaseFile;
-import tanks.BiConsumer;
-import tanks.Drawing;
-import tanks.Function;
-import tanks.Game;
+import tanks.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 
 
 public class SavedFilesList extends ButtonList
 {
+    public BiConsumer<String, BaseFile> behavior;
+    public Function<BaseFile, String> hover;
+    public String extension;
+    public BaseFile directoryFile;
+
     public String directory;
     public boolean sortedByTime = false;
     public BiConsumer<BaseFile, Button> auxiliarySetup = null;
@@ -22,7 +22,7 @@ public class SavedFilesList extends ButtonList
     public boolean drawOpenFileButton = false;
 
     Button openFolder = new Button(-1000, -1000, this.objHeight, this.objHeight, "", () ->
-            Game.game.fileManager.openFileManager(this.directory), "Open folder in file manager");
+        Game.game.fileManager.openFileManager(this.directory), "Open folder in file manager");
 
     public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover)
     {
@@ -34,12 +34,14 @@ public class SavedFilesList extends ButtonList
         this(dir, page, xOffset, yOffset, behavior, hover, null, ext);
     }
 
-    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile, Button> auxiliarySetup)
+    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile,
+        Button> auxiliarySetup)
     {
         this(dir, page, xOffset, yOffset, behavior, hover, auxiliarySetup, ".tanks");
     }
 
-    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile, Button> auxiliarySetup, String ext)
+    public SavedFilesList(String dir, int page, int xOffset, int yOffset, BiConsumer<String, BaseFile> behavior, Function<BaseFile, String> hover, BiConsumer<BaseFile,
+        Button> auxiliarySetup, String ext)
     {
         super(new ArrayList<>(), page, xOffset, yOffset);
 
@@ -51,21 +53,31 @@ public class SavedFilesList extends ButtonList
         this.openFolder.imageSizeX = 30;
         this.openFolder.imageSizeY = 30;
 
-        BaseFile directory = Game.game.fileManager.getFile(dir);
-        if (!directory.exists())
-        {
-            directory.mkdirs();
-        }
+        this.behavior = behavior;
+        this.hover = hover;
+        this.extension = ext;
+        this.directoryFile = Game.game.fileManager.getFile(dir);
+
+        if (!directoryFile.exists())
+            directoryFile.mkdirs();
+
+        refresh();
+    }
+
+    public void refresh()
+    {
+        buttons.clear();
+        fileButtons.clear();
 
         ArrayList<String> files = new ArrayList<>();
 
         try
         {
-            ArrayList<String> ds = directory.getSubfiles();
+            ArrayList<String> ds = directoryFile.getSubfiles();
 
-            for (String p : ds)
+            for (String p: ds)
             {
-                if (p.endsWith(ext))
+                if (p.endsWith(extension))
                     files.add(p);
             }
         }
@@ -132,6 +144,7 @@ public class SavedFilesList extends ButtonList
 
     public void sort(boolean byTime)
     {
+        this.fileButtons.removeIf(b -> b.text == null);
         this.buttons.removeAll(this.fileButtons);
 
         // IMPORTANT: there's a nicer way to do this but libgdx doesnt support it
@@ -148,7 +161,6 @@ public class SavedFilesList extends ButtonList
     {
         this.openFolder.posX = Drawing.drawing.interfaceSizeX / 2 + this.xOffset + this.objXSpace / 2 * 1.35;
         this.openFolder.posY = Drawing.drawing.interfaceSizeY / 2 + this.yOffset - this.objYSpace * 3.5;
-
         if (this.drawOpenFileButton)
             this.openFolder.update();
 

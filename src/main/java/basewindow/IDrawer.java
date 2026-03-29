@@ -1,6 +1,6 @@
 package basewindow;
 
-public interface IDrawer 
+public interface IDrawer
 {
-	void draw();
+    void draw();
 }

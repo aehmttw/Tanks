@@ -1,9 +1,12 @@
 package tanks.network.event;
 
 import tanks.attribute.AttributeModifier;
+import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
-public class EventTankAddAttributeModifier extends PersonalEvent implements IStackableEvent
+import io.netty.buffer.ByteBuf;
+
+public class EventTankAddAttributeModifier extends PersonalEvent
 {
     public int tank;
     public String name;
@@ -41,6 +44,38 @@ public class EventTankAddAttributeModifier extends PersonalEvent implements ISta
     }
 
     @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.tank);
+        NetworkUtils.writeString(b, this.name);
+        b.writeDouble(this.duration);
+        b.writeDouble(this.deteriorationAge);
+        b.writeDouble(this.warmupAge);
+        b.writeDouble(this.value);
+        NetworkUtils.writeString(b, this.effect);
+        b.writeDouble(this.age);
+        NetworkUtils.writeString(b, this.type);
+        b.writeBoolean(this.expired);
+        b.writeBoolean(this.unduplicate);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.tank = b.readInt();
+        this.name = NetworkUtils.readString(b);
+        this.duration = b.readDouble();
+        this.deteriorationAge = b.readDouble();
+        this.warmupAge = b.readDouble();
+        this.value = b.readDouble();
+        this.effect = NetworkUtils.readString(b);
+        this.age = b.readDouble();
+        this.type = NetworkUtils.readString(b);
+        this.expired = b.readBoolean();
+        this.unduplicate = b.readBoolean();
+    }
+
+    @Override
     public void execute()
     {
         Tank t = Tank.idMap.get(this.tank);
@@ -67,14 +102,4 @@ public class EventTankAddAttributeModifier extends PersonalEvent implements ISta
         }
     }
 
-    public boolean isStackable()
-    {
-        return unduplicate;
-    }
-
-    @Override
-    public int getIdentifier()
-    {
-        return name.hashCode() + IStackableEvent.f(tank);
-    }
 }

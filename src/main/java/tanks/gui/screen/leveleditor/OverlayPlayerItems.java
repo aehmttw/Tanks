@@ -10,9 +10,11 @@ public class OverlayPlayerItems extends ScreenLevelEditorOverlay
 {
     public TextBox editCoins;
 
-    public Button editShop = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Shop", () -> Game.screen = new OverlayShop(Game.screen, editor));
+    public Button editShop = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Shop",
+        () -> Game.screen = new OverlayShop(Game.screen, editor));
 
-    public Button editStartingItems = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Starting items", () -> Game.screen = new OverlayStartingItems(Game.screen, editor));
+    public Button editStartingItems = new Button(this.centerX, this.centerY + this.objYSpace / 2, this.objWidth, this.objHeight, "Starting items",
+        () -> Game.screen = new OverlayStartingItems(Game.screen, editor));
 
     public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", this::escape);
 
@@ -26,8 +28,8 @@ public class OverlayPlayerItems extends ScreenLevelEditorOverlay
                 editCoins.inputText = "0";
 
             editor.level.startingCoins = Integer.parseInt(editCoins.inputText);
-        }
-                ,  editor.level.startingCoins + "");
+        },
+            editor.level.startingCoins + "");
 
         editCoins.allowLetters = false;
         editCoins.allowSpaces = false;
@@ -51,7 +53,11 @@ public class OverlayPlayerItems extends ScreenLevelEditorOverlay
         super.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Drawing.drawing.drawPopup(this.centerX, this.centerY - 20, 800, 550);
+        int sX = (int) (800 * this.objWidth / 350);
+        int sY = (int) Math.min(700, 550 * this.objHeight / 40);
+
+        Drawing.drawing.setColor(0, 0, 0, 127);
+        Drawing.drawing.drawPopup(this.centerX, this.centerY - (Drawing.drawing.interfaceScaleZoom <= 1 ? 20 : 0), sX, sY);
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

@@ -5,7 +5,6 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.registry.RegistryModelTank;
 import tanks.tankson.Serializable;
-import tanks.tankson.TanksONable;
 
 import java.util.ArrayList;
 
@@ -100,7 +99,8 @@ public class TankModels
 
         for (String s: emblems)
         {
-            Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + s + ".png"));
+            if (!s.isEmpty())
+                Game.registryModelTank.tankEmblems.add(new RegistryModelTank.TankModelEntry("emblems/" + s + ".png"));
         }
     }
 
@@ -110,11 +110,14 @@ public class TankModels
 
         for (String s: skins)
         {
-            String[] sections = s.split(",");
-            if (sections.length == 1)
-                new TankSkin(s);
-            else
-                new TankSkin(sections[0], Boolean.parseBoolean(sections[1]));
+            if (!s.isEmpty())
+            {
+                String[] sections = s.split(",");
+                if (sections.length == 1)
+                    new TankSkin(s);
+                else
+                    new TankSkin(sections[0], Boolean.parseBoolean(sections[1]));
+            }
         }
     }
 

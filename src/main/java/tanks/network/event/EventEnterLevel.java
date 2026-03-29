@@ -1,27 +1,45 @@
 package tanks.network.event;
 
-import tanks.*;
+import tanks.Crusade;
+import tanks.Game;
 import tanks.gui.screen.ScreenGame;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventEnterLevel extends PersonalEvent
-{	
-	public EventEnterLevel()
-	{
-		
-	}
+{
+    public EventEnterLevel()
+    {
 
-	@Override
-	public void execute()
-	{
-		if (this.clientID == null)
-		{
-			ScreenGame s = new ScreenGame();
-			Game.screen = s;
+    }
 
-			if (Game.autoReady)
-				Game.eventsOut.add(new EventPlayerAutoReady());
+    @Override
+    public void execute()
+    {
+        if (this.clientID == null)
+        {
+            ScreenGame s = new ScreenGame();
+            Game.screen = s;
 
-			Crusade.currentCrusade = null;
-		}
-	}
+            if (Game.autoReady)
+                Game.eventsOut.add(new EventPlayerAutoReady());
+
+            if (Game.playerTank != null)
+                Game.playerTank.updateAbilities();
+
+            Crusade.currentCrusade = null;
+        }
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+
+    }
 }

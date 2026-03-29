@@ -1,6 +1,7 @@
 package tanks.network.event;
 
-import tanks.*;
+import tanks.Crusade;
+import tanks.Game;
 
 public class EventPlayerAutoReady extends EventPlayerReady
 {

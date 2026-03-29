@@ -28,7 +28,7 @@ public class ScreenOptionsMisc extends Screen
                 autostart.setText(autostartText, ScreenOptions.offText);
         }
     },
-            "When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
+        "When enabled, levels will---start playing automatically---4 seconds after they are---loaded (if the play button---isn't clicked earlier)");
 
     Button fullStats = new Button(this.centerX, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -43,7 +43,7 @@ public class ScreenOptionsMisc extends Screen
                 fullStats.setText(fullStatsText, ScreenOptions.offText);
         }
     },
-            "When off, skips directly to the summary tab---of the crusade end stats screen");
+        "When off, skips directly to the summary tab---of the crusade end stats screen");
 
     Button previewCrusades = new Button(this.centerX, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -58,7 +58,7 @@ public class ScreenOptionsMisc extends Screen
                 previewCrusades.setText(previewCrusadesText, ScreenOptions.offText);
         }
     },
-            "When enabled, the backgrounds of---the crusade preview and stats---screens display an animation of all---the crusade levels scrolling by.");
+        "When enabled, the backgrounds of---the crusade preview and stats---screens display an animation of all---the crusade levels scrolling by.");
 
     Button circularHotbar = new Button(this.centerX, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -73,9 +73,9 @@ public class ScreenOptionsMisc extends Screen
                 circularHotbar.setText(hotbarText, bottomText);
         }
     },
-            "Configures the placement of item, health,---and ammunition information on the screen.------" +
-                    "In the 'bottom' setting, all this information---will be at the bottom of the screen.------" +
-                    "In the 'circular' setting, this information will---either be overlaid on your tank---or placed around your cursor.");
+        "Configures the placement of item, health,---and ammunition information on the screen.------" +
+            "In the 'bottom' setting, all this information---will be at the bottom of the screen.------" +
+            "In the 'circular' setting, this information will---either be overlaid on your tank---or placed around your cursor.");
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () -> Game.screen = new ScreenOptions());
 
@@ -104,8 +104,8 @@ public class ScreenOptionsMisc extends Screen
         else
             circularHotbar.setText(hotbarText, bottomText);
 
-//        if (Game.framework == Game.Framework.libgdx)
-//            previewCrusades.enabled = false;
+        if (Game.game.window.touchscreen)
+            circularHotbar.enabled = false;
     }
 
     @Override

@@ -7,12 +7,19 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Property
 {
     String id();
+
     String name() default "";
+
     String desc() default "";
+
     String category() default "";
+
     MiscType miscType() default MiscType.none;
+
     boolean nullable() default false;
+
     double minValue() default Double.NEGATIVE_INFINITY;
+
     double maxValue() default Double.POSITIVE_INFINITY;
 
     enum MiscType

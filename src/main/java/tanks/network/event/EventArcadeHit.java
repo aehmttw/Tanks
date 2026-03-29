@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.*;
 import tanks.minigames.Arcade;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventArcadeHit extends PersonalEvent
 {
     public int power;

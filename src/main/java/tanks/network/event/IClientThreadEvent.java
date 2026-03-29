@@ -4,5 +4,5 @@ import tanks.network.ClientHandler;
 
 public interface IClientThreadEvent
 {
-	void execute(ClientHandler s);
+    void execute(ClientHandler s);
 }

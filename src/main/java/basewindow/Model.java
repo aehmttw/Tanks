@@ -53,7 +53,7 @@ public class Model implements IModel
         this.materials.put("default", Model.defaultMaterial);
 
         int bones = 0;
-        for (String s : lines)
+        for (String s: lines)
         {
             if (s.startsWith("newmtl "))
             {
@@ -243,7 +243,7 @@ public class Model implements IModel
 
                 if (sections.length >= 7)
                     this.points.add(new ModelPart.Point(Double.parseDouble(sections[1]), -Double.parseDouble(sections[2]), Double.parseDouble(sections[3]),
-                            new double[]{Double.parseDouble(sections[4]), Double.parseDouble(sections[5]), Double.parseDouble(sections[6]), 1}));
+                        new double[]{Double.parseDouble(sections[4]), Double.parseDouble(sections[5]), Double.parseDouble(sections[6]), 1}));
                 else
                     this.points.add(new ModelPart.Point(Double.parseDouble(sections[1]), -Double.parseDouble(sections[2]), Double.parseDouble(sections[3])));
             }
@@ -295,7 +295,7 @@ public class Model implements IModel
 
         boolean facesAdded = false;
 
-        for (String s : lines)
+        for (String s: lines)
         {
             if (s.startsWith("usemtl "))
             {
@@ -383,7 +383,7 @@ public class Model implements IModel
         for (int n = 0; n < s.length; n++)
         {
             if (!s[n].equals(""))
-               i[n] = Integer.parseInt(s[n]);
+                i[n] = Integer.parseInt(s[n]);
         }
 
         return i;
@@ -392,9 +392,9 @@ public class Model implements IModel
     public void addTriangle(ArrayList<ModelPart.Shape> shapes, int[] v1, int[] v2, int[] v3)
     {
         shapes.add(new ModelPart.Triangle(this.points.get(v1[0]), this.points.get(v2[0]), this.points.get(v3[0]),
-                this.texCoords.get(v1[1]), this.texCoords.get(v2[1]), this.texCoords.get(v3[1]),
-                this.normals.get(v1[2]), this.normals.get(v2[2]), this.normals.get(v3[2]),
-                this.colors.get(v1[3]), this.colors.get(v2[3]), this.colors.get(v3[3])));
+            this.texCoords.get(v1[1]), this.texCoords.get(v2[1]), this.texCoords.get(v3[1]),
+            this.normals.get(v1[2]), this.normals.get(v2[2]), this.normals.get(v3[2]),
+            this.colors.get(v1[3]), this.colors.get(v2[3]), this.colors.get(v3[3])));
     }
 
     public void setSkin(HashMap<String, String> skins)

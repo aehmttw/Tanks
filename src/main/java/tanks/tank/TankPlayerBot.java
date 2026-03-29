@@ -1,10 +1,8 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletAirStrike;
-import tanks.bullet.BulletArc;
 import tanks.attribute.AttributeModifier;
+import tanks.bullet.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.hotbar.Hotbar;
 import tanks.item.*;
@@ -232,6 +230,7 @@ public class TankPlayerBot extends TankPurple implements IServerPlayerTank
         else
             this.shootAIType = ShootAI.straight;
 
+        this.ignoreRange = b instanceof BulletBlock;
         this.cooldownBase = i.item.cooldownBase;
         this.cooldownRandom = 0;
         this.bulletItem = i;

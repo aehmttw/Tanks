@@ -1,17 +1,10 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Level;
-import tanks.gui.Button;
-import tanks.gui.ITrigger;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.tankson.FieldPointer;
-import tanks.tankson.Pointer;
-import tanks.tankson.Property;
+import tanks.*;
+import tanks.gui.*;
+import tanks.item.*;
+import tanks.tankson.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -23,6 +16,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     public boolean showLoadFromTemplate = false;
 
     public Button itemTabButton;
+    public SelectorItemIcon itemIconSelector;
 
     public boolean defaultUnlimitedItems = false;
 
@@ -36,9 +30,10 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 b.maxStackSize = 0;
             }
 
-            this.setTarget(b);
             Game.screen = this;
-        }, "My", Item.class);
+            this.setupLayoutParameters();
+            this.setTarget(b);
+        }, "My", this.target.getType());
     }
     );
 
@@ -134,11 +129,13 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             if (is instanceof ItemBullet.ItemStackBullet)
             {
                 this.objectEditorScreen = new ScreenEditorBullet(new FieldPointer<>(item, item.getClass().getField("bullet"), false), this.prevScreen);
+                ((ScreenEditorBullet) this.objectEditorScreen).screenEditorItem = this;
                 ((ScreenEditorBullet) this.objectEditorScreen).bulletTypes.posX += 20;
             }
             else if (is instanceof ItemMine.ItemStackMine)
             {
                 this.objectEditorScreen = new ScreenEditorMine(new FieldPointer<>(item, item.getClass().getField("mine"), false), this.prevScreen);
+                ((ScreenEditorMine) this.objectEditorScreen).screenEditorItem = this;
 //                this.objectEditorScreen.forceDisplayTabs = true;
 //                Button b = this.objectEditorScreen.topLevelButtons.get(0);
 //                b.posX = this.itemTabButton.posX;
@@ -178,21 +175,25 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
 
                 // Item name, icon, cooldown
                 FieldPointer<Item> ip = new FieldPointer<>(screen.target.get(), screen.target.getType().getField("item"));
-                for (Field f : i.getClass().getFields())
+                for (Field f: i.getClass().getFields())
                 {
+                    Property p = f.getAnnotation(Property.class);
                     if (f.getDeclaringClass().equals(Item.class))
                     {
-                        Property p = f.getAnnotation(Property.class);
                         if (p != null && p.category().equals(this.category))
                         {
-                            this.uiElements.add(screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p));
+                            ITrigger t = screen.getUIElementForField(new FieldPointer<>(ip.get(), f), p);
+                            this.uiElements.add(t);
+
+                            if (p.miscType().equals(Property.MiscType.itemIcon))
+                                itemIconSelector = (SelectorItemIcon) t;
                         }
                     }
                 }
 
                 // Move the cooldown to be after stack size and max stack size
                 ITrigger cooldown = this.uiElements.remove(this.uiElements.size() - 1);
-                for (Field f : this.screen.fields)
+                for (Field f: this.screen.fields)
                 {
                     Property p = f.getAnnotation(Property.class);
                     if (p != null && p.category().equals(this.category) && !p.id().equals("item"))
@@ -203,7 +204,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
                 this.uiElements.add(cooldown);
 
                 // Other per-item settings
-                for (Field f : i.getClass().getFields())
+                for (Field f: i.getClass().getFields())
                 {
                     if (!f.getDeclaringClass().equals(Item.class))
                     {
@@ -284,11 +285,25 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
         else
             super.update();
 
+        this.updateAutoIcon();
+
         if (this.showLoadFromTemplate)
             load.update();
         else
             this.delete.update();
 
         this.save.update();
+    }
+
+    public void updateAutoIcon()
+    {
+        Item i = this.target.get().item;
+        if (i.autoIcon)
+        {
+            i.setAutomaticIcon();
+            itemIconSelector.selectedIcon = i.icon;
+            itemIconSelector.selectedOption = i.icon.registryIndex;
+            itemIconSelector.itemIcons[itemIconSelector.selectedOption] = i.icon;
+        }
     }
 }

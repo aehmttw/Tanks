@@ -8,9 +8,7 @@ import tanks.network.event.*;
 import tanks.tank.*;
 import tanks.translation.Translation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public class RampageTrial extends Minigame
 {
@@ -25,7 +23,8 @@ public class RampageTrial extends Minigame
     public int rampageDuration = 500;
     public int rampageExitDuration = 200;
     public int maxPower = 8;
-    public static String[] rampage_titles = new String[]{"Rampage!", "Extra rampage!", "Super rampage!", "Mega rampage!!", "Giga rampage!!", "Insane rampage!!", "Ultimate rampage!!!", "Godlike rampage!!!"};
+    public static String[] rampage_titles = new String[]
+        {"Rampage!", "Extra rampage!", "Super rampage!", "Mega rampage!!", "Giga rampage!!", "Insane rampage!!", "Ultimate rampage!!!", "Godlike rampage!!!"};
 
     public HashMap<Player, Double> playerDeathTimes = new HashMap<>();
     public HashMap<Player, Tank> playerDeaths = new HashMap<>();
@@ -96,7 +95,7 @@ public class RampageTrial extends Minigame
 
             lastHit = age;
 
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof Tank)
                 {
@@ -185,7 +184,7 @@ public class RampageTrial extends Minigame
             ArrayList<Player> totalPlayers = new ArrayList<>();
 
             int enemies = 0;
-            for (Movable m : Game.movables)
+            for (Movable m: Game.movables)
             {
                 if (m instanceof IServerPlayerTank)
                 {
@@ -278,7 +277,8 @@ public class RampageTrial extends Minigame
 
             Drawing.drawing.setInterfaceFontSize(20 * mul);
             Drawing.drawing.setColor(col[0] / 2, col[1] / 2, col[2] / 2, frac * 255);
-            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 2.5, Drawing.drawing.interfaceSizeY / 2 + 33 * mul + 2.5, "+%d%% faster!", power * 20);
+            Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + 2.5, Drawing.drawing.interfaceSizeY / 2 + 33 * mul + 2.5, "+%d%% faster!",
+                power * 20);
             Drawing.drawing.setColor(col[0], col[1], col[2], frac * 255);
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 33 * mul, "+%d%% faster!", power * 20);
         }

@@ -1,20 +1,13 @@
 package tanks.tank;
 
 import tanks.*;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletAirStrike;
-import tanks.bullet.BulletArc;
-import tanks.bullet.DefaultItems;
 import tanks.attribute.AttributeModifier;
-import tanks.gui.IFixedMenu;
-import tanks.gui.Scoreboard;
+import tanks.bullet.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.ScreenPartyHost;
 import tanks.hotbar.Hotbar;
 import tanks.hotbar.ItemBar;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
+import tanks.item.*;
 import tanks.network.ConnectedPlayer;
 import tanks.network.event.*;
 
@@ -34,9 +27,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     public long startUpdateTime = -1;
     public double ourTimeOffset = 0;
 
-    public boolean forceMotion = true, recoil = false;
-    public boolean action1, action2;
-    public int quickActions;
+    public boolean forceMotion = true;
+    public boolean recoil = false;
 
     public static boolean checkMotion = false;
     public static boolean weakTimeCheck = false;
@@ -82,7 +74,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
 
     public double bufferCooldown = 0;
     public Item.ItemStack<?> lastItem = null;
-    
+
     public boolean didAction = false;
 
     public TankPlayerRemote(double x, double y, double angle, Player p)
@@ -112,26 +104,10 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.currentKnownPosY = this.posY;
             this.prevKnownPosX = this.posX;
             this.prevKnownPosY = this.posY;
-            this.lastAngle = this.angle;
-            this.lastPitch = this.pitch;
         }
 
         this.timeSinceRefresh += Panel.frameFrequency;
         this.localAge += Panel.frameFrequency;
-
-        if (!this.disabled)
-        {
-            if (this.action1)
-                this.action(false);
-            if (this.action2)
-                this.action(true);
-
-            for (int i = 0; i < this.abilities.size(); i++)
-            {
-                if ((quickActions >> i) % 2 == 1)
-                    this.quickAction(i);
-            }
-        }
 
         super.update();
 
@@ -254,7 +230,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         ItemBar b = this.player.hotbar.itemBar;
         ItemBullet.ItemStackBullet ib = null;
         ItemMine.ItemStackMine im = null;
-        Item.ItemStack<?> i2;
+        Item.ItemStack<?> i2 = null;
 
         if (this.getPrimaryAbility() instanceof ItemBullet.ItemStackBullet)
             ib = (ItemBullet.ItemStackBullet) this.getPrimaryAbility();
@@ -296,7 +272,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         lastMaxLiveMines = mlm;
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, int quickActions, double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, boolean[] quickActions,
+                                 double time, long receiveTime)
     {
         if (this.destroy)
             return;
@@ -337,11 +314,11 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
                 double dVY = vY - this.lastVY;
                 double changeVelocitySq = dVX * dVX + dVY * dVY;
 
-                if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001
-                        && !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001
-                        && Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY)
-                        && (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001)
-                        && (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVY) < 0.001)))
+                if (!this.hasCollided && changeVelocitySq > maxChangeVelocity * maxChangeVelocity * 1.00001 &&
+                    !(Math.abs(this.getAngleInDirection(this.posX + this.lastVX, this.posY + this.lastVY) - this.getAngleInDirection(this.posX + vX, this.posY + vY)) < 0.0001 &&
+                        Math.abs(vX) <= Math.abs(this.lastVX) && Math.abs(vY) <= Math.abs(this.lastVY) &&
+                        (Math.abs(vX) >= Math.abs(this.lastVX * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVX) < 0.001) &&
+                        (Math.abs(vY) >= Math.abs(this.lastVY * Math.pow(1 - Math.min(1, this.friction * this.frictionModifier), time)) || Math.abs(this.lastVY) < 0.001)))
                 {
                     double changeVelocity = Math.sqrt(changeVelocitySq);
 
@@ -475,28 +452,18 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             this.timeSinceRefresh = 0;
             this.lastUpdateTime = t;
 
-            if (ib != null && ib.item != null && ib.item.cooldownBase < 10)
-            {
-                // continuous shoot
-                this.action1 = action1;
-                this.action2 = action2;
-                this.quickActions = quickActions;
-            }
-            else
-            {
-                if (action1 && !this.disabled)
-                    this.action(false);
+            if (action1 && !this.disabled)
+                this.action(false);
 
-                if (action2 && !this.disabled)
-                    this.action(true);
+            if (action2 && !this.disabled)
+                this.action(true);
 
-                if (!this.disabled)
+            if (!this.disabled)
+            {
+                for (int i = 0; i < this.abilities.size(); i++)
                 {
-                    for (int i = 0; i < this.abilities.size(); i++)
-                    {
-                        if ((quickActions >> i) % 2 == 1)
-                            this.quickAction(i);
-                    }
+                    if (quickActions[i])
+                        this.quickAction(i);
                 }
             }
 
@@ -530,7 +497,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (Crusade.crusadeMode && Crusade.currentCrusade != null)
         {
             CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-            cp.addItemUse(m.item);
+            cp.addItemUse(m.item, 1);
         }
     }
 
@@ -539,7 +506,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (Game.bulletLocked || this.destroy)
             return;
 
-        int a = right ? selectedSecondaryAbility : selectedPrimaryAbility;
+        int a = right ? player.hotbar.itemBar.selectedSecondaryAbility : player.hotbar.itemBar.selectedPrimaryAbility;
 
         if (this.player.hotbar.itemBar.getSelectedAction(right) != this.lastItem && this.bufferCooldown > 0)
             return;
@@ -556,7 +523,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             s.networkIndex = -a - 1;
             if (s.attemptUse(this))
             {
-                Game.eventsOut.add(new EventUpdateTankAbility(this.player, right ? this.selectedSecondaryAbility : this.selectedPrimaryAbility));
+                Game.eventsOut.add(new EventUpdateTankAbility(this.player, right ? player.hotbar.itemBar.selectedSecondaryAbility : player.hotbar.itemBar.selectedPrimaryAbility));
                 this.didAction = true;
             }
         }
@@ -624,7 +591,7 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         if (Crusade.crusadeMode && Crusade.currentCrusade != null)
         {
             CrusadePlayer cp = Crusade.currentCrusade.getCrusadePlayer(this.getPlayer());
-            cp.addItemUse(b.item);
+            cp.addItemUse(b.item, b.frameDamageMultipler);
         }
     }
 
@@ -644,17 +611,6 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
     {
         if (Crusade.crusadeMode)
             this.player.remainingLives--;
-
-        for (IFixedMenu m : ModAPI.menuGroup)
-        {
-            if (m instanceof Scoreboard && ((Scoreboard) m).objectiveType.equals(Scoreboard.objectiveTypes.deaths))
-            {
-                if (((Scoreboard) m).players.isEmpty())
-                    ((Scoreboard) m).addTeamScore(this.team, 1);
-                else
-                    ((Scoreboard) m).addPlayerScore(this.player, 1);
-            }
-        }
 
         if (Game.screen instanceof ScreenGame)
         {

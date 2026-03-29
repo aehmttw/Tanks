@@ -1,13 +1,10 @@
 package tanksonline.screen;
 
-import tanks.network.event.online.EventSilentDisconnect;
 import tanks.gui.Button;
 import tanks.gui.UUIDTextBox;
 import tanks.gui.screen.ScreenOnline;
-import tanksonline.AccessCode;
-import tanksonline.PlayerMap;
-import tanksonline.TanksOnlinePlayer;
-import tanksonline.TanksOnlineServerHandler;
+import tanks.network.event.online.EventSilentDisconnect;
+import tanksonline.*;
 
 import java.io.File;
 import java.util.UUID;

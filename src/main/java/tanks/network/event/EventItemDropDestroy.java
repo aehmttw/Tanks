@@ -2,6 +2,8 @@ package tanks.network.event;
 
 import tanks.ItemDrop;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventItemDropDestroy extends PersonalEvent
 {
     public int itemDrop;

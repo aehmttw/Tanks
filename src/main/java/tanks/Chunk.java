@@ -1,12 +1,9 @@
 package tanks;
 
 import basewindow.IBatchRenderableObject;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.*;
 import tanks.obstacle.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("UnusedReturnValue")
 public class Chunk
@@ -16,28 +13,25 @@ public class Chunk
     public static final Chunk zeroChunk = new Chunk();
     public static boolean debug = false;
 
-    public static Int2ObjectOpenHashMap<Chunk> chunkMap = new Int2ObjectOpenHashMap<>();
-    public static ObjectArrayList<Chunk> chunkList = new ObjectArrayList<>();
-    private static final ObjectArrayList<Chunk> chunkCache = new ObjectArrayList<>();
+    public static HashMap<Integer, Chunk> chunkMap = new HashMap<>();
+    public static ArrayList<Chunk> chunkList = new ArrayList<>();
+    private static final ArrayList<Chunk> chunkCache = new ArrayList<>();
     public static int chunkSize = 8;
 
-    private static final ObjectArraySet<Chunk> dirtyChunks = new ObjectArraySet<>();
+    private static final HashSet<Chunk> dirtyChunks = new HashSet<>();
 
     public final Level level;
-    public final int chunkX, chunkY;
+    public final int chunkX;
+    public final int chunkY;
     public Face[] borderFaces = new Face[4];
-    public final ObjectOpenHashSet<Obstacle> obstacles = new ObjectOpenHashSet<>();
-    public final ObjectOpenHashSet<Movable> movables = new ObjectOpenHashSet<>();
+    public final HashSet<Obstacle> obstacles = new HashSet<>();
+    public final HashSet<Movable> movables = new HashSet<>();
 
-    /**
-     * Stores faces of Movables, which are updated every frame
-     */
+    /** Stores faces of Movables, which are updated every frame */
     public final FaceList faces = new FaceList(this);
     public final Tile[][] tileGrid = new Tile[chunkSize][chunkSize];
 
-    /**
-     * The variable that caches the previous call to {@link Chunk#getChunk}
-     */
+    /** The variable that caches the previous call to {@link Chunk#getChunk} */
     private static Chunk prevChunk;
 
     public Chunk(Level l, Random r, int x, int y)
@@ -68,7 +62,7 @@ public class Chunk
      *
      * @return the chunks within the range
      */
-    public static ObjectArrayList<Chunk> iterateOutwards(int tileX, int tileY, int maxChunks)
+    public static ArrayList<Chunk> iterateOutwards(int tileX, int tileY, int maxChunks)
     {
         chunkCache.clear();
         queue.clear();
@@ -78,11 +72,11 @@ public class Chunk
 
         if (start != null)
         {
-            queue.enqueue(start);
+            queue.add(start);
 
             while (!queue.isEmpty())
             {
-                Chunk c = queue.dequeue();
+                Chunk c = queue.remove();
                 for (int i = 0; i < 4; i++)
                 {
                     int newX = c.chunkX + Direction.X[i];
@@ -91,13 +85,23 @@ public class Chunk
                     if (next != null && start.manhattanDist(next) < maxChunks && visited.add(next))
                     {
                         chunkCache.add(next);
-                        queue.enqueue(next);
+                        queue.add(next);
                     }
                 }
             }
         }
 
         return chunkCache;
+    }
+
+    /**
+     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance traveled is >= maxChunks.
+     *
+     * @return the chunks within the range
+     */
+    public static ArrayList<Chunk> iterateOutwards(double posX, double posY, int maxChunks)
+    {
+        return iterateOutwards((int) (posX / Game.tile_size), (int) (posY / Game.tile_size), maxChunks);
     }
 
 
@@ -120,9 +124,7 @@ public class Chunk
         faces.getSide(dir.opposite().index()).add(f);
     }
 
-    /**
-     * Helper to convert chunk coordinates to game coordinates and clamp it to the level size.
-     */
+    /** Helper to convert chunk coordinates to game coordinates and clamp it to the level size. */
     private static double convert(int chunk, Level l, boolean isX)
     {
         return Math.max(isX ? l.startX : l.startY, Math.min(isX ? l.sizeX : l.sizeY, chunk * Chunk.chunkSize)) * Game.tile_size;
@@ -133,18 +135,8 @@ public class Chunk
         return !Chunk.chunkList.isEmpty();
     }
 
-    /**
-     * Iterates in a diamond shape (like BFS) outwards until the manhattan distance traveled is >= maxChunks.
-     *
-     * @return the chunks within the range
-     */
-    public static ObjectArrayList<Chunk> iterateOutwards(double posX, double posY, int maxChunks)
-    {
-        return iterateOutwards((int) (posX / Game.tile_size), (int) (posY / Game.tile_size), maxChunks);
-    }
-
-    static ObjectArrayFIFOQueue<Chunk> queue = new ObjectArrayFIFOQueue<>();
-    static ObjectOpenHashSet<Chunk> visited = new ObjectOpenHashSet<>();
+    static Queue<Chunk> queue = new LinkedList<>();
+    static HashSet<Chunk> visited = new HashSet<>();
 
     public static double chunkToGame(double chunkPos)
     {
@@ -156,7 +148,7 @@ public class Chunk
         if (dirtyChunks.isEmpty())
             return;
 
-        for (Chunk c : dirtyChunks)
+        for (Chunk c: dirtyChunks)
             c.faces.sort();
 
         dirtyChunks.clear();
@@ -222,20 +214,23 @@ public class Chunk
         faces.removeFaces(o);
     }
 
-    public static ObjectArrayList<Chunk> getChunksInRange(double x1, double y1, double x2, double y2)
+    public static ArrayList<Chunk> getChunksInRange(double x1, double y1, double x2, double y2)
     {
         return getChunksInRange((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size),
             (int) (x2 / Game.tile_size), (int) (y2 / Game.tile_size));
     }
 
-    public static ObjectArrayList<Chunk> getChunksInRange(int tx1, int ty1, int tx2, int ty2)
+    public static ArrayList<Chunk> getChunksInRange(int tx1, int ty1, int tx2, int ty2)
     {
-        int x1 = tx1 / chunkSize, y1 = ty1 / chunkSize, x2 = tx2 / chunkSize, y2 = ty2 / chunkSize;
+        int x1 = tx1 / chunkSize;
+        int y1 = ty1 / chunkSize;
+        int x2 = tx2 / chunkSize;
+        int y2 = ty2 / chunkSize;
         chunkCache.clear();
-        for (Chunk c : chunkList)
+        for (Chunk c: chunkList)
         {
-            if (Game.isOrdered(true, x1, c.chunkX, x2)
-                && Game.isOrdered(true, y1, c.chunkY, y2))
+            if (Game.isOrdered(true, x1, c.chunkX, x2) &&
+                Game.isOrdered(true, y1, c.chunkY, y2))
                 chunkCache.add(c);
         }
         return chunkCache;
@@ -301,13 +296,6 @@ public class Chunk
         return getIfPresent(((int) (tileX / Game.tile_size)), ((int) (tileY / Game.tile_size)), fallback, func);
     }
 
-    public static <K> K get(double tileX, double tileY, Function<Tile, K> func)
-    {
-        Tile t = getTile(tileX, tileY);
-        if (t == null) throw new RuntimeException("not present");
-        return func.apply(t);
-    }
-
     public static <K> K getIfPresent(int tileX, int tileY, K fallback, Function<Tile, K> func)
     {
         Tile t = getTile(tileX, tileY);
@@ -315,34 +303,33 @@ public class Chunk
         return func.apply(t);
     }
 
-    /**
-     * Expects all pixel coordinates.
-     */
-    public static ObjectArrayList<Chunk> getChunksInRadius(double x1, double y1, double radius)
+    public static <K> K get(double tileX, double tileY, Function<Tile, K> func)
+    {
+        Tile t = getTile(tileX, tileY);
+        if (t == null) throw new RuntimeException("not present");
+        return func.apply(t);
+    }
+
+    /** Expects all pixel coordinates. */
+    public static ArrayList<Chunk> getChunksInRadius(double x1, double y1, double radius)
+    {
+        return getChunksInRadius((int) (x1 / Game.tile_size), (int) (y1 / Game.tile_size), radius / Game.tile_size);
+    }
+
+    /** Expects all tile coordinates. */
+    public static ArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
     {
         chunkCache.clear();
-        for (Chunk chunk : chunkList)
+        double x1 = (double) tx1 / chunkSize;
+        double y1 = (double) ty1 / chunkSize;
+        double cRad = Math.ceil(radius / chunkSize) + 1;
+        for (Chunk chunk: chunkList)
         {
-            double distX = Math.abs(Chunk.chunkToGame(chunk.chunkX) - x1);
-            double distY = Math.abs(Chunk.chunkToGame(chunk.chunkY) - y1);
-            double size = Chunk.chunkToGame(Chunk.chunkSize);
-
-            boolean inRange = distX <= size / 2 + radius && distY <= size / 2 + radius;
-            boolean closeEnough = distX <= size / 2 && distY <= size / 2;
-            boolean cornerInRange = Math.pow(distX - size, 2) + Math.pow(distY - size, 2) <= Math.pow(radius, 2);
-
-            if (inRange && (closeEnough || cornerInRange))
+            if ((chunk.chunkX - x1) * (chunk.chunkX - x1) +
+                (chunk.chunkY - y1) * (chunk.chunkY - y1) <= cRad * cRad)
                 chunkCache.add(chunk);
         }
         return chunkCache;
-    }
-
-    /**
-     * Expects all tile coordinates.
-     */
-    public static ObjectArrayList<Chunk> getChunksInRadius(int tx1, int ty1, double radius)
-    {
-        return getChunksInRadius((tx1 + 0.5) * Game.tile_size, (ty1 + 0.5) * Game.tile_size, radius);
     }
 
     public static Tile setTileColor(Level l, Random r, Tile t)
@@ -368,15 +355,22 @@ public class Chunk
         return (int) (pix / Game.tile_size) % chunkSize;
     }
 
-    /**
-     * Automatically converts to chunk coordinates.
-     */
+    /** Automatically converts to chunk coordinates. */
     public Tile getChunkTile(int posX, int posY)
     {
         if (posX < 0 || posY < 0)
             return null;
 
         return tileGrid[posX % chunkSize][posY % chunkSize];
+    }
+
+    /** Automatically converts to tile coordinates and then chunk coordinates. */
+    public Tile getChunkTile(double posX, double posY)
+    {
+        if (posX < 0 || posX >= Game.currentSizeX * Game.tile_size || posY < 0 || posY >= Game.currentSizeY * Game.tile_size)
+            return null;
+
+        return tileGrid[gameToPosInChunk(posX)][gameToPosInChunk(posY)];
     }
 
     public void setObstacle(int x, int y, Obstacle o)
@@ -386,9 +380,7 @@ public class Chunk
             t.add(o);
     }
 
-    /**
-     * Expects tile coordinates.
-     */
+    /** Expects tile coordinates. */
     public static Tile getTile(int tileX, int tileY)
     {
         Chunk c = getChunk(tileX, tileY);
@@ -397,26 +389,13 @@ public class Chunk
         return c.getChunkTile(tileX, tileY);
     }
 
-    /**
-     * Expects pixel coordinates.
-     */
+    /** Expects pixel coordinates. */
     public static Tile getTile(double posX, double posY)
     {
         Chunk c = getChunk(posX, posY);
         if (c == null)
             return null;
         return c.getChunkTile(posX, posY);
-    }
-
-    /**
-     * Automatically converts to tile coordinates and then chunk coordinates.
-     */
-    public Tile getChunkTile(double posX, double posY)
-    {
-        if (posX < 0 || posX >= Game.currentSizeX * Game.tile_size || posY < 0 || posY >= Game.currentSizeY * Game.tile_size)
-            return null;
-
-        return tileGrid[gameToPosInChunk(posX)][gameToPosInChunk(posY)];
     }
 
     public static double addCoords(double chunk, double tile)
@@ -431,10 +410,10 @@ public class Chunk
 
         Drawing.drawing.setColor(255, 255, 0, 128);
 
-        for (Chunk c : chunkList)
+        for (Chunk c: chunkList)
         {
             int i = 0;
-            for (Face f : c.borderFaces)
+            for (Face f: c.borderFaces)
             {
                 if (f != null)
                 {
@@ -466,9 +445,9 @@ public class Chunk
         }
 
         Drawing.drawing.setColor(255, 255, 255);
-        for (Movable m : Game.movables)
-            Drawing.drawing.drawText(m.posX, m.posY, m.getCurrentChunks().stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
-                .collect(Collectors.joining(", ")));
+//        for (Movable m : Game.movables)
+//            Drawing.drawing.drawText(m.posX, m.posY, m.getCurrentChunks().stream().map(c -> "(" + c.chunkX + ", " + c.chunkY + ")")
+//                .collect(Collectors.joining(", ")));
     }
 
     /**
@@ -501,8 +480,10 @@ public class Chunk
             prevChunk = null;
         }
 
-        int startX = l.startX / chunkSize, startY = l.startY / chunkSize;
-        int sX = l.sizeX / chunkSize + 1, sY = l.sizeY / chunkSize + 1;
+        int startX = l.startX / chunkSize;
+        int startY = l.startY / chunkSize;
+        int sX = l.sizeX / chunkSize + 1;
+        int sY = l.sizeY / chunkSize + 1;
         Random r = new Random(l.tilesRandomSeed);
 
         for (int x = 0; x < sX; x++)
@@ -510,25 +491,19 @@ public class Chunk
                 addChunk(x + startX, y + startY, new Chunk(l, r, x, y));
     }
 
-    /**
-     * Expects pixel coordinates.
-     */
+    /** Expects pixel coordinates. */
     public static Chunk getChunk(double posX, double posY)
     {
         return getChunk((int) (posX / Game.tile_size), (int) (posY / Game.tile_size));
     }
 
-    /**
-     * Expects tile coordinates.
-     */
+    /** Expects tile coordinates. */
     public static Chunk getChunk(int tileX, int tileY)
     {
         return getChunkCoords(tileX / Chunk.chunkSize, tileY / Chunk.chunkSize);
     }
 
-    /**
-     * Expects chunk coordinates.
-     */
+    /** Expects chunk coordinates. */
     public static Chunk getChunkCoords(int chunkX, int chunkY)
     {
         if (prevChunk != null && prevChunk.chunkX == chunkX && prevChunk.chunkY == chunkY)
@@ -560,22 +535,14 @@ public class Chunk
     {
         public final Chunk chunk;
 
-        /**
-         * dynamic x, static y
-         */
-        public final ObjectArrayList<Face> topFaces = new ObjectArrayList<>();
-        /**
-         * dynamic x, static y
-         */
-        public final ObjectArrayList<Face> bottomFaces = new ObjectArrayList<>();
-        /**
-         * static x, dynamic y
-         */
-        public final ObjectArrayList<Face> leftFaces = new ObjectArrayList<>();
-        /**
-         * static x, dynamic y
-         */
-        public final ObjectArrayList<Face> rightFaces = new ObjectArrayList<>();
+        /** dynamic x, static y */
+        public final ArrayList<Face> topFaces = new ArrayList<>();
+        /** dynamic x, static y */
+        public final ArrayList<Face> bottomFaces = new ArrayList<>();
+        /** static x, dynamic y */
+        public final ArrayList<Face> leftFaces = new ArrayList<>();
+        /** static x, dynamic y */
+        public final ArrayList<Face> rightFaces = new ArrayList<>();
 
         public FaceList(Chunk chunk)
         {
@@ -613,14 +580,15 @@ public class Chunk
 
         public void sort()
         {
-            topFaces.unstableSort(null);
-            bottomFaces.unstableSort(Comparator.reverseOrder());
-            leftFaces.unstableSort(null);
-            rightFaces.unstableSort(Comparator.reverseOrder());
+            // Do not replace with <list>.sort(). This breaks the iOS compiler.
+            Collections.sort(topFaces);
+            Collections.sort(bottomFaces, Collections.reverseOrder());
+            Collections.sort(leftFaces);
+            Collections.sort(rightFaces, Collections.reverseOrder());
 
             for (int i = 0; i < 4; i++)
             {
-                ObjectArrayList<Face> f = getSide(i);
+                ArrayList<Face> f = getSide(i);
                 for (int j = 1; j < f.size(); j++)
                 {
                     if (f.get(j) == null || f.get(j).equals(f.get(j - 1)))
@@ -629,7 +597,7 @@ public class Chunk
             }
         }
 
-        public ObjectArrayList<Face> getSide(int side)
+        public ArrayList<Face> getSide(int side)
         {
             switch (side)
             {
@@ -659,12 +627,15 @@ public class Chunk
     {
         public static Tile fallbackTile = new Tile();
 
-        public Obstacle fullObstacle, surfaceObstacle, extraObstacle;
-        public double colR, colG, colB, depth;
+        public Obstacle fullObstacle;
+        public Obstacle surfaceObstacle;
+        public Obstacle extraObstacle;
+        public double colR;
+        public double colG;
+        public double colB;
+        public double depth;
 
-        /**
-         * For use in level loading only
-         */
+        /** For use in level loading only */
         public boolean solidTank;
 
         public double height()
@@ -684,7 +655,7 @@ public class Chunk
 
         public double groundHeight()
         {
-            return obstacle() != null ? obstacle().getGroundHeight() : depth;
+            return obstacle() != null && obstacle().replaceTiles ? obstacle().getGroundHeight() : depth;
         }
 
         public boolean tankSolid()

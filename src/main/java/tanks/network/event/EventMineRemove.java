@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.Game;
 import tanks.tank.Mine;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventMineRemove extends PersonalEvent
 {
     public int mine;

@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.attribute.AttributeModifier;
 import tanks.bullet.Bullet;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventBulletAddAttributeModifier extends PersonalEvent
 {
     public int bullet;

@@ -2,11 +2,11 @@ package tanks.gui.screen.leveleditor;
 
 import tanks.Drawing;
 import tanks.Game;
-import tanks.gui.input.InputBindingGroup;
-import tanks.gui.screen.leveleditor.selector.SelectorNumber;
 import tanks.gui.Button;
 import tanks.gui.TextBox;
+import tanks.gui.input.InputBindingGroup;
 import tanks.gui.screen.Screen;
+import tanks.gui.screen.leveleditor.selector.SelectorNumber;
 
 import java.util.Locale;
 
@@ -52,7 +52,8 @@ public class OverlaySelectNumber extends ScreenLevelEditorOverlay
         screenLevelEditor.paused = true;
 
         this.selector = selector;
-        textBox = new TextBox(this.centerX, this.centerY + 15, 350, 40, this.selector.metadataProperty.name(), this::submit, this.selector.numberString(screenLevelEditor.mousePlaceable));
+        textBox = new TextBox(this.centerX, this.centerY + 15, 350, 40, this.selector.metadataProperty.name(), this::submit,
+            this.selector.numberString(screenLevelEditor.mousePlaceable));
 
         textBox.allowLetters = false;
         textBox.allowSpaces = false;

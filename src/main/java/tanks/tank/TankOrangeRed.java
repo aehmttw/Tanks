@@ -3,9 +3,7 @@ package tanks.tank;
 import tanks.Game;
 import tanks.bullet.DefaultItems;
 
-/**
- * A tank which shoots explosive bullets
- */
+/** A tank which shoots explosive bullets */
 public class TankOrangeRed extends TankAIControlled
 {
     public TankOrangeRed(String name, double x, double y, double angle)

@@ -2,23 +2,16 @@ package tanks.minigames;
 
 import tanks.Game;
 import tanks.Level;
-import tanks.ModAPI;
 import tanks.bullet.Bullet;
 import tanks.gui.screen.*;
-import tanks.tank.Tank;
-import tanks.tank.TankPlayer;
-import tanks.tank.TankPlayerRemote;
+import tanks.tank.*;
 
 public abstract class Minigame extends Level
 {
-    /**
-     * The amount of coins one gets from killing players.
-     */
+    /** The amount of coins one gets from killing players. */
     public int playerKillCoins = 0;
 
-    /**
-     * Forcibly disable the minimap. Useful for games like hide and seek.
-     */
+    /** Forcibly disable the minimap. Useful for games like hide and seek. */
     public boolean forceDisableMinimap = false;
 
     public boolean enableKillMessages = false;
@@ -31,6 +24,7 @@ public abstract class Minigame extends Level
     public boolean showItems = false;
     public boolean flashBackground = false;
     public boolean removeMusicWhenDead = false;
+    public boolean hideShop = false;
 
     public String name;
 
@@ -49,7 +43,6 @@ public abstract class Minigame extends Level
     @Override
     public void loadLevel()
     {
-        ModAPI.menuGroup.clear();
         ScreenInterlevel.fromMinigames = true;
 
         super.loadLevel();
@@ -72,58 +65,44 @@ public abstract class Minigame extends Level
         }
     }
 
-    /**
-     * Add custom scoreboards, text, etc.
-     */
+    /** Add custom scoreboards, text, etc. */
     public void setUp()
     {
 
     }
 
-    /**
-     * Do any per-frame updating here
-     */
+    /** Do any per-frame updating here */
     public void update()
     {
 
     }
 
-    /**
-     * Draw anything for the game here
-     */
+    /** Draw anything for the game here */
     public void draw()
     {
 
     }
 
-    /**
-     * Draw stuff that needs to be pinned directly to the screen in the hotbar
-     */
+    /** Draw stuff that needs to be pinned directly to the screen in the hotbar */
     public void drawHotbar()
     {
 
     }
 
-    /**
-     * Draw the circle-style hotbar, affected by angled perspective
-     */
+    /** Draw the circle-style hotbar, affected by angled perspective */
     public void drawCircleHotbar()
     {
 
     }
 
 
-    /**
-     * Override this method to do something when the level has started to end
-     */
+    /** Override this method to do something when the level has started to end */
     public void onLevelEndQuick()
     {
 
     }
 
-    /**
-     * Override this method to do something when the level finished ending
-     */
+    /** Override this method to do something when the level finished ending */
     public void onLevelEnd(boolean levelWon)
     {
 
@@ -137,9 +116,7 @@ public abstract class Minigame extends Level
             Game.screen = new ScreenInterlevel();
     }
 
-    /**
-     *  Override and set customLevelEnd to true to set a custom level end condition
-     */
+    /** Override and set customLevelEnd to true to set a custom level end condition */
     public boolean levelEnded()
     {
         return true;
@@ -147,6 +124,7 @@ public abstract class Minigame extends Level
 
     /**
      * Override to do something when a bullet is fired
+     *
      * @param b
      */
     public void onBulletFire(Bullet b)
@@ -156,6 +134,7 @@ public abstract class Minigame extends Level
 
     /**
      * Override to do something when a tank destroys another tank
+     *
      * @param attacker
      * @param target
      */

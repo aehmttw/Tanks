@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.Game;
 import tanks.obstacle.*;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventObstacleSnowMelt extends PersonalEvent implements IStackableEvent
 {
     public double posX;

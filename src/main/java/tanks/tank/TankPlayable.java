@@ -2,33 +2,22 @@ package tanks.tank;
 
 import basewindow.Color;
 import tanks.Game;
-import tanks.GameObject;
-import tanks.Panel;
 import tanks.Player;
-import tanks.bullet.Bullet;
-import tanks.bullet.BulletAirStrike;
-import tanks.bullet.BulletArc;
-import tanks.bullet.DefaultItems;
-import tanks.item.Item;
-import tanks.item.ItemBullet;
-import tanks.item.ItemMine;
-import tanks.tankson.ICopyable;
-import tanks.tankson.Property;
-import tanks.tankson.Serializer;
+import tanks.bullet.*;
+import tanks.hotbar.ItemBar;
+import tanks.item.*;
+import tanks.tankson.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import static tanks.tank.TankPropertyCategory.*;
-import static tanks.tank.TankPropertyCategory.appearanceEmblem;
 
 public abstract class TankPlayable extends Tank implements ICopyable<TankPlayable>
 {
-    @TankBuildProperty @Property(id = "abilities", name = "Abilities", category = TankPropertyCategory.abilities)
+    @TankBuildProperty
+    @Property(id = "abilities", name = "Abilities", category = TankPropertyCategory.abilities)
     public ArrayList<Item.ItemStack<?>> abilities = new ArrayList<>();
-
-    public int selectedPrimaryAbility = 0;
-    public int selectedSecondaryAbility = 1;
 
     public Player player = Game.player;
 
@@ -61,51 +50,52 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public void updateAbilities()
     {
-        if (this.selectedPrimaryAbility >= this.abilities.size())
-            this.selectedPrimaryAbility = -1;
+        ItemBar ib = this.player.hotbar.itemBar;
+        if (ib.selectedPrimaryAbility >= this.abilities.size())
+            ib.selectedPrimaryAbility = -1;
 
-        if (this.selectedSecondaryAbility >= this.abilities.size())
-            this.selectedSecondaryAbility = -1;
+        if (ib.selectedSecondaryAbility >= this.abilities.size())
+            ib.selectedSecondaryAbility = -1;
 
-        if (this.getAbility(this.selectedPrimaryAbility) != null && this.getAbility(this.selectedPrimaryAbility).item.rightClick)
+        if (this.getAbility(ib.selectedPrimaryAbility) != null && this.getAbility(ib.selectedPrimaryAbility).item.rightClick)
         {
             boolean found = false;
             for (int i = 0; i < this.abilities.size(); i++)
             {
                 if (!this.abilities.get(i).item.rightClick)
                 {
-                    this.selectedPrimaryAbility = i;
+                    ib.selectedPrimaryAbility = i;
                     found = true;
                 }
             }
 
             if (!found)
-                this.selectedPrimaryAbility = -1;
+                ib.selectedPrimaryAbility = -1;
         }
 
-        if (this.getAbility(this.selectedSecondaryAbility) != null && !this.getAbility(this.selectedSecondaryAbility).item.rightClick)
+        if (this.getAbility(ib.selectedSecondaryAbility) != null && !this.getAbility(ib.selectedSecondaryAbility).item.rightClick)
         {
             boolean found = false;
             for (int i = 0; i < this.abilities.size(); i++)
             {
                 if (this.abilities.get(i).item.rightClick)
                 {
-                    this.selectedSecondaryAbility = i;
+                    ib.selectedSecondaryAbility = i;
                     found = true;
                 }
             }
 
             if (!found)
-                this.selectedSecondaryAbility = -1;
+                ib.selectedSecondaryAbility = -1;
         }
 
         for (int i = 0; i < this.abilities.size(); i++)
         {
-            if (this.abilities.get(i).item.rightClick && this.selectedSecondaryAbility < 0)
-                this.selectedSecondaryAbility = i;
+            if (this.abilities.get(i).item.rightClick && ib.selectedSecondaryAbility < 0)
+                ib.selectedSecondaryAbility = i;
 
-            if (!this.abilities.get(i).item.rightClick && this.selectedPrimaryAbility < 0)
-                this.selectedPrimaryAbility = i;
+            if (!this.abilities.get(i).item.rightClick && ib.selectedPrimaryAbility < 0)
+                ib.selectedPrimaryAbility = i;
         }
     }
 
@@ -120,7 +110,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
     {
         try
         {
-            for (Field f : m.getClass().getFields())
+            for (Field f: m.getClass().getFields())
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null)
@@ -130,6 +120,8 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
                         Object v = f.get(this);
                         if (v instanceof ICopyable)
                             f.set(m, ((ICopyable<?>) v).getCopy());
+                        else if (v instanceof Color)
+                            f.set(m, new Color().set((Color) v));
                         else
                             f.set(m, v);
                     }
@@ -160,7 +152,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
     {
         try
         {
-            for (Field f : m.getClass().getFields())
+            for (Field f: m.getClass().getFields())
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.miscType() != Property.MiscType.colorRGBA && p.miscType() != Property.MiscType.colorRGB)
@@ -217,7 +209,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
         String name = m.name;
         try
         {
-            for (Field f : m.getClass().getFields())
+            for (Field f: m.getClass().getFields())
             {
                 Property p = f.getAnnotation(Property.class);
                 if (p != null && p.miscType() != Property.MiscType.colorRGBA && p.miscType() != Property.MiscType.colorRGB)
@@ -267,7 +259,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
             }
             else
             {
-                for (Item.ItemStack<?> i : this.abilities)
+                for (Item.ItemStack<?> i: this.abilities)
                 {
                     if (i instanceof ItemBullet.ItemStackBullet && !foundBullet)
                     {
@@ -321,7 +313,7 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public ItemBullet.ItemStackBullet getFirstBullet()
     {
-        for (Item.ItemStack<?> ability : this.abilities)
+        for (Item.ItemStack<?> ability: this.abilities)
         {
             if (ability instanceof ItemBullet.ItemStackBullet)
                 return (ItemBullet.ItemStackBullet) ability;
@@ -332,16 +324,18 @@ public abstract class TankPlayable extends Tank implements ICopyable<TankPlayabl
 
     public Item.ItemStack<?> getPrimaryAbility()
     {
-        if (selectedPrimaryAbility < this.abilities.size() && selectedPrimaryAbility >= 0 && !this.abilities.get(this.selectedPrimaryAbility).item.rightClick)
-            return this.abilities.get(this.selectedPrimaryAbility);
+        int selectedPrimaryAbility = this.player.hotbar.itemBar.selectedPrimaryAbility;
+        if (selectedPrimaryAbility < this.abilities.size() && selectedPrimaryAbility >= 0 && !this.abilities.get(selectedPrimaryAbility).item.rightClick)
+            return this.abilities.get(selectedPrimaryAbility);
         else
             return null;
     }
 
     public Item.ItemStack<?> getSecondaryAbility()
     {
-        if (selectedSecondaryAbility < this.abilities.size() && selectedSecondaryAbility >= 0 && this.abilities.get(this.selectedSecondaryAbility).item.rightClick)
-            return this.abilities.get(this.selectedSecondaryAbility);
+        int selectedSecondaryAbility = this.player.hotbar.itemBar.selectedSecondaryAbility;
+        if (selectedSecondaryAbility < this.abilities.size() && selectedSecondaryAbility >= 0 && this.abilities.get(selectedSecondaryAbility).item.rightClick)
+            return this.abilities.get(selectedSecondaryAbility);
         else
             return null;
     }

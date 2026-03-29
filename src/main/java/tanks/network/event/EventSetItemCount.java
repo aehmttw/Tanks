@@ -1,37 +1,54 @@
 package tanks.network.event;
 
 import tanks.Game;
+import tanks.Player;
+import tanks.network.NetworkUtils;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 
-public class EventSetItemCount extends PersonalEvent implements IStackableEvent
+public class EventSetItemCount extends PersonalEvent
 {
-    public int count;
+    public String name;
     public UUID playerID;
     public int slot;
+    public int count;
 
     public EventSetItemCount()
     {
 
     }
 
-    public EventSetItemCount(int count, UUID playerID, int slot)
+    public EventSetItemCount(Player p, int slot, int count)
     {
-        this.count = count;
-        this.playerID = playerID;
+        this.playerID = p.clientID;
         this.slot = slot;
+        this.count = count;
     }
 
     @Override
-    public int getIdentifier()
+    public void write(ByteBuf b)
     {
-        return IStackableEvent.f(playerID.hashCode()) + slot;
+        NetworkUtils.writeString(b, this.playerID.toString());
+        b.writeInt(this.slot);
+        b.writeInt(this.count);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.playerID = UUID.fromString(NetworkUtils.readString(b));
+        this.slot = b.readInt();
+        this.count = b.readInt();
     }
 
     @Override
     public void execute()
     {
         if (this.clientID == null && this.playerID.equals(Game.clientID))
-            Game.player.hotbar.itemBar.slots[slot].stackSize = count;
+        {
+            Game.player.hotbar.itemBar.slots[slot].stackSize = this.count;
+        }
     }
 }

@@ -3,24 +3,26 @@ package tanks.network.event;
 import tanks.gui.ChatMessage;
 import tanks.gui.screen.ScreenPartyLobby;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventMutePlayer extends PersonalEvent
 {
-	public boolean muted;
+    public boolean muted;
 
-	public EventMutePlayer()
-	{
+    public EventMutePlayer()
+    {
 
-	}
+    }
 
-	public EventMutePlayer(boolean muted)
-	{
-		this.muted = muted;
-	}
+    public EventMutePlayer(boolean muted)
+    {
+        this.muted = muted;
+    }
 
-	@Override
-	public void execute() 
-	{
-		if (this.clientID == null)
+    @Override
+    public void execute()
+    {
+        if (this.clientID == null)
         {
             if (muted)
                 ScreenPartyLobby.chat.add(0, new ChatMessage("\u00A7255000000255The party host has disabled your ability to chat!"));
@@ -29,6 +31,18 @@ public class EventMutePlayer extends PersonalEvent
 
             ScreenPartyLobby.muted = muted;
         }
-	}
+    }
+
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeBoolean(this.muted);
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.muted = b.readBoolean();
+    }
 
 }

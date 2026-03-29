@@ -1,16 +1,10 @@
 package tanks.gui.screen.leveleditor;
 
-import tanks.Consumer;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.gui.Button;
-import tanks.gui.ButtonList;
-import tanks.gui.Selector;
-import tanks.gui.screen.IConditionalOverlayScreen;
-import tanks.gui.screen.Screen;
-import tanks.gui.screen.ScreenAddSavedItem;
-import tanks.gui.screen.ScreenEditorShopItem;
+import tanks.*;
+import tanks.gui.*;
+import tanks.gui.screen.*;
 import tanks.item.Item;
+import tanks.item.ItemIcon;
 import tanks.registry.RegistryItem;
 import tanks.tankson.MonitoredArrayListIndexPointer;
 
@@ -50,13 +44,13 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
         this.load();
 
         String[] itemNames = new String[Game.registryItem.itemEntries.size()];
-        String[] itemImages = new String[Game.registryItem.itemEntries.size()];
+        ItemIcon[] itemImages = new ItemIcon[Game.registryItem.itemEntries.size()];
 
         for (int i = 0; i < Game.registryItem.itemEntries.size(); i++)
         {
             RegistryItem.ItemEntry r = Game.registryItem.getEntry(i);
             itemNames[i] = r.name;
-            itemImages[i] = r.image;
+            itemImages[i] = r.icon;
         }
 
         itemSelector = new Selector(0, 0, 0, 0, "item type", itemNames, () ->
@@ -66,7 +60,8 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
                 try
                 {
                     screenLevelEditor.level.shop.add(new Item.ShopItem(i));
-                    ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(screenLevelEditor.level.shop, screenLevelEditor.level.shop.size() - 1, false, this::refreshItems), this);
+                    ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(Item.ShopItem.class, screenLevelEditor.level.shop,
+                        screenLevelEditor.level.shop.size() - 1, false, this::refreshItems), this);
                     s.onComplete = this::refreshItems;
                     Game.screen = s;
                 }
@@ -76,10 +71,11 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
                 }
             };
 
-            Game.screen = new ScreenAddSavedItem(this, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]), Game.registryItem.getEntry(itemSelector.selectedOption).item);
+            Game.screen = new ScreenAddSavedItem(this, addItem, Game.formatString(itemSelector.options[itemSelector.selectedOption]),
+                Game.registryItem.getEntry(itemSelector.selectedOption).item);
         });
 
-        itemSelector.images = itemImages;
+        itemSelector.itemIcons = itemImages;
         itemSelector.quick = true;
     }
 
@@ -91,7 +87,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
 
         shopList.reorderBehavior = (i, j) ->
         {
-            editor.level.shop.add(j, editor.level.shop.remove((int)i));
+            editor.level.shop.add(j, editor.level.shop.remove((int) i));
             this.refreshItems();
         };
 
@@ -133,6 +129,18 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
         this.back.draw();
         this.addItem.draw();
 
+        for (int i = Math.min((this.shopList.page + 1) * this.shopList.rows * this.shopList.columns, shopList.buttons.size()) - 1;
+             i >= this.shopList.page * this.shopList.rows * this.shopList.columns; i--)
+        {
+            Button b = this.shopList.buttons.get(i);
+            Drawing.drawing.setColor(0, 0, 0);
+            Drawing.drawing.setInterfaceFontSize(this.textSize / 2);
+            int ss = editor.level.shop.get(i).itemStack.stackSize;
+
+            if (ss > 0)
+                Drawing.drawing.drawInterfaceText(b.posX - b.sizeX / 2 + b.sizeY, b.posY + b.sizeY * 0.325, "x" + ss, false);
+        }
+
         if (this.shopList.reorder)
             this.reorderItems.setText("Stop reordering");
         else
@@ -168,7 +176,8 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
             {
                 try
                 {
-                    ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(editor.level.shop, j, false, this::refreshItems), Game.screen);
+                    ScreenEditorShopItem s = new ScreenEditorShopItem(new MonitoredArrayListIndexPointer<>(Item.ShopItem.class, editor.level.shop, j,
+                        false, this::refreshItems), Game.screen);
                     s.onComplete = this::refreshItems;
                     Game.screen = s;
                 }
@@ -179,7 +188,7 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
             });
 
             b.itemIcon = items.get(j).itemStack.item.icon;
-            b.imageXOffset = - b.sizeX / 2 + b.sizeY / 2 + 10;
+            b.imageXOffset = -b.sizeX / 2 + b.sizeY / 2 + 10;
             b.imageSizeX = b.sizeY;
             b.imageSizeY = b.sizeY;
 

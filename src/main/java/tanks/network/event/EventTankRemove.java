@@ -3,6 +3,8 @@ package tanks.network.event;
 import tanks.Game;
 import tanks.tank.Tank;
 
+import io.netty.buffer.ByteBuf;
+
 public class EventTankRemove extends PersonalEvent
 {
     public int tank;

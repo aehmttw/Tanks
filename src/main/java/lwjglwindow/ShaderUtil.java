@@ -1,10 +1,8 @@
 package lwjglwindow;
 
 import basewindow.*;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL20;
+
+import org.lwjgl.opengl.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -298,7 +296,7 @@ public class ShaderUtil extends BaseShaderUtil
         this.enabledAttributes.clear();
     }
 
-    public static abstract class LWJGLUniform implements ShaderProgram.IUniform
+    public abstract static class LWJGLUniform implements ShaderProgram.IUniform
     {
         protected int flag;
         protected String name;

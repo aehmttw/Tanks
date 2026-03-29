@@ -4,7 +4,6 @@ import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SelectorColor;
-import tanks.gui.TextBoxSlider;
 import tanks.network.event.EventSendTankColors;
 import tanks.network.event.EventUpdateTankColors;
 import tanks.tank.TankPlayer;
@@ -98,17 +97,9 @@ public class ScreenOptionsPlayerColor extends Screen
         resetColor.imageYOffset = 0;
         resetColor.fullInfo = true;
 
-        if (Drawing.drawing.interfaceScaleZoom > 1)
-        {
-            this.preview.posX -= 480;
-            this.preview.posY -= 20;
-        }
-        else
-        {
-            this.yPos -= this.objYSpace / 2;
-            this.addColor.posY -= this.objYSpace / 2;
-            this.removeColor.posY -= this.objYSpace / 2;
-        }
+        this.yPos -= this.objYSpace / 2;
+        this.addColor.posY -= this.objYSpace / 2;
+        this.removeColor.posY -= this.objYSpace / 2;
 
         this.addColor();
 
@@ -236,4 +227,11 @@ public class ScreenOptionsPlayerColor extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Tank color");
     }
+
+    @Override
+    public void setupLayoutParameters()
+    {
+        this.setUnscaledLayoutParameters();
+    }
+
 }

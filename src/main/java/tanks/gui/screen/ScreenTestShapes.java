@@ -89,7 +89,7 @@ public class ScreenTestShapes extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5 + 35, "turn 3D Ground off to test alignment.");
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
-        Drawing.drawing.displayUncenteredInterfaceText(this.centerX - 20, this.centerY + this.objYSpace / 2 - 10,"= Center");
+        Drawing.drawing.displayUncenteredInterfaceText(this.centerX - 20, this.centerY + this.objYSpace / 2 - 10, "= Center");
 
         shapeLength.draw();
         shapeWidth.draw();

@@ -17,19 +17,20 @@ import java.util.regex.Pattern;
 public final class Serializer
 {
 
-    public static float TANKSON_VERSION = 1.1f;
+    public static String TANKSON_VERSION = "1.1";
 
     public static HashMap<Class<?>, Object> defaults = new HashMap<>();
 
     public static HashMap<String, Tank> userTanks = new HashMap<>();
 
-    public static float getVersion(String s)
+    /** Gets the Version present in the TanksON Shebang. If no shebang is present, defaults to 1.0 */
+    public static String getVersion(String s)
     {
         Pattern pattern = Pattern.compile("^/\\*TANKSON v(\\d+\\.\\d+)\\*/");
         Matcher m = pattern.matcher(s);
-        float version = 1.0f;
+        String version = "1.0";
         if (m.find())
-            version = Float.parseFloat(m.group(1));
+            version = m.group(1);
 
         return version;
     }
@@ -180,7 +181,7 @@ public final class Serializer
     public static Object fromTanksON(String s)
     {
 
-        if (getVersion(s) <= TANKSON_VERSION)
+        if (Game.compareVersions(getVersion(s), TANKSON_VERSION) <= 0)
         {
             Object o = TanksON.parseObject(s);
             if (o instanceof Map)

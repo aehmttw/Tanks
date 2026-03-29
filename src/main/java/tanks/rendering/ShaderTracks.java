@@ -2,11 +2,11 @@ package tanks.rendering;
 
 import basewindow.*;
 
-public class ShaderTracks extends ShaderGroup
+public class ShaderTracks extends ShaderGroupShadowDraw
 {
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f time;
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f maxAge;
     public Attribute1f addTime;
 

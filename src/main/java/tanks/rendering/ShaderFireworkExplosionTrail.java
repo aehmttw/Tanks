@@ -1,7 +1,8 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
+import basewindow.ShaderGroupShadowDraw;
+import basewindow.StageExclusiveUniform;
 
 public class ShaderFireworkExplosionTrail extends RendererShader
 {
@@ -9,13 +10,13 @@ public class ShaderFireworkExplosionTrail extends RendererShader
     public Attribute1f posOffset;
     public Attribute1f maxAge;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f time;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform3f gravity;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform4f color;
 
     public ShaderFireworkExplosionTrail(BaseWindow w)

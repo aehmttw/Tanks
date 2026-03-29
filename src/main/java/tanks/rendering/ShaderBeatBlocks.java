@@ -1,7 +1,8 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
+import basewindow.ShaderGroupShadowDraw;
+import basewindow.StageExclusiveUniform;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBeatBlock;
@@ -11,7 +12,7 @@ public class ShaderBeatBlocks extends RendererShader implements IUpdatedShader, 
     public Uniform1f obstacleSizeFrac;
     public Uniform1f outlineSizeFrac;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f flashFrac;
 
     public Attribute3f centerCoord;

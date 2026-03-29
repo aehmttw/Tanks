@@ -67,7 +67,7 @@ public class DisplayFireworks
                 f.drawUpdate(fireworks, getOtherFireworkArray());
         }
 
-        Firework.shader.set();
+        Game.game.window.setShader(Firework.shader);
         for (int i = 0; i < getFireworkArray().size(); i++)
         {
             Firework f = fireworks.get(i);
@@ -76,7 +76,7 @@ public class DisplayFireworks
                 f.drawUpdate(fireworks, getOtherFireworkArray());
         }
 
-        Firework.trailShader.set();
+        Game.game.window.setShader(Firework.trailShader);
         for (int i = 0; i < getFireworkArray().size(); i++)
         {
             Firework f = fireworks.get(i);
@@ -90,7 +90,7 @@ public class DisplayFireworks
             }
         }
 
-        Game.game.window.shaderDefault.set();
+        Game.game.window.setShader(Game.game.window.shaderDefault);
 
         if (Game.glowEnabled)
         {
@@ -102,7 +102,7 @@ public class DisplayFireworks
                     f.drawGlow();
             }
 
-            Firework.shader.set();
+            Game.game.window.setShader(Firework.shader);
             for (int i = 0; i < getFireworkArray().size(); i++)
             {
                 Firework f = fireworks.get(i);
@@ -110,7 +110,7 @@ public class DisplayFireworks
                 if (f.type == Firework.FireworkType.particle_group)
                     f.drawGlow();
             }
-            Game.game.window.shaderDefault.set();
+            Game.game.window.setShader(Game.game.window.shaderDefault);
         }
 
         //A fix to some glitchiness on ios

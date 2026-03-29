@@ -342,19 +342,19 @@ public class LWJGLWindow extends BaseWindow
         return source.toString();
     }
 
-    protected void setUpShaders()
-    {
-        try
-        {
-            this.shaderDefault = new ShaderGroup(this, "default");
-            this.shaderDefault.initialize();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            System.exit(0);
-        }
-    }
+	protected void setUpShaders()
+	{
+		try
+		{
+			this.shaderDefault = new ShaderGroupShadowDrawDefault(this);
+			this.shaderDefault.initialize();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
 
     protected void loop()
     {
@@ -362,10 +362,11 @@ public class LWJGLWindow extends BaseWindow
 
         this.setUpShaders();
 
-        this.shaderHandler = new ShaderHandler(this);
-        this.shapeRenderer = new ImmediateModeShapeRenderer(this);
-        this.lightTex = glGenTextures();
-        this.textures.put("lights", this.lightTex);
+		this.shaderHandler = new ShaderHandler(this);
+		this.shapeRenderer = new ImmediateModeShapeRenderer(this);
+        this.vboRenderer = new VBORenderer(this);
+		this.lightTex = glGenTextures();
+		this.textures.put("lights", this.lightTex);
 
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -536,9 +537,9 @@ public class LWJGLWindow extends BaseWindow
 
         glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.glow.set((float) glow);
-    }
+		if (this.currentShaderStage.shader instanceof ShaderBase)
+            ((ShaderBase)(this.currentShaderStage.shader)).glow.set((float) glow);
+	}
 
     public void setColor(double r, double g, double b, double a)
     {
@@ -549,9 +550,9 @@ public class LWJGLWindow extends BaseWindow
 
         glColor4d(this.colorR, this.colorG, this.colorB, this.colorA);
 
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.glow.set(0f);
-    }
+		if (this.currentShaderStage.shader instanceof ShaderBase)
+		((ShaderBase)(this.currentShaderStage.shader)).glow.set(0f);
+	}
 
     public void setColor(double r, double g, double b)
     {
@@ -562,9 +563,9 @@ public class LWJGLWindow extends BaseWindow
 
         glColor3d(this.colorR, this.colorG, this.colorB);
 
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.glow.set(0f);
-    }
+		if (this.currentShaderStage.shader instanceof ShaderBase)
+		((ShaderBase)(this.currentShaderStage.shader)).glow.set(0f);
+	}
 
     protected void createImage(String image)
     {
@@ -698,9 +699,13 @@ public class LWJGLWindow extends BaseWindow
 
         buf.flip();
 
-        currentShaderGroup.shaderBase.lightsCount.set(lights.size());
-        currentShaderGroup.shaderBase.lightsTexSize.set(p);
-        currentShaderGroup.shaderBase.scale.set((float) scale);
+        if (this.currentShaderStage.shader instanceof ShaderBase)
+        {
+            ShaderBase sb = (ShaderBase) this.currentShaderStage.shader;
+            sb.lightsCount.set(lights.size());
+            sb.lightsTexSize.set(p);
+            sb.scale.set((float) scale);
+        }
 
         glEnable(GL_TEXTURE_2D);
         glActiveTexture(GL_TEXTURE2);
@@ -1130,14 +1135,18 @@ public class LWJGLWindow extends BaseWindow
             return this.shaderHandler.quality;
     }
 
-    @Override
-    public void setLighting(double light, double glowLight, double shadow, double glowShadow)
-    {
-        this.currentShaderGroup.shaderBase.light.set((float) light);
-        this.currentShaderGroup.shaderBase.glowLight.set((float) glowLight);
-        this.currentShaderGroup.shaderBase.shade.set((float) shadow);
-        this.currentShaderGroup.shaderBase.glowShade.set((float) glowShadow);
-    }
+	@Override
+	public void setLighting(double light, double glowLight, double shadow, double glowShadow)
+	{
+        if (this.currentShaderStage.shader instanceof ShaderBase)
+        {
+            ShaderBase sb = ((ShaderBase) (this.currentShaderStage.shader));
+            sb.light.set((float) light);
+            sb.glowLight.set((float) glowLight);
+            sb.shade.set((float) shadow);
+            sb.glowShade.set((float) glowShadow);
+        }
+	}
 
     @Override
     public void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess)
@@ -1237,8 +1246,8 @@ public class LWJGLWindow extends BaseWindow
     {
         glEnable(GL_TEXTURE_2D);
 
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.texture.set(true);
+		if (this.currentShaderStage.shader instanceof ShaderBase)
+		    ((ShaderBase)(this.currentShaderStage.shader)).texture.set(true);
 
         GL20.glActiveTexture(GL13.GL_TEXTURE0);
     }
@@ -1248,8 +1257,8 @@ public class LWJGLWindow extends BaseWindow
         this.currentTexture = null;
         glDisable(GL_TEXTURE_2D);
 
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.texture.set(false);
+		if (this.currentShaderStage.shader instanceof ShaderBase)
+		    ((ShaderBase)(this.currentShaderStage.shader)).texture.set(false);
 
         glEnable(GL_TEXTURE_2D);
         GL20.glActiveTexture(GL13.GL_TEXTURE1);
@@ -1260,17 +1269,17 @@ public class LWJGLWindow extends BaseWindow
     {
         glEnable(GL_DEPTH_TEST);
 
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.depthtest.set(true);
-    }
+		if (this.currentShaderStage.shader instanceof ShaderBase)
+		    ((ShaderBase)(this.currentShaderStage.shader)).depthtest.set(true);
+	}
 
     public void disableDepthtest()
     {
         glDisable(GL_DEPTH_TEST);
 
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.depthtest.set(false);
-    }
+		if (this.currentShaderStage.shader instanceof ShaderBase)
+		    ((ShaderBase)(this.currentShaderStage.shader)).depthtest.set(false);
+	}
 
     public void enableDepthmask()
     {
@@ -1282,26 +1291,26 @@ public class LWJGLWindow extends BaseWindow
         glDepthMask(false);
     }
 
-    public void setGlowBlendFunc()
-    {
-        glBlendFunc(GL_SRC_COLOR, GL_ONE);
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.blendFunc.set(1);
-    }
+	public void setGlowBlendFunc()
+	{
+		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+        if (this.currentShaderStage.shader instanceof ShaderBase)
+		    ((ShaderBase)(this.currentShaderStage.shader)).blendFunc.set(1);
+	}
 
-    public void setLightBlendFunc()
-    {
-        glBlendFunc(GL_DST_COLOR, GL_ONE);
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.blendFunc.set(2);
-    }
+	public void setLightBlendFunc()
+	{
+		glBlendFunc(GL_DST_COLOR, GL_ONE);
+        if (this.currentShaderStage.shader instanceof ShaderBase)
+		    ((ShaderBase)(this.currentShaderStage.shader)).blendFunc.set(2);
+	}
 
-    public void setTransparentBlendFunc()
-    {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        if (!drawingShadow)
-            this.currentShaderGroup.shaderBase.blendFunc.set(0);
-    }
+	public void setTransparentBlendFunc()
+	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if (this.currentShaderStage.shader instanceof ShaderBase)
+		    ((ShaderBase)(this.currentShaderStage.shader)).blendFunc.set(0);
+	}
 
     public int createVBO()
     {

@@ -11,13 +11,29 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class Serializer
 {
 
+    public static String TANKSON_VERSION = "1.1";
+
     public static HashMap<Class<?>, Object> defaults = new HashMap<>();
 
     public static HashMap<String, Tank> userTanks = new HashMap<>();
+
+    /** Gets the Version present in the TanksON Shebang. If no shebang is present, defaults to 1.0 */
+    public static String getVersion(String s)
+    {
+        Pattern pattern = Pattern.compile("^/\\*TANKSON v(\\d+\\.\\d+)\\*/");
+        Matcher m = pattern.matcher(s);
+        String version = "1.0";
+        if (m.find())
+            version = m.group(1);
+
+        return version;
+    }
 
     public static Class<?> getCorrectClass(Object o)
     {
@@ -158,16 +174,25 @@ public final class Serializer
 
     public static String toTanksON(Object o)
     {
-        return TanksON.toString(toMap(o));
+        String shebang = "/*TANKSON v" + TANKSON_VERSION + "*/";
+        return shebang + TanksON.toString(toMap(o));
     }
 
     public static Object fromTanksON(String s)
     {
-        Object o = TanksON.parseObject(s);
-        if (o instanceof Map)
-            return parseObject((Map<String, Object>) o);
+
+        if (Game.compareVersions(getVersion(s), TANKSON_VERSION) <= 0)
+        {
+            Object o = TanksON.parseObject(s);
+            if (o instanceof Map)
+                return parseObject((Map<String, Object>) o);
+            else
+                throw new RuntimeException("Unexpected type of object: " + o.toString());
+        }
         else
-            throw new RuntimeException("Unexpected type of object: " + o.toString());
+        {
+            throw new RuntimeException("Unknown TanksON Version " + getVersion(s) + ". You may be running an older version of Tanks with a newer game file.");
+        }
     }
 
     public static boolean equivalent(Object a, Object b)

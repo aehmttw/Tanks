@@ -10,7 +10,7 @@ public class ItemMine extends Item implements ICopyable<ItemMine>
 {
     public static final String item_class_name = "mine";
 
-    @Property(id = "mine", category = "none")
+    @Property(id = "mine", category = "none", name="Mine")
     public Mine mine = new Mine();
 
     public ItemMine()

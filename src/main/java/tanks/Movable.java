@@ -3,11 +3,11 @@ package tanks;
 import tanks.attribute.AttributeModifier;
 import tanks.attribute.EffectManager;
 import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.ScreenOverlaySelectPower;
 import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.tank.IAvoidObject;
 import tanks.tank.NameTag;
-import tanks.tankson.MetadataProperty;
-import tanks.tankson.Property;
+import tanks.tankson.*;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -60,6 +60,8 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public Team team;
 
     private boolean firstFrame = true;
+
+    public ArrayList<ScreenOverlaySelectPower.PrefixedFieldPointer<?>> properties;
 
     public Movable(double x, double y)
     {

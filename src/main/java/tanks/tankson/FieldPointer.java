@@ -40,6 +40,11 @@ public class FieldPointer<T> extends Pointer<T>
         }
     }
 
+    public Field getField()
+    {
+        return this.field;
+    }
+
     @Override
     public T get()
     {

@@ -20,7 +20,7 @@ public abstract class Item extends GameObject
     @Property(id = "icon", name = "Icon", miscType = Property.MiscType.itemIcon)
     public ItemIcon icon = new ItemIcon("item", "item.png");
 
-    @Property(id = "auto_icon", name = "", category = "none")
+    @Property(id = "auto_icon", name = "Automatically pick icon", category = "none")
     public boolean autoIcon = false;
 
     @Property(id = "cooldown", name = "Cooldown", desc = "Minimum time between uses of this item \n \n 1 time unit = 0.01 seconds")

@@ -526,6 +526,23 @@ public class ScreenChangelog extends Screen
                         "Bug fixes and other minor improvements\n"
                 }
             );
+
+            new Changelog("v1.6.2", new String[]
+                    {
+                            "*What's new in Tanks v1.6.2:\n\n" +
+                                    "Due to industry trends, we have decided to pivot Tanks\n" +
+                                    "towards becoming a roguelike.\n\n" +
+                                    "This update brings a new 'upgrade' system to enhance gameplay.\n" +
+                                    "Just hop into a level and play a bit, and you'll be presented\n" +
+                                    "with a selection of upgrades for your tank.\n\n" +
+                                    "Of course, to make things fair for your enemies, they will also\n" +
+                                    "be able to choose upgrades when you do. And not just your enemies.\n" +
+                                    "Everything on the game field will get to pick an upgrade, including\n" +
+                                    "bullets and mines that have been shot previously\n\n" +
+                                    "Over the coming months, we will have many new exciting changes\n" +
+                                    "to help move the project in this direction."
+                    }
+            );
         }
     }
 }

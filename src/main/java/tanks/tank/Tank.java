@@ -83,6 +83,7 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = general, minValue = 0.0, id = "base_health", name = "Hitpoints", desc = "The default bullet does one hitpoint of damage")
     public double baseHealth = 1;
     public double health = 1;
+    public double lastBaseHealth;
 
     @TankBuildProperty
     @Property(category = general, id = "resist_bullets", name = "Bullet immunity")
@@ -139,7 +140,7 @@ public abstract class Tank extends Movable implements ISolidObject
     public double timeInvisible = 0;
 
     @TankBuildProperty
-    @Property(category = appearanceBody, id = "color", miscType = Property.MiscType.colorRGB)
+    @Property(category = appearanceBody, id = "color", name = "Primary color", miscType = Property.MiscType.colorRGB)
     public Color color = new Color();
 
     @TankBuildProperty
@@ -163,7 +164,7 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = Property.MiscType.colorRGB)
     public boolean enableSecondaryColor = false;
     @TankBuildProperty
-    @Property(category = appearanceTurretBarrel, id = "color2", miscType = Property.MiscType.colorRGB)
+    @Property(category = appearanceTurretBarrel, id = "color2", name = "Secondary color", miscType = Property.MiscType.colorRGB)
     public Color secondaryColor = new Color();
     @TankBuildProperty
     @Property(category = appearanceTurretBarrel, id = "turret_size", name = "Turret thickness", minValue = 0.0)
@@ -178,7 +179,7 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = appearanceTurretBase, id = "enable_color3", name = "Custom color", miscType = Property.MiscType.colorRGB)
     public boolean enableTertiaryColor = false;
     @TankBuildProperty
-    @Property(category = appearanceTurretBase, id = "color3", miscType = Property.MiscType.colorRGB)
+    @Property(category = appearanceTurretBase, id = "color3", name = "Tertiary color", miscType = Property.MiscType.colorRGB)
     public Color tertiaryColor = new Color();
 
     @TankBuildProperty
@@ -205,7 +206,7 @@ public abstract class Tank extends Movable implements ISolidObject
     @Property(category = appearanceEmblem, id = "emblem", name = "Tank emblem", miscType = Property.MiscType.emblem)
     public String emblem = null;
     @TankBuildProperty
-    @Property(category = appearanceEmblem, id = "emblem_color", miscType = Property.MiscType.colorRGB)
+    @Property(category = appearanceEmblem, id = "emblem_color", name = "Emblem color", miscType = Property.MiscType.colorRGB)
     public Color emblemColor = new Color();
 
     @MetadataProperty(id = "rotation", name = "Rotation", selector = SelectorRotation.selector_name, image = "rotate_tank.png", keybind = "editor.rotate")
@@ -497,7 +498,19 @@ public abstract class Tank extends Movable implements ISolidObject
         }
 
         if (this.age <= 0)
+        {
             this.currentlyTargetable = targetable;
+            this.lastBaseHealth = baseHealth;
+        }
+
+        if (!this.targetable)
+            this.currentlyTargetable = false;
+
+        if (this.lastBaseHealth != this.baseHealth)
+        {
+            this.health += this.baseHealth - this.lastBaseHealth;
+            this.lastBaseHealth = this.baseHealth;
+        }
 
         this.updateVisibility();
 

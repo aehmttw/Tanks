@@ -202,7 +202,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     @Property(id = "multishot_spread_angle", minValue = 0.0, maxValue = 360, name = "Multishot spread angle", category = BulletPropertyCategory.firing,
         desc = "The angle spread in degrees of multiple bullets fired at once")
-    public double multishotSpread = 0;
+    public double multishotSpread = 60;
 
     @Property(id = "accuracy_spread_angle", minValue = 0.0, name = "Accuracy spread angle", category = BulletPropertyCategory.firing,
         desc = "The size of the random inaccuracy angle variation of a bullet when fired, in degrees. Larger values are less accurate.")

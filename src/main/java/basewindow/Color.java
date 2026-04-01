@@ -1,5 +1,7 @@
 package basewindow;
 
+import tanks.tankson.Property;
+
 public class Color
 {
     public double red;

@@ -128,6 +128,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     protected int specialReadyMusicIterationsLeft = 0;
     public String specialReadyMusic = null;
 
+    public double timeTillPower = Math.random() * 300 + 200;
+    public int powers = 0;
+    public ScreenOverlaySelectPower powerSelection = null;
+
     @SuppressWarnings("unchecked")
     public ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[]) (new ArrayList[10]);
 
@@ -1336,6 +1340,22 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 Drawing.drawing.playSound("level_start.ogg");
 
             Obstacle.draw_size = Math.min(Game.tile_size, Obstacle.draw_size + Panel.frameFrequency);
+        }
+
+        if (this.powerSelection != null)
+        {
+            this.powerSelection.update();
+            return;
+        }
+        else if (!paused && playing && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)
+        {
+            this.timeTillPower -= Panel.frameFrequency;
+            if (this.timeTillPower < 0 && Game.playerTank != null && !Game.playerTank.destroy)
+            {
+                this.powerSelection = new ScreenOverlaySelectPower(this);
+                this.timeTillPower = Math.random() * 500 + 300 * Math.min(powers + 3, 8) / 3.0;
+                powers++;
+            }
         }
 
         if (paused)
@@ -3100,7 +3120,9 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         if (Game.currentLevel instanceof Minigame)
             ((Minigame) Game.currentLevel).draw();
 
-        if (paused && !screenshotMode)
+        if (this.powerSelection != null)
+            this.powerSelection.draw();
+        else if (paused && !screenshotMode)
         {
             if (ScreenGame.finishedQuick)
             {

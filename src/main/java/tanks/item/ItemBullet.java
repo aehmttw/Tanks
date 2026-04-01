@@ -12,7 +12,7 @@ public class ItemBullet extends Item implements ICopyable<ItemBullet>
 {
     public static final String item_class_name = "bullet";
 
-    @Property(id = "bullet", category = "none")
+    @Property(id = "bullet", category = "none", name="Bullet")
     public Bullet bullet;
 
     public ItemBullet()

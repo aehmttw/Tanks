@@ -461,7 +461,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
             {
                 for (int i = 0; i < this.abilities.size(); i++)
                 {
-                    if ((quickActions >> i) % 2 == 1)
+                    // tests whether the `i`th bit in quickActions set to 1
+                    if ((quickActions & (1 << i)) != 0)
                         this.quickAction(i);
                 }
             }

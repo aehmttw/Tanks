@@ -321,8 +321,7 @@ public class Game
     // Value is set before Game.game.window is initialized
     public boolean fullscreen = false;
 
-    private Game()
-    {
+    private Game() {
         Game.game = this;
         input = new InputBindings();
     }

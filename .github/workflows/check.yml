@@ -12,6 +12,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      pull-requests: write
       security-events: write
 
     steps:
@@ -33,8 +34,21 @@ jobs:
         run: ./gradlew build
 
       - name: Lint
-        run: |
-          ./gradlew lint || echo "::warning::Checkstyle found violations. See the checkstyle-report artifact for details."
+        id: lint
+        continue-on-error: true
+        run: ./gradlew lint
+
+      - name: Comment on PR if lint failed
+        if: steps.lint.outcome == 'failure' && github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: ':warning: **Checkstyle found style violations.** See the **checkstyle-report** artifact for details.'
+            })
 
       - name: Determine artifact name
         id: find_artifact

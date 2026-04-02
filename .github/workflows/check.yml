@@ -38,16 +38,25 @@ jobs:
         continue-on-error: true
         run: ./gradlew lint
 
+      - name: Count lint violations
+        id: count_violations
+        if: steps.lint.outcome == 'failure'
+        run: |
+          count=$(grep -r '<error ' build/reports/checkstyle/ | wc -l)
+          echo "count=$count" >> $GITHUB_OUTPUT
+
       - name: Comment on PR if lint failed
         if: steps.lint.outcome == 'failure' && github.event_name == 'pull_request'
         uses: actions/github-script@v6
         with:
           script: |
+            const count = ${{ steps.count_violations.outputs.count }};
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: ':warning: **Checkstyle found style violations.** See the **checkstyle-report** artifact for details.'
+              body: `:warning: **Checkstyle found ${count} style violation${count === 1 ? '' : 's'}.** Download the **checkstyle-report** artifact from the [Actions run](${runUrl}) for details.`
             })
 
       - name: Determine artifact name

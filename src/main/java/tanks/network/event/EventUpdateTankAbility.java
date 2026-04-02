@@ -27,23 +27,6 @@ public class EventUpdateTankAbility extends PersonalEvent
 
         this.count = ((TankPlayable) (p.tank)).abilities.get(slot).stackSize;
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.playerID.toString());
-        b.writeInt(this.slot);
-        b.writeInt(this.count);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.playerID = UUID.fromString(NetworkUtils.readString(b));
-        this.slot = b.readInt();
-        this.count = b.readInt();
-    }
-
     @Override
     public void execute()
     {

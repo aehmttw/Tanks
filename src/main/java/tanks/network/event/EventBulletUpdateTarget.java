@@ -24,21 +24,6 @@ public class EventBulletUpdateTarget extends PersonalEvent
         else
             this.target = b.homingTarget.networkID;
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.bullet);
-        b.writeInt(this.target);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.bullet = b.readInt();
-        this.target = b.readInt();
-    }
-
     @Override
     public void execute()
     {

@@ -47,16 +47,4 @@ public class EventLevelExit extends PersonalEvent
 
         System.gc();
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.winningTeam);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.winningTeam = NetworkUtils.readString(b);
-    }
 }

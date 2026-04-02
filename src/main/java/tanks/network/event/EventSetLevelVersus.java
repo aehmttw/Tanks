@@ -16,20 +16,6 @@ public class EventSetLevelVersus extends PersonalEvent
     public void execute()
     {
         if (this.clientID == null && Game.screen instanceof ScreenGame)
-        {
             ((ScreenGame) Game.screen).isVersus = true;
-        }
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-
     }
 }

@@ -1,14 +1,14 @@
 package tanks.network;
 
+import io.netty.buffer.ByteBuf;
 import tanks.Game;
-import tanks.gui.screen.ScreenPartyHost;
-import tanks.gui.screen.ScreenPartyLobby;
+import tanks.gui.screen.*;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
+import tanks.translation.Translation;
 
-import io.netty.buffer.ByteBuf;
-
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MessageReader
 {
@@ -18,8 +18,11 @@ public class MessageReader
     public static int upstreamBytes;
     public static long lastMessageTime;
 
+    public static HashMap<Integer, Integer> eventBytes = new HashMap<>();
+
     public static int upstreamBytesPerSec;
     public static int downstreamBytesPerSec;
+    public static List<String> eventBytesPerSecText = new ArrayList<>();
 
     public boolean useQueue = true;
     public ByteBuf queue;
@@ -32,7 +35,6 @@ public class MessageReader
     {
         this.queueMessage(null, c, m, clientID);
     }
-
 
     public void queueMessage(ServerHandler s, ByteBuf m, UUID clientID)
     {
@@ -215,6 +217,11 @@ public class MessageReader
             lastMessageTime = time;
             upstreamBytesPerSec = upstreamBytes;
             downstreamBytesPerSec = downstreamBytes;
+            eventBytesPerSecText = eventBytes.entrySet().stream()
+                .sorted(Comparator.comparingInt(Map.Entry::getValue))
+                .map(entry -> Translation.translate("%s: %.2f KB/s", NetworkEventMap.get(entry.getKey()).getSimpleName(), entry.getValue() / 1024.))
+                .collect(Collectors.toList());
+            eventBytes.clear();
             upstreamBytes = 0;
             downstreamBytes = 0;
         }

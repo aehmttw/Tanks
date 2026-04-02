@@ -1,13 +1,9 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.screen.ScreenPartyHost;
-import tanks.network.NetworkUtils;
 import tanks.network.ServerHandler;
-
-import io.netty.buffer.ByteBuf;
 
 public class EventSendTankColors extends PersonalEvent
 {
@@ -25,22 +21,6 @@ public class EventSendTankColors extends PersonalEvent
         this.color1.set(p.color);
         this.color2.set(p.color2);
         this.color3.set(p.color3);
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeColor(b, this.color1);
-        NetworkUtils.writeColor(b, this.color2);
-        NetworkUtils.writeColor(b, this.color3);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        NetworkUtils.readColor(b, this.color1);
-        NetworkUtils.readColor(b, this.color2);
-        NetworkUtils.readColor(b, this.color3);
     }
 
     @Override

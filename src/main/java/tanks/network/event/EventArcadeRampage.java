@@ -20,18 +20,6 @@ public class EventArcadeRampage extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(power);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        power = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (clientID == null && Game.currentLevel instanceof Arcade)

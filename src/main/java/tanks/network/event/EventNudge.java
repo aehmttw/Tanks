@@ -57,17 +57,4 @@ public class EventNudge extends PersonalEvent
             }
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.username);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.username = NetworkUtils.readString(b);
-    }
-
 }

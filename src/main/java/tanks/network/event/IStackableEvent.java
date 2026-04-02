@@ -1,5 +1,6 @@
 package tanks.network.event;
 
+/** Given multiple events that implement this, if they have the same identifier, only the latest one is sent */
 public interface IStackableEvent extends INetworkEvent
 {
     int getIdentifier();

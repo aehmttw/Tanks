@@ -96,22 +96,4 @@ public class EventShowCrusadeStats extends PersonalEvent
             Crusade.currentCrusade.crusadePlayers.put(cp.player, cp);
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.name);
-        NetworkUtils.writeString(b, this.levels);
-        NetworkUtils.writeString(b, this.stats);
-        NetworkUtils.writeString(b, this.crusade);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.name = NetworkUtils.readString(b);
-        this.levels = NetworkUtils.readString(b);
-        this.stats = NetworkUtils.readString(b);
-        this.crusade = NetworkUtils.readString(b);
-    }
 }

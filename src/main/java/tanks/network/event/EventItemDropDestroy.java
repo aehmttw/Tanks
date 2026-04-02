@@ -19,18 +19,6 @@ public class EventItemDropDestroy extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.itemDrop);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.itemDrop = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (clientID == null && ItemDrop.idMap.get(itemDrop) != null)

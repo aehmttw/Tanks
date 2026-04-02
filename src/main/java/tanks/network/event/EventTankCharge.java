@@ -45,20 +45,6 @@ public class EventTankCharge extends PersonalEvent implements IStackableEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeDouble(this.charge);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.charge = b.readDouble();
-    }
-
-    @Override
     public int getIdentifier()
     {
         return this.tank;

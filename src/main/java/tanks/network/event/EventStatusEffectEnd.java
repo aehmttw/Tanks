@@ -3,7 +3,6 @@ package tanks.network.event;
 import tanks.Movable;
 import tanks.attribute.StatusEffect;
 import tanks.bullet.Bullet;
-import tanks.network.NetworkUtils;
 import tanks.tank.Tank;
 
 import io.netty.buffer.ByteBuf;
@@ -33,22 +32,6 @@ public class EventStatusEffectEnd extends PersonalEvent
     public EventStatusEffectEnd()
     {
 
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeBoolean(this.isTank);
-        b.writeInt(this.networkID);
-        NetworkUtils.writeString(b, this.effect);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.isTank = b.readBoolean();
-        this.networkID = b.readInt();
-        this.effect = NetworkUtils.readString(b);
     }
 
     @Override

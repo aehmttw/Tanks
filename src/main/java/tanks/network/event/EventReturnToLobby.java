@@ -25,16 +25,4 @@ public class EventReturnToLobby extends PersonalEvent
             System.gc();
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-
-    }
 }

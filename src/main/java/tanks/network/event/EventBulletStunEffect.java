@@ -43,18 +43,4 @@ public class EventBulletStunEffect extends PersonalEvent
             }
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeDouble(this.length);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.length = b.readDouble();
-    }
 }

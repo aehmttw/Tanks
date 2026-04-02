@@ -39,24 +39,6 @@ public class EventObstacleBoostPanelEffect extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeBoolean(this.isTank);
-        b.writeInt(this.networkID);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.isTank = b.readBoolean();
-        this.networkID = b.readInt();
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-    }
-
-    @Override
     public void execute()
     {
         if (clientID != null)

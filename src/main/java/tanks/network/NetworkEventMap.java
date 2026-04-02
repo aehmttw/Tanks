@@ -3,7 +3,6 @@ package tanks.network;
 import io.netty.buffer.*;
 import tanks.Game;
 import tanks.network.event.INetworkEvent;
-import tanks.tankson.ReflectionHandle;
 
 import java.util.HashMap;
 

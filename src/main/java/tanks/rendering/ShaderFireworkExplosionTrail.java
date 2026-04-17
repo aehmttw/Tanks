@@ -27,6 +27,7 @@ public class ShaderFireworkExplosionTrail extends RendererShader
     @Override
     public void initialize() throws Exception
     {
+        super.initialize();
         this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_firework_trail.vert"}, "/shaders/main.frag", null);
         this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_firework_trail.vert"}, "/shaders/shadow_map.frag", null);
     }

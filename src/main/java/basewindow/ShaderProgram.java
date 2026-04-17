@@ -62,7 +62,10 @@ public abstract class ShaderProgram
             {
                 ShaderGroup.Attribute a = (ShaderGroup.Attribute) f.get(this.group);
                 if (a == null)
+                {
                     a = (ShaderGroup.Attribute) f.getType().newInstance();
+                    a.passAttributes = new Attribute[this.group.stages.size()];
+                }
 
                 Attribute a2 = this.util.getAttribute();
                 a.passAttributes[this.stageIndex] = a2;

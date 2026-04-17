@@ -189,7 +189,6 @@ void main(void)
                     col = minLight;
             }
 
-
             vec4 baseColor = vec4(gl_FragColor.xyz, 0.0);
 
 //            if (customLight)
@@ -253,6 +252,7 @@ void main(void)
         if (depthtest)
             gl_FragColor.xyz *= maxLight;
     }
+
 
     if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
         gl_FragColor.rgb *= gl_FragColor.a;

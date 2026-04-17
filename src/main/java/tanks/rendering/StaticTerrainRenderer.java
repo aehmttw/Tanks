@@ -53,7 +53,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
     {
         RegionRenderer s = this.outOfBoundsRenderer;
 
-        Class<? extends ShaderGroup> sg = ShaderGroup.class;
+        Class<? extends ShaderGroup> sg = ShaderGroupShadowDrawDefault.class;
 
         if (o instanceof Obstacle)
             sg = ((Obstacle) o).renderer;

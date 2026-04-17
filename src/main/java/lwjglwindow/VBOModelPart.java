@@ -36,7 +36,7 @@ public class VBOModelPart extends ModelPart
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, AxisRotation[] axisRotations, boolean depthTest)
     {
-        IBaseShader shader = (IBaseShader) this.window.currentShaderStage;
+        IBaseShader shader = (IBaseShader) this.window.currentShaderStage.shader;
 
         if (this.material.useDefaultDepthMask)
             window.setDrawOptions(depthTest, this.material.glow || this.window.forceModelGlow, this.window.colorA >= 1.0);
@@ -75,7 +75,7 @@ public class VBOModelPart extends ModelPart
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)
     {
-        IBaseShader shader = (IBaseShader) this.window.currentShaderStage;
+        IBaseShader shader = (IBaseShader) this.window.currentShaderStage.shader;
 
         if (this.material.useDefaultDepthMask)
             window.setDrawOptions(depthTest, this.material.glow || this.window.forceModelGlow, this.window.colorA >= 1.0);
@@ -109,7 +109,7 @@ public class VBOModelPart extends ModelPart
     @Override
     public void draw(double posX, double posY, double sX, double sY, double angle)
     {
-        IBaseShader shader = (IBaseShader) this.window.currentShaderStage;
+        IBaseShader shader = (IBaseShader) this.window.currentShaderStage.shader;
 
         if (this.material.useDefaultDepthMask)
             window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow);
@@ -141,7 +141,7 @@ public class VBOModelPart extends ModelPart
     @Override
     public void draw2D(double posX, double posY, double posZ, double sX, double sY, double sZ)
     {
-        IBaseShader shader = (IBaseShader) this.window.currentShaderStage;
+        IBaseShader shader = (IBaseShader) this.window.currentShaderStage.shader;
 
         if (this.material.useDefaultDepthMask)
             window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.window.colorA >= 1.0);

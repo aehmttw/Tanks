@@ -2,6 +2,7 @@ package tanks.obstacle;
 
 import basewindow.IBatchRenderableObject;
 import basewindow.ShaderGroup;
+import basewindow.ShaderGroupShadowDrawDefault;
 import tanks.*;
 import tanks.rendering.ShaderObstacle;
 import tanks.tank.IAvoidObject;
@@ -43,10 +44,12 @@ public abstract class Obstacle extends SolidGameObject implements IDrawableForIn
     public boolean allowBounce = true;
     public boolean replaceTiles = true;
 
-    /** If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles. */
-    public boolean batchDraw = true;
-    public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
-    public Class<? extends ShaderGroup> tileRenderer = ShaderGroup.class;
+	/**
+	 * If set to true, will draw as a VBO. Set to false for simpler rendering of more dynamic obstacles.
+	 */
+	public boolean batchDraw = true;
+	public Class<? extends ShaderGroup> renderer = ShaderObstacle.class;
+	public Class<? extends ShaderGroup> tileRenderer = ShaderGroupShadowDrawDefault.class;
 
     /** Obstacles with different render numbers can have different values for their uniforms */
     public int rendererNumber = 0;

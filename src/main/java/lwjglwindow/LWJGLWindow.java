@@ -133,7 +133,7 @@ public class LWJGLWindow extends BaseWindow
 
 	protected void init()
 	{
-		this.fontRenderer = new FontRenderer(this, "/fonts/default/font.png");
+        this.fontRenderer = new FontRenderer(this, "/fonts/default/font.png");
 
 		// Load zh cn font
         try
@@ -336,6 +336,8 @@ public class LWJGLWindow extends BaseWindow
 	{
 		try
 		{
+            this.defaultDrawPass = new RenderPassDraw(this);
+            this.defaultShadowPass = new RenderPassShadowMap(this);
 			this.shaderDefault = new ShaderGroupShadowDrawDefault(this);
 			this.shaderDefault.initialize();
 		}
@@ -430,6 +432,8 @@ public class LWJGLWindow extends BaseWindow
 			glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		glfwGetFramebufferSize(window, w, h);
+        this.frameBufferWidth = w[0];
+        this.frameBufferHeight = h[0];
 
 		this.updater.update();
 
@@ -1248,7 +1252,7 @@ public class LWJGLWindow extends BaseWindow
 
 		glEnable(GL_TEXTURE_2D);
 		GL20.glActiveTexture(GL13.GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, this.shaderHandler.depthTexture);
+        this.defaultShadowPass.depthFrameBuffer.depthTexture.bind(1);
 	}
 
 	public void enableDepthtest()

@@ -5,8 +5,8 @@ public abstract class ShaderGroupShadowDraw extends ShaderGroup
     public static final int shadow_pass = 0;
     public static final int draw_pass = 1;
 
-    public ShaderProgram shaderBase;
-    public ShaderProgram shaderShadowMap;
+    public ShaderBase shaderBase;
+    public ShaderShadowMap shaderShadowMap;
 
     public ShaderGroupShadowDraw(BaseWindow w, String name)
     {

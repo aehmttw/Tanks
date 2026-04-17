@@ -11,9 +11,5 @@ public abstract class RenderPass
         this.window = w;
     }
 
-    public void render()
-    {
-
-    }
-
+    public abstract void draw();
 }

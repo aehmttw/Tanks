@@ -3,6 +3,7 @@ package basewindow;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 /**
  * A shader group allows for shaders to share the same uniforms and attributes
@@ -11,12 +12,14 @@ import java.util.HashSet;
 public abstract class ShaderGroup
 {
     public HashSet<Attribute> attributes = new HashSet<>();
-    public HashMap<RenderPass, ShaderStage> stages = new HashMap<>();
+    public LinkedHashMap<RenderPass, ShaderStage> stages = new LinkedHashMap<>();
 
     public BaseWindow window;
 
     public String name;
     protected int random = (int) (Math.random() * 100);
+
+    public boolean initialized = false;
 
     public ShaderGroup(BaseWindow w, String name)
     {
@@ -33,6 +36,7 @@ public abstract class ShaderGroup
             st.index = i;
             i++;
         }
+        initialized = true;
     }
 
     public void addStage(ShaderStage st)
@@ -86,14 +90,14 @@ public abstract class ShaderGroup
 
     public interface IGroupUniform
     {
-        void setWindow(BaseWindow window);
+        void initialize(BaseWindow window, int stages);
 
         void bind(int stage);
     }
 
     public static abstract class GroupPrimitiveUniform<T, U extends ShaderProgram.IPrimitiveUniform<T>> implements IGroupUniform
     {
-        protected U[] uniforms;
+        protected ShaderProgram.IPrimitiveUniform[] uniforms;
 
         protected BaseWindow window;
 
@@ -102,9 +106,10 @@ public abstract class ShaderGroup
             this.uniforms[window.currentShaderStage.index].set(t);
         }
 
-        public void setWindow(BaseWindow w)
+        public void initialize(BaseWindow w, int stages)
         {
             this.window = w;
+            this.uniforms = new ShaderProgram.IPrimitiveUniform[stages];
         }
 
         public void bind(int stage)
@@ -115,7 +120,7 @@ public abstract class ShaderGroup
 
     public static abstract class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
     {
-        protected T[] uniforms;
+        protected ShaderProgram.IMatrixUniform[] uniforms;
 
         protected BaseWindow window;
 
@@ -124,9 +129,10 @@ public abstract class ShaderGroup
             this.uniforms[window.currentShaderStage.index].set(f, transpose);
         }
 
-        public void setWindow(BaseWindow w)
+        public void initialize(BaseWindow w, int stages)
         {
             this.window = w;
+            this.uniforms = new ShaderProgram.IMatrixUniform[stages];
         }
 
         public void bind(int stage)

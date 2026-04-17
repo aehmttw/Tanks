@@ -18,6 +18,7 @@ public class ShaderGroundObstacleBeatBlock extends RendererShader implements IOb
     @Override
     public void initialize() throws Exception
     {
+        super.initialize();
         this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_ground_obstacles.vert"}, "/shaders/main.frag", null);
         this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_ground_obstacles.vert"}, "/shaders/shadow_map.frag", null);
     }

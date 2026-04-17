@@ -20,6 +20,7 @@ public class ShaderIce extends RendererShader implements IObstacleSizeShader, IG
     @Override
     public void initialize() throws Exception
     {
+        super.initialize();
         this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_ice.vert"}, "/shaders/main.frag", null);
         this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_ice.vert"}, "/shaders/shadow_map.frag", null);
     }

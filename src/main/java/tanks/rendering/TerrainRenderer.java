@@ -107,7 +107,7 @@ public class TerrainRenderer
         RegionRenderer s = null;
         HashMap<Integer, RegionRenderer> renderers = this.outOfBoundsRenderers;
 
-        Class<? extends ShaderGroup> sg = ShaderGroup.class;
+        Class<? extends ShaderGroup> sg = ShaderGroupShadowDrawDefault.class;
 
         if (Game.screen instanceof ScreenIntro || Game.screen instanceof ScreenExit)
             sg = ShaderGroundIntro.class;

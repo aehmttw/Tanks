@@ -171,7 +171,7 @@ public class ShaderUtil extends BaseShaderUtil
                         if (u == null)
                         {
                             u = (LWJGLGroupUniform) c.newInstance();
-                            u.setWindow(window);
+                            u.initialize(window, this.program.group.stages.size());
                             f.set(program.group, u);
                         }
 
@@ -201,7 +201,7 @@ public class ShaderUtil extends BaseShaderUtil
                         {
                             // If you get this, it means one of your shader uniforms in a ShaderGroup class doesn't have a corresponding
                             // GLSL uniform. This could happen if you only use the uniform in the base or shadow map shader of the group
-                            // (in which case you can tag them with @OnlyBaseUniform or @OnlyShadowMapUniform)
+                            // (in which case you can tag them with @StageExclusiveUniform)
                             // or if the uniform is unused and is thus optimized out by the GLSL compiler.
                             throw new RuntimeException("Failed to bind uniform in " + program, e);
                         }

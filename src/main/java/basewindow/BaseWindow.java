@@ -1,6 +1,8 @@
 package basewindow;
 
 import basewindow.transformation.*;
+import lwjglwindow.RenderPassDraw;
+import lwjglwindow.RenderPassShadowMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +25,10 @@ public abstract class BaseWindow
 
     public double absoluteWidth, absoluteHeight, absoluteDepth;
     public double clipMultiplier = 100, clipDistMultiplier = 1;
+
+    public int frameBufferWidth;
+    public int frameBufferHeight;
+
 
     public boolean hasResized;
 
@@ -106,16 +112,16 @@ public abstract class BaseWindow
 
     public ModelPart.ShapeDrawer shapeDrawer;
 
-    public ShaderGroup shaderDefault;
-    public ShaderGroup shaderBones;
+    public ShaderGroupShadowDraw shaderDefault;
+    public ShaderGroupShadowDraw shaderBones;
 
 //    public ShaderGroup currentShaderGroup;
 //    public ShaderProgram currentShader;
     public ShaderGroup.ShaderStage currentShaderStage;
     public RenderPass currentRenderPass;
 
-    public RenderPass defaultShadowPass = new RenderPass("shadow");
-    public RenderPass defaultDrawPass = new RenderPass("draw");
+    public RenderPassShadowMap defaultShadowPass;
+    public RenderPassDraw defaultDrawPass;
 
     // capsLock and numLock do not work on mac (glfw limitation) :(
     public boolean shift = false;
@@ -294,9 +300,12 @@ public abstract class BaseWindow
 
     public void setShader(ShaderGroup s1)
     {
+        if (!s1.initialized)
+            throw new RuntimeException("Shader group not initialized: " + s1);
+
         ShaderGroup.ShaderStage s = s1.stages.get(this.currentRenderPass);
         ShaderGroup.ShaderStage old = null;
-        if (s.group == this.currentShaderStage.group)
+        if (this.currentShaderStage != null)
             old = this.currentShaderStage;
 
         s.shader.set();

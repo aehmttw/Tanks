@@ -7,8 +7,7 @@ import tanks.item.Item;
 import tanks.tank.*;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.*;
 import java.util.*;
 
 public final class Serializer
@@ -143,7 +142,8 @@ public final class Serializer
                             {
                                 ArrayList<Object> o3keys = new ArrayList<>();
                                 ArrayList<Object> o3vals = new ArrayList<>();
-                                for (Map.Entry<?,?> o3: ((Map<?,?>) o2).entrySet()) {
+                                for (Map.Entry<?, ?> o3: ((Map<?, ?>) o2).entrySet())
+                                {
                                     if (o3.getKey() instanceof Byte || o3.getKey() instanceof Character || o3.getKey() instanceof String || o3.getKey() instanceof Number ||
                                         o3.getKey() instanceof Boolean)
                                     {
@@ -402,8 +402,16 @@ public final class Serializer
                     else if (o2 instanceof ArrayList)
                     {
                         ParameterizedType pt = (ParameterizedType) f.getGenericType();
+                        Type t = pt.getActualTypeArguments()[0];
+                        Class elem;
+                        if (t instanceof Class)
+                            elem = (Class<?>) t;
+                        else if (t instanceof ParameterizedType)
+                            elem = (Class<?>) ((ParameterizedType) t).getRawType();
+                        else
+                            elem = (Class<?>) t;
                         ArrayList arr = (ArrayList) m.get(getid(f));
-                        if (!arr.isEmpty() && (arr.get(0) instanceof Map))
+                        if (!arr.isEmpty() && isTanksONable(elem))
                         {
                             ArrayList o3s = new ArrayList();
                             for (Map o3: ((ArrayList<Map>) m.get(getid(f))))
@@ -412,7 +420,7 @@ public final class Serializer
                             }
                             f.set(o, o3s);
                         }
-                        else if (pt.getActualTypeArguments()[0] == Color.class)
+                        else if (elem == Color.class)
                         {
                             ArrayList<Color> colors = new ArrayList<>();
                             ArrayList<ArrayList<Double>> els = (ArrayList<ArrayList<Double>>) m.get(getid(f));
@@ -430,8 +438,8 @@ public final class Serializer
                     }
                     else if (o2 instanceof Map)
                     {
-                        ArrayList<?> keys = (ArrayList<?>)((ArrayList<ArrayList>) m.get(getid(f))).get(0);
-                        ArrayList<?> vals = (ArrayList<?>)((ArrayList<ArrayList>) m.get(getid(f))).get(1);
+                        ArrayList<?> keys = (ArrayList<?>) ((ArrayList<ArrayList>) m.get(getid(f))).get(0);
+                        ArrayList<?> vals = (ArrayList<?>) ((ArrayList<ArrayList>) m.get(getid(f))).get(1);
                         ParameterizedType pt = (ParameterizedType) f.getGenericType();
                         Map<?, ?> o3s;
                         if (o2 instanceof LinkedHashMap)
@@ -443,9 +451,9 @@ public final class Serializer
                         for (int i = 0; i < keys.size(); i++)
                         {
                             if (isTanksONable((Class<?>) pt.getActualTypeArguments()[1]))
-                                ((Map<Object, Object>)o3s).put(keys.get(i), parseObject((Map<String, Object>) vals.get(i)));
+                                ((Map<Object, Object>) o3s).put(keys.get(i), parseObject((Map<String, Object>) vals.get(i)));
                             else
-                                ((Map<Object, Object>)o3s).put(keys.get(i), vals.get(i));
+                                ((Map<Object, Object>) o3s).put(keys.get(i), vals.get(i));
                         }
                         f.set(o, o3s);
                     }

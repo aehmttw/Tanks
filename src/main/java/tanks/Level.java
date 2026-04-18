@@ -106,7 +106,8 @@ public class Level
 
     public HashMap<String, Tank> tankLookupTable = null;
 
-    public Level() {
+    public Level()
+    {
         obstacles = new ArrayList<Obstacle>();
         this.tanks = new ArrayList<Tank>();
         this.customTanks = new ArrayList<>();
@@ -310,8 +311,8 @@ public class Level
                 String[] obs = obstaclesPo.split("-");
 
                 ArrayList<String> obsIR = new ArrayList<>();
-                obsIR.add(obs[0].replace("...",":")); //X Coordinate (changed to sliced notation)
-                obsIR.add(obs[1].replace("...",":")); //Y Coordinate (changed to sliced notation)
+                obsIR.add(obs[0].replace("...", ":")); //X Coordinate (changed to sliced notation)
+                obsIR.add(obs[1].replace("...", ":")); //Y Coordinate (changed to sliced notation)
                 if (obs.length >= 3)
                     obsIR.add(obs[2]); //Name
                 if (obs.length >= 4)
@@ -487,12 +488,10 @@ public class Level
             this.startingCoins = 0;
             this.startingItems = new ArrayList<>();
         }
-
-//        System.out.println(Serializer.toTanksON(this));
-//        System.out.println(Serializer.toTanksON(Serializer.fromTanksON(Serializer.toTanksON(this))));
     }
 
-    public void init() {
+    public void init()
+    {
         init(false);
     }
 
@@ -519,7 +518,7 @@ public class Level
             double endX = (xs.length > 1 ? Double.parseDouble(xs[1]) : startX) + 1;
             String[] ys = obs.get(1).split(":");
             double startY = Double.parseDouble(ys[0]);
-            double endY = (ys.length > 1 ? Double.parseDouble(ys[1]): startY) + 1;
+            double endY = (ys.length > 1 ? Double.parseDouble(ys[1]) : startY) + 1;
 
             for (double x = startX; x < endX; x++)
             {

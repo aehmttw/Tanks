@@ -13,8 +13,8 @@ public abstract class ShaderGroupShadowDraw extends ShaderGroup
         super(w, name);
         this.shaderBase = new ShaderBase(w);
         this.shaderShadowMap = new ShaderShadowMap(w);
-        this.addStage(new ShaderStage(this, w.defaultShadowPass, this.shaderShadowMap));
-        this.addStage(new ShaderStage(this, w.defaultDrawPass, this.shaderBase));
+        this.addStage(new ShaderStage(this, w.mainRenderPasses.shadowPass, this.shaderShadowMap));
+        this.addStage(new ShaderStage(this, w.mainRenderPasses.drawPass, this.shaderBase));
     }
 
     @Override

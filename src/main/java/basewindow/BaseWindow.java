@@ -2,7 +2,6 @@ package basewindow;
 
 import basewindow.transformation.*;
 import lwjglwindow.RenderPassDraw;
-import lwjglwindow.RenderPassShadowMap;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -120,8 +119,7 @@ public abstract class BaseWindow
     public ShaderGroup.ShaderStage currentShaderStage;
     public RenderPass currentRenderPass;
 
-    public RenderPassShadowMap defaultShadowPass;
-    public RenderPassDraw defaultDrawPass;
+    public RenderPassGroupShadowDraw mainRenderPasses;
 
     // capsLock and numLock do not work on mac (glfw limitation) :(
     public boolean shift = false;
@@ -206,6 +204,10 @@ public abstract class BaseWindow
 
     public abstract void loadPerspective();
 
+    public abstract void getProjectionMatrix(float[] proj);
+
+    public abstract void clearColor();
+
     public abstract void clearDepth();
 
     public abstract void setWindowTitle(String s);
@@ -244,6 +246,12 @@ public abstract class BaseWindow
 
     public abstract void stopTexture();
 
+    public abstract void setViewport(int x, int y, int w, int h);
+
+    public abstract BaseFrameBuffer createFrameBuffer();
+
+    public abstract void stopFrameBuffer();
+
     public abstract void addVertex(double x, double y, double z);
 
     public abstract void addVertex(double x, double y);
@@ -251,20 +259,6 @@ public abstract class BaseWindow
     public abstract void openLink(URL url) throws Exception;
 
     public abstract void setResolution(int x, int y);
-
-    public abstract void setShadowQuality(double quality);
-
-    public abstract double getShadowQuality();
-
-    public abstract void setLighting(double light, double glowLight, double shadow, double glowShadow);
-
-    public abstract void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess);
-
-    public abstract void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess, double minBound, double maxBound, boolean enableNegative);
-
-    public abstract void disableMaterialLights();
-
-    public abstract void setCelShadingSections(float sections);
 
     public abstract void createLights(ArrayList<double[]> lights, double scale);
 
@@ -298,6 +292,10 @@ public abstract class BaseWindow
 
     public abstract void setForceModelGlow(boolean glow);
 
+    /**
+     * Switches the current shader program used to draw things.
+     * @param s1 Shader group with support for the current render pass.
+     */
     public void setShader(ShaderGroup s1)
     {
         if (!s1.initialized)
@@ -313,11 +311,6 @@ public abstract class BaseWindow
 
         if (old != null && old.renderPass == s.renderPass)
             s.shader.copyUniformsFrom(old.shader, old.shader.getClass());
-    }
-
-    public void executeRenderPass(RenderPass r)
-    {
-
     }
 
     public void setupKeyCodes()

@@ -222,71 +222,71 @@ public class Panel
 	}
 
 	public void update()
-	{
-		if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F12) && Game.game.window.validPressedKeys.contains(InputCodes.KEY_F3) && Game.debug)
-		{
-			Game.game.window.validPressedKeys.clear();
-			Game.exitToCrash(new Exception("Manually initiated crash"));
-		}
+    {
+        if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F12) && Game.game.window.validPressedKeys.contains(InputCodes.KEY_F3) && Game.debug)
+        {
+            Game.game.window.validPressedKeys.clear();
+            Game.exitToCrash(new Exception("Manually initiated crash"));
+        }
 
-		if (saveScreenshotDir != null)
-		{
-			try
-			{
-				Game.game.window.screenshot(saveScreenshotDir, false);
-				saveScreenshotDir = null;
-			}
-			catch (Exception e)
-			{
-				Game.exitToCrash(e);
-			}
-		}
+        if (saveScreenshotDir != null)
+        {
+            try
+            {
+                Game.game.window.screenshot(saveScreenshotDir, false);
+                saveScreenshotDir = null;
+            }
+            catch (Exception e)
+            {
+                Game.exitToCrash(e);
+            }
+        }
 
-		if (Game.game.input.screenshot.isValid())
-		{
-			Game.game.input.screenshot.invalidate();
+        if (Game.game.input.screenshot.isValid())
+        {
+            Game.game.input.screenshot.invalidate();
 
-			if (Game.game.window.shift)
-				Game.game.fileManager.openFileManager(Game.homedir + Game.screenshotsPath);
-			else
-			{
-				try
-				{
-					String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
-					notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) + "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.", 1200, 400));
-				}
-				catch (Exception e)
-				{
-					Game.exitToCrash(e);
-				}
-			}
-		}
+            if (Game.game.window.shift)
+                Game.game.fileManager.openFileManager(Game.homedir + Game.screenshotsPath);
+            else
+            {
+                try
+                {
+                    String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
+                    notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) + "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.", 1200, 400));
+                }
+                catch (Exception e)
+                {
+                    Game.exitToCrash(e);
+                }
+            }
+        }
 
         this.frameStartTime = System.currentTimeMillis();
 
-		if (firstFrame)
-			this.setUp();
+        if (firstFrame)
+            this.setUp();
 
-		firstFrame = false;
+        firstFrame = false;
 
         Game.game.window.orthographic = Game.orthographicView;
 
-		if (Game.screen == Game.prevScreen && !Game.screen.windowTitle.equals(lastWindowTitle))
-		{
-			lastWindowTitle = Game.screen.windowTitle;
-			Game.game.window.setWindowTitle("Tanks" + lastWindowTitle);
-		}
+        if (Game.screen == Game.prevScreen && !Game.screen.windowTitle.equals(lastWindowTitle))
+        {
+            lastWindowTitle = Game.screen.windowTitle;
+            Game.game.window.setWindowTitle("Tanks" + lastWindowTitle);
+        }
 
-		if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
-		{
-			started = true;
+        if (!started && (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F) || !Game.cinematic))
+        {
+            started = true;
 
 //			this.startTime = System.currentTimeMillis() + splash_duration;
 //			Drawing.drawing.playSound("splash_jingle.ogg");
 //			Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
-		}
+        }
 
-		if (!started)
+        if (!started)
         {
             this.startTime = System.currentTimeMillis();
 
@@ -297,29 +297,35 @@ public class Panel
             }
         }
 
-		int maxFps = Game.maxFPS;
-		if (Game.deterministicMode && Game.deterministic30Fps)
-			maxFps = 30;
-		else if (Game.deterministicMode)
-			maxFps = 60;
+        int maxFps = Game.maxFPS;
+        if (Game.deterministicMode && Game.deterministic30Fps)
+            maxFps = 30;
+        else if (Game.deterministicMode)
+            maxFps = 60;
 
-		if (maxFps > 0)
-		{
-			int frameTime = 1000000000 / maxFps;
-			while (System.nanoTime() - lastFrameNano < frameTime)
-			{
+        if (maxFps > 0)
+        {
+            int frameTime = 1000000000 / maxFps;
+            while (System.nanoTime() - lastFrameNano < frameTime)
+            {
 
-			}
-		}
+            }
+        }
 
-		lastFrameNano = System.nanoTime();
+        lastFrameNano = System.nanoTime();
 
-		Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
+        Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
 
-		if (!Game.shadowsEnabled)
-			Game.game.window.setShadowQuality(0);
+        if (!Game.shadowsEnabled)
+        {
+            Game.game.window.mainRenderPasses.shadowQuality = 1;
+            Game.game.window.mainRenderPasses.shadowsEnabled = false;
+        }
 		else
-			Game.game.window.setShadowQuality(Game.shadowQuality / 10.0 * 1.25);
+        {
+            Game.game.window.mainRenderPasses.shadowQuality = Game.shadowQuality / 10.0 * 1.25;
+            Game.game.window.mainRenderPasses.shadowsEnabled = true;
+        }
 
 		Screen prevScreen = Game.screen;
 

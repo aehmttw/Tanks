@@ -1326,7 +1326,7 @@ public class Drawing
 
 	public void setLighting(double light, double shadow)
 	{
-		Game.game.window.setLighting(light, Math.max(1, light), shadow, Math.max(1, shadow));
+		Game.game.window.mainRenderPasses.setLighting(light, Math.max(1, light), shadow, Math.max(1, shadow));
 	}
 
 	public void drawTooltip(String[] text)

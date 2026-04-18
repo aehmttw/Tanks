@@ -27,6 +27,8 @@ import java.util.*;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.EXTFramebufferObject.GL_FRAMEBUFFER_EXT;
+import static org.lwjgl.opengl.EXTFramebufferObject.glBindFramebufferEXT;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -63,13 +65,9 @@ public class LWJGLWindow extends BaseWindow
 
 	public boolean forceModelGlow = false;
 
-	protected boolean shadowsEnabled = false;
-
 	protected boolean upscaleImages = false;
 
 	protected int lightTex;
-
-	public ShaderHandler shaderHandler;
 
 	double bbx1 = 1;
 	double bby1 = 0;
@@ -170,6 +168,9 @@ public class LWJGLWindow extends BaseWindow
         }
 
 		GLFWErrorCallback.createPrint(System.err).set();
+
+        if (System.getProperty("os.name").toLowerCase().contains("linux"))
+            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
 
 		if (!glfwInit())
 			throw new IllegalStateException("Unable to initialize GLFW");
@@ -336,10 +337,11 @@ public class LWJGLWindow extends BaseWindow
 	{
 		try
 		{
-            this.defaultDrawPass = new RenderPassDraw(this);
-            this.defaultShadowPass = new RenderPassShadowMap(this);
-			this.shaderDefault = new ShaderGroupShadowDrawDefault(this);
-			this.shaderDefault.initialize();
+            this.mainRenderPasses = new RenderPassGroupShadowDraw(this);
+            this.shaderDefault = new ShaderGroupShadowDrawDefault(this);
+            this.shaderDefault.initialize();
+            this.mainRenderPasses.shaderGroup = this.shaderDefault;
+
 		}
 		catch (Exception e)
 		{
@@ -354,7 +356,6 @@ public class LWJGLWindow extends BaseWindow
 
 		this.setUpShaders();
 
-		this.shaderHandler = new ShaderHandler(this);
 		this.shapeRenderer = new ImmediateModeShapeRenderer(this);
         this.vboRenderer = new VBORenderer(this);
 		this.lightTex = glGenTextures();
@@ -436,11 +437,7 @@ public class LWJGLWindow extends BaseWindow
         this.frameBufferHeight = h[0];
 
 		this.updater.update();
-
-		if (shadowsEnabled)
-			this.shaderHandler.renderShadowMap();
-
-		this.shaderHandler.renderNormal();
+		this.mainRenderPasses.draw();
 
 		glfwSwapBuffers(window);
 
@@ -847,10 +844,23 @@ public class LWJGLWindow extends BaseWindow
 		}
 	}
 
+    @Override
+    public void getProjectionMatrix(float[] proj)
+    {
+        glGetFloatv(GL_PROJECTION_MATRIX, proj);
+    }
+
+    @Override
 	public void clearDepth()
 	{
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
+
+    @Override
+    public void clearColor()
+    {
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
 
 	@Override
 	public void setWindowTitle(String s)
@@ -1061,7 +1071,25 @@ public class LWJGLWindow extends BaseWindow
 		disableTexture();
 	}
 
-	@Override
+    @Override
+    public void setViewport(int x, int y, int w, int h)
+    {
+        glViewport(x, y, w, h);
+    }
+
+    @Override
+    public BaseFrameBuffer createFrameBuffer()
+    {
+        return new FrameBuffer();
+    }
+
+    @Override
+    public void stopFrameBuffer()
+    {
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    }
+
+    @Override
 	public void addVertex(double x, double y, double z)
 	{
 		glVertex3d(x, y, z);
@@ -1099,83 +1127,6 @@ public class LWJGLWindow extends BaseWindow
 	public void setResolution(int x, int y)
 	{
 		glfwSetWindowSize(window, x, y);
-	}
-
-	@Override
-	public void setShadowQuality(double quality)
-	{
-		if (quality <= 0)
-		{
-			this.shaderHandler.quality = 1;
-			this.shadowsEnabled = false;
-		}
-		else
-		{
-			this.shaderHandler.quality = quality;
-			this.shadowsEnabled = true;
-		}
-	}
-
-	@Override
-	public double getShadowQuality()
-	{
-		if (!this.shadowsEnabled)
-			return 0;
-		else
-			return this.shaderHandler.quality;
-	}
-
-	@Override
-	public void setLighting(double light, double glowLight, double shadow, double glowShadow)
-	{
-        if (this.currentShaderStage.shader instanceof ShaderBase)
-        {
-            ShaderBase sb = ((ShaderBase) (this.currentShaderStage.shader));
-            sb.light.set((float) light);
-            sb.glowLight.set((float) glowLight);
-            sb.shade.set((float) shadow);
-            sb.glowShade.set((float) glowShadow);
-        }
-	}
-
-	@Override
-	public void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess)
-	{
-		this.setMaterialLights(ambient, diffuse, specular, shininess, -1, 1, true);
-	}
-
-	@Override
-	public void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess, double minBound, double maxBound, boolean negative)
-	{
-		if (this.drawingShadow)
-			return;
-
-		/*this.currentBaseShader.customLight.set(true);
-		this.currentBaseShader.lightAmbient.set(ambient[0], ambient[1], ambient[2]);
-		this.currentBaseShader.lightDiffuse.set(diffuse[0], diffuse[1], diffuse[2]);
-		this.currentBaseShader.lightSpecular.set(specular[0], specular[1], specular[2]);
-		this.currentBaseShader.shininess.set((float) shininess);
-		this.currentBaseShader.minBrightness.set((float) minBound);
-		this.currentBaseShader.maxBrightness.set((float) maxBound);
-		this.currentBaseShader.negativeBrightness.set(negative);*/
-	}
-
-	@Override
-	public void setCelShadingSections(float sections)
-	{
-		if (this.drawingShadow)
-			return;
-
-		//this.currentBaseShader.celsections.set(sections);
-	}
-
-	@Override
-	public void disableMaterialLights()
-	{
-		if (this.drawingShadow)
-			return;
-
-		//this.currentBaseShader.customLight.set(false);
 	}
 
 	@Override
@@ -1249,10 +1200,6 @@ public class LWJGLWindow extends BaseWindow
 
 		if (this.currentShaderStage.shader instanceof ShaderBase)
 		    ((ShaderBase)(this.currentShaderStage.shader)).texture.set(false);
-
-		glEnable(GL_TEXTURE_2D);
-		GL20.glActiveTexture(GL13.GL_TEXTURE1);
-        this.defaultShadowPass.depthFrameBuffer.depthTexture.bind(1);
 	}
 
 	public void enableDepthtest()

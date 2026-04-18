@@ -7,7 +7,14 @@ import java.util.LinkedHashMap;
 
 /**
  * A shader group allows for shaders to share the same uniforms and attributes
- * across both normal and shadow map render mode shaders.
+ * across multiple render passes. This allows for drawing code to be shared between
+ * passes, which can simplify rendering a bit.
+ *
+ * Switching between shader groups within the same render pass will transfer over
+ * all uniforms which have matching names. This creates a sort of hierarchical
+ * state where more specialized shaders can extend more base-level ones in order
+ * to add more properties (uniforms, attributes) without disrupting the state of
+ * the original shaders.
  */
 public abstract class ShaderGroup
 {

@@ -103,10 +103,10 @@ public class VBOPosedModel extends PosedModel
             else
                 window.setDrawOptions(depthTest, m.material.glow, m.material.depthMask);
 
-            if (m.material.customLight)
-                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
-
-            window.setCelShadingSections(m.material.celSections);
+//            if (m.material.customLight)
+//                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+//
+//            window.setCelShadingSections(m.material.celSections);
 
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
@@ -120,8 +120,8 @@ public class VBOPosedModel extends PosedModel
             shader.renderPosedVBO(m.vertexVBO, m.colorVBO, m.texVBO, m.normalVBO, this.bonesVBOs.get(m), m.shapes.length * 3);
             window.disableTexture();
 
-            if (m.material.customLight)
-                window.disableMaterialLights();
+//            if (m.material.customLight)
+//                window.disableMaterialLights();
 
             glPopMatrix();
         }
@@ -148,10 +148,10 @@ public class VBOPosedModel extends PosedModel
             else
                 window.setDrawOptions(false, m.material.glow, m.material.depthMask);
 
-            if (m.material.customLight)
-                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
-
-            window.setCelShadingSections(m.material.celSections);
+//            if (m.material.customLight)
+//                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+//
+//            window.setCelShadingSections(m.material.celSections);
 
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
@@ -165,8 +165,8 @@ public class VBOPosedModel extends PosedModel
             shader.renderPosedVBO(m.vertexVBO, m.colorVBO, m.texVBO, m.normalVBO, this.bonesVBOs.get(m), m.shapes.length * 3);
             window.disableTexture();
 
-            if (m.material.customLight)
-                window.disableMaterialLights();
+//            if (m.material.customLight)
+//                window.disableMaterialLights();
 
             glPopMatrix();
         }

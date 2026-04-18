@@ -1733,11 +1733,18 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
     public void save()
     {
-        this.new_save(this.name);
+        this.save(this.name);
+    }
+
+    public void save(String levelName)
+    {
+        this.legacy_save(levelName);
     }
 
     public void new_save(String levelName)
     {
+        level.obstaclesIR.clear();
+        level.tanksIR.clear();
         ArrayList<Obstacle> unmarked = (ArrayList<Obstacle>) Game.obstacles.clone();
         String[][][] obstacles = new String[Game.registryObstacle.obstacleEntries.size()][this.level.sizeX][this.level.sizeY];
 
@@ -1795,7 +1802,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                         String obsName = Game.registryObstacle.obstacleEntries.get(h).name;
 
                         if (!obsName.equals("normal") || !stack.equals("1.0"))
-                            name = "-" + obsName;
+                            name = obsName;
 
                         if (xLength >= yLength)
                         {

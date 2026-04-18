@@ -25,6 +25,7 @@ import tanks.obstacle.*;
 import tanks.registry.*;
 import tanks.rendering.*;
 import tanks.tank.*;
+import tanks.tankson.Serializer;
 
 import com.codedisaster.steamworks.SteamMatchmaking;
 
@@ -1373,7 +1374,16 @@ public class Game
                 line.append(f.nextLine()).append("\n");
             }
 
-            Level l = new Level(line.substring(0, line.length() - 1));
+            Level l;
+            try
+            {
+                l = (Level) Serializer.fromTanksON(line.substring(0, line.length() - 1));
+                l.init();
+            }
+            catch (RuntimeException e)
+            {
+                l = new Level(line.substring(0, line.length() - 1));
+            }
             l.loadLevel(s);
 
             f.stopReading();

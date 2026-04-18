@@ -168,6 +168,9 @@ public class LWJGLWindow extends BaseWindow
 
         GLFWErrorCallback.createPrint(System.err).set();
 
+        if (System.getProperty("os.name").toLowerCase().contains("linux"))
+            GLFW.glfwInitHint(GLFW.GLFW_PLATFORM, GLFW.GLFW_PLATFORM_X11);
+
         if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
 

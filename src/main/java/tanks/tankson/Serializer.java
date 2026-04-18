@@ -1,8 +1,7 @@
 package tanks.tankson;
 
 import basewindow.Color;
-import tanks.Game;
-import tanks.Team;
+import tanks.*;
 import tanks.bullet.*;
 import tanks.item.Item;
 import tanks.tank.*;
@@ -137,6 +136,28 @@ public final class Serializer
                             {
                                 p.put(getid(f), f.get(o));
                             }
+                        }
+                        else if (o2 instanceof Map)
+                        {
+                            if (!((Map) o2).isEmpty() && isTanksONable(((Map) o2).values().iterator().next()))
+                            {
+                                ArrayList<Object> o3keys = new ArrayList<>();
+                                ArrayList<Object> o3vals = new ArrayList<>();
+                                for (Map.Entry<?,?> o3: ((Map<?,?>) o2).entrySet()) {
+                                    if (o3.getKey() instanceof Byte || o3.getKey() instanceof Character || o3.getKey() instanceof String || o3.getKey() instanceof Number ||
+                                        o3.getKey() instanceof Boolean)
+                                    {
+                                        o3keys.add(o3.getKey());
+                                        o3vals.add(toMap(o3.getValue()));
+                                    }
+                                    else
+                                        throw new RuntimeException("Key must be Primitive or String for Map Serialization. Type: " + o3.getKey().getClass());
+                                }
+                                p.put(getid(f), Arrays.asList(o3keys, o3vals));
+
+                            }
+                            else
+                                p.put(getid(f), f.get(o));
                         }
                         else if (o2 instanceof Enum)
                             p.put(getid(f), ((Enum) o2).name());
@@ -348,6 +369,9 @@ public final class Serializer
             case "team":
                 o = new Team();
                 break;
+            case "level":
+                o = new Level();
+                break;
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
@@ -404,6 +428,27 @@ public final class Serializer
 
 
                     }
+                    else if (o2 instanceof Map)
+                    {
+                        ArrayList<?> keys = (ArrayList<?>)((ArrayList<ArrayList>) m.get(getid(f))).get(0);
+                        ArrayList<?> vals = (ArrayList<?>)((ArrayList<ArrayList>) m.get(getid(f))).get(1);
+                        ParameterizedType pt = (ParameterizedType) f.getGenericType();
+                        Map<?, ?> o3s;
+                        if (o2 instanceof LinkedHashMap)
+                            o3s = new LinkedHashMap<>();
+                        else if (o2 instanceof HashMap)
+                            o3s = new HashMap<>();
+                        else
+                            throw new RuntimeException("Unknown map type: " + o2.getClass());
+                        for (int i = 0; i < keys.size(); i++)
+                        {
+                            if (isTanksONable((Class<?>) pt.getActualTypeArguments()[1]))
+                                ((Map<Object, Object>)o3s).put(keys.get(i), parseObject((Map<String, Object>) vals.get(i)));
+                            else
+                                ((Map<Object, Object>)o3s).put(keys.get(i), vals.get(i));
+                        }
+                        f.set(o, o3s);
+                    }
                     else if (o2 instanceof Color)
                     {
                         ArrayList<Double> objs = (ArrayList) m.get(getid(f));
@@ -441,7 +486,7 @@ public final class Serializer
             }
             catch (Exception e)
             {
-                System.out.println(getid(f));
+                System.err.println(getid(f));
                 throw new RuntimeException(e);
             }
         }
@@ -475,7 +520,7 @@ public final class Serializer
             }
             catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
             {
-                System.out.println("Unconvertable field found! " + k);
+                System.err.println("Unconvertable field found! " + k);
                 e.printStackTrace();
             }
         }

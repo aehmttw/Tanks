@@ -1,5 +1,13 @@
 package basewindow;
 
+/**
+ * Corresponds to an OpenGL render pass, generally used for situations where the whole
+ * game scene is to be rendered.
+ *
+ * For example, one render pass may render the depth of the scene from a light source
+ * so that another render pass which draws the scene, can determine if objects are in
+ * line of sight of that light source.
+ */
 public abstract class RenderPass
 {
     public String name;
@@ -11,5 +19,8 @@ public abstract class RenderPass
         this.window = w;
     }
 
-    public abstract void draw();
+    public void draw()
+    {
+        this.window.currentRenderPass = this;
+    }
 }

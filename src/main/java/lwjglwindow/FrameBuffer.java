@@ -1,5 +1,6 @@
 package lwjglwindow;
 
+import basewindow.BaseFrameBuffer;
 import org.lwjgl.opengl.GL13;
 
 import java.nio.ByteBuffer;
@@ -8,10 +9,9 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 import static org.lwjgl.opengl.GL20.*;
 
-public class FrameBuffer
+public class FrameBuffer extends BaseFrameBuffer
 {
     protected int framebuffer;
-
     public ArrayList<FrameBufferTexture> colorTextures = new ArrayList<>();
     public FrameBufferTexture depthTexture = null;
 
@@ -64,9 +64,32 @@ public class FrameBuffer
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     }
 
+    public void free()
+    {
+        if (depthTexture != null)
+            glDeleteTextures(depthTexture.texture);
+
+        for (FrameBufferTexture t: colorTextures)
+            glDeleteTextures(t.texture);
+
+        glDeleteFramebuffersEXT(framebuffer);
+    }
+
     public void bind()
     {
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebuffer);
+    }
+
+    @Override
+    public void bindDepthTexture(int target)
+    {
+        this.depthTexture.bind(target);
+    }
+
+    @Override
+    public void bindColorTexture(int which, int target)
+    {
+        this.colorTextures.get(which).bind(target);
     }
 
     public static class FrameBufferTexture
@@ -108,7 +131,7 @@ public class FrameBuffer
                     intFormat,
                     sizeX, sizeY, 0,
                     format,
-                    GL_UNSIGNED_BYTE,
+                    GL_FLOAT,
                     (ByteBuffer) null);
             glBindTexture(GL_TEXTURE_2D, 0);
         }

@@ -43,10 +43,10 @@ public class VBOModelPart extends ModelPart
         else
             window.setDrawOptions(depthTest, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
 
-        if (this.material.customLight)
-            window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
-
-        window.setCelShadingSections(this.material.celSections);
+//        if (this.material.customLight)
+//            window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
+//
+//        window.setCelShadingSections(this.material.celSections);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -68,8 +68,8 @@ public class VBOModelPart extends ModelPart
 
         window.disableDepthtest();
 
-        if (this.material.customLight)
-            window.disableMaterialLights();
+//        if (this.material.customLight)
+//            window.disableMaterialLights();
     }
 
     @Override
@@ -82,10 +82,10 @@ public class VBOModelPart extends ModelPart
         else
             window.setDrawOptions(depthTest, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
 
-        if (this.material.customLight)
-            window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
-
-        window.setCelShadingSections(this.material.celSections);
+//        if (this.material.customLight)
+//            window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
+//
+//        window.setCelShadingSections(this.material.celSections);
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
@@ -102,8 +102,8 @@ public class VBOModelPart extends ModelPart
 
         window.disableDepthtest();
 
-        if (this.material.customLight)
-            window.disableMaterialLights();
+//        if (this.material.customLight)
+//            window.disableMaterialLights();
     }
 
     @Override
@@ -148,6 +148,11 @@ public class VBOModelPart extends ModelPart
         else
             window.setDrawOptions(false, this.material.glow || this.window.forceModelGlow, this.material.depthMask);
 
+//        if (this.material.customLight)
+//            window.setMaterialLights(this.material.ambient, this.material.diffuse, this.material.specular, this.material.shininess);
+//
+//        window.setCelShadingSections(this.material.celSections);
+
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
         Translation.transform(window, posX / window.absoluteWidth, posY / window.absoluteHeight, posZ / window.absoluteDepth);
@@ -162,6 +167,9 @@ public class VBOModelPart extends ModelPart
         window.disableTexture();
 
         glPopMatrix();
+
+//        if (this.material.customLight)
+//            window.disableMaterialLights();
     }
 
     public void setTexture()

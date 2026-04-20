@@ -511,6 +511,19 @@ public class Level
         this.disableFriendlyFire = disableFriendlyFire;
         this.customTanks.addAll(customTanks);
 
+        if (teamsMap.isEmpty()) {
+            if (disableFriendlyFire)
+            {
+                teamsMap.put("ally", Game.playerTeamNoFF);
+                teamsMap.put("enemy", Game.enemyTeamNoFF);
+            }
+            else
+            {
+                teamsMap.put("ally", Game.playerTeam);
+                teamsMap.put("enemy", Game.enemyTeam);
+            }
+        }
+
         for (ArrayList<String> obs: obstaclesIR)
         {
             String[] xs = obs.get(0).split(":");

@@ -1738,7 +1738,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
     public void save(String levelName)
     {
-        this.legacy_save(levelName);
+        this.new_save(levelName);
     }
 
     public void new_save(String levelName)
@@ -1893,6 +1893,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 level.tanksIR.add(tank);
             }
         }
+
+        Game.currentLevelString = Serializer.toTanksON(this.level);
 
         BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName);
         if (file.exists())
@@ -2718,7 +2720,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         this.replaceSpawns();
         Game.currentLevel.reloadTiles();
 
-        Game.currentLevel = new Level(Game.currentLevelString);
+        Game.currentLevel = this.level;
         Game.currentLevel.tilesRandomSeed = level.tilesRandomSeed;
         Game.currentLevel.timer = level.timer;
 

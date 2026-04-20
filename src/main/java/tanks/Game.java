@@ -1379,6 +1379,7 @@ public class Game
             {
                 l = (Level) Serializer.fromTanksON(line.substring(0, line.length() - 1));
                 l.init();
+                l.levelString = line.substring(0, line.length()-1);
             }
             catch (RuntimeException e)
             {

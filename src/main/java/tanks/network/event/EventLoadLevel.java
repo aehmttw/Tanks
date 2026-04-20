@@ -8,6 +8,7 @@ import tanks.minigames.Minigame;
 import tanks.network.NetworkUtils;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankPlayer;
+import tanks.tankson.Serializer;
 
 import io.netty.buffer.ByteBuf;
 
@@ -82,7 +83,15 @@ public class EventLoadLevel extends PersonalEvent
             if (level.startsWith("minigame="))
                 Game.currentLevel = Game.registryMinigame.minigames.get(level.substring(level.indexOf("=") + 1)).getConstructor().newInstance();
             else
-                Game.currentLevel = new Level(level, new ArrayList<>(), true, disableFriendlyFire);
+                try
+                {
+                    Game.currentLevel = (Level) Serializer.fromTanksON(level);
+                    Game.currentLevel.init(new ArrayList<>(), true, disableFriendlyFire);
+                }
+                catch (RuntimeException e)
+                {
+                    Game.currentLevel = new Level(level, new ArrayList<>(), true, disableFriendlyFire);
+                }
 
             Game.currentLevel.startTime = startTime;
             Game.currentLevel.loadLevel();

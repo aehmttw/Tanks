@@ -635,6 +635,12 @@ public class Level
                 setSolidTank((int) Double.parseDouble(tank[0]), (int) Double.parseDouble(tank[1]), true);
             }
         }
+
+        if (TankModels.tank != null && playerBuilds.isEmpty())
+        {
+            TankPlayer.ShopTankBuild tp = new TankPlayer.ShopTankBuild();
+            playerBuilds.add(tp);
+        }
     }
 
     protected static ArrayList<String> getJsonObjects(String s)

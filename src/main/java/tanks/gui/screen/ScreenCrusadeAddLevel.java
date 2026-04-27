@@ -4,6 +4,7 @@ import tanks.Crusade;
 import tanks.Game;
 import tanks.gui.Button;
 import tanks.gui.SavedFilesList;
+import tanks.tankson.Serializer;
 
 public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
 {
@@ -34,7 +35,14 @@ public class ScreenCrusadeAddLevel extends ScreenPlaySavedLevels
                 if (Game.loadLevel(file, s))
                 {
                     s.level.buildOverrides.addAll(Game.currentLevel.playerBuilds);
-                    s.level.levelString = Game.currentLevel.levelString;
+                    try
+                    {
+                        s.level.levelString = Serializer.toTanksON(Serializer.fromTanksON(Game.currentLevel.levelString));
+                    }
+                    catch (RuntimeException e)
+                    {
+                        s.level.levelString = Game.currentLevel.levelString;
+                    }
                     s.level.tanks.addAll(Game.currentLevel.customTanks);
                     Game.screen = s;
                 }

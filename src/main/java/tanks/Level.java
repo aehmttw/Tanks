@@ -8,8 +8,7 @@ import tanks.gui.screen.leveleditor.selector.SelectorTeam;
 import tanks.item.Item;
 import tanks.network.ServerHandler;
 import tanks.network.event.*;
-import tanks.obstacle.Obstacle;
-import tanks.obstacle.ObstacleBeatBlock;
+import tanks.obstacle.*;
 import tanks.registry.RegistryTank;
 import tanks.tank.*;
 import tanks.tankson.*;
@@ -1284,5 +1283,161 @@ public class Level
         }
 
         return out.substring(1);
+    }
+
+    public String save()
+    {
+        this.obstaclesIR.clear();
+        this.tanksIR.clear();
+        ArrayList<Obstacle> unmarked = (ArrayList<Obstacle>) Game.obstacles.clone();
+        String[][][] obstacles = new String[Game.registryObstacle.obstacleEntries.size()][this.sizeX][this.sizeY];
+
+        for (int h = 0; h < Game.registryObstacle.obstacleEntries.size(); h++)
+        {
+            for (int i = 0; i < Game.obstacles.size(); i++)
+            {
+                Obstacle o = Game.obstacles.get(i);
+                int x = (int) (o.posX / Game.tile_size);
+                int y = (int) (o.posY / Game.tile_size);
+
+                if (x < obstacles[h].length && x >= 0 && y < obstacles[h][0].length && y >= 0 && o.name.equals(Game.registryObstacle.getEntry(h).name))
+                {
+                    obstacles[h][x][y] = o.getMetadata();
+
+                    unmarked.remove(o);
+                }
+            }
+
+            //compression
+            for (int i = 0; i < this.sizeX; i++)
+            {
+                for (int j = 0; j < this.sizeY; j++)
+                {
+                    if (obstacles[h][i][j] != null)
+                    {
+                        String stack = obstacles[h][i][j];
+
+                        int xLength = 0;
+
+                        while (true)
+                        {
+                            xLength += 1;
+
+                            if (i + xLength >= obstacles[h].length)
+                                break;
+                            else if (!Objects.equals(obstacles[h][i + xLength][j], stack))
+                                break;
+                        }
+
+
+                        int yLength = 0;
+
+                        while (true)
+                        {
+                            yLength += 1;
+
+                            if (j + yLength >= obstacles[h][0].length)
+                                break;
+                            else if (!Objects.equals(obstacles[h][i][j + yLength], stack))
+                                break;
+                        }
+
+                        String name = "";
+                        String obsName = Game.registryObstacle.obstacleEntries.get(h).name;
+
+                        if (!obsName.equals("normal") || !stack.equals("1.0"))
+                            name = obsName;
+
+                        if (xLength >= yLength)
+                        {
+                            ArrayList<String> obs = new ArrayList<>();
+                            if (xLength == 1)
+                            {
+                                obs.add(Integer.toString(i));
+                                obs.add(Integer.toString(j));
+                                obs.add(name);
+                            }
+                            else
+                            {
+                                obs.add(Integer.toString(i) + ":" + Integer.toString(i + xLength - 1));
+                                obs.add(Integer.toString(j));
+                                obs.add(name);
+                            }
+
+                            if (!stack.isEmpty())
+                                obs.add(stack);
+
+                            this.obstaclesIR.add(obs);
+
+                            for (int z = 0; z < xLength; z++)
+                            {
+                                obstacles[h][i + z][j] = null;
+                            }
+                        }
+                        else
+                        {
+                            ArrayList<String> obs = new ArrayList<>();
+                            obs.add(Integer.toString(i));
+                            obs.add(Integer.toString(j) + ":" + Integer.toString(j + yLength - 1));
+                            obs.add(name);
+
+                            if (!stack.isEmpty())
+                                obs.add(stack);
+
+                            this.obstaclesIR.add(obs);
+
+                            for (int z = 0; z < yLength; z++)
+                            {
+                                obstacles[h][i][j + z] = null;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Obstacle obstacle: unmarked)
+        {
+            ArrayList<String> obs = new ArrayList<>();
+            obs.add(Integer.toString((int) (obstacle.posX / Game.tile_size)));
+            obs.add(Integer.toString((int) (obstacle.posY / Game.tile_size)));
+            obs.add(obstacle.name);
+
+            if (obstacle instanceof ObstacleUnknown && ((ObstacleUnknown) obstacle).metadata != null)
+                obs.add(((ObstacleUnknown) obstacle).metadata);
+            else
+            {
+                String meta = obstacle.getMetadata();
+                if (!meta.isEmpty())
+                    obs.add(meta);
+            }
+
+
+            this.obstaclesIR.add(obs);
+        }
+
+        for (int i = 0; i < Game.movables.size(); i++)
+        {
+            if (Game.movables.get(i) instanceof Tank)
+            {
+                Tank t = (Tank) Game.movables.get(i);
+                int x = (int) (t.posX / Game.tile_size);
+                int y = (int) (t.posY / Game.tile_size);
+                int angle = (int) (t.angle * 2 / Math.PI);
+
+                ArrayList<String> tank = new ArrayList<>();
+                tank.add(Integer.toString(x));
+                tank.add(Integer.toString(y));
+                tank.add(t.name);
+                tank.add(Integer.toString(angle));
+
+                if (t.team != null)
+                    tank.add(t.team.name);
+
+                this.tanksIR.add(tank);
+            }
+        }
+
+        return Serializer.toTanksON(this);
     }
 }

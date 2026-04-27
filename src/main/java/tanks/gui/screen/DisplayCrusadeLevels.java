@@ -7,6 +7,7 @@ import tanks.rendering.StaticTerrainRenderer;
 import tanks.rendering.TerrainRenderer;
 import tanks.tank.TankAIControlled;
 import tanks.tank.TankSpawnMarker;
+import tanks.tankson.Serializer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,7 +90,19 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         Game.cleanUp();
 
-        l.level = new Level(l.levelString, l.tanks);
+        try
+        {
+            l.level = (Level) Serializer.fromTanksON(l.levelString);
+            l.level.init(l.tanks);
+            l.level.levelString = l.levelString;
+        }
+        catch (RuntimeException e)
+        {
+            if (l.levelString.equals("{")) {
+                System.out.println("Whiskey Tango Foxtrot!");
+            }
+            l.level = new Level(l.levelString, l.tanks);
+        }
 
         if (!l.isTransition)
             addTransitionLevels(l);

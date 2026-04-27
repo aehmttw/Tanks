@@ -98,9 +98,6 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
         }
         catch (RuntimeException e)
         {
-            if (l.levelString.equals("{")) {
-                System.out.println("Whiskey Tango Foxtrot!");
-            }
             l.level = new Level(l.levelString, l.tanks);
         }
 

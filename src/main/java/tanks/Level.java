@@ -510,7 +510,8 @@ public class Level
         this.disableFriendlyFire = disableFriendlyFire;
         this.customTanks.addAll(customTanks);
 
-        if (teamsMap.isEmpty()) {
+        if (teamsMap.isEmpty())
+        {
             if (disableFriendlyFire)
             {
                 teamsMap.put("ally", Game.playerTeamNoFF);

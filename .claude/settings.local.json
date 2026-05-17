@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew clean:*)",
+      "Bash(python3:*)",
+      "WebSearch",
+      "WebFetch(domain:checkstyle.org)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:checkstyle.sourceforge.io)",
+      "Bash(./gradlew checkstyleMain:*)",
+      "Bash(./gradlew lineCount:*)",
+      "Bash(./gradlew lintCount:*)",
+      "Bash(find:*)",
+      "Bash(./gradlew compuleCheckstyleChecksJava)",
+      "Bash(head:*)",
+      "WebFetch(domain:www.jetbrains.com)"
+    ]
+  }
+}

@@ -74,6 +74,10 @@ public class ScreenLanguage extends Screen
             changeLanguage(new Translation("zhcn.lang"))
         ));
 
+        languages.buttons.add(4, new Button(0, 0, 350, 40, "हिन्दी", () ->
+            changeLanguage(new Translation("hi.lang"))
+        ));
+
         languages.sortButtons();
     }
 

@@ -34,7 +34,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void fillGlow(double x, double y, double sX, double sY, boolean shade, boolean light)
     {
-        if (this.window.drawingShadow)
+        if (this.window.mainRenderPasses.drawingShadow)
             return;
 
         x += sX / 2;
@@ -194,7 +194,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
     {
-        if (this.window.drawingShadow)
+        if (this.window.mainRenderPasses.drawingShadow)
             return;
 
         if (depthTest)
@@ -337,7 +337,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void fillFacingGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
     {
-        if (this.window.drawingShadow)
+        if (this.window.mainRenderPasses.drawingShadow)
             return;
 
         if (depthTest)
@@ -898,7 +898,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled)
     {
-        if (this.window.drawingShadow)
+        if (this.window.mainRenderPasses.drawingShadow)
             return;
 
         if (!this.window.textures.containsKey(image))
@@ -941,7 +941,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void drawImage(double x, double y, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled)
     {
-        if (this.window.drawingShadow)
+        if (this.window.mainRenderPasses.drawingShadow)
             return;
 
         if (!this.window.textures.containsKey(image))
@@ -989,7 +989,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, boolean scaled, boolean depthtest)
     {
-        if (this.window.drawingShadow)
+        if (this.window.mainRenderPasses.drawingShadow)
             return;
 
         if (!this.window.textures.containsKey(image))
@@ -1042,7 +1042,7 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void drawImage(double x, double y, double z, double sX, double sY, double u1, double v1, double u2, double v2, String image, double rotation, boolean scaled, boolean depthtest)
     {
-        if (this.window.drawingShadow)
+        if (this.window.mainRenderPasses.drawingShadow)
             return;
 
         if (!this.window.textures.containsKey(image))

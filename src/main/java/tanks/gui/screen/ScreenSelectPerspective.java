@@ -115,7 +115,11 @@ public class ScreenSelectPerspective extends Screen implements ILevelPreviewScre
 
         Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(this.centerX, this.centerY, this.objXSpace * 2, this.objYSpace * 9);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

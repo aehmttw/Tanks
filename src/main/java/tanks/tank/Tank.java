@@ -905,7 +905,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
 		if (this.currentlyVisible || this.destroy)
 		{
-			if (!Game.game.window.drawingShadow)
+			if (!Game.game.window.mainRenderPasses.drawingShadow)
 				drawAge += Panel.frameFrequency;
 
 			this.drawTank(false, Game.enable3d);

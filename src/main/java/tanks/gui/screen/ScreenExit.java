@@ -44,7 +44,7 @@ public class ScreenExit extends Screen
         Game.game.window.clipMultiplier = 2;
         Game.game.window.clipDistMultiplier = 1;
 
-        if (!Game.game.window.drawingShadow || !Game.shadowsEnabled)
+        if (!Game.game.window.mainRenderPasses.drawingShadow || !Game.shadowsEnabled)
             lastTime = System.currentTimeMillis();
 
         if (lastTime - startTime < outroTime + outroAnimationTime)

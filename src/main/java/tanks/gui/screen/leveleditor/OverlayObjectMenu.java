@@ -405,9 +405,9 @@ public class OverlayObjectMenu extends ScreenLevelEditorOverlay implements ITank
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         if (Game.screen != this)
             return;

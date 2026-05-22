@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 @TanksONable("bullet")
-public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
+public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable, IDrawableLightSource
 {
 	public static int currentID = 0;
 	public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -1802,4 +1802,21 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
 		Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
 	}
+
+    @Override
+    public boolean lit()
+    {
+        return true;
+    }
+
+    @Override
+    public double[] getLightInfo()
+    {
+        this.lightInfo[3] = this.size * 2 / Game.tile_size * (1 - Math.min(1, this.destroyTimer / maxDestroyTimer));
+        this.lightInfo[4] = this.baseColor.red;
+        this.lightInfo[5] = this.baseColor.green;
+        this.lightInfo[6] = this.baseColor.blue;
+
+        return this.lightInfo;
+    }
 }

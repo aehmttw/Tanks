@@ -69,9 +69,9 @@ public class OverlayLevelOptionsTimer extends ScreenLevelEditorOverlay
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
         this.seconds.draw();
         this.minutes.draw();
         this.back.draw();

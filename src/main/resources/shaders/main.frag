@@ -115,19 +115,20 @@ float rescale(float f)
 void main(void)
 {
     vec4 color = texture2D(tex, gl_TexCoord[0].st);
+    vec4 fragColor;
 
     if (texture)
     {
-        gl_FragColor = color * vertexColor;
+        fragColor = color * vertexColor;
 
         if (color.a <= 0.0)
-            discard;
+        discard;
     }
     else
-        gl_FragColor = vertexColor;
+        fragColor = vertexColor;
 
     if (vbo)
-        gl_FragColor *= originalColor;
+        fragColor *= originalColor;
 
     float maxLight = 1.0;
     float minLight = 0.0;
@@ -137,6 +138,8 @@ void main(void)
         maxLight = light * (1.0 - glow) + glowLight * glow;
         minLight = shade * (1.0 - glow) + glowShade * glow;
     }
+
+    float col = 1.0;
 
     if (shadow)
     {
@@ -148,40 +151,38 @@ void main(void)
         {
             bool lit = depthVec.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
 
-            float col;
-
-//            if (useNormal)
-//            {
-//                float d = dot(normal, lightVec);
-//
-//                if (negativeBrightness)
-//                {
-//                    if (d < minBrightness)
-//                    d = -1.0;
-//                    else if (d > maxBrightness)
-//                    d = 1.0;
-//                    else
-//                    d = 2.0 * (d - minBrightness) / (maxBrightness - minBrightness) - 1.0;
-//                }
-//                else
-//                {
-//                    if (d < minBrightness)
-//                    d = 0.0;
-//                    else if (d > maxBrightness)
-//                    d = 1.0;
-//                    else
-//                    d = (d - minBrightness) / (maxBrightness - minBrightness);
-//                }
-//
-//                if (celsections > 0.0)
-//                    d = float(int(celsections * d + celsections / 10.0)) / celsections;
-//
-//                col = getNormalLighting(minLight, maxLight, d);
-//
-//                if (!lit)
-//                    col = min(col, minLight);
-//            }
-//            else
+            //            if (useNormal)
+            //            {
+            //                float d = dot(normal, lightVec);
+            //
+            //                if (negativeBrightness)
+            //                {
+            //                    if (d < minBrightness)
+            //                    d = -1.0;
+            //                    else if (d > maxBrightness)
+            //                    d = 1.0;
+            //                    else
+            //                    d = 2.0 * (d - minBrightness) / (maxBrightness - minBrightness) - 1.0;
+            //                }
+            //                else
+            //                {
+            //                    if (d < minBrightness)
+            //                    d = 0.0;
+            //                    else if (d > maxBrightness)
+            //                    d = 1.0;
+            //                    else
+            //                    d = (d - minBrightness) / (maxBrightness - minBrightness);
+            //                }
+            //
+            //                if (celsections > 0.0)
+            //                    d = float(int(celsections * d + celsections / 10.0)) / celsections;
+            //
+            //                col = getNormalLighting(minLight, maxLight, d);
+            //
+            //                if (!lit)
+            //                    col = min(col, minLight);
+            //            }
+            //            else
             {
                 if (lit)
                     col = maxLight;
@@ -189,21 +190,22 @@ void main(void)
                     col = minLight;
             }
 
-            vec4 baseColor = vec4(gl_FragColor.xyz, 0.0);
 
-//            if (customLight)
-//                gl_FragColor.xyz *= (lightDiffuse * col + lightAmbient);
-//            else
-                gl_FragColor.xyz *= col;
+            vec4 baseColor = vec4(fragColor.xyz, 0.0);
 
-//            if (useNormal && lit)
-//            {
-//                vec3 cam = normalize((inverse(toMat3(gl_ProjectionMatrix)) * vec3(0, 0, 1)).xyz);
-//                vec3 h = normalize(cam + normalize(lightVec));
-//                float specular = pow(0.5 + dot(normalize(normal), h) / 2.0, shininess);
-//
-//                gl_FragColor.xyz += lightSpecular * specular;
-//            }
+            //            if (customLight)
+            //                fragColor.xyz *= (lightDiffuse * col + lightAmbient);
+            //            else
+//            fragColor.xyz *= col;
+
+            //            if (useNormal && lit)
+            //            {
+            //                vec3 cam = normalize((inverse(toMat3(gl_ProjectionMatrix)) * vec3(0, 0, 1)).xyz);
+            //                vec3 h = normalize(cam + normalize(lightVec));
+            //                float specular = pow(0.5 + dot(normalize(normal), h) / 2.0, shininess);
+            //
+            //                fragColor.xyz += lightSpecular * specular;
+            //            }
 
             /*float spotlightBrightness = 1.0;
             float spotlightDarkness = light * 4.0 - 3.0;
@@ -227,7 +229,7 @@ void main(void)
                 float cutoff = 0.01;
 
                 if (lw < cutoff * (pr.x * pr.x) || lw < cutoff * (pr.y * pr.y) || lw < cutoff * (pr.z * pr.z))
-                    continue;
+                continue;
 
                 float l = max(0.0, lw / (pow(pr.x, 2.0) + pow(pr.y, 2.0) + pow(pr.z, 2.0)));
                 l = max(0.0, (l - cutoff) / (1.0 - cutoff));
@@ -236,31 +238,42 @@ void main(void)
 
                 float uc = 0.35;
                 if (l > uc)
-                    l = uc + 1.0 - (1.0 / (1.0 + l - uc));
+                l = uc + 1.0 - (1.0 / (1.0 + l - uc));
                 extraLight += l * (texture2D(lightsTexture, vec2((float(i * c + 3)) / float(lightsTexSize), 0.0)));
             }
 
             vec4 extraLightSqrt = vec4(sqrt(extraLight.x), sqrt(extraLight.y), sqrt(extraLight.z), 0.0);
-            gl_FragColor += extraLightSqrt * baseColor;
+            fragColor += extraLightSqrt * baseColor;
 
             //float fogFrac = pow(max(0.0, min(1.0, (position.w / depth - 0.2) / 0.8)), 5.0);
-            //gl_FragColor.xyz = gl_FragColor.xyz * (1.0 - fogFrac) + vec3(0.8, 0.8, 0.8) * (fogFrac);
+            //fragColor.xyz = fragColor.xyz * (1.0 - fogFrac) + vec3(0.8, 0.8, 0.8) * (fogFrac);
         }
     }
     else
     {
         if (depthtest)
-            gl_FragColor.xyz *= maxLight;
+            fragColor.xyz *= maxLight;
+    }
+
+    if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
+    {
+        fragColor.rgb *= fragColor.a;
+        gl_FragData[0] = vec4(0.0);
+        gl_FragData[1] = fragColor;
+        gl_FragData[2] = vec4(0.0);
+    }
+    else
+    {
+        gl_FragData[0] = fragColor;
+        gl_FragData[1] = vec4(0.0, 0.0, 0.0, fragColor.a);
+        gl_FragData[2] = vec4(col, 0.0, 0.0, fragColor.a);
     }
 
 
-    if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
-        gl_FragColor.rgb *= gl_FragColor.a;
+    //fragColor.xyz = 0.5 + 100.0 * (fragColor.xyz - 0.5);
 
-    //gl_FragColor.xyz = 0.5 + 100.0 * (gl_FragColor.xyz - 0.5);
-
-   // gl_FragColor = vec4(vec3((1.0 - gl_FragCoord.z) * 500.0), 1.0);
-//    float diff = 1.0f - abs(dot(normal, normalize(inverse(toMat3(gl_ProjectionMatrix)) * vec3(0, 0, -1))));
-//    float elight = max(0, diff - edgeCutoff) / (1.0 - edgeCutoff);
-//    gl_FragColor.xyz *= 1 + elight * edgeLight;
+    // fragColor = vec4(vec3((1.0 - gl_FragCoord.z) * 500.0), 1.0);
+    //    float diff = 1.0f - abs(dot(normal, normalize(inverse(toMat3(gl_ProjectionMatrix)) * vec3(0, 0, -1))));
+    //    float elight = max(0, diff - edgeCutoff) / (1.0 - edgeCutoff);
+    //    fragColor.xyz *= 1 + elight * edgeLight;
 }

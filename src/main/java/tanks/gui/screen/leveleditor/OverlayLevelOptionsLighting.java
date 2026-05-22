@@ -68,9 +68,9 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
         this.light.draw();
         this.shadow.draw();
         this.back.draw();

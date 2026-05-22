@@ -244,11 +244,11 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
     }
 
     @Override
-    public void draw()
+    public void drawUI()
     {
         if (this.objectEditorScreen != null)
         {
-            this.objectEditorScreen.draw();
+            this.objectEditorScreen.drawUI();
 
             if (this.objectEditorScreen.currentTab == null)
             {
@@ -266,7 +266,7 @@ public class ScreenEditorItem extends ScreenEditorTanksONable<Item.ItemStack<?>>
             this.itemTabButton.draw();
         }
         else
-            super.draw();
+            super.drawUI();
 
         if (this.showLoadFromTemplate)
             load.draw();

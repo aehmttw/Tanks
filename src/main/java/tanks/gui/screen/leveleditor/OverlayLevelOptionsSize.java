@@ -73,9 +73,9 @@ public class OverlayLevelOptionsSize extends ScreenLevelEditorOverlay
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
         this.sizeY.draw();
         this.sizeX.draw();
         this.back3.draw();

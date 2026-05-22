@@ -241,7 +241,7 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
         {
             this.background.draw();
 
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 Game.game.window.clearDepth();
 
             Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);

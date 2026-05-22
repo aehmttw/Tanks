@@ -173,7 +173,7 @@ public class SelectorDrawable extends Button
         }
         else if (this.bulletEffect != null)
         {
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 this.bulletEffect.drawForInterface(this.posX, this.sizeX * 0.8, this.posY, Bullet.bullet_size, this.effects, this.removeEffects);
         }
     }

@@ -234,7 +234,11 @@ public class ScreenAddSavedItem extends Screen implements IBlankBackgroundScreen
     {
         Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         items.draw();
         quit.draw();
         search.draw();

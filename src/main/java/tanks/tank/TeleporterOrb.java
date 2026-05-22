@@ -85,25 +85,25 @@ public class TeleporterOrb extends Movable
 			}
 		}
 
-		//Drawing.drawing.setColor(255, 255, 255);
-		Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac);
-
-		if (Game.enable3d)
-			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2 * endFrac, (this.size - this.tank.size) / 2 * endFrac, true, true);
-
-		for (int i = 0; i < (this.size - this.tank.size) * endFrac; i++)
-		{
-			Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac, 20);
-			//Drawing.drawing.setColor(255, 255, 255, 20);
-
-			if (Game.enable3d)
-				Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i, false, true);
-			else
-				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
-		}
-
-		//if (this.tank.size == 0)
-		//	Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.glow));
+//		//Drawing.drawing.setColor(255, 255, 255);
+//		Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac);
+//
+//		if (Game.enable3d)
+//			Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, (this.size - this.tank.size) / 2 * endFrac, (this.size - this.tank.size) / 2 * endFrac, true, true);
+//
+//		for (int i = 0; i < (this.size - this.tank.size) * endFrac; i++)
+//		{
+//			Drawing.drawing.setColor(this.tank.color.red * (1 - frac) + 255 * frac, this.tank.color.green * (1 - frac) + 255 * frac, this.tank.color.blue * (1 - frac) + 255 * frac, 20);
+//			//Drawing.drawing.setColor(255, 255, 255, 20);
+//
+//			if (Game.enable3d)
+//				Drawing.drawing.fillOval(this.posX, this.posY, this.posZ, i, i, false, true);
+//			else
+//				Drawing.drawing.fillOval(this.posX, this.posY, i, i);
+//		}
+//
+//		//if (this.tank.size == 0)
+//		//	Game.effects.add(Effect.createNewEffect(this.posX, this.posY, this.posZ, Effect.EffectType.glow));
 	}
 	
 	@Override
@@ -260,7 +260,9 @@ public class TeleporterOrb extends Movable
 			this.lastTrailPitch = this.getPolarPitch();
 
 		this.trailSet[0].frontColor.set(tank.color);
+        this.trailSet[0].frontColor.alpha *= 0.99;
 		this.trailSet[1].frontColor.set(tank.secondaryColor);
+        this.trailSet[1].frontColor.alpha *= 0.99;
 
 		int i = 0;
 		for (Trail t : this.trailSet)

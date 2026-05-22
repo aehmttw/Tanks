@@ -109,7 +109,7 @@ public class InputSelector implements IDrawable, ITrigger
 			else
 				Button.drawGlow(q3, this.posY + 5, this.sizeX / 2 - this.sizeY * (1 - m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
 
-			if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
+			if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.mainRenderPasses.drawingShadow)
 			{
 				for (Effect e : this.glowEffects)
 				{
@@ -239,7 +239,7 @@ public class InputSelector implements IDrawable, ITrigger
 			}
 		}
 
-		if (Game.glowEnabled && !Game.game.window.drawingShadow)
+		if (Game.glowEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
 		{
 			if (this.lastFrame < Panel.panel.ageFrames - 1)
 				this.glowEffects.clear();

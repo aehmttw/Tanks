@@ -758,7 +758,7 @@ public class Panel
 
 	public void draw()
 	{
-		if ((Game.game.window.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
+		if ((Game.game.window.mainRenderPasses.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
 			this.age += Panel.frameFrequency;
 
 		while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.drawing.getTrackOffset())
@@ -768,7 +768,7 @@ public class Panel
 			Panel.panel.pastPlayerTime.remove(0);
 		}
 
-		if (continuation != null && Game.game.window.drawingShadow)
+		if (continuation != null && Game.game.window.mainRenderPasses.drawingShadow)
 			return;
 
 		if (continuation == null)
@@ -823,10 +823,10 @@ public class Panel
 
 			Game.screen.setupLights();
 
-			if (Game.fancyLights)
-				Game.game.window.createLights(this.lights, Drawing.drawing.scale);
+//			if (Game.fancyLights)
+//				Game.game.window.createLights(this.lights, Drawing.drawing.scale);
 
-			if (!Game.game.window.drawingShadow)
+			if (!Game.game.window.mainRenderPasses.drawingShadow)
 			{
 				long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
 				if (lastFrameSec < time && lastFrameSec != firstFrameSec)
@@ -844,102 +844,108 @@ public class Panel
 			}
 		}
 
-		if (onlinePaused)
-			this.onlineOverlay.draw();
-		else
-		{
-			try
-			{
+        if (!onlinePaused)
+        {
+            try
+            {
                 if (Game.screen.interfaceScaleZoomOverride > 0)
                     Drawing.drawing.interfaceScaleZoom = Game.screen.interfaceScaleZoomOverride;
                 else
                     Drawing.drawing.interfaceScaleZoom = Drawing.drawing.interfaceScaleZoomDefault;
                 Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
 
-				Game.screen.draw();
+                Game.screen.draw();
 
-				this.continuation = null;
-				this.continuationMusic = false;
-			}
-			catch (LoadingTerrainContinuation c)
-			{
-				if (this.continuation == null)
-					this.continuationStartTime = System.currentTimeMillis();
+                this.continuation = null;
+                this.continuationMusic = false;
+            }
+            catch (LoadingTerrainContinuation c)
+            {
+                if (this.continuation == null)
+                    this.continuationStartTime = System.currentTimeMillis();
 
-				if (System.currentTimeMillis() - continuationStartTime > 500 && !continuationMusic)
-				{
-					Drawing.drawing.playMusic("waiting_music.ogg", Game.musicVolume, true, Game.screen.musicID, 500);
-					continuationMusic = true;
-					forceRefreshMusic = true;
-				}
-				this.continuation = c;
+                if (System.currentTimeMillis() - continuationStartTime > 500 && !continuationMusic)
+                {
+                    Drawing.drawing.playMusic("waiting_music.ogg", Game.musicVolume, true, Game.screen.musicID, 500);
+                    continuationMusic = true;
+                    forceRefreshMusic = true;
+                }
+                this.continuation = c;
 
-				Drawing.drawing.setColor(235, 207, 166);
-				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+                Drawing.drawing.setColor(235, 207, 166);
+                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
-				Drawing.drawing.setColor(0, 0, 0);
-				Drawing.drawing.setInterfaceFontSize(24);
-				Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
-				Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
+                Drawing.drawing.setColor(0, 0, 0);
+                Drawing.drawing.setInterfaceFontSize(24);
+                Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
+                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
 
-				if (System.currentTimeMillis() - continuationStartTime > 500)
-				{
-					double time = 1.0 * (System.currentTimeMillis() - continuationStartTime) / c.renderer.stagedCount * (c.renderer.totalObjectsCount - c.renderer.stagedCount);
+                if (System.currentTimeMillis() - continuationStartTime > 500)
+                {
+                    double time = 1.0 * (System.currentTimeMillis() - continuationStartTime) / c.renderer.stagedCount * (c.renderer.totalObjectsCount - c.renderer.stagedCount);
 
-					if (time <= 50)
-						Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "Just a moment...");
-					else
-						Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left", Game.timeInterval(0, (long) time + 1000, true));
-				}
+                    if (time <= 50)
+                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "Just a moment...");
+                    else
+                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left", Game.timeInterval(0, (long) time + 1000, true));
+                }
 
-				Drawing.drawing.setColor(255, 255, 255);
-				Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
-				Drawing.drawing.setColor(0, 0, 0, 127);
-				Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
-			}
-		}
+                Drawing.drawing.setColor(255, 255, 255);
+                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
+                Drawing.drawing.setColor(0, 0, 0, 127);
+                Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
+            }
+        }
+    }
 
-		ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
+    public void drawUI()
+    {
+        Game.screen.drawUI();
 
-		if (!(Game.screen instanceof ScreenExit || Game.screen instanceof ScreenIntro))
-		{
-			Drawing.drawing.terrainRenderer.allowPartialLoading = true;
-			this.drawBar();
-		}
+        if (onlinePaused)
+            this.onlineOverlay.draw();
 
-		if (!notifications.isEmpty())
-		{
-			double sy = 0;
-			for (int i = 0; i < notifications.size(); i++)
-			{
-				Notification n = notifications.get(i);
-				if (i > 0)
-					n.age = Math.max(0, Math.min(n.age, notifications.get(i-1).age - 25));
-				sy += n.draw(sy);
+        ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 
-				if (notifications.get(i).age > notifications.get(i).duration + notifications.get(i).removeDuration)
-				{
-					notifications.remove(i);
-					i--;
-				}
-			}
-		}
+        if (!(Game.screen instanceof ScreenExit || Game.screen instanceof ScreenIntro))
+        {
+            Drawing.drawing.terrainRenderer.allowPartialLoading = true;
+            this.drawBar();
+        }
 
-		if (currentMessage != null)
-			currentMessage.draw();
+        if (!notifications.isEmpty())
+        {
+            double sy = 0;
+            for (int i = 0; i < notifications.size(); i++)
+            {
+                Notification n = notifications.get(i);
+                if (i > 0)
+                    n.age = Math.max(0, Math.min(n.age, notifications.get(i-1).age - 25));
+                sy += n.draw(sy);
 
-		if (Drawing.drawing.tooltip != null)
-			Drawing.drawing.drawTooltip(Drawing.drawing.tooltip, Drawing.drawing.getInterfaceMouseX(), Drawing.drawing.getInterfaceMouseY());
+                if (notifications.get(i).age > notifications.get(i).duration + notifications.get(i).removeDuration)
+                {
+                    notifications.remove(i);
+                    i--;
+                }
+            }
+        }
 
-		Drawing.drawing.tooltip = null;
+        if (currentMessage != null)
+            currentMessage.draw();
 
-		if (Game.screen.showDefaultMouse)
-			this.drawMouseTarget();
+        if (Drawing.drawing.tooltip != null)
+            Drawing.drawing.drawTooltip(Drawing.drawing.tooltip, Drawing.drawing.getInterfaceMouseX(), Drawing.drawing.getInterfaceMouseY());
 
-		if (!Game.screen.drawDebugInternally)
-			DebugKeybinds.renderDebugging();
+        Drawing.drawing.tooltip = null;
 
-		Drawing.drawing.setColor(255, 255, 255);
+        if (Game.screen.showDefaultMouse)
+            this.drawMouseTarget();
+
+        if (!Game.screen.drawDebugInternally)
+            DebugKeybinds.renderDebugging();
+
+        Drawing.drawing.setColor(255, 255, 255);
         Game.screen.drawPostMouse();
     }
 

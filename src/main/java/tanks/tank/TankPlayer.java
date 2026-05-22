@@ -742,7 +742,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 		this.bufferCooldown = value;
 	}
 
-	@TanksONable("shop_build")
+    @TanksONable("shop_build")
 	public static class ShopTankBuild extends TankPlayer
 	{
 		@TankBuildProperty @Property(id = "price", name = "Price", category = general)

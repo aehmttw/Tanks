@@ -339,7 +339,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 		save.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
 				+ Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
 
-		if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
+		if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
 			this.fireworksDisplay.draw();
 
 		boolean skip = false;
@@ -455,7 +455,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 			}
 		}
 
-		if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
+		if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
 			Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
 	}
 }

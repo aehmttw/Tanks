@@ -565,6 +565,13 @@ public class ScreenAddSavedTank extends Screen implements IConditionalOverlayScr
         }
         else
             this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
+        if (this.drawBehindScreen)
+            ((Screen) this.tankScreen).drawUI();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 600);

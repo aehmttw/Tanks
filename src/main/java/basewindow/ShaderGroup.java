@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
  * passes, which can simplify rendering a bit.
  *
  * Switching between shader groups within the same render pass will transfer over
- * all uniforms which have matching names. This creates a sort of hierarchical
+ * all uniforms which come from the same class. This creates a sort of hierarchical
  * state where more specialized shaders can extend more base-level ones in order
  * to add more properties (uniforms, attributes) without disrupting the state of
  * the original shaders.
@@ -125,7 +125,7 @@ public abstract class ShaderGroup
         }
     }
 
-    public static abstract class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
+    public static abstract class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform> implements IGroupUniform
     {
         protected ShaderProgram.IMatrixUniform[] uniforms;
 
@@ -151,6 +151,8 @@ public abstract class ShaderGroup
     public static class Uniform1b extends GroupPrimitiveUniform<Boolean, ShaderProgram.Uniform1b> { }
 
     public static class Uniform1i extends GroupPrimitiveUniform<Integer, ShaderProgram.Uniform1i> { }
+
+    public static class UniformSampler2D extends GroupPrimitiveUniform<Integer, ShaderProgram.UniformSampler2D> { }
 
     public static class Uniform2i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform2i> { }
 

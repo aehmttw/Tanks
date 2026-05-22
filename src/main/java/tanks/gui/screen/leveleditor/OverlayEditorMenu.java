@@ -79,14 +79,14 @@ public class OverlayEditorMenu extends ScreenLevelEditorOverlay
         }
     }
 
-    public void draw()
+    public void drawUI()
     {
         if (Level.isDark())
             this.editor.fontBrightness = 255;
         else
             this.editor.fontBrightness = 0;
 
-        super.draw();
+        super.drawUI();
 
         if (editor.level.editable)
         {

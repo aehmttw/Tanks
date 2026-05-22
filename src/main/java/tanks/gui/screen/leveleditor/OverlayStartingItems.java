@@ -102,9 +102,9 @@ public class OverlayStartingItems extends ScreenLevelEditorOverlay implements IC
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         if (Game.screen != this)
             return;

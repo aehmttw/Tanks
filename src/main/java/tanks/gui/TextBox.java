@@ -191,7 +191,7 @@ public class TextBox implements IDrawable, ITrigger
 
 		if (enableHover)
 		{
-			if (Game.glowEnabled && !Game.game.window.drawingShadow)
+			if (Game.glowEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
 			{
 				if (infoSelected && !Game.game.window.touchscreen)
 				{
@@ -323,7 +323,7 @@ public class TextBox implements IDrawable, ITrigger
 			this.checkKeys();
 		}
 
-		if (Game.glowEnabled && !Game.game.window.drawingShadow)
+		if (Game.glowEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
 		{
 			if (this.lastFrame < Panel.panel.ageFrames - 1)
 				this.glowEffects.clear();

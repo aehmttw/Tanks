@@ -46,9 +46,9 @@ public class OverlayPlayerItems extends ScreenLevelEditorOverlay
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         int sX = (int) (800 * this.objWidth / 350);

@@ -1,7 +1,6 @@
 package basewindow;
 
 import basewindow.transformation.*;
-import lwjglwindow.RenderPassDraw;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,8 +101,6 @@ public abstract class BaseWindow
 
     public boolean antialiasingSupported = false;
     public boolean antialiasingEnabled = false;
-
-    public boolean drawingShadow = false;
 
     public static final HashMap<Integer, String> keyNames = new HashMap<>();
 
@@ -206,6 +203,8 @@ public abstract class BaseWindow
 
     public abstract void getProjectionMatrix(float[] proj);
 
+    public abstract Matrix4 getProjectionMatrix();
+
     public abstract void clearColor();
 
     public abstract void clearDepth();
@@ -291,6 +290,10 @@ public abstract class BaseWindow
     public abstract String screenshot(String dir, boolean async) throws IOException;
 
     public abstract void setForceModelGlow(boolean glow);
+
+    public abstract void enableBackFaceCulling();
+
+    public abstract void disableBackFaceCulling();
 
     /**
      * Switches the current shader program used to draw things.

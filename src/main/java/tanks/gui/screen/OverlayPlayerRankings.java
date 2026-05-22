@@ -27,7 +27,7 @@ public class OverlayPlayerRankings
 
     public void draw()
     {
-        if (Game.game.window.drawingShadow)
+        if (Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
         minCooldown -= Panel.frameFrequency;

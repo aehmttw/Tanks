@@ -236,7 +236,7 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             Tank t = screen.target.get();
             Bullet bullet = screen.target.get().getBullet();
 
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, t.color, t.secondaryColor);
             super.draw();
         }

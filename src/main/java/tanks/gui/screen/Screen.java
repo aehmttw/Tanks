@@ -46,7 +46,6 @@ public abstract class Screen implements IBatchRenderableObject
 	public double interfaceScaleZoomOverride = -1;
 
 	protected boolean redrawn = false;
-	public boolean splitTiles = false;
 	public boolean drawn = false;
 
 	public IBatchRenderableObject[][] tiles;
@@ -76,6 +75,11 @@ public abstract class Screen implements IBatchRenderableObject
 	public abstract void update();
 
 	public abstract void draw();
+
+    public void drawUI()
+    {
+
+    }
 
 	public void drawPostMouse()
 	{
@@ -190,21 +194,6 @@ public abstract class Screen implements IBatchRenderableObject
     {
 
     }
-
-    public static class FlashingTile implements IBatchRenderableObject
-	{
-		public boolean redrawn = false;
-		public int posX;
-		public int posY;
-
-		public double flash;
-
-		public FlashingTile(int x, int y)
-		{
-			this.posX = x;
-			this.posY = y;
-		}
-	}
 
 	/** Setup all light info in Panel.lights to be sent to the shader */
 	public void setupLights()

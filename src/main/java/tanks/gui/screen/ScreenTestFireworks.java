@@ -54,7 +54,7 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Fireworks!!!");
 
-        if (!Game.game.window.drawingShadow)
+        if (!Game.game.window.mainRenderPasses.drawingShadow)
             fireworksDisplay.draw();
 
         fireworksMode.draw();

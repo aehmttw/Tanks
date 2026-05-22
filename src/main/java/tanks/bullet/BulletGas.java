@@ -350,4 +350,26 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
             Game.effects.add(e);
         }
     }
+
+
+    @Override
+    public double[] getLightInfo()
+    {
+        double rawOpacity = (1.0 - (this.age) / lifespan);
+        rawOpacity *= rawOpacity * this.frameDamageMultipler;
+        double opacity = Math.min(rawOpacity * 255 * this.opacity, 254) * (1 - this.destroyTimer / this.maxDestroyTimer);
+
+        double frac = 1;
+        if (this.lifespan > 0)
+            frac = Math.max(0, 1 - this.age / this.lifespan);
+        else
+            opacity = Math.min(255 * this.opacity, 254) * (1 - this.destroyTimer / this.maxDestroyTimer);
+
+        this.lightInfo[3] = this.size / Game.tile_size;
+        this.lightInfo[4] = (this.startColor.red * frac + this.endColor.red * (1 - frac)) * (opacity / 255);
+        this.lightInfo[5] = (this.startColor.green * frac + this.endColor.green * (1 - frac)) * (opacity / 255);
+        this.lightInfo[6] = (this.startColor.blue * frac + this.endColor.blue * (1 - frac)) * (opacity / 255);
+
+        return this.lightInfo;
+    }
 }

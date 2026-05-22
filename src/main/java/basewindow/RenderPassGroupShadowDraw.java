@@ -1,7 +1,6 @@
 package basewindow;
 
 import lwjglwindow.FrameBuffer;
-import lwjglwindow.RenderPassDraw;
 
 public class RenderPassGroupShadowDraw
 {
@@ -9,6 +8,21 @@ public class RenderPassGroupShadowDraw
     public RenderPassShadowMap shadowPass;
     public RenderPassDraw drawPass;
     public ShaderGroupShadowDraw shaderGroup;
+
+    /**
+     * If set, will draw to framebuffer instead of drawing to the screen.
+     * Textures from the framebuffer will be bound to "image" and "depth" names.
+     */
+    public boolean drawToFramebuffer = false;
+
+    /** Set if we are sampling depth maps only, for example, to see shadows cast by a light source */
+    public boolean drawingShadow = false;
+
+    /**
+     * How many render passes have run before this one this frame for the main drawing.
+     * Useful if you need to check if this is the first time something is being drawn this frame.
+     */
+    public int currentPassNumber = -1;
 
     public boolean shadowsEnabled = true;
     public double shadowQuality = 1.25;
@@ -71,9 +85,17 @@ public class RenderPassGroupShadowDraw
 
     public void draw()
     {
+        this.currentPassNumber = 0;
         if (shadowsEnabled)
+        {
+            this.drawingShadow = true;
             this.shadowPass.draw();
+            this.currentPassNumber++;
+        }
 
+        this.drawingShadow = false;
         this.drawPass.draw();
+
+        this.currentPassNumber = -1;
     }
 }

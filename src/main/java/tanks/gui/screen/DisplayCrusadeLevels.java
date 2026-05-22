@@ -182,7 +182,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         Game.game.window.loadPerspective();
 
-        if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
+        if (Game.game.window.mainRenderPasses.currentPassNumber == 0)
             this.age += Panel.frameFrequency;
 
         ArrayList<Movable> movables = Game.movables;
@@ -277,7 +277,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                 Game.game.window.addMatrix();
                 translation.apply();
 
-                if (Game.game.window.drawingShadow)
+                if (Game.game.window.mainRenderPasses.drawingShadow)
                 {
                     translation.x *= this.shadowScaleNum;
                     translation.y *= this.shadowScaleNum;

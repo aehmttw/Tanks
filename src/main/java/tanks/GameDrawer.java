@@ -1,12 +1,55 @@
 package tanks;
 
 import basewindow.IDrawer;
+import basewindow.RenderPass;
 import tanks.extension.Extension;
+import tanks.rendering.*;
 
 public class GameDrawer implements IDrawer
 {
-	@Override
-	public void draw()
+    public boolean initialized = false;
+    public RenderPassPostLights lightsPass;
+    public RenderPassUI uiPass;
+
+    public void initialize()
+    {
+        try
+        {
+            this.initialized = true;
+            Game.game.window.mainRenderPasses.drawToFramebuffer = true;
+            this.lightsPass = new RenderPassPostLights();
+
+            ShaderPostLights lightsShader = new ShaderPostLights(this.lightsPass);
+            this.lightsPass.lightsShader = lightsShader;
+            lightsShader.initialize();
+
+            ShaderPostLightingMix mixShader = new ShaderPostLightingMix(this.lightsPass);
+            this.lightsPass.mixShader = mixShader;
+            mixShader.initialize();
+
+            this.uiPass = new RenderPassUI();
+            this.uiPass.shaderUI = new ShaderGroupUI(uiPass);
+            this.uiPass.shaderUI.initialize();
+        }
+        catch (Exception e)
+        {
+            Game.exitToCrash(e);
+        }
+    }
+
+    @Override
+    public void draw()
+    {
+        if (!initialized)
+            this.initialize();
+
+        Game.game.window.mainRenderPasses.draw();
+        this.lightsPass.draw();
+        this.uiPass.draw();
+    }
+
+    @Override
+	public void drawSinglePass(RenderPass rp)
 	{
 		try
 		{

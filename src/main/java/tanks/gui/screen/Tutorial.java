@@ -254,7 +254,7 @@ public class Tutorial extends Minigame
 
     public void drawTutorial()
     {
-        if (ScreenGame.finishedQuick || Game.game.window.drawingShadow)
+        if (ScreenGame.finishedQuick || Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
         if (step == 0)

@@ -245,7 +245,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         {
             Bullet bullet = screen.target.get();
 
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, Player.default_primary, Player.default_secondary);
 
             super.drawUIElements();
@@ -381,7 +381,7 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
         public void draw()
         {
             Bullet bullet = screen.target.get();
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
             {
                 bullet.drawForInterface(centerX, Drawing.drawing.interfaceSizeX * 0.6, centerY + objYSpace * 4, Math.min(100, bullet.size), effects, removeEffects, rand, Player.default_primary, Player.default_secondary);
             }
@@ -460,9 +460,9 @@ public class ScreenEditorBullet extends ScreenEditorTanksONable<Bullet>
     }
 
     @Override
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         if (this.target.get() != null)
             this.bulletTypes.draw();

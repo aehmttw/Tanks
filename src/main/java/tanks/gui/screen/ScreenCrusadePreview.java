@@ -310,7 +310,7 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
         {
             this.background.draw();
 
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 Game.game.window.clearDepth();
 
             double width = 0.7;

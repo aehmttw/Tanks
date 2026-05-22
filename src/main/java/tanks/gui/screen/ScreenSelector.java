@@ -224,7 +224,11 @@ public class ScreenSelector extends Screen implements IConditionalOverlayScreen,
             Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
             this.drawDefaultBackground();
         }
+    }
 
+    @Override
+    public void drawUI()
+    {
         quit.draw();
 
         if (!(iconColors != null && iconColors.colorSelector != null))

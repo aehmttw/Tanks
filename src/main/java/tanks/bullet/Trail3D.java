@@ -235,7 +235,7 @@ public class Trail3D extends Trail
 
     public void drawCap3D(double x, double y, double z, double width, double angle, double pitch)
     {
-        if (Game.game.window.drawingShadow)
+        if (Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
         rotations[0].angle = -(angle - Math.PI / 2);

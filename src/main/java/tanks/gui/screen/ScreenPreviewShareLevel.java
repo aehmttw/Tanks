@@ -131,7 +131,7 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
     {
         this.levelDisplay.draw();
 
-        if (showUI && !Game.game.window.drawingShadow)
+        if (showUI && !Game.game.window.mainRenderPasses.drawingShadow)
         {
             Panel.showMouseTarget = mouseTarget;
             Panel.showMouseTargetHeight = mouseTargetHeight;
@@ -142,7 +142,7 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
             Game.screen = new ScreenWaiting("Uploading level...");
         }
 
-        if (!hideUI && !Game.game.window.drawingShadow)
+        if (!hideUI && !Game.game.window.mainRenderPasses.drawingShadow)
         {
             this.back.draw();
             this.upload.draw();
@@ -154,7 +154,7 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
             }
         }
 
-        if (hideUI && !Game.game.window.drawingShadow)
+        if (hideUI && !Game.game.window.mainRenderPasses.drawingShadow)
             showUI = true;
     }
 

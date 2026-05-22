@@ -231,7 +231,11 @@ public class ScreenSelectorTankReference extends ScreenEditorTanksONable<ITankFi
     {
         Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(this.centerX, this.centerY, 1200, 660);
 

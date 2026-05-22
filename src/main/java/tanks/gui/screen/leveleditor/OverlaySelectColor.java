@@ -104,9 +104,9 @@ public class OverlaySelectColor extends ScreenLevelEditorOverlay
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(this.centerX, this.centerY, 800, 600);

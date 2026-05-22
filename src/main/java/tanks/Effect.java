@@ -486,7 +486,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
                 Drawing.drawing.fillRect(this.posX, this.posY, Obstacle.draw_size, Obstacle.draw_size);
             }
 
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 this.posZ -= Panel.frameFrequency / 2;
 
             this.color.set(Math.max(this.color.red - Panel.frameFrequency, 0), Math.max(this.color.green - Panel.frameFrequency, 0),
@@ -538,7 +538,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         }
         else if (this.type == EffectType.boostLight)
         {
-            if (Game.game.window.drawingShadow)
+            if (Game.game.window.mainRenderPasses.drawingShadow)
                 return;
 
             Drawing.drawing.setColor(255, 255, 255, 255, 1);

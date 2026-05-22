@@ -6,6 +6,7 @@ import org.lwjgl.opengl.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.EXTGeometryShader4.*;
 import static org.lwjgl.opengl.GL20.*;
@@ -124,7 +125,9 @@ public class ShaderUtil extends BaseShaderUtil
         Field[] programFields = program.getClass().getFields();
         Field[] groupFields = new Field[0];
         if (program.group != null)
+        {
             groupFields = program.group.getClass().getFields();
+        }
 
         Field[] fields = new Field[programFields.length + groupFields.length];
         System.arraycopy(programFields, 0, fields, 0, programFields.length);
@@ -269,6 +272,22 @@ public class ShaderUtil extends BaseShaderUtil
     }
 
     public static class LWJGLUniform1i extends LWJGLUniform implements ShaderProgram.Uniform1i
+    {
+        private int value = 0;
+
+        public void set(Integer i)
+        {
+            value = i;
+            GL20.glUniform1i(flag, i);
+        }
+
+        public Integer get()
+        {
+            return value;
+        }
+    }
+
+    public static class LWJGLUniformSampler2D extends LWJGLUniform implements ShaderProgram.UniformSampler2D
     {
         private int value = 0;
 
@@ -494,6 +513,17 @@ public class ShaderUtil extends BaseShaderUtil
     }
 
     public static class LWJGLGroupUniform1i extends ShaderGroup.Uniform1i implements LWJGLGroupUniform
+    {
+        @Override
+        public void instantiate(String name, int programID, int stage)
+        {
+            this.uniforms[stage] = new LWJGLUniform1i();
+            ((LWJGLUniform) this.uniforms[stage]).name = name;
+            ((LWJGLUniform) this.uniforms[stage]).programID = programID;
+        }
+    }
+
+    public static class LWJGLGroupUniformSampler2D extends ShaderGroup.UniformSampler2D implements LWJGLGroupUniform
     {
         @Override
         public void instantiate(String name, int programID, int stage)

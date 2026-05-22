@@ -1,7 +1,6 @@
-package lwjglwindow;
+package basewindow;
 
-import basewindow.RenderPass;
-import basewindow.RenderPassGroupShadowDraw;
+import org.lwjgl.opengl.GL11;
 
 public class RenderPassDraw extends RenderPass
 {
@@ -9,6 +8,8 @@ public class RenderPassDraw extends RenderPass
 
     public boolean initialized = false;
     protected float[] projMatrixShadow = new float[16];
+
+    public BaseFrameBuffer drawFrameBuffer;
 
     float[] biasMatrix = new float[]
     {
@@ -22,12 +23,30 @@ public class RenderPassDraw extends RenderPass
     {
         super(pg.window, "draw");
         this.passGroup = pg;
+        this.drawFrameBuffer = pg.window.createFrameBuffer();
+
+        // Main drawing
+        this.drawFrameBuffer.addColorTexture(pg.window, 3, false);
+
+        // Glow
+        this.drawFrameBuffer.addColorTexture(pg.window, 3, false);
+
+        // Light/shadow level
+        this.drawFrameBuffer.addColorTexture(pg.window, 1, false);
+
+        this.drawFrameBuffer.createDepthTexture(pg.window);
     }
 
     @Override
     public void draw()
     {
         super.draw();
+
+        if (this.passGroup.drawToFramebuffer)
+        {
+            this.drawFrameBuffer.resizeToWindow(this.window);
+            this.drawFrameBuffer.bind();
+        }
 
         this.window.getProjectionMatrix(projMatrixShadow);
 
@@ -44,8 +63,6 @@ public class RenderPassDraw extends RenderPass
             this.window.mainRenderPasses.setLighting(1.0, 1.0, 0.5, 1.0);
         }
 
-        this.window.drawingShadow = false;
-
         this.window.loadPerspective();
 
         this.window.shaderDefault.shaderBase.lightViewProjectionMatrix.set(projMatrixShadow, false);
@@ -57,7 +74,20 @@ public class RenderPassDraw extends RenderPass
         this.window.clearColor();
 
         this.passGroup.depthFrameBuffer.bindDepthTexture(1);
-        this.window.drawer.draw();
+        this.window.drawer.drawSinglePass(this);
+
+        this.window.stopFrameBuffer();
+
+        this.window.setShader(this.passGroup.shaderGroup);
+
+        if (this.passGroup.drawToFramebuffer)
+        {
+            this.drawFrameBuffer.bindColorTexture(this.window, 0, "image");
+            this.drawFrameBuffer.bindDepthTexture(this.window, "depth");
+
+            this.window.setColor(255, 255, 255);
+            this.window.shapeRenderer.drawImage(0, window.absoluteHeight, window.absoluteWidth, -window.absoluteHeight, "image", false);
+        }
 
         // Debug code: draw the depth texture
         /* this.window.textures.put("depth", this.window.defaultShadowPass.depthFrameBuffer.depthTexture.texture);

@@ -59,9 +59,9 @@ public class OverlaySelectTeam extends OverlaySelectChoice<Team>
     }
 
     @Override
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         int pageCount = this.selector.buttonList.rows * this.selector.buttonList.columns;
         for (int i = this.selector.buttonList.page * pageCount; i < (this.selector.buttonList.page + 1) * pageCount; i++)

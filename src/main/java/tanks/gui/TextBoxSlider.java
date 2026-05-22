@@ -92,7 +92,7 @@ public class TextBoxSlider extends TextBox
             else
                 Button.drawGlow(mid1, this.posY + 5, end1 - start1 - this.sizeY * (-m), this.sizeY * m, 0.6, 0, 0, 0, 100, false);
 
-            if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.drawingShadow)
+            if (this.lastFrame == Panel.panel.ageFrames - 1 && !Game.game.window.mainRenderPasses.drawingShadow)
             {
                 for (Effect e: this.glowEffects)
                 {

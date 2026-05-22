@@ -1,9 +1,9 @@
 package basewindow;
 
-public class ShaderBase extends ShaderProgram implements IBaseShader
+public class ShaderBase extends ShaderProgram implements IBaseShader, IBlendFuncShader, IDepthShader, IGlowShader, ITextureShader
 {
     public Uniform1b texture;
-    public Uniform1i depthTexture;
+    public UniformSampler2D depthTexture;
     public UniformMatrix4 biasMatrix;
     public UniformMatrix4 lightViewProjectionMatrix;
     //    public Uniform3f lightVec;
@@ -38,7 +38,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public Uniform1i lightsTexSize;
     public Uniform1i lightsTexture;
 
-    public Uniform1i tex;
+    public UniformSampler2D tex;
 
     public Uniform1i blendFunc;
 
@@ -88,5 +88,29 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public String toString()
     {
         return this.group.name + "/base";
+    }
+
+    @Override
+    public void setBlendFunc(int func)
+    {
+        this.blendFunc.set(func);
+    }
+
+    @Override
+    public void setDepthTest(boolean on)
+    {
+        this.depthtest.set(on);
+    }
+
+    @Override
+    public void setGlow(float glow)
+    {
+        this.glow.set(glow);
+    }
+
+    @Override
+    public void setTexture(boolean on)
+    {
+        this.texture.set(on);
     }
 }

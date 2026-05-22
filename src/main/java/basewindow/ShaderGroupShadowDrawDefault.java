@@ -2,7 +2,6 @@ package basewindow;
 
 public class ShaderGroupShadowDrawDefault extends ShaderGroupShadowDraw
 {
-
     public ShaderGroupShadowDrawDefault(BaseWindow w)
     {
         super(w, "default");

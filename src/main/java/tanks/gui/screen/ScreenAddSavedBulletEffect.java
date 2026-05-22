@@ -215,7 +215,7 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
 
         for (int i = Math.min(effects.page * effects.rows * effects.columns + effects.rows * effects.columns, effects.buttons.size()) - 1; i >= effects.page * effects.rows * effects.columns; i--)
         {
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
             {
                 Button b = effects.buttons.get(i);
                 ((BulletEffect) b.miscData.get("effect")).drawForInterface(b.posX, b.sizeX - b.sizeY, b.posY, Bullet.bullet_size,

@@ -178,9 +178,9 @@ public class OverlayPlayerBuilds extends ScreenLevelEditorOverlay implements IRe
     }
 
     @Override
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         if (Game.screen != this)
             return;

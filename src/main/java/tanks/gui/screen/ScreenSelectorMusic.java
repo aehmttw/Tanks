@@ -148,7 +148,11 @@ public class ScreenSelectorMusic extends Screen implements IConditionalOverlaySc
             Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
             this.drawDefaultBackground();
         }
+    }
 
+    @Override
+    public void drawUI()
+    {
         buttonList.draw();
 
         quit.draw();

@@ -754,11 +754,10 @@ public class Panel
             Drawing.drawing.playMusic(Game.screen.music, Game.musicVolume, true, Game.screen.musicID, fadeTime);
     }
 
-    public void draw()
-    {
-        if ((Game.game.window.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer &&
-            !ScreenPartyLobby.isClient)))
-            this.age += Panel.frameFrequency;
+	public void draw()
+	{
+		if ((Game.game.window.mainRenderPasses.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
+			this.age += Panel.frameFrequency;
 
         while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.drawing.getTrackOffset())
         {
@@ -767,8 +766,8 @@ public class Panel
             Panel.panel.pastPlayerTime.remove(0);
         }
 
-        if (continuation != null && Game.game.window.drawingShadow)
-            return;
+		if (continuation != null && Game.game.window.mainRenderPasses.drawingShadow)
+			return;
 
         if (continuation == null)
         {
@@ -825,19 +824,19 @@ public class Panel
 
             Game.screen.setupLights();
 
-            if (Game.fancyLights)
-                Game.game.window.createLights(this.lights, Drawing.drawing.scale);
+//			if (Game.fancyLights)
+//				Game.game.window.createLights(this.lights, Drawing.drawing.scale);
 
-            if (!Game.game.window.drawingShadow)
-            {
-                long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
-                if (lastFrameSec < time && lastFrameSec != firstFrameSec)
-                {
-                    lastFPS = (int) (frames * 1.0 * frameSampling);
-                    frames = 0;
-                    allocatedLastSecond = allocatedThisSecond;
-                    allocatedThisSecond = 0;
-                }
+			if (!Game.game.window.mainRenderPasses.drawingShadow)
+			{
+				long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
+				if (lastFrameSec < time && lastFrameSec != firstFrameSec)
+				{
+					lastFPS = (int) (frames * 1.0 * frameSampling);
+					frames = 0;
+					allocatedLastSecond = allocatedThisSecond;
+					allocatedThisSecond = 0;
+				}
 
                 lastFrameSec = time;
                 frames++;
@@ -846,9 +845,7 @@ public class Panel
             }
         }
 
-        if (onlinePaused)
-            this.onlineOverlay.draw();
-        else
+        if (!onlinePaused)
         {
             try
             {
@@ -878,14 +875,12 @@ public class Panel
                 this.continuation = c;
 
                 Drawing.drawing.setColor(235, 207, 166);
-                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
-                    Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
                 Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.setInterfaceFontSize(24);
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
-                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)",
-                    100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
+                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
 
                 if (System.currentTimeMillis() - continuationStartTime > 500)
                 {
@@ -894,17 +889,23 @@ public class Panel
                     if (time <= 50)
                         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "Just a moment...");
                     else
-                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left",
-                            Game.timeInterval(0, (long) time + 1000, true));
+                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left", Game.timeInterval(0, (long) time + 1000, true));
                 }
 
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
                 Drawing.drawing.setColor(0, 0, 0, 127);
-                Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5,
-                    1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
+                Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
             }
         }
+    }
+
+    public void drawUI()
+    {
+        Game.screen.drawUI();
+
+        if (onlinePaused)
+            this.onlineOverlay.draw();
 
         ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 
@@ -921,7 +922,7 @@ public class Panel
             {
                 Notification n = notifications.get(i);
                 if (i > 0)
-                    n.age = Math.max(0, Math.min(n.age, notifications.get(i - 1).age - 25));
+                    n.age = Math.max(0, Math.min(n.age, notifications.get(i-1).age - 25));
                 sy += n.draw(sy);
 
                 if (notifications.get(i).age > notifications.get(i).duration + notifications.get(i).removeDuration)

@@ -156,6 +156,8 @@ public abstract class ShaderProgram
         Integer get();
     }
 
+    public interface UniformSampler2D extends Uniform1i {}
+
     public interface Uniform2i extends IPrimitiveUniform<int[]>
     {
         void set(int i1, int i2);

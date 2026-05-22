@@ -2082,7 +2082,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 mul = 2;
 
             Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
-                mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+                    mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
         }
 
         this.drawDefaultBackground();
@@ -2132,7 +2132,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
             drawables[i].clear();
         }
+    }
 
+    public void drawUI()
+    {
         if (Level.isDark())
             Drawing.drawing.setColor(255, 255, 255, 64);
         else

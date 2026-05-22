@@ -95,6 +95,13 @@ public abstract class ScreenLevelEditorOverlay extends Screen implements ILevelP
         this.editor.draw();
     }
 
+    @Override
+    public void drawUI()
+    {
+//        windowTitle = (this.editor.allowClose ? "" : "*");
+        this.editor.drawUI();
+    }
+
     public ArrayList<TankSpawnMarker> getSpawns()
     {
         return editor.spawns;

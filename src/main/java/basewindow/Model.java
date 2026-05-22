@@ -321,7 +321,7 @@ public class Model implements IModel
                     int[] v3 = objToIndex(sections[3].split("/"));
                     int[] v4 = objToIndex(sections[4].split("/"));
                     this.addTriangle(shapes, v1, v2, v3);
-                    this.addTriangle(shapes, v1, v4, v3);
+                    this.addTriangle(shapes, v1, v3, v4);
                 }
                 else if (sections.length == 4)
                 {

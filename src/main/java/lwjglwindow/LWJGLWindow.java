@@ -689,14 +689,6 @@ public class LWJGLWindow extends BaseWindow
 
 		buf.flip();
 
-        if (this.currentShaderStage.shader instanceof ShaderBase)
-        {
-            ShaderBase sb = (ShaderBase) this.currentShaderStage.shader;
-            sb.lightsCount.set(lights.size());
-            sb.lightsTexSize.set(p);
-            sb.scale.set((float) scale);
-        }
-
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, this.lightTex);

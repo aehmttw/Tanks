@@ -71,18 +71,6 @@ public class RenderPassGroupShadowDraw
         this.window.clearDepth();
     }
 
-    public void setLighting(double light, double glowLight, double shadow, double glowShadow)
-    {
-        if (this.window.currentRenderPass == drawPass)
-        {
-            ShaderBase sb = ((ShaderBase) (this.window.currentShaderStage.shader));
-            sb.light.set((float) light);
-            sb.glowLight.set((float) glowLight);
-            sb.shade.set((float) shadow);
-            sb.glowShade.set((float) glowShadow);
-        }
-    }
-
     public void draw()
     {
         this.currentPassNumber = 0;

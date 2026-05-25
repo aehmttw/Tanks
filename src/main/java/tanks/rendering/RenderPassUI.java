@@ -24,7 +24,6 @@ public class RenderPassUI extends RenderPass
         if (!this.initialized)
         {
             this.initialized = true;
-            this.window.mainRenderPasses.setLighting(1.0, 1.0, 0.5, 1.0);
         }
 
         this.window.loadPerspective();

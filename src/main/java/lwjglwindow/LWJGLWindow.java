@@ -126,8 +126,13 @@ public class LWJGLWindow extends BaseWindow
 
     protected void init()
     {
+        // Fallback triage, in priority order: the game's bundled font, then the OS default font for
+        // broad offline coverage, then any font files (e.g. the downloaded Noto Sans .ttc) the user
+        // has under ~/.tanks/fonts. findFontForChar walks these in load order, so the first that has
+        // the glyph wins.
         TruetypeFontRenderer ttf = new TruetypeFontRenderer(this, "/fonts/default/Bullet.ttf", 128, true, 1.4, 0.3);
-        ttf.addFontsFromIndex("/fonts/NotoSans/index.txt", 128, false, 1.4, 0.3);
+        ttf.addSystemFont(128, false, 1.4, 0.3);
+        ttf.addFontsFromDirectory(System.getProperty("user.home") + "/.tanks/fonts", 128, false, 1.4, 0.3);
 
         this.fontRenderer = ttf;
 

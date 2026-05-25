@@ -9,7 +9,8 @@ import org.lwjgl.system.MemoryStack;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -33,6 +34,16 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
         public TtfFontInfo(ByteBuffer buffer, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
         {
+            this(buffer, 0, bakeHeight, pixelPerfect, sizeScale, yOffset);
+        }
+
+        /**
+         * @param fontOffset Byte offset of this font's table directory within {@code buffer}: 0 for a
+         *                   standalone .ttf, or the {@code stbtt_GetFontOffsetForIndex} value for a
+         *                   member of a .ttc collection (where many fonts share one buffer).
+         */
+        public TtfFontInfo(ByteBuffer buffer, int fontOffset, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+        {
             this.ttfBuffer = buffer;
             this.stbInfo = STBTTFontinfo.create();
             this.bakeHeight = bakeHeight;
@@ -40,7 +51,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             this.sizeScale = sizeScale;
             this.yOffset = yOffset;
 
-            if (!stbtt_InitFont(stbInfo, buffer))
+            if (!stbtt_InitFont(stbInfo, buffer, fontOffset))
                 throw new RuntimeException("Failed to initialize STB truetype font");
 
             this.fontScale = stbtt_ScaleForPixelHeight(stbInfo, bakeHeight);
@@ -165,21 +176,27 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         this.fonts.add(defaultFont);
     }
 
-    private TtfFontInfo loadFont(String path, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    private ByteBuffer readResource(String path) throws IOException
     {
-        try
+        try (InputStream in = lwjglWindow.getResource(path))
         {
-            InputStream in = lwjglWindow.getResource(path);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] chunk = new byte[8192];
             int n;
             while ((n = in.read(chunk)) > 0)
                 out.write(chunk, 0, n);
-            in.close();
             byte[] bytes = out.toByteArray();
             ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length);
             buffer.put(bytes).flip();
-            return new TtfFontInfo(buffer, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            return buffer;
+        }
+    }
+
+    private TtfFontInfo loadFont(String path, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        try
+        {
+            return new TtfFontInfo(readResource(path), bakeHeight, pixelPerfect, sizeScale, yOffset);
         }
         catch (Exception e)
         {
@@ -213,36 +230,151 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         addFont(ttfPath, 64, false, 1.0, 0.0);
     }
 
-    /**
-     * Loads every font listed in {@code indexPath} (one resource path per line; blank lines and
-     * lines starting with {@code #} are ignored) and registers each as a fallback with the given
-     * tuning. The index file is read via {@code LWJGLWindow.getResource}, so it goes through the
-     * project's normal override-location lookup before falling back to the classpath.
-     */
-    public void addFontsFromIndex(String indexPath, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    /** Reads an entire file on disk into a native {@link ByteBuffer} suitable for STB. */
+    private static ByteBuffer readFile(String filePath) throws IOException
     {
-        try (InputStream in = lwjglWindow.getResource(indexPath);
-             BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8)))
-        {
-            int loaded = 0;
-            String line;
-            while ((line = r.readLine()) != null)
-            {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#"))
-                    continue;
+        byte[] bytes = Files.readAllBytes(Paths.get(filePath));
+        ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length);
+        buffer.put(bytes).flip();
+        return buffer;
+    }
 
-                int before = fonts.size();
-                addFont(line, bakeHeight, pixelPerfect, sizeScale, yOffset);
-                if (fonts.size() > before)
-                    loaded++;
+    /**
+     * Registers every font contained in {@code buffer} as a fallback, in order, all sharing the one
+     * buffer. A plain .ttf reports a single font; a .ttc collection reports several. Order matters:
+     * {@link #findFontForChar} returns the first font that has the glyph, so earlier-added fonts win.
+     *
+     * @return the number of fonts registered
+     */
+    private int addFontsFromBuffer(ByteBuffer buffer, String label, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        int count = stbtt_GetNumberOfFonts(buffer);
+        if (count <= 0)
+            throw new RuntimeException("not a valid font file (stbtt_GetNumberOfFonts returned " + count + ")");
+
+        int loaded = 0;
+        for (int i = 0; i < count; i++)
+        {
+            int offset = stbtt_GetFontOffsetForIndex(buffer, i);
+            if (offset < 0)
+                continue;
+
+            try
+            {
+                fonts.add(new TtfFontInfo(buffer, offset, bakeHeight, pixelPerfect, sizeScale, yOffset));
+                loaded++;
             }
-            System.out.println("TruetypeFontRenderer: loaded " + loaded + " fonts from " + indexPath);
+            catch (Exception e)
+            {
+                System.err.println("TruetypeFontRenderer: skipped sub-font " + i + " of '" + label + "': " + e.getMessage());
+            }
+        }
+        return loaded;
+    }
+
+    /**
+     * Adds every font in a file on disk (a .ttf, .otf, or multi-font .ttc) as a fallback. Intended
+     * for fonts outside the classpath — an OS system font, or a user-supplied file under
+     * {@code ~/.tanks/fonts}. A missing, unreadable, or invalid file is logged and skipped: a bad
+     * fallback must never kill the renderer.
+     *
+     * @return the number of fonts registered (0 on failure)
+     */
+    public int addFontFile(String filePath, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        try
+        {
+            int loaded = addFontsFromBuffer(readFile(filePath), filePath, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            System.out.println("TruetypeFontRenderer: loaded " + loaded + " font(s) from " + filePath);
+            return loaded;
         }
         catch (Exception e)
         {
-            System.err.println("TruetypeFontRenderer: failed to read font index '" + indexPath + "': " + e.getMessage());
+            System.err.println("TruetypeFontRenderer: failed to load font file '" + filePath + "': " + e.getMessage());
+            return 0;
         }
+    }
+
+    /**
+     * Adds every font file sitting directly inside {@code dirPath} (non-recursive) as a fallback:
+     * each .ttc, .ttf, and .otf, processed in case-insensitive filename order so load priority is
+     * stable across runs. This is where the downloaded Noto Sans collection in {@code ~/.tanks/fonts}
+     * is picked up, alongside any other font the user drops there. The directory is created if it
+     * doesn't exist (so there's a place to drop fonts and for the downloader to write to); an empty
+     * or uncreatable directory is a no-op.
+     */
+    public void addFontsFromDirectory(String dirPath, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        File dir = new File(dirPath);
+        if (!dir.isDirectory() && !dir.mkdirs())
+        {
+            System.err.println("TruetypeFontRenderer: could not create font directory " + dirPath);
+            return;
+        }
+
+        File[] files = dir.listFiles((d, name) ->
+        {
+            String n = name.toLowerCase(Locale.ROOT);
+            return n.endsWith(".ttc") || n.endsWith(".ttf") || n.endsWith(".otf");
+        });
+
+        if (files == null)
+            return;
+
+        Arrays.sort(files, Comparator.comparing(f -> f.getName().toLowerCase(Locale.ROOT)));
+        for (File f : files)
+            addFontFile(f.getAbsolutePath(), bakeHeight, pixelPerfect, sizeScale, yOffset);
+    }
+
+    /**
+     * Adds the platform's default UI font as a fallback — the tier between the bundled font and any
+     * downloaded fonts — so common scripts render offline before the larger Noto collection is
+     * present. Probes a short, per-OS list of well-known font paths and adds the first that exists;
+     * if none are found the call is a no-op.
+     */
+    public void addSystemFont(int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
+        String[] candidates;
+
+        if (os.contains("win"))
+        {
+            String windir = System.getenv("WINDIR");
+            String root = (windir != null ? windir : "C:\\Windows") + "\\Fonts\\";
+            candidates = new String[]{root + "segoeui.ttf", root + "arial.ttf", root + "tahoma.ttf"};
+        }
+        else if (os.contains("mac") || os.contains("darwin"))
+        {
+            candidates = new String[]{
+                    "/System/Library/Fonts/SFNS.ttf",
+                    "/System/Library/Fonts/SFNSText.ttf",
+                    "/System/Library/Fonts/Helvetica.ttc",
+                    "/System/Library/Fonts/Supplemental/Arial.ttf",
+                    "/Library/Fonts/Arial.ttf"};
+        }
+        else // Linux / other unix
+        {
+            candidates = new String[]{
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                    "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf",
+                    "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+                    "/usr/share/fonts/TTF/DejaVuSans.ttf",
+                    "/usr/share/fonts/google-noto/NotoSans-Regular.ttf",
+                    "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+                    "/usr/share/fonts/liberation/LiberationSans-Regular.ttf",
+                    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"};
+        }
+
+        for (String path : candidates)
+        {
+            if (new File(path).isFile())
+            {
+                addFontFile(path, bakeHeight, pixelPerfect, sizeScale, yOffset);
+                return;
+            }
+        }
+
+        System.err.println("TruetypeFontRenderer: no system default font found for OS '" + os + "'");
     }
 
     @Override

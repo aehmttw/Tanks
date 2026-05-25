@@ -9,7 +9,6 @@ import org.lwjgl.system.MemoryStack;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -277,11 +276,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         // report the likely cause once per file instead of once per sub-font.
         if (failed > 0)
         {
-            String reason = isOpenTypeCFF(buffer)
-                    ? "OpenType/CFF outlines (CFF2 variable fonts aren't supported by STB)"
-                    : "STB could not initialize them";
-            System.err.println("TruetypeFontRenderer: skipped " + failed + " of " + count
-                    + " font(s) in '" + label + "' — " + reason);
+            String reason = isOpenTypeCFF(buffer) ? "OpenType/CFF outlines (CFF2 variable fonts aren't supported by STB)" : "STB could not initialize them";
+            System.err.println("TruetypeFontRenderer: skipped " + failed + " of " + count + " font(s) in '" + label + "' — " + reason);
         }
 
         return loaded;
@@ -294,8 +290,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         if (off < 0 || off + 4 > buffer.capacity())
             return false;
         // 'OTTO' = 0x4F 0x54 0x54 0x4F
-        return buffer.get(off) == 0x4F && buffer.get(off + 1) == 0x54
-                && buffer.get(off + 2) == 0x54 && buffer.get(off + 3) == 0x4F;
+        return buffer.get(off) == 0x4F && buffer.get(off + 1) == 0x54 && buffer.get(off + 2) == 0x54 && buffer.get(off + 3) == 0x4F;
     }
 
     /**
@@ -349,7 +344,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return;
 
         Arrays.sort(files, Comparator.comparing(f -> f.getName().toLowerCase(Locale.ROOT)));
-        for (File f : files)
+        for (File f: files)
             addFontFile(f.getAbsolutePath(), bakeHeight, pixelPerfect, sizeScale, yOffset);
     }
 
@@ -410,14 +405,14 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         if (paths.isEmpty())
             System.err.println("TruetypeFontRenderer: no system fonts found for OS '" + os + "'");
 
-        for (String path : paths)
+        for (String path: paths)
             addFontFile(path, bakeHeight, pixelPerfect, sizeScale, yOffset);
     }
 
     /** Adds each path that exists as a regular file to {@code out}, skipping the rest. */
     private static void addExisting(Set<String> out, String... paths)
     {
-        for (String p : paths)
+        for (String p: paths)
             if (new File(p).isFile())
                 out.add(p);
     }
@@ -437,11 +432,34 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         // verify a candidate actually contains that glyph: fontconfig's best match is often a CFF2
         // font STB can't use, and its coverage lists include near-misses. Picking by real coverage is
         // what steps over the system's CFF2 Noto CJK to a glyf fallback (e.g. Droid Sans Fallback).
-        String[] langs = {"ru", "el", "zh", "ja", "ko", "hi", "bn", "ta", "te", "kn", "ml", "gu",
-                "pa", "or", "si", "ar", "he", "th", "my", "km", "lo", "ka", "hy", "am"};
-        int[] samples = {0x0410, 0x0391, 0x4E00, 0x3042, 0xAC00, 0x0905, 0x0985, 0x0B85, 0x0C05,
-                0x0C85, 0x0D05, 0x0A85, 0x0A05, 0x0B05, 0x0D85, 0x0627, 0x05D0, 0x0E01, 0x1000,
-                0x1780, 0x0E81, 0x10D0, 0x0531, 0x1200};
+        String[] langs = { "ru", "el", "zh", "ja", "ko", "hi", "bn", "ta", "te", "kn", "ml", "gu", "pa", "or", "si", "ar", "he", "th", "my", "km", "lo", "ka", "hy", "am" };
+        int[] samples =
+            {
+                0x0410,
+                0x0391,
+                0x4E00,
+                0x3042,
+                0xAC00,
+                0x0905,
+                0x0985,
+                0x0B85,
+                0x0C05,
+                0x0C85,
+                0x0D05,
+                0x0A85,
+                0x0A05,
+                0x0B05,
+                0x0D85,
+                0x0627,
+                0x05D0,
+                0x0E01,
+                0x1000,
+                0x1780,
+                0x0E81,
+                0x10D0,
+                0x0531,
+                0x1200
+            };
 
         Set<String> added = new HashSet<>();      // files contributing glyphs to the chain
         Set<String> rejected = new HashSet<>();   // files STB can't use at all (e.g. CFF2)
@@ -466,7 +484,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 return;
             }
 
-            for (String file : candidates)
+            for (String file: candidates)
             {
                 if (added.contains(file) || rejected.contains(file) || !new File(file).isFile())
                     continue;
@@ -482,7 +500,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     /** True if any already-loaded font has a glyph for {@code codepoint}. */
     private boolean anyFontSupports(int codepoint)
     {
-        for (TtfFontInfo font : fonts)
+        for (TtfFontInfo font: fonts)
             if (font.supportsCodepoint(codepoint))
                 return true;
         return false;
@@ -538,8 +556,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         if (initialized == 0)
         {
             rejected.add(filePath);
-            System.err.println("TruetypeFontRenderer: cannot use '" + filePath + "' — "
-                    + (isOpenTypeCFF(buffer) ? "OpenType/CFF2 outlines unsupported by STB" : "no STB-loadable fonts"));
+            System.err.println("TruetypeFontRenderer: cannot use '" + filePath + "' — " +
+                (isOpenTypeCFF(buffer) ? "OpenType/CFF2 outlines unsupported by STB" : "no STB-loadable fonts"));
         }
         if (added > 0)
             System.out.println("TruetypeFontRenderer: loaded system font " + filePath);
@@ -551,14 +569,17 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     private void addFontsFromStandardDirs(int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
     {
         Set<String> scanned = new LinkedHashSet<>();
-        for (String dir : new String[]{
+        for (String dir: new String[]
+            {
                 System.getProperty("user.home") + "/.local/share/fonts",
                 System.getProperty("user.home") + "/.fonts",
                 "/usr/share/fonts",
-                "/usr/local/share/fonts"})
+                "/usr/local/share/fonts"
+            }
+        )
             collectFontFiles(new File(dir), scanned, 0);
 
-        for (String f : scanned)
+        for (String f: scanned)
             addFontFile(f, bakeHeight, pixelPerfect, sizeScale, yOffset);
 
         if (scanned.isEmpty())
@@ -608,7 +629,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         if (entries == null)
             return;
 
-        for (File f : entries)
+        for (File f: entries)
         {
             if (f.isDirectory())
                 collectFontFiles(f, out, depth + 1);

@@ -14,8 +14,11 @@ uniform int blendFunc;
 
 void main(void)
 {
-    vertexColor = gl_Color;
-    vec4 pos = gl_Vertex;
+    vertexColor = getColor(gl_Color);
+    vec4 pos;
+    vec3 normal;
+
+    getVertVecs(pos, normal);
 
     gl_Position = gl_ModelViewProjectionMatrix * pos;
 

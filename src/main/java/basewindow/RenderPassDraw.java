@@ -31,8 +31,8 @@ public class RenderPassDraw extends RenderPass
         // Glow
         this.drawFrameBuffer.addColorTexture(pg.window, 3, false);
 
-        // Light/shadow level
-        this.drawFrameBuffer.addColorTexture(pg.window, 1, false);
+        // Light/shadow, emissiveness
+        this.drawFrameBuffer.addColorTexture(pg.window, 2, false);
 
         this.drawFrameBuffer.createDepthTexture(pg.window);
     }

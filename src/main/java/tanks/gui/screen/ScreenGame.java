@@ -941,39 +941,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     }
 
     @Override
-    public void setupLights()
-    {
-        setupGameLights();
-    }
-
-    public static void setupGameLights()
-    {
-        for (Obstacle o: Game.obstacles)
-        {
-            if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
-            {
-                double[] l = ((IDrawableLightSource) o).getLightInfo();
-                l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
-                l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
-                l[2] = (o instanceof ObstacleStackable ? ((ObstacleStackable) o).startHeight : 25) * Drawing.drawing.scale;
-                Panel.panel.lights.add(l);
-            }
-        }
-
-        for (Movable o: Game.movables)
-        {
-            if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
-            {
-                double[] l = ((IDrawableLightSource) o).getLightInfo();
-                l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
-                l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
-                l[2] = (o.posZ + 25) * Drawing.drawing.scale;
-                Panel.panel.lights.add(l);
-            }
-        }
-    }
-
-    @Override
     public void update()
     {
         if (ScreenPartyHost.isServer && this.shop.isEmpty() && Game.autoReady && !this.ready)

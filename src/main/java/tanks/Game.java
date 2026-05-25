@@ -315,11 +315,13 @@ public class Game
     public static String homedir;
     public static Game game = new Game();
 
-    // Note: this is not used by the game to determine fullscreen status
-    // It is simply a value defined before
-    // Refer to Game.game.window.fullscreen for true fullscreen status
-    // Value is set before Game.game.window is initialized
-    public boolean fullscreen = false;
+    public static GameDrawer drawer;
+
+	// Note: this is not used by the game to determine fullscreen status
+	// It is simply a value defined before
+	// Refer to Game.game.window.fullscreen for true fullscreen status
+	// Value is set before Game.game.window is initialized
+	public boolean fullscreen = false;
 
     private Game()
     {

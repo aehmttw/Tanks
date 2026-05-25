@@ -245,9 +245,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public boolean justBounced = false;
 
-    public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
-
-    public final boolean isTemplate;
+	public final boolean isTemplate;
 
     // Whether this bullet class can deflect other bullets (things like arc and air strike can't)
     public boolean canDeflect = true;
@@ -1833,13 +1831,24 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     }
 
     @Override
-    public double[] getLightInfo()
+    public double getBrightness()
     {
-        this.lightInfo[3] = this.size * 2 / Game.tile_size * (1 - Math.min(1, this.destroyTimer / maxDestroyTimer));
-        this.lightInfo[4] = this.baseColor.red;
-        this.lightInfo[5] = this.baseColor.green;
-        this.lightInfo[6] = this.baseColor.blue;
+        return this.size * this.effect.glowSize * (1 - Math.min(1, this.destroyTimer / maxDestroyTimer));
+    }
 
-        return this.lightInfo;
+    Color c = new Color();
+    @Override
+    public Color getColor()
+    {
+//        if (!this.effect.glowGlowy)
+//        {
+//            c.set(this.outlineColor.red - 255, this.outlineColor.green - 255, this.outlineColor.blue - 255);
+//            return c;
+//        }
+
+        if (this.effect.overrideGlowColor)
+            return this.effect.glowColor;
+
+        return this.outlineColor;
     }
 }

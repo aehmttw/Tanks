@@ -232,7 +232,7 @@ public class FrameBuffer extends BaseFrameBuffer
                     intFormat,
                     sizeX, sizeY, 0,
                     format,
-                    GL_UNSIGNED_BYTE,
+                    t == Type.FLOAT ? GL_FLOAT : GL_UNSIGNED_BYTE,
                     (ByteBuffer) null);
             glBindTexture(GL_TEXTURE_2D, 0);
         }

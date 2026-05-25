@@ -25,15 +25,11 @@ void main()
 {
     vec3 worldPos = getWorldPos(vec2(gl_FragCoord.x / width, gl_FragCoord.y / height));
     vec3 dists = worldPos - lightPos.xyz;
-    //float dist2 = dists.x * dists.x + dists.y * dists.y + dists.z * dists.z / 10000000000000.0;
-//    gl_FragColor = vec4(/*gl_Color.rgb * lightPos[3] * 1000.0 / dist2*/ dists, 1.0f);
 
-    //float dist2 = (dists.x * dists.x + dists.y * dists.y + dists.z * dists.z) / (lightPos.w * lightPos.w);
     float dist = length(dists) / lightPos.w;
 
-   //float fade = ((1.0 / min(dist2, 1.0)) - 1.0) / 100.0;
-//    float f = (1.0 - smoothstep(0.0, 1.0, dist2));
-//    float fade = f * f * 0.1 / dist2;
     float fade = max(1.0 - dist, 0.0);
-    gl_FragColor = vec4(lightColor.rgb * fade * fade * fade, 1.0);
+    gl_FragColor = vec4(lightColor.rgb * lightColor.rgb * sign(lightColor.rgb) * fade * fade * fade, 1.0);
+//    gl_FragColor = vec4(1, -0.5, 0, 1);
+//    gl_FragColor.xyz = dists / dist / 1000.0 + vec3(0.5, 0.5, 0.5);
 }

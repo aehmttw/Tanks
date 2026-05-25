@@ -1,6 +1,7 @@
 package tanks;
 
 import basewindow.InputCodes;
+import tanks.bullet.Trail3D;
 import tanks.extension.Extension;
 import tanks.gui.*;
 import tanks.gui.ScreenElement.CenterMessage;
@@ -91,8 +92,7 @@ public class Panel
 
     protected Screen lastDrawnScreen = null;
 
-    public ArrayList<double[]> lights = new ArrayList<>();
-    HashMap<Integer, IStackableEvent> stackedEventsIn = new HashMap<>();
+	HashMap<Integer, IStackableEvent> stackedEventsIn = new HashMap<>();
 
     public LoadingTerrainContinuation continuation = null;
     public long continuationStartTime = 0;
@@ -118,26 +118,22 @@ public class Panel
 
     }
 
-    public void setUp()
-    {
-        Game.game.shaderIntro = new ShaderGroundIntro(Game.game.window);
-        Game.game.shaderOutOfBounds = new ShaderGroundOutOfBounds(Game.game.window);
-        Game.game.shaderTracks = new ShaderTracks(Game.game.window);
-        Firework.shader = new ShaderFireworkExplosion(Game.game.window);
-        Firework.trailShader = new ShaderFireworkExplosionTrail(Game.game.window);
+	public void setUp()
+	{
+		Game.game.shaderIntro = new ShaderGroundIntro(Game.game.window);
+		Game.game.shaderOutOfBounds = new ShaderGroundOutOfBounds(Game.game.window);
+ 		Game.game.shaderTracks = new ShaderTracks(Game.game.window);
 
-        try
-        {
-            Game.game.shaderIntro.initialize();
-            Game.game.shaderOutOfBounds.initialize();
-            Game.game.shaderTracks.initialize();
-            Firework.shader.initialize();
-            Firework.trailShader.initialize();
-        }
-        catch (Exception e)
-        {
-            Game.exitToCrash(e);
-        }
+		try
+		{
+			Game.game.shaderIntro.initialize();
+			Game.game.shaderOutOfBounds.initialize();
+			Game.game.shaderTracks.initialize();
+		}
+		catch (Exception e)
+		{
+			Game.exitToCrash(e);
+		}
 
         Drawing.drawing.terrainRenderer = new TerrainRenderer();
         Drawing.drawing.trackRenderer = new TrackRenderer();
@@ -819,10 +815,6 @@ public class Panel
             }
 
             Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
-
-            this.lights.clear();
-
-            Game.screen.setupLights();
 
 //			if (Game.fancyLights)
 //				Game.game.window.createLights(this.lights, Drawing.drawing.scale);

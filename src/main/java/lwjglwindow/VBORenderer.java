@@ -98,6 +98,7 @@ public class VBORenderer extends BaseVBORenderer
         GL11.glDisableClientState(GL_COLOR_ARRAY);
 
         ArrayList<Integer> attributes = this.enabledAttributes;
+
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0, attributesSize = attributes.size(); i < attributesSize; i++)
             glDisableVertexAttribArray(attributes.get(i));

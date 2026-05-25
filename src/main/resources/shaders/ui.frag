@@ -34,7 +34,7 @@ void main(void)
         fragColor *= originalColor;
 
     if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
-        fragColor.rgb *= fragColor.a;
+        fragColor.rgb *= fragColor.rgb * fragColor.a * fragColor.a;
 
     gl_FragColor = fragColor;
 }

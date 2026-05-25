@@ -2909,10 +2909,4 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         paused = true;
         Game.screen = new OverlayConfirmSave(Game.screen, this);
     }
-
-    @Override
-    public void setupLights()
-    {
-        ScreenGame.setupGameLights();
-    }
 }

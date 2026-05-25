@@ -3,6 +3,7 @@ package tanks;
 import basewindow.IDrawer;
 import basewindow.RenderPass;
 import tanks.extension.Extension;
+import tanks.gui.Firework;
 import tanks.rendering.*;
 
 public class GameDrawer implements IDrawer
@@ -15,6 +16,8 @@ public class GameDrawer implements IDrawer
     {
         try
         {
+            Game.drawer = this;
+
             this.initialized = true;
             Game.game.window.mainRenderPasses.drawToFramebuffer = true;
             this.lightsPass = new RenderPassPostLights();
@@ -28,8 +31,13 @@ public class GameDrawer implements IDrawer
             mixShader.initialize();
 
             this.uiPass = new RenderPassUI();
-            this.uiPass.shaderUI = new ShaderGroupUI(uiPass);
+            this.uiPass.shaderUI = new ShaderUIDefault(uiPass);
             this.uiPass.shaderUI.initialize();
+
+            Firework.shader = new ShaderFireworkExplosion();
+            Firework.trailShader = new ShaderFireworkExplosionTrail();
+            Firework.shader.initialize();
+            Firework.trailShader.initialize();
         }
         catch (Exception e)
         {

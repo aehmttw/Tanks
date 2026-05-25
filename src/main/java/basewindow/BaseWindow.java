@@ -308,7 +308,9 @@ public abstract class BaseWindow
 
     public abstract void enableBackFaceCulling();
 
-    public abstract void disableBackFaceCulling();
+    public abstract void enableFrontFaceCulling();
+
+    public abstract void disableFaceCulling();
 
     /**
      * Switches the current shader program used to draw things.

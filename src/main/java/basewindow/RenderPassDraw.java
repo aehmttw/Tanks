@@ -53,15 +53,9 @@ public class RenderPassDraw extends RenderPass
         this.window.setShader(this.window.shaderDefault);
         this.window.shaderDefault.shaderBase.shadowres.set(this.passGroup.getShadowMapSize());
         this.window.shaderDefault.shaderBase.shadow.set(this.passGroup.shadowsEnabled);
-        this.window.shaderDefault.shaderBase.width.set((float) this.window.absoluteWidth);
-        this.window.shaderDefault.shaderBase.height.set((float) this.window.absoluteHeight);
-        this.window.shaderDefault.shaderBase.depth.set((float) this.window.absoluteDepth);
 
         if (!this.initialized)
-        {
             this.initialized = true;
-            this.window.mainRenderPasses.setLighting(1.0, 1.0, 0.5, 1.0);
-        }
 
         this.window.loadPerspective();
 

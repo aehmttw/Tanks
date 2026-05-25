@@ -1327,7 +1327,6 @@ public class Drawing
 
 	public void setLighting(double light, double shadow)
 	{
-		Game.game.window.mainRenderPasses.setLighting(light, Math.max(1, light), shadow, Math.max(1, shadow));
         Game.drawer.lightsPass.light = light;
         Game.drawer.lightsPass.shadow = shadow;
 	}

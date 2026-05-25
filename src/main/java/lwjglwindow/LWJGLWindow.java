@@ -700,25 +700,17 @@ public class LWJGLWindow extends BaseWindow
 
         buf.flip();
 
-        if (this.currentShaderStage.shader instanceof ShaderBase)
-        {
-            ShaderBase sb = (ShaderBase) this.currentShaderStage.shader;
-            sb.lightsCount.set(lights.size());
-            sb.lightsTexSize.set(p);
-            sb.scale.set((float) scale);
-        }
-
-        glEnable(GL_TEXTURE_2D);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, this.lightTex);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-        glActiveTexture(GL_TEXTURE0);
-    }
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, this.lightTex);
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+		glActiveTexture(GL_TEXTURE0);
+	}
 
     public void setIcon(String icon)
     {

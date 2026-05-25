@@ -34,10 +34,14 @@ public class Model implements IModel
     {
         ArrayList<String> lines = fileManager.getInternalFileContents(dir + "model.mtl");
 
+        ArrayList<String> modelLines = fileManager.getInternalFileContents(dir + "model.obj");
+        if (modelLines.isEmpty())
+            throw new RuntimeException("Didn't find model: " + dir + "model.obj");
+
         if (lines == null)
-            lines = fileManager.getInternalFileContents(dir + "model.obj");
+            lines = modelLines;
         else
-            lines.addAll(fileManager.getInternalFileContents(dir + "model.obj"));
+            lines.addAll(modelLines);
 
         return lines;
     }

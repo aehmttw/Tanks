@@ -140,6 +140,7 @@ void main(void)
     }
 
     float col = 1.0;
+    bool lit = true;
 
     if (shadow)
     {
@@ -149,7 +150,7 @@ void main(void)
 
         if (depthtest)
         {
-            bool lit = depthVec.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
+            lit = depthVec.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
 
             //            if (useNormal)
             //            {
@@ -259,14 +260,14 @@ void main(void)
     {
         fragColor.rgb *= fragColor.a;
         gl_FragData[0] = vec4(0.0);
-        gl_FragData[1] = fragColor;
+        gl_FragData[1] = fragColor * fragColor;
         gl_FragData[2] = vec4(0.0);
     }
     else
     {
         gl_FragData[0] = fragColor;
         gl_FragData[1] = vec4(0.0, 0.0, 0.0, fragColor.a);
-        gl_FragData[2] = vec4(col, 0.0, 0.0, fragColor.a);
+        gl_FragData[2] = vec4(float(lit), glow, 0.0, fragColor.a);
     }
 
 

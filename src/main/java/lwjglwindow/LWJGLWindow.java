@@ -1247,7 +1247,7 @@ public class LWJGLWindow extends BaseWindow
 
 	public void setGlowBlendFunc()
 	{
-		glBlendFunc(GL_SRC_COLOR, GL_ONE);
+		glBlendFunc(GL_ONE, GL_ONE);
         if (this.currentShaderStage.shader instanceof IBlendFuncShader)
             ((IBlendFuncShader)(this.currentShaderStage.shader)).setBlendFunc(1);
 	}
@@ -1380,9 +1380,18 @@ public class LWJGLWindow extends BaseWindow
         GL11.glCullFace(GL11.GL_BACK);
     }
 
+
     @Override
-    public void disableBackFaceCulling()
+    public void enableFrontFaceCulling()
+    {
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glCullFace(GL_FRONT);
+    }
+
+    @Override
+    public void disableFaceCulling()
     {
         GL11.glDisable(GL11.GL_CULL_FACE);
     }
+
 }

@@ -175,7 +175,11 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
         if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
             Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
             this.fireworksDisplay.draw();
 

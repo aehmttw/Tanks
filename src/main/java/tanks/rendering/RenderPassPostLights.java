@@ -1,22 +1,24 @@
 package tanks.rendering;
 
-import basewindow.BaseFrameBuffer;
-import basewindow.RenderPass;
-import tanks.Drawing;
-import tanks.Game;
-import tanks.Panel;
-import tanks.bullet.Trail3D;
+import basewindow.*;
+import tanks.*;
 import tanks.gui.screen.ScreenGame;
+import tanks.obstacle.Obstacle;
 
 public class RenderPassPostLights extends RenderPass
 {
     protected float[] tempLightPos = new float[4];
     protected float[] tempLightColor = new float[3];
-    protected float[] baseLight = new float[]{1f, 1f, 1f};
+    protected float[] lightColor = new float[]{1f, 1f, 1f};
 
     public ShaderPostLights lightsShader;
     public ShaderPostLightingMix mixShader;
     public BaseFrameBuffer lightsFrameBuffer;
+
+    public double light = 1.0;
+    public double shadow = 0.5;
+
+    public static Model sphere = Drawing.drawing.getModel("/models/sphere/");
 
     public RenderPassPostLights()
     {
@@ -52,26 +54,7 @@ public class RenderPassPostLights extends RenderPass
         Game.game.window.mainRenderPasses.drawPass.drawFrameBuffer.bindDepthTexture(0);
         this.window.setForceModelGlow(true);
 
-        for (double[] d: Panel.panel.lights)
-        {
-            double size = d[3] * Game.tile_size * 4 * Drawing.drawing.scale;
-
-            tempLightPos[0] = (float) d[0];
-            tempLightPos[1] = (float) d[1];
-            tempLightPos[2] = (float) d[2];
-            tempLightPos[3] = (float) size;
-
-            tempLightColor[0] = (float) d[4] / 255;
-            tempLightColor[1] = (float) d[5] / 255;
-            tempLightColor[2] = (float) d[6] / 255;
-
-            this.lightsShader.lightPos.set(tempLightPos);
-            this.lightsShader.lightColor.set(tempLightColor);
-
-            this.window.enableBackFaceCulling();
-            Trail3D.cap.draw(d[0], d[1], d[2], size, size, size, 0, 0, -Math.PI / 2, false);
-            this.window.disableBackFaceCulling();
-        }
+        this.drawPointLights();
 
         this.window.setForceModelGlow(false);
         this.window.stopFrameBuffer();
@@ -84,7 +67,9 @@ public class RenderPassPostLights extends RenderPass
 //        Game.game.window.shapeRenderer.drawImage(100, 100, 200, 200, "lights", false);
 
         this.window.setShader(this.mixShader);
-        this.mixShader.baseLight.set(baseLight);
+        this.mixShader.lightColor.set(this.lightColor);
+        this.mixShader.baseLight.set((float) this.light);
+        this.mixShader.shadowLight.set((float) this.shadow);
         this.mixShader.colorTex.set(0);
         this.mixShader.lightTex.set(1);
         this.mixShader.glowTex.set(2);
@@ -97,5 +82,50 @@ public class RenderPassPostLights extends RenderPass
         Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "image", false);
         //        Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "lights", false);
 
+    }
+
+    public void drawLight(IDrawableLightSource l, double posX, double posY, double posZ, double size)
+    {
+        Color c = l.getColor();
+        tempLightPos[0] = (float) posX;
+        tempLightPos[1] = (float) posY;
+        tempLightPos[2] = (float) posZ;
+        tempLightPos[3] = (float) size;
+
+        tempLightColor[0] = (float) c.red / 255;
+        tempLightColor[1] = (float) c.green / 255;
+        tempLightColor[2] = (float) c.blue / 255;
+
+        this.lightsShader.lightPos.set(tempLightPos);
+        this.lightsShader.lightColor.set(tempLightColor);
+
+        this.window.enableFrontFaceCulling();
+        sphere.draw(posX, posY, posZ, size, size, size, 0, 0, 0, false);
+        this.window.disableFaceCulling();
+    }
+
+    public void drawPointLights()
+    {
+        if (Game.screen instanceof ScreenGame)
+            ((ScreenGame) Game.screen).setPerspective();
+
+        for (Obstacle o: Game.obstacles)
+        {
+            if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
+            {
+                drawLight((IDrawableLightSource) o, Drawing.drawing.gameToAbsoluteX(o.posX, 0),  Drawing.drawing.gameToAbsoluteY(o.posY, 0), (o.posZ + Game.tile_size / 2) * Drawing.drawing.scale, ((IDrawableLightSource) o).getBrightness() * Drawing.drawing.scale);
+            }
+        }
+
+        for (Movable m: Game.movables)
+        {
+            if (m instanceof IDrawableLightSource && ((IDrawableLightSource) m).lit())
+            {
+                drawLight((IDrawableLightSource) m, Drawing.drawing.gameToAbsoluteX(m.posX, 0),  Drawing.drawing.gameToAbsoluteY(m.posY, 0), m.posZ * Drawing.drawing.scale, ((IDrawableLightSource) m).getBrightness() * Drawing.drawing.scale);
+            }
+        }
+
+        Game.game.window.transformations.clear();
+        Game.game.window.loadPerspective();
     }
 }

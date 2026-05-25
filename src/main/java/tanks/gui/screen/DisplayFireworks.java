@@ -93,7 +93,7 @@ public class DisplayFireworks
             }
         }
 
-        Game.game.window.setShader(Game.game.window.shaderDefault);
+        Game.game.window.setShader(Game.drawer.uiPass.shaderUI);
 
         if (Game.glowEnabled)
         {
@@ -113,7 +113,7 @@ public class DisplayFireworks
                 if (f.type == Firework.FireworkType.particle_group)
                     f.drawGlow();
             }
-            Game.game.window.setShader(Game.game.window.shaderDefault);
+            Game.game.window.setShader(Game.drawer.uiPass.shaderUI);
         }
 
         //A fix to some glitchiness on ios

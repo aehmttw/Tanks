@@ -284,7 +284,11 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
     public void draw()
     {
         this.levelDisplay.draw();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (confirmingDelete)
         {
             Drawing.drawing.setColor(0, 0, 0, 127);

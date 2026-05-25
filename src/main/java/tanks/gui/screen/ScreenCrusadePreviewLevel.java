@@ -132,6 +132,11 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
     public void draw()
     {
         this.levelDisplay.draw();
+    }
+
+    @Override
+    public void drawUI()
+    {
 
         double extraWidth = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2;
         double height = (Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale;

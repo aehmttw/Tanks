@@ -331,16 +331,20 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
 	@Override
 	public void draw()
-	{
-		this.drawDefaultBackground();
+    {
+        this.drawDefaultBackground();
 
-		save.posX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
-				+ Drawing.drawing.interfaceSizeX - 50 * Drawing.drawing.interfaceScaleZoom - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
-		save.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
-				+ Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+        save.posX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
+                + Drawing.drawing.interfaceSizeX - 50 * Drawing.drawing.interfaceScaleZoom - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+        save.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2
+                + Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+    }
 
-		if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
-			this.fireworksDisplay.draw();
+    @Override
+    public void drawUI()
+    {
+        if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
+            this.fireworksDisplay.draw();
 
 		boolean skip = false;
 		if (Crusade.crusadeMode)

@@ -3,18 +3,16 @@ package tanks.rendering;
 import basewindow.*;
 import tanks.Game;
 
-public class ShaderGroupUI extends ShaderGroupSingleStage
+public abstract class ShaderGroupUI extends ShaderGroupSingleStage
 {
     public ShaderGroupUI(RenderPass p)
     {
         super(Game.game.window, new ShaderUI(Game.game.window), "ui", p);
     }
 
-    @Override
-    public void initialize() throws Exception
+    public ShaderGroupUI(String name)
     {
-        super.initialize();
-        this.shader.setUp("/shaders/main_ui.vert", "/shaders/main_ui.frag");
+        super(Game.game.window, new ShaderUI(Game.game.window), name, Game.drawer.uiPass);
     }
 
     public static class ShaderUI extends ShaderProgram implements IBaseShader, ITextureShader, IBlendFuncShader

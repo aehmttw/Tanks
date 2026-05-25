@@ -132,6 +132,11 @@ public class ScreenPreviewShareLevel extends Screen implements ILevelPreviewScre
     public void draw()
     {
         this.levelDisplay.draw();
+    }
+
+    @Override
+    public void drawUI()
+    {
 
         if (showUI && !Game.game.window.mainRenderPasses.drawingShadow)
         {

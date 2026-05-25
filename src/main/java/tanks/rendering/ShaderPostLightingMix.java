@@ -11,7 +11,9 @@ public class ShaderPostLightingMix extends ShaderGroupSingleStage
     public UniformSampler2D glowTex;
     public UniformSampler2D shadowTex;
 
-    public Uniform3f baseLight;
+    public Uniform3f lightColor;
+    public Uniform1f baseLight;
+    public Uniform1f shadowLight;
 
     public ShaderPostLightingMix(RenderPass p)
     {

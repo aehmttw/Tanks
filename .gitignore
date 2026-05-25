@@ -16,6 +16,7 @@ steam_app_id.txt
 /Tests
 /src/main/resources/hash.txt
 libs.tar.gz
+chars
 
 # Local character SVGs — not to be committed
 chars/

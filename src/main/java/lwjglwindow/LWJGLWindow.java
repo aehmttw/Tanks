@@ -124,15 +124,12 @@ public class LWJGLWindow extends BaseWindow
         glfwSetErrorCallback(null).free();
     }
 
-
     protected void init()
     {
-
         TruetypeFontRenderer ttf = new TruetypeFontRenderer(this, "/fonts/Bullet.ttf", 64, true, 1.4, 0.3);
         ttf.addFontsFromIndex("/fonts/NotoSans/index.txt", 128, false, 1.4, 0.3);
 
         this.fontRenderer = ttf;
-
 
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -145,14 +142,6 @@ public class LWJGLWindow extends BaseWindow
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-        // Request a well-defined OpenGL 3.0 context. Renderer uses immediate-mode
-        // (glBegin/glEnd), so we stay below 3.2 where the compatibility profile is implicit.
-        // Without these hints, NVIDIA's EGL driver on Wayland segfaults setting up the context.
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_FALSE);
 
         if (antialiasingEnabled)
             glfwWindowHint(GLFW_SAMPLES, 4);

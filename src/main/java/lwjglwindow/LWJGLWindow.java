@@ -128,10 +128,10 @@ public class LWJGLWindow extends BaseWindow
     protected void init()
     {
 
-            TruetypeFontRenderer ttf = new TruetypeFontRenderer(this, "/fonts/Bullet.ttf", 64, true, 1.4, 0.3);
-            ttf.addFontsFromIndex("/fonts/NotoSans/index.txt", 128, false, 1.4, 0.3);
+        TruetypeFontRenderer ttf = new TruetypeFontRenderer(this, "/fonts/Bullet.ttf", 64, true, 1.4, 0.3);
+        ttf.addFontsFromIndex("/fonts/NotoSans/index.txt", 128, false, 1.4, 0.3);
 
-            this.fontRenderer = ttf;
+        this.fontRenderer = ttf;
 
 
         GLFWErrorCallback.createPrint(System.err).set();

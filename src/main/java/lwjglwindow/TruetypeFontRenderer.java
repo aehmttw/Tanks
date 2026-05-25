@@ -9,6 +9,7 @@ import org.lwjgl.system.MemoryStack;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -253,6 +254,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             throw new RuntimeException("not a valid font file (stbtt_GetNumberOfFonts returned " + count + ")");
 
         int loaded = 0;
+        int failed = 0;
         for (int i = 0; i < count; i++)
         {
             int offset = stbtt_GetFontOffsetForIndex(buffer, i);
@@ -266,10 +268,34 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             }
             catch (Exception e)
             {
-                System.err.println("TruetypeFontRenderer: skipped sub-font " + i + " of '" + label + "': " + e.getMessage());
+                failed++;
             }
         }
+
+        // STB rasterizes TrueType (glyf) and bare CFF outlines, but not CFF2 — the format used by
+        // variable OpenType/CFF fonts such as the system Noto Sans CJK packages. Those fail to init;
+        // report the likely cause once per file instead of once per sub-font.
+        if (failed > 0)
+        {
+            String reason = isOpenTypeCFF(buffer)
+                    ? "OpenType/CFF outlines (CFF2 variable fonts aren't supported by STB)"
+                    : "STB could not initialize them";
+            System.err.println("TruetypeFontRenderer: skipped " + failed + " of " + count
+                    + " font(s) in '" + label + "' — " + reason);
+        }
+
         return loaded;
+    }
+
+    /** True if the first font in {@code buffer} is OpenType/CFF-flavoured ('OTTO'), not TrueType. */
+    private static boolean isOpenTypeCFF(ByteBuffer buffer)
+    {
+        int off = stbtt_GetFontOffsetForIndex(buffer, 0);
+        if (off < 0 || off + 4 > buffer.capacity())
+            return false;
+        // 'OTTO' = 0x4F 0x54 0x54 0x4F
+        return buffer.get(off) == 0x4F && buffer.get(off + 1) == 0x54
+                && buffer.get(off + 2) == 0x54 && buffer.get(off + 3) == 0x4F;
     }
 
     /**
@@ -285,7 +311,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         try
         {
             int loaded = addFontsFromBuffer(readFile(filePath), filePath, bakeHeight, pixelPerfect, sizeScale, yOffset);
-            System.out.println("TruetypeFontRenderer: loaded " + loaded + " font(s) from " + filePath);
+            if (loaded > 0)
+                System.out.println("TruetypeFontRenderer: loaded " + loaded + " font(s) from " + filePath);
             return loaded;
         }
         catch (Exception e)
@@ -327,54 +354,271 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     }
 
     /**
-     * Adds the platform's default UI font as a fallback — the tier between the bundled font and any
-     * downloaded fonts — so common scripts render offline before the larger Noto collection is
-     * present. Probes a short, per-OS list of well-known font paths and adds the first that exists;
-     * if none are found the call is a no-op.
+     * Adds the platform's system fonts as fallbacks — the tier between the bundled Bullet font and
+     * any downloaded fonts. Bullet already covers Latin, so the value here is breadth: CJK, Indic,
+     * Arabic, Hebrew, Thai and other scripts that no single UI font carries. We therefore register
+     * several broad-coverage system fonts and let {@link #findFontForChar} choose per glyph.
+     *
+     * <p>macOS and Windows keep their fonts in stable, well-known directories, so those are
+     * hardcoded. On Linux font locations vary by distro, so we ask fontconfig ({@code fc-match})
+     * which file the system actually uses for each of a set of representative scripts; if fontconfig
+     * is unavailable we fall back to scanning the standard font directories.
      */
-    public void addSystemFont(int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    public void addSystemFonts(int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
     {
         String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
-        String[] candidates;
+
+        // LinkedHashSet: keep discovery order but drop duplicates — one font often serves several
+        // scripts (e.g. a Noto CJK file covers zh/ja/ko), and it must not be loaded more than once.
+        Set<String> paths = new LinkedHashSet<>();
 
         if (os.contains("win"))
         {
             String windir = System.getenv("WINDIR");
             String root = (windir != null ? windir : "C:\\Windows") + "\\Fonts\\";
-            candidates = new String[]{root + "segoeui.ttf", root + "arial.ttf", root + "tahoma.ttf"};
+            addExisting(paths,
+                    root + "segoeui.ttf",   // Latin, Cyrillic, Greek, Arabic, Hebrew, ...
+                    root + "msyh.ttc",      // Microsoft YaHei — Simplified Chinese
+                    root + "msjh.ttc",      // Microsoft JhengHei — Traditional Chinese
+                    root + "yugothm.ttc",   // Yu Gothic — Japanese
+                    root + "msgothic.ttc",  // MS Gothic — Japanese (older systems)
+                    root + "malgun.ttf",    // Malgun Gothic — Korean
+                    root + "Nirmala.ttf",   // Nirmala UI — Devanagari and other Indic scripts
+                    root + "tahoma.ttf");   // extra Arabic/Hebrew coverage
         }
         else if (os.contains("mac") || os.contains("darwin"))
         {
-            candidates = new String[]{
-                    "/System/Library/Fonts/SFNS.ttf",
+            addExisting(paths,
+                    "/System/Library/Fonts/SFNS.ttf",                              // San Francisco — Latin et al.
                     "/System/Library/Fonts/SFNSText.ttf",
-                    "/System/Library/Fonts/Helvetica.ttc",
-                    "/System/Library/Fonts/Supplemental/Arial.ttf",
-                    "/Library/Fonts/Arial.ttf"};
+                    "/Library/Fonts/Arial Unicode.ttf",                            // very broad multi-script
+                    "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
+                    "/System/Library/Fonts/PingFang.ttc",                          // CJK
+                    "/System/Library/Fonts/Hiragino Sans GB.ttc",                  // CJK
+                    "/System/Library/Fonts/AppleSDGothicNeo.ttc",                  // Korean
+                    "/System/Library/Fonts/Kohinoor.ttc",                          // Devanagari
+                    "/System/Library/Fonts/Supplemental/Devanagari Sangam MN.ttc",
+                    "/System/Library/Fonts/Supplemental/Thonburi.ttc");            // Thai
         }
         else // Linux / other unix
         {
-            candidates = new String[]{
-                    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-                    "/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf",
-                    "/usr/share/fonts/dejavu/DejaVuSans.ttf",
-                    "/usr/share/fonts/TTF/DejaVuSans.ttf",
-                    "/usr/share/fonts/google-noto/NotoSans-Regular.ttf",
-                    "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
-                    "/usr/share/fonts/liberation/LiberationSans-Regular.ttf",
-                    "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"};
+            // Linux resolves and loads its own fonts (fontconfig-driven, with STB-loadability checks).
+            addLinuxSystemFonts(bakeHeight, pixelPerfect, sizeScale, yOffset);
+            return;
         }
 
-        for (String path : candidates)
+        if (paths.isEmpty())
+            System.err.println("TruetypeFontRenderer: no system fonts found for OS '" + os + "'");
+
+        for (String path : paths)
+            addFontFile(path, bakeHeight, pixelPerfect, sizeScale, yOffset);
+    }
+
+    /** Adds each path that exists as a regular file to {@code out}, skipping the rest. */
+    private static void addExisting(Set<String> out, String... paths)
+    {
+        for (String p : paths)
+            if (new File(p).isFile())
+                out.add(p);
+    }
+
+    /**
+     * Resolves and loads broad-coverage Linux system fonts via fontconfig. For each representative
+     * language it takes fontconfig's best match ({@code fc-match}); if STB can't rasterize that file
+     * (e.g. a CFF2 font like the system Noto Sans CJK), it walks the fonts that actually cover the
+     * script ({@code fc-list}) and loads the first STB can use — typically a glyf alternative such as
+     * Droid Sans Fallback. If fontconfig is unavailable, or nothing usable is found, it falls back to
+     * scanning the standard font directories.
+     */
+    private void addLinuxSystemFonts(int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        // (fontconfig language, representative BMP codepoint) for the major writing systems. We only
+        // pull in a font for a script when nothing loaded so far renders its sample character, and we
+        // verify a candidate actually contains that glyph: fontconfig's best match is often a CFF2
+        // font STB can't use, and its coverage lists include near-misses. Picking by real coverage is
+        // what steps over the system's CFF2 Noto CJK to a glyf fallback (e.g. Droid Sans Fallback).
+        String[] langs = {"ru", "el", "zh", "ja", "ko", "hi", "bn", "ta", "te", "kn", "ml", "gu",
+                "pa", "or", "si", "ar", "he", "th", "my", "km", "lo", "ka", "hy", "am"};
+        int[] samples = {0x0410, 0x0391, 0x4E00, 0x3042, 0xAC00, 0x0905, 0x0985, 0x0B85, 0x0C05,
+                0x0C85, 0x0D05, 0x0A85, 0x0A05, 0x0B05, 0x0D85, 0x0627, 0x05D0, 0x0E01, 0x1000,
+                0x1780, 0x0E81, 0x10D0, 0x0531, 0x1200};
+
+        Set<String> added = new HashSet<>();      // files contributing glyphs to the chain
+        Set<String> rejected = new HashSet<>();   // files STB can't use at all (e.g. CFF2)
+
+        for (int s = 0; s < langs.length; s++)
         {
-            if (new File(path).isFile())
+            int codepoint = samples[s];
+            if (anyFontSupports(codepoint))
+                continue;   // already covered by Bullet or a font loaded for an earlier script
+
+            List<String> candidates;
+            try
             {
-                addFontFile(path, bakeHeight, pixelPerfect, sizeScale, yOffset);
+                // fontconfig's best match first (highest quality), then every font claiming to cover
+                // the script.
+                candidates = new ArrayList<>(runFontconfig("fc-match", "-f", "%{file}\n", ":lang=" + langs[s]));
+                candidates.addAll(runFontconfig("fc-list", ":lang=" + langs[s], "--format", "%{file}\n"));
+            }
+            catch (IOException notInstalled)
+            {
+                addFontsFromStandardDirs(bakeHeight, pixelPerfect, sizeScale, yOffset);
                 return;
+            }
+
+            for (String file : candidates)
+            {
+                if (added.contains(file) || rejected.contains(file) || !new File(file).isFile())
+                    continue;
+                if (addFontFileCovering(file, codepoint, rejected, bakeHeight, pixelPerfect, sizeScale, yOffset))
+                {
+                    added.add(file);
+                    break;
+                }
+            }
+        }
+    }
+
+    /** True if any already-loaded font has a glyph for {@code codepoint}. */
+    private boolean anyFontSupports(int codepoint)
+    {
+        for (TtfFontInfo font : fonts)
+            if (font.supportsCodepoint(codepoint))
+                return true;
+        return false;
+    }
+
+    /**
+     * Reads {@code filePath} and registers only the sub-fonts that STB can initialize <em>and</em>
+     * that contain a glyph for {@code requiredCodepoint}; returns true if at least one was added.
+     * Files STB can't use at all (e.g. CFF2) are recorded in {@code rejected} so other scripts skip
+     * them. This is what lets the resolver pass over the system's CFF2 Noto CJK to a glyf fallback.
+     */
+    private boolean addFontFileCovering(String filePath, int requiredCodepoint, Set<String> rejected,
+                                        int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        ByteBuffer buffer;
+        try
+        {
+            buffer = readFile(filePath);
+        }
+        catch (IOException e)
+        {
+            rejected.add(filePath);
+            return false;
+        }
+
+        int count = stbtt_GetNumberOfFonts(buffer);
+        int initialized = 0;
+        int added = 0;
+        for (int i = 0; i < count; i++)
+        {
+            int offset = stbtt_GetFontOffsetForIndex(buffer, i);
+            if (offset < 0)
+                continue;
+
+            TtfFontInfo info;
+            try
+            {
+                info = new TtfFontInfo(buffer, offset, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            }
+            catch (Exception e)
+            {
+                continue;   // STB couldn't initialize this sub-font (e.g. CFF2)
+            }
+            initialized++;
+
+            if (info.supportsCodepoint(requiredCodepoint))
+            {
+                fonts.add(info);
+                added++;
             }
         }
 
-        System.err.println("TruetypeFontRenderer: no system default font found for OS '" + os + "'");
+        if (initialized == 0)
+        {
+            rejected.add(filePath);
+            System.err.println("TruetypeFontRenderer: cannot use '" + filePath + "' — "
+                    + (isOpenTypeCFF(buffer) ? "OpenType/CFF2 outlines unsupported by STB" : "no STB-loadable fonts"));
+        }
+        if (added > 0)
+            System.out.println("TruetypeFontRenderer: loaded system font " + filePath);
+
+        return added > 0;
+    }
+
+    /** Last-resort fallback when fontconfig is absent: load every font under the standard font dirs. */
+    private void addFontsFromStandardDirs(int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        Set<String> scanned = new LinkedHashSet<>();
+        for (String dir : new String[]{
+                System.getProperty("user.home") + "/.local/share/fonts",
+                System.getProperty("user.home") + "/.fonts",
+                "/usr/share/fonts",
+                "/usr/local/share/fonts"})
+            collectFontFiles(new File(dir), scanned, 0);
+
+        for (String f : scanned)
+            addFontFile(f, bakeHeight, pixelPerfect, sizeScale, yOffset);
+
+        if (scanned.isEmpty())
+            System.err.println("TruetypeFontRenderer: no Linux system fonts found");
+    }
+
+    /**
+     * Runs a fontconfig command and returns its stdout as a list of non-blank, trimmed lines.
+     * Throws {@link IOException} if the binary isn't installed.
+     */
+    private static List<String> runFontconfig(String... command) throws IOException
+    {
+        Process p = new ProcessBuilder(command).start();
+
+        List<String> lines = new ArrayList<>();
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream(), java.nio.charset.StandardCharsets.UTF_8)))
+        {
+            String line;
+            while ((line = r.readLine()) != null)
+            {
+                line = line.trim();
+                if (!line.isEmpty())
+                    lines.add(line);
+            }
+        }
+
+        try
+        {
+            p.waitFor(3, java.util.concurrent.TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+        }
+        p.destroy();
+
+        return lines;
+    }
+
+    /** Recursively collects .ttf/.ttc/.otf files under {@code dir} (depth-bounded) into {@code out}. */
+    private static void collectFontFiles(File dir, Set<String> out, int depth)
+    {
+        if (depth > 6 || !dir.isDirectory())
+            return;
+
+        File[] entries = dir.listFiles();
+        if (entries == null)
+            return;
+
+        for (File f : entries)
+        {
+            if (f.isDirectory())
+                collectFontFiles(f, out, depth + 1);
+            else
+            {
+                String n = f.getName().toLowerCase(Locale.ROOT);
+                if (n.endsWith(".ttf") || n.endsWith(".ttc") || n.endsWith(".otf"))
+                    out.add(f.getAbsolutePath());
+            }
+        }
     }
 
     @Override

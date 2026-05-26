@@ -18,6 +18,10 @@ public class ShaderBase extends ShaderProgram implements IBaseShader, IBlendFunc
 
     public Uniform1i blendFunc;
 
+    public Uniform1f baseLight;
+    public Uniform1f shadowLight;
+
+
     public BaseWindow window;
 
     public ShaderBase(BaseWindow window)

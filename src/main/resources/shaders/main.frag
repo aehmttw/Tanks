@@ -18,6 +18,8 @@ uniform bool shadow;
 uniform bool vbo;
 uniform vec4 originalColor;
 
+uniform float baseLight;
+uniform float shadowLight;
 
 uniform float width;
 uniform float height;
@@ -71,7 +73,7 @@ void main(void)
     else
     {
         gl_FragData[0] = fragColor;
-        gl_FragData[1] = vec4(0.0, 0.0, 0.0, fragColor.a);
-        gl_FragData[2] = vec4(float(lit), glow, 0.0, fragColor.a);
+        gl_FragData[1] = vec4(fragColor.rgb * glow * (float(lit) * (1.0 - baseLight) + (1.0 - float(lit)) *  (1.0 - shadowLight)), fragColor.a);
+        gl_FragData[2] = vec4(float(lit), 0.0, 0.0, fragColor.a);
     }
 }

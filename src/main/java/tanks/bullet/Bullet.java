@@ -1819,6 +1819,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     {
 //        if (!this.effect.glowGlowy)
 //        {
+//            System.out.println("hi");
 //            c.set(this.outlineColor.red - 255, this.outlineColor.green - 255, this.outlineColor.blue - 255);
 //            return c;
 //        }

@@ -18,8 +18,8 @@ void main()
 //    vec3 normalized = lightFromLights / intensity;
 
     vec3 inputCol = texture2D(colorTex, texPos).rgb;
-    vec2 sunInfo = texture2D(shadowTex, texPos).rg;
-    float sunIntensity = ((1.0 - sunInfo.r) * shadowLight + sunInfo.r * baseLight) * (1.0 - sunInfo.g) + sunInfo.g;
+    float lit = texture2D(shadowTex, texPos).r;
+    float sunIntensity = ((1.0 - lit) * shadowLight + lit * baseLight);
 
     vec3 env = sunIntensity * lightColor;
     vec3 fromLights = sqrt(abs(lightFromLights)) * sign(lightFromLights);

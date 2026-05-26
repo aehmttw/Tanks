@@ -30,6 +30,9 @@ public class RenderPassGroupShadowDraw
 
     public BaseFrameBuffer depthFrameBuffer;
 
+    public double light;
+    public double shadow;
+
     public RenderPassGroupShadowDraw(BaseWindow w)
     {
         this.window = w;

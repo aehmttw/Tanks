@@ -1,6 +1,7 @@
 package tanks.tank;
 
 import basewindow.Color;
+import basewindow.Model;
 import tanks.*;
 import tanks.gui.screen.ScreenPartyLobby;
 import tanks.item.ItemMine;
@@ -57,6 +58,8 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public static HashMap<Integer, Mine> idMap = new HashMap<>();
 
     public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
+
+    public static Model mine;
 
     /**
      * Do not use if you plan to place this mine in the game field. Only for templates.
@@ -125,14 +128,15 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
         if (Game.enable3d)
         {
-            for (double i = height; i < height + 6; i++)
-            {
-                double frac = ((i - height + 1) / 6 + 1) / 2;
-                Drawing.drawing.setColor(this.outlineColorR * frac, this.outlineColorG * frac, this.outlineColorB * frac, 255, 0.5);
-                Drawing.drawing.fillOval(this.posX, this.posY, this.posZ + i + 1.5, this.size, this.size, true, false);
-            }
+//            for (double i = height; i < height + 6; i++)
+//            {
+//                double frac = ((i - height + 1) / 6 + 1) / 2;
+//                Drawing.drawing.setColor(this.outlineColorR * frac, this.outlineColorG * frac, this.outlineColorB * frac, 255, 0.5);
+//                Drawing.drawing.fillOval(this.posX, this.posY, this.posZ + i + 1.5, this.size, this.size, true, false);
+//            }
 
             Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 255, 1);
+            Drawing.drawing.drawModel(mine, this.posX, this.posY, this.posZ + height, this.size, this.size, 6, 0);
 
             if (Game.glowEnabled)
                 Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ + height + 1, this.size * 4, this.size * 4, true, false);
@@ -154,7 +158,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
             Drawing.drawing.setColor(this.initialColor, 255, 0.5);
 
         if (Game.enable3d)
-            Drawing.drawing.fillOval(this.posX, this.posY, this.posZ + height + 7.5, this.size * 0.8, this.size * 0.8, true, false);
+            Drawing.drawing.drawModel(mine, this.posX, this.posY, this.posZ + height, this.size * 0.8, this.size * 0.8, 7, 0);
         else
             Drawing.drawing.fillOval(this.posX, this.posY, this.size * 0.8, this.size * 0.8);
 

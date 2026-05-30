@@ -28,6 +28,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         public final boolean pixelPerfect;
         public final double sizeScale;
         public final double yOffset;
+        public final java.awt.Font awtFont;
+        public final double awtToStbScaleRatio;
 
         private final Map<Integer, Integer> glyphTextures = new HashMap<>();
         private final Map<Integer, int[]> glyphMetrics = new HashMap<>();
@@ -64,6 +66,57 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 stbtt_GetFontVMetrics(stbInfo, a, d, lg);
                 this.ascent = a.get(0);
             }
+
+            java.awt.Font rawFont = null;
+            try
+            {
+                byte[] bytes = new byte[buffer.remaining()];
+                int originalPos = buffer.position();
+                buffer.get(bytes);
+                buffer.position(originalPos);
+                
+                rawFont = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, new java.io.ByteArrayInputStream(bytes));
+            }
+            catch (Exception e)
+            {
+                System.err.println("TruetypeFontRenderer: failed to load AWT Font: " + e.getMessage());
+            }
+            this.awtFont = (rawFont != null) ? rawFont.deriveFont((float) bakeHeight) : null;
+
+            double ratio = 1.0;
+            if (this.awtFont != null)
+            {
+                char calChar = 'a';
+                if (!supportsCodepoint(calChar))
+                {
+                    for (int c = 32; c < 65536; c++)
+                    {
+                        if (supportsCodepoint(c))
+                        {
+                            calChar = (char) c;
+                            break;
+                        }
+                    }
+                }
+                
+                try
+                {
+                    java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
+                    java.awt.font.GlyphVector gv = this.awtFont.layoutGlyphVector(frc, new char[]{calChar}, 0, 1, java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
+                    double awtAdvance = gv.getGlyphPosition(1).getX();
+                    int[] stbMetrics = getGlyphMetrics(stbtt_FindGlyphIndex(stbInfo, calChar));
+                    double stbAdvance = stbMetrics[0] * this.fontScale;
+                    if (awtAdvance > 0 && stbAdvance > 0)
+                    {
+                        ratio = stbAdvance / awtAdvance;
+                    }
+                }
+                catch (Exception e)
+                {
+                    // Keep ratio = 1.0
+                }
+            }
+            this.awtToStbScaleRatio = ratio;
         }
 
         public boolean supportsCodepoint(int codepoint)
@@ -73,31 +126,41 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
         public int[] getMetrics(int codepoint)
         {
-            if (glyphMetrics.containsKey(codepoint))
-                return glyphMetrics.get(codepoint);
+            return getGlyphMetrics(stbtt_FindGlyphIndex(stbInfo, codepoint));
+        }
+
+        public int[] getGlyphMetrics(int glyphId)
+        {
+            if (glyphMetrics.containsKey(glyphId))
+                return glyphMetrics.get(glyphId);
 
             try (MemoryStack stack = MemoryStack.stackPush())
             {
                 IntBuffer adv = stack.mallocInt(1);
                 IntBuffer lsb = stack.mallocInt(1);
-                stbtt_GetCodepointHMetrics(stbInfo, codepoint, adv, lsb);
+                stbtt_GetGlyphHMetrics(stbInfo, glyphId, adv, lsb);
 
                 IntBuffer x0 = stack.mallocInt(1);
                 IntBuffer y0 = stack.mallocInt(1);
                 IntBuffer x1 = stack.mallocInt(1);
                 IntBuffer y1 = stack.mallocInt(1);
-                stbtt_GetCodepointBitmapBox(stbInfo, codepoint, fontScale, fontScale, x0, y0, x1, y1);
+                stbtt_GetGlyphBitmapBox(stbInfo, glyphId, fontScale, fontScale, x0, y0, x1, y1);
 
                 int[] m = new int[]{adv.get(0), x1.get(0) - x0.get(0), y1.get(0) - y0.get(0), x0.get(0), y0.get(0)};
-                glyphMetrics.put(codepoint, m);
+                glyphMetrics.put(glyphId, m);
                 return m;
             }
         }
 
         public int getOrCreateTexture(int codepoint)
         {
-            if (glyphTextures.containsKey(codepoint))
-                return glyphTextures.get(codepoint);
+            return getOrCreateGlyphTexture(stbtt_FindGlyphIndex(stbInfo, codepoint));
+        }
+
+        public int getOrCreateGlyphTexture(int glyphId)
+        {
+            if (glyphTextures.containsKey(glyphId))
+                return glyphTextures.get(glyphId);
 
             try (MemoryStack stack = MemoryStack.stackPush())
             {
@@ -106,11 +169,11 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 IntBuffer xoff = stack.mallocInt(1);
                 IntBuffer yoff = stack.mallocInt(1);
 
-                ByteBuffer bitmap = stbtt_GetCodepointBitmap(stbInfo, fontScale, fontScale, codepoint, w, h, xoff, yoff);
+                ByteBuffer bitmap = stbtt_GetGlyphBitmap(stbInfo, fontScale, fontScale, glyphId, w, h, xoff, yoff);
 
                 if (bitmap == null || w.get(0) == 0 || h.get(0) == 0)
                 {
-                    glyphTextures.put(codepoint, 0);
+                    glyphTextures.put(glyphId, 0);
                     return 0;
                 }
 
@@ -145,9 +208,9 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
                 stbtt_FreeBitmap(bitmap);
 
-                int[] m = new int[]{getMetrics(codepoint)[0], w.get(0), h.get(0), xoff.get(0), yoff.get(0)};
-                glyphMetrics.put(codepoint, m);
-                glyphTextures.put(codepoint, texId);
+                int[] m = new int[]{getGlyphMetrics(glyphId)[0], w.get(0), h.get(0), xoff.get(0), yoff.get(0)};
+                glyphMetrics.put(glyphId, m);
+                glyphTextures.put(glyphId, texId);
                 return texId;
             }
         }
@@ -475,8 +538,24 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             {
                 // fontconfig's best match first (highest quality), then every font claiming to cover
                 // the script.
-                candidates = new ArrayList<>(runFontconfig("fc-match", "-f", "%{file}\n", ":lang=" + langs[s]));
-                candidates.addAll(runFontconfig("fc-list", ":lang=" + langs[s], "--format", "%{file}\n"));
+                List<String> rawCandidates = new ArrayList<>(runFontconfig("fc-match", "-f", "%{file}\n", ":lang=" + langs[s]));
+                rawCandidates.addAll(runFontconfig("fc-list", ":lang=" + langs[s], "--format", "%{file}\n"));
+
+                // Prioritize static fonts over variable fonts because Java 8's AWT shaping
+                // does not work with modern OpenType variable fonts (.vf / [wght]).
+                List<String> staticFonts = new ArrayList<>();
+                List<String> variableFonts = new ArrayList<>();
+                for (String c : rawCandidates)
+                {
+                    String lower = c.toLowerCase();
+                    if (lower.contains("[wght") || lower.contains("-vf") || lower.contains("google-noto-vf") || lower.contains("variable"))
+                        variableFonts.add(c);
+                    else
+                        staticFonts.add(c);
+                }
+                candidates = new ArrayList<>();
+                candidates.addAll(staticFonts);
+                candidates.addAll(variableFonts);
             }
             catch (IOException notInstalled)
             {
@@ -737,49 +816,31 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
         double opacity = this.window.colorA;
         double curX = x;
-        char[] c = s.toCharArray();
 
         double r0 = this.window.colorR;
         double g0 = this.window.colorG;
         double b0 = this.window.colorB;
         double a0 = this.window.colorA;
 
-        for (int i = 0; i < c.length; i++)
+        List<ShapedRun> runs = parseRuns(s);
+        for (ShapedRun run : runs)
         {
-            if (c[i] == 'Â')
-                continue;
-            else if (c[i] == '§')
+            if (run.isReset)
             {
-                if (s.length() <= i + 1)
-                    continue;
-
-                if (c[i + 1] == 'r')
-                {
-                    i++;
-                    this.window.setColor(r0 * 255, g0 * 255, b0 * 255, a0 * 255);
-                    continue;
-                }
-
-                if (s.length() <= i + 12)
-                    continue;
-
-                try
-                {
-                    int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
-                    int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
-                    int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
-                    int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
-                    this.window.setColor(r, g, b, a * opacity);
-                }
-                catch (Exception e)
-                {
-                    continue;
-                }
-
-                i += 12;
+                this.window.setColor(r0 * 255, g0 * 255, b0 * 255, a0 * 255);
             }
-            else
-                curX += drawChar(curX, y, z, sX, sY, c[i], depth);
+            else if (run.color != null)
+            {
+                this.window.setColor(run.color[0], run.color[1], run.color[2], run.color[3] * opacity);
+            }
+            else if (!run.text.isEmpty())
+            {
+                List<FontRun> fontRuns = partitionByFont(run.text);
+                for (FontRun fontRun : fontRuns)
+                {
+                    curX += drawShapedString(curX, y, z, sX, sY, fontRun.text, fontRun.font, depth);
+                }
+            }
         }
 
         glDisable(GL_DEPTH_TEST);
@@ -790,49 +851,31 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     {
         double opacity = this.window.colorA;
         double curX = x;
-        char[] c = s.toCharArray();
 
         double r0 = this.window.colorR;
         double g0 = this.window.colorG;
         double b0 = this.window.colorB;
         double a0 = this.window.colorA;
 
-        for (int i = 0; i < c.length; i++)
+        List<ShapedRun> runs = parseRuns(s);
+        for (ShapedRun run : runs)
         {
-            if (c[i] == 'Â')
-                continue;
-            else if (c[i] == '§')
+            if (run.isReset)
             {
-                if (s.length() <= i + 1)
-                    continue;
-
-                if (c[i + 1] == 'r')
-                {
-                    i++;
-                    this.window.setColor(r0 * 255, g0 * 255, b0 * 255, a0 * 255);
-                    continue;
-                }
-
-                if (s.length() <= i + 12)
-                    continue;
-
-                try
-                {
-                    int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
-                    int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
-                    int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
-                    int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
-                    this.window.setColor(r, g, b, a * opacity);
-                }
-                catch (Exception e)
-                {
-                    continue;
-                }
-
-                i += 12;
+                this.window.setColor(r0 * 255, g0 * 255, b0 * 255, a0 * 255);
             }
-            else
-                curX += drawChar(curX, y, 0, sX, sY, c[i], false);
+            else if (run.color != null)
+            {
+                this.window.setColor(run.color[0], run.color[1], run.color[2], run.color[3] * opacity);
+            }
+            else if (!run.text.isEmpty())
+            {
+                List<FontRun> fontRuns = partitionByFont(run.text);
+                for (FontRun fontRun : fontRuns)
+                {
+                    curX += drawShapedString(curX, y, 0, sX, sY, fontRun.text, fontRun.font, false);
+                }
+            }
         }
     }
 
@@ -840,42 +883,256 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     public double getStringSizeX(double sX, String s)
     {
         double w = 0;
-        char[] c = s.toCharArray();
-
-        for (int i = 0; i < c.length; i++)
+        List<ShapedRun> runs = parseRuns(s);
+        for (ShapedRun run : runs)
         {
-            if (c[i] == 'Â')
-                continue;
-            else if (c[i] == '§')
+            if (!run.text.isEmpty())
             {
-                if (s.length() <= i + 1)
-                    continue;
-
-                if (c[i + 1] == 'r')
+                List<FontRun> fontRuns = partitionByFont(run.text);
+                for (FontRun fontRun : fontRuns)
                 {
-                    i++;
-                    continue;
+                    w += getShapedStringSizeX(sX, fontRun.text, fontRun.font);
                 }
-
-                if (s.length() <= i + 12)
-                    continue;
-
-                i += 12;
-            }
-            else
-            {
-                TtfFontInfo font = findFontForChar(c[i]);
-                int[] m = font.getMetrics(c[i]);
-                w += m[0] * font.fontScale * sX * 32.0 * font.sizeScale / font.bakeHeight;
             }
         }
-
         return w;
+    }
+
+    private double getShapedStringSizeX(double sX, String text, TtfFontInfo font)
+    {
+        if (text.isEmpty())
+            return 0;
+
+        if (font.awtFont == null)
+        {
+            double w = 0;
+            for (int i = 0; i < text.length(); i++)
+            {
+                int[] m = font.getGlyphMetrics(stbtt_FindGlyphIndex(font.stbInfo, text.charAt(i)));
+                w += m[0] * font.fontScale * sX * 32.0 * font.sizeScale / font.bakeHeight;
+            }
+            return w;
+        }
+
+        java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
+        java.awt.font.GlyphVector gv = font.awtFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
+        double scaleX = sX * 32.0 * font.sizeScale / font.bakeHeight;
+        return gv.getGlyphPosition(gv.getNumGlyphs()).getX() * font.awtToStbScaleRatio * scaleX;
     }
 
     @Override
     public double getStringSizeY(double sY, String s)
     {
         return sY * 32;
+    }
+
+    private static class ShapedRun
+    {
+        public final String text;
+        public final double[] color; // Null if no change, size 4 array if specified
+        public final boolean isReset;
+
+        public ShapedRun(String text, double[] color, boolean isReset)
+        {
+            this.text = text;
+            this.color = color;
+            this.isReset = isReset;
+        }
+    }
+
+    private static class FontRun
+    {
+        public final String text;
+        public final TtfFontInfo font;
+
+        public FontRun(String text, TtfFontInfo font)
+        {
+            this.text = text;
+            this.font = font;
+        }
+    }
+
+    private List<ShapedRun> parseRuns(String s)
+    {
+        List<ShapedRun> runs = new ArrayList<>();
+        StringBuilder currentText = new StringBuilder();
+        char[] c = s.toCharArray();
+        for (int i = 0; i < c.length; i++)
+        {
+            if (c[i] == 'Â')
+            {
+                continue;
+            }
+            else if (c[i] == '§')
+            {
+                if (s.length() <= i + 1)
+                {
+                    currentText.append(c[i]);
+                    continue;
+                }
+
+                if (c[i + 1] == 'r')
+                {
+                    if (currentText.length() > 0)
+                    {
+                        runs.add(new ShapedRun(currentText.toString(), null, false));
+                        currentText.setLength(0);
+                    }
+                    runs.add(new ShapedRun("", null, true));
+                    i++;
+                    continue;
+                }
+
+                if (s.length() <= i + 12)
+                {
+                    currentText.append(c[i]);
+                    continue;
+                }
+
+                try
+                {
+                    int r = Integer.parseInt(c[i + 1] + "" + c[i + 2] + "" + c[i + 3]);
+                    int g = Integer.parseInt(c[i + 4] + "" + c[i + 5] + "" + c[i + 6]);
+                    int b = Integer.parseInt(c[i + 7] + "" + c[i + 8] + "" + c[i + 9]);
+                    int a = Integer.parseInt(c[i + 10] + "" + c[i + 11] + "" + c[i + 12]);
+                    
+                    if (currentText.length() > 0)
+                    {
+                        runs.add(new ShapedRun(currentText.toString(), null, false));
+                        currentText.setLength(0);
+                    }
+                    runs.add(new ShapedRun("", new double[]{r, g, b, a}, false));
+                    i += 12;
+                }
+                catch (Exception e)
+                {
+                    currentText.append(c[i]);
+                }
+            }
+            else
+            {
+                currentText.append(c[i]);
+            }
+        }
+        if (currentText.length() > 0)
+        {
+            runs.add(new ShapedRun(currentText.toString(), null, false));
+        }
+        return runs;
+    }
+
+    private List<FontRun> partitionByFont(String text)
+    {
+        List<FontRun> runs = new ArrayList<>();
+        if (text.isEmpty())
+            return runs;
+
+        StringBuilder currentText = new StringBuilder();
+        TtfFontInfo currentFont = findFontForChar(text.charAt(0));
+        currentText.append(text.charAt(0));
+
+        for (int i = 1; i < text.length(); i++)
+        {
+            char c = text.charAt(i);
+            TtfFontInfo font = findFontForChar(c);
+            if (font == currentFont)
+            {
+                currentText.append(c);
+            }
+            else
+            {
+                runs.add(new FontRun(currentText.toString(), currentFont));
+                currentText.setLength(0);
+                currentFont = font;
+                currentText.append(c);
+            }
+        }
+        if (currentText.length() > 0)
+        {
+            runs.add(new FontRun(currentText.toString(), currentFont));
+        }
+        return runs;
+    }
+
+    private double drawShapedString(double x, double y, double z, double sX, double sY, String text, TtfFontInfo font, boolean depthtest)
+    {
+        if (text.isEmpty())
+            return 0;
+
+        if (font.awtFont == null)
+        {
+            double curX = x;
+            for (int i = 0; i < text.length(); i++)
+            {
+                curX += drawChar(curX, y, z, sX, sY, text.charAt(i), depthtest);
+            }
+            return curX - x;
+        }
+
+        java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
+        java.awt.font.GlyphVector gv = font.awtFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
+
+        int numGlyphs = gv.getNumGlyphs();
+        double scaleX = sX * 32.0 * font.sizeScale / font.bakeHeight;
+        double scaleY = sY * 32.0 * font.sizeScale / font.bakeHeight;
+        double baselineY = (y - sY * 16) + font.ascent * font.fontScale * scaleY + sY * 32 * font.yOffset;
+
+        if (lwjglWindow.drawingShadow)
+        {
+            return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;
+        }
+
+        for (int i = 0; i < numGlyphs; i++)
+        {
+            int glyphId = gv.getGlyphCode(i);
+            if (glyphId < 0)
+                continue;
+
+            java.awt.geom.Point2D pos = gv.getGlyphPosition(i);
+
+            int texId = font.getOrCreateGlyphTexture(glyphId);
+            int[] m = font.getGlyphMetrics(glyphId);
+            int bitmapW = m[1];
+            int bitmapH = m[2];
+            int xoff = m[3];
+            int yoff = m[4];
+
+            double gx = x + (pos.getX() * font.awtToStbScaleRatio + xoff) * scaleX;
+            double gy = baselineY + (pos.getY() * font.awtToStbScaleRatio + yoff) * scaleY;
+            double gw = bitmapW * scaleX;
+            double gh = bitmapH * scaleY;
+
+            if (texId != 0)
+            {
+                if (depthtest)
+                    glEnable(GL_DEPTH_TEST);
+
+                lwjglWindow.enableTexture();
+                glEnable(GL_BLEND);
+                lwjglWindow.setTransparentBlendFunc();
+                glDepthMask(false);
+
+                glBindTexture(GL_TEXTURE_2D, texId);
+
+                glBegin(GL_TRIANGLE_FAN);
+                glTexCoord2d(0, 0);
+                glVertex3d(gx, gy, z);
+                glTexCoord2d(0, 1);
+                glVertex3d(gx, gy + gh, z);
+                glTexCoord2d(1, 1);
+                glVertex3d(gx + gw, gy + gh, z);
+                glTexCoord2d(1, 0);
+                glVertex3d(gx + gw, gy, z);
+                glEnd();
+
+                glDepthMask(true);
+                lwjglWindow.disableTexture();
+
+                if (depthtest)
+                    glDisable(GL_DEPTH_TEST);
+            }
+        }
+
+        return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;
     }
 }

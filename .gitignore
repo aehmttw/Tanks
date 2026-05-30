@@ -18,6 +18,7 @@ steam_app_id.txt
 libs.tar.gz
 chars
 .claude
+.antigravitycli
 
 # Local character SVGs — not to be committed
 chars/

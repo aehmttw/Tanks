@@ -545,7 +545,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 // does not work with modern OpenType variable fonts (.vf / [wght]).
                 List<String> staticFonts = new ArrayList<>();
                 List<String> variableFonts = new ArrayList<>();
-                for (String c : rawCandidates)
+                for (String c: rawCandidates)
                 {
                     String lower = c.toLowerCase();
                     if (lower.contains("[wght") || lower.contains("-vf") || lower.contains("google-noto-vf") || lower.contains("variable"))
@@ -823,7 +823,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         double a0 = this.window.colorA;
 
         List<ShapedRun> runs = parseRuns(s);
-        for (ShapedRun run : runs)
+        for (ShapedRun run: runs)
         {
             if (run.isReset)
             {
@@ -836,7 +836,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             else if (!run.text.isEmpty())
             {
                 List<FontRun> fontRuns = partitionByFont(run.text);
-                for (FontRun fontRun : fontRuns)
+                for (FontRun fontRun: fontRuns)
                 {
                     curX += drawShapedString(curX, y, z, sX, sY, fontRun.text, fontRun.font, depth);
                 }
@@ -858,7 +858,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         double a0 = this.window.colorA;
 
         List<ShapedRun> runs = parseRuns(s);
-        for (ShapedRun run : runs)
+        for (ShapedRun run: runs)
         {
             if (run.isReset)
             {
@@ -871,7 +871,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             else if (!run.text.isEmpty())
             {
                 List<FontRun> fontRuns = partitionByFont(run.text);
-                for (FontRun fontRun : fontRuns)
+                for (FontRun fontRun: fontRuns)
                 {
                     curX += drawShapedString(curX, y, 0, sX, sY, fontRun.text, fontRun.font, false);
                 }
@@ -884,12 +884,12 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     {
         double w = 0;
         List<ShapedRun> runs = parseRuns(s);
-        for (ShapedRun run : runs)
+        for (ShapedRun run: runs)
         {
             if (!run.text.isEmpty())
             {
                 List<FontRun> fontRuns = partitionByFont(run.text);
-                for (FontRun fontRun : fontRuns)
+                for (FontRun fontRun: fontRuns)
                 {
                     w += getShapedStringSizeX(sX, fontRun.text, fontRun.font);
                 }

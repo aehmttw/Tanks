@@ -48,12 +48,22 @@ public class GameDrawer implements IDrawer
     @Override
     public void draw()
     {
-        if (!initialized)
-            this.initialize();
+        try
+        {
+            if (!initialized)
+                this.initialize();
 
-        Game.game.window.mainRenderPasses.draw();
-        this.lightsPass.draw();
-        this.uiPass.draw();
+            Game.game.window.mainRenderPasses.draw();
+            this.lightsPass.draw();
+            this.uiPass.draw();
+        }
+        catch (Throwable e)
+        {
+            if (e instanceof GameCrashedException)
+                Game.displayCrashScreen(((GameCrashedException) e).originalException);
+            else
+                Game.displayCrashScreen(e);
+        }
     }
 
     @Override

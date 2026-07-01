@@ -3,7 +3,7 @@
 uniform sampler2D colorTex;
 uniform sampler2D lightTex;
 
-uniform vec3 baseLight;
+uniform float baseLight;
 
 void main()
 {

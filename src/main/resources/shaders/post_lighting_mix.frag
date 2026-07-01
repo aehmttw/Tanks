@@ -24,11 +24,17 @@ void main()
     vec3 env = sunIntensity * lightColor;
     vec3 fromLights = sqrt(abs(lightFromLights)) * sign(lightFromLights);
     vec3 glow = texture2D(glowTex, texPos).rgb;
-    float sunAdj = 5.0 * sunIntensity + 1.0;
 
-    vec3 light = env + fromLights / sunAdj;
+//    float sunAdj = 5.0 * sunIntensity + 1.0;
+//    vec3 light = env + fromLights / sunAdj;
+    float fOrig = 1.0 / (5.0 * sunIntensity + 1.0);
+    float fLin = 1.0 - sunIntensity;
+
+    float t = smoothstep(0.6, 1.0, sunIntensity);
+    vec3 light = env + fromLights * mix(fLin, fOrig, t);
 
     gl_FragColor = vec4(inputCol * light + glow, 1.0);
+
 //    gl_FragColor.xyz = gl_FragColor.xyz * 0.1 + lightFromLights;
 //    gl_FragColor = vec4(texture2D(colorTex, texPos).rgb * (baseLight.rgb + sqrt(intensity)), 0.5);
 }

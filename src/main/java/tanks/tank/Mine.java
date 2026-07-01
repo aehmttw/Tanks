@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @TanksONable("mine")
-public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITanksONEditable
+public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITanksONEditable, IDrawableLightSource
 {
     public static double mine_size = 30;
     public static double mine_radius = Game.tile_size * 2.25;
@@ -28,9 +28,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     @Property(id = "size", name = "Size", category = MinePropertyCategory.mine)
     public double size = mine_size;
 
-    public double outlineColorR;
-    public double outlineColorG;
-    public double outlineColorB;
+    public Color outlineColor = new Color();
     public double height = 0;
 
     @Property(id = "triggered_timer", name = "Triggered fuse length",
@@ -50,6 +48,8 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
     @Property(id = "color2", name = "Final color", miscType = Property.MiscType.colorRGB, category = MinePropertyCategory.colors)
     public Color finalColor = new Color(255, 0, 0);
+
+    public Color centerColor = new Color();
 
     public int networkID = -1;
 
@@ -90,9 +90,9 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
         this.team = t.team;
         double[] outlineCol = Team.getObjectColor(t.color.red, t.color.green, t.color.blue, t);
-        this.outlineColorR = outlineCol[0];
-        this.outlineColorG = outlineCol[1];
-        this.outlineColorB = outlineCol[2];
+        this.outlineColor.red = outlineCol[0];
+        this.outlineColor.green = outlineCol[1];
+        this.outlineColor.blue = outlineCol[2];
 
         if (!ScreenPartyLobby.isClient)
         {
@@ -116,7 +116,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     @Override
     public void draw()
     {
-        Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 255, 0.5);
+        Drawing.drawing.setColor(this.outlineColor, 255, 1);
 
         if (Game.enable3d && Game.enable3dBg && Game.fancyTerrain)
         {
@@ -135,7 +135,6 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 //                Drawing.drawing.fillOval(this.posX, this.posY, this.posZ + i + 1.5, this.size, this.size, true, false);
 //            }
 
-            Drawing.drawing.setColor(this.outlineColorR, this.outlineColorG, this.outlineColorB, 255, 1);
             Drawing.drawing.drawModel(mine, this.posX, this.posY, this.posZ + height, this.size, this.size, 6, 0);
 
             if (Game.glowEnabled)
@@ -150,12 +149,14 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
         }
 
         double frac = Math.min(1000, this.timer) / 1000.0;
-        Drawing.drawing.setColor(this.initialColor.red * frac + this.finalColor.red * (1 - frac),
-            this.initialColor.green * frac + this.finalColor.green * (1 - frac),
-            this.initialColor.blue * frac + this.finalColor.blue * (1 - frac), 255, 0.5);
+        this.centerColor.set(this.initialColor.red * frac + this.finalColor.red * (1 - frac),
+                this.initialColor.green * frac + this.finalColor.green * (1 - frac),
+                this.initialColor.blue * frac + this.finalColor.blue * (1 - frac));
 
         if (timer < 150 && ((int) timer % 20) / 10 == 1)
-            Drawing.drawing.setColor(this.initialColor, 255, 0.5);
+            this.centerColor.set(this.initialColor);
+
+        Drawing.drawing.setColor(this.centerColor, 255, 1);
 
         if (Game.enable3d)
             Drawing.drawing.drawModel(mine, this.posX, this.posY, this.posZ + height, this.size * 0.8, this.size * 0.8, 7, 0);
@@ -328,5 +329,23 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
     public String getName()
     {
         return "Mine";
+    }
+
+    @Override
+    public boolean lit()
+    {
+        return true;
+    }
+
+    @Override
+    public double getBrightness()
+    {
+        return this.size * 2;
+    }
+
+    @Override
+    public Color getColor()
+    {
+        return this.outlineColor;
     }
 }

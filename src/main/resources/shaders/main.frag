@@ -52,6 +52,7 @@ void main(void)
         fragColor *= originalColor;
 
     bool lit = true;
+    float glowValue = 1.0;
 
     if (shadow)
     {
@@ -60,7 +61,10 @@ void main(void)
         vec4 depthVec = texture2D(depthTexture, lightNDCPosition.xy);
 
         if (depthtest)
+        {
             lit = depthVec.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
+            glowValue = glow;
+        }
     }
 
     if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
@@ -73,7 +77,7 @@ void main(void)
     else
     {
         gl_FragData[0] = fragColor;
-        gl_FragData[1] = vec4(fragColor.rgb * glow * (float(lit) * (1.0 - baseLight) + (1.0 - float(lit)) *  (1.0 - shadowLight)), fragColor.a);
+        gl_FragData[1] = vec4(fragColor.rgb * glowValue * (float(lit) * (1.0 - baseLight) + (1.0 - float(lit)) *  (1.0 - shadowLight)), fragColor.a);
         gl_FragData[2] = vec4(float(lit), 0.0, 0.0, fragColor.a);
     }
 }

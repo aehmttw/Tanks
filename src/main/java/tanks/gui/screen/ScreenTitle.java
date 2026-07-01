@@ -325,6 +325,42 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 		}
 	}
 
+    @Override
+    public void drawUI()
+    {
+        play.draw();
+        exit.draw();
+        options.draw();
+        languages.draw();
+
+        if (Game.debug)
+            debug.draw();
+
+        about.draw();
+
+        Drawing.drawing.setColor(0, 0, 0);
+        Drawing.drawing.setInterfaceFontSize(24);
+
+        if (Game.player.enableTertiaryColor)
+            Drawing.drawing.setColor(Game.player.color3);
+        else
+            Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color.red), Turret.calculateSecondaryColor(Game.player.color.green), Turret.calculateSecondaryColor(Game.player.color.blue));
+        Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
+        Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
+
+        Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color2.red), Turret.calculateSecondaryColor(Game.player.color2.green), Turret.calculateSecondaryColor(Game.player.color2.blue));
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
+
+        Drawing.drawing.setColor(Game.player.color);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
+        Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
+
+        Drawing.drawing.setColor(Game.player.color2);
+        Drawing.drawing.setInterfaceFontSize(this.titleSize);
+        Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
+    }
+
 	public void drawWithoutBackground()
 	{
 		languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2
@@ -359,38 +395,6 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 
 		this.logo.luminance = Math.max(0.5, 1 - this.screenAge / 50.0);
 
-		play.draw();
-		exit.draw();
-		options.draw();
-		languages.draw();
-
-		if (Game.debug)
-			debug.draw();
-
-		about.draw();
-
-		Drawing.drawing.setColor(0, 0, 0);
-		Drawing.drawing.setInterfaceFontSize(24);
-
-		if (Game.player.enableTertiaryColor)
-			Drawing.drawing.setColor(Game.player.color3);
-		else
-			Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color.red), Turret.calculateSecondaryColor(Game.player.color.green), Turret.calculateSecondaryColor(Game.player.color.blue));
-		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
-		Drawing.drawing.displayInterfaceText(this.lCenterX + 4, 4 + this.lCenterY - this.objYSpace, "Tanks");
-
-		Drawing.drawing.setColor(Turret.calculateSecondaryColor(Game.player.color2.red), Turret.calculateSecondaryColor(Game.player.color2.green), Turret.calculateSecondaryColor(Game.player.color2.blue));
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
-
-		Drawing.drawing.setColor(Game.player.color);
-		Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);
-		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace, "Tanks");
-
-		Drawing.drawing.setColor(Game.player.color2);
-		Drawing.drawing.setInterfaceFontSize(this.titleSize);
-		Drawing.drawing.displayInterfaceText(this.lCenterX, this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
-
 		for (int i = Game.movables.size() - 1; i >= 0; i--)
 		{
 			Game.movables.get(i).draw();
@@ -415,6 +419,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
 	{
 		if (Game.screen == this)
 			this.drawDefaultBackground();
+        else
+            this.drawUI();
 
 		this.drawWithoutBackground();
 	}

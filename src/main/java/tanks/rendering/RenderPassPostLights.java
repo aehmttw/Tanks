@@ -125,6 +125,12 @@ public class RenderPassPostLights extends RenderPass
             }
         }
 
+        for (Effect e: Game.effects)
+        {
+            if (e.lit())
+                drawLight(e, Drawing.drawing.gameToAbsoluteX(e.posX, 0),  Drawing.drawing.gameToAbsoluteY(e.posY, 0), e.posZ * Drawing.drawing.scale, e.getBrightness() * Drawing.drawing.scale);
+        }
+
         Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
     }

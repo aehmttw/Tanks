@@ -433,8 +433,8 @@ public class LWJGLWindow extends BaseWindow
 			glfwSetWindowSizeLimits(window, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 		glfwGetFramebufferSize(window, w, h);
-        this.frameBufferWidth = w[0];
-        this.frameBufferHeight = h[0];
+        this.frameBufferWidth = Math.max(1, w[0]);
+        this.frameBufferHeight = Math.max(1, h[0]);
 
 		this.updater.update();
         this.drawer.draw();

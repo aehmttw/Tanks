@@ -136,6 +136,13 @@ public class Face implements Comparable<Face>
         if (!valid || (startX == endX && startY == endY))
             return;
 
+        // Allow game NaN handler to catch it
+        if (Double.isNaN(this.startX) || Double.isNaN(this.endX) || Double.isNaN(this.startY) || Double.isNaN(this.endY))
+        {
+            System.err.println("NaN face! " + this);
+            return;
+        }
+
         if (this.direction.isNonZeroY())
         {
             if (this.startX == this.endX)
@@ -152,12 +159,12 @@ public class Face implements Comparable<Face>
         }
     }
 
-//    public String toString()
-//    {
-//        String ownerName = this.owner instanceof Obstacle ? ((Obstacle) this.owner).name : this.owner instanceof Tank ? ((Tank) this.owner).name : this.owner != null ? this.owner.getClass().getSimpleName() : "null";
-//        if (this.direction.isNonZeroY())
-//            return String.format("%.1f-%.1f %.1f  %s", this.startX, this.endX, this.startY, ownerName);
-//        else
-//            return String.format("%.1f %.1f-%.1f  %s", this.startX, this.startY, this.endY, ownerName);
-//    }
+    public String toString()
+    {
+        String ownerName = this.owner instanceof Obstacle ? ((Obstacle) this.owner).name : this.owner instanceof Tank ? ((Tank) this.owner).name : this.owner != null ? this.owner.getClass().getSimpleName() : "null";
+        if (this.direction.isNonZeroY())
+            return String.format("%.1f-%.1f %.1f  %s", this.startX, this.endX, this.startY, ownerName);
+        else
+            return String.format("%.1f %.1f-%.1f  %s", this.startX, this.startY, this.endY, ownerName);
+    }
 }

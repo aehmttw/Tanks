@@ -563,7 +563,8 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
 		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled && !ScreenGame.finishedQuick)
 		{
 			Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
-            e.setColorsFromTank(this);
+            e.setColorWithNoise(255, 180, 0, 50);
+            e.setGlowColor(e.color, 127);
 
 			if (Game.enable3d)
 				e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random());

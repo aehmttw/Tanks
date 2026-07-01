@@ -11,9 +11,9 @@ import tanks.tank.Mine;
 import tanks.tank.Tank;
 import tanks.tank.Turret;
 
-public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderableObject
+public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderableObject, IDrawableLightSource
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, blockMarker, circleMarker, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress}
+    public enum EffectType {fire, smokeTrail, trail, ray, blockMarker, circleMarker, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress, explosionLight}
 
     public enum State {live, removed, recycle}
 
@@ -119,6 +119,11 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             this.color.set(255, 0, 0);
             this.force = true;
         }
+        else if (type == EffectType.explosionLight)
+        {
+            this.maxAge = 30;
+            this.glowColor.set(255, 200, 160);
+        }
         else if (type == EffectType.laser)
         {
             this.maxAge = 21;
@@ -150,9 +155,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
             this.maxAge = 25;
         }
         else if (type == EffectType.tread)
-        {
             this.maxAge = TrackRenderer.getMaxTrackAge();
-        }
         else if (type == EffectType.darkFire)
             this.maxAge = 20;
         else if (type == EffectType.stun)
@@ -637,6 +640,11 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
 
             }
         }
+        else if (this.type == EffectType.explosionLight)
+        {
+            double frac = 2 * (1 - this.age / this.maxAge);
+            this.glowColor.set(255 * frac, 200 * frac, 160 * frac);
+        }
         else
         {
             Game.exitToCrash(new RuntimeException("Invalid effect type: " + this.type));
@@ -1007,5 +1015,26 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     {
         Drawing.drawing.setColor(0, 0, 0, 64);
         Drawing.drawing.trackRenderer.addRect(this, this.posX, this.posY, this.posZ, size * Obstacle.draw_size / Game.tile_size, size * Obstacle.draw_size / Game.tile_size, angle);
+    }
+
+    @Override
+    public boolean lit()
+    {
+        return this.type == EffectType.explosionLight;
+    }
+
+    @Override
+    public double getBrightness()
+    {
+        if (this.type == EffectType.explosionLight)
+            return this.radius * 3;
+
+        return 0;
+    }
+
+    @Override
+    public Color getColor()
+    {
+        return this.glowColor;
     }
 }

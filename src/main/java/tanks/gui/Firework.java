@@ -334,7 +334,7 @@ public class Firework extends Movable
 		{
 			double opacity = Math.min(255, Math.max(0, (255 - this.age * 255.0 / this.maxAge)));
 
-			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity / 2.0);
+			Drawing.drawing.setColor(this.colorR, this.colorG, this.colorB, opacity);
 
 			if (Game.enable3d)
 				Drawing.drawing.fillInterfaceGlow(posX, posY, posZ, this.size * 40, this.size * 40);

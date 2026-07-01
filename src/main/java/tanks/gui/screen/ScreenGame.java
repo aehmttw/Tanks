@@ -2141,7 +2141,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 //            m.randomize();
             m.postUpdate();
 
-            if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
+            if ((Double.isNaN(m.posX) || Double.isNaN(m.posY)) && !(m instanceof MovableNaN))
             {
                 Game.removeMovables.add(m);
                 System.err.println("A movable's position became NaN! " + m);

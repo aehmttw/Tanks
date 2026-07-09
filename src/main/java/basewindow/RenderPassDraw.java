@@ -32,7 +32,7 @@ public class RenderPassDraw extends RenderPass
         this.drawFrameBuffer.addColorTexture(pg.window, 3, false);
 
         // Light/shadow
-        this.drawFrameBuffer.addColorTexture(pg.window, 3, false);
+        this.drawFrameBuffer.addColorTexture(pg.window, 1, false);
 
         this.drawFrameBuffer.createDepthTexture(pg.window);
     }

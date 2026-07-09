@@ -16,8 +16,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     
     public void fillOval(double x, double y, double sX, double sY)
     {
-        this.window.disableDepthtest();
-
         x += sX / 2;
         y += sY / 2;
 
@@ -38,8 +36,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     {
         if (this.window.mainRenderPasses.drawingShadow)
             return;
-
-        this.window.disableDepthtest();
 
         x += sX / 2;
         y += sY / 2;
@@ -429,7 +425,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
     public void fillRect(double x, double y, double sX, double sY)
     {
-        this.window.disableDepthtest();
         glBegin(GL_TRIANGLE_FAN);
 
         glVertex2d(x, y);
@@ -448,7 +443,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             return;
         }
 
-        this.window.disableDepthtest();
         glBegin(GL_TRIANGLE_FAN);
 
         int sides = Math.max(4, (int) (radius / 4) + 5) / 2;
@@ -918,8 +912,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         glEnable(GL_BLEND);
         this.window.setTransparentBlendFunc();
 
-        this.window.disableDepthtest();
-
         glBindTexture(GL_TEXTURE_2D, this.window.textures.get(image));
 
         double width = sX * (u2 - u1);
@@ -956,7 +948,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
             this.window.createImage(image);
 
         //loadPerspective();
-        this.window.disableDepthtest();
 
         glMatrixMode(GL_MODELVIEW);
         this.window.enableTexture();
@@ -1006,6 +997,8 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
 
         if (depthtest)
             this.window.enableDepthtest();
+        else
+            this.window.disableDepthtest();
 
         this.window.enableTexture();
         glEnable(GL_BLEND);

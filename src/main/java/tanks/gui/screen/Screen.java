@@ -191,4 +191,9 @@ public abstract class Screen implements IBatchRenderableObject
     {
 
     }
+
+    public void onFilesDropped(String... files)
+    {
+
+    }
 }

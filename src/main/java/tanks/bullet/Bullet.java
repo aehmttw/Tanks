@@ -245,7 +245,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
 
     public boolean justBounced = false;
 
-	public final boolean isTemplate;
+    public final boolean isTemplate;
 
     // Whether this bullet class can deflect other bullets (things like arc and air strike can't)
     public boolean canDeflect = true;
@@ -1821,8 +1821,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         else
             Drawing.drawing.setColor(base.red, base.green, base.blue, 255, this.effect.luminance);
 
-		Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
-	}
+        Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
+    }
 
     @Override
     public boolean lit()
@@ -1837,6 +1837,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     }
 
     Color c = new Color();
+
     @Override
     public Color getColor()
     {

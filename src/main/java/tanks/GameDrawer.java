@@ -67,10 +67,10 @@ public class GameDrawer implements IDrawer
     }
 
     @Override
-	public void drawSinglePass(RenderPass rp)
-	{
-		try
-		{
+    public void drawSinglePass(RenderPass rp)
+    {
+        try
+        {
             for (Extension e: Game.extensionRegistry.extensions)
                 e.preDraw();
 

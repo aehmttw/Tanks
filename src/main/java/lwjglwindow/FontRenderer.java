@@ -134,9 +134,9 @@ public class FontRenderer extends BaseFontRenderer
     public void drawString(double x, double y, double z, double sX, double sY, String s, boolean depth)
     {
         if (depth)
-            ((LWJGLWindow)this.window).enableDepthtest();
+            ((LWJGLWindow) this.window).enableDepthtest();
         else
-            ((LWJGLWindow)this.window).disableDepthtest();
+            ((LWJGLWindow) this.window).disableDepthtest();
 
         double opacity = this.window.colorA;
         double curX = x;
@@ -185,7 +185,7 @@ public class FontRenderer extends BaseFontRenderer
                 curX += (drawChar(curX, y, z, sX, sY, c[i], depth) + 1) * sX * 4;
         }
 
-        ((LWJGLWindow)this.window).disableDepthtest();
+        ((LWJGLWindow) this.window).disableDepthtest();
     }
 
     @Override

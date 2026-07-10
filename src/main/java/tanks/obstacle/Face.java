@@ -166,7 +166,8 @@ public class Face implements Comparable<Face>
 
     public String toString()
     {
-        String ownerName = this.owner instanceof Obstacle ? ((Obstacle) this.owner).name : this.owner instanceof Tank ? ((Tank) this.owner).name : this.owner != null ? this.owner.getClass().getSimpleName() : "null";
+        String ownerName = this.owner instanceof Obstacle ? ((Obstacle) this.owner).name : this.owner instanceof Tank ? ((Tank) this.owner).name :
+                                                                                           this.owner != null ? this.owner.getClass().getSimpleName() : "null";
         if (this.direction.isNonZeroY())
             return String.format("%.1f-%.1f %.1f  %s", this.startX, this.endX, this.startY, ownerName);
         else

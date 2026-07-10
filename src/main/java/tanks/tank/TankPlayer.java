@@ -731,10 +731,10 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
     }
 
     @TanksONable("shop_build")
-	public static class ShopTankBuild extends TankPlayer
-	{
-		@TankBuildProperty @Property(id = "price", name = "Price", category = general)
-		public int price;
+    public static class ShopTankBuild extends TankPlayer
+    {
+        @TankBuildProperty @Property(id = "price", name = "Price", category = general)
+        public int price;
 
         public ShopTankBuild()
         {

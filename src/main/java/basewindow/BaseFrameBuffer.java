@@ -15,6 +15,11 @@ public abstract class BaseFrameBuffer
     public abstract void createDepthTexture(int sizeX, int sizeY);
 
     /**
+     * Set the framebuffer to capture depth information into a texture with the same size as the window
+     */
+    public abstract void createDepthTexture(BaseWindow w);
+
+    /**
      * Set the framebuffer to capture written color information into a texture of given size
      * @param sizeX
      * @param sizeY
@@ -23,10 +28,6 @@ public abstract class BaseFrameBuffer
      */
     public abstract void addColorTexture(int sizeX, int sizeY, int channels, boolean fp);
 
-    /**
-     * Set the framebuffer to capture depth information into a texture with the same size as the window
-     */
-    public abstract void createDepthTexture(BaseWindow w);
 
     /**
      * Set the framebuffer to capture written color information into a texture with the same size as the window
@@ -66,19 +67,19 @@ public abstract class BaseFrameBuffer
     public abstract void bindDepthTexture(int target);
 
     /**
+     * Binds the depth texture associated with this framebuffer to a given texture name, which can be used in drawImage
+     * for use in a shader.
+     * @param name Texture name to bind to
+     */
+    public abstract void bindDepthTexture(BaseWindow w, String name);
+
+    /**
      * Binds the color texture associated with this framebuffer to the given OpenGL texture slot
      * for use in a shader.
      * @param which Which color texture to bind
      * @param target Texture slot to bind to
      */
     public abstract void bindColorTexture(int which, int target);
-
-    /**
-     * Binds the depth texture associated with this framebuffer to a given texture name, which can be used in drawImage
-     * for use in a shader.
-     * @param name Texture name to bind to
-     */
-    public abstract void bindDepthTexture(BaseWindow w, String name);
 
     /**
      * Binds the color texture associated with this framebuffer to a given texture name, which can be used in drawImage

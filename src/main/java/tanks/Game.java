@@ -174,7 +174,7 @@ public class Game
     public static boolean followingCam = false;
     public static boolean firstPerson = false;
 
-	public static boolean fancyLights = true;
+    public static boolean fancyLights = true;
 
     public static boolean tankTextures = true;
 
@@ -317,11 +317,11 @@ public class Game
 
     public static GameDrawer drawer;
 
-	// Note: this is not used by the game to determine fullscreen status
-	// It is simply a value defined before
-	// Refer to Game.game.window.fullscreen for true fullscreen status
-	// Value is set before Game.game.window is initialized
-	public boolean fullscreen = false;
+    // Note: this is not used by the game to determine fullscreen status
+    // It is simply a value defined before
+    // Refer to Game.game.window.fullscreen for true fullscreen status
+    // Value is set before Game.game.window is initialized
+    public boolean fullscreen = false;
 
     private Game()
     {

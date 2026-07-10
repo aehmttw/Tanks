@@ -2,15 +2,16 @@ package lwjglwindow;
 
 import basewindow.BaseFrameBuffer;
 import basewindow.BaseWindow;
+
 import org.lwjgl.opengl.GL13;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import static org.lwjgl.opengl.EXTFramebufferObject.*;
-import static org.lwjgl.opengl.ARBTextureFloat.*;
+import static org.lwjgl.opengl.ARBTextureFloat.GL_RGB16F_ARB;
+import static org.lwjgl.opengl.ARBTextureFloat.GL_RGBA16F_ARB;
 import static org.lwjgl.opengl.ARBTextureRG.*;
-
+import static org.lwjgl.opengl.EXTFramebufferObject.*;
 import static org.lwjgl.opengl.GL20.*;
 
 public class FrameBuffer extends BaseFrameBuffer
@@ -34,7 +35,15 @@ public class FrameBuffer extends BaseFrameBuffer
         if (this.initialized)
             throw new AssertionError("Can't add textures to already initialized frame buffer!");
 
-        this.depthTexture = new FrameBufferTexture(sizeX, sizeY,1, FrameBufferTexture.Type.DEPTH);
+        this.depthTexture = new FrameBufferTexture(sizeX, sizeY, 1, FrameBufferTexture.Type.DEPTH);
+    }
+
+    @Override
+    public void createDepthTexture(BaseWindow w)
+    {
+        this.createDepthTexture(w.frameBufferWidth, w.frameBufferHeight);
+        this.lastWindowSizeX = w.frameBufferWidth;
+        this.lastWindowSizeY = w.frameBufferHeight;
     }
 
     public void addColorTexture(int sizeX, int sizeY, int channels, boolean fp)
@@ -45,16 +54,8 @@ public class FrameBuffer extends BaseFrameBuffer
         this.colorTextures.add(new FrameBufferTexture(sizeX, sizeY, channels, fp ? FrameBufferTexture.Type.FLOAT : FrameBufferTexture.Type.INT));
 
         if (this.colorTextures.size() > GL_MAX_COLOR_ATTACHMENTS_EXT)
-            throw new AssertionError("The maximum number of color textures for a framebuffer (" + GL_MAX_COLOR_ATTACHMENTS_EXT
-            + ") has been exceeded!");
-    }
-
-    @Override
-    public void createDepthTexture(BaseWindow w)
-    {
-        this.createDepthTexture(w.frameBufferWidth, w.frameBufferHeight);
-        this.lastWindowSizeX = w.frameBufferWidth;
-        this.lastWindowSizeY = w.frameBufferHeight;
+            throw new AssertionError("The maximum number of color textures for a framebuffer (" + GL_MAX_COLOR_ATTACHMENTS_EXT +
+            ") has been exceeded!");
     }
 
     @Override
@@ -144,15 +145,15 @@ public class FrameBuffer extends BaseFrameBuffer
     }
 
     @Override
-    public void bindColorTexture(int which, int target)
-    {
-        this.colorTextures.get(which).bind(target);
-    }
-
-    @Override
     public void bindDepthTexture(BaseWindow w, String name)
     {
         ((LWJGLWindow) w).textures.put(name, this.depthTexture.texture);
+    }
+
+    @Override
+    public void bindColorTexture(int which, int target)
+    {
+        this.colorTextures.get(which).bind(target);
     }
 
     @Override
@@ -164,6 +165,7 @@ public class FrameBuffer extends BaseFrameBuffer
     public static class FrameBufferTexture
     {
         public enum Type { INT, FLOAT, DEPTH }
+
         protected int texture;
         protected Type type;
         protected int channels;

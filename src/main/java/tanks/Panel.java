@@ -1,7 +1,6 @@
 package tanks;
 
 import basewindow.InputCodes;
-import tanks.bullet.Trail3D;
 import tanks.extension.Extension;
 import tanks.gui.*;
 import tanks.gui.ScreenElement.CenterMessage;
@@ -92,7 +91,7 @@ public class Panel
 
     protected Screen lastDrawnScreen = null;
 
-	HashMap<Integer, IStackableEvent> stackedEventsIn = new HashMap<>();
+    HashMap<Integer, IStackableEvent> stackedEventsIn = new HashMap<>();
 
     public LoadingTerrainContinuation continuation = null;
     public long continuationStartTime = 0;
@@ -118,22 +117,22 @@ public class Panel
 
     }
 
-	public void setUp()
-	{
-		Game.game.shaderIntro = new ShaderGroundIntro(Game.game.window);
-		Game.game.shaderOutOfBounds = new ShaderGroundOutOfBounds(Game.game.window);
- 		Game.game.shaderTracks = new ShaderTracks(Game.game.window);
+    public void setUp()
+    {
+        Game.game.shaderIntro = new ShaderGroundIntro(Game.game.window);
+        Game.game.shaderOutOfBounds = new ShaderGroundOutOfBounds(Game.game.window);
+        Game.game.shaderTracks = new ShaderTracks(Game.game.window);
 
-		try
-		{
-			Game.game.shaderIntro.initialize();
-			Game.game.shaderOutOfBounds.initialize();
-			Game.game.shaderTracks.initialize();
-		}
-		catch (Exception e)
-		{
-			Game.exitToCrash(e);
-		}
+        try
+        {
+            Game.game.shaderIntro.initialize();
+            Game.game.shaderOutOfBounds.initialize();
+            Game.game.shaderTracks.initialize();
+        }
+        catch (Exception e)
+        {
+            Game.exitToCrash(e);
+        }
 
         Drawing.drawing.terrainRenderer = new TerrainRenderer();
         Drawing.drawing.trackRenderer = new TrackRenderer();
@@ -211,7 +210,7 @@ public class Panel
         settingUp = false;
     }
 
-	public void update()
+    public void update()
     {
         if (Game.game.window.validPressedKeys.contains(InputCodes.KEY_F12) && Game.game.window.validPressedKeys.contains(InputCodes.KEY_F3) && Game.debug)
         {
@@ -243,7 +242,9 @@ public class Panel
                 try
                 {
                     String dir = Game.homedir + Game.screenshotsPath + System.currentTimeMillis() + ".png";
-                    notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) + "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.", 1200, 400));
+                    notifications.add(new Notification("Screenshot saved to \u00A7255127000255" + Game.game.window.screenshot(dir, true) +
+                        "\u00A7r! \n Press \u00A7255127000255Shift + " + Game.game.input.screenshot.getInputs() + "\u00A7r to open the screenshots directory.",
+                        1200, 400));
                 }
                 catch (Exception e)
                 {
@@ -271,9 +272,9 @@ public class Panel
         {
             started = true;
 
-//			this.startTime = System.currentTimeMillis() + splash_duration;
-//			Drawing.drawing.playSound("splash_jingle.ogg");
-//			Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
+//            this.startTime = System.currentTimeMillis() + splash_duration;
+//            Drawing.drawing.playSound("splash_jingle.ogg");
+//            Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
         }
 
         if (!started)
@@ -304,14 +305,15 @@ public class Panel
 
         lastFrameNano = System.nanoTime();
 
-        Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).playing && Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
+        Game.game.window.constrainMouse = Game.constrainMouse && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && ((ScreenGame) Game.screen).playing &&
+            Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
 
         if (!Game.shadowsEnabled)
         {
             Game.game.window.mainRenderPasses.shadowQuality = 1;
             Game.game.window.mainRenderPasses.shadowsEnabled = false;
         }
-		else
+        else
         {
             Game.game.window.mainRenderPasses.shadowQuality = Game.shadowQuality / 10.0 * 1.25;
             Game.game.window.mainRenderPasses.shadowsEnabled = true;
@@ -750,10 +752,11 @@ public class Panel
             Drawing.drawing.playMusic(Game.screen.music, Game.musicVolume, true, Game.screen.musicID, fadeTime);
     }
 
-	public void draw()
-	{
-		if ((Game.game.window.mainRenderPasses.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
-			this.age += Panel.frameFrequency;
+    public void draw()
+    {
+        if ((Game.game.window.mainRenderPasses.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused &&
+            !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
+            this.age += Panel.frameFrequency;
 
         while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.drawing.getTrackOffset())
         {
@@ -762,8 +765,8 @@ public class Panel
             Panel.panel.pastPlayerTime.remove(0);
         }
 
-		if (continuation != null && Game.game.window.mainRenderPasses.drawingShadow)
-			return;
+        if (continuation != null && Game.game.window.mainRenderPasses.drawingShadow)
+            return;
 
         if (continuation == null)
         {
@@ -816,19 +819,19 @@ public class Panel
 
             Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
 
-//			if (Game.fancyLights)
-//				Game.game.window.createLights(this.lights, Drawing.drawing.scale);
+//            if (Game.fancyLights)
+//                Game.game.window.createLights(this.lights, Drawing.drawing.scale);
 
-			if (!Game.game.window.mainRenderPasses.drawingShadow)
-			{
-				long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
-				if (lastFrameSec < time && lastFrameSec != firstFrameSec)
-				{
-					lastFPS = (int) (frames * 1.0 * frameSampling);
-					frames = 0;
-					allocatedLastSecond = allocatedThisSecond;
-					allocatedThisSecond = 0;
-				}
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
+            {
+                long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
+                if (lastFrameSec < time && lastFrameSec != firstFrameSec)
+                {
+                    lastFPS = (int) (frames * 1.0 * frameSampling);
+                    frames = 0;
+                    allocatedLastSecond = allocatedThisSecond;
+                    allocatedThisSecond = 0;
+                }
 
                 lastFrameSec = time;
                 frames++;
@@ -867,12 +870,14 @@ public class Panel
                 this.continuation = c;
 
                 Drawing.drawing.setColor(235, 207, 166);
-                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+                    Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
                 Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.setInterfaceFontSize(24);
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
-                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
+                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+                    String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
 
                 if (System.currentTimeMillis() - continuationStartTime > 500)
                 {
@@ -881,13 +886,15 @@ public class Panel
                     if (time <= 50)
                         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "Just a moment...");
                     else
-                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left", Game.timeInterval(0, (long) time + 1000, true));
+                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60,
+                            "About %s left", Game.timeInterval(0, (long) time + 1000, true));
                 }
 
                 Drawing.drawing.setColor(255, 255, 255);
                 Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5);
                 Drawing.drawing.setColor(0, 0, 0, 127);
-                Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5, 1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
+                Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5,
+                    1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
             }
         }
     }
@@ -914,7 +921,7 @@ public class Panel
             {
                 Notification n = notifications.get(i);
                 if (i > 0)
-                    n.age = Math.max(0, Math.min(n.age, notifications.get(i-1).age - 25));
+                    n.age = Math.max(0, Math.min(n.age, notifications.get(i - 1).age - 25));
                 sy += n.draw(sy);
 
                 if (notifications.get(i).age > notifications.get(i).duration + notifications.get(i).removeDuration)

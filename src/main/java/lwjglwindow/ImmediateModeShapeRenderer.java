@@ -118,6 +118,68 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
     }
 
     @Override
+    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
+    {
+        this.fillGlow(x, y, z, sX, sY, depthTest, shade, false);
+    }
+
+    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
+    {
+        if (this.window.mainRenderPasses.drawingShadow)
+            return;
+
+        if (depthTest)
+        {
+            this.window.enableDepthtest();
+            glDepthMask(false);
+        }
+
+        x += sX / 2;
+        y += sY / 2;
+
+        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5);
+
+        if (!shade)
+            this.window.setGlowBlendFunc();
+
+        if (light)
+            this.window.setLightBlendFunc();
+
+        glBegin(GL_TRIANGLES);
+        double step = Math.PI * 2 / sides;
+
+        double pX = x + Math.cos(0) * sX / 2;
+        double pY = y + Math.sin(0) * sY / 2;
+        double d = 0;
+        for (int n = 0; n < sides; n++)
+        {
+            d += step;
+
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
+
+            glVertex3d(pX, pY, z);
+            pX = x + Math.cos(d) * sX / 2;
+            pY = y + Math.sin(d) * sY / 2;
+            glVertex3d(pX, pY, z);
+
+            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
+
+            glVertex3d(x, y, z);
+        }
+
+        glEnd();
+
+        if (!shade)
+            this.window.setTransparentBlendFunc();
+
+        if (depthTest)
+        {
+            glDepthMask(true);
+            this.window.disableDepthtest();
+        }
+    }
+
+    @Override
     public void fillRect(double x, double y, double z, double sX, double sY, boolean depthTest)
     {
         if (depthTest)
@@ -209,68 +271,6 @@ public class ImmediateModeShapeRenderer extends BaseShapeRenderer
         }
 
         glEnd();
-    }
-
-    @Override
-    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade)
-    {
-        this.fillGlow(x, y, z, sX, sY, depthTest, shade, false);
-    }
-
-    public void fillGlow(double x, double y, double z, double sX, double sY, boolean depthTest, boolean shade, boolean light)
-    {
-        if (this.window.mainRenderPasses.drawingShadow)
-            return;
-
-        if (depthTest)
-        {
-            this.window.enableDepthtest();
-            glDepthMask(false);
-        }
-
-        x += sX / 2;
-        y += sY / 2;
-
-        int sides = Math.max(4, (int) (sX + sY + Math.max(z / 20, 0)) / 16 + 5);
-
-        if (!shade)
-            this.window.setGlowBlendFunc();
-
-        if (light)
-            this.window.setLightBlendFunc();
-
-        glBegin(GL_TRIANGLES);
-        double step = Math.PI * 2 / sides;
-
-        double pX = x + Math.cos(0) * sX / 2;
-        double pY = y + Math.sin(0) * sY / 2;
-        double d = 0;
-        for (int n = 0; n < sides; n++)
-        {
-            d += step;
-
-            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, 0);
-
-            glVertex3d(pX, pY, z);
-            pX = x + Math.cos(d) * sX / 2;
-            pY = y + Math.sin(d) * sY / 2;
-            glVertex3d(pX, pY, z);
-
-            glColor4d(this.window.colorR, this.window.colorG, this.window.colorB, this.window.colorA);
-
-            glVertex3d(x, y, z);
-        }
-
-        glEnd();
-
-        if (!shade)
-            this.window.setTransparentBlendFunc();
-
-        if (depthTest)
-        {
-            glDepthMask(true);
-            this.window.disableDepthtest();
-        }
     }
 
     public void fillFacingOval(double x, double y, double z, double sX, double sY, boolean depthTest)

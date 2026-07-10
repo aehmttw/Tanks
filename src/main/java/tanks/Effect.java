@@ -11,7 +11,38 @@ import tanks.tank.*;
 
 public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderableObject, IDrawableLightSource
 {
-    public enum EffectType {fire, smokeTrail, trail, ray, blockMarker, circleMarker, explosion, laser, piece, obstaclePiece, obstaclePiece3d, charge, tread, darkFire, electric, healing, stun, bushBurn, glow, teleporterLight, interfacePiece, interfacePieceSparkle, snow, shield, boostLight, exclamation, chain, tutorialProgress, explosionLight}
+    public enum EffectType
+    {
+        fire,
+        smokeTrail,
+        trail,
+        ray,
+        blockMarker,
+        circleMarker,
+        explosion,
+        laser,
+        piece,
+        obstaclePiece,
+        obstaclePiece3d,
+        charge,
+        tread,
+        darkFire,
+        electric,
+        healing,
+        stun,
+        bushBurn,
+        glow,
+        teleporterLight,
+        interfacePiece,
+        interfacePieceSparkle,
+        snow,
+        shield,
+        boostLight,
+        exclamation,
+        chain,
+        tutorialProgress,
+        explosionLight
+    }
 
     public enum State { live, removed, recycle }
 

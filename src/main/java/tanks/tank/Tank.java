@@ -49,8 +49,8 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
 
     public Color lightColor = new Color(255, 255, 255);
 
-	public double angle = 0;
-	public double pitch = 0;
+    public double angle = 0;
+    public double pitch = 0;
 
     public boolean depthTest = true;
 
@@ -583,9 +583,9 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
 
         double boost = em.getAttributeValue(AttributeModifier.ember_effect, 0);
 
-		if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled && !ScreenGame.finishedQuick)
-		{
-			Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
+        if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled && !ScreenGame.finishedQuick)
+        {
+            Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
             e.setColorWithNoise(255, 180, 0, 50);
             e.setGlowColor(e.color, 127);
 
@@ -772,8 +772,8 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
                 Drawing.drawing.fillLargeGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size, true, false, false, false);
         }
 
-		if (this.fullBrightness)
-			luminance = 1;
+        if (this.fullBrightness)
+            luminance = 1;
 
         if (!forInterface)
         {
@@ -928,10 +928,10 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
         this.showName = this.hasName && !this.hidden && this.currentlyVisible;
 
 
-		if (this.currentlyVisible || this.destroy)
-		{
-			if (!Game.game.window.mainRenderPasses.drawingShadow)
-				drawAge += Panel.frameFrequency;
+        if (this.currentlyVisible || this.destroy)
+        {
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
+                drawAge += Panel.frameFrequency;
 
             this.drawTank(false, Game.enable3d);
 
@@ -1416,14 +1416,14 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
         }
     }
 
-	public Tank setDefaultPlayerColor()
-	{
-		this.color.set(0, 150, 255);
-		Turret.setSecondary(this.color, this.secondaryColor);
-		Turret.setTertiary(this.color, this.secondaryColor, this.tertiaryColor);
-		this.emblemColor.set(this.secondaryColor);
-		return this;
-	}
+    public Tank setDefaultPlayerColor()
+    {
+        this.color.set(0, 150, 255);
+        Turret.setSecondary(this.color, this.secondaryColor);
+        Turret.setTertiary(this.color, this.secondaryColor, this.tertiaryColor);
+        this.emblemColor.set(this.secondaryColor);
+        return this;
+    }
 
     @Override
     public boolean lit()

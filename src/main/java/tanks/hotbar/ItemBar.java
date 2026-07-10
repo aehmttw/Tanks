@@ -496,8 +496,8 @@ public class ItemBar
         }
     }
 
-	public void drawCircle()
-	{
+    public void drawCircle()
+    {
         if (Game.game.window.mainRenderPasses.drawingShadow)
             return;
 

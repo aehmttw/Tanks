@@ -1,9 +1,6 @@
 package tanks.rendering;
 
-import basewindow.BaseWindow;
-import basewindow.ShaderGroup;
-import basewindow.ShaderGroupShadowDraw;
-import basewindow.StageExclusiveUniform;
+import basewindow.*;
 
 public class ShaderBoostPanel extends RendererShader implements IObstacleSizeShader, IObstacleVertexCoordShader, IObstacleTimeShader, IGlowShader, IGraphicsOptionsShader
 {

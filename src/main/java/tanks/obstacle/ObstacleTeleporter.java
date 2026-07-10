@@ -20,8 +20,8 @@ public class ObstacleTeleporter extends Obstacle implements IDrawableLightSource
 
     public Color lightColor = new Color();
 
-	@MetadataProperty(id="group_id", name = "Group ID", image="id.png", selector = SelectorGroupID.selector_name, keybind = "editor.groupID")
-	public int groupID = 0;
+    @MetadataProperty(id = "group_id", name = "Group ID", image = "id.png", selector = SelectorGroupID.selector_name, keybind = "editor.groupID")
+    public int groupID = 0;
 
     public Effect glow;
 
@@ -274,10 +274,10 @@ public class ObstacleTeleporter extends Obstacle implements IDrawableLightSource
         return new double[]{r, g, b};
     }
 
-	public double getTileHeight()
-	{
-		return 0;
-	}
+    public double getTileHeight()
+    {
+        return 0;
+    }
 
     @Override
     public boolean lit()

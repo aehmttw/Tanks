@@ -1,7 +1,5 @@
 package basewindow;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
@@ -125,7 +123,7 @@ public abstract class ShaderGroup
         }
     }
 
-    public static abstract class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform> implements IGroupUniform
+    public abstract static class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform> implements IGroupUniform
     {
         protected ShaderProgram.IMatrixUniform[] uniforms;
 

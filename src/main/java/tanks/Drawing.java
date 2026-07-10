@@ -1325,13 +1325,13 @@ public class Drawing
             addVertex(x + sX, y + sY, z + sZ);
     }
 
-	public void setLighting(double light, double shadow)
-	{
+    public void setLighting(double light, double shadow)
+    {
         Game.drawer.lightsPass.light = light;
         Game.drawer.lightsPass.shadow = shadow;
         Game.game.window.mainRenderPasses.light = light;
         Game.game.window.mainRenderPasses.shadow = shadow;
-	}
+    }
 
     public void drawTooltip(String[] text)
     {

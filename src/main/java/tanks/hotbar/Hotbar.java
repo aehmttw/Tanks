@@ -456,10 +456,10 @@ public class Hotbar
             ((Minigame) Game.currentLevel).drawHotbar();
     }
 
-	public void drawCircle()
-	{
+    public void drawCircle()
+    {
         if (Game.playerTank == null || Game.game.window.mainRenderPasses.drawingShadow)
-			return;
+            return;
 
         Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
         Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);

@@ -42,8 +42,8 @@ public abstract class Screen implements IBatchRenderableObject
 
     public double interfaceScaleZoomOverride = -1;
 
-	protected boolean redrawn = false;
-	public boolean drawn = false;
+    protected boolean redrawn = false;
+    public boolean drawn = false;
 
     public IBatchRenderableObject[][] tiles;
 
@@ -78,8 +78,8 @@ public abstract class Screen implements IBatchRenderableObject
 
     }
 
-	public void drawPostMouse()
-	{
+    public void drawPostMouse()
+    {
 
     }
 

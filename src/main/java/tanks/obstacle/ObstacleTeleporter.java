@@ -1,5 +1,6 @@
 package tanks.obstacle;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorGroupID;

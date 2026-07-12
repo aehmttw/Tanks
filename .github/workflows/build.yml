@@ -1,4 +1,4 @@
-name: Game
+name: Build
 env:
   itchio_project: aehmttw/Tanks
   itchio_channel: Universal_JAR

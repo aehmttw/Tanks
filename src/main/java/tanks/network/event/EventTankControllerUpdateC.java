@@ -39,7 +39,7 @@ public class EventTankControllerUpdateC extends PersonalEvent implements IStacka
         this.time = Panel.frameFrequency;
 
         int i = 0;
-        for (boolean b : t.quickActions)
+        for (boolean b: t.quickActions)
             this.quickActions |= (b ? 1 : 0) << i++;
     }
 

@@ -1,8 +1,9 @@
 package tanks.network;
 
-import io.netty.buffer.*;
 import tanks.Game;
 import tanks.network.event.INetworkEvent;
+
+import io.netty.buffer.*;
 
 import java.util.HashMap;
 

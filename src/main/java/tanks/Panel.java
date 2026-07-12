@@ -916,7 +916,7 @@ public class Panel
             Drawing.drawing.setColor(255, 255, 255);
             Drawing.drawing.setInterfaceFontSize(16);
             double y = Drawing.drawing.getInterfaceEdgeY(true) - 20;
-            for (String s : MessageReader.eventBytesPerSecText)
+            for (String s: MessageReader.eventBytesPerSecText)
                 Drawing.drawing.drawUncenteredInterfaceText(10, y -= 20, s);
         }
 

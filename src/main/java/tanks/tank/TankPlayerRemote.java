@@ -127,7 +127,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         this.posX = TankRemote.cubicInterpolationVelocity(this.prevKnownPosX, pvx, this.currentKnownPosX, cvx, this.timeSinceRefresh, this.interpolationTime);
         this.posY = TankRemote.cubicInterpolationVelocity(this.prevKnownPosY, pvy, this.currentKnownPosY, cvy, this.timeSinceRefresh, this.interpolationTime);
 
-        //System.out.printf("t: %f %f | pos: %f %f -> %f %f, vel %f %f -> %f %f\n", this.timeSinceRefresh, this.interpolationTime, +this.prevKnownPosX, this.prevKnownPosY, this.currentKnownPosX, this.currentKnownPosY, this.prevKnownVX, this.prevKnownVY, this.currentKnownVX, this.currentKnownVY);
+        //System.out.printf("t: %f %f | pos: %f %f -> %f %f, vel %f %f -> %f %f\n", this.timeSinceRefresh, this.interpolationTime, +this.prevKnownPosX, this.prevKnownPosY,
+        // this.currentKnownPosX, this.currentKnownPosY, this.prevKnownVX, this.prevKnownVY, this.currentKnownVX, this.currentKnownVY);
         //System.out.printf("pos: %f %f\n", this.posX, this.posY);
 
         double frac = Math.min(1, this.timeSinceRefresh / this.interpolationTime);
@@ -272,7 +273,8 @@ public class TankPlayerRemote extends TankPlayable implements IServerPlayerTank
         lastMaxLiveMines = mlm;
     }
 
-    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, int quickActions, double time, long receiveTime)
+    public void controllerUpdate(double x, double y, double vX, double vY, double angle, double mX, double mY, boolean action1, boolean action2, int quickActions, double time,
+                                 long receiveTime)
     {
         if (this.destroy)
             return;

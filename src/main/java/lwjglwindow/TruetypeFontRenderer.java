@@ -12,12 +12,15 @@ import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.stb.STBTruetype.*;
 
 public class TruetypeFontRenderer extends BaseFontRenderer
 {
+    public static final boolean print_debug = false;
+
     public static class TtfFontInfo
     {
         public final STBTTFontinfo stbInfo;
@@ -216,7 +219,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         }
     }
 
-    private final List<TtfFontInfo> fonts = new ArrayList<>();
+    private final List<TtfFontInfo> fonts = new CopyOnWriteArrayList<>();
     private final TtfFontInfo defaultFont;
     private final LWJGLWindow lwjglWindow;
 
@@ -369,7 +372,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         try
         {
             int loaded = addFontsFromBuffer(readFile(filePath), filePath, bakeHeight, pixelPerfect, sizeScale, yOffset);
-            if (loaded > 0)
+            if (loaded > 0 && print_debug)
                 System.out.println("TruetypeFontRenderer: loaded " + loaded + " font(s) from " + filePath);
             return loaded;
         }
@@ -638,7 +641,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             System.err.println("TruetypeFontRenderer: cannot use '" + filePath + "' — " +
                 (isOpenTypeCFF(buffer) ? "OpenType/CFF2 outlines unsupported by STB" : "no STB-loadable fonts"));
         }
-        if (added > 0)
+        if (added > 0 && print_debug)
             System.out.println("TruetypeFontRenderer: loaded system font " + filePath);
 
         return added > 0;

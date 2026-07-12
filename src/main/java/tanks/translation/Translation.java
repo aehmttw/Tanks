@@ -14,6 +14,12 @@ public class Translation
     public String fileName;
     public HashMap<String, String> translations = new HashMap<>();
 
+    public static final boolean show_translated = false;
+    public static final String prefix_can_translate = "\u00A7255000255255";
+    public static final String prefix_translated = "\u00A7000160000255";
+    public static final String prefix_untranslated = "\u00A7255000000255";
+    public static final String suffix = "\u00A7r";
+
     public void initialize(ArrayList<String> translations)
     {
         boolean first = true;
@@ -75,6 +81,14 @@ public class Translation
     {
         String t = translations.get(s);
 
+        if (show_translated)
+        {
+            if (t == null)
+                return prefix_untranslated + s + suffix;
+
+            return prefix_translated + t + suffix;
+        }
+
         if (t == null)
             return s;
 
@@ -85,6 +99,14 @@ public class Translation
     {
         String t = translations.get(s);
 
+        if (show_translated)
+        {
+            if (t == null)
+                return prefix_untranslated + String.format(s, objects) + suffix;
+
+            return prefix_translated + String.format(t, objects) + suffix;
+        }
+
         if (t == null)
             t = s;
 
@@ -93,6 +115,9 @@ public class Translation
 
     public static String translate(String s)
     {
+        if (currentTranslation == null && show_translated)
+            return prefix_can_translate + s + suffix;
+
         if (currentTranslation == null)
             return s;
 
@@ -101,6 +126,9 @@ public class Translation
 
     public static String translate(String s, Object... objects)
     {
+        if (currentTranslation == null && show_translated)
+            return prefix_can_translate + String.format(s, objects) + suffix;
+
         if (currentTranslation == null)
             return String.format(s, objects);
 

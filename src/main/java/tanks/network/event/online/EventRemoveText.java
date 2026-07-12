@@ -21,18 +21,6 @@ public class EventRemoveText extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(id);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null && Game.screen instanceof ScreenOnline)

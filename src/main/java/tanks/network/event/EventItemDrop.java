@@ -27,25 +27,6 @@ public class EventItemDrop extends PersonalEvent
         this.posY = id.posY;
     }
 
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.id);
-        NetworkUtils.writeString(b, item);
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.id = b.readInt();
-        this.item = NetworkUtils.readString(b);
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-    }
-
     @Override
     public void execute()
     {

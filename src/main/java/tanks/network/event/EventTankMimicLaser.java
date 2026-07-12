@@ -53,22 +53,6 @@ public class EventTankMimicLaser extends PersonalEvent implements IStackableEven
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeInt(this.tank2);
-        b.writeDouble(this.range);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.tank2 = b.readInt();
-        this.range = b.readDouble();
-    }
-
-    @Override
     public int getIdentifier()
     {
         return this.tank;

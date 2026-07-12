@@ -1,10 +1,6 @@
 package tanks.network.event;
 
-import tanks.Game;
-import tanks.Player;
-import tanks.network.NetworkUtils;
-
-import io.netty.buffer.ByteBuf;
+import tanks.*;
 
 import java.util.UUID;
 
@@ -25,22 +21,6 @@ public class EventSetItemCount extends PersonalEvent
         this.playerID = p.clientID;
         this.slot = slot;
         this.count = count;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.playerID.toString());
-        b.writeInt(this.slot);
-        b.writeInt(this.count);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.playerID = UUID.fromString(NetworkUtils.readString(b));
-        this.slot = b.readInt();
-        this.count = b.readInt();
     }
 
     @Override

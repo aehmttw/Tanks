@@ -20,18 +20,6 @@ public class EventPurchaseBuild extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.name);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.name = NetworkUtils.readString(b);
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null)

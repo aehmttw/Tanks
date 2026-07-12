@@ -1,25 +1,10 @@
 package tanks.network.event;
 
-import tanks.Drawing;
-import tanks.Game;
+import tanks.*;
 import tanks.minigames.Arcade;
-
-import io.netty.buffer.ByteBuf;
 
 public class EventArcadeFrenzy extends PersonalEvent
 {
-    @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-
-    }
-
     @Override
     public void execute()
     {

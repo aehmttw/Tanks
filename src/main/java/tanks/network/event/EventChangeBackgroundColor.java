@@ -34,30 +34,6 @@ public class EventChangeBackgroundColor extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.colorR);
-        b.writeInt(this.colorG);
-        b.writeInt(this.colorB);
-
-        b.writeInt(this.noiseR);
-        b.writeInt(this.noiseG);
-        b.writeInt(this.noiseB);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.colorR = b.readInt();
-        this.colorG = b.readInt();
-        this.colorB = b.readInt();
-
-        this.noiseR = b.readInt();
-        this.noiseG = b.readInt();
-        this.noiseB = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         Level l;

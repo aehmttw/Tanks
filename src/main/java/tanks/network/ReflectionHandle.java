@@ -1,4 +1,4 @@
-package tanks.tankson;
+package tanks.network;
 
 import tanks.*;
 

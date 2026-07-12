@@ -27,22 +27,6 @@ public class EventSetupHotbar extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.playerID.toString());
-        b.writeBoolean(this.items);
-        b.writeBoolean(this.coins);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.playerID = UUID.fromString(NetworkUtils.readString(b));
-        this.items = b.readBoolean();
-        this.coins = b.readBoolean();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null && Game.player.clientID.equals(this.playerID))

@@ -42,30 +42,6 @@ public class EventObstacleDestroy extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeDouble(this.posX);
-        b.writeDouble(this.posY);
-        b.writeBoolean(this.effect);
-        b.writeDouble(this.effectX);
-        b.writeDouble(this.effectY);
-        b.writeDouble(this.radius);
-        NetworkUtils.writeString(b, this.name);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.posX = b.readDouble();
-        this.posY = b.readDouble();
-        this.effect = b.readBoolean();
-        this.effectX = b.readDouble();
-        this.effectY = b.readDouble();
-        this.radius = b.readDouble();
-        this.name = NetworkUtils.readString(b);
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID != null)

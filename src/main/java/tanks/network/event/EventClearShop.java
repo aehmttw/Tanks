@@ -16,18 +16,6 @@ public class EventClearShop extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-
-    }
-
-    @Override
     public void execute()
     {
         if (Game.screen instanceof ScreenGame)

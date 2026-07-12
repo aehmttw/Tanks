@@ -29,22 +29,6 @@ public class EventSetSelectedItems extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.slot);
-        b.writeInt(this.primary);
-        b.writeInt(this.secondary);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.slot = b.readInt();
-        this.primary = b.readInt();
-        this.secondary = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID != null)

@@ -1,10 +1,7 @@
 package tanks.network.event;
 
-import tanks.Game;
-import tanks.Player;
+import tanks.*;
 import tanks.gui.screen.ScreenPartyHost;
-
-import io.netty.buffer.ByteBuf;
 
 public class EventPlayerReady extends PersonalEvent
 {
@@ -37,17 +34,4 @@ public class EventPlayerReady extends PersonalEvent
             Game.eventsOut.add(new EventUpdateReadyPlayers(ScreenPartyHost.readyPlayers));
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-
-    }
-
 }

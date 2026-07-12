@@ -52,18 +52,4 @@ public class EventTankUpdateHealth extends PersonalEvent
             t.vY = 0;
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeDouble(this.health);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.health = b.readDouble();
-    }
 }

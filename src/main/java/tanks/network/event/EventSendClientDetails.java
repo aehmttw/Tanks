@@ -5,8 +5,6 @@ import tanks.gui.ChatMessage;
 import tanks.gui.screen.*;
 import tanks.network.*;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.UUID;
 
 public class EventSendClientDetails extends PersonalEvent implements IServerThreadEvent
@@ -25,22 +23,6 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
         this.version = version;
         this.clientID = clientID;
         this.username = username;
-    }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.version);
-        NetworkUtils.writeString(b, clientID.toString());
-        NetworkUtils.writeString(b, username);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.version = b.readInt();
-        this.clientID = UUID.fromString(NetworkUtils.readString(b));
-        this.username = NetworkUtils.readString(b);
     }
 
     @Override

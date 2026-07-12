@@ -25,20 +25,6 @@ public class EventUpdateCoins extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        NetworkUtils.writeString(b, this.playerID.toString());
-        b.writeInt(this.coins);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.playerID = UUID.fromString(NetworkUtils.readString(b));
-        this.coins = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID == null && this.playerID.equals(Game.clientID))

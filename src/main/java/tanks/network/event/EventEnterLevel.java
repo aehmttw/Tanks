@@ -30,16 +30,4 @@ public class EventEnterLevel extends PersonalEvent
             Crusade.currentCrusade = null;
         }
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-
-    }
 }

@@ -3,7 +3,7 @@ package tanks.network.event;
 import basewindow.Color;
 import io.netty.buffer.ByteBuf;
 import tanks.network.NetworkUtils;
-import tanks.tankson.ReflectionHandle;
+import tanks.network.ReflectionHandle;
 
 import java.lang.annotation.*;
 import java.util.UUID;
@@ -53,26 +53,12 @@ public interface INetworkEvent extends IEvent
 
     default void write(ByteBuf b)
     {
-        try
-        {
-            handle.writeObject(b, this);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException("Writing event " + this.getClass().getSimpleName() + " failed: " + e, e);
-        }
+        handle.writeObject(b, this);
     }
 
     default void read(ByteBuf b)
     {
-        try
-        {
-            handle.readObject(b, this);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException("Reading event " + this.getClass().getSimpleName() + " failed: " + e, e);
-        }
+        handle.readObject(b, this);
     }
 
     void execute();

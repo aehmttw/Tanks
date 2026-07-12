@@ -1,7 +1,8 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
+import basewindow.ShaderGroupShadowDraw;
+import basewindow.StageExclusiveUniform;
 import tanks.Game;
 import tanks.obstacle.Obstacle;
 import tanks.obstacle.ObstacleBeatBlock;
@@ -11,7 +12,7 @@ public class ShaderBeatBlocks extends RendererShader implements IUpdatedShader, 
     public Uniform1f obstacleSizeFrac;
     public Uniform1f outlineSizeFrac;
 
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f flashFrac;
 
     public Attribute3f centerCoord;
@@ -24,6 +25,7 @@ public class ShaderBeatBlocks extends RendererShader implements IUpdatedShader, 
     @Override
     public void initialize() throws Exception
     {
+        super.initialize();
         this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_beat_blocks.vert"}, "/shaders/main.frag", null);
         this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_beat_blocks.vert"}, "/shaders/shadow_map.frag", null);
     }

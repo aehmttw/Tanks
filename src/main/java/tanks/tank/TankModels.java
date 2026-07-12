@@ -141,6 +141,8 @@ public class TankModels
 
         Tank.health_model = Drawing.drawing.getModel("/models/tankhealth/");
 
+        Mine.mine = Drawing.drawing.getModel("/models/mine/");
+
         registerTankEmblems();
 
     }

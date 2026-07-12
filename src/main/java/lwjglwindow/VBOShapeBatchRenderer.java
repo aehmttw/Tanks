@@ -192,7 +192,7 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
     {
         super(true);
         this.window = window;
-        this.shader = window.currentShader.group;
+        this.shader = window.currentShaderStage.group;
     }
 
     public VBOShapeBatchRenderer(LWJGLWindow window, ShaderGroup s)
@@ -627,17 +627,17 @@ public class VBOShapeBatchRenderer extends BaseShapeBatchRenderer
         {
             this.window.setColor(255, 255, 255, 255, this.colorGlow);
 
-            this.shader.setVertexBuffer(vertVBO);
-            this.shader.setColorBuffer(colVBO);
+            this.window.vboRenderer.setVertexBuffer(vertVBO);
+            this.window.vboRenderer.setColorBuffer(colVBO);
 
             for (ShaderGroup.Attribute a: this.shader.attributes)
             {
                 int attributeId = this.attributeToId.get(a);
                 AttributeProperty prop = this.attributeProperties.get(attributeId);
-                this.shader.setCustomBuffer(a, prop.vboId, a.count);
+                this.window.vboRenderer.setCustomBuffer(a, prop.vboId, a.count);
             }
 
-            this.shader.drawVBO(this.size);
+            this.window.vboRenderer.drawVBO(this.size);
         }
     }
 

@@ -498,7 +498,7 @@ public class ItemBar
 
     public void drawCircle()
     {
-        if (Game.game.window.drawingShadow)
+        if (Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
         double mx = Drawing.drawing.getInterfaceMouseX();

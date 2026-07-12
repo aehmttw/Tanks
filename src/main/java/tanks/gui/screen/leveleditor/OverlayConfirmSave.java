@@ -53,9 +53,9 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
     }
 
     @Override
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         Drawing.drawing.setColor(255, 127, 0, this.opacity);
         this.opacity = Math.max(0, this.opacity - Panel.frameFrequency * 2);

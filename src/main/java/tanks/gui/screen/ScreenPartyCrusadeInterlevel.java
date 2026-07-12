@@ -215,10 +215,14 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     {
         this.drawDefaultBackground();
 
-        if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
+        if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
             Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+    }
 
-        if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
+    @Override
+    public void drawUI()
+    {
+        if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
             this.fireworksDisplay.draw();
 
         if (ScreenPartyLobby.isClient)

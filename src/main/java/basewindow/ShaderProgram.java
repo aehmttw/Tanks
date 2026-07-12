@@ -7,6 +7,7 @@ import java.util.HashMap;
 public abstract class ShaderProgram
 {
     public ShaderGroup group;
+    public int stageIndex = 0;
     public BaseShaderUtil util;
     public ArrayList<Attribute> attributes = new ArrayList<>();
     public BaseWindow window;
@@ -61,30 +62,19 @@ public abstract class ShaderProgram
             {
                 ShaderGroup.Attribute a = (ShaderGroup.Attribute) f.get(this.group);
                 if (a == null)
+                {
                     a = (ShaderGroup.Attribute) f.getType().newInstance();
-
-                if (this == group.shaderShadowMap)
-                {
-                    Attribute a2 = this.util.getAttribute();
-                    a.shadowMapAttribute = a2;
-
-                    a2.name = f.getName();
-                    f.set(this.group, a);
-
-                    this.group.attributes.add(a);
-                    a.shadowMapAttribute.bind();
+                    a.passAttributes = new Attribute[this.group.stages.size()];
                 }
-                else
-                {
-                    Attribute a1 = this.util.getAttribute();
-                    a.normalAttribute = a1;
 
-                    a1.name = f.getName();
-                    f.set(this.group, a);
+                Attribute a2 = this.util.getAttribute();
+                a.passAttributes[this.stageIndex] = a2;
 
-                    this.group.attributes.add(a);
-                    a.normalAttribute.bind();
-                }
+                a2.name = f.getName();
+                f.set(this.group, a);
+
+                this.group.attributes.add(a);
+                a.passAttributes[this.stageIndex].bind();
             }
         }
     }
@@ -165,6 +155,8 @@ public abstract class ShaderProgram
 
         Integer get();
     }
+
+    public interface UniformSampler2D extends Uniform1i {}
 
     public interface Uniform2i extends IPrimitiveUniform<int[]>
     {

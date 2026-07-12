@@ -86,13 +86,14 @@ public class Tanks
 
                 if (Game.framework == Game.Framework.lwjgl)
                 {
+                    Game.drawer = new GameDrawer();
                     // Creates and configures the LWJGL window.
                     Game.game.window = new LWJGLWindow(
-                        "Tanks",
-                        1400, 900 + Drawing.drawing.statsHeight,
-                        Game.absoluteDepthBase,
-                        new GameUpdater(), new GameDrawer(), new GameWindowHandler(),
-                        Game.vsync, !Panel.showMouseTarget
+                            "Tanks",
+                            1400, 900 + Drawing.drawing.statsHeight,
+                            Game.absoluteDepthBase,
+                            new GameUpdater(), Game.drawer, new GameWindowHandler(),
+                            Game.vsync, !Panel.showMouseTarget
                     );
                     Game.game.window.antialiasingEnabled = Game.antialiasing;
 

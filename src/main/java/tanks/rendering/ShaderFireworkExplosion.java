@@ -1,34 +1,28 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
+import basewindow.ShaderGroupShadowDraw;
+import basewindow.StageExclusiveUniform;
 
-public class ShaderFireworkExplosion extends RendererShader
+public class ShaderFireworkExplosion extends ShaderGroupUI
 {
     public Attribute2f offset;
     public Attribute1f maxAge;
 
-    @OnlyBaseUniform
     public Uniform1f time;
-
-    @OnlyBaseUniform
     public Uniform1f fireworkGlow;
-
-    @OnlyBaseUniform
     public Uniform3f gravity;
-
-    @OnlyBaseUniform
     public Uniform4f color;
 
-    public ShaderFireworkExplosion(BaseWindow w)
+    public ShaderFireworkExplosion()
     {
-        super(w, "firework");
+        super("firework");
     }
 
     @Override
     public void initialize() throws Exception
     {
-        this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_firework.vert"}, "/shaders/main.frag", null);
-        this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_firework.vert"}, "/shaders/shadow_map.frag", null);
+        super.initialize();
+        this.shader.setUp("/shaders/ui.vert", new String[]{"/shaders/ui_firework.vert"}, "/shaders/ui.frag", null);
     }
 }

@@ -893,7 +893,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         {
             this.background.draw();
 
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 Game.game.window.clearDepth();
 
             Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
@@ -983,7 +983,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             if (tankEntriesShown >= 0)
             {
-                if (!Game.game.window.drawingShadow)
+                if (!Game.game.window.mainRenderPasses.drawingShadow)
                     topBarTimer = Math.min(topBarTimer + Panel.frameFrequency, maxBarTime);
 
                 double f = topBarTimer / maxBarTime;
@@ -1003,7 +1003,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             if (tankEntriesShown > this.tanks.size())
             {
-                if (!Game.game.window.drawingShadow)
+                if (!Game.game.window.mainRenderPasses.drawingShadow)
                     bottomBarTimer = Math.min(bottomBarTimer + Panel.frameFrequency, maxBarTime);
 
                 double f = bottomBarTimer / maxBarTime;
@@ -1039,7 +1039,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             if (levelEntriesShown >= 0)
             {
-                if (!Game.game.window.drawingShadow)
+                if (!Game.game.window.mainRenderPasses.drawingShadow)
                     topBarTimer = Math.min(topBarTimer + Panel.frameFrequency, maxBarTime);
 
                 double f = topBarTimer / maxBarTime;
@@ -1101,7 +1101,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             if (levelEntriesShown > this.levels.size())
             {
-                if (!Game.game.window.drawingShadow)
+                if (!Game.game.window.mainRenderPasses.drawingShadow)
                     bottomBarTimer = Math.min(bottomBarTimer + Panel.frameFrequency, maxBarTime);
 
                 double f = bottomBarTimer / maxBarTime;
@@ -1222,7 +1222,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             if (itemEntriesShown >= 0)
             {
-                if (!Game.game.window.drawingShadow)
+                if (!Game.game.window.mainRenderPasses.drawingShadow)
                     topBarTimer = Math.min(topBarTimer + Panel.frameFrequency, maxBarTime);
 
                 double f = topBarTimer / maxBarTime;
@@ -1239,7 +1239,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
             if (itemEntriesShown > this.items.size())
             {
-                if (!Game.game.window.drawingShadow)
+                if (!Game.game.window.mainRenderPasses.drawingShadow)
                     bottomBarTimer = Math.min(bottomBarTimer + Panel.frameFrequency, maxBarTime);
 
                 double f = bottomBarTimer / maxBarTime;
@@ -1252,7 +1252,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
         {
             this.drawPageEntries(this.miscEntriesShown, this.misc.size(), this.miscPage, this.misc);
 
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
             {
                 for (Tank t: this.rollingTanks)
                 {
@@ -1385,7 +1385,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
 
         public void draw(int num, int count, int pageSize)
         {
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 this.age = Math.min(this.age + Panel.frameFrequency, this.maxAge);
 
             int numOnPage = num % pageSize;

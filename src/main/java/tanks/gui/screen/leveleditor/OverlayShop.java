@@ -104,9 +104,9 @@ public class OverlayShop extends ScreenLevelEditorOverlay implements IConditiona
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         if (Game.screen != this)
             return;

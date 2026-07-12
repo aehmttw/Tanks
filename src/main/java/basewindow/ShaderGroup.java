@@ -1,103 +1,59 @@
 package basewindow;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 /**
  * A shader group allows for shaders to share the same uniforms and attributes
- * across both normal and shadow map render mode shaders.
+ * across multiple render passes. This allows for drawing code to be shared between
+ * passes, which can simplify rendering a bit.
+ *
+ * Switching between shader groups within the same render pass will transfer over
+ * all uniforms which come from the same class. This creates a sort of hierarchical
+ * state where more specialized shaders can extend more base-level ones in order
+ * to add more properties (uniforms, attributes) without disrupting the state of
+ * the original shaders.
  */
-public class ShaderGroup
+public abstract class ShaderGroup
 {
-    public ShaderBase shaderBase;
-    public ShaderShadowMap shaderShadowMap;
     public HashSet<Attribute> attributes = new HashSet<>();
+    public LinkedHashMap<RenderPass, ShaderStage> stages = new LinkedHashMap<>();
+
     public BaseWindow window;
 
     public String name;
     protected int random = (int) (Math.random() * 100);
 
+    public boolean initialized = false;
+
     public ShaderGroup(BaseWindow w, String name)
     {
         this.window = w;
-        this.shaderBase = new ShaderBase(w);
-        this.shaderBase.group = this;
-        this.shaderShadowMap = new ShaderShadowMap(w);
-        this.shaderShadowMap.group = this;
         this.name = name;
     }
 
     public void initialize() throws Exception
     {
-        this.shaderShadowMap.setUp(
-            "/shaders/shadow_map.vert", new String[]{"/shaders/main_default.vert"},
-            "/shaders/shadow_map.frag", null);
-        this.shaderBase.setUp(
-            "/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
-            "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
+        int i = 0;
+        for (ShaderStage st: stages.values())
+        {
+            st.shader.stageIndex = i;
+            st.index = i;
+            i++;
+        }
+        initialized = true;
     }
 
-    public void setVertexBuffer(int id)
+    public void addStage(ShaderStage st)
     {
-        if (this.window.drawingShadow)
-            this.shaderShadowMap.util.setVertexBuffer(id);
-        else
-            this.shaderBase.util.setVertexBuffer(id);
-    }
-
-    public void setColorBuffer(int id)
-    {
-        if (this.window.drawingShadow)
-            this.shaderShadowMap.util.setColorBuffer(id);
-        else
-            this.shaderBase.util.setColorBuffer(id);
-    }
-
-    public void setTexCoordBuffer(int id)
-    {
-        if (this.window.drawingShadow)
-            this.shaderShadowMap.util.setTexCoordBuffer(id);
-        else
-            this.shaderBase.util.setTexCoordBuffer(id);
-    }
-
-    public void setNormalBuffer(int id)
-    {
-        if (this.window.drawingShadow)
-            this.shaderShadowMap.util.setNormalBuffer(id);
-        else
-            this.shaderBase.util.setNormalBuffer(id);
-    }
-
-    public void setCustomBuffer(Attribute attribute, int bufferID, int size)
-    {
-        if (this.window.drawingShadow)
-            this.shaderShadowMap.util.setCustomBuffer(attribute.shadowMapAttribute, bufferID, size);
-        else
-            this.shaderBase.util.setCustomBuffer(attribute.normalAttribute, bufferID, size);
-    }
-
-    public void drawVBO(int numberIndices)
-    {
-        if (this.window.drawingShadow)
-            this.shaderShadowMap.util.drawVBO(numberIndices);
-        else
-            this.shaderBase.util.drawVBO(numberIndices);
-    }
-
-    public void set()
-    {
-        if (this.window.drawingShadow)
-            this.window.setShader(this.shaderShadowMap);
-        else
-            this.window.setShader(this.shaderBase);
+        this.stages.put(st.renderPass, st);
     }
 
     public abstract static class Attribute
     {
         public int count;
 
-        public ShaderProgram.Attribute normalAttribute;
-        public ShaderProgram.Attribute shadowMapAttribute;
+        public ShaderProgram.Attribute[] passAttributes;
 
         public Attribute(int count)
         {
@@ -139,65 +95,54 @@ public class ShaderGroup
 
     public interface IGroupUniform
     {
-        void setWindow(BaseWindow window);
+        void initialize(BaseWindow window, int stages);
 
-        void bind(boolean shadow);
+        void bind(int stage);
     }
 
     public abstract static class GroupPrimitiveUniform<T, U extends ShaderProgram.IPrimitiveUniform<T>> implements IGroupUniform
     {
-        protected U baseUniform;
-        protected U shadowMapUniform;
+        protected ShaderProgram.IPrimitiveUniform[] uniforms;
 
         protected BaseWindow window;
 
         public void set(T t)
         {
-            if (!window.drawingShadow)
-                baseUniform.set(t);
-            else
-                shadowMapUniform.set(t);
+            this.uniforms[window.currentShaderStage.index].set(t);
         }
 
-        public void setWindow(BaseWindow w)
+        public void initialize(BaseWindow w, int stages)
         {
             this.window = w;
+            this.uniforms = new ShaderProgram.IPrimitiveUniform[stages];
         }
 
-        public void bind(boolean shadow)
+        public void bind(int stage)
         {
-            if (shadow)
-                shadowMapUniform.bind();
-            else
-                baseUniform.bind();
+            this.uniforms[stage].bind();
         }
     }
 
-    public abstract static class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform>
+    public abstract static class GroupMatrixUniform<T extends ShaderProgram.IMatrixUniform> implements IGroupUniform
     {
-        protected T baseUniform;
-        protected T shadowMapUniform;
+        protected ShaderProgram.IMatrixUniform[] uniforms;
+
         protected BaseWindow window;
 
         public void set(float[] f, boolean transpose)
         {
-            if (!window.drawingShadow)
-                baseUniform.set(f, transpose);
-            else
-                shadowMapUniform.set(f, transpose);
+            this.uniforms[window.currentShaderStage.index].set(f, transpose);
         }
 
-        public void setWindow(BaseWindow w)
+        public void initialize(BaseWindow w, int stages)
         {
             this.window = w;
+            this.uniforms = new ShaderProgram.IMatrixUniform[stages];
         }
 
-        public void bind(boolean shadow)
+        public void bind(int stage)
         {
-            if (shadow)
-                shadowMapUniform.bind();
-            else
-                baseUniform.bind();
+            this.uniforms[stage].bind();
         }
     }
 
@@ -205,7 +150,9 @@ public class ShaderGroup
 
     public static class Uniform1i extends GroupPrimitiveUniform<Integer, ShaderProgram.Uniform1i> {}
 
-    public static class Uniform2i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform2i> {}
+    public static class UniformSampler2D extends GroupPrimitiveUniform<Integer, ShaderProgram.UniformSampler2D> { }
+
+    public static class Uniform2i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform2i> { }
 
     public static class Uniform3i extends GroupPrimitiveUniform<int[], ShaderProgram.Uniform3i> {}
 
@@ -224,6 +171,22 @@ public class ShaderGroup
     public static class UniformMatrix3 extends GroupMatrixUniform<ShaderProgram.UniformMatrix3> {}
 
     public static class UniformMatrix4 extends GroupMatrixUniform<ShaderProgram.UniformMatrix4> {}
+
+    public static class ShaderStage
+    {
+        public ShaderGroup group;
+        public int index;
+        public ShaderProgram shader;
+        public RenderPass renderPass;
+
+        public ShaderStage(ShaderGroup g, RenderPass pass, ShaderProgram shader)
+        {
+            this.group = g;
+            this.renderPass = pass;
+            this.shader = shader;
+            this.shader.group = g;
+        }
+    }
 
     @Override
     public String toString()

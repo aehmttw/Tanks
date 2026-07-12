@@ -1,48 +1,26 @@
 package basewindow;
 
-public class ShaderBase extends ShaderProgram implements IBaseShader
+public class ShaderBase extends ShaderProgram implements IBaseShader, IBlendFuncShader, IDepthShader, IGlowShader, ITextureShader
 {
     public Uniform1b texture;
-    public Uniform1i depthTexture;
+    public UniformSampler2D depthTexture;
     public UniformMatrix4 biasMatrix;
     public UniformMatrix4 lightViewProjectionMatrix;
-    //    public Uniform3f lightVec;
     public Uniform1b depthtest;
     public Uniform1f glow;
     public Uniform1i shadowres;
-    public Uniform1f light;
-    public Uniform1f glowLight;
-    public Uniform1f shade;
-    public Uniform1f glowShade;
-    //    public Uniform1f edgeLight;
-//    public Uniform1f edgeCutoff;
-//    public Uniform1f minBrightness;
-//    public Uniform1f maxBrightness;
-//    public Uniform1b negativeBrightness;
-//    public Uniform1b customLight;
-//    public Uniform3f lightAmbient;
-//    public Uniform3f lightDiffuse;
-//    public Uniform3f lightSpecular;
-//    public Uniform1f shininess;
-//    public Uniform1f celsections;
+
     public Uniform1b shadow;
     public Uniform1b vbo;
     public Uniform4f originalColor;
 
-    public Uniform1f width;
-    public Uniform1f height;
-    public Uniform1f depth;
-    public Uniform1f scale;
-
-    public Uniform1i lightsCount;
-    public Uniform1i lightsTexSize;
-    public Uniform1i lightsTexture;
-
-    public Uniform1i tex;
+    public UniformSampler2D tex;
 
     public Uniform1i blendFunc;
 
-//    public Uniform1b useNormal;
+    public Uniform1f baseLight;
+    public Uniform1f shadowLight;
+
 
     public BaseWindow window;
 
@@ -52,19 +30,11 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
         this.window = window;
     }
 
-//    @Override
-//    public void initialize() throws Exception
-//    {
-//        this.setUp("/shaders/main.vert", new String[]{"/shaders/main_default.vert"},
-//                "/shaders/main.frag", new String[]{"/shaders/main_default.frag"});
-//    }
-
     @Override
     public void initializeUniforms()
     {
         this.tex.set(0);
         this.depthTexture.set(1);
-        this.lightsTexture.set(2);
         this.blendFunc.set(0);
     }
 
@@ -74,11 +44,11 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
         this.originalColor.set((float) this.window.colorR, (float) this.window.colorG, (float) this.window.colorB, (float) this.window.colorA);
         //this.useNormal.set(normalBufferID != 0);
 
-        this.util.setVertexBuffer(vertexBufferID);
-        this.util.setColorBuffer(colorBufferID);
-        this.util.setTexCoordBuffer(texBufferID);
-        this.util.setNormalBuffer(normalBufferID);
-        this.util.drawVBO(numberIndices);
+        this.window.vboRenderer.setVertexBuffer(vertexBufferID);
+        this.window.vboRenderer.setColorBuffer(colorBufferID);
+        this.window.vboRenderer.setTexCoordBuffer(texBufferID);
+        this.window.vboRenderer.setNormalBuffer(normalBufferID);
+        this.window.vboRenderer.drawVBO(numberIndices);
 
         this.vbo.set(false);
         //this.useNormal.set(false);
@@ -88,5 +58,29 @@ public class ShaderBase extends ShaderProgram implements IBaseShader
     public String toString()
     {
         return this.group.name + "/base";
+    }
+
+    @Override
+    public void setBlendFunc(int func)
+    {
+        this.blendFunc.set(func);
+    }
+
+    @Override
+    public void setDepthTest(boolean on)
+    {
+        this.depthtest.set(on);
+    }
+
+    @Override
+    public void setGlow(float glow)
+    {
+        this.glow.set(glow);
+    }
+
+    @Override
+    public void setTexture(boolean on)
+    {
+        this.texture.set(on);
     }
 }

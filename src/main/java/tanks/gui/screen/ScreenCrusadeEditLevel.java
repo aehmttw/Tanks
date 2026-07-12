@@ -362,6 +362,11 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
     public void draw()
     {
         this.levelDisplay.draw();
+    }
+
+    @Override
+    public void drawUI()
+    {
 
         if (removeMenu)
         {

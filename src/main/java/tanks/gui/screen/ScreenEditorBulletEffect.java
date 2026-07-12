@@ -350,11 +350,11 @@ public class ScreenEditorBulletEffect extends ScreenEditorTanksONable<BulletEffe
     }
 
     @Override
-    public void draw()
+    public void drawUI()
     {
         this.setTrailLength();
 
-        super.draw();
+        super.drawUI();
 
         if (this.message != null)
             return;

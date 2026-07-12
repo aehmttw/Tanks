@@ -1,11 +1,9 @@
 package tanks.network;
 
 import basewindow.Color;
-
 import io.netty.buffer.ByteBuf;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.*;
 
 public class NetworkUtils
 {

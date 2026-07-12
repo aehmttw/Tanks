@@ -21,18 +21,6 @@ public class EventPurchaseItem extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(item);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        item = b.readInt();
-    }
-
-    @Override
     public void execute()
     {
         if (this.clientID != null && Game.screen instanceof ScreenGame)

@@ -42,18 +42,4 @@ public class EventTankRemove extends PersonalEvent
 
         t.unregisterNetworkID();
     }
-
-    @Override
-    public void write(ByteBuf b)
-    {
-        b.writeInt(this.tank);
-        b.writeBoolean(this.destroyAnimation);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        this.tank = b.readInt();
-        this.destroyAnimation = b.readBoolean();
-    }
 }

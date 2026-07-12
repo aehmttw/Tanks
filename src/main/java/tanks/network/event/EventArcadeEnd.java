@@ -20,18 +20,6 @@ public class EventArcadeEnd extends PersonalEvent
     }
 
     @Override
-    public void write(ByteBuf b)
-    {
-        b.writeBoolean(win);
-    }
-
-    @Override
-    public void read(ByteBuf b)
-    {
-        win = b.readBoolean();
-    }
-
-    @Override
     public void execute()
     {
         if (clientID == null && Game.currentLevel instanceof Arcade)

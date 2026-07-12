@@ -78,6 +78,10 @@ public class ScreenLanguage extends Screen
             changeLanguage(new Translation("hi.lang"))
         ));
 
+        languages.buttons.add(5, new Button(0, 0, 350, 40, "😀 Emoji ✨", () ->
+            changeLanguage(new Translation("emoji.lang"))
+        ));
+
         languages.sortButtons();
     }
 

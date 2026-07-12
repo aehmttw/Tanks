@@ -19,7 +19,7 @@ import java.util.*;
 
 import static tanks.tank.TankPropertyCategory.*;
 
-public abstract class Tank extends Movable implements ISolidObject
+public abstract class Tank extends Movable implements ISolidObject, IDrawableLightSource
 {
     public static int currentID = 0;
     public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -46,6 +46,8 @@ public abstract class Tank extends Movable implements ISolidObject
     @TankBuildProperty
     @Property(category = appearanceTurretBarrel, id = "turret_skin", name = "Turret barrel skin", miscType = Property.MiscType.turretModel)
     public TankModels.TankSkin turretSkin = TankModels.tank;
+
+    public Color lightColor = new Color(255, 255, 255);
 
     public double angle = 0;
     public double pitch = 0;
@@ -584,7 +586,8 @@ public abstract class Tank extends Movable implements ISolidObject
         if (Math.random() * Panel.frameFrequency < boost * Game.effectMultiplier && Game.effectsEnabled && !ScreenGame.finishedQuick)
         {
             Effect e = Effect.createNewEffect(this.posX, this.posY, Game.tile_size / 2, Effect.EffectType.piece);
-            e.setColorsFromTank(this);
+            e.setColorWithNoise(255, 180, 0, 50);
+            e.setGlowColor(e.color, 127);
 
             if (Game.enable3d)
                 e.set3dPolarMotion(Math.random() * 2 * Math.PI, Math.random() * Math.PI, Math.random());
@@ -769,28 +772,6 @@ public abstract class Tank extends Movable implements ISolidObject
                 Drawing.drawing.fillLargeGlow(this.posX, this.posY, Math.max(this.size / 4, 11), size, size, true, false, false, false);
         }
 
-        if (this.lightIntensity > 0 && this.lightSize > 0 && !transparent)
-        {
-            double i = this.lightIntensity;
-
-            while (i > 0)
-            {
-                double ls = this.lightSize;
-                if (forInterface && ls > 8)
-                    ls = 8;
-
-                double size = ls * s * i / this.lightIntensity;
-                Drawing.drawing.setColor(255, 255, 255, i * 255);
-
-                if (forInterface)
-                    Drawing.drawing.fillInterfaceGlow(this.posX, this.posY, size, size, false, true);
-                else
-                    Drawing.drawing.fillLargeGlow(this.posX, this.posY, 0, size, size, false, false, false, true);
-
-                i--;
-            }
-        }
-
         if (this.fullBrightness)
             luminance = 1;
 
@@ -949,7 +930,7 @@ public abstract class Tank extends Movable implements ISolidObject
 
         if (this.currentlyVisible || this.destroy)
         {
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
                 drawAge += Panel.frameFrequency;
 
             this.drawTank(false, Game.enable3d);
@@ -1442,5 +1423,27 @@ public abstract class Tank extends Movable implements ISolidObject
         Turret.setTertiary(this.color, this.secondaryColor, this.tertiaryColor);
         this.emblemColor.set(this.secondaryColor);
         return this;
+    }
+
+    @Override
+    public boolean lit()
+    {
+        return this.lightIntensity > 0 && this.lightSize > 0;
+    }
+
+    @Override
+    public Color getColor()
+    {
+        this.lightColor.red = 255 * this.lightIntensity;
+        this.lightColor.green = 255 * this.lightIntensity;
+        this.lightColor.blue = 255 * this.lightIntensity;
+
+        return this.lightColor;
+    }
+
+    @Override
+    public double getBrightness()
+    {
+        return this.lightSize * this.size * (1.0 - this.destroyTimer / Game.tile_size);
     }
 }

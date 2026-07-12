@@ -14,6 +14,7 @@ public class ShaderGroundOutOfBounds extends RendererShader implements IObstacle
     @Override
     public void initialize() throws Exception
     {
+        super.initialize();
         this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_out_of_bounds.vert"}, "/shaders/main.frag", null);
         this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_out_of_bounds.vert"}, "/shaders/shadow_map.frag", null);
     }

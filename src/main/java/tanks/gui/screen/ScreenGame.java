@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.InputCodes;
 import basewindow.InputPoint;
+import basewindow.transformation.Matrix4;
 import basewindow.transformation.RotationAboutPoint;
 import basewindow.transformation.Translation;
 import tanks.*;
@@ -113,6 +114,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public boolean zoomScrolled = false;
 
     public boolean playedIntro = false;
+
+    public Matrix4 projection;
 
     protected static String[] ready_musics =
         {
@@ -935,39 +938,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         lastShop = s.toString();
 
         this.shopList = new ButtonList(this.shopItemButtons, 0, 0, (int) shopOffset, -30);
-    }
-
-    @Override
-    public void setupLights()
-    {
-        setupGameLights();
-    }
-
-    public static void setupGameLights()
-    {
-        for (Obstacle o: Game.obstacles)
-        {
-            if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
-            {
-                double[] l = ((IDrawableLightSource) o).getLightInfo();
-                l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
-                l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
-                l[2] = (o instanceof ObstacleStackable ? ((ObstacleStackable) o).startHeight : 25) * Drawing.drawing.scale;
-                Panel.panel.lights.add(l);
-            }
-        }
-
-        for (Movable o: Game.movables)
-        {
-            if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
-            {
-                double[] l = ((IDrawableLightSource) o).getLightInfo();
-                l[0] = Drawing.drawing.gameToAbsoluteX(o.posX, 0);
-                l[1] = Drawing.drawing.gameToAbsoluteY(o.posY, 0);
-                l[2] = (o.posZ + 25) * Drawing.drawing.scale;
-                Panel.panel.lights.add(l);
-            }
-        }
     }
 
     @Override
@@ -2187,7 +2157,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 //            m.randomize();
             m.postUpdate();
 
-            if (Double.isNaN(m.posX) || Double.isNaN(m.posY))
+            if ((Double.isNaN(m.posX) || Double.isNaN(m.posY)) && !(m instanceof MovableNaN))
             {
                 Game.removeMovables.add(m);
                 System.err.println("A movable's position became NaN! " + m);
@@ -2517,7 +2487,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if (Game.angledView)
         {
-            if (!Game.game.window.drawingShadow)
+            if (Game.game.window.currentShaderStage.renderPass == Game.game.window.mainRenderPasses.drawPass)
             {
                 if (this.playing && (!this.paused || ScreenPartyHost.isServer || ScreenPartyLobby.isClient) && !ScreenGame.finished)
                     slant = Math.min(1, slant + 0.01 * Panel.frameFrequency);
@@ -2537,7 +2507,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             Game.game.window.loadPerspective();
         }
 
-        if (Game.followingCam && Game.framework == Game.Framework.lwjgl && !Game.game.window.drawingShadow)
+        if (Game.followingCam && Game.framework == Game.Framework.lwjgl && !Game.game.window.mainRenderPasses.drawingShadow)
         {
             double frac = Panel.panel.zoomTimer;
 
@@ -2599,7 +2569,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                 drawables[o.drawLevel].add(o);
 
             Effect e = o.getCompanionEffect();
-            if (!Game.game.window.drawingShadow && e != null)
+            if (!Game.game.window.mainRenderPasses.drawingShadow && e != null)
                 this.drawables[9].add(e);
         }
 
@@ -2659,7 +2629,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     Game.playerTank.getTouchCircleSize(), Game.playerTank.getTouchCircleSize());
             }
 
-            if (i == 9 && !Game.game.window.drawingShadow && Game.playerTank != null)
+            if (i == 9 && !Game.game.window.mainRenderPasses.drawingShadow && Game.playerTank != null)
             {
                 if (Level.isDark())
                     Drawing.drawing.setColor(255, 255, 255, 50);
@@ -2702,6 +2672,18 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         }
 
         DebugKeybinds.renderDebugging();
+
+        this.projection = Game.game.window.getProjectionMatrix();
+        Game.game.window.transformations.clear();
+        Game.game.window.loadPerspective();
+    }
+
+    public void drawUI()
+    {
+        this.setPerspective();
+        Game.game.window.loadPerspective();
+
+        Drawing drawing = Drawing.drawing;
 
         if (Panel.darkness > 0)
         {
@@ -2885,7 +2867,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     Drawing.drawing.setColor(0, 0, 0, Math.max(0, 127 * Math.min(1, (readyPanelCounter * 10) / 200) * Math.min(s / 25, 1)));
                     Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX + extraWidth / 2, Drawing.drawing.interfaceSizeY / 2, extraWidth, height);
                     Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX - Math.min(readyPanelCounter * 10, 200), Drawing.drawing.interfaceSizeY / 2,
-                        Math.min(readyPanelCounter * 20, 400), height);
+                            Math.min(readyPanelCounter * 20, 400), height);
 
                     double c = readyPanelCounter - 35;
 
@@ -2983,7 +2965,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                         drawing.setColor(255, 127, 0, 127);
                         double size = Math.sin(1.25 / 60 * screenAge * Math.PI) * 5 + 50 + nudgeTimer * 10;
 
-                        if (!Game.game.window.drawingShadow)
+                        if (!Game.game.window.mainRenderPasses.drawingShadow)
                             nudgeTimer = Math.max(nudgeTimer - Panel.frameFrequency, 0);
 
                         drawing.fillPartialInterfaceOval(readyButton.posX - readyButton.sizeX / 2 + readyButton.sizeY / 2, readyButton.posY, size, size, 0.25, 0.75);

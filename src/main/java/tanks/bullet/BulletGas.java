@@ -33,6 +33,8 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
     @Property(id = "opacity", name = "Opacity", category = BulletPropertyCategory.appearance)
     public double opacity = 1;
 
+    protected Color lightColor = new Color();
+
     public BulletGas()
     {
         this.init();
@@ -83,7 +85,7 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
 
         double frac = 1;
         if (this.lifespan > 0)
-            frac = Math.pow(this.startSize, 2) / Math.pow(this.size, 2);
+            frac = Math.pow(this.startSize, 2) / Math.max(1, Math.pow(this.size, 2));
 
         this.damage = this.baseDamage * (this.lifespan <= 0 ? 1 : Math.max(0, 1.0 - this.age / this.lifespan));
         this.tankHitKnockback = this.baseTankKB * frac;
@@ -356,5 +358,32 @@ public class BulletGas extends Bullet implements IDrawableWithGlow
 
             Game.effects.add(e);
         }
+    }
+
+    @Override
+    public double getBrightness()
+    {
+        return this.size * 4;
+    }
+
+
+    @Override
+    public Color getColor()
+    {
+        double rawOpacity = (1.0 - (this.age) / lifespan);
+        rawOpacity *= rawOpacity * this.frameDamageMultipler;
+        double opacity = Math.min(rawOpacity * 255 * this.opacity, 254) * (1 - this.destroyTimer / this.maxDestroyTimer);
+
+        double frac = 1;
+        if (this.lifespan > 0)
+            frac = Math.max(0, 1 - this.age / this.lifespan);
+        else
+            opacity = Math.min(255 * this.opacity, 254) * (1 - this.destroyTimer / this.maxDestroyTimer);
+
+        this.lightColor.red = (this.startColor.red * frac + this.endColor.red * (1 - frac)) * (opacity / 255);
+        this.lightColor.green = (this.startColor.green * frac + this.endColor.green * (1 - frac)) * (opacity / 255);
+        this.lightColor.blue = (this.startColor.blue * frac + this.endColor.blue * (1 - frac)) * (opacity / 255);
+
+        return this.lightColor;
     }
 }

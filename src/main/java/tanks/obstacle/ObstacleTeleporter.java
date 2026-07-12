@@ -1,5 +1,6 @@
 package tanks.obstacle;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
 import tanks.gui.screen.leveleditor.selector.SelectorGroupID;
@@ -9,11 +10,15 @@ import tanks.tankson.MetadataProperty;
 
 import java.util.ArrayList;
 
-/** A teleporter which randomly transports the player to another teleporter in the level */
-public class ObstacleTeleporter extends Obstacle
+/**
+ * A teleporter which randomly transports the player to another teleporter in the level
+ */
+public class ObstacleTeleporter extends Obstacle implements IDrawableLightSource
 {
     public double cooldown;
     public double brightness = 1;
+
+    public Color lightColor = new Color();
 
     @MetadataProperty(id = "group_id", name = "Group ID", image = "id.png", selector = SelectorGroupID.selector_name, keybind = "editor.groupID")
     public int groupID = 0;
@@ -272,5 +277,25 @@ public class ObstacleTeleporter extends Obstacle
     public double getTileHeight()
     {
         return 0;
+    }
+
+    @Override
+    public boolean lit()
+    {
+        return true;
+    }
+
+    @Override
+    public double getBrightness()
+    {
+        return draw_size * (2.5 - this.brightness);
+    }
+
+    @Override
+    public Color getColor()
+    {
+        double frac = (2 - this.brightness) / 2;
+        this.lightColor.set(frac * this.colorR, frac * this.colorG, frac * this.colorB);
+        return this.lightColor;
     }
 }

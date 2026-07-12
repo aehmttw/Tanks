@@ -157,9 +157,9 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         colorRed.r1 = 0;
         colorRed.r2 = 255;

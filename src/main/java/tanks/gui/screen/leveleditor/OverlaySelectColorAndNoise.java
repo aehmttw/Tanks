@@ -167,9 +167,9 @@ public class OverlaySelectColorAndNoise extends ScreenLevelEditorOverlay
         super.update();
     }
 
-    public void draw()
+    public void drawUI()
     {
-        super.draw();
+        super.drawUI();
 
         int sX = (int) (800 * this.objWidth / 350);
         int sY = (int) Math.min(700, 600 * this.objHeight / 40);

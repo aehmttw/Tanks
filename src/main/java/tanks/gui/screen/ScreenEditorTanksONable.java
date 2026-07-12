@@ -1187,7 +1187,11 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
     {
         Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         create.setText("Create new %s", (Object) objName);
 
         if (showDeleteObj)
@@ -1256,15 +1260,14 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
 
             this.drawTitle();
 
-            if (Level.isDark())
-                Drawing.drawing.setColor(255, 255, 255);
-            else
-                Drawing.drawing.setColor(0, 0, 0);
-
             this.quit.draw();
 
             if (this.target.get() == null)
             {
+                if (Level.isDark())
+                    Drawing.drawing.setColor(255, 255, 255);
+                else
+                    Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.setInterfaceFontSize(this.textSize);
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "There is no %s set", this.objName);
                 this.create.draw();

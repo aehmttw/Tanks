@@ -1,12 +1,13 @@
 package tanks.rendering;
 
 import basewindow.BaseWindow;
-import basewindow.OnlyBaseUniform;
+import basewindow.ShaderGroupShadowDraw;
+import basewindow.StageExclusiveUniform;
 
 @RendererDrawLayer(7)
 public class ShaderIce extends RendererShader implements IObstacleSizeShader, IGroundHeightShader
 {
-    @OnlyBaseUniform
+    @StageExclusiveUniform({ShaderGroupShadowDraw.draw_pass})
     public Uniform1f obstacleSizeFrac;
     public Attribute1f groundHeight;
 
@@ -19,6 +20,7 @@ public class ShaderIce extends RendererShader implements IObstacleSizeShader, IG
     @Override
     public void initialize() throws Exception
     {
+        super.initialize();
         this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_ice.vert"}, "/shaders/main.frag", null);
         this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_ice.vert"}, "/shaders/shadow_map.frag", null);
     }

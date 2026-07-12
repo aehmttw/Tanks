@@ -26,7 +26,7 @@ public class Crate extends Movable
         if (this.age <= 0)
             Drawing.drawing.playGlobalSound("accel.ogg", (float) (0.75f / this.iPosZ * 1000), 0.25f);
 
-        if (Game.game.window.drawingShadow || !Game.shadowsEnabled)
+        if (Game.game.window.mainRenderPasses.drawingShadow || !Game.shadowsEnabled)
             this.age += Panel.frameFrequency;
 
         double size = this.size * Obstacle.draw_size / Game.tile_size * Math.min(1, this.age / (Game.tile_size * 1.5));

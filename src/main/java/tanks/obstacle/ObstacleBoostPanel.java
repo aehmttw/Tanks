@@ -1,5 +1,6 @@
 package tanks.obstacle;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.attribute.*;
 import tanks.bullet.Bullet;
@@ -10,10 +11,12 @@ import tanks.rendering.ShaderBoostPanel;
 import tanks.rendering.ShaderGroundObstacle;
 import tanks.tank.Tank;
 
-public class ObstacleBoostPanel extends Obstacle
+public class ObstacleBoostPanel extends Obstacle implements IDrawableLightSource
 {
     public double brightness = 0;
     public Effect glow;
+
+    public Color glowColor = new Color();
 
     public ObstacleBoostPanel(String name, double posX, double posY)
     {
@@ -173,4 +176,22 @@ public class ObstacleBoostPanel extends Obstacle
         return null;
     }
 
+    @Override
+    public boolean lit()
+    {
+        return brightness > 0;
+    }
+
+    @Override
+    public double getBrightness()
+    {
+        return 200;
+    }
+
+    @Override
+    public Color getColor()
+    {
+        this.glowColor.set(2.55 * this.brightness, 2.20 * this.brightness, 1.60 * this.brightness);
+        return glowColor;
+    }
 }

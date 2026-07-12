@@ -458,7 +458,7 @@ public class Hotbar
 
     public void drawCircle()
     {
-        if (Game.playerTank == null || Game.game.window.drawingShadow)
+        if (Game.playerTank == null || Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
         Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);

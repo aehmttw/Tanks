@@ -1,5 +1,6 @@
 package tanks.obstacle;
 
+import basewindow.Color;
 import tanks.*;
 import tanks.gui.screen.leveleditor.selector.SelectorColor;
 import tanks.gui.screen.leveleditor.selector.SelectorLuminosity;
@@ -7,9 +8,6 @@ import tanks.tankson.MetadataProperty;
 
 public class ObstacleLight extends Obstacle implements IDrawableLightSource
 {
-    /** 7 values, first 3 are automatically set to coords, 4th is brightness, 5-7 are color */
-    public double[] lightInfo;
-
     @MetadataProperty(id = "luminosity", name = "Luminosity", selector = SelectorLuminosity.selector_name, image = "block_luminosity.png", keybind = "editor.height")
     public double luminosity = 1;
 
@@ -18,11 +16,11 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
     @MetadataProperty(id = "light_color", name = "Color", selector = SelectorColor.selector_name, image = "color.png", keybind = "editor.groupID")
     public int lightColor = default_color;
 
+    protected Color lightColorObj = new Color();
+
     public ObstacleLight(String name, double posX, double posY)
     {
         super(name, posX, posY);
-
-        this.lightInfo = new double[]{0, 0, 0, 0, 255, 250, 235};
 
         this.draggable = false;
         this.destructible = false;
@@ -35,6 +33,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
         this.batchDraw = false;
         this.replaceTiles = false;
 
+        this.refreshMetadata();
         this.drawLevel = 9;
 
         this.primaryMetadataID = SelectorLuminosity.selector_name;
@@ -58,7 +57,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
         Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
 
         double s = this.luminosity * Game.tile_size * 4;
-        Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s * 3, s * 3, false, false, false, true);
+        //Drawing.drawing.fillForcedGlow(this.posX, this.posY, 0, s * 3, s * 3, false, false, false, true);
 
     }
 
@@ -69,8 +68,8 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
         double frac = Obstacle.draw_size / Game.tile_size * 0.75;
         Drawing.drawing.setColor(this.colorR * frac, this.colorG * frac, this.colorB * frac, this.colorA, this.glow);
 
-        if (!Game.fancyLights)
-            Drawing.drawing.fillLargeGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
+//        if (!Game.fancyLights)
+        Drawing.drawing.fillLargeGlow(this.posX, this.posY, 0, s, s, false, false, false, false);
     }
 
     @Override
@@ -123,13 +122,13 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
     @Override
     public void refreshMetadata()
     {
-        this.lightInfo[4] = this.lightColor / (256 * 256) % 256;
-        this.lightInfo[5] = this.lightColor / (256) % 256;
-        this.lightInfo[6] = this.lightColor % 256;
+        this.lightColorObj.red = this.lightColor / (256 * 256) % 256;
+        this.lightColorObj.green = this.lightColor / (256) % 256;
+        this.lightColorObj.blue = this.lightColor % 256;
 
-        this.colorR = this.lightInfo[4];
-        this.colorG = this.lightInfo[5];
-        this.colorB = this.lightInfo[6];
+        this.colorR = this.lightColorObj.red;
+        this.colorG = this.lightColorObj.green;
+        this.colorB = this.lightColorObj.blue;
     }
 
     public double getTileHeight()
@@ -144,9 +143,14 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
     }
 
     @Override
-    public double[] getLightInfo()
+    public double getBrightness()
     {
-        this.lightInfo[3] = Math.pow(this.luminosity, 2) * Obstacle.draw_size / Game.tile_size;
-        return this.lightInfo;
+        return this.luminosity * Game.tile_size * 4 * Obstacle.draw_size / Game.tile_size;
+    }
+
+    @Override
+    public Color getColor()
+    {
+        return this.lightColorObj;
     }
 }

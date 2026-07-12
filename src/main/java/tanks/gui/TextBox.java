@@ -195,18 +195,16 @@ public class TextBox implements IDrawable, ITrigger
 
         if (enableHover)
         {
-            if (Game.glowEnabled && !Game.game.window.drawingShadow)
+            if (Game.glowEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
             {
                 if (infoSelected && !Game.game.window.touchscreen)
                 {
-                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0,
-                        0, 0, 80, false);
+                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.7, 0, 0, 0, 80, false);
                     Drawing.drawing.setColor(0, 0, 255);
                     Drawing.drawing.fillInterfaceGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY, this.sizeY * 9 / 4, this.sizeY * 9 / 4);
                 }
                 else
-                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0,
-                        0, 0, 100, false);
+                    Button.drawGlow(this.posX + this.sizeX / 2 - this.sizeY / 2, this.posY + 2.5, this.sizeY * 3 / 4, this.sizeY * 3 / 4, 0.6, 0, 0, 0, 100, false);
             }
 
             if (infoSelected && !Game.game.window.touchscreen)
@@ -337,7 +335,7 @@ public class TextBox implements IDrawable, ITrigger
             this.checkKeys();
         }
 
-        if (Game.glowEnabled && !Game.game.window.drawingShadow)
+        if (Game.glowEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
         {
             if (this.lastFrame < Panel.panel.ageFrames - 1)
                 this.glowEffects.clear();

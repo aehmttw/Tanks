@@ -15,6 +15,7 @@ public class ShaderHole extends RendererShader implements IObstacleSizeShader, I
     @Override
     public void initialize() throws Exception
     {
+        super.initialize();
         this.shaderBase.setUp("/shaders/main.vert", new String[]{"/shaders/main_holes.vert"}, "/shaders/main.frag", null);
         this.shaderShadowMap.setUp("/shaders/shadow_map.vert", new String[]{"/shaders/main_holes.vert"}, "/shaders/shadow_map.frag", null);
     }

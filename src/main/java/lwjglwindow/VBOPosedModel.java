@@ -69,12 +69,9 @@ public class VBOPosedModel extends PosedModel
     @Override
     public void draw(double posX, double posY, double posZ, double sX, double sY, double sZ, double yaw, double pitch, double roll, boolean depthTest)
     {
-        if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderBaseBones);
-        else
-            this.model.window.setShader(this.model.window.shaderShadowMapBones);
+        this.model.window.setShader(this.model.window.shaderBones);
 
-        IBoneShader shader = (IBoneShader) this.model.window.currentShader;
+        IBoneShader shader = (IBoneShader) this.model.window.currentShaderStage;
 
         for (PoseBone b: this.bones)
         {
@@ -104,11 +101,10 @@ public class VBOPosedModel extends PosedModel
             else
                 window.setDrawOptions(depthTest, m.material.glow, m.material.depthMask);
 
-            if (m.material.customLight)
-                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness,
-                    m.material.negativeBrightness);
-
-            window.setCelShadingSections(m.material.celSections);
+//            if (m.material.customLight)
+//                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+//
+//            window.setCelShadingSections(m.material.celSections);
 
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
@@ -122,29 +118,23 @@ public class VBOPosedModel extends PosedModel
             shader.renderPosedVBO(m.vertexVBO, m.colorVBO, m.texVBO, m.normalVBO, this.bonesVBOs.get(m), m.shapes.length * 3);
             window.disableTexture();
 
-            if (m.material.customLight)
-                window.disableMaterialLights();
+//            if (m.material.customLight)
+//                window.disableMaterialLights();
 
             glPopMatrix();
         }
 
         ((LWJGLWindow) this.model.window).setDrawOptions(false, false, true);
 
-        if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderDefault.shaderBase);
-        else
-            this.model.window.setShader(this.model.window.shaderDefault.shaderShadowMap);
+        this.model.window.setShader(this.model.window.shaderDefault);
     }
 
     @Override
     public void draw(double posX, double posY, double sX, double sY, double yaw)
     {
-        if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderBaseBones);
-        else
-            this.model.window.setShader(this.model.window.shaderShadowMapBones);
+        this.model.window.setShader(this.model.window.shaderBones);
 
-        IBoneShader shader = (IBoneShader) this.model.window.currentShader;
+        IBoneShader shader = (IBoneShader) this.model.window.currentShaderStage;
 
         for (ModelPart mo: this.model.models)
         {
@@ -156,11 +146,10 @@ public class VBOPosedModel extends PosedModel
             else
                 window.setDrawOptions(false, m.material.glow, m.material.depthMask);
 
-            if (m.material.customLight)
-                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness,
-                    m.material.negativeBrightness);
-
-            window.setCelShadingSections(m.material.celSections);
+//            if (m.material.customLight)
+//                window.setMaterialLights(m.material.ambient, m.material.diffuse, m.material.specular, m.material.shininess, m.material.minBrightness, m.material.maxBrightness, m.material.negativeBrightness);
+//
+//            window.setCelShadingSections(m.material.celSections);
 
             glMatrixMode(GL_MODELVIEW);
             glPushMatrix();
@@ -174,16 +163,13 @@ public class VBOPosedModel extends PosedModel
             shader.renderPosedVBO(m.vertexVBO, m.colorVBO, m.texVBO, m.normalVBO, this.bonesVBOs.get(m), m.shapes.length * 3);
             window.disableTexture();
 
-            if (m.material.customLight)
-                window.disableMaterialLights();
+//            if (m.material.customLight)
+//                window.disableMaterialLights();
 
             glPopMatrix();
         }
 
-        if (!this.model.window.drawingShadow)
-            this.model.window.setShader(this.model.window.shaderDefault.shaderBase);
-        else
-            this.model.window.setShader(this.model.window.shaderDefault.shaderShadowMap);
+        this.model.window.setShader(this.model.window.shaderDefault);
     }
 
     @Override

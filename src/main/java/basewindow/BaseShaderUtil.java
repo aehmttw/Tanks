@@ -14,16 +14,4 @@ public abstract class BaseShaderUtil
     public abstract ShaderProgram.Attribute getAttribute();
 
     public abstract void set();
-
-    public abstract void setVertexBuffer(int id);
-
-    public abstract void setColorBuffer(int id);
-
-    public abstract void setTexCoordBuffer(int id);
-
-    public abstract void setNormalBuffer(int id);
-
-    public abstract void setCustomBuffer(ShaderProgram.Attribute attribute, int bufferID, int size);
-
-    public abstract void drawVBO(int numberIndices);
 }

@@ -10,6 +10,11 @@ public interface IStackableEvent extends INetworkEvent
         return true;
     }
 
+    static int key(IStackableEvent e)
+    {
+        return f(NetworkEventMap.get(e.getClass()) + f(e.getIdentifier()));
+    }
+
     static int f(int i)
     {
         return 1664525 * i + 1013904223;

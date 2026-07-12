@@ -175,7 +175,7 @@ public class Game
     public static boolean followingCam = false;
     public static boolean firstPerson = false;
 
-    public static boolean fancyLights = false;
+    public static boolean fancyLights = true;
 
     public static boolean tankTextures = true;
 
@@ -315,6 +315,8 @@ public class Game
 
     public static String homedir;
     public static Game game = new Game();
+
+    public static GameDrawer drawer;
 
     // Note: this is not used by the game to determine fullscreen status
     // It is simply a value defined before
@@ -1389,8 +1391,18 @@ public class Game
 
     public static int compareVersions(String v1, String v2)
     {
-        String[] a = v1.substring(v1.indexOf(" v") + 2).split("\\.");
-        String[] b = v2.substring(v2.indexOf(" v") + 2).split("\\.");
+        String[] a;
+        String[] b;
+        if (v1.contains(" v") && v2.contains(" v"))
+        {
+            a = v1.substring(v1.indexOf(" v") + 2).split("\\.");
+            b = v2.substring(v2.indexOf(" v") + 2).split("\\.");
+        }
+        else
+        {
+            a = v1.split("\\.");
+            b = v2.split("\\.");
+        }
 
         for (int i = 0; i < Math.max(a.length, b.length); i++)
         {

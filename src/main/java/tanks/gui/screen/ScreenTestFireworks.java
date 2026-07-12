@@ -48,12 +48,16 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
     {
         this.drawDefaultBackground();
         Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setInterfaceFontSize(this.titleSize * 2);
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "Fireworks!!!");
 
-        if (!Game.game.window.drawingShadow)
+        if (!Game.game.window.mainRenderPasses.drawingShadow)
             fireworksDisplay.draw();
 
         fireworksMode.draw();

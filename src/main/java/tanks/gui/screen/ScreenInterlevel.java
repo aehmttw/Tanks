@@ -336,11 +336,15 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
         this.drawDefaultBackground();
 
         save.posX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
-            Drawing.drawing.interfaceSizeX - 50 * Drawing.drawing.interfaceScaleZoom - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+                Drawing.drawing.interfaceSizeX - 50 * Drawing.drawing.interfaceScaleZoom - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
         save.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 +
-            Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+                Drawing.drawing.interfaceSizeY - 50 * Drawing.drawing.interfaceScaleZoom;
+    }
 
-        if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
+    @Override
+    public void drawUI()
+    {
+        if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
             this.fireworksDisplay.draw();
 
         boolean skip = false;
@@ -456,7 +460,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
             }
         }
 
-        if (Panel.win && Game.effectsEnabled && !Game.game.window.drawingShadow)
+        if (Panel.win && Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
             Panel.darkness = Math.min(Panel.darkness + Panel.frameFrequency * 1.5, 191);
     }
 }

@@ -377,7 +377,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         this.drawPoints();
 
-        if (Game.effectsEnabled && !Game.game.window.drawingShadow)
+        if (Game.effectsEnabled && !Game.game.window.mainRenderPasses.drawingShadow)
         {
             boolean spedUp = false;
             if (!Game.game.window.pressedKeys.isEmpty() || !Game.game.window.pressedButtons.isEmpty())

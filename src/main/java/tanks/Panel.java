@@ -88,7 +88,6 @@ public class Panel
 
     protected Screen lastDrawnScreen = null;
 
-    public ArrayList<double[]> lights = new ArrayList<>();
     HashMap<Integer, IStackableEvent> stackedEventsIn = new HashMap<>();
 
     public LoadingTerrainContinuation continuation = null;
@@ -120,16 +119,12 @@ public class Panel
         Game.game.shaderIntro = new ShaderGroundIntro(Game.game.window);
         Game.game.shaderOutOfBounds = new ShaderGroundOutOfBounds(Game.game.window);
         Game.game.shaderTracks = new ShaderTracks(Game.game.window);
-        Firework.shader = new ShaderFireworkExplosion(Game.game.window);
-        Firework.trailShader = new ShaderFireworkExplosionTrail(Game.game.window);
 
         try
         {
             Game.game.shaderIntro.initialize();
             Game.game.shaderOutOfBounds.initialize();
             Game.game.shaderTracks.initialize();
-            Firework.shader.initialize();
-            Firework.trailShader.initialize();
         }
         catch (Exception e)
         {
@@ -274,9 +269,9 @@ public class Panel
         {
             started = true;
 
-//          this.startTime = System.currentTimeMillis() + splash_duration;
-//          Drawing.drawing.playSound("splash_jingle.ogg");
-//          Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
+//            this.startTime = System.currentTimeMillis() + splash_duration;
+//            Drawing.drawing.playSound("splash_jingle.ogg");
+//            Drawing.drawing.playMusic("menu_intro.ogg", Game.musicVolume, false, "intro", 0, false);
         }
 
         if (!started)
@@ -311,9 +306,15 @@ public class Panel
             Game.playerTank != null && !Game.playerTank.destroy) || Game.screen instanceof ScreenLevelEditor);
 
         if (!Game.shadowsEnabled)
-            Game.game.window.setShadowQuality(0);
+        {
+            Game.game.window.mainRenderPasses.shadowQuality = 1;
+            Game.game.window.mainRenderPasses.shadowsEnabled = false;
+        }
         else
-            Game.game.window.setShadowQuality(Game.shadowQuality / 10.0 * 1.25);
+        {
+            Game.game.window.mainRenderPasses.shadowQuality = Game.shadowQuality / 10.0 * 1.25;
+            Game.game.window.mainRenderPasses.shadowsEnabled = true;
+        }
 
         Screen prevScreen = Game.screen;
 
@@ -750,8 +751,8 @@ public class Panel
 
     public void draw()
     {
-        if ((Game.game.window.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused && !ScreenPartyHost.isServer &&
-            !ScreenPartyLobby.isClient)))
+        if ((Game.game.window.mainRenderPasses.drawingShadow || !Game.shadowsEnabled) && (Game.screen instanceof ScreenGame && !(((ScreenGame) Game.screen).paused &&
+            !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
             this.age += Panel.frameFrequency;
 
         while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.drawing.getTrackOffset())
@@ -761,7 +762,7 @@ public class Panel
             Panel.panel.pastPlayerTime.remove(0);
         }
 
-        if (continuation != null && Game.game.window.drawingShadow)
+        if (continuation != null && Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
         if (continuation == null)
@@ -815,14 +816,10 @@ public class Panel
 
             Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
 
-            this.lights.clear();
+//            if (Game.fancyLights)
+//                Game.game.window.createLights(this.lights, Drawing.drawing.scale);
 
-            Game.screen.setupLights();
-
-            if (Game.fancyLights)
-                Game.game.window.createLights(this.lights, Drawing.drawing.scale);
-
-            if (!Game.game.window.drawingShadow)
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
             {
                 long time = (long) (System.currentTimeMillis() * frameSampling / 1000);
                 if (lastFrameSec < time && lastFrameSec != firstFrameSec)
@@ -840,9 +837,7 @@ public class Panel
             }
         }
 
-        if (onlinePaused)
-            this.onlineOverlay.draw();
-        else
+        if (!onlinePaused)
         {
             try
             {
@@ -878,8 +873,8 @@ public class Panel
                 Drawing.drawing.setColor(0, 0, 0);
                 Drawing.drawing.setInterfaceFontSize(24);
                 Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 30, "Drawing a big level...");
-                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, String.format("%.2f%% (%d / %d)",
-                    100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
+                Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+                    String.format("%.2f%% (%d / %d)", 100.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount, c.renderer.stagedCount, c.renderer.totalObjectsCount));
 
                 if (System.currentTimeMillis() - continuationStartTime > 500)
                 {
@@ -888,8 +883,8 @@ public class Panel
                     if (time <= 50)
                         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "Just a moment...");
                     else
-                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60, "About %s left",
-                            Game.timeInterval(0, (long) time + 1000, true));
+                        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 60,
+                            "About %s left", Game.timeInterval(0, (long) time + 1000, true));
                 }
 
                 Drawing.drawing.setColor(255, 255, 255);
@@ -899,6 +894,14 @@ public class Panel
                     1.0 * c.renderer.stagedCount / c.renderer.totalObjectsCount);
             }
         }
+    }
+
+    public void drawUI()
+    {
+        Game.screen.drawUI();
+
+        if (onlinePaused)
+            this.onlineOverlay.draw();
 
         ScreenOverlayChat.draw(!(Game.screen instanceof IHiddenChatboxScreen));
 

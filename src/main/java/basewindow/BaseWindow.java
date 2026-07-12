@@ -16,6 +16,7 @@ public abstract class BaseWindow
 
     public BaseShapeRenderer shapeRenderer;
     public BaseFontRenderer fontRenderer;
+    public BaseVBORenderer vboRenderer;
 
     public boolean angled = false;
     public double pointWidth = -1;
@@ -27,6 +28,10 @@ public abstract class BaseWindow
 
     public double clipMultiplier = 100;
     public double clipDistMultiplier = 1;
+
+    public int frameBufferWidth;
+    public int frameBufferHeight;
+
 
     public boolean hasResized;
 
@@ -112,22 +117,21 @@ public abstract class BaseWindow
     public boolean antialiasingSupported = false;
     public boolean antialiasingEnabled = false;
 
-    public boolean drawingShadow = false;
-
     public static final HashMap<Integer, String> keyNames = new HashMap<>();
 
     public BasePlatformHandler platformHandler;
 
     public ModelPart.ShapeDrawer shapeDrawer;
 
-    public ShaderGroup shaderDefault;
+    public ShaderGroupShadowDraw shaderDefault;
+    public ShaderGroupShadowDraw shaderBones;
 
-    public ShaderBones shaderBaseBones;
-    public ShaderShadowMapBones shaderShadowMapBones;
+//    public ShaderGroup currentShaderGroup;
+//    public ShaderProgram currentShader;
+    public ShaderGroup.ShaderStage currentShaderStage;
+    public RenderPass currentRenderPass;
 
-    public ShaderGroup currentShaderGroup;
-
-    public ShaderProgram currentShader;
+    public RenderPassGroupShadowDraw mainRenderPasses;
 
     // capsLock and numLock do not work on mac (glfw limitation) :(
     public boolean shift = false;
@@ -212,6 +216,12 @@ public abstract class BaseWindow
 
     public abstract void loadPerspective();
 
+    public abstract void getProjectionMatrix(float[] proj);
+
+    public abstract Matrix4 getProjectionMatrix();
+
+    public abstract void clearColor();
+
     public abstract void clearDepth();
 
     public abstract void setWindowTitle(String s);
@@ -250,6 +260,12 @@ public abstract class BaseWindow
 
     public abstract void stopTexture();
 
+    public abstract void setViewport(int x, int y, int w, int h);
+
+    public abstract BaseFrameBuffer createFrameBuffer();
+
+    public abstract void stopFrameBuffer();
+
     public abstract void addVertex(double x, double y, double z);
 
     public abstract void addVertex(double x, double y);
@@ -257,20 +273,6 @@ public abstract class BaseWindow
     public abstract void openLink(URL url) throws Exception;
 
     public abstract void setResolution(int x, int y);
-
-    public abstract void setShadowQuality(double quality);
-
-    public abstract double getShadowQuality();
-
-    public abstract void setLighting(double light, double glowLight, double shadow, double glowShadow);
-
-    public abstract void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess);
-
-    public abstract void setMaterialLights(float[] ambient, float[] diffuse, float[] specular, double shininess, double minBound, double maxBound, boolean enableNegative);
-
-    public abstract void disableMaterialLights();
-
-    public abstract void setCelShadingSections(float sections);
 
     public abstract void createLights(ArrayList<double[]> lights, double scale);
 
@@ -304,39 +306,31 @@ public abstract class BaseWindow
 
     public abstract void setForceModelGlow(boolean glow);
 
-    public void setShader(ShaderBase s)
+    public abstract void enableBackFaceCulling();
+
+    public abstract void enableFrontFaceCulling();
+
+    public abstract void disableFaceCulling();
+
+    /**
+     * Switches the current shader program used to draw things.
+     * @param s1 Shader group with support for the current render pass.
+     */
+    public void setShader(ShaderGroup s1)
     {
-        ShaderBase old = null;
-        if (this.currentShaderGroup != null)
-            old = this.currentShaderGroup.shaderBase;
+        if (!s1.initialized)
+            throw new RuntimeException("Shader group not initialized: " + s1);
 
-        try
-        {
-            s.set();
-            this.currentShaderGroup = s.group;
-            this.currentShader = s;
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+        ShaderGroup.ShaderStage s = s1.stages.get(this.currentRenderPass);
+        ShaderGroup.ShaderStage old = null;
+        if (this.currentShaderStage != null)
+            old = this.currentShaderStage;
 
-        if (old != null)
-            s.copyUniformsFrom(old, ShaderBase.class);
-    }
+        s.shader.set();
+        this.currentShaderStage = s;
 
-    public void setShader(ShaderShadowMap s)
-    {
-        ShaderShadowMap old = null;
-        if (this.currentShaderGroup != null)
-            old = this.currentShaderGroup.shaderShadowMap;
-
-        s.set();
-        this.currentShaderGroup = s.group;
-        this.currentShader = s;
-
-        if (old != null)
-            s.copyUniformsFrom(old, ShaderShadowMap.class);
+        if (old != null && old.renderPass == s.renderPass)
+            s.shader.copyUniformsFrom(old.shader, old.shader.getClass());
     }
 
     public void setupKeyCodes()

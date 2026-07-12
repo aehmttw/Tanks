@@ -268,7 +268,7 @@ public class DebugKeybinds
 
     public static void renderDebugging()
     {
-        if (!Game.debug || Game.game.window.drawingShadow)
+        if (!Game.debug || Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
         handleDebugKeybinds();

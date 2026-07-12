@@ -442,10 +442,14 @@ public class Level
         ArrayList<String> out = new ArrayList<>();
         for (int i = 0; i < s.length(); i++)
         {
+            if (s.charAt(i) == '/' && s.charAt(i + 1) == '*')
+                last = i;
+
             if (s.charAt(i) == '{' || s.charAt(i) == '[')
             {
                 if (depth == 0)
-                    last = i;
+                    if (i - 2 < 0 || s.charAt(i - 1) != '/' || s.charAt(i - 2) != '*')
+                        last = i;
 
                 depth++;
             }

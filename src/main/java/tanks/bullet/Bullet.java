@@ -16,7 +16,7 @@ import tanks.tankson.*;
 import java.util.*;
 
 @TanksONable("bullet")
-public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable
+public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditable, IDrawableLightSource
 {
     public static int currentID = 0;
     public static ArrayList<Integer> freeIDs = new ArrayList<>();
@@ -244,8 +244,6 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     public double originY;
 
     public boolean justBounced = false;
-
-    public double[] lightInfo = new double[]{0, 0, 0, 0, 0, 0, 0};
 
     public final boolean isTemplate;
 
@@ -1824,5 +1822,35 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
             Drawing.drawing.setColor(base.red, base.green, base.blue, 255, this.effect.luminance);
 
         Drawing.drawing.fillInterfaceOval(start, y, size * 0.6, size * 0.6);
+    }
+
+    @Override
+    public boolean lit()
+    {
+        return true;
+    }
+
+    @Override
+    public double getBrightness()
+    {
+        return this.size * this.effect.glowSize * (1 - Math.min(1, this.destroyTimer / maxDestroyTimer));
+    }
+
+    Color c = new Color();
+
+    @Override
+    public Color getColor()
+    {
+//        if (!this.effect.glowGlowy)
+//        {
+//            System.out.println("hi");
+//            c.set(this.outlineColor.red - 255, this.outlineColor.green - 255, this.outlineColor.blue - 255);
+//            return c;
+//        }
+
+        if (this.effect.overrideGlowColor)
+            return this.effect.glowColor;
+
+        return this.outlineColor;
     }
 }

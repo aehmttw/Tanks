@@ -18,6 +18,16 @@ public class Tanks
 {
     public static void main(String[] args)
     {
+        // On macOS GLFW must own the Cocoa main thread (that's why we launch with -XstartOnFirstThread).
+        // The TrueType font loader uses Java2D/AWT for glyph shaping, and initializing AWT on macOS spins
+        // up AppKit on that same first thread — two owners of the Cocoa run loop, which deadlocks the app
+        // (it wedges in glfwPollEvents). Running AWT headless keeps the font engine (createFont /
+        // layoutGlyphVector) fully working while stopping it from ever touching AppKit. Must be set before
+        // any AWT class loads, so it lives at the very top of main. macOS only: Windows/Linux use the Swing
+        // crash dialog in fail(), which needs a head — and macOS exits before reaching that dialog anyway.
+        if (System.getProperty("os.name", "").toLowerCase().contains("mac"))
+            System.setProperty("java.awt.headless", "true");
+
         Game.framework = Game.Framework.lwjgl;
         int port = 8080;
 
@@ -67,7 +77,7 @@ public class Tanks
                     {
                         if (path.endsWith(".jar"))
                         {
-                            String[] command = new String[]{"java", "-XstartOnFirstThread", "-jar", path, "mac"};
+                            String[] command = new String[]{"java", "-XstartOnFirstThread", "-Djava.awt.headless=true", "-jar", path, "mac"};
                             Runtime.getRuntime().exec(command);
                             Runtime.getRuntime().exit(0);
                             return;

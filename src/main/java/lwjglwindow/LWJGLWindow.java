@@ -3,7 +3,6 @@ package lwjglwindow;
 import basewindow.*;
 import basewindow.transformation.Matrix4;
 import basewindow.transformation.Transformation;
-import tanks.Game;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
@@ -127,42 +126,10 @@ public class LWJGLWindow extends BaseWindow
 
     protected void init()
     {
-        this.fontRenderer = new FontRenderer(this, "/fonts/default/font.png");
-
-        // Load zh cn font
-        try
-        {
-            int count = 1;
-            while (true)
-            {
-                try (InputStream zhCnFontInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".png");
-                     InputStream zhCnTxtInputStream = LWJGLWindow.class.getClassLoader().getResourceAsStream("fonts/zh_cn/font_zh_cn_" + count + ".txt"))
-                {
-                    if (zhCnFontInputStream == null) break;
-                    if (zhCnTxtInputStream == null)
-                    {
-                        System.err.println("Failed to load zh cn font " + count);
-                        continue;
-                    }
-                    Scanner scanner = new Scanner(Objects.requireNonNull(zhCnTxtInputStream), StandardCharsets.UTF_8.name());
-                    StringBuilder sb = new StringBuilder();
-                    while (scanner.hasNextLine())
-                    {
-                        sb.append(scanner.nextLine());
-                    }
-                    String chinese_chars = sb.toString();
-                    int[] chinese_chars_sizes = new int[chinese_chars.length()];
-                    Arrays.fill(chinese_chars_sizes, 8);
-                    this.fontRenderer.addFont("/fonts/zh_cn/font_zh_cn_" + count + ".png", chinese_chars, chinese_chars_sizes);
-                    count++;
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace(Game.logger);
-            e.printStackTrace();
-        }
+        TruetypeFontRenderer ttf = new TruetypeFontRenderer(this, "/fonts/default/Bullet.ttf", 128, true, 1.4, 0.3);
+        ttf.addFontsFromDirectory(System.getProperty("user.home") + "/.tanks/fonts", 128, false, 1.4, 0.3);
+        ttf.addSystemFonts(128, false, 1.4, 0.3);
+        this.fontRenderer = ttf;
 
         GLFWErrorCallback.createPrint(System.err).set();
 

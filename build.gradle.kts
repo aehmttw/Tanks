@@ -179,6 +179,7 @@ task("BuildMacApp", Exec::class) {
         "--name", baseName,
         "--resource-dir", resourcesDir,
         "--java-options", "-XstartOnFirstThread",
+        "--java-options", "-Djava.awt.headless=true",
         "--arguments", "mac",
         "--dest", distributions,
     )

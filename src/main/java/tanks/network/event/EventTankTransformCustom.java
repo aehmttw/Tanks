@@ -1,10 +1,11 @@
 package tanks.network.event;
 
 import basewindow.Color;
-import io.netty.buffer.ByteBuf;
 import tanks.*;
 import tanks.network.NetworkUtils;
 import tanks.tank.*;
+
+import io.netty.buffer.ByteBuf;
 
 import java.util.HashSet;
 

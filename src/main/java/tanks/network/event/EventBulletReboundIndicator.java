@@ -6,8 +6,13 @@ import tanks.bullet.BulletReboundIndicator;
 
 public class EventBulletReboundIndicator extends PersonalEvent
 {
-    public double posX, posY, posZ, size, maxAge;
-    public Color color1, color2;
+    public double posX;
+    public double posY;
+    public double posZ;
+    public double size;
+    public double maxAge;
+    public Color color1;
+    public Color color2;
 
     public EventBulletReboundIndicator()
     {

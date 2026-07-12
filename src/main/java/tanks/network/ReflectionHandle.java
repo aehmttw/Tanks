@@ -23,13 +23,13 @@ public class ReflectionHandle<S>
 
     public void readObject(S stream, Object object)
     {
-        for (FieldHandle f : getFieldsInClass(object.getClass()))
+        for (FieldHandle f: getFieldsInClass(object.getClass()))
             f.write(object, getTypeHandle(f.field.getType()).read(stream));
     }
 
     public void writeObject(S stream, Object object)
     {
-        for (FieldHandle f : getFieldsInClass(object.getClass()))
+        for (FieldHandle f: getFieldsInClass(object.getClass()))
             getTypeHandle(f.field.getType()).write(stream, f.read(object));
     }
 
@@ -65,7 +65,7 @@ public class ReflectionHandle<S>
 
             do
             {
-                for (Field f : clazz.getDeclaredFields())
+                for (Field f: clazz.getDeclaredFields())
                 {
                     if (shouldCheckField(f))
                         fields.add(new FieldHandle(f));
@@ -89,7 +89,8 @@ public class ReflectionHandle<S>
 
     public static class FieldHandle
     {
-        protected final MethodHandle read, write;
+        protected final MethodHandle read;
+        protected final MethodHandle write;
         protected final Field field;
 
         public FieldHandle(Field field)

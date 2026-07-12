@@ -744,7 +744,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
     protected double drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest)
     {
-        if (lwjglWindow.drawingShadow)
+        if (lwjglWindow.mainRenderPasses.drawingShadow)
             return 0;
 
         int codepoint = c;
@@ -1077,7 +1077,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         double scaleY = sY * 32.0 * font.sizeScale / font.bakeHeight;
         double baselineY = (y - sY * 16) + font.ascent * font.fontScale * scaleY + sY * 32 * font.yOffset;
 
-        if (lwjglWindow.drawingShadow)
+        if (lwjglWindow.mainRenderPasses.drawingShadow)
         {
             return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;
         }

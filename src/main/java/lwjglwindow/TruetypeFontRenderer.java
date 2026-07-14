@@ -4,7 +4,6 @@ import basewindow.BaseFontRenderer;
 
 import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGUniverse;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.system.MemoryStack;
@@ -270,13 +269,16 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                     // mapping. The region is a generous em-relative box that comfortably contains the
                     // artwork (which sits above the baseline, hence the negative y origin); we then
                     // crop to the actual painted pixels so the texture and offsets are tight.
-                    double x0 = -0.15 * upem, y0 = -1.2 * upem, w = 1.45 * upem, h = 1.6 * upem;
+                    double x0 = -0.15 * upem;
+                    double y0 = -1.2 * upem;
+                    double w = 1.45 * upem;
+                    double h = 1.6 * upem;
                     int cw = (int) Math.ceil(w * pxScale);
                     int ch = (int) Math.ceil(h * pxScale);
 
-                    String svgDoc = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\""
-                        + " width=\"" + cw + "\" height=\"" + ch + "\" viewBox=\"" + x0 + " " + y0 + " " + w + " " + h + "\">"
-                        + content + "</svg>";
+                    String svgDoc = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\"" +
+                        " width=\"" + cw + "\" height=\"" + ch + "\" viewBox=\"" + x0 + " " + y0 + " " + w + " " + h + "\">" +
+                        content + "</svg>";
 
                     BufferedImage canvas = new BufferedImage(cw, ch, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g = canvas.createGraphics();
@@ -291,12 +293,16 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                     g.dispose();
 
                     int[] argb = canvas.getRGB(0, 0, cw, ch, null, 0, cw);
-                    int minX = cw, minY = ch, maxX = -1, maxY = -1;
+                    int minX = cw;
+                    int minY = ch;
+                    int maxX = -1;
+                    int maxY = -1;
                     for (int p = 0; p < argb.length; p++)
                     {
                         if ((argb[p] >>> 24) > 10)
                         {
-                            int px = p % cw, py = p / cw;
+                            int px = p % cw;
+                            int py = p / cw;
                             if (px < minX) minX = px;
                             if (px > maxX) maxX = px;
                             if (py < minY) minY = py;
@@ -1279,7 +1285,10 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         // `color * vertexColor` (ui.frag) leaves the emoji untinted; restore the run color afterward
         // since a run may mix emoji and non-emoji font runs.
         boolean color = font.isColorEmoji();
-        double r0 = this.window.colorR, g0 = this.window.colorG, b0 = this.window.colorB, a0 = this.window.colorA;
+        double r0 = this.window.colorR;
+        double g0 = this.window.colorG;
+        double b0 = this.window.colorB;
+        double a0 = this.window.colorA;
         if (color)
             this.window.setColor(255, 255, 255, a0 * 255);
 

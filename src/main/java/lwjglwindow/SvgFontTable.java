@@ -5,11 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -172,7 +168,7 @@ public class SvgFontTable
         if (!needed.isEmpty())
         {
             sb.append("<defs>");
-            for (String id : needed)
+            for (String id: needed)
             {
                 String el = defs.get(id);
                 if (el != null)
@@ -370,8 +366,7 @@ public class SvgFontTable
 
     private static int u32(ByteBuffer b, int pos)
     {
-        return ((b.get(pos) & 0xFF) << 24) | ((b.get(pos + 1) & 0xFF) << 16)
-            | ((b.get(pos + 2) & 0xFF) << 8) | (b.get(pos + 3) & 0xFF);
+        return ((b.get(pos) & 0xFF) << 24) | ((b.get(pos + 1) & 0xFF) << 16) | ((b.get(pos + 2) & 0xFF) << 8) | (b.get(pos + 3) & 0xFF);
     }
 
     private static byte[] gunzip(byte[] data) throws Exception

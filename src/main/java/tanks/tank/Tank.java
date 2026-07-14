@@ -1368,6 +1368,11 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
         return m instanceof Tank ? (Tank) m : null;
     }
 
+    protected boolean canTarget()
+    {
+        return targetable && currentlyTargetable && !hidden;
+    }
+
     public static class ClippedTile
     {
         public final int x;

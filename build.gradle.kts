@@ -50,6 +50,10 @@ dependencies {
     // Your other existing dependencies
     api(libs.org.l33tlabs.twl.pngdecoder)
     implementation("io.netty:netty-all:4.1.94.Final")
+
+    // svgSalamander: rasterizes the per-glyph SVG documents from the color-emoji font's
+    // OpenType 'SVG ' table (Java 8-compatible, no natives).
+    implementation("guru.nidi.com.kitfox:svgSalamander:1.1.3")
 //    implementation("it.unimi.dsi:fastutil-core:8.5.16")
 
     //Steamworks4j (Use files in libs folder until version 10 is available on mavenCentral

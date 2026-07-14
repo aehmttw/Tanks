@@ -2,11 +2,18 @@ package lwjglwindow;
 
 import basewindow.BaseFontRenderer;
 
+import com.kitfox.svg.SVGDiagram;
+import com.kitfox.svg.SVGUniverse;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.system.MemoryStack;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
@@ -36,6 +43,15 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
         private final Map<Integer, Integer> glyphTextures = new HashMap<>();
         private final Map<Integer, int[]> glyphMetrics = new HashMap<>();
+
+        /**
+         * Non-null when this font carries an OpenType {@code SVG } table (a color emoji font). Its
+         * glyphs are rasterized from SVG instead of through STB — see {@link #getOrCreateColorGlyphTexture}.
+         */
+        public SvgFontTable svg;
+        private final Map<Integer, Integer> colorGlyphTextures = new HashMap<>();
+        private final Map<Integer, int[]> colorGlyphMetrics = new HashMap<>();
+        private final SVGUniverse svgUniverse = new SVGUniverse();
 
         public TtfFontInfo(ByteBuffer buffer, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
         {
@@ -120,6 +136,13 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 }
             }
             this.awtToStbScaleRatio = ratio;
+
+            this.svg = SvgFontTable.tryParse(buffer, fontOffset);
+        }
+
+        public boolean isColorEmoji()
+        {
+            return svg != null;
         }
 
         public boolean supportsCodepoint(int codepoint)
@@ -217,6 +240,135 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 return texId;
             }
         }
+
+        /**
+         * Rasterizes a color-emoji glyph's SVG artwork (from the {@code SVG } table) into a GL
+         * texture, and records its placement metrics {@code {advance, w, h, xoff, yoff}} in the same
+         * bakeHeight-pixel, baseline-relative, y-down units the STB path uses (so {@link #drawShapedString}
+         * positions it identically). Returns 0 (and caches 0) when the glyph has no SVG artwork or
+         * rasterization fails; callers fall back to nothing (tofu) for that glyph.
+         */
+        public int getOrCreateColorGlyphTexture(int glyphId)
+        {
+            Integer existing = colorGlyphTextures.get(glyphId);
+            if (existing != null)
+                return existing;
+
+            int texId = 0;
+            try
+            {
+                String content = svg.buildGlyphContent(glyphId);
+                if (content != null)
+                {
+                    int upem = svg.getUnitsPerEm();
+                    double pxScale = (double) bakeHeight / upem;
+
+                    // The glyph markup has no viewport of its own (font design units, y-down, origin
+                    // on the baseline). We must supply an explicit width/height/viewBox: without one
+                    // svgSalamander computes the content's bounding box to build a viewport, and that
+                    // path NPEs on <use>-referenced elements. viewBox also does the design->device
+                    // mapping. The region is a generous em-relative box that comfortably contains the
+                    // artwork (which sits above the baseline, hence the negative y origin); we then
+                    // crop to the actual painted pixels so the texture and offsets are tight.
+                    double x0 = -0.15 * upem, y0 = -1.2 * upem, w = 1.45 * upem, h = 1.6 * upem;
+                    int cw = (int) Math.ceil(w * pxScale);
+                    int ch = (int) Math.ceil(h * pxScale);
+
+                    String svgDoc = "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.1\""
+                        + " width=\"" + cw + "\" height=\"" + ch + "\" viewBox=\"" + x0 + " " + y0 + " " + w + " " + h + "\">"
+                        + content + "</svg>";
+
+                    BufferedImage canvas = new BufferedImage(cw, ch, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g = canvas.createGraphics();
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                    g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+
+                    URI uri = svgUniverse.loadSVG(new StringReader(svgDoc), "glyph" + glyphId);
+                    SVGDiagram diagram = svgUniverse.getDiagram(uri);
+                    diagram.setIgnoringClipHeuristic(true);
+                    diagram.render(g);
+                    g.dispose();
+
+                    int[] argb = canvas.getRGB(0, 0, cw, ch, null, 0, cw);
+                    int minX = cw, minY = ch, maxX = -1, maxY = -1;
+                    for (int p = 0; p < argb.length; p++)
+                    {
+                        if ((argb[p] >>> 24) > 10)
+                        {
+                            int px = p % cw, py = p / cw;
+                            if (px < minX) minX = px;
+                            if (px > maxX) maxX = px;
+                            if (py < minY) minY = py;
+                            if (py > maxY) maxY = py;
+                        }
+                    }
+
+                    if (maxX >= 0)
+                    {
+                        int bw = maxX - minX + 1;
+                        int bh = maxY - minY + 1;
+                        texId = uploadArgbCrop(argb, cw, minX, minY, bw, bh);
+                        int xoff = (int) Math.round(x0 * pxScale) + minX;
+                        int yoff = (int) Math.round(y0 * pxScale) + minY;
+                        colorGlyphMetrics.put(glyphId, new int[]{getGlyphMetrics(glyphId)[0], bw, bh, xoff, yoff});
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                System.err.println("TruetypeFontRenderer: failed to rasterize color glyph " + glyphId + ": " + e.getMessage());
+            }
+
+            if (!colorGlyphMetrics.containsKey(glyphId))
+                colorGlyphMetrics.put(glyphId, new int[]{getGlyphMetrics(glyphId)[0], 0, 0, 0, 0});
+
+            colorGlyphTextures.put(glyphId, texId);
+            return texId;
+        }
+
+        public int[] getColorGlyphMetrics(int glyphId)
+        {
+            int[] m = colorGlyphMetrics.get(glyphId);
+            if (m == null)
+            {
+                getOrCreateColorGlyphTexture(glyphId);
+                m = colorGlyphMetrics.get(glyphId);
+            }
+            return m;
+        }
+
+        /**
+         * Uploads a straight-alpha ARGB region (rows {@code minY..}, cols {@code minX..} of a
+         * {@code canvasW}-wide buffer) as an RGBA GL texture and returns its id.
+         */
+        private int uploadArgbCrop(int[] argb, int canvasW, int minX, int minY, int bw, int bh)
+        {
+            ByteBuffer rgba = BufferUtils.createByteBuffer(bw * bh * 4);
+            for (int y = 0; y < bh; y++)
+            {
+                int row = (minY + y) * canvasW + minX;
+                for (int x = 0; x < bw; x++)
+                {
+                    int px = argb[row + x];
+                    rgba.put((byte) ((px >> 16) & 0xFF)); // R
+                    rgba.put((byte) ((px >> 8) & 0xFF));  // G
+                    rgba.put((byte) (px & 0xFF));         // B
+                    rgba.put((byte) ((px >> 24) & 0xFF)); // A
+                }
+            }
+            rgba.flip();
+
+            int texId = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, texId);
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bw, bh, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+            return texId;
+        }
     }
 
     private final List<TtfFontInfo> fonts = new CopyOnWriteArrayList<>();
@@ -240,6 +392,33 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         this.lwjglWindow = h;
         this.defaultFont = loadFont(ttfResourcePath, bakeHeight, pixelPerfect, sizeScale, yOffset);
         this.fonts.add(defaultFont);
+
+        addColorEmojiFont("/fonts/emoji/NotoColorEmoji.ttf");
+    }
+
+    /**
+     * Loads the bundled color emoji font and inserts it right after the default font, so emoji
+     * codepoints resolve to it ahead of any later-added system fallback fonts. The font's glyphs are
+     * rasterized from its OpenType {@code SVG } table (see {@link SvgFontTable}). Non-fatal: a missing
+     * or SVG-less font is logged and skipped, leaving emoji to fall back to tofu.
+     */
+    private void addColorEmojiFont(String resourcePath)
+    {
+        try
+        {
+            // Emoji are baked independently of the UI font. The smaller sizeScale (0.9 vs the UI
+            // font's 1.4) means the emoji baseline would otherwise land higher than the text
+            // baseline; yOffset ~0.4 pushes the emoji box down so it centers vertically on the text.
+            TtfFontInfo emoji = loadFont(resourcePath, 128, false, 0.9, 0.6);
+            if (emoji.isColorEmoji())
+                this.fonts.add(emoji);
+            else
+                System.err.println("TruetypeFontRenderer: '" + resourcePath + "' has no 'SVG ' table; not used for color emoji");
+        }
+        catch (Exception e)
+        {
+            System.err.println("TruetypeFontRenderer: could not load bundled color emoji font '" + resourcePath + "': " + e.getMessage());
+        }
     }
 
     private ByteBuffer readResource(String path) throws IOException
@@ -735,14 +914,19 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         return false;
     }
 
-    private TtfFontInfo findFontForChar(char c)
+    private TtfFontInfo findFontForCodepoint(int cp)
     {
         for (TtfFontInfo font: fonts)
         {
-            if (font.supportsCodepoint(c))
+            if (font.supportsCodepoint(cp))
                 return font;
         }
         return defaultFont;
+    }
+
+    private TtfFontInfo findFontForChar(char c)
+    {
+        return findFontForCodepoint(c);
     }
 
     protected double drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest)
@@ -1031,24 +1215,30 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return runs;
 
         StringBuilder currentText = new StringBuilder();
-        TtfFontInfo currentFont = findFontForChar(text.charAt(0));
-        currentText.append(text.charAt(0));
+        TtfFontInfo currentFont = null;
 
-        for (int i = 1; i < text.length(); i++)
+        // Iterate by Unicode codepoint (not UTF-16 char) so both halves of a surrogate-pair emoji
+        // resolve to — and stay grouped under — the same font. Grouping per-char instead would send
+        // each lone surrogate to the default font and produce tofu.
+        int i = 0;
+        while (i < text.length())
         {
-            char c = text.charAt(i);
-            TtfFontInfo font = findFontForChar(c);
-            if (font == currentFont)
-            {
-                currentText.append(c);
-            }
-            else
+            int cp = text.codePointAt(i);
+            int cc = Character.charCount(cp);
+            TtfFontInfo font = findFontForCodepoint(cp);
+
+            if (currentFont == null)
+                currentFont = font;
+
+            if (font != currentFont)
             {
                 runs.add(new FontRun(currentText.toString(), currentFont));
                 currentText.setLength(0);
                 currentFont = font;
-                currentText.append(c);
             }
+
+            currentText.append(text, i, i + cc);
+            i += cc;
         }
         if (currentText.length() > 0)
         {
@@ -1085,6 +1275,14 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;
         }
 
+        // Color emoji carry their own RGB. Force the vertex color to opaque white so the shader's
+        // `color * vertexColor` (ui.frag) leaves the emoji untinted; restore the run color afterward
+        // since a run may mix emoji and non-emoji font runs.
+        boolean color = font.isColorEmoji();
+        double r0 = this.window.colorR, g0 = this.window.colorG, b0 = this.window.colorB, a0 = this.window.colorA;
+        if (color)
+            this.window.setColor(255, 255, 255, a0 * 255);
+
         for (int i = 0; i < numGlyphs; i++)
         {
             int glyphId = gv.getGlyphCode(i);
@@ -1093,8 +1291,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
             java.awt.geom.Point2D pos = gv.getGlyphPosition(i);
 
-            int texId = font.getOrCreateGlyphTexture(glyphId);
-            int[] m = font.getGlyphMetrics(glyphId);
+            int texId = color ? font.getOrCreateColorGlyphTexture(glyphId) : font.getOrCreateGlyphTexture(glyphId);
+            int[] m = color ? font.getColorGlyphMetrics(glyphId) : font.getGlyphMetrics(glyphId);
             int bitmapW = m[1];
             int bitmapH = m[2];
             int xoff = m[3];
@@ -1135,6 +1333,9 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                     glDisable(GL_DEPTH_TEST);
             }
         }
+
+        if (color)
+            this.window.setColor(r0 * 255, g0 * 255, b0 * 255, a0 * 255);
 
         return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;
     }

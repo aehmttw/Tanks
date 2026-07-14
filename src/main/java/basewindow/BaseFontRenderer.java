@@ -4,6 +4,14 @@ public abstract class BaseFontRenderer
 {
     public boolean drawBox = false;
 
+    /**
+     * When true, color-emoji glyphs are multiplied by the current draw color instead of being drawn
+     * in their own colors. Normally emoji ignore the draw color (so they show full color even when
+     * text is, say, black); enabling this lets a caller draw emoji as a text drop-shadow — a darker,
+     * offset copy behind the real text. Callers should set it back to false when done.
+     */
+    public boolean tintColorEmoji = false;
+
     public BaseWindow window;
 
     public BaseFontRenderer(BaseWindow h)

@@ -1281,15 +1281,18 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;
         }
 
-        // Color emoji carry their own RGB. Force the vertex color to opaque white so the shader's
-        // `color * vertexColor` (ui.frag) leaves the emoji untinted; restore the run color afterward
-        // since a run may mix emoji and non-emoji font runs.
+        // Color emoji carry their own RGB. Normally we force the vertex color to opaque white so the
+        // shader's `color * vertexColor` (ui.frag) leaves the emoji untinted (emoji look full-color
+        // even when text is drawn in, say, black). When tintColorEmoji is set, we instead let the
+        // current color multiply through, so a darker offset copy renders as a drop-shadow. Either
+        // way we restore the run color afterward, since a run may mix emoji and non-emoji font runs.
         boolean color = font.isColorEmoji();
+        boolean forceWhite = color && !this.tintColorEmoji;
         double r0 = this.window.colorR;
         double g0 = this.window.colorG;
         double b0 = this.window.colorB;
         double a0 = this.window.colorA;
-        if (color)
+        if (forceWhite)
             this.window.setColor(255, 255, 255, a0 * 255);
 
         for (int i = 0; i < numGlyphs; i++)
@@ -1343,7 +1346,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             }
         }
 
-        if (color)
+        if (forceWhite)
             this.window.setColor(r0 * 255, g0 * 255, b0 * 255, a0 * 255);
 
         return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;

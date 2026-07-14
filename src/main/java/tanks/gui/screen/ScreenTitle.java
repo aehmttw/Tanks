@@ -343,6 +343,10 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(24);
 
+        // Draw the darker, offset copies as a drop-shadow. Tint color emoji by the shadow color too
+        // (they normally ignore the draw color) so the emoji title casts a shadow like the text one.
+        Game.game.window.fontRenderer.tintColorEmoji = true;
+
         if (Game.player.enableTertiaryColor)
             Drawing.drawing.setColor(Game.player.color3);
         else
@@ -355,6 +359,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
             Turret.calculateSecondaryColor(Game.player.color2.blue));
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.lCenterX + 2, 2 + this.lCenterY - this.objYSpace * 2 / 9, "The Crusades");
+
+        Game.game.window.fontRenderer.tintColorEmoji = false;
 
         Drawing.drawing.setColor(Game.player.color);
         Drawing.drawing.setInterfaceFontSize(this.titleSize * 2.5);

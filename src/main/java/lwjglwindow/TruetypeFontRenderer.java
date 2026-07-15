@@ -12,6 +12,7 @@ import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -31,8 +32,21 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         public final boolean pixelPerfect;
         public final double sizeScale;
         public final double yOffset;
-        public final java.awt.Font awtFont;
-        public final double awtToStbScaleRatio;
+
+        // True if this is the first (or only) font in its buffer. Java 8's Font.createFont, given the
+        // whole buffer, can only return the buffer's first font, so only a first-in-buffer face gets a
+        // correct AWT font and can be used for complex-script shaping; a later .ttc sub-font is limited
+        // to STB per-glyph rendering. The font resolver uses this to prefer a shaping-capable face.
+        public final boolean firstInBuffer;
+
+        // The AWT Font is loaded lazily (see getAwtFont) rather than in the constructor: creating one
+        // spills the font data to a temp file on disk, so eagerly building one for every registered
+        // fallback exhausts the disk quota ("Disk quota exceeded"), after which createFont hands back
+        // the wrong face entirely (e.g. Noto Emoji for a CJK font) and shaping produces .notdef tofu.
+        // These two fields are only valid once awtFontLoaded is true.
+        private volatile boolean awtFontLoaded = false;
+        private java.awt.Font awtFont = null;
+        private double awtToStbScaleRatio = 1.0;
 
         private final Map<Integer, Integer> glyphTextures = new HashMap<>();
         private final Map<Integer, int[]> glyphMetrics = new HashMap<>();
@@ -59,6 +73,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             if (!stbtt_InitFont(stbInfo, buffer, fontOffset))
                 throw new RuntimeException("Failed to initialize STB truetype font");
 
+            this.firstInBuffer = (fontOffset == stbtt_GetFontOffsetForIndex(buffer, 0));
+
             this.fontScale = stbtt_ScaleForPixelHeight(stbInfo, bakeHeight);
 
             try (MemoryStack stack = MemoryStack.stackPush())
@@ -69,22 +85,70 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 stbtt_GetFontVMetrics(stbInfo, a, d, lg);
                 this.ascent = a.get(0);
             }
+        }
+
+        /**
+         * Returns this font's AWT {@link java.awt.Font}, used for complex-script shaping, loading it
+         * on first call. The load is deferred because {@link java.awt.Font#createFont} writes the font
+         * data out to a temp file on disk; with many system fonts registered as fallbacks, doing it up
+         * front for all of them exhausts the disk quota ("Disk quota exceeded"), after which createFont
+         * silently returns the wrong face (e.g. Noto Emoji for a CJK font) and shaping through it
+         * yields .notdef boxes. We only render a handful of scripts, so each font pays this cost only
+         * if it is actually used to draw or measure text.
+         *
+         * @return the derived AWT Font, or null if it could not be created or is the wrong face
+         *         (callers then fall back to per-glyph STB rendering)
+         */
+        public synchronized java.awt.Font getAwtFont()
+        {
+            if (!awtFontLoaded)
+                loadAwtFont();
+            return awtFont;
+        }
+
+        /** The AWT-to-STB advance ratio, ensuring the AWT font (and hence the ratio) is loaded first. */
+        public synchronized double getAwtToStbScaleRatio()
+        {
+            getAwtFont();
+            return awtToStbScaleRatio;
+        }
+
+        private void loadAwtFont()
+        {
+            awtFontLoaded = true;
 
             java.awt.Font rawFont = null;
             try
             {
-                byte[] bytes = new byte[buffer.remaining()];
-                int originalPos = buffer.position();
-                buffer.get(bytes);
-                buffer.position(originalPos);
-                
+                byte[] bytes;
+                synchronized (ttfBuffer)
+                {
+                    bytes = new byte[ttfBuffer.remaining()];
+                    int originalPos = ttfBuffer.position();
+                    ttfBuffer.get(bytes);
+                    ttfBuffer.position(originalPos);
+                }
+
                 rawFont = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, new java.io.ByteArrayInputStream(bytes));
             }
             catch (Exception e)
             {
-                System.err.println("TruetypeFontRenderer: failed to load AWT Font: " + e.getMessage());
+                // Non-fatal: without an AWT font this face just renders per-glyph through STB (no
+                // complex-script shaping). Only of interest when debugging font issues.
+                if (print_debug)
+                    System.err.println("TruetypeFontRenderer: failed to load AWT Font: " + e.getMessage());
             }
             this.awtFont = (rawFont != null) ? rawFont.deriveFont((float) bakeHeight) : null;
+
+            // A .ttc collection packs many sub-fonts into the one buffer we pass to createFont, but
+            // Java 8 has no way to pick a sub-font — it always returns the collection's first font. And
+            // once the disk quota is exhausted createFont can hand back an unrelated fallback face
+            // entirely. Either way the AWT font ends up not matching the face STB loaded, and shaping
+            // through it yields .notdef boxes. Detect that by checking the AWT font can display the
+            // scripts STB says this face covers; if not, drop it so callers fall back to STB per-glyph
+            // rendering with the correct face.
+            if (this.awtFont != null && !awtFontMatchesStbCoverage())
+                this.awtFont = null;
 
             double ratio = 1.0;
             if (this.awtFont != null)
@@ -101,7 +165,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                         }
                     }
                 }
-                
+
                 try
                 {
                     java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
@@ -120,6 +184,45 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 }
             }
             this.awtToStbScaleRatio = ratio;
+        }
+
+        // One distinctive codepoint per major writing system, used to check an AWT font is the same
+        // face STB loaded (see loadAwtFont). For the same font file STB coverage and AWT canDisplay
+        // agree; they only diverge when createFont handed back a different face (a .ttc sub-font
+        // stand-in, or a disk-quota fallback font).
+        private static final int[] SCRIPT_PROBES =
+            {
+                0x0041, // Latin
+                0x0410, // Cyrillic
+                0x0391, // Greek
+                0x4E00, // CJK
+                0x3042, // Hiragana
+                0xAC00, // Hangul
+                0x0905, // Devanagari
+                0x0985, // Bengali
+                0x0B85, // Tamil
+                0x0627, // Arabic
+                0x05D0, // Hebrew
+                0x0E01, // Thai
+                0x10D0, // Georgian
+                0x0531, // Armenian
+                0x1200  // Ethiopic
+            };
+
+        /**
+         * True if the loaded AWT font can display every probe script that STB reports this face
+         * covers. A false result means createFont returned the wrong face (a first-sub-font stand-in
+         * for a .ttc member Java 8 can't address, or a disk-quota fallback), so the AWT font must not
+         * be used for this face.
+         */
+        private boolean awtFontMatchesStbCoverage()
+        {
+            for (int cp: SCRIPT_PROBES)
+            {
+                if (supportsCodepoint(cp) && !awtFont.canDisplay(cp))
+                    return false;
+            }
+            return true;
         }
 
         public boolean supportsCodepoint(int codepoint)
@@ -223,6 +326,54 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     private final TtfFontInfo defaultFont;
     private final LWJGLWindow lwjglWindow;
 
+    /**
+     * A system/user font file that has been discovered but not yet read from disk. Fallback fonts are
+     * registered lazily: at startup we record only paths and the writing systems each is expected to
+     * cover, and a file is read + STB-initialized the first time a glyph in one of its scripts is
+     * actually drawn (see {@link #resolveDeferredForCodepoint}). This keeps startup from reading and
+     * parsing dozens of large system fonts — including CJK collections tens of MB each — that a given
+     * session may never display. Cross-platform: the same mechanism backs Linux, macOS and Windows.
+     */
+    private static class DeferredFont
+    {
+        final String path;
+        final int bakeHeight;
+        final boolean pixelPerfect;
+        final double sizeScale;
+        final double yOffset;
+
+        // The Unicode blocks this font is registered to serve. Empty when {@link #broad} is true.
+        final Set<Character.UnicodeBlock> blocks;
+
+        // A broad-coverage fallback (e.g. the bundled Noto Sans collection) that is considered for any
+        // codepoint, not just a specific block. Broad fonts keep their registration priority, so a
+        // user-supplied broad font still wins over a system font for the same glyph.
+        final boolean broad;
+
+        // Set once we've attempted to read + load this file, so we never read it twice (even if the
+        // load added nothing, e.g. a CFF2 file STB can't use).
+        volatile boolean resolved = false;
+
+        DeferredFont(String path, boolean broad, Set<Character.UnicodeBlock> blocks,
+                     int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+        {
+            this.path = path;
+            this.broad = broad;
+            this.blocks = blocks;
+            this.bakeHeight = bakeHeight;
+            this.pixelPerfect = pixelPerfect;
+            this.sizeScale = sizeScale;
+            this.yOffset = yOffset;
+        }
+    }
+
+    // Registered-but-unread fallback fonts, in priority order (earlier wins). Read on demand.
+    private final List<DeferredFont> deferredFonts = new CopyOnWriteArrayList<>();
+    // Unicode blocks we've already tried to resolve, so a codepoint with no available font doesn't
+    // re-scan (and re-read broad fonts) on every frame it's drawn.
+    private final Set<Character.UnicodeBlock> resolvedBlocks = ConcurrentHashMap.newKeySet();
+    private final Object deferredLock = new Object();
+
     public TruetypeFontRenderer(LWJGLWindow h, String ttfResourcePath)
     {
         this(h, ttfResourcePath, 64, false, 1.0, 0.0);
@@ -240,6 +391,10 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         this.lwjglWindow = h;
         this.defaultFont = loadFont(ttfResourcePath, bakeHeight, pixelPerfect, sizeScale, yOffset);
         this.fonts.add(defaultFont);
+
+        // Every other font loads its AWT font lazily to avoid exhausting the disk quota, but the
+        // default (Bullet) font is always in use, so load it up front so it's ready immediately.
+        this.defaultFont.getAwtFont();
     }
 
     private ByteBuffer readResource(String path) throws IOException
@@ -339,8 +494,9 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
         // STB rasterizes TrueType (glyf) and bare CFF outlines, but not CFF2 — the format used by
         // variable OpenType/CFF fonts such as the system Noto Sans CJK packages. Those fail to init;
-        // report the likely cause once per file instead of once per sub-font.
-        if (failed > 0)
+        // this is expected and routine (the resolver simply steps to a glyf fallback), and now happens
+        // on demand during play, so it's debug-only rather than a per-file log line every session.
+        if (failed > 0 && print_debug)
         {
             String reason = isOpenTypeCFF(buffer) ? "OpenType/CFF outlines (CFF2 variable fonts aren't supported by STB)" : "STB could not initialize them";
             System.err.println("TruetypeFontRenderer: skipped " + failed + " of " + count + " font(s) in '" + label + "' — " + reason);
@@ -378,7 +534,10 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         }
         catch (Exception e)
         {
-            System.err.println("TruetypeFontRenderer: failed to load font file '" + filePath + "': " + e.getMessage());
+            // Non-fatal: a fallback file that won't read is just skipped (the resolver tries the next
+            // candidate). Read on demand now, so keep it out of normal runtime logs.
+            if (print_debug)
+                System.err.println("TruetypeFontRenderer: failed to load font file '" + filePath + "': " + e.getMessage());
             return 0;
         }
     }
@@ -410,77 +569,81 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return;
 
         Arrays.sort(files, Comparator.comparing(f -> f.getName().toLowerCase(Locale.ROOT)));
+        // Registered as broad, high-priority deferred fallbacks: a user drops a font here to have it
+        // cover whatever a script needs, so it should win over system fonts. It's read on demand the
+        // first time a glyph it might cover is drawn, not now — a bundled Noto collection can be tens
+        // of MB, and a session that only shows Latin should never pay to read it.
         for (File f: files)
-            addFontFile(f.getAbsolutePath(), bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferBroadFont(f.getAbsolutePath(), bakeHeight, pixelPerfect, sizeScale, yOffset);
     }
 
+    // Representative codepoints per writing system, used to tag which scripts a deferred font serves.
+    private static final int CP_CYRILLIC = 0x0410, CP_GREEK = 0x0391, CP_ARABIC = 0x0627, CP_HEBREW = 0x05D0,
+            CP_CJK = 0x4E00, CP_HIRAGANA = 0x3042, CP_KATAKANA = 0x30A2, CP_HANGUL = 0xAC00,
+            CP_DEVANAGARI = 0x0905, CP_BENGALI = 0x0985, CP_TAMIL = 0x0B85, CP_TELUGU = 0x0C05,
+            CP_GUJARATI = 0x0A85, CP_GURMUKHI = 0x0A05, CP_THAI = 0x0E01;
+
     /**
-     * Adds the platform's system fonts as fallbacks — the tier between the bundled Bullet font and
-     * any downloaded fonts. Bullet already covers Latin, so the value here is breadth: CJK, Indic,
-     * Arabic, Hebrew, Thai and other scripts that no single UI font carries. We therefore register
-     * several broad-coverage system fonts and let {@link #findFontForChar} choose per glyph.
+     * Registers the platform's system fonts as <em>deferred</em> fallbacks — the tier between the
+     * bundled Bullet font and any downloaded fonts. Bullet already covers Latin, so the value here is
+     * breadth: CJK, Indic, Arabic, Hebrew, Thai and other scripts no single UI font carries. Nothing is
+     * read here; each font is tagged with the scripts it serves and only read the first time one of
+     * those scripts is drawn (see {@link #resolveDeferredForCodepoint}).
      *
-     * <p>macOS and Windows keep their fonts in stable, well-known directories, so those are
-     * hardcoded. On Linux font locations vary by distro, so we ask fontconfig ({@code fc-match})
-     * which file the system actually uses for each of a set of representative scripts; if fontconfig
-     * is unavailable we fall back to scanning the standard font directories.
+     * <p>macOS and Windows keep their fonts in stable, well-known directories, so those are hardcoded
+     * (each with its scripts). On Linux font locations vary by distro, so we ask fontconfig which files
+     * cover each representative script; if fontconfig is unavailable we fall back to the standard font
+     * directories.
      */
     public void addSystemFonts(int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
     {
         String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
 
-        // LinkedHashSet: keep discovery order but drop duplicates — one font often serves several
-        // scripts (e.g. a Noto CJK file covers zh/ja/ko), and it must not be loaded more than once.
-        Set<String> paths = new LinkedHashSet<>();
-
         if (os.contains("win"))
         {
             String windir = System.getenv("WINDIR");
             String root = (windir != null ? windir : "C:\\Windows") + "\\Fonts\\";
-            addExisting(paths,
-                    root + "segoeui.ttf",   // Latin, Cyrillic, Greek, Arabic, Hebrew, ...
-                    root + "msyh.ttc",      // Microsoft YaHei — Simplified Chinese
-                    root + "msjh.ttc",      // Microsoft JhengHei — Traditional Chinese
-                    root + "yugothm.ttc",   // Yu Gothic — Japanese
-                    root + "msgothic.ttc",  // MS Gothic — Japanese (older systems)
-                    root + "malgun.ttf",    // Malgun Gothic — Korean
-                    root + "Nirmala.ttf",   // Nirmala UI — Devanagari and other Indic scripts
-                    root + "tahoma.ttf");   // extra Arabic/Hebrew coverage
+            // Segoe UI covers Latin/Cyrillic/Greek/Arabic/Hebrew; the CJK and Indic families follow.
+            deferSystemFont(root + "segoeui.ttf", new int[]{CP_CYRILLIC, CP_GREEK, CP_ARABIC, CP_HEBREW}, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferSystemFont(root + "msyh.ttc",    new int[]{CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // YaHei — Simplified Chinese
+            deferSystemFont(root + "msjh.ttc",    new int[]{CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // JhengHei — Traditional Chinese
+            deferSystemFont(root + "yugothm.ttc", new int[]{CP_HIRAGANA, CP_KATAKANA, CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // Yu Gothic — Japanese
+            deferSystemFont(root + "msgothic.ttc",new int[]{CP_HIRAGANA, CP_KATAKANA, CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // MS Gothic — Japanese (older)
+            deferSystemFont(root + "malgun.ttf",  new int[]{CP_HANGUL}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // Malgun Gothic — Korean
+            deferSystemFont(root + "Nirmala.ttf", new int[]{CP_DEVANAGARI, CP_BENGALI, CP_TAMIL, CP_TELUGU, CP_GUJARATI, CP_GURMUKHI}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // Nirmala UI — Indic
+            deferSystemFont(root + "tahoma.ttf",  new int[]{CP_ARABIC, CP_HEBREW}, bakeHeight, pixelPerfect, sizeScale, yOffset);
         }
         else if (os.contains("mac") || os.contains("darwin"))
         {
-            addExisting(paths,
-                    "/System/Library/Fonts/SFNS.ttf",                              // San Francisco — Latin et al.
-                    "/System/Library/Fonts/SFNSText.ttf",
-                    "/Library/Fonts/Arial Unicode.ttf",                            // very broad multi-script
-                    "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",
-                    "/System/Library/Fonts/PingFang.ttc",                          // CJK
-                    "/System/Library/Fonts/Hiragino Sans GB.ttc",                  // CJK
-                    "/System/Library/Fonts/AppleSDGothicNeo.ttc",                  // Korean
-                    "/System/Library/Fonts/Kohinoor.ttc",                          // Devanagari
-                    "/System/Library/Fonts/Supplemental/Devanagari Sangam MN.ttc",
-                    "/System/Library/Fonts/Supplemental/Thonburi.ttc");            // Thai
+            deferSystemFont("/System/Library/Fonts/SFNS.ttf",     new int[]{CP_CYRILLIC, CP_GREEK}, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferSystemFont("/System/Library/Fonts/SFNSText.ttf", new int[]{CP_CYRILLIC, CP_GREEK}, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            // Arial Unicode is a very broad multi-script font — treat as a broad fallback.
+            deferBroadFont("/Library/Fonts/Arial Unicode.ttf", bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferBroadFont("/System/Library/Fonts/Supplemental/Arial Unicode.ttf", bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferSystemFont("/System/Library/Fonts/PingFang.ttc",          new int[]{CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferSystemFont("/System/Library/Fonts/Hiragino Sans GB.ttc",  new int[]{CP_CJK, CP_HIRAGANA, CP_KATAKANA}, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferSystemFont("/System/Library/Fonts/AppleSDGothicNeo.ttc",  new int[]{CP_HANGUL}, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferSystemFont("/System/Library/Fonts/Kohinoor.ttc",          new int[]{CP_DEVANAGARI}, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferSystemFont("/System/Library/Fonts/Supplemental/Devanagari Sangam MN.ttc", new int[]{CP_DEVANAGARI}, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferSystemFont("/System/Library/Fonts/Supplemental/Thonburi.ttc", new int[]{CP_THAI}, bakeHeight, pixelPerfect, sizeScale, yOffset);
         }
         else // Linux / other unix
         {
-            // Linux resolves and loads its own fonts (fontconfig-driven, with STB-loadability checks).
+            // Linux resolves its own fonts (fontconfig-driven, with STB-loadability checks).
             addLinuxSystemFonts(bakeHeight, pixelPerfect, sizeScale, yOffset);
-            return;
         }
-
-        if (paths.isEmpty())
-            System.err.println("TruetypeFontRenderer: no system fonts found for OS '" + os + "'");
-
-        for (String path: paths)
-            addFontFile(path, bakeHeight, pixelPerfect, sizeScale, yOffset);
     }
 
-    /** Adds each path that exists as a regular file to {@code out}, skipping the rest. */
-    private static void addExisting(Set<String> out, String... paths)
+    /** Registers a deferred system font for the scripts {@code sampleCodepoints} name, if it exists. */
+    private void deferSystemFont(String path, int[] sampleCodepoints, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
     {
-        for (String p: paths)
-            if (new File(p).isFile())
-                out.add(p);
+        registerDeferredFont(path, false, sampleCodepoints, bakeHeight, pixelPerfect, sizeScale, yOffset);
+    }
+
+    /** Registers a deferred broad-coverage fallback (considered for any codepoint), if it exists. */
+    private void deferBroadFont(String path, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        registerDeferredFont(path, true, null, bakeHeight, pixelPerfect, sizeScale, yOffset);
     }
 
     /**
@@ -527,15 +690,15 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 0x1200
             };
 
-        Set<String> added = new HashSet<>();      // files contributing glyphs to the chain
-        Set<String> rejected = new HashSet<>();   // files STB can't use at all (e.g. CFF2)
+        // Collect, per candidate file, the scripts (sample codepoints) it claims to cover — deduped by
+        // path so the same file is registered once, tagged for every script it serves. Preserving
+        // first-seen order keeps static fonts (added static-first below) ahead of variable ones, so at
+        // load time a glyf font is read before a CFF2 variable font STB can't use (and often before it
+        // is even reached). No files are read here — coverage is verified lazily when a script is drawn.
+        Map<String, List<Integer>> fileToSamples = new LinkedHashMap<>();
 
         for (int s = 0; s < langs.length; s++)
         {
-            int codepoint = samples[s];
-            if (anyFontSupports(codepoint))
-                continue;   // already covered by Bullet or a font loaded for an earlier script
-
             List<String> candidates;
             try
             {
@@ -568,86 +731,27 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
             for (String file: candidates)
             {
-                if (added.contains(file) || rejected.contains(file) || !new File(file).isFile())
+                if (!new File(file).isFile())
                     continue;
-                if (addFontFileCovering(file, codepoint, rejected, bakeHeight, pixelPerfect, sizeScale, yOffset))
-                {
-                    added.add(file);
-                    break;
-                }
+                fileToSamples.computeIfAbsent(file, k -> new ArrayList<>()).add(samples[s]);
             }
         }
-    }
 
-    /** True if any already-loaded font has a glyph for {@code codepoint}. */
-    private boolean anyFontSupports(int codepoint)
-    {
-        for (TtfFontInfo font: fonts)
-            if (font.supportsCodepoint(codepoint))
-                return true;
-        return false;
+        for (Map.Entry<String, List<Integer>> e: fileToSamples.entrySet())
+        {
+            int[] cps = new int[e.getValue().size()];
+            for (int i = 0; i < cps.length; i++)
+                cps[i] = e.getValue().get(i);
+            registerDeferredFont(e.getKey(), false, cps, bakeHeight, pixelPerfect, sizeScale, yOffset);
+        }
     }
 
     /**
-     * Reads {@code filePath} and registers only the sub-fonts that STB can initialize <em>and</em>
-     * that contain a glyph for {@code requiredCodepoint}; returns true if at least one was added.
-     * Files STB can't use at all (e.g. CFF2) are recorded in {@code rejected} so other scripts skip
-     * them. This is what lets the resolver pass over the system's CFF2 Noto CJK to a glyf fallback.
+     * Last-resort fallback when fontconfig is absent: register every font under the standard font dirs
+     * as a deferred broad fallback. Without fontconfig we can't cheaply tell which file covers which
+     * script, so each is considered for any codepoint and read on demand — a scan can turn up hundreds
+     * of files, and reading them all up front is exactly what lazy loading avoids.
      */
-    private boolean addFontFileCovering(String filePath, int requiredCodepoint, Set<String> rejected,
-                                        int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
-    {
-        ByteBuffer buffer;
-        try
-        {
-            buffer = readFile(filePath);
-        }
-        catch (IOException e)
-        {
-            rejected.add(filePath);
-            return false;
-        }
-
-        int count = stbtt_GetNumberOfFonts(buffer);
-        int initialized = 0;
-        int added = 0;
-        for (int i = 0; i < count; i++)
-        {
-            int offset = stbtt_GetFontOffsetForIndex(buffer, i);
-            if (offset < 0)
-                continue;
-
-            TtfFontInfo info;
-            try
-            {
-                info = new TtfFontInfo(buffer, offset, bakeHeight, pixelPerfect, sizeScale, yOffset);
-            }
-            catch (Exception e)
-            {
-                continue;   // STB couldn't initialize this sub-font (e.g. CFF2)
-            }
-            initialized++;
-
-            if (info.supportsCodepoint(requiredCodepoint))
-            {
-                fonts.add(info);
-                added++;
-            }
-        }
-
-        if (initialized == 0)
-        {
-            rejected.add(filePath);
-            System.err.println("TruetypeFontRenderer: cannot use '" + filePath + "' — " +
-                (isOpenTypeCFF(buffer) ? "OpenType/CFF2 outlines unsupported by STB" : "no STB-loadable fonts"));
-        }
-        if (added > 0 && print_debug)
-            System.out.println("TruetypeFontRenderer: loaded system font " + filePath);
-
-        return added > 0;
-    }
-
-    /** Last-resort fallback when fontconfig is absent: load every font under the standard font dirs. */
     private void addFontsFromStandardDirs(int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
     {
         Set<String> scanned = new LinkedHashSet<>();
@@ -662,7 +766,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             collectFontFiles(new File(dir), scanned, 0);
 
         for (String f: scanned)
-            addFontFile(f, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            deferBroadFont(f, bakeHeight, pixelPerfect, sizeScale, yOffset);
 
         if (scanned.isEmpty())
             System.err.println("TruetypeFontRenderer: no Linux system fonts found");
@@ -735,14 +839,139 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         return false;
     }
 
+    /**
+     * Picks the font used to render {@code c}. First checks the already-loaded fonts; on a miss it
+     * reads in any deferred (registered-but-unread) font that serves {@code c}'s script, then checks
+     * again — this is what triggers the lazy load of a system fallback the first time its script is
+     * drawn. Falls back to the default font if nothing covers {@code c}.
+     */
     private TtfFontInfo findFontForChar(char c)
     {
+        TtfFontInfo f = findLoadedFontForChar(c);
+        if (f != null && f.firstInBuffer)
+            return f;   // already have a shaping-capable cover — the best kind, no need to read more
+
+        // Either nothing covers c yet, or only a STB-only face does. Read in this script's deferred
+        // fonts (once per block) so a shaping-capable standalone font gets a chance to be loaded and
+        // preferred — this is what keeps a broad .ttc from shadowing e.g. Droid Sans Devanagari.
+        if (!resolvedBlocks.contains(blockOf(c)))
+        {
+            resolveDeferredForCodepoint(c);
+            TtfFontInfo resolved = findLoadedFontForChar(c);
+            if (resolved != null)
+                f = resolved;
+        }
+
+        return f != null ? f : defaultFont;
+    }
+
+    /**
+     * Finds an already-loaded font covering {@code c}, or null if none is loaded yet. A shaping-capable
+     * face (first-in-buffer, so it gets a correct AWT font — see {@link TtfFontInfo#firstInBuffer}) is
+     * preferred over one that can only be STB per-glyph rendered, even if the STB-only face appears
+     * earlier. This lets a proper standalone system font (e.g. Droid Sans Devanagari) win over a
+     * shaping-incapable .ttc sub-font that also claims the script. Among faces of equal capability the
+     * earliest wins, preserving priority ordering.
+     */
+    private TtfFontInfo findLoadedFontForChar(char c)
+    {
+        TtfFontInfo stbOnly = null;
         for (TtfFontInfo font: fonts)
         {
             if (font.supportsCodepoint(c))
-                return font;
+            {
+                if (font.firstInBuffer)
+                    return font;
+                if (stbOnly == null)
+                    stbOnly = font;
+            }
         }
-        return defaultFont;
+        return stbOnly;
+    }
+
+    /**
+     * Reads in any deferred fallback font registered for {@code cp}'s Unicode block (plus any broad
+     * fallbacks), in priority order, until one covers {@code cp}. Called on a render-thread cache miss,
+     * so it does the on-demand file read that laziness trades for a smaller startup. Each block is only
+     * scanned once — a codepoint with no available font records the block and never re-reads.
+     */
+    private void resolveDeferredForCodepoint(int cp)
+    {
+        Character.UnicodeBlock block = blockOf(cp);
+        if (resolvedBlocks.contains(block))
+            return;
+
+        synchronized (deferredLock)
+        {
+            if (resolvedBlocks.contains(block))
+                return;
+
+            for (DeferredFont df: deferredFonts)
+            {
+                if (df.resolved)
+                    continue;
+                if (!df.broad && !df.blocks.contains(block))
+                    continue;
+
+                df.resolved = true;
+                addFontFile(df.path, df.bakeHeight, df.pixelPerfect, df.sizeScale, df.yOffset);
+
+                // Stop only once a shaping-capable face covers the glyph. A broad .ttc (e.g. the
+                // bundled Noto collection) often covers the script with a non-first-in-buffer sub-font
+                // that can't shape (no correct AWT font) — keep reading the block's standalone fonts
+                // (e.g. Droid Sans Devanagari) so the firstInBuffer one is present for
+                // findLoadedFontForChar to prefer. If none turns up we still have the STB-only cover.
+                TtfFontInfo cover = findLoadedFontForChar((char) cp);
+                if (cover != null && cover.firstInBuffer)
+                    break;
+            }
+
+            resolvedBlocks.add(block);
+        }
+    }
+
+    /** Unicode block of {@code cp}, mapping the "no block" case to a stable non-null sentinel. */
+    private static Character.UnicodeBlock blockOf(int cp)
+    {
+        Character.UnicodeBlock b = null;
+        try { b = Character.UnicodeBlock.of(cp); } catch (IllegalArgumentException ignored) {}
+        return b != null ? b : Character.UnicodeBlock.BASIC_LATIN;
+    }
+
+    /**
+     * Registers {@code path} as a deferred fallback without reading it. {@code sampleCodepoints} name
+     * the writing systems it should serve (one representative codepoint each); their Unicode blocks
+     * become its routing tags. Pass {@code broad = true} (with no samples) for a broad-coverage
+     * fallback considered for any codepoint. Non-existent files are skipped.
+     */
+    private void registerDeferredFont(String path, boolean broad, int[] sampleCodepoints,
+                                      int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        if (path == null || !new File(path).isFile())
+            return;
+
+        Set<Character.UnicodeBlock> blocks = new HashSet<>();
+        if (sampleCodepoints != null)
+            for (int cp: sampleCodepoints)
+                blocks.add(blockOf(cp));
+
+        // Registration is serialized against resolveDeferredForCodepoint on deferredLock. Discovery runs
+        // on a background thread while the render thread resolves fonts on demand; without this lock the
+        // render thread (iterating a copy-on-write snapshot) could finish resolving a block and mark it
+        // done just after this font was added but before the invalidation below, stranding the block on
+        // an inferior font forever. Under the lock the two operations can't interleave: the block is
+        // either resolved before this font exists (then re-opened here) or after (then it's included).
+        synchronized (deferredLock)
+        {
+            deferredFonts.add(new DeferredFont(path, broad, blocks, bakeHeight, pixelPerfect, sizeScale, yOffset));
+
+            // A font registered after a codepoint in its script was already drawn (and its block marked
+            // resolved) must re-open that block so the next draw picks the new font up.
+            if (broad)
+                resolvedBlocks.clear();
+            else
+                resolvedBlocks.removeAll(blocks);
+        }
     }
 
     protected double drawChar(double x, double y, double z, double sX, double sY, char c, boolean depthtest)
@@ -906,7 +1135,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         if (text.isEmpty())
             return 0;
 
-        if (font.awtFont == null)
+        java.awt.Font awtFont = font.getAwtFont();
+        if (awtFont == null)
         {
             double w = 0;
             for (int i = 0; i < text.length(); i++)
@@ -918,9 +1148,9 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         }
 
         java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
-        java.awt.font.GlyphVector gv = font.awtFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
+        java.awt.font.GlyphVector gv = awtFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
         double scaleX = sX * 32.0 * font.sizeScale / font.bakeHeight;
-        return gv.getGlyphPosition(gv.getNumGlyphs()).getX() * font.awtToStbScaleRatio * scaleX;
+        return gv.getGlyphPosition(gv.getNumGlyphs()).getX() * font.getAwtToStbScaleRatio() * scaleX;
     }
 
     @Override
@@ -1062,7 +1292,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         if (text.isEmpty())
             return 0;
 
-        if (font.awtFont == null)
+        java.awt.Font awtFont = font.getAwtFont();
+        if (awtFont == null)
         {
             double curX = x;
             for (int i = 0; i < text.length(); i++)
@@ -1073,22 +1304,26 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         }
 
         java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
-        java.awt.font.GlyphVector gv = font.awtFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
+        java.awt.font.GlyphVector gv = awtFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
 
         int numGlyphs = gv.getNumGlyphs();
         double scaleX = sX * 32.0 * font.sizeScale / font.bakeHeight;
         double scaleY = sY * 32.0 * font.sizeScale / font.bakeHeight;
         double baselineY = (y - sY * 16) + font.ascent * font.fontScale * scaleY + sY * 32 * font.yOffset;
+        double awtToStbScaleRatio = font.getAwtToStbScaleRatio();
 
         if (lwjglWindow.mainRenderPasses.drawingShadow)
         {
-            return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;
+            return gv.getGlyphPosition(numGlyphs).getX() * awtToStbScaleRatio * scaleX;
         }
 
         for (int i = 0; i < numGlyphs; i++)
         {
             int glyphId = gv.getGlyphCode(i);
-            if (glyphId < 0)
+            // Skip glyphs the layout engine deleted while shaping (e.g. a virama consumed to form an
+            // Indic conjunct). Java flags these with the 0xFFFF/0xFFFE sentinel; feeding that to STB
+            // would draw an out-of-range .notdef box where the shaped cluster already rendered.
+            if (glyphId < 0 || glyphId >= 0xFFFE)
                 continue;
 
             java.awt.geom.Point2D pos = gv.getGlyphPosition(i);
@@ -1100,8 +1335,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             int xoff = m[3];
             int yoff = m[4];
 
-            double gx = x + (pos.getX() * font.awtToStbScaleRatio + xoff) * scaleX;
-            double gy = baselineY + (pos.getY() * font.awtToStbScaleRatio + yoff) * scaleY;
+            double gx = x + (pos.getX() * awtToStbScaleRatio + xoff) * scaleX;
+            double gy = baselineY + (pos.getY() * awtToStbScaleRatio + yoff) * scaleY;
             double gw = bitmapW * scaleX;
             double gh = bitmapH * scaleY;
 
@@ -1136,6 +1371,6 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             }
         }
 
-        return gv.getGlyphPosition(numGlyphs).getX() * font.awtToStbScaleRatio * scaleX;
+        return gv.getGlyphPosition(numGlyphs).getX() * awtToStbScaleRatio * scaleX;
     }
 }

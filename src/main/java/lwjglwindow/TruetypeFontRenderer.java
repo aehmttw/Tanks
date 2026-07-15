@@ -578,10 +578,21 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     }
 
     // Representative codepoints per writing system, used to tag which scripts a deferred font serves.
-    private static final int CP_CYRILLIC = 0x0410, CP_GREEK = 0x0391, CP_ARABIC = 0x0627, CP_HEBREW = 0x05D0,
-            CP_CJK = 0x4E00, CP_HIRAGANA = 0x3042, CP_KATAKANA = 0x30A2, CP_HANGUL = 0xAC00,
-            CP_DEVANAGARI = 0x0905, CP_BENGALI = 0x0985, CP_TAMIL = 0x0B85, CP_TELUGU = 0x0C05,
-            CP_GUJARATI = 0x0A85, CP_GURMUKHI = 0x0A05, CP_THAI = 0x0E01;
+    private static final int CP_CYRILLIC = 0x0410;
+    private static final int CP_GREEK = 0x0391;
+    private static final int CP_ARABIC = 0x0627;
+    private static final int CP_HEBREW = 0x05D0;
+    private static final int CP_CJK = 0x4E00;
+    private static final int CP_HIRAGANA = 0x3042;
+    private static final int CP_KATAKANA = 0x30A2;
+    private static final int CP_HANGUL = 0xAC00;
+    private static final int CP_DEVANAGARI = 0x0905;
+    private static final int CP_BENGALI = 0x0985;
+    private static final int CP_TAMIL = 0x0B85;
+    private static final int CP_TELUGU = 0x0C05;
+    private static final int CP_GUJARATI = 0x0A85;
+    private static final int CP_GURMUKHI = 0x0A05;
+    private static final int CP_THAI = 0x0E01;
 
     /**
      * Registers the platform's system fonts as <em>deferred</em> fallbacks — the tier between the
@@ -608,7 +619,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             deferSystemFont(root + "msyh.ttc",    new int[]{CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // YaHei — Simplified Chinese
             deferSystemFont(root + "msjh.ttc",    new int[]{CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // JhengHei — Traditional Chinese
             deferSystemFont(root + "yugothm.ttc", new int[]{CP_HIRAGANA, CP_KATAKANA, CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // Yu Gothic — Japanese
-            deferSystemFont(root + "msgothic.ttc",new int[]{CP_HIRAGANA, CP_KATAKANA, CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // MS Gothic — Japanese (older)
+            deferSystemFont(root + "msgothic.ttc", new int[]{CP_HIRAGANA, CP_KATAKANA, CP_CJK}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // MS Gothic — Japanese (older)
             deferSystemFont(root + "malgun.ttf",  new int[]{CP_HANGUL}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // Malgun Gothic — Korean
             deferSystemFont(root + "Nirmala.ttf", new int[]{CP_DEVANAGARI, CP_BENGALI, CP_TAMIL, CP_TELUGU, CP_GUJARATI, CP_GURMUKHI}, bakeHeight, pixelPerfect, sizeScale, yOffset);   // Nirmala UI — Indic
             deferSystemFont(root + "tahoma.ttf",  new int[]{CP_ARABIC, CP_HEBREW}, bakeHeight, pixelPerfect, sizeScale, yOffset);
@@ -934,7 +945,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     private static Character.UnicodeBlock blockOf(int cp)
     {
         Character.UnicodeBlock b = null;
-        try { b = Character.UnicodeBlock.of(cp); } catch (IllegalArgumentException ignored) {}
+        try { b = Character.UnicodeBlock.of(cp); } catch (IllegalArgumentException ignored) { }
         return b != null ? b : Character.UnicodeBlock.BASIC_LATIN;
     }
 

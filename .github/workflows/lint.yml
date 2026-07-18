@@ -52,7 +52,9 @@ jobs:
               }
               match($0, /<file name="[^"]+"/) {
                 file = substr($0, RSTART + 12, RLENGTH - 12)
-                sub(/^.*\/(src\/.*)$/, "\\1", file)
+                src_index = index(file, "/src/")
+                if (src_index > 0)
+                  file = substr(file, src_index + 1)
                 next
               }
               /<error / && count < max {
@@ -63,7 +65,7 @@ jobs:
                   line = substr($0, RSTART + 6, RLENGTH - 7)
 
                 if (match($0, /message="[^"]+"/))
-                  message = substr($0, RSTART + 9, RLENGTH - 9)
+                  message = substr($0, RSTART + 9, RLENGTH - 10)
 
                 gsub(/&amp;/, "\\&", message)
                 gsub(/&lt;/, "<", message)

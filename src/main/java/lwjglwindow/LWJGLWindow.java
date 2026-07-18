@@ -133,6 +133,10 @@ public class LWJGLWindow extends BaseWindow
         systemFontLoader.start();
         this.fontRenderer = ttf;
 
+        // The old way of doing fonts
+//        FontRenderer fonts = new FontRenderer(this, "/fonts/default/font.png");
+//        this.fontRenderer = fonts;
+
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (System.getProperty("os.name").toLowerCase().contains("linux"))

@@ -155,14 +155,17 @@ public class Panel
             Game.musicEnabled = false;
         }
 
-        if (Game.fontcompatability) {
+        if (Game.fontcompatability)
+        {
             TruetypeFontRenderer ttf = new TruetypeFontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/Bullet.ttf", 128, true, 1.4, 0.3);
             ttf.addFontsFromDirectory(System.getProperty("user.home") + "/.tanks/fonts", 128, false, 1.4, 0.3);
             Thread systemFontLoader = new Thread(() -> ttf.addSystemFonts(128, false, 1.4, 0.3), "system-font-loader");
             systemFontLoader.setDaemon(true);
             systemFontLoader.start();
             Game.game.window.fontRenderer = ttf;
-        } else {
+        }
+        else
+        {
             FontRenderer fonts = new FontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/font.png");
             Game.game.window.fontRenderer = fonts;
         }

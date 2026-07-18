@@ -82,7 +82,8 @@ public class ScreenOptionsWindow extends Screen
     },
         "Disallows your mouse pointer from---leaving the window while playing");
 
-    Button fontCompatability = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable() {
+    Button fontCompatability = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
         @Override
         public void run()
         {
@@ -104,7 +105,7 @@ public class ScreenOptionsWindow extends Screen
                 Game.game.window.fontRenderer = fonts;
             }
         }
-    }, "Allow extended fonts including other languages and emojis");
+    }, "Allow extended fonts including---other languages and emojis");
 
     public static final String fullscreenText = "Fullscreen: ";
 

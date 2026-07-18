@@ -51,6 +51,23 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         private final Map<Integer, Integer> glyphTextures = new HashMap<>();
         private final Map<Integer, int[]> glyphMetrics = new HashMap<>();
 
+        // Cache of AWT-shaped layouts, keyed by the exact string drawn. The UI redraws the same strings
+        // every frame, so without this each redraw re-runs Font.layoutGlyphVector (heavy shaping, plus a
+        // fresh Point2D per glyph and a char[] copy) — the bulk of the new font system's per-frame
+        // garbage. Bounded, access-order LRU: static UI text stays resident while transient strings
+        // (timers, FPS, scores) age out instead of growing the map without bound. synchronizedMap keeps
+        // it safe if measurement and drawing ever run on different threads (as the metrics maps assume).
+        private static final int SHAPED_CACHE_MAX = 2048;
+        private final Map<String, ShapedText> shapedCache = java.util.Collections.synchronizedMap(
+            new LinkedHashMap<String, ShapedText>(256, 0.75f, true)
+            {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, ShapedText> eldest)
+                {
+                    return size() > SHAPED_CACHE_MAX;
+                }
+            });
+
         public TtfFontInfo(ByteBuffer buffer, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
         {
             this(buffer, 0, bakeHeight, pixelPerfect, sizeScale, yOffset);
@@ -113,6 +130,41 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return awtToStbScaleRatio;
         }
 
+        /**
+         * Returns the cached {@link ShapedText} for {@code text}, shaping it via AWT on the first request
+         * and reusing it thereafter. Glyph pen positions are stored in STB units (AWT position times the
+         * awt-to-STB ratio), so the only per-frame work left for a repeated string is scaling by sX/sY.
+         * Must only be called when {@link #getAwtFont()} is non-null (the shaping path); callers guarantee
+         * this and fall back to per-glyph STB rendering otherwise.
+         */
+        ShapedText getShapedText(String text)
+        {
+            ShapedText st = shapedCache.get(text);
+            if (st != null)
+                return st;
+
+            double ratio = getAwtToStbScaleRatio();
+            java.awt.font.GlyphVector gv = getAwtFont().layoutGlyphVector(
+                SHARED_FRC, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
+
+            int n = gv.getNumGlyphs();
+            int[] ids = new int[n];
+            double[] px = new double[n];
+            double[] py = new double[n];
+            for (int i = 0; i < n; i++)
+            {
+                ids[i] = gv.getGlyphCode(i);
+                java.awt.geom.Point2D p = gv.getGlyphPosition(i);
+                px[i] = p.getX() * ratio;
+                py[i] = p.getY() * ratio;
+            }
+            double advance = gv.getGlyphPosition(n).getX() * ratio;
+
+            st = new ShapedText(ids, px, py, advance);
+            shapedCache.put(text, st);
+            return st;
+        }
+
         private void loadAwtFont()
         {
             awtFontLoaded = true;
@@ -168,8 +220,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
                 try
                 {
-                    java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
-                    java.awt.font.GlyphVector gv = this.awtFont.layoutGlyphVector(frc, new char[]{calChar}, 0, 1, java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
+                    java.awt.font.GlyphVector gv = this.awtFont.layoutGlyphVector(SHARED_FRC, new char[]{calChar}, 0, 1, java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
                     double awtAdvance = gv.getGlyphPosition(1).getX();
                     int[] stbMetrics = getGlyphMetrics(stbtt_FindGlyphIndex(stbInfo, calChar));
                     double stbAdvance = stbMetrics[0] * this.fontScale;
@@ -325,6 +376,32 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     private final List<TtfFontInfo> fonts = new CopyOnWriteArrayList<>();
     private final TtfFontInfo defaultFont;
     private final LWJGLWindow lwjglWindow;
+
+    // A FontRenderContext is immutable and identically configured for every shaping call, so share one
+    // instead of allocating a new one per draw/measure. (antialias=true, fractionalMetrics=true.)
+    private static final java.awt.font.FontRenderContext SHARED_FRC = new java.awt.font.FontRenderContext(null, true, true);
+
+    /**
+     * An AWT-shaped layout cached for one (font, string): glyph ids and their pen positions in STB units
+     * (AWT position pre-multiplied by the font's awt-to-STB ratio), plus the total advance in the same
+     * units. Resolution-independent — the frame's sX/sY scale is applied at draw/measure time — so one
+     * cached instance serves every redraw of that string at any size. See {@link TtfFontInfo#getShapedText}.
+     */
+    private static final class ShapedText
+    {
+        final int[] glyphIds;
+        final double[] posX;
+        final double[] posY;
+        final double advance;
+
+        ShapedText(int[] glyphIds, double[] posX, double[] posY, double advance)
+        {
+            this.glyphIds = glyphIds;
+            this.posX = posX;
+            this.posY = posY;
+            this.advance = advance;
+        }
+    }
 
     /**
      * A system/user font file that has been discovered but not yet read from disk. Fallback fonts are
@@ -1277,10 +1354,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return w;
         }
 
-        java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
-        java.awt.font.GlyphVector gv = awtFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
         double scaleX = sX * 32.0 * font.sizeScale / font.bakeHeight;
-        return gv.getGlyphPosition(gv.getNumGlyphs()).getX() * font.getAwtToStbScaleRatio() * scaleX;
+        return font.getShapedText(text).advance * scaleX;
     }
 
     @Override
@@ -1433,30 +1508,26 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return curX - x;
         }
 
-        java.awt.font.FontRenderContext frc = new java.awt.font.FontRenderContext(null, true, true);
-        java.awt.font.GlyphVector gv = awtFont.layoutGlyphVector(frc, text.toCharArray(), 0, text.length(), java.awt.Font.LAYOUT_LEFT_TO_RIGHT);
+        ShapedText shaped = font.getShapedText(text);
 
-        int numGlyphs = gv.getNumGlyphs();
+        int numGlyphs = shaped.glyphIds.length;
         double scaleX = sX * 32.0 * font.sizeScale / font.bakeHeight;
         double scaleY = sY * 32.0 * font.sizeScale / font.bakeHeight;
         double baselineY = (y - sY * 16) + font.ascent * font.fontScale * scaleY + sY * 32 * font.yOffset;
-        double awtToStbScaleRatio = font.getAwtToStbScaleRatio();
 
         if (lwjglWindow.mainRenderPasses.drawingShadow)
         {
-            return gv.getGlyphPosition(numGlyphs).getX() * awtToStbScaleRatio * scaleX;
+            return shaped.advance * scaleX;
         }
 
         for (int i = 0; i < numGlyphs; i++)
         {
-            int glyphId = gv.getGlyphCode(i);
+            int glyphId = shaped.glyphIds[i];
             // Skip glyphs the layout engine deleted while shaping (e.g. a virama consumed to form an
             // Indic conjunct). Java flags these with the 0xFFFF/0xFFFE sentinel; feeding that to STB
             // would draw an out-of-range .notdef box where the shaped cluster already rendered.
             if (glyphId < 0 || glyphId >= 0xFFFE)
                 continue;
-
-            java.awt.geom.Point2D pos = gv.getGlyphPosition(i);
 
             int texId = font.getOrCreateGlyphTexture(glyphId);
             int[] m = font.getGlyphMetrics(glyphId);
@@ -1465,8 +1536,8 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             int xoff = m[3];
             int yoff = m[4];
 
-            double gx = x + (pos.getX() * awtToStbScaleRatio + xoff) * scaleX;
-            double gy = baselineY + (pos.getY() * awtToStbScaleRatio + yoff) * scaleY;
+            double gx = x + (shaped.posX[i] + xoff) * scaleX;
+            double gy = baselineY + (shaped.posY[i] + yoff) * scaleY;
             double gw = bitmapW * scaleX;
             double gh = bitmapH * scaleY;
 
@@ -1501,6 +1572,6 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             }
         }
 
-        return gv.getGlyphPosition(numGlyphs).getX() * awtToStbScaleRatio * scaleX;
+        return shaped.advance * scaleX;
     }
 }

@@ -21,11 +21,7 @@ uniform vec4 originalColor;
 uniform float baseLight;
 uniform float shadowLight;
 
-uniform float width;
-uniform float height;
-uniform float depth;
-uniform float scale;
-
+uniform bool drawToFramebuffer;
 
 #define BLEND_TRANSPARENT 0
 #define BLEND_GLOW 1
@@ -67,17 +63,34 @@ void main(void)
         }
     }
 
-    if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
+    if (drawToFramebuffer)
     {
-        fragColor.rgb *= fragColor.a;
-        gl_FragData[0] = vec4(0.0);
-        gl_FragData[1] = fragColor * fragColor;
-        gl_FragData[2] = vec4(0.0);
+        if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
+        {
+            fragColor.rgb *= fragColor.a;
+            gl_FragData[0] = vec4(0.0);
+            gl_FragData[1] = fragColor * fragColor;
+            gl_FragData[2] = vec4(0.0);
+        }
+        else
+        {
+            gl_FragData[0] = fragColor;
+            gl_FragData[1] = vec4(fragColor.rgb * glowValue * (float(lit) * (1.0 - baseLight) + (1.0 - float(lit)) * (1.0 - shadowLight)), fragColor.a);
+            gl_FragData[2] = vec4(float(lit), 0.0, 0.0, fragColor.a);
+        }
     }
     else
     {
-        gl_FragData[0] = fragColor;
-        gl_FragData[1] = vec4(fragColor.rgb * glowValue * (float(lit) * (1.0 - baseLight) + (1.0 - float(lit)) *  (1.0 - shadowLight)), fragColor.a);
-        gl_FragData[2] = vec4(float(lit), 0.0, 0.0, fragColor.a);
+        if (blendFunc == BLEND_GLOW || blendFunc == BLEND_LIGHT)
+        {
+            fragColor.rgb *= fragColor.a;
+            gl_FragData[0] = fragColor * fragColor;
+        }
+        else
+        {
+            float maxLight = baseLight * (1.0 - glow) + glow;
+            float minLight = shadowLight * (1.0 - glow) + glow;
+            gl_FragData[0] = vec4(fragColor.rgb * (lit ? maxLight : minLight), fragColor.a);
+        }
     }
 }

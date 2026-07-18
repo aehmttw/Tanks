@@ -1,7 +1,5 @@
 package basewindow;
 
-import org.lwjgl.opengl.GL11;
-
 public class RenderPassDraw extends RenderPass
 {
     public RenderPassGroupShadowDraw passGroup;
@@ -51,6 +49,7 @@ public class RenderPassDraw extends RenderPass
         this.window.getProjectionMatrix(projMatrixShadow);
 
         this.window.setShader(this.window.shaderDefault);
+        this.window.shaderDefault.shaderBase.drawToFramebuffer.set(this.passGroup.drawToFramebuffer);
         this.window.shaderDefault.shaderBase.shadowres.set(this.passGroup.getShadowMapSize());
         this.window.shaderDefault.shaderBase.shadow.set(this.passGroup.shadowsEnabled);
 

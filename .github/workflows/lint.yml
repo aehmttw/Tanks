@@ -51,7 +51,7 @@ jobs:
                 count = 0
               }
               match($0, /<file name="[^"]+"/) {
-                file = substr($0, RSTART + 12, RLENGTH - 12)
+                file = substr($0, RSTART + 12, RLENGTH - 13)
                 src_index = index(file, "/src/")
                 if (src_index > 0)
                   file = substr(file, src_index + 1)

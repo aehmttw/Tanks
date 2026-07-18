@@ -48,8 +48,25 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         private java.awt.Font awtFont = null;
         private double awtToStbScaleRatio = 1.0;
 
-        private final Map<Integer, Integer> glyphTextures = new HashMap<>();
         private final Map<Integer, int[]> glyphMetrics = new HashMap<>();
+
+        // ---- Glyph atlas ----
+        // Instead of one GL texture per glyph, glyph coverage is packed into shared ATLAS_SIZE² "page"
+        // textures. A whole string then draws with a single bind + one batched glBegin/glEnd per page
+        // (usually one) instead of a texture bind, full state set/reset, and immediate-mode quad per
+        // glyph — the dominant cost on low-end GPUs/drivers. Coverage is stored as LUMINANCE_ALPHA
+        // (white luminance + STB's alpha), so the existing `color * vertexColor` UI shader renders it
+        // unchanged while using half the VRAM of the old RGBA-white textures.
+        private static final int ATLAS_SIZE = 1024;   // page dimension; within the GL 2.1 guaranteed max
+        private static final int ATLAS_PAD = 1;       // transparent gutter to stop bilinear glyph bleed
+        private int atlasPageTex = 0;                 // current page GL id; 0 = none allocated yet
+        private int atlasPenX = 0;                    // shelf-packing cursor within the current page
+        private int atlasPenY = 0;
+        private int atlasShelfHeight = 0;
+
+        // glyphId -> {pageTex, atlasX, atlasY}; a mapping present with null value marks a glyph that has
+        // no pixels (e.g. a space), so it's recorded as "resolved" but never drawn.
+        private final Map<Integer, int[]> glyphSlots = new HashMap<>();
 
         // Cache of AWT-shaped layouts, keyed by the exact string drawn. The UI redraws the same strings
         // every frame, so without this each redraw re-runs Font.layoutGlyphVector (heavy shaping, plus a
@@ -309,15 +326,21 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             }
         }
 
-        public int getOrCreateTexture(int codepoint)
+        public int[] getOrCreateSlotForCodepoint(int codepoint)
         {
-            return getOrCreateGlyphTexture(stbtt_FindGlyphIndex(stbInfo, codepoint));
+            return getOrCreateGlyphSlot(stbtt_FindGlyphIndex(stbInfo, codepoint));
         }
 
-        public int getOrCreateGlyphTexture(int glyphId)
+        /**
+         * Returns this glyph's atlas placement {@code {pageTex, atlasX, atlasY}}, rasterizing it and
+         * packing it into an atlas page on first use, or {@code null} if the glyph has no pixels (e.g. a
+         * space). MUST be called <em>outside</em> a {@code glBegin/glEnd} pair — it binds and uploads to
+         * texture objects, which is illegal mid-primitive. Callers pre-pass all glyphs before drawing.
+         */
+        public int[] getOrCreateGlyphSlot(int glyphId)
         {
-            if (glyphTextures.containsKey(glyphId))
-                return glyphTextures.get(glyphId);
+            if (glyphSlots.containsKey(glyphId))
+                return glyphSlots.get(glyphId);
 
             try (MemoryStack stack = MemoryStack.stackPush())
             {
@@ -328,48 +351,91 @@ public class TruetypeFontRenderer extends BaseFontRenderer
 
                 ByteBuffer bitmap = stbtt_GetGlyphBitmap(stbInfo, fontScale, fontScale, glyphId, w, h, xoff, yoff);
 
-                if (bitmap == null || w.get(0) == 0 || h.get(0) == 0)
+                int bw = (bitmap == null) ? 0 : w.get(0);
+                int bh = (bitmap == null) ? 0 : h.get(0);
+                if (bitmap == null || bw == 0 || bh == 0)
                 {
-                    glyphTextures.put(glyphId, 0);
-                    return 0;
+                    if (bitmap != null)
+                        stbtt_FreeBitmap(bitmap);
+                    glyphSlots.put(glyphId, null);   // no pixels: resolved, never drawn
+                    return null;
                 }
 
-                // The project's fragment shader does `color * vertexColor`, where `color` is the
-                // sampled texel. GL_ALPHA textures return RGB=0 in GLSL, which would zero out
-                // the glyph color. Upload as RGBA with white RGB and STB's alpha so the shader
-                // multiplies the per-vertex color through unchanged.
-                int bw = w.get(0);
-                int bh = h.get(0);
-                ByteBuffer rgba = BufferUtils.createByteBuffer(bw * bh * 4);
+                // Coverage stored as LUMINANCE_ALPHA (white luminance + STB's alpha), so the sampled
+                // texel is (1,1,1,a) and the UI shader's `color * vertexColor` passes the vertex color
+                // through unchanged — identical result to the old RGBA-white texture, at half the bytes.
+                ByteBuffer la = BufferUtils.createByteBuffer(bw * bh * 2);
                 for (int i = 0; i < bw * bh; i++)
                 {
                     int a = bitmap.get(i) & 0xFF;
                     if (pixelPerfect)
                         a = a >= 128 ? 0xFF : 0x00;
-                    rgba.put((byte) 0xFF);
-                    rgba.put((byte) 0xFF);
-                    rgba.put((byte) 0xFF);
-                    rgba.put((byte) a);
+                    la.put((byte) 0xFF);
+                    la.put((byte) a);
                 }
-                rgba.flip();
+                la.flip();
 
-                int filter = pixelPerfect ? GL_NEAREST : GL_LINEAR;
-                int texId = glGenTextures();
-                glBindTexture(GL_TEXTURE_2D, texId);
+                int[] slot = allocAtlasRect(bw, bh);   // {pageTex, x, y}
+                glBindTexture(GL_TEXTURE_2D, slot[0]);
                 glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bw, bh, 0, GL_RGBA, GL_UNSIGNED_BYTE, rgba);
+                glTexSubImage2D(GL_TEXTURE_2D, 0, slot[1], slot[2], bw, bh, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, la);
 
                 stbtt_FreeBitmap(bitmap);
 
-                int[] m = new int[]{getGlyphMetrics(glyphId)[0], w.get(0), h.get(0), xoff.get(0), yoff.get(0)};
+                int[] m = new int[]{getGlyphMetrics(glyphId)[0], bw, bh, xoff.get(0), yoff.get(0)};
                 glyphMetrics.put(glyphId, m);
-                glyphTextures.put(glyphId, texId);
-                return texId;
+                glyphSlots.put(glyphId, slot);
+                return slot;
             }
+        }
+
+        /** Reserves a {@code bw × bh} rectangle (plus padding) on an atlas page via shelf packing. */
+        private int[] allocAtlasRect(int bw, int bh)
+        {
+            int needW = bw + ATLAS_PAD;
+            int needH = bh + ATLAS_PAD;
+
+            if (atlasPageTex == 0)
+                newAtlasPage();
+
+            if (atlasPenX + needW > ATLAS_SIZE)   // no room on this shelf: start the next one
+            {
+                atlasPenX = 0;
+                atlasPenY += atlasShelfHeight;
+                atlasShelfHeight = 0;
+            }
+            if (atlasPenY + needH > ATLAS_SIZE)   // page full: open a fresh page
+                newAtlasPage();
+
+            int x = atlasPenX;
+            int y = atlasPenY;
+            atlasPenX += needW;
+            if (needH > atlasShelfHeight)
+                atlasShelfHeight = needH;
+
+            return new int[]{atlasPageTex, x, y};
+        }
+
+        /** Allocates a new, zero-initialized atlas page and makes it current (resets the shelf pen). */
+        private void newAtlasPage()
+        {
+            int filter = pixelPerfect ? GL_NEAREST : GL_LINEAR;
+            int tex = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, tex);
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            // Upload a zeroed page so the inter-glyph padding is transparent — otherwise bilinear
+            // filtering at a glyph's edge could sample undefined texels from a neighbour.
+            ByteBuffer blank = BufferUtils.createByteBuffer(ATLAS_SIZE * ATLAS_SIZE * 2);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, ATLAS_SIZE, ATLAS_SIZE, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, blank);
+
+            atlasPageTex = tex;
+            atlasPenX = 0;
+            atlasPenY = 0;
+            atlasShelfHeight = 0;
         }
     }
 
@@ -401,6 +467,30 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             this.posY = posY;
             this.advance = advance;
         }
+    }
+
+    // Per-frame run-pipeline caches. The UI redraws the same strings every frame, so re-parsing color
+    // runs and re-partitioning by font is pure repeated work plus garbage (lists, StringBuilders,
+    // substrings, and a native stbtt_FindGlyphIndex per character). parseRuns is a pure function of the
+    // string. The font partition additionally depends on which fallback fonts are loaded; since `fonts`
+    // is append-only, its size is a monotonic generation token — when it grows (a new fallback resolved)
+    // we drop the partition cache so strings re-resolve against the better font set.
+    private static final int RUN_CACHE_MAX = 1024;
+    private final Map<String, List<ShapedRun>> parseRunsCache = boundedLru(RUN_CACHE_MAX);
+    private final Map<String, List<FontRun>> partitionCache = boundedLru(RUN_CACHE_MAX);
+    private volatile int partitionCacheFontCount = -1;
+
+    /** A thread-safe, bounded (access-order LRU) map — evicts the least-recently-used entry past {@code max}. */
+    private static <K, V> Map<K, V> boundedLru(int max)
+    {
+        return java.util.Collections.synchronizedMap(new LinkedHashMap<K, V>(256, 0.75f, true)
+        {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest)
+            {
+                return size() > max;
+            }
+        });
     }
 
     /**
@@ -1189,7 +1279,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         int codepoint = c;
         TtfFontInfo font = findFontForChar(c);
 
-        int texId = font.getOrCreateTexture(codepoint);
+        int[] slot = font.getOrCreateSlotForCodepoint(codepoint);   // {pageTex, atlasX, atlasY} or null
         int[] m = font.getMetrics(codepoint);
         int advance = m[0];
         int bitmapW = m[1];
@@ -1206,7 +1296,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         double gw = bitmapW * scaleX;
         double gh = bitmapH * scaleY;
 
-        if (texId != 0)
+        if (slot != null)
         {
             if (depthtest)
                 glEnable(GL_DEPTH_TEST);
@@ -1216,16 +1306,21 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             lwjglWindow.setTransparentBlendFunc();
             glDepthMask(false);
 
-            glBindTexture(GL_TEXTURE_2D, texId);
+            glBindTexture(GL_TEXTURE_2D, slot[0]);
 
-            glBegin(GL_TRIANGLE_FAN);
-            glTexCoord2d(0, 0);
+            double u0 = slot[1] / (double) TtfFontInfo.ATLAS_SIZE;
+            double v0 = slot[2] / (double) TtfFontInfo.ATLAS_SIZE;
+            double u1 = (slot[1] + bitmapW) / (double) TtfFontInfo.ATLAS_SIZE;
+            double v1 = (slot[2] + bitmapH) / (double) TtfFontInfo.ATLAS_SIZE;
+
+            glBegin(GL_QUADS);
+            glTexCoord2d(u0, v0);
             glVertex3d(gx, gy, z);
-            glTexCoord2d(0, 1);
+            glTexCoord2d(u0, v1);
             glVertex3d(gx, gy + gh, z);
-            glTexCoord2d(1, 1);
+            glTexCoord2d(u1, v1);
             glVertex3d(gx + gw, gy + gh, z);
-            glTexCoord2d(1, 0);
+            glTexCoord2d(u1, v0);
             glVertex3d(gx + gw, gy, z);
             glEnd();
 
@@ -1390,7 +1485,41 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         }
     }
 
+    /** Cached wrapper over {@link #computeRuns}: parsing color runs is a pure function of the string. */
     private List<ShapedRun> parseRuns(String s)
+    {
+        List<ShapedRun> runs = parseRunsCache.get(s);
+        if (runs == null)
+        {
+            runs = computeRuns(s);
+            parseRunsCache.put(s, runs);
+        }
+        return runs;
+    }
+
+    /**
+     * Cached wrapper over {@link #computeFontPartition}. The partition depends on which fallback fonts
+     * are loaded, so it is invalidated whenever {@code fonts} grows (a new fallback resolved on demand).
+     */
+    private List<FontRun> partitionByFont(String text)
+    {
+        int count = fonts.size();
+        if (count != partitionCacheFontCount)
+        {
+            partitionCache.clear();
+            partitionCacheFontCount = count;
+        }
+
+        List<FontRun> runs = partitionCache.get(text);
+        if (runs == null)
+        {
+            runs = computeFontPartition(text);
+            partitionCache.put(text, runs);
+        }
+        return runs;
+    }
+
+    private List<ShapedRun> computeRuns(String s)
     {
         List<ShapedRun> runs = new ArrayList<>();
         StringBuilder currentText = new StringBuilder();
@@ -1459,7 +1588,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         return runs;
     }
 
-    private List<FontRun> partitionByFont(String text)
+    private List<FontRun> computeFontPartition(String text)
     {
         List<FontRun> runs = new ArrayList<>();
         if (text.isEmpty())
@@ -1520,6 +1649,30 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             return shaped.advance * scaleX;
         }
 
+        // Pass 1: make sure every glyph is rasterized into the atlas *before* we open a glBegin block.
+        // getOrCreateGlyphSlot binds and uploads textures, which is illegal between glBegin/glEnd; doing
+        // it here means the draw pass below only ever reads already-packed slots. After warm-up this is
+        // just map lookups.
+        for (int i = 0; i < numGlyphs; i++)
+        {
+            int glyphId = shaped.glyphIds[i];
+            if (glyphId < 0 || glyphId >= 0xFFFE)
+                continue;
+            font.getOrCreateGlyphSlot(glyphId);
+        }
+
+        // State is set once for the whole string rather than per glyph.
+        if (depthtest)
+            glEnable(GL_DEPTH_TEST);
+        lwjglWindow.enableTexture();
+        glEnable(GL_BLEND);
+        lwjglWindow.setTransparentBlendFunc();
+        glDepthMask(false);
+
+        // Pass 2: emit every glyph as a quad, opening a new bind + glBegin only when the atlas page
+        // changes between consecutive glyphs (a whole Latin string is one page → one bind, one batch).
+        int boundPage = -1;
+        boolean batchOpen = false;
         for (int i = 0; i < numGlyphs; i++)
         {
             int glyphId = shaped.glyphIds[i];
@@ -1529,7 +1682,10 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             if (glyphId < 0 || glyphId >= 0xFFFE)
                 continue;
 
-            int texId = font.getOrCreateGlyphTexture(glyphId);
+            int[] slot = font.getOrCreateGlyphSlot(glyphId);   // guaranteed a cache hit after pass 1
+            if (slot == null)
+                continue;   // glyph has no pixels (e.g. a space)
+
             int[] m = font.getGlyphMetrics(glyphId);
             int bitmapW = m[1];
             int bitmapH = m[2];
@@ -1541,36 +1697,38 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             double gw = bitmapW * scaleX;
             double gh = bitmapH * scaleY;
 
-            if (texId != 0)
+            if (slot[0] != boundPage)
             {
-                if (depthtest)
-                    glEnable(GL_DEPTH_TEST);
-
-                lwjglWindow.enableTexture();
-                glEnable(GL_BLEND);
-                lwjglWindow.setTransparentBlendFunc();
-                glDepthMask(false);
-
-                glBindTexture(GL_TEXTURE_2D, texId);
-
-                glBegin(GL_TRIANGLE_FAN);
-                glTexCoord2d(0, 0);
-                glVertex3d(gx, gy, z);
-                glTexCoord2d(0, 1);
-                glVertex3d(gx, gy + gh, z);
-                glTexCoord2d(1, 1);
-                glVertex3d(gx + gw, gy + gh, z);
-                glTexCoord2d(1, 0);
-                glVertex3d(gx + gw, gy, z);
-                glEnd();
-
-                glDepthMask(true);
-                lwjglWindow.disableTexture();
-
-                if (depthtest)
-                    glDisable(GL_DEPTH_TEST);
+                if (batchOpen)
+                    glEnd();
+                glBindTexture(GL_TEXTURE_2D, slot[0]);
+                glBegin(GL_QUADS);
+                boundPage = slot[0];
+                batchOpen = true;
             }
+
+            double u0 = slot[1] / (double) TtfFontInfo.ATLAS_SIZE;
+            double v0 = slot[2] / (double) TtfFontInfo.ATLAS_SIZE;
+            double u1 = (slot[1] + bitmapW) / (double) TtfFontInfo.ATLAS_SIZE;
+            double v1 = (slot[2] + bitmapH) / (double) TtfFontInfo.ATLAS_SIZE;
+
+            glTexCoord2d(u0, v0);
+            glVertex3d(gx, gy, z);
+            glTexCoord2d(u0, v1);
+            glVertex3d(gx, gy + gh, z);
+            glTexCoord2d(u1, v1);
+            glVertex3d(gx + gw, gy + gh, z);
+            glTexCoord2d(u1, v0);
+            glVertex3d(gx + gw, gy, z);
         }
+
+        if (batchOpen)
+            glEnd();
+
+        glDepthMask(true);
+        lwjglWindow.disableTexture();
+        if (depthtest)
+            glDisable(GL_DEPTH_TEST);
 
         return shaped.advance * scaleX;
     }

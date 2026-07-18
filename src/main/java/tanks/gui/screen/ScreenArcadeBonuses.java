@@ -303,7 +303,11 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (bonusCount >= 3 && bonuses.get(0).value > 2000000000)
         {
             Drawing drawing = Drawing.drawing;

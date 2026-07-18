@@ -3,9 +3,11 @@ package tanks;
 import basewindow.InputCodes;
 import tanks.extension.Extension;
 import tanks.gui.*;
-import tanks.gui.ScreenElement.*;
+import tanks.gui.ScreenElement.CenterMessage;
+import tanks.gui.ScreenElement.Notification;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.*;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
 import tanks.network.*;
 import tanks.network.event.*;
@@ -14,7 +16,8 @@ import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Panel
 {
@@ -60,6 +63,10 @@ public class Panel
     public long lastMemory = 0;
     public long allocatedThisSecond = 0;
     public long allocatedLastSecond = 0;
+
+    // Wall-clock time (ms) of the last memory sample appended to mem.log; used to throttle the log to
+    // one sample per second rather than one per frame.
+    public long lastMemLogTime = 0;
 
     public long startTime = System.currentTimeMillis();
     public long frameStartTime = System.currentTimeMillis();

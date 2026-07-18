@@ -336,7 +336,15 @@ public class TruetypeFontRenderer extends BaseFontRenderer
      */
     private static class DeferredFont
     {
+        // A deferred source is either a file on disk (path set, preReadBuffer null) or a single,
+        // already-read sub-font of a .ttc collection (preReadBuffer + faceOffset set, path null). The
+        // latter backs lazy TTC loading: when a collection file is first read we initialize only its
+        // primary face and register each remaining sub-font as one of these, read in (STB-initialized)
+        // on demand — see {@link #loadFontFileLazily} and {@link #resolveDeferred}.
         final String path;
+        final ByteBuffer preReadBuffer;
+        final int faceOffset;
+
         final int bakeHeight;
         final boolean pixelPerfect;
         final double sizeScale;
@@ -350,14 +358,32 @@ public class TruetypeFontRenderer extends BaseFontRenderer
         // user-supplied broad font still wins over a system font for the same glyph.
         final boolean broad;
 
-        // Set once we've attempted to read + load this file, so we never read it twice (even if the
-        // load added nothing, e.g. a CFF2 file STB can't use).
+        // Set once we've attempted to read + load this source, so we never read/init it twice (even if
+        // it added nothing, e.g. a CFF2 file STB can't use).
         volatile boolean resolved = false;
 
+        /** A font file on disk, read + loaded (its primary face) on demand. */
         DeferredFont(String path, boolean broad, Set<Character.UnicodeBlock> blocks,
                      int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
         {
             this.path = path;
+            this.preReadBuffer = null;
+            this.faceOffset = 0;
+            this.broad = broad;
+            this.blocks = blocks;
+            this.bakeHeight = bakeHeight;
+            this.pixelPerfect = pixelPerfect;
+            this.sizeScale = sizeScale;
+            this.yOffset = yOffset;
+        }
+
+        /** A single already-read sub-font of a collection, STB-initialized on demand (lazy TTC). */
+        DeferredFont(ByteBuffer preReadBuffer, int faceOffset, boolean broad, Set<Character.UnicodeBlock> blocks,
+                     int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+        {
+            this.path = null;
+            this.preReadBuffer = preReadBuffer;
+            this.faceOffset = faceOffset;
             this.broad = broad;
             this.blocks = blocks;
             this.bakeHeight = bakeHeight;
@@ -461,21 +487,31 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     }
 
     /**
-     * Registers every font contained in {@code buffer} as a fallback, in order, all sharing the one
-     * buffer. A plain .ttf reports a single font; a .ttc collection reports several. Order matters:
-     * {@link #findFontForChar} returns the first font that has the glyph, so earlier-added fonts win.
+     * Loads a font file's <em>primary</em> face from {@code buffer} and defers the rest — lazy TTC
+     * loading. A plain .ttf reports a single font (loaded now); a .ttc collection reports several, of
+     * which only the first STB accepts is initialized here. That first face is {@code firstInBuffer},
+     * so it gets a correct AWT font and is always preferred by {@link #findLoadedFontForChar}; and for
+     * the weight/style-variant collections we fall back to (CJK etc.) every sub-font shares its Unicode
+     * coverage, so the siblings would never be selected over it. Initializing them up front is pure
+     * waste, so each remaining sub-font is registered as a deferred face — routed by the same script
+     * tags ({@code broad}/{@code blocks}) and STB-initialized on demand only if a glyph turns up that
+     * the primary face lacks (a genuinely heterogeneous collection). All faces share the one buffer.
      *
-     * @return the number of fonts registered
+     * @return the number of faces initialized now (0 or 1)
      */
-    private int addFontsFromBuffer(ByteBuffer buffer, String label, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    private int loadFontFileLazily(ByteBuffer buffer, String label, boolean broad, Set<Character.UnicodeBlock> blocks,
+                                   int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
     {
         int count = stbtt_GetNumberOfFonts(buffer);
         if (count <= 0)
             throw new RuntimeException("not a valid font file (stbtt_GetNumberOfFonts returned " + count + ")");
 
+        // Initialize faces in order until the first STB accepts — the collection's primary face. A
+        // healthy .ttc/.ttf yields it on the first try (index 0, hence firstInBuffer); we only step
+        // past a face here if STB rejects it (e.g. a CFF2 sub-font).
+        int i = 0;
         int loaded = 0;
-        int failed = 0;
-        for (int i = 0; i < count; i++)
+        for (; i < count; i++)
         {
             int offset = stbtt_GetFontOffsetForIndex(buffer, i);
             if (offset < 0)
@@ -485,21 +521,31 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             {
                 fonts.add(new TtfFontInfo(buffer, offset, bakeHeight, pixelPerfect, sizeScale, yOffset));
                 loaded++;
+                i++;
+                break;
             }
-            catch (Exception e)
+            catch (Exception ignored)
             {
-                failed++;
+                // STB couldn't init this face; try the next one in the collection.
             }
         }
 
-        // STB rasterizes TrueType (glyf) and bare CFF outlines, but not CFF2 — the format used by
-        // variable OpenType/CFF fonts such as the system Noto Sans CJK packages. Those fail to init;
-        // this is expected and routine (the resolver simply steps to a glyf fallback), and now happens
-        // on demand during play, so it's debug-only rather than a per-file log line every session.
-        if (failed > 0 && print_debug)
+        // Defer every remaining sub-font — read in on demand, never up front (see method contract).
+        for (; i < count; i++)
         {
-            String reason = isOpenTypeCFF(buffer) ? "OpenType/CFF outlines (CFF2 variable fonts aren't supported by STB)" : "STB could not initialize them";
-            System.err.println("TruetypeFontRenderer: skipped " + failed + " of " + count + " font(s) in '" + label + "' — " + reason);
+            int offset = stbtt_GetFontOffsetForIndex(buffer, i);
+            if (offset < 0)
+                continue;
+            registerDeferredFace(buffer, offset, broad, blocks, bakeHeight, pixelPerfect, sizeScale, yOffset);
+        }
+
+        if (loaded == 0 && print_debug)
+        {
+            // STB rasterizes TrueType (glyf) and bare CFF outlines, but not CFF2 — the format used by
+            // variable OpenType/CFF fonts such as the system Noto Sans CJK packages. Those fail to init;
+            // this is expected and routine (the resolver simply steps to a glyf fallback).
+            String reason = isOpenTypeCFF(buffer) ? "OpenType/CFF outlines (CFF2 variable fonts aren't supported by STB)" : "STB could not initialize any face";
+            System.err.println("TruetypeFontRenderer: loaded no faces from '" + label + "' — " + reason);
         }
 
         return loaded;
@@ -525,9 +571,23 @@ public class TruetypeFontRenderer extends BaseFontRenderer
      */
     public int addFontFile(String filePath, int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
     {
+        // A directly-added file has no script tags of its own, so treat its deferred sub-fonts as broad
+        // (considered for any codepoint), matching how a file dropped in the fonts directory is handled.
+        return addFontFile(filePath, true, Collections.emptySet(), bakeHeight, pixelPerfect, sizeScale, yOffset);
+    }
+
+    /**
+     * Reads {@code filePath}, initializes its primary face now, and defers the rest (lazy TTC). The
+     * deferred sub-fonts inherit {@code broad}/{@code blocks} for on-demand routing.
+     *
+     * @return the number of faces initialized now (0 on failure)
+     */
+    private int addFontFile(String filePath, boolean broad, Set<Character.UnicodeBlock> blocks,
+                            int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
         try
         {
-            int loaded = addFontsFromBuffer(readFile(filePath), filePath, bakeHeight, pixelPerfect, sizeScale, yOffset);
+            int loaded = loadFontFileLazily(readFile(filePath), filePath, broad, blocks, bakeHeight, pixelPerfect, sizeScale, yOffset);
             if (loaded > 0 && print_debug)
                 System.out.println("TruetypeFontRenderer: loaded " + loaded + " font(s) from " + filePath);
             return loaded;
@@ -917,27 +977,86 @@ public class TruetypeFontRenderer extends BaseFontRenderer
             if (resolvedBlocks.contains(block))
                 return;
 
-            for (DeferredFont df: deferredFonts)
+            // Resolving a collection file registers its remaining sub-fonts as new deferred faces (lazy
+            // TTC); those must be considered too if the primary face didn't cover cp. We re-scan until a
+            // pass resolves nothing new — each resolve marks a source resolved permanently, so the set
+            // of matching-unresolved sources strictly shrinks and this terminates. For the common case
+            // (primary face covers cp) we break on the first pass and the deferred siblings are never
+            // touched.
+            boolean coveredByShaper = false;
+            boolean progress = true;
+            while (progress && !coveredByShaper)
             {
-                if (df.resolved)
-                    continue;
-                if (!df.broad && !df.blocks.contains(block))
-                    continue;
+                progress = false;
 
-                df.resolved = true;
-                addFontFile(df.path, df.bakeHeight, df.pixelPerfect, df.sizeScale, df.yOffset);
+                for (DeferredFont df: deferredFonts)
+                {
+                    if (df.resolved)
+                        continue;
+                    if (!df.broad && !df.blocks.contains(block))
+                        continue;
 
-                // Stop only once a shaping-capable face covers the glyph. A broad .ttc (e.g. the
-                // bundled Noto collection) often covers the script with a non-first-in-buffer sub-font
-                // that can't shape (no correct AWT font) — keep reading the block's standalone fonts
-                // (e.g. Droid Sans Devanagari) so the firstInBuffer one is present for
-                // findLoadedFontForChar to prefer. If none turns up we still have the STB-only cover.
-                TtfFontInfo cover = findLoadedFontForChar((char) cp);
-                if (cover != null && cover.firstInBuffer)
-                    break;
+                    df.resolved = true;
+                    progress = true;
+                    resolveDeferred(df);
+
+                    // Stop only once a shaping-capable face covers the glyph. A broad .ttc (e.g. the
+                    // bundled Noto collection) often covers the script with a non-first-in-buffer sub-font
+                    // that can't shape (no correct AWT font) — keep reading the block's standalone fonts
+                    // (e.g. Droid Sans Devanagari) so the firstInBuffer one is present for
+                    // findLoadedFontForChar to prefer. If none turns up we still have the STB-only cover.
+                    TtfFontInfo cover = findLoadedFontForChar((char) cp);
+                    if (cover != null && cover.firstInBuffer)
+                    {
+                        coveredByShaper = true;
+                        break;
+                    }
+                }
             }
 
             resolvedBlocks.add(block);
+        }
+    }
+
+    /**
+     * Loads a single deferred source into the live font list: reads the file and initializes its
+     * primary face (deferring the rest) for a path-based source, or STB-initializes the one already-read
+     * collection sub-font for a face-based source (lazy TTC). Always runs under {@link #deferredLock}.
+     */
+    private void resolveDeferred(DeferredFont df)
+    {
+        if (df.preReadBuffer != null)
+        {
+            try
+            {
+                fonts.add(new TtfFontInfo(df.preReadBuffer, df.faceOffset, df.bakeHeight, df.pixelPerfect, df.sizeScale, df.yOffset));
+            }
+            catch (Exception e)
+            {
+                // A deferred sub-font STB can't init (e.g. CFF2) — the resolver simply keeps looking.
+                if (print_debug)
+                    System.err.println("TruetypeFontRenderer: failed to init deferred sub-font at offset " + df.faceOffset + ": " + e.getMessage());
+            }
+            return;
+        }
+
+        addFontFile(df.path, df.broad, df.blocks, df.bakeHeight, df.pixelPerfect, df.sizeScale, df.yOffset);
+    }
+
+    /**
+     * Registers a single not-yet-initialized sub-font of an already-read collection as a deferred face
+     * (lazy TTC). It inherits the collection's {@code broad}/{@code blocks} routing and shares its
+     * buffer. Serialized on {@link #deferredLock} like {@link #registerDeferredFont}. Unlike that
+     * method it does not re-open resolved blocks: the primary face is loaded eagerly alongside these,
+     * so coverage is already available, and in the normal resolve path the siblings are picked up by
+     * the enclosing re-scan in {@link #resolveDeferredForCodepoint} without needing re-invalidation.
+     */
+    private void registerDeferredFace(ByteBuffer buffer, int faceOffset, boolean broad, Set<Character.UnicodeBlock> blocks,
+                                      int bakeHeight, boolean pixelPerfect, double sizeScale, double yOffset)
+    {
+        synchronized (deferredLock)
+        {
+            deferredFonts.add(new DeferredFont(buffer, faceOffset, broad, blocks, bakeHeight, pixelPerfect, sizeScale, yOffset));
         }
     }
 

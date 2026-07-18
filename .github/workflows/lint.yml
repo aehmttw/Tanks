@@ -40,18 +40,74 @@ jobs:
           count=$(grep -r '<error ' build/reports/checkstyle/ | wc -l)
           echo "count=$count" >> "$GITHUB_OUTPUT"
 
+      - name: Extract lint violations for PR comment
+        id: lint_summary
+        if: steps.lint.outcome == 'failure'
+        run: |
+          max_violations=10
+          summary=$(
+            awk -v max="$max_violations" '
+              BEGIN {
+                count = 0
+              }
+              match($0, /<file name="[^"]+"/) {
+                file = substr($0, RSTART + 12, RLENGTH - 12)
+                sub(/^.*\/(src\/.*)$/, "\\1", file)
+                next
+              }
+              /<error / && count < max {
+                line = "?"
+                message = ""
+
+                if (match($0, /line="[0-9]+"/))
+                  line = substr($0, RSTART + 6, RLENGTH - 7)
+
+                if (match($0, /message="[^"]+"/))
+                  message = substr($0, RSTART + 9, RLENGTH - 9)
+
+                gsub(/&amp;/, "\\&", message)
+                gsub(/&lt;/, "<", message)
+                gsub(/&gt;/, ">", message)
+                gsub(/&quot;/, "\"", message)
+                gsub(/&apos;/, "\x27", message)
+
+                printf("- `%s:%s` %s\n", file, line, message)
+                count++
+              }
+            ' build/reports/checkstyle/*.xml
+          )
+
+          {
+            echo "summary<<EOF"
+            echo "$summary"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Comment on PR if lint failed
         if: steps.lint.outcome == 'failure' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
             const count = Number('${{ steps.count_violations.outputs.count }}');
+            const summary = `${{ steps.lint_summary.outputs.summary }}`.trim();
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const lines = [
+              `:warning: **Checkstyle found ${count} style violation${count === 1 ? '' : 's'}.** Download the **checkstyle-report** artifact from the [Actions run](${runUrl}) for details.`
+            ];
+
+            if (summary) {
+              lines.push('', '**First 10 violations:**', summary);
+            }
+
+            if (count > 10) {
+              lines.push('', `_Showing 10 of ${count} violations._`);
+            }
+
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `:warning: **Checkstyle found ${count} style violation${count === 1 ? '' : 's'}.** Download the **checkstyle-report** artifact from the [Actions run](${runUrl}) for details.`
+              body: lines.join('\n')
             });
 
       - name: Upload lint report

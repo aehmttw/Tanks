@@ -1208,7 +1208,7 @@ public class Panel
                 offset + (int) (Panel.windowHeight - 40 + 6), 0.4, 0.4, s);
 
             s = "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s";
-                                Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset,
+            Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset,
                 offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, s);
         }
     }

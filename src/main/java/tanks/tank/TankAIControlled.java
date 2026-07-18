@@ -1049,8 +1049,8 @@ public class TankAIControlled extends Tank implements ITankField
         // LOWER PRIORITY VALUE = HIGHER PRIORITY (due to natural sort order of ints)
         if (tankTargetComparator == null)
         {
-            tankTargetComparator = Comparator.
-                <Movable>comparingInt(m -> (b.damage == 0 && b.boosting) && (m instanceof TankAIControlled && !((TankAIControlled) m).enableMovement) ? 1 : 0)  // boosting tank priority calculation
+            tankTargetComparator = Comparator
+                .<Movable>comparingInt(m -> (b.damage == 0 && b.boosting) && (m instanceof TankAIControlled && !((TankAIControlled) m).enableMovement) ? 1 : 0)  // boosting tank priority calculation
                 .thenComparing(m -> GameObject.sqDistBetw(this, m));
         }
 
@@ -1060,10 +1060,10 @@ public class TankAIControlled extends Tank implements ITankField
         }
 
         Movable nearest = Game.movables.stream()
-        .filter(m -> m instanceof Tank && ((Tank) m).canTarget() && !m.destroy &&   // is targetable tank
+            .filter(m -> m instanceof Tank && ((Tank) m).canTarget() && !m.destroy &&   // is targetable tank
             this.isSupportTank() == Team.isAllied(this, m) && m != this &&               // is correct team
             !(b.damage < 0 && ((Tank) m).health - ((Tank) m).baseHealth >= b.maxExtraHealth && b.maxExtraHealth > 0))   // if healer tank, is tank health maxed out
-        .sorted(tankTargetComparator).limit(3).min(hasLineOfSightComparator).orElse(null);
+            .sorted(tankTargetComparator).limit(3).min(hasLineOfSightComparator).orElse(null);
 
         if (this.targetEnemy != nearest)
             this.cooldownStacks = 0;

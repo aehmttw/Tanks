@@ -65,10 +65,6 @@ public class Panel
     public long allocatedThisSecond = 0;
     public long allocatedLastSecond = 0;
 
-    // Wall-clock time (ms) of the last memory sample appended to mem.log; used to throttle the log to
-    // one sample per second rather than one per frame.
-    public long lastMemLogTime = 0;
-
     public long startTime = System.currentTimeMillis();
     public long frameStartTime = System.currentTimeMillis();
 

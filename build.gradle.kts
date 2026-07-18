@@ -14,6 +14,8 @@ fun getHash(): String {
 }
 
 val lwjglVersion = "3.4.1"
+// 3.4.1 does not work on mac os 10.12, and probably other old versions of mac os.
+val lwjglOpenalMacX86Version = "3.2.4"
 val lwjglNatives = listOf(
     "natives-freebsd",
     "natives-linux-arm32", "natives-linux-arm64",
@@ -42,7 +44,10 @@ dependencies {
         runtimeOnly("org.lwjgl", "lwjgl", classifier = native)
         runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = native)
         runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = native)
-        runtimeOnly("org.lwjgl", "lwjgl-openal", classifier = native)
+        if (native == "natives-macos")
+            runtimeOnly("org.lwjgl:lwjgl-openal:$lwjglOpenalMacX86Version:$native")
+        else
+            runtimeOnly("org.lwjgl", "lwjgl-openal", classifier = native)
         runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = native)
         runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = native)
     }

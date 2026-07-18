@@ -296,7 +296,7 @@ public class TranslationKeyExtractor
             }
         }
 
-        return hasLetter ? v: null;
+        return hasLetter ? v : null;
     }
 
     private static boolean isProbablyStringExpression(String expr)

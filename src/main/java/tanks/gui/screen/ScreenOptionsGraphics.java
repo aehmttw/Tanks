@@ -11,6 +11,7 @@ public class ScreenOptionsGraphics extends Screen
     public static final String glowText = "Glow effects: ";
     public static final String tankTexturesText = "Tank textures: ";
 
+    public static final String fancyLightingText = "Fancy lighting: ";
     public static final String graphics3dText = "3D graphics: ";
     public static final String ground3dText = "3D ground: ";
     public static final String perspectiveText = "View: ";
@@ -50,6 +51,11 @@ public class ScreenOptionsGraphics extends Screen
             graphics3d.setText(graphics3dText, ScreenOptions.onText);
         else
             graphics3d.setText(graphics3dText, ScreenOptions.offText);
+
+        if (Game.fancyLights)
+            fancyLighting.setText(fancyLightingText, ScreenOptions.onText);
+        else
+            fancyLighting.setText(fancyLightingText, ScreenOptions.offText);
 
         update3dGroundButton();
 
@@ -229,6 +235,23 @@ public class ScreenOptionsGraphics extends Screen
     },
         "3D graphics may impact performance");
 
+    Button fancyLighting = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.fancyLights = !Game.fancyLights;
+
+            if (Game.fancyLights)
+                fancyLighting.setText(fancyLightingText, ScreenOptions.onText);
+            else
+                fancyLighting.setText(fancyLightingText, ScreenOptions.offText);
+
+            Game.resetTiles();
+        }
+    },
+        "Allows for prettier 3D lights which can---more accurately light up dark areas------May significantly impact performance---on weaker devices");
+
     Button ground3d = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
@@ -248,7 +271,7 @@ public class ScreenOptionsGraphics extends Screen
         "Enabling 3D ground may impact---performance in large levels");
 
 
-    Button altPerspective = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 0.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button altPerspective = new Button(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
@@ -328,7 +351,7 @@ public class ScreenOptionsGraphics extends Screen
         tankTextures.update();
         xrayBullets.update();
 
-        graphics3d.update();
+        fancyLighting.update();
         ground3d.update();
         altPerspective.update();
         shadows.update();
@@ -361,7 +384,7 @@ public class ScreenOptionsGraphics extends Screen
         shadows.draw();
         altPerspective.draw();
         ground3d.draw();
-        graphics3d.draw();
+        fancyLighting.draw();
 
         xrayBullets.draw();
         tankTextures.draw();

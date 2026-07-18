@@ -219,6 +219,7 @@ public class ScreenOptions extends Screen
             f.println("3d_ground=" + Game.enable3dBg);
             f.println("shadows_enabled=" + Game.shadowsEnabled);
             f.println("shadow_quality=" + Game.shadowQuality);
+            f.println("fancy_lighting=" + Game.fancyLights);
             f.println("vsync=" + Game.vsync);
             f.println("max_fps=" + Game.maxFPS);
             f.println("antialiasing=" + Game.antialiasing);
@@ -341,6 +342,9 @@ public class ScreenOptions extends Screen
                         break;
                     case "shadow_quality":
                         Game.shadowQuality = Integer.parseInt(optionLine[1]);
+                        break;
+                    case "fancy_lighting":
+                        Game.fancyLights = Boolean.parseBoolean(optionLine[1]);
                         break;
                     case "vsync":
                         Game.vsync = Boolean.parseBoolean(optionLine[1]);
@@ -560,6 +564,14 @@ public class ScreenOptions extends Screen
             if (!Game.musicEnabled)
                 Game.musicVolume = 0;
 
+            if (!Game.enable3d)
+            {
+                Game.enable3d = true;
+                Game.enable3dBg = false;
+                Game.orthographicView = true;
+                Game.shadowsEnabled = false;
+                ScreenOptionsGraphics.viewNo = 2;
+            }
 
             if (TankPlayerRemote.weakTimeCheck)
                 TankPlayerRemote.anticheatMaxTimeOffset = TankPlayerRemote.anticheatStrongTimeOffset;

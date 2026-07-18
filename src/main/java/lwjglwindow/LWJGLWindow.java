@@ -126,9 +126,8 @@ public class LWJGLWindow extends BaseWindow
 
     protected void init()
     {
-        // The old way of doing fonts
-        FontRenderer fonts = new FontRenderer(this, "/fonts/default/font.png");
-        this.fontRenderer = fonts;
+        this.fontRenderer = new FontRenderer(this, "/fonts/default/font.png");
+
 
         GLFWErrorCallback.createPrint(System.err).set();
 

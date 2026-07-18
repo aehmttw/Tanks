@@ -53,8 +53,12 @@ public class GameDrawer implements IDrawer
             if (!initialized)
                 this.initialize();
 
+            Game.game.window.mainRenderPasses.drawToFramebuffer = Game.fancyLights;
             Game.game.window.mainRenderPasses.draw();
-            this.lightsPass.draw();
+
+            if (Game.fancyLights)
+                this.lightsPass.draw();
+
             this.uiPass.draw();
         }
         catch (Throwable e)

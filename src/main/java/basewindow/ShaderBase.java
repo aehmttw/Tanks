@@ -12,6 +12,8 @@ public class ShaderBase extends ShaderProgram implements IBaseShader, IBlendFunc
 
     public Uniform1b shadow;
     public Uniform1b vbo;
+    public Uniform1b drawToFramebuffer;
+
     public Uniform4f originalColor;
 
     public UniformSampler2D tex;

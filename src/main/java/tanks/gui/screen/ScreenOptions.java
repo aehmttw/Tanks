@@ -280,6 +280,7 @@ public class ScreenOptions extends Screen
             f.println("enable_extensions=" + Game.enableExtensions);
             f.println("auto_load_extensions=" + Game.autoLoadExtensions);
             f.println("debug_mode=" + alwaysDebug);
+            f.println("font_compatability=" + Game.fontcompatability);
             f.stopWriting();
         }
         catch (FileNotFoundException e)
@@ -536,6 +537,9 @@ public class ScreenOptions extends Screen
                         alwaysDebug = Boolean.parseBoolean(optionLine[1]);
                         if (alwaysDebug)
                             Game.debug = true;
+                        break;
+                    case "font_compatability":
+                        Game.fontcompatability = Boolean.parseBoolean(optionLine[1]);
                         break;
                     default:
                         break;

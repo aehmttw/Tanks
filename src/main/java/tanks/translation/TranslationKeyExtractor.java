@@ -5,16 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -77,15 +68,15 @@ public class TranslationKeyExtractor
         if (OUTPUT_LANG.equals(config.outputMode))
         {
             System.out.println(config.languageName);
-            for (String key : results.keySet())
+            for (String key: results.keySet())
                 System.out.println(escapeLangValue(key) + "=");
         }
         else
         {
-            for (Map.Entry<String, TreeSet<String>> entry : results.entrySet())
+            for (Map.Entry<String, TreeSet<String>> entry: results.entrySet())
             {
                 System.out.println(entry.getKey());
-                for (String location : entry.getValue())
+                for (String location: entry.getValue())
                     System.out.println("  " + location);
             }
 
@@ -154,26 +145,26 @@ public class TranslationKeyExtractor
         LineMap lines = new LineMap(text);
         String relative = root.relativize(path.toAbsolutePath().normalize()).toString().replace('\\', '/');
 
-        for (int idx : findOccurrences(text, "Translation.translate("))
+        for (int idx: findOccurrences(text, "Translation.translate("))
             extractCallFirstArgument(text, idx + "Translation.translate".length(), relative, lines, results);
 
-        for (String method : METHOD_SINKS)
+        for (String method: METHOD_SINKS)
         {
             String needle = "." + method + "(";
-            for (int idx : findOccurrences(text, needle))
+            for (int idx: findOccurrences(text, needle))
                 extractCallFirstArgument(text, idx + needle.length() - 1, relative, lines, results);
         }
 
-        for (String type : GUI_CONSTRUCTORS)
+        for (String type: GUI_CONSTRUCTORS)
         {
             String needle = "new " + type + "(";
-            for (int idx : findOccurrences(text, needle))
+            for (int idx: findOccurrences(text, needle))
                 extractConstructorStrings(type, text, idx + needle.length() - 1, relative, lines, results);
         }
 
-        for (String annotation : Arrays.asList("@MetadataProperty(", "@Property("))
+        for (String annotation: Arrays.asList("@MetadataProperty(", "@Property("))
         {
-            for (int idx : findOccurrences(text, annotation))
+            for (int idx: findOccurrences(text, annotation))
                 extractAnnotationStrings(text, idx + annotation.length() - 1, relative, lines, results);
         }
     }
@@ -239,7 +230,7 @@ public class TranslationKeyExtractor
             return;
 
         int line = lines.lineNumber(openParenIndex);
-        for (String field : Arrays.asList("name", "desc"))
+        for (String field: Arrays.asList("name", "desc"))
         {
             String expr = findNamedArgumentExpression(body, field);
             if (expr != null)
@@ -262,7 +253,7 @@ public class TranslationKeyExtractor
         if (values == null)
             return;
 
-        for (String value : values)
+        for (String value: values)
         {
             String key = clean(value);
             if (key == null)
@@ -305,7 +296,7 @@ public class TranslationKeyExtractor
             }
         }
 
-        return hasLetter ? v : null;
+        return hasLetter ? v: null;
     }
 
     private static boolean isProbablyStringExpression(String expr)
@@ -347,15 +338,15 @@ public class TranslationKeyExtractor
             LinkedHashSet<String> built = new LinkedHashSet<>();
             built.add("");
 
-            for (String part : plusParts)
+            for (String part: plusParts)
             {
                 Set<String> values = approximateStringValues(part);
                 if (values == null)
                     return null;
 
                 LinkedHashSet<String> next = new LinkedHashSet<>();
-                for (String prefix : built)
-                    for (String suffix : values)
+                for (String prefix: built)
+                    for (String suffix: values)
                         next.add(prefix + suffix);
                 built = next;
             }

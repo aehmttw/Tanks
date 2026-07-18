@@ -86,10 +86,13 @@ jobs:
       - name: Comment on PR if lint failed
         if: steps.lint.outcome == 'failure' && github.event_name == 'pull_request'
         uses: actions/github-script@v7
+        env:
+          LINT_VIOLATION_COUNT: ${{ steps.count_violations.outputs.count }}
+          LINT_VIOLATION_SUMMARY: ${{ steps.lint_summary.outputs.summary }}
         with:
           script: |
-            const count = Number('${{ steps.count_violations.outputs.count }}');
-            const summary = `${{ steps.lint_summary.outputs.summary }}`.trim();
+            const count = Number(process.env.LINT_VIOLATION_COUNT || '0');
+            const summary = (process.env.LINT_VIOLATION_SUMMARY || '').trim();
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const lines = [
               `:warning: **Checkstyle found ${count} style violation${count === 1 ? '' : 's'}.** Download the **checkstyle-report** artifact from the [Actions run](${runUrl}) for details.`

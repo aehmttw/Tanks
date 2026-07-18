@@ -1,11 +1,14 @@
 package tanks;
 
 import basewindow.InputCodes;
+import lwjglwindow.*;
 import tanks.extension.Extension;
 import tanks.gui.*;
-import tanks.gui.ScreenElement.*;
+import tanks.gui.ScreenElement.CenterMessage;
+import tanks.gui.ScreenElement.Notification;
 import tanks.gui.screen.*;
-import tanks.gui.screen.leveleditor.*;
+import tanks.gui.screen.leveleditor.ScreenLevelEditor;
+import tanks.gui.screen.leveleditor.ScreenLevelEditorOverlay;
 import tanks.item.Item;
 import tanks.network.*;
 import tanks.network.event.*;
@@ -14,7 +17,8 @@ import tanks.obstacle.Obstacle;
 import tanks.rendering.*;
 import tanks.tank.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Panel
 {
@@ -145,6 +149,21 @@ public class Panel
         {
             Game.soundsEnabled = false;
             Game.musicEnabled = false;
+        }
+
+        if (Game.fontcompatability)
+        {
+            TruetypeFontRenderer ttf = new TruetypeFontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/Bullet.ttf", 128, true, 1.4, 0.3);
+            ttf.addFontsFromDirectory(System.getProperty("user.home") + "/.tanks/fonts", 128, false, 1.4, 0.3);
+            Thread systemFontLoader = new Thread(() -> ttf.addSystemFonts(128, false, 1.4, 0.3), "system-font-loader");
+            systemFontLoader.setDaemon(true);
+            systemFontLoader.start();
+            Game.game.window.fontRenderer = ttf;
+        }
+        else
+        {
+            FontRenderer fonts = new FontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/font.png");
+            Game.game.window.fontRenderer = fonts;
         }
 
         double scale = 1;

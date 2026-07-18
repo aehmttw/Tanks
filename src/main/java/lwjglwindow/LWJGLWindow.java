@@ -126,13 +126,8 @@ public class LWJGLWindow extends BaseWindow
 
     protected void init()
     {
-//        TruetypeFontRenderer ttf = new TruetypeFontRenderer(this, "/fonts/default/Bullet.ttf", 128, true, 1.4, 0.3);
-//        ttf.addFontsFromDirectory(System.getProperty("user.home") + "/.tanks/fonts", 128, false, 1.4, 0.3);
-//        Thread systemFontLoader = new Thread(() -> ttf.addSystemFonts(128, false, 1.4, 0.3), "system-font-loader");
-//        systemFontLoader.setDaemon(true);
-//        systemFontLoader.start();
-//        this.fontRenderer = ttf;
         this.fontRenderer = new FontRenderer(this, "/fonts/default/font.png");
+
 
         GLFWErrorCallback.createPrint(System.err).set();
 

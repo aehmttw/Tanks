@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import lwjglwindow.*;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.Button;
@@ -11,11 +12,12 @@ public class ScreenOptionsWindow extends Screen
     public static final String infoBarText = "Info bar: ";
     public static final String warnText = "Warn before exit: ";
     public static final String constrainMouseText = "Constrain mouse: ";
+    public static final String fontCompatabilityText = "Extended Fonts: ";
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back",
         () -> Game.screen = new ScreenOptions());
 
-    Button fullscreen = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "",
+    Button fullscreen = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 0.5, this.objWidth, this.objHeight, "",
         () -> Game.game.window.setFullscreen(!Game.game.window.fullscreen), Translation.translate("Can also be toggled at any time---by pressing %s",
         Game.game.input.fullscreen.getInputs()));
 
@@ -80,6 +82,31 @@ public class ScreenOptionsWindow extends Screen
     },
         "Disallows your mouse pointer from---leaving the window while playing");
 
+    Button fontCompatability = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            Game.fontcompatability = !Game.fontcompatability;
+            if (Game.fontcompatability)
+            {
+                fontCompatability.setText(fontCompatabilityText, ScreenOptions.onText);
+                TruetypeFontRenderer ttf = new TruetypeFontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/Bullet.ttf", 128, true, 1.4, 0.3);
+                ttf.addFontsFromDirectory(System.getProperty("user.home") + "/.tanks/fonts", 128, false, 1.4, 0.3);
+                Thread systemFontLoader = new Thread(() -> ttf.addSystemFonts(128, false, 1.4, 0.3), "system-font-loader");
+                systemFontLoader.setDaemon(true);
+                systemFontLoader.start();
+                Game.game.window.fontRenderer = ttf;
+            }
+            else
+            {
+                fontCompatability.setText(fontCompatabilityText, ScreenOptions.offText);
+                FontRenderer fonts = new FontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/font.png");
+                Game.game.window.fontRenderer = fonts;
+            }
+        }
+    }, "Allow extended fonts including---other languages and emojis");
+
     public static final String fullscreenText = "Fullscreen: ";
 
     public TextBox width;
@@ -90,7 +117,7 @@ public class ScreenOptionsWindow extends Screen
         this.music = "menu_options.ogg";
         this.musicID = "menu";
 
-        width = new TextBox(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 4, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.25, this.objWidth * 0.45,
+        width = new TextBox(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 4, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.5, this.objWidth * 0.45,
             this.objHeight, "Width", () ->
         {
             if (width.inputText.length() <= 2)
@@ -106,7 +133,7 @@ public class ScreenOptionsWindow extends Screen
         width.checkMinValue = true;
         width.maxChars = 4;
 
-        height = new TextBox(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace * 3 / 4, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.25,
+        height = new TextBox(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace * 3 / 4, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 0.5,
             this.objWidth * 0.45, this.objHeight, "Height", () ->
         {
             if (height.inputText.length() <= 2)
@@ -137,6 +164,11 @@ public class ScreenOptionsWindow extends Screen
         else
             constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
 
+        if (Game.fontcompatability)
+            fontCompatability.setText(fontCompatabilityText, ScreenOptions.onText);
+        else
+            fontCompatability.setText(fontCompatabilityText, ScreenOptions.offText);
+
         pauseOnLostFocus.setText("Pause on lost focus: ", Game.pauseOnLostFocus ? ScreenOptions.onText : ScreenOptions.offText);
     }
 
@@ -152,6 +184,7 @@ public class ScreenOptionsWindow extends Screen
         showStats.update();
         confirmClose.update();
         constrainMouse.update();
+        fontCompatability.update();
 
         if (!width.selected)
             width.inputText = (int) Game.game.window.absoluteWidth + "";
@@ -168,7 +201,7 @@ public class ScreenOptionsWindow extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(0, 0, 0);
-        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.35, "Window resolution");
+        Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2 + this.objXSpace / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.6, "Window resolution");
         width.draw();
         height.draw();
         if (Game.framework == Game.Framework.libgdx)
@@ -179,6 +212,7 @@ public class ScreenOptionsWindow extends Screen
         pauseOnLostFocus.draw();
         confirmClose.draw();
         constrainMouse.draw();
+        fontCompatability.draw();
 
         fullscreen.setText(fullscreenText, (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText));
 

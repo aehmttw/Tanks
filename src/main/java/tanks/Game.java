@@ -198,6 +198,8 @@ public class Game
     public static boolean deterministic30Fps = false;
     public static int seed = 0;
 
+    public static boolean fontcompatability = true;
+
     public static boolean invulnerable = false;
 
     public static boolean warnBeforeClosing = true;

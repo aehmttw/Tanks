@@ -595,6 +595,12 @@ public class TankAIControlled extends Tank implements ITankField
     /** How often to shoot rays for AI calculations. */
     protected double rayFrequency = 5;
 
+    /** A cached comparator prioritizing target enemy tanks based on distance and support-tank-specific behavior */
+    protected Comparator<Movable> tankTargetComparator;
+
+    /** A cached comparator prioritizing tanks that have line of sight of the tank */
+    protected Comparator<Movable> hasLineOfSightComparator;
+
     /** The time since rays were used. Initially randomized to spread things out. */
     protected double timeSinceRaysUsed = Math.random() * rayFrequency;
 
@@ -1029,46 +1035,41 @@ public class TankAIControlled extends Tank implements ITankField
 
     public void updateTarget()
     {
+        if (!useRaysThisFrame)
+            return;
+
         if (this.transformMimic)
             if (this.updateTargetMimic())
                 return;
 
-        double nearestDist = Double.MAX_VALUE;
-        Movable nearest = null;
         this.hasTarget = false;
 
         Bullet b = this.getBullet();
 
-        boolean lowPriority = true;
-        for (int i = 0; i < Game.movables.size(); i++)
+        // LOWER PRIORITY VALUE = HIGHER PRIORITY (due to natural sort order of ints)
+        if (tankTargetComparator == null)
         {
-            Movable m = Game.movables.get(i);
-
-            boolean correctTeam = (this.isSupportTank() && Team.isAllied(this, m)) || (!this.isSupportTank() && !Team.isAllied(this, m));
-            if (m instanceof Tank && correctTeam && !((Tank) m).hidden && ((Tank) m).currentlyTargetable && m != this)
-            {
-                if (b.damage < 0 && ((Tank) m).health - ((Tank) m).baseHealth >= b.maxExtraHealth && b.maxExtraHealth > 0)
-                    continue;
-
-                boolean lowP = ((b.damage == 0 && b.boosting) && (m instanceof TankAIControlled && !((TankAIControlled) m).enableMovement));
-                if (!lowPriority && lowP)
-                    continue;
-
-                double dist = GameObject.distanceBetween(this, m);
-                if (dist < nearestDist || (lowPriority && !lowP))
-                {
-                    this.hasTarget = true;
-                    nearestDist = dist;
-                    nearest = m;
-                    lowPriority = lowP;
-                }
-            }
+            tankTargetComparator = Comparator.
+                <Movable>comparingInt(m -> (b.damage == 0 && b.boosting) && (m instanceof TankAIControlled && !((TankAIControlled) m).enableMovement) ? 1 : 0)  // boosting tank priority calculation
+                .thenComparing(m -> GameObject.sqDistBetw(this, m));
         }
+
+        if (hasLineOfSightComparator == null)
+        {
+            hasLineOfSightComparator = Comparator.comparingInt(m -> inLineOfSight(m) ? 0 : 1);
+        }
+
+        Movable nearest = Game.movables.stream()
+        .filter(m -> m instanceof Tank && ((Tank) m).canTarget() && !m.destroy &&   // is targetable tank
+            this.isSupportTank() == Team.isAllied(this, m) && m != this &&               // is correct team
+            !(b.damage < 0 && ((Tank) m).health - ((Tank) m).baseHealth >= b.maxExtraHealth && b.maxExtraHealth > 0))   // if healer tank, is tank health maxed out
+        .sorted(tankTargetComparator).limit(3).min(hasLineOfSightComparator).orElse(null);
 
         if (this.targetEnemy != nearest)
             this.cooldownStacks = 0;
 
         this.targetEnemy = nearest;
+        this.hasTarget = this.targetEnemy != null;
     }
 
     public boolean updateTargetMimic()
@@ -2383,6 +2384,13 @@ public class TankAIControlled extends Tank implements ITankField
 
             this.angle = (this.angle + Math.PI * 2) % (Math.PI * 2);
         }
+    }
+
+    public boolean inLineOfSight(GameObject other)
+    {
+        return Ray.newRay(this.posX, this.posY, this.getAngleInDirection(other.posX, other.posY), 0, this)
+            .setSize(this.getBullet().size).moveOut(this.size / 10).setExplosive(this.aimIgnoreDestructible)
+            .setShootThrough(true).getTarget() == other;
     }
 
     public void updateIdleTurret()

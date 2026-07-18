@@ -72,7 +72,7 @@ public class Ray extends GameObject
     }
 
     /** Comparator that sorts the chunks by manhattan distance from {@linkplain #startingChunk} */
-    private static final Comparator<Chunk> chunkComparator = (o1, o2) -> keyExtractor(o1) - keyExtractor(o2);
+    private static final Comparator<Chunk> chunkComparator = Comparator.comparingInt(Ray::keyExtractor);
 
     /** Should be consumed immediately via getTarget or getDist. Otherwise, use {@linkplain #copy()} */
     public static Ray newRay(double x, double y, double angle, int bounces, Tank tank)

@@ -749,7 +749,20 @@ public class ScreenCrusadeEditor extends Screen implements ITankBuildScreen
             for (int i = 0; i < this.crusade.levels.size(); i++)
             {
                 String l = this.crusade.levels.get(i).levelString;
-                f.println(l.substring(l.indexOf('{'), l.indexOf('}') + 1) + " name=" + this.crusade.levels.get(i).levelName);
+                try
+                {
+                    Map<String, Object> m = (Map<String, Object>) TanksON.parseObject(l);
+                    m.remove("coins");
+                    m.remove("shop");
+                    m.remove("items");
+                    m.remove("builds");
+                    m.remove("custom_tanks");
+                    f.println(TanksON.toString(m) + " name=" + this.crusade.levels.get(i).levelName);
+                }
+                catch (RuntimeException e)
+                {
+                    f.println(l.substring(l.indexOf('{'), l.lastIndexOf('}') + 1) + " name=" + this.crusade.levels.get(i).levelName);
+                }
             }
 
             f.println("build_overrides");

@@ -947,8 +947,8 @@ public class Level
 
     public static boolean isDark()
     {
-        return Level.currentColor.getPerceivedBrightness() <= 127
-                || Level.currentLightIntensity * Level.currentLightColor.getPerceivedBrightness() <= 127;
+        return Level.currentColor.getPerceivedBrightness() <= 127 ||
+                Level.currentLightIntensity * Level.currentLightColor.getPerceivedBrightness() <= 127;
     }
 
     public Tank lookupTank(String name)

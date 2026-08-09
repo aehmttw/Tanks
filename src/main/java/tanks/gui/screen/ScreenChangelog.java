@@ -526,6 +526,17 @@ public class ScreenChangelog extends Screen
                         "Bug fixes and other minor improvements\n"
                 }
             );
+
+            new Changelog("v1.6.2a", new String[]
+                {
+                    "*What's new in Tanks v1.6.2a:\n\n" +
+                        "Added fancy lighting option\n" +
+                        "Added level lighting color option\n" +
+                        "Big improvements to rendering\n" +
+                        "Network optimizations\n" +
+                        "Improved font support\n"
+                }
+            );
         }
     }
 }

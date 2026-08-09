@@ -28,7 +28,7 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
     });
 
     TextBox fireworksCount = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Firework count",
-    () ->
+        () ->
         {
 
             try

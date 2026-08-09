@@ -29,17 +29,17 @@ public class ScreenTestFireworks extends Screen implements IDarkScreen
 
     TextBox fireworksCount = new TextBox(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 180, this.objWidth, this.objHeight, "Firework count",
     () ->
-    {
+        {
 
-        try
-        {
-            DisplayFireworks.firework_frequency = Double.parseDouble(this.fireworksCount.inputText);
-        }
-        catch (Exception e)
-        {
-            this.fireworksCount.inputText = this.fireworksCount.previousInputText;
-        }
-    }, DisplayFireworks.firework_frequency + "");
+            try
+            {
+                DisplayFireworks.firework_frequency = Double.parseDouble(this.fireworksCount.inputText);
+            }
+            catch (Exception e)
+            {
+                this.fireworksCount.inputText = this.fireworksCount.previousInputText;
+            }
+        }, DisplayFireworks.firework_frequency + "");
 
     public ScreenTestFireworks()
     {

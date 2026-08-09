@@ -1325,12 +1325,24 @@ public class Drawing
             addVertex(x + sX, y + sY, z + sZ);
     }
 
+    public void setLightingUI()
+    {
+        this.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity), Level.currentLightColor);
+    }
+
     public void setLighting(double light, double shadow)
     {
         Game.drawer.lightsPass.light = light;
         Game.drawer.lightsPass.shadow = shadow;
         Game.game.window.mainRenderPasses.light = light;
         Game.game.window.mainRenderPasses.shadow = shadow;
+    }
+
+    public void setLighting(double light, double shadow, Color color)
+    {
+        this.setLighting(light, shadow);
+        Game.drawer.lightsPass.setLightColor(color);
+        Game.game.window.mainRenderPasses.setLightColor(color);
     }
 
     public void drawTooltip(String[] text)

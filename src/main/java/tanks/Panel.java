@@ -151,7 +151,7 @@ public class Panel
             Game.musicEnabled = false;
         }
 
-        if (Game.fontcompatability)
+        if (Game.fontCompatibility)
         {
             TruetypeFontRenderer ttf = new TruetypeFontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/Bullet.ttf", 128, true, 1.4, 0.3);
             ttf.addFontsFromDirectory(System.getProperty("user.home") + "/.tanks/fonts", 128, false, 1.4, 0.3);
@@ -833,7 +833,7 @@ public class Panel
                     Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
             }
 
-            Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity);
+            Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity, Level.currentLightColor);
 
 //            if (Game.fancyLights)
 //                Game.game.window.createLights(this.lights, Drawing.drawing.scale);

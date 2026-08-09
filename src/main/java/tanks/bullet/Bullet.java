@@ -250,6 +250,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     // Whether this bullet class can deflect other bullets (things like arc and air strike can't)
     public boolean canDeflect = true;
 
+    protected Color lightColor = new Color();
+
     /**
      * Do not use if you plan to place this bullet in the game field. Only for templates.
      * Use another constructor if you want to add the bullet to the game field.
@@ -1556,6 +1558,8 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
                 Drawing.drawing.setColor(this.effect.glowColor.red, this.effect.glowColor.green, this.effect.glowColor.blue, 255 * glow, shade ? luminance : 1);
 
             double sizeMul = this.effect.glowSize;
+            if (Game.fancyLights && this.effect.glowGlowy)
+                sizeMul = Math.min(sizeMul, 4);
 
             if (this.destroyTimer < 60.0)
             {
@@ -1827,7 +1831,7 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
     @Override
     public boolean lit()
     {
-        return true;
+        return this.effect.glowGlowy && this.effect.glowSize > 0 && this.effect.glowIntensity > 0;
     }
 
     @Override
@@ -1836,21 +1840,19 @@ public class Bullet extends Movable implements ICopyable<Bullet>, ITanksONEditab
         return this.size * this.effect.glowSize * (1 - Math.min(1, this.destroyTimer / maxDestroyTimer));
     }
 
-    Color c = new Color();
-
     @Override
     public Color getColor()
     {
-//        if (!this.effect.glowGlowy)
-//        {
-//            System.out.println("hi");
-//            c.set(this.outlineColor.red - 255, this.outlineColor.green - 255, this.outlineColor.blue - 255);
-//            return c;
-//        }
-
+        Color glowColor = this.outlineColor;
         if (this.effect.overrideGlowColor)
-            return this.effect.glowColor;
+            glowColor = this.effect.glowColor;
 
-        return this.outlineColor;
+        double frac = ((Game.tile_size - destroyTimer) / Game.tile_size);
+
+        this.lightColor.red = glowColor.red * this.effect.glowIntensity * frac;
+        this.lightColor.green = glowColor.green * this.effect.glowIntensity * frac;
+        this.lightColor.blue = glowColor.blue * this.effect.glowIntensity * frac;
+
+        return this.lightColor;
     }
 }

@@ -12,7 +12,7 @@ public class ScreenOptionsWindow extends Screen
     public static final String infoBarText = "Info bar: ";
     public static final String warnText = "Warn before exit: ";
     public static final String constrainMouseText = "Constrain mouse: ";
-    public static final String fontCompatabilityText = "Extended Fonts: ";
+    public static final String fontCompatibilityText = "Extended Fonts: ";
 
     Button back = new Button(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 210, this.objWidth, this.objHeight, "Back",
         () -> Game.screen = new ScreenOptions());
@@ -82,15 +82,15 @@ public class ScreenOptionsWindow extends Screen
     },
         "Disallows your mouse pointer from---leaving the window while playing");
 
-    Button fontCompatability = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
+    Button fontCompatibility = new Button(this.centerX + this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
         @Override
         public void run()
         {
-            Game.fontcompatability = !Game.fontcompatability;
-            if (Game.fontcompatability)
+            Game.fontCompatibility = !Game.fontCompatibility;
+            if (Game.fontCompatibility)
             {
-                fontCompatability.setText(fontCompatabilityText, ScreenOptions.onText);
+                fontCompatibility.setText(fontCompatibilityText, ScreenOptions.onText);
                 TruetypeFontRenderer ttf = new TruetypeFontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/Bullet.ttf", 128, true, 1.4, 0.3);
                 ttf.addFontsFromDirectory(System.getProperty("user.home") + "/.tanks/fonts", 128, false, 1.4, 0.3);
                 Thread systemFontLoader = new Thread(() -> ttf.addSystemFonts(128, false, 1.4, 0.3), "system-font-loader");
@@ -100,7 +100,7 @@ public class ScreenOptionsWindow extends Screen
             }
             else
             {
-                fontCompatability.setText(fontCompatabilityText, ScreenOptions.offText);
+                fontCompatibility.setText(fontCompatibilityText, ScreenOptions.offText);
                 FontRenderer fonts = new FontRenderer((LWJGLWindow) Game.game.window, "/fonts/default/font.png");
                 Game.game.window.fontRenderer = fonts;
             }
@@ -164,10 +164,10 @@ public class ScreenOptionsWindow extends Screen
         else
             constrainMouse.setText(constrainMouseText, ScreenOptions.offText);
 
-        if (Game.fontcompatability)
-            fontCompatability.setText(fontCompatabilityText, ScreenOptions.onText);
+        if (Game.fontCompatibility)
+            fontCompatibility.setText(fontCompatibilityText, ScreenOptions.onText);
         else
-            fontCompatability.setText(fontCompatabilityText, ScreenOptions.offText);
+            fontCompatibility.setText(fontCompatibilityText, ScreenOptions.offText);
 
         pauseOnLostFocus.setText("Pause on lost focus: ", Game.pauseOnLostFocus ? ScreenOptions.onText : ScreenOptions.offText);
     }
@@ -184,7 +184,7 @@ public class ScreenOptionsWindow extends Screen
         showStats.update();
         confirmClose.update();
         constrainMouse.update();
-        fontCompatability.update();
+        fontCompatibility.update();
 
         if (!width.selected)
             width.inputText = (int) Game.game.window.absoluteWidth + "";
@@ -212,7 +212,7 @@ public class ScreenOptionsWindow extends Screen
         pauseOnLostFocus.draw();
         confirmClose.draw();
         constrainMouse.draw();
-        fontCompatability.draw();
+        fontCompatibility.draw();
 
         fullscreen.setText(fullscreenText, (Game.game.window.fullscreen ? ScreenOptions.onText : ScreenOptions.offText));
 

@@ -72,8 +72,6 @@ public class EventTankTransformCustom extends PersonalEvent
         this.luminance = newTank.luminance;
         this.glowIntensity = newTank.glowIntensity;
         this.glowSize = newTank.glowSize;
-        this.lightIntensity = newTank.lightIntensity;
-        this.lightSize = newTank.lightSize;
 
         this.size = newTank.size;
         this.turretSize = newTank.turretSize;
@@ -124,8 +122,6 @@ public class EventTankTransformCustom extends PersonalEvent
             t.luminance = this.luminance;
             t.glowIntensity = this.glowIntensity;
             t.glowSize = this.glowSize;
-            t.lightIntensity = this.lightIntensity;
-            t.lightSize = this.lightSize;
 
             if (((TankRemote) t).tank instanceof TankAIControlled)
             {

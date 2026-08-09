@@ -82,7 +82,7 @@ public class ScreenTankLoadOverwrite extends Screen implements IBlankBackgroundS
     @Override
     public void draw()
     {
-        Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
+        Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);

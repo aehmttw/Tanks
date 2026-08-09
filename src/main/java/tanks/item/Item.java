@@ -54,7 +54,7 @@ public abstract class Item extends GameObject
 
         public static ShopItem fromString(String s)
         {
-            if (!s.startsWith("{"))
+            if (s.startsWith("["))
                 return fromStringLegacy(s);
 
             return (ShopItem) Serializer.fromTanksON(s);
@@ -268,158 +268,165 @@ public abstract class Item extends GameObject
         @Deprecated
         public static ItemStack<?> fromStringLegacy(Player pl, String s)
         {
-            if (s.contains("[") && s.contains("]"))
-                s = s.substring(s.indexOf("[") + 1, s.indexOf("]"));
-
-            String[] p = s.split(",");
-
-            String name = p[0];
-            String image = p[1];
-            int quantity = Integer.parseInt(p[4]);
-            int maxStack = Integer.parseInt(p[5]);
-
-            Item i = Game.registryItem.getEntry(p[6]).getItem();
-            i.name = name;
-            i.icon = Game.registryItemIcon.getItemIcon(image.replace(".png", "")).getCopy();
-            ItemStack<?> is = i.getStack(pl);
-            if (i instanceof ItemBullet)
+            try
             {
-                ItemBullet bullet = (ItemBullet) i;
+                if (s.contains("[") && s.contains("]"))
+                    s = s.substring(s.indexOf("[") + 1, s.indexOf("]"));
 
-                String kind = p[7];
-                switch (kind)
+                String[] p = s.split(",");
+
+                String name = p[0];
+                String image = p[1];
+                int quantity = Integer.parseInt(p[4]);
+                int maxStack = Integer.parseInt(p[5]);
+
+                Item i = Game.registryItem.getEntry(p[6]).getItem();
+                i.name = name;
+                i.icon = Game.registryItemIcon.getItemIcon(image.replace(".png", "")).getCopy();
+                ItemStack<?> is = i.getStack(pl);
+                if (i instanceof ItemBullet)
                 {
-                    case "normal":
-                        bullet.bullet = DefaultItems.basic_bullet.bullet.getCopy();
-                        break;
-                    case "flamethrower":
-                        bullet.bullet = DefaultItems.flamethrower.bullet.getCopy();
-                        break;
-                    case "laser":
-                        bullet.bullet = DefaultItems.laser.bullet.getCopy();
-                        break;
-                    case "freezing":
-                        bullet.bullet = DefaultItems.freezing_bullet.bullet.getCopy();
-                        break;
-                    case "electric":
-                        bullet.bullet = DefaultItems.zap.bullet.getCopy();
-                        break;
-                    case "healing":
-                        bullet.bullet = DefaultItems.healing_ray.bullet.getCopy();
-                        break;
-                    case "arc":
-                        bullet.bullet = DefaultItems.artillery_shell.bullet.getCopy();
-                        break;
-                    case "explosive":
-                        bullet.bullet = DefaultItems.explosive_bullet.bullet.getCopy();
-                        break;
-                    case "boost":
-                        bullet.bullet = DefaultItems.booster_bullet.bullet.getCopy();
-                        break;
-                    case "air":
-                        bullet.bullet = DefaultItems.air.bullet.getCopy();
-                        break;
-                    case "homing":
-                        bullet.bullet = DefaultItems.homing_rocket.bullet.getCopy();
-                        break;
-                    default:
-                        break;
+                    ItemBullet bullet = (ItemBullet) i;
+
+                    String kind = p[7];
+                    switch (kind)
+                    {
+                        case "normal":
+                            bullet.bullet = DefaultItems.basic_bullet.bullet.getCopy();
+                            break;
+                        case "flamethrower":
+                            bullet.bullet = DefaultItems.flamethrower.bullet.getCopy();
+                            break;
+                        case "laser":
+                            bullet.bullet = DefaultItems.laser.bullet.getCopy();
+                            break;
+                        case "freezing":
+                            bullet.bullet = DefaultItems.freezing_bullet.bullet.getCopy();
+                            break;
+                        case "electric":
+                            bullet.bullet = DefaultItems.zap.bullet.getCopy();
+                            break;
+                        case "healing":
+                            bullet.bullet = DefaultItems.healing_ray.bullet.getCopy();
+                            break;
+                        case "arc":
+                            bullet.bullet = DefaultItems.artillery_shell.bullet.getCopy();
+                            break;
+                        case "explosive":
+                            bullet.bullet = DefaultItems.explosive_bullet.bullet.getCopy();
+                            break;
+                        case "boost":
+                            bullet.bullet = DefaultItems.booster_bullet.bullet.getCopy();
+                            break;
+                        case "air":
+                            bullet.bullet = DefaultItems.air.bullet.getCopy();
+                            break;
+                        case "homing":
+                            bullet.bullet = DefaultItems.homing_rocket.bullet.getCopy();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    switch (p[8])
+                    {
+                        case "none":
+                            bullet.bullet.effect = new BulletEffect();
+                            break;
+                        case "fire":
+                            bullet.bullet.effect = BulletEffect.fire.getCopy();
+                            break;
+                        case "trail":
+                            bullet.bullet.effect = BulletEffect.trail.getCopy();
+                            break;
+                        case "dark_fire":
+                            bullet.bullet.effect = BulletEffect.dark_fire.getCopy();
+                            break;
+                        case "fire_and_smoke":
+                            bullet.bullet.effect = BulletEffect.fire_trail.getCopy();
+                            break;
+                        case "ice":
+                            bullet.bullet.effect = BulletEffect.ice.getCopy();
+                            break;
+                        case "ember":
+                            bullet.bullet.effect = BulletEffect.ember.getCopy();
+                            break;
+                        default:
+                            break;
+                    }
+
+                    bullet.bullet.speed = Double.parseDouble(p[9]);
+
+                    if (p[7].equals("arc"))
+                    {
+                        ((BulletArc) bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
+                        if (bullet.bullet.effect.trailEffects.isEmpty() && !bullet.bullet.effect.enableParticles)
+                            bullet.bullet.effect = BulletEffect.long_trail.getCopy();
+                    }
+
+                    if (p[7].equals("electric"))
+                        bullet.bullet.rebounds = Integer.parseInt(p[10]);
+                    else
+                        bullet.bullet.bounces = Integer.parseInt(p[10]);
+
+                    bullet.bullet.damage = Double.parseDouble(p[11]);
+
+                    if (p[7].equals("healing"))
+                        bullet.bullet.damage *= -1;
+                    else if (p[7].equals("boost") || p[7].equals("air"))
+                        bullet.bullet.damage = 0;
+
+                    bullet.bullet.maxLiveBullets = Integer.parseInt(p[12]);
+                    bullet.cooldownBase = Double.parseDouble(p[13]);
+
+                    if (p[7].equals("flamethrower") || p[7].equals("air"))
+                    {
+                        bullet.bullet.lifespan *= Double.parseDouble(p[14]) / Bullet.bullet_size;
+                        ((BulletGas) (bullet.bullet)).endSize *= Double.parseDouble(p[14]) / Bullet.bullet_size;
+                    }
+                    else
+                        bullet.bullet.size = Double.parseDouble(p[14]);
+
+                    bullet.bullet.recoil = Double.parseDouble(p[15]);
+                    bullet.bullet.heavy = Boolean.parseBoolean(p[16]);
+                    bullet.bullet.pitch *= Bullet.bullet_size / bullet.bullet.size;
+
+                    if (p.length > 17)
+                    {
+                        bullet.bullet.accuracySpread = Double.parseDouble(p[17]);
+                        bullet.bullet.shotCount = Integer.parseInt(p[18]);
+                        bullet.bullet.multishotSpread = Double.parseDouble(p[19]);
+                    }
+                }
+                else if (i instanceof ItemMine)
+                {
+                    ItemMine mine = (ItemMine) i;
+                    mine.mine.timer = Double.parseDouble(p[7]);
+                    mine.mine.triggeredTimer = Double.parseDouble(p[8]);
+                    mine.mine.explosion.radius = Double.parseDouble(p[9]);
+                    mine.mine.explosion.damage = Double.parseDouble(p[10]);
+                    mine.mine.maxLiveMines = Integer.parseInt(p[11]);
+                    mine.cooldownBase = Double.parseDouble(p[12]);
+                    mine.mine.size = Double.parseDouble(p[13]);
+                    mine.mine.explosion.destroysObstacles = Boolean.parseBoolean(p[14]);
+                }
+                else if (i instanceof ItemShield)
+                {
+                    ItemShield shield = (ItemShield) i;
+                    shield.amount = Double.parseDouble(p[7]);
+                    shield.max = Double.parseDouble(p[8]);
+                    shield.cooldownBase = Double.parseDouble(p[9]);
                 }
 
-                switch (p[8])
-                {
-                    case "none":
-                        bullet.bullet.effect = new BulletEffect();
-                        break;
-                    case "fire":
-                        bullet.bullet.effect = BulletEffect.fire.getCopy();
-                        break;
-                    case "trail":
-                        bullet.bullet.effect = BulletEffect.trail.getCopy();
-                        break;
-                    case "dark_fire":
-                        bullet.bullet.effect = BulletEffect.dark_fire.getCopy();
-                        break;
-                    case "fire_and_smoke":
-                        bullet.bullet.effect = BulletEffect.fire_trail.getCopy();
-                        break;
-                    case "ice":
-                        bullet.bullet.effect = BulletEffect.ice.getCopy();
-                        break;
-                    case "ember":
-                        bullet.bullet.effect = BulletEffect.ember.getCopy();
-                        break;
-                    default:
-                        break;
-                }
+                is.stackSize = quantity;
+                is.maxStackSize = maxStack;
 
-                bullet.bullet.speed = Double.parseDouble(p[9]);
-
-                if (p[7].equals("arc"))
-                {
-                    ((BulletArc) bullet.bullet).maxRange = 1000 * bullet.bullet.speed / 3.125;
-                    if (bullet.bullet.effect.trailEffects.isEmpty() && !bullet.bullet.effect.enableParticles)
-                        bullet.bullet.effect = BulletEffect.long_trail.getCopy();
-                }
-
-                if (p[7].equals("electric"))
-                    bullet.bullet.rebounds = Integer.parseInt(p[10]);
-                else
-                    bullet.bullet.bounces = Integer.parseInt(p[10]);
-
-                bullet.bullet.damage = Double.parseDouble(p[11]);
-
-                if (p[7].equals("healing"))
-                    bullet.bullet.damage *= -1;
-                else if (p[7].equals("boost") || p[7].equals("air"))
-                    bullet.bullet.damage = 0;
-
-                bullet.bullet.maxLiveBullets = Integer.parseInt(p[12]);
-                bullet.cooldownBase = Double.parseDouble(p[13]);
-
-                if (p[7].equals("flamethrower") || p[7].equals("air"))
-                {
-                    bullet.bullet.lifespan *= Double.parseDouble(p[14]) / Bullet.bullet_size;
-                    ((BulletGas) (bullet.bullet)).endSize *= Double.parseDouble(p[14]) / Bullet.bullet_size;
-                }
-                else
-                    bullet.bullet.size = Double.parseDouble(p[14]);
-
-                bullet.bullet.recoil = Double.parseDouble(p[15]);
-                bullet.bullet.heavy = Boolean.parseBoolean(p[16]);
-                bullet.bullet.pitch *= Bullet.bullet_size / bullet.bullet.size;
-
-                if (p.length > 17)
-                {
-                    bullet.bullet.accuracySpread = Double.parseDouble(p[17]);
-                    bullet.bullet.shotCount = Integer.parseInt(p[18]);
-                    bullet.bullet.multishotSpread = Double.parseDouble(p[19]);
-                }
+                return is;
             }
-            else if (i instanceof ItemMine)
+            catch (Exception e)
             {
-                ItemMine mine = (ItemMine) i;
-                mine.mine.timer = Double.parseDouble(p[7]);
-                mine.mine.triggeredTimer = Double.parseDouble(p[8]);
-                mine.mine.explosion.radius = Double.parseDouble(p[9]);
-                mine.mine.explosion.damage = Double.parseDouble(p[10]);
-                mine.mine.maxLiveMines = Integer.parseInt(p[11]);
-                mine.cooldownBase = Double.parseDouble(p[12]);
-                mine.mine.size = Double.parseDouble(p[13]);
-                mine.mine.explosion.destroysObstacles = Boolean.parseBoolean(p[14]);
+                throw new RuntimeException("Failed to parse legacy item: " + s, e);
             }
-            else if (i instanceof ItemShield)
-            {
-                ItemShield shield = (ItemShield) i;
-                shield.amount = Double.parseDouble(p[7]);
-                shield.max = Double.parseDouble(p[8]);
-                shield.cooldownBase = Double.parseDouble(p[9]);
-            }
-
-            is.stackSize = quantity;
-            is.maxStackSize = maxStack;
-
-            return is;
         }
 
         @Override

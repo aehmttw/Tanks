@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
 import basewindow.BaseFile;
+import basewindow.Color;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.gui.*;
@@ -287,8 +288,8 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             this.preview.luminance = tank.luminance;
             this.preview.glowIntensity = tank.glowIntensity;
             this.preview.glowSize = tank.glowSize;
-            this.preview.lightSize = tank.lightSize;
-            this.preview.lightIntensity = tank.lightIntensity;
+            this.preview.overrideGlowColor = tank.overrideGlowColor;
+            this.preview.glowColor = tank.glowColor;
             this.preview.setBullet(tank.getBullet());
             this.preview.multipleTurrets = tank.multipleTurrets;
 
@@ -320,11 +321,75 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
             super(screen, name, category);
         }
 
+        public SelectorColor colorPicker;
+        public Button colorToggle;
+
         public void set()
         {
             super.set();
-            preview.posX = screen.centerX + screen.objXSpace / 2;
-            preview.posY += 60;
+            preview.posX = screen.centerX + screen.objXSpace;
+        }
+
+        @Override
+        public void addFields()
+        {
+            this.uiElements.clear();
+            for (Field f: this.screen.fields)
+            {
+                Property p = f.getAnnotation(Property.class);
+
+                if (p != null && p.category().equals(this.category))
+                {
+                    ITrigger t = screen.getUIElementForField(new FieldPointer<>(target.get(), f), p);
+
+                    if (p.id().equals("glow_color_override"))
+                        this.colorToggle = (Button) t;
+                    else if (p.miscType() != Property.MiscType.colorRGB)
+                    {
+                        this.uiElements.add(t);
+                        for (int i = 1; i < t.getSize(); i++)
+                        {
+                            this.uiElements.add(new EmptySpace());
+                        }
+                    }
+                    else if (t instanceof SelectorColor)
+                        this.colorPicker = (SelectorColor) t;
+                }
+            }
+        }
+
+        @Override
+        public void sortUIElements()
+        {
+            EmptySpace s = new EmptySpace();
+            this.uiElements.add(s);
+            this.uiElements.add(this.colorToggle);
+            this.uiElements.add(this.colorPicker);
+            while (this.uiElements.size() < 12)
+                this.uiElements.add(new EmptySpace());
+
+            super.sortUIElements();
+            this.uiElements.remove(this.colorPicker);
+        }
+
+        @Override
+        public void updateUIElements()
+        {
+            Tank e = screen.target.get();
+            super.updateUIElements();
+
+            if (e.overrideGlowColor)
+                this.colorPicker.update();
+        }
+
+        @Override
+        public void drawUIElements()
+        {
+            Tank e = screen.target.get();
+            super.drawUIElements();
+
+            if (e.overrideGlowColor)
+                this.colorPicker.draw();
         }
     }
 
@@ -588,13 +653,13 @@ public class ScreenEditorTank extends ScreenEditorTanksONable<TankAIControlled>
 
             Drawing.drawing.setColor(80, 80, 80);
             Drawing.drawing.fillInterfaceOval(margin, screen.centerY + 60 + space * 2, s * 1.5, s * 1.5);
-            Drawing.drawing.setColor(tank.secondaryColor.red * preview.glowIntensity, tank.secondaryColor.green * preview.glowIntensity,
-                tank.secondaryColor.blue * preview.glowIntensity, 255, 1);
+            Color c = tank.secondaryColor;
+            if (tank.overrideGlowColor)
+                c = tank.glowColor;
+            Drawing.drawing.setColor(c.red * preview.glowIntensity, c.green * preview.glowIntensity,
+                c.blue * preview.glowIntensity, 255, 1);
             Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * Math.min(2, preview.glowSize / 4),
                 s * 1.5 * Math.min(2, preview.glowSize / 4));
-            Drawing.drawing.setColor(255, 255, 255, 255 * preview.lightIntensity, 1);
-            Drawing.drawing.fillInterfaceGlow(margin, screen.centerY + 60 + space * 2, s * 1.5 * Math.min(2, preview.lightSize / 4),
-                s * 1.5 * Math.min(2, preview.lightSize / 4), false, true);
 
             Drawing.drawing.setColor(0, 0, 0, 64);
             for (int i = 0; i < 3; i++)

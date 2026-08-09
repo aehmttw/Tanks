@@ -20,6 +20,7 @@ uniform vec4 originalColor;
 
 uniform float baseLight;
 uniform float shadowLight;
+uniform vec3 lightColor;
 
 uniform bool drawToFramebuffer;
 
@@ -75,7 +76,8 @@ void main(void)
         else
         {
             gl_FragData[0] = fragColor;
-            gl_FragData[1] = vec4(fragColor.rgb * glowValue * (float(lit) * (1.0 - baseLight) + (1.0 - float(lit)) * (1.0 - shadowLight)), fragColor.a);
+            vec3 l = glowValue * (float(lit) * (vec3(1.0) - baseLight * lightColor) + (1.0 - float(lit)) * (vec3(1.0) - shadowLight * lightColor));
+            gl_FragData[1] = vec4(fragColor.rgb * l, fragColor.a);
             gl_FragData[2] = vec4(float(lit), 0.0, 0.0, fragColor.a);
         }
     }

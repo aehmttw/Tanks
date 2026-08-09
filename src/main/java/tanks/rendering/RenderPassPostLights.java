@@ -3,7 +3,6 @@ package tanks.rendering;
 import basewindow.*;
 import tanks.*;
 import tanks.gui.screen.ScreenGame;
-import tanks.obstacle.Obstacle;
 
 public class RenderPassPostLights extends RenderPass
 {
@@ -61,10 +60,10 @@ public class RenderPassPostLights extends RenderPass
 
         this.lightsFrameBuffer.bindColorTexture(this.window, 0, "lights");
 
-//        this.window.currentRenderPass = this.window.mainRenderPasses.drawPass;
-//        this.window.setShader(this.window.shaderDefault);
-////        Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "lights", false);
-//        Game.game.window.shapeRenderer.drawImage(100, 100, 200, 200, "lights", false);
+        // this.window.currentRenderPass = this.window.mainRenderPasses.drawPass;
+        // this.window.setShader(this.window.shaderDefault);
+        // Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "lights", false);
+        // Game.game.window.shapeRenderer.drawImage(100, 100, 200, 200, "lights", false);
 
         this.window.setShader(this.mixShader);
         this.mixShader.lightColor.set(this.lightColor);
@@ -80,7 +79,7 @@ public class RenderPassPostLights extends RenderPass
         Game.game.window.mainRenderPasses.drawPass.drawFrameBuffer.bindColorTexture(2, 3);
 
         Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "image", false);
-        //        Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "lights", false);
+        // Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "lights", false);
 
     }
 
@@ -106,32 +105,13 @@ public class RenderPassPostLights extends RenderPass
 
     public void drawPointLights()
     {
-        if (Game.screen instanceof ScreenGame)
-            ((ScreenGame) Game.screen).setPerspective();
+        Game.screen.drawPointLights();
+    }
 
-        for (Obstacle o: Game.obstacles)
-        {
-            if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
-            {
-                drawLight((IDrawableLightSource) o, Drawing.drawing.gameToAbsoluteX(o.posX, 0),  Drawing.drawing.gameToAbsoluteY(o.posY, 0), (o.posZ + Game.tile_size / 2) * Drawing.drawing.scale, ((IDrawableLightSource) o).getBrightness() * Drawing.drawing.scale);
-            }
-        }
-
-        for (Movable m: Game.movables)
-        {
-            if (m instanceof IDrawableLightSource && ((IDrawableLightSource) m).lit())
-            {
-                drawLight((IDrawableLightSource) m, Drawing.drawing.gameToAbsoluteX(m.posX, 0),  Drawing.drawing.gameToAbsoluteY(m.posY, 0), m.posZ * Drawing.drawing.scale, ((IDrawableLightSource) m).getBrightness() * Drawing.drawing.scale);
-            }
-        }
-
-        for (Effect e: Game.effects)
-        {
-            if (e.lit())
-                drawLight(e, Drawing.drawing.gameToAbsoluteX(e.posX, 0),  Drawing.drawing.gameToAbsoluteY(e.posY, 0), e.posZ * Drawing.drawing.scale, e.getBrightness() * Drawing.drawing.scale);
-        }
-
-        Game.game.window.transformations.clear();
-        Game.game.window.loadPerspective();
+    public void setLightColor(Color c)
+    {
+        this.lightColor[0] = (float) c.red / 255;
+        this.lightColor[1] = (float) c.green / 255;
+        this.lightColor[2] = (float) c.blue / 255;
     }
 }

@@ -6,6 +6,7 @@ import tanks.*;
 import tanks.attribute.AttributeModifier;
 import tanks.attribute.EffectManager;
 import tanks.bullet.Bullet;
+import tanks.bullet.BulletEffectPropertyCategory;
 import tanks.gui.screen.*;
 import tanks.gui.screen.leveleditor.selector.SelectorRotation;
 import tanks.item.Item;
@@ -145,21 +146,23 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
     public Color color = new Color();
 
     @TankBuildProperty
+    @Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0,
+            desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
+    public double luminance = 0.5;
+
+    @TankBuildProperty
     @Property(category = appearanceGlow, id = "glow_intensity", name = "Aura intensity", minValue = 0.0)
     public double glowIntensity = 1;
     @TankBuildProperty
     @Property(category = appearanceGlow, id = "glow_size", name = "Aura size", minValue = 0.0)
     public double glowSize = 4;
+
     @TankBuildProperty
-    @Property(category = appearanceGlow, id = "light_intensity", name = "Light intensity", minValue = 0.0)
-    public double lightIntensity = 1;
+    @Property(category = appearanceGlow, id = "glow_color_override", name = "Custom aura color")
+    public boolean overrideGlowColor = false;
     @TankBuildProperty
-    @Property(category = appearanceGlow, id = "light_size", name = "Light size", minValue = 0.0)
-    public double lightSize = 0;
-    @TankBuildProperty
-    @Property(category = appearanceGlow, id = "luminance", name = "Tank luminance", minValue = 0.0, maxValue = 1.0,
-        desc = "How bright the tank will be in dark lighting. At 0, the tank will be shaded like terrain by lighting. At 1, the tank will always be fully bright.")
-    public double luminance = 0.5;
+    @Property(category = appearanceGlow, id = "glow_color", name = "Aura color", miscType = Property.MiscType.colorRGB)
+    public Color glowColor = new Color(255, 255, 255, 255);
 
     /** Important: this option only is useful for the tank editor. Secondary color will be treated independently even if disabled. */
     @Property(category = appearanceTurretBarrel, id = "enable_color2", name = "Custom color", miscType = Property.MiscType.colorRGB)
@@ -235,8 +238,12 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
     public boolean[][] hiddenPoints = new boolean[3][3];
     public boolean hidden = false;
 
+    public double hiddenFrac = 0;
+
     public boolean[][] canHidePoints = new boolean[3][3];
     public boolean canHide = false;
+
+    public double[] drawLightColor = new double[3];
 
     public Turret turret;
 
@@ -651,6 +658,9 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
 
         if (this.possessor != null)
             this.possessor.updatePossessing();
+
+        double mul = this.hidden ? 1 : -2;
+        this.hiddenFrac = Math.min(1, Math.max(0, this.hiddenFrac + mul * 0.01 * Panel.frameFrequency));
     }
 
     public void updateVisibility()
@@ -754,12 +764,25 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
 
         Drawing drawing = Drawing.drawing;
         double[] teamColor = Team.getObjectColor(this.secondaryColor.red, this.secondaryColor.green, this.secondaryColor.blue, this);
+        double[] lightColor = teamColor;
+        if ((!Game.fancyLights || forInterface) && this.overrideGlowColor)
+        {
+            lightColor = this.drawLightColor;
+            lightColor[0] = this.glowColor.red;
+            lightColor[1] = this.glowColor.green;
+            lightColor[2] = this.glowColor.blue;
+        }
 
-        Drawing.drawing.setColor(teamColor[0] * this.glowModifier * this.glowIntensity, teamColor[1] * this.glowModifier * this.glowIntensity, teamColor[2] * this.glowModifier * this.glowIntensity, 255, 1);
+        double hf = 1 - this.hiddenFrac;
+        Drawing.drawing.setColor(lightColor[0] * this.glowModifier * this.glowIntensity * hf, lightColor[1] * this.glowModifier * this.glowIntensity * hf, lightColor[2] * this.glowModifier * this.glowIntensity * hf, 255, 1);
 
         if (Game.glowEnabled && !transparent)
         {
             double gs = this.glowSize;
+
+            if (gs > 4 && Game.fancyLights)
+                gs = 4;
+
             if (forInterface && gs > 8)
                 gs = 8;
 
@@ -1433,15 +1456,21 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
     @Override
     public boolean lit()
     {
-        return this.lightIntensity > 0 && this.lightSize > 0;
+        return this.glowIntensity > 0 && this.glowSize > 0 && this.currentlyVisible;
     }
 
     @Override
     public Color getColor()
     {
-        this.lightColor.red = 255 * this.lightIntensity;
-        this.lightColor.green = 255 * this.lightIntensity;
-        this.lightColor.blue = 255 * this.lightIntensity;
+        double frac = ((Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1) * (1 - hiddenFrac);
+
+        Color glowColor = this.secondaryColor;
+        if (this.overrideGlowColor)
+            glowColor = this.glowColor;
+
+        this.lightColor.red = glowColor.red * this.glowIntensity * frac;
+        this.lightColor.green = glowColor.green * this.glowIntensity * frac;
+        this.lightColor.blue = glowColor.blue * this.glowIntensity * frac;
 
         return this.lightColor;
     }
@@ -1449,6 +1478,8 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
     @Override
     public double getBrightness()
     {
-        return this.lightSize * this.size * (1.0 - this.destroyTimer / Game.tile_size);
+        double frac = ((Game.tile_size - destroyTimer) / Game.tile_size) * Math.min(this.drawAge / Game.tile_size, 1) * (1 - hiddenFrac);
+        double s = this.size * frac;
+        return this.glowSize * s * (1.0 - this.destroyTimer / Game.tile_size) / 2;
     }
 }

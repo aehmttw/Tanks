@@ -19,6 +19,7 @@ uniform bool shadow;
 
 uniform bool vbo;
 uniform vec4 originalColor;
+uniform vec3 lightColor;
 
 uniform int blendFunc;
 

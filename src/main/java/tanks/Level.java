@@ -29,6 +29,7 @@ public class Level
     public static Color currentColorVar = new Color(235, 207, 166);
     public static double currentLightIntensity = 1;
     public static double currentShadowIntensity = 0.5;
+    public static Color currentLightColor = new Color(255, 255, 255);
 
     public static int currentCloudCount = 0;
 
@@ -52,6 +53,7 @@ public class Level
 
     public double light = 1.0;
     public double shadow = 0.5;
+    public Color lightColor = new Color(255, 255, 255);
 
     public LinkedHashMap<String, Team> teamsMap = new LinkedHashMap<>();
 
@@ -270,6 +272,9 @@ public class Level
             light = (int) Double.parseDouble(screen[9]) / 100.0;
             shadow = (int) Double.parseDouble(screen[10]) / 100.0;
         }
+
+        if (screen.length >= 14)
+            lightColor.set(Double.parseDouble(screen[11]), Double.parseDouble(screen[12]), Double.parseDouble(screen[13]));
 
         if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
         {
@@ -874,6 +879,7 @@ public class Level
 
         currentLightIntensity = light;
         currentShadowIntensity = shadow;
+        currentLightColor = lightColor;
 
         Drawing.drawing.setScreenBounds(Game.tile_size * sizeX, Game.tile_size * sizeY);
         Chunk.populateChunks(this);
@@ -941,7 +947,8 @@ public class Level
 
     public static boolean isDark()
     {
-        return Level.currentColor.red * 0.2126 + Level.currentColor.green * 0.7152 + Level.currentColor.blue * 0.0722 <= 127 || currentLightIntensity <= 0.5;
+        return Level.currentColor.getPerceivedBrightness() <= 127
+                || Level.currentLightIntensity * Level.currentLightColor.getPerceivedBrightness() <= 127;
     }
 
     public Tank lookupTank(String name)

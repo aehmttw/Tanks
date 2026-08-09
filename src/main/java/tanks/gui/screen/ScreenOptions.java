@@ -13,6 +13,7 @@ import com.codedisaster.steamworks.SteamMatchmaking;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 
 public class ScreenOptions extends Screen
 {
@@ -20,6 +21,8 @@ public class ScreenOptions extends Screen
     public static final String offText = "\u00A7200000000255off";
 
     public static boolean alwaysDebug = false;
+
+    public static HashMap<String, String> unrecognizedOptions = new HashMap<>();
 
     TankPlayer preview = new TankPlayer(0, 0, 0);
 
@@ -276,12 +279,24 @@ public class ScreenOptions extends Screen
             f.println("tank_green_3=" + (int) Game.player.color3.green);
             f.println("tank_blue_3=" + (int) Game.player.color3.blue);
             f.println("translation=" + (Translation.currentTranslation == null ? "null" : Translation.currentTranslation.fileName));
+            f.println("font_compatibility=" + Game.fontCompatibility);
             f.println("agreed_steam_workshop=" + Game.agreedToWorkshopAgreement);
             f.println("last_version=" + Game.lastVersion);
             f.println("enable_extensions=" + Game.enableExtensions);
             f.println("auto_load_extensions=" + Game.autoLoadExtensions);
             f.println("debug_mode=" + alwaysDebug);
-            f.println("font_compatability=" + Game.fontcompatability);
+
+            if (!unrecognizedOptions.isEmpty())
+            {
+                f.println("# These options were found but not recognized by Tanks.");
+                f.println("# They might come from a future version of the game.");
+            }
+
+            for (String s: unrecognizedOptions.keySet())
+            {
+                f.println(s + "=" + unrecognizedOptions.get(s));
+            }
+
             f.stopWriting();
         }
         catch (FileNotFoundException e)
@@ -303,7 +318,7 @@ public class ScreenOptions extends Screen
                 String line = f.nextLine();
                 String[] optionLine = line.split("=");
 
-                if (optionLine[0].charAt(0) == '#')
+                if (optionLine[0].isEmpty() || optionLine[0].charAt(0) == '#')
                 {
                     continue;
                 }
@@ -525,6 +540,9 @@ public class ScreenOptions extends Screen
                     case "translation":
                         Translation.setCurrentTranslation(optionLine[1]);
                         break;
+                    case "font_compatibility":
+                        Game.fontCompatibility = Boolean.parseBoolean(optionLine[1]);
+                        break;
                     case "last_version":
                         Game.lastVersion = optionLine[1];
                         break;
@@ -542,10 +560,8 @@ public class ScreenOptions extends Screen
                         if (alwaysDebug)
                             Game.debug = true;
                         break;
-                    case "font_compatability":
-                        Game.fontcompatability = Boolean.parseBoolean(optionLine[1]);
-                        break;
                     default:
+                        unrecognizedOptions.put(optionLine[0], optionLine[1]);
                         break;
                 }
             }

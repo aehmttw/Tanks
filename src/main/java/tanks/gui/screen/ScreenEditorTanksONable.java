@@ -1185,7 +1185,7 @@ public abstract class ScreenEditorTanksONable<T> extends Screen implements IBlan
     @Override
     public void draw()
     {
-        Drawing.drawing.setLighting(Level.currentLightIntensity, Math.max(Level.currentLightIntensity * 0.75, Level.currentShadowIntensity));
+        Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
     }
 

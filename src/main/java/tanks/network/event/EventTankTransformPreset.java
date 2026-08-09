@@ -70,8 +70,6 @@ public class EventTankTransformPreset extends PersonalEvent
             t.luminance = target.luminance;
             t.glowIntensity = target.glowIntensity;
             t.glowSize = target.glowSize;
-            t.lightIntensity = target.lightIntensity;
-            t.lightSize = target.lightSize;
 
             if (((TankRemote) t).tank instanceof TankAIControlled)
             {

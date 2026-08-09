@@ -53,7 +53,7 @@ public class ObstacleBoostPanel extends Obstacle implements IDrawableLightSource
     @Override
     public void onObjectEntryLocal(Movable m)
     {
-        if (ScreenGame.finishedQuick)
+        if (ScreenGame.finishedQuick || (m instanceof Tank && ((Tank) m).teleporting))
             return;
 
         this.brightness = Math.min(this.brightness + Panel.frameFrequency * 8, 100);
@@ -66,7 +66,7 @@ public class ObstacleBoostPanel extends Obstacle implements IDrawableLightSource
     @Override
     public void onObjectEntry(Movable m)
     {
-        if (ScreenGame.finishedQuick)
+        if (ScreenGame.finishedQuick || (m instanceof Tank && ((Tank) m).teleporting))
             return;
 
         this.onObjectEntryLocal(m);

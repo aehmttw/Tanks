@@ -4,7 +4,7 @@ import tanks.Drawing;
 import tanks.gui.*;
 import tanks.gui.screen.Screen;
 
-public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
+public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay implements IUnshadedEditorBackgroundScreen
 {
     public TextBoxSlider colorRed;
     public TextBoxSlider colorGreen;
@@ -161,6 +161,9 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
     {
         super.drawUI();
 
+        Drawing.drawing.setColor(0, 0, 0, 128);
+        Drawing.drawing.drawPopup(centerX, centerY - 30, 800 * this.objHeight / 40, 420 * this.objWidth / 350);
+
         colorRed.r1 = 0;
         colorRed.r2 = 255;
         colorRed.g1 = colorGreen.value;
@@ -190,7 +193,7 @@ public class OverlayLevelOptionsColor extends ScreenLevelEditorOverlay
         this.colorVarRed.draw();
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
 
-        Drawing.drawing.setColor(editor.fontBrightness, editor.fontBrightness, editor.fontBrightness);
+        Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Background colors");
         this.back.draw();
     }

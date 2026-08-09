@@ -122,6 +122,52 @@ public class Compatibility
                 ((Bullet) owner).effect.glowSize = (double) value;
         });
 
+        unused_table.put("light_intensity", (owner, value) ->
+        {
+            if (owner instanceof Tank)
+            {
+                Tank t = (Tank) owner;
+                t.extraProperties = new HashMap<>();
+                t.extraProperties.put("light_intensity", value);
+
+                if (t.extraProperties.containsKey("light_size"))
+                {
+                    double i = (double) value;
+                    double s = (double) t.extraProperties.get("light_size");
+
+                    if (i > 0 && s > 0)
+                    {
+                        t.overrideGlowColor = true;
+                        t.glowIntensity = i;
+                        t.glowSize = s;
+                    }
+                }
+            }
+        });
+
+        unused_table.put("light_size", (owner, value) ->
+        {
+            if (owner instanceof Tank)
+            {
+                Tank t = (Tank) owner;
+                t.extraProperties = new HashMap<>();
+                t.extraProperties.put("light_size", value);
+
+                double i = 1;
+                if (t.extraProperties.containsKey("light_intensity"))
+                    i = (double) t.extraProperties.get("light_intensity");
+
+                double s = (double) value;
+
+                if (i > 0 && s > 0)
+                {
+                    t.overrideGlowColor = true;
+                    t.glowIntensity = i;
+                    t.glowSize = s;
+                }
+            }
+        });
+
         for (String s: new String[]{"color_*", "color_*2", "color_*3", "emblem_*", "color_noise_*"})
         {
             for (String c: new String[]{"r", "g", "b"})

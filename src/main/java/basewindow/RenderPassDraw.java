@@ -63,6 +63,7 @@ public class RenderPassDraw extends RenderPass
 
         this.window.shaderDefault.shaderBase.shadowLight.set((float) this.passGroup.shadow);
         this.window.shaderDefault.shaderBase.baseLight.set((float) this.passGroup.light);
+        this.window.shaderDefault.shaderBase.lightColor.set(this.passGroup.lightColor);
 
         this.window.setViewport(0, 0, this.window.frameBufferWidth, this.window.frameBufferHeight);
 

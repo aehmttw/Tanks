@@ -56,6 +56,11 @@ public abstract class Movable extends SolidGameObject implements IDrawableForInt
     public boolean isRemote = false;
     public boolean managedMotion = true;
 
+    /**
+     * This can be used to add extra properties to anything via an extension. Please check if it's null first.
+     */
+    public HashMap<String, Object> extraProperties;
+
     @MetadataProperty(id = "team", name = "Team", selector = SelectorTeam.selector_name, image = "team.png", keybind = "editor.team")
     public Team team;
 

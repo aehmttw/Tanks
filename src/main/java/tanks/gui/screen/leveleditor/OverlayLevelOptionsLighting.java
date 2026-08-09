@@ -3,22 +3,24 @@ package tanks.gui.screen.leveleditor;
 import tanks.Drawing;
 import tanks.Level;
 import tanks.gui.Button;
+import tanks.gui.SelectorColor;
 import tanks.gui.TextBoxSlider;
 import tanks.gui.screen.Screen;
 
-public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
+public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay implements IUnshadedEditorBackgroundScreen
 {
     public TextBoxSlider light;
     public TextBoxSlider shadow;
 
-    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", this::escape
-    );
+    public SelectorColor lightColor;
+
+    public Button back = new Button(this.centerX, this.centerY + this.objYSpace * 2, this.objWidth, this.objHeight, "Back", this::escape);
 
     public OverlayLevelOptionsLighting(Screen previous, ScreenLevelEditor screenLevelEditor)
     {
         super(previous, screenLevelEditor);
 
-        light = new TextBoxSlider(this.centerX, this.centerY - this.objYSpace * 0.75, this.objWidth, this.objHeight, "Direct light", () ->
+        light = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY - this.objYSpace * 1.25, this.objWidth, this.objHeight, "Direct light", () ->
         {
             if (light.inputText.length() <= 0)
                 light.inputText = light.previousInputText;
@@ -38,7 +40,7 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
         light.g1 = 0;
         light.b1 = 0;
 
-        shadow = new TextBoxSlider(this.centerX, this.centerY + this.objYSpace * 0.75, this.objWidth, this.objHeight, "Shadow light", () ->
+        shadow = new TextBoxSlider(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 0.25, this.objWidth, this.objHeight, "Shadow light", () ->
         {
             if (shadow.inputText.length() <= 0)
                 shadow.inputText = shadow.previousInputText;
@@ -57,6 +59,9 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
         shadow.r1 = 0;
         shadow.g1 = 0;
         shadow.b1 = 0;
+
+        lightColor = new SelectorColor(this.centerX + this.objXSpace / 2, this.centerY - this.objYSpace * 2, this.objWidth, this.objHeight,
+                "Light color", this.objYSpace * 1.5, this.editor.level.lightColor, false);
     }
 
     public void update()
@@ -64,6 +69,7 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
         this.light.update();
         this.shadow.update();
         this.back.update();
+        this.lightColor.update();
 
         super.update();
     }
@@ -71,12 +77,17 @@ public class OverlayLevelOptionsLighting extends ScreenLevelEditorOverlay
     public void drawUI()
     {
         super.drawUI();
+
+        Drawing.drawing.setColor(0, 0, 0, 128);
+        Drawing.drawing.drawPopup(centerX, centerY - 30, 800 * this.objHeight / 40, 420 * this.objWidth / 350);
+
         this.light.draw();
         this.shadow.draw();
         this.back.draw();
+        this.lightColor.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
-        Drawing.drawing.setColor(editor.fontBrightness, editor.fontBrightness, editor.fontBrightness);
-        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "Lighting");
+        Drawing.drawing.setColor(255, 255, 255);
+        Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Lighting");
     }
 }

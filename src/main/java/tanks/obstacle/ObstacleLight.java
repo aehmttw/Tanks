@@ -17,6 +17,7 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
     public int lightColor = default_color;
 
     protected Color lightColorObj = new Color();
+    protected Color lightColorDimmed = new Color();
 
     public ObstacleLight(String name, double posX, double posY)
     {
@@ -151,6 +152,8 @@ public class ObstacleLight extends Obstacle implements IDrawableLightSource
     @Override
     public Color getColor()
     {
-        return this.lightColorObj;
+        double f = Obstacle.draw_size / Game.tile_size;
+        this.lightColorDimmed.set(this.lightColorObj.red * f, this.lightColorObj.green * f, this.lightColorObj.blue * f);
+        return this.lightColorDimmed;
     }
 }

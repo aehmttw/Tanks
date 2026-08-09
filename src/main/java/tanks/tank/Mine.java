@@ -137,7 +137,7 @@ public class Mine extends Movable implements IAvoidObject, ICopyable<Mine>, ITan
 
             Drawing.drawing.drawModel(mine, this.posX, this.posY, this.posZ + height, this.size, this.size, 6, 0);
 
-            if (Game.glowEnabled)
+            if (Game.glowEnabled && !Game.fancyLights)
                 Drawing.drawing.fillGlow(this.posX, this.posY, this.posZ + height + 1, this.size * 4, this.size * 4, true, false);
         }
         else

@@ -196,4 +196,35 @@ public abstract class Screen implements IBatchRenderableObject
     {
 
     }
+
+    public void drawPointLights()
+    {
+        if ((this instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) this).isOverlayEnabled()) || this instanceof IBlankBackgroundScreen)
+            return;
+
+        for (Obstacle o: Game.obstacles)
+        {
+            if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
+            {
+                Game.drawer.lightsPass.drawLight((IDrawableLightSource) o, Drawing.drawing.gameToAbsoluteX(o.posX, 0),  Drawing.drawing.gameToAbsoluteY(o.posY, 0), (o.posZ + Game.tile_size / 2) * Drawing.drawing.scale, ((IDrawableLightSource) o).getBrightness() * Drawing.drawing.scale);
+            }
+        }
+
+        for (Movable m: Game.movables)
+        {
+            if (m instanceof IDrawableLightSource && ((IDrawableLightSource) m).lit())
+            {
+                Game.drawer.lightsPass.drawLight((IDrawableLightSource) m, Drawing.drawing.gameToAbsoluteX(m.posX, 0),  Drawing.drawing.gameToAbsoluteY(m.posY, 0), m.posZ * Drawing.drawing.scale, ((IDrawableLightSource) m).getBrightness() * Drawing.drawing.scale);
+            }
+        }
+
+        for (Effect e: Game.effects)
+        {
+            if (e.lit())
+                Game.drawer.lightsPass.drawLight(e, Drawing.drawing.gameToAbsoluteX(e.posX, 0),  Drawing.drawing.gameToAbsoluteY(e.posY, 0), e.posZ * Drawing.drawing.scale, e.getBrightness() * Drawing.drawing.scale);
+        }
+
+        Game.game.window.transformations.clear();
+        Game.game.window.loadPerspective();
+    }
 }

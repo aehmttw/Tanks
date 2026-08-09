@@ -1745,8 +1745,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
         level.append(this.level.sizeX).append(",").append(this.level.sizeY).append(",").append(this.level.color.red).append(",").append(this.level.color.green).append(",")
             .append(this.level.color.blue).append(",").append(this.level.colorVar.red).append(",").append(this.level.colorVar.green).append(",").append(this.level.colorVar.blue)
-            .append(",").append((int) (this.level.timer / 100)).append(",").append((int) Math.round(this.level.light * 100)).append(",")
-            .append((int) Math.round(this.level.shadow * 100)).append("|");
+            .append(",").append((int) (this.level.timer / 100)).append(",")
+            .append((int) Math.round(this.level.light * 100)).append(",").append((int) Math.round(this.level.shadow * 100)).append(",")
+            .append((int) Math.round(this.level.lightColor.red)).append(",").append((int) Math.round(this.level.lightColor.green)).append(",")
+            .append((int) Math.round(this.level.lightColor.blue)).append("|");
 
         ArrayList<Obstacle> unmarked = (ArrayList<Obstacle>) Game.obstacles.clone();
         String[][][] obstacles = new String[Game.registryObstacle.obstacleEntries.size()][this.level.sizeX][this.level.sizeY];
@@ -2300,7 +2302,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
         buttons.draw();
 
-        if (Game.screen instanceof IOverlayScreen || this.paused)
+        if (!(Game.screen instanceof IUnshadedEditorBackgroundScreen) && (Game.screen instanceof IOverlayScreen || this.paused))
         {
             Drawing.drawing.setColor(127, 178, 228, 64);
             //Drawing.drawing.setColor(0, 0, 0, 127);

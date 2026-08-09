@@ -51,6 +51,15 @@ public class Color
         return this;
     }
 
+    /**
+     * @return The brightness of this color scaled to account for the sensitivity of the human eye.
+     * The human eye is most sensitive to green and least sensitive to blue.
+     */
+    public double getPerceivedBrightness()
+    {
+        return this.red * 0.2126 + this.green * 0.7152 + this.blue * 0.0722;
+    }
+
     public String toString()
     {
         return red + "/" + green + "/" + blue + "/" + alpha;

@@ -327,8 +327,7 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
         }
     }
 
-    @Override
-    public void drawUI()
+    public void drawGUI()
     {
         play.draw();
         exit.draw();
@@ -423,8 +422,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
     {
         if (Game.screen == this)
             this.drawDefaultBackground();
-        else
-            this.drawUI();
+
+        this.drawGUI();
 
         this.drawWithoutBackground();
     }

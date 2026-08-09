@@ -198,7 +198,7 @@ public class Game
     public static boolean deterministic30Fps = false;
     public static int seed = 0;
 
-    public static boolean fontcompatability = true;
+    public static boolean fontCompatibility = true;
 
     public static boolean invulnerable = false;
 
@@ -1108,6 +1108,7 @@ public class Game
 
         Level.currentLightIntensity = 1.0;
         Level.currentShadowIntensity = 0.75;
+        Level.currentLightColor.set(255, 255, 255);
     }
 
     public static Obstacle getObstacle(int tileX, int tileY)

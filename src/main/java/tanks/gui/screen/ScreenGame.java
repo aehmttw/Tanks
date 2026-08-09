@@ -3292,4 +3292,11 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         return Drawing.drawing.scale * (1 - Panel.panel.zoomTimer) + Drawing.drawing.interfaceScale * Panel.panel.zoomTimer;
     }
 
+    @Override
+    public void drawPointLights()
+    {
+        this.setPerspective();
+        super.drawPointLights();
+    }
+
 }

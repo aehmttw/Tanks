@@ -32,6 +32,7 @@ public class RenderPassGroupShadowDraw
 
     public double light;
     public double shadow;
+    protected float[] lightColor = new float[3];
 
     public RenderPassGroupShadowDraw(BaseWindow w)
     {
@@ -88,5 +89,12 @@ public class RenderPassGroupShadowDraw
         this.drawPass.draw();
 
         this.currentPassNumber = -1;
+    }
+
+    public void setLightColor(Color c)
+    {
+        this.lightColor[0] = (float) c.red / 255;
+        this.lightColor[1] = (float) c.green / 255;
+        this.lightColor[2] = (float) c.blue / 255;
     }
 }

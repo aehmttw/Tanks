@@ -22,7 +22,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader, IBlendFunc
 
     public Uniform1f baseLight;
     public Uniform1f shadowLight;
-
+    public Uniform3f lightColor;
 
     public BaseWindow window;
 

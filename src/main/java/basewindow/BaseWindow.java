@@ -97,6 +97,7 @@ public abstract class BaseWindow
     public double yOffset = 0;
     public double zOffset = 0;
 
+    public Camera baseCamera;
 
     public Transformation[] baseTransformations = new Transformation[]
         {
@@ -149,6 +150,8 @@ public abstract class BaseWindow
         this.vsync = vsync;
         this.windowHandler = w;
         this.showMouseOnLaunch = showMouse;
+
+        this.baseCamera = new Camera(0, x, 0, y, this.absoluteDepth);
 
         if (System.getProperties().toString().contains("Mac OS X"))
             mac = true;

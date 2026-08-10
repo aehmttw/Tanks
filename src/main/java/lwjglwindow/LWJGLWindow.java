@@ -385,6 +385,8 @@ public class LWJGLWindow extends BaseWindow
         glfwGetCursorPos(window, mx, my);
         absoluteMouseX = mx[0];
         absoluteMouseY = my[0];
+//        this.baseCamera.setAspectRatio(this.absoluteWidth / this.absoluteHeight);
+        this.baseCamera.updateSize(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
 
         focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
 
@@ -743,12 +745,14 @@ public class LWJGLWindow extends BaseWindow
             if (this.orthographic)
                 glOrtho(-absoluteWidth / 2, absoluteWidth / 2, absoluteHeight / 2, -absoluteHeight / 2, -absoluteDepth * m, absoluteDepth * m);
             else
-                glFrustum(
-                    -absoluteWidth / (absoluteDepth * 2.0) * m,
-                    absoluteWidth / (absoluteDepth * 2.0) * m,
-                    absoluteHeight / (absoluteDepth * 2.0) * m,
-                    -absoluteHeight / (absoluteDepth * 2.0) * m,
-                    m, absoluteDepth * m * clipDistMultiplier);
+                glMultMatrixf(this.baseCamera.projection.toOpenGL());
+//                glFrustum(
+//                    -absoluteWidth / (absoluteDepth * 2.0) * m,
+//                    absoluteWidth / (absoluteDepth * 2.0) * m,
+//                    absoluteHeight / (absoluteDepth * 2.0) * m,
+//                    -absoluteHeight / (absoluteDepth * 2.0) * m,
+//                    m, absoluteDepth * m * clipDistMultiplier);
+
         }
 
         this.angled = false;
@@ -807,8 +811,9 @@ public class LWJGLWindow extends BaseWindow
         {
             applyTransformations();
 
-            for (Transformation t: this.baseTransformations)
-                t.apply();
+            glMultMatrixf(this.baseCamera.view.toOpenGL());
+//            for (Transformation t: this.baseTransformations)
+//                t.apply();
         }
     }
 

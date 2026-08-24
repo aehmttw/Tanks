@@ -99,7 +99,11 @@ public class ScreenChangelog extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(centerX, centerY, 1100, 720);
 
@@ -136,7 +140,7 @@ public class ScreenChangelog extends Screen
                 Drawing.drawing.drawInterfaceText(this.centerX - 400, this.centerY + (-(pageContents.length - 1) / 2.0 + i) * this.objYSpace / 2 - this.objYSpace, s, false);
             }
         }
-    }
+        }
 
     public static class Changelog
     {

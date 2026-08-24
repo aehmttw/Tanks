@@ -100,6 +100,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
     public boolean panDown;
     public double panX;
     public double panY;
+    public double panScreenX;
+    public double panScreenY;
     public double panCurrentX;
     public double panCurrentY;
     public double zoomCurrentX;
@@ -576,6 +578,10 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         if (!initialized)
             initialize();
 
+        // Input is processed before the draw pass refreshes the camera. Keep its
+        // world conversion aligned with the current stats-bar viewport.
+        this.setBasePerspective();
+
         if (Level.isDark())
             this.fontBrightness = 255;
         else
@@ -885,8 +891,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         validZoomFingers = 0;
         if (!Game.game.window.touchscreen)
         {
-            double mx = Drawing.drawing.getMouseX();
-            double my = Drawing.drawing.getMouseY();
+            double mx = Drawing.drawing.getWorldMouseX();
+            double my = Drawing.drawing.getWorldMouseY();
 
             boolean[] handled = checkMouse(mx, my,
                 Game.game.input.editorUse.isPressed() && !Game.game.input.editorAction.isPressed(),
@@ -915,8 +921,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 {
                     input = true;
 
-                    double mx = Drawing.drawing.toGameCoordsX(Drawing.drawing.getInterfacePointerX(p.x));
-                    double my = Drawing.drawing.toGameCoordsY(Drawing.drawing.getInterfacePointerY(p.y));
+                    double mx = Drawing.drawing.getWorldPointerX(p.x);
+                    double my = Drawing.drawing.getWorldPointerY(p.y);
 
                     this.touchscreenSelectedButton = null;
 
@@ -934,26 +940,44 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 panDown = false;
         }
 
-        double px = Drawing.drawing.gameToInterfaceCoordsX(panCurrentX);
-        double py = Drawing.drawing.gameToInterfaceCoordsY(panCurrentY);
+        double px = panCurrentX;
+        double py = panCurrentY;
 
         if (!zoomDown && panDown)
         {
-            if (prevPanDown && !prevZoomDown)
+            if (!Game.game.window.touchscreen)
             {
-                offsetX += panCurrentX - panX;
-                offsetY += panCurrentY - panY;
-            }
+                Camera.Bounds bounds = Game.game.window.baseCamera.getBoundsAtDepth(0);
+                double worldPerPixelX = (bounds.right - bounds.left) / Math.max(1, Game.game.window.absoluteWidth);
+                double worldPerPixelY = (bounds.bottom - bounds.top) / Math.max(1, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
 
-            panX = Drawing.drawing.toGameCoordsX(px);
-            panY = Drawing.drawing.toGameCoordsY(py);
+                if (prevPanDown && !prevZoomDown)
+                {
+                    offsetX += (Game.game.window.absoluteMouseX - panScreenX) * worldPerPixelX;
+                    offsetY += (Game.game.window.absoluteMouseY - panScreenY) * worldPerPixelY;
+                }
+
+                panScreenX = Game.game.window.absoluteMouseX;
+                panScreenY = Game.game.window.absoluteMouseY;
+            }
+            else
+            {
+                if (prevPanDown && !prevZoomDown)
+                {
+                    offsetX += panCurrentX - panX;
+                    offsetY += panCurrentY - panY;
+                }
+
+                panX = panCurrentX;
+                panY = panCurrentY;
+            }
         }
 
 
         if (zoomDown)
         {
-            double zx = Drawing.drawing.gameToInterfaceCoordsX(zoomCurrentX);
-            double zy = Drawing.drawing.gameToInterfaceCoordsY(zoomCurrentY);
+            double zx = zoomCurrentX;
+            double zy = zoomCurrentY;
             double d = Math.sqrt(Math.pow(px - zx, 2) + Math.pow(py - zy, 2));
 
             if (prevZoomDown)
@@ -962,21 +986,11 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 zoom = Math.max(0.75, Math.min(Math.max(2 / (Drawing.drawing.unzoomedScale / Drawing.drawing.interfaceScale), 1), zoom));
                 Drawing.drawing.scale = getScale();
 
-                panCurrentX = Drawing.drawing.toGameCoordsX(px);
-                panCurrentY = Drawing.drawing.toGameCoordsY(py);
-                zoomCurrentX = Drawing.drawing.toGameCoordsX(zx);
-                zoomCurrentY = Drawing.drawing.toGameCoordsY(zy);
-
                 double x = (panCurrentX + zoomCurrentX) / 2;
                 double y = (panCurrentY + zoomCurrentY) / 2;
                 offsetX += x - panX;
                 offsetY += y - panY;
             }
-
-            panCurrentX = Drawing.drawing.toGameCoordsX(px);
-            panCurrentY = Drawing.drawing.toGameCoordsY(py);
-            zoomCurrentX = Drawing.drawing.toGameCoordsX(zx);
-            zoomCurrentY = Drawing.drawing.toGameCoordsY(zy);
 
             double x = (panCurrentX + zoomCurrentX) / 2;
             double y = (panCurrentY + zoomCurrentY) / 2;
@@ -1077,9 +1091,15 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 }
             }
         }
-        else if (currentMode == EditorMode.camera || (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_ALT) && validLeft))
+        else if (currentMode == EditorMode.camera || (Game.game.window.pressedKeys.contains(InputCodes.KEY_LEFT_ALT) && left))
         {
-            if (validLeft)
+            if (!Game.game.window.touchscreen && left)
+            {
+                panDown = true;
+                panCurrentX = mx;
+                panCurrentY = my;
+            }
+            else if (validLeft)
             {
                 if (validZoomFingers == 0)
                 {
@@ -2107,10 +2127,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             {
                 Drawing drawing = Drawing.drawing;
                 Drawing.drawing.setColor(174, 92, 16);
-                Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(-Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(drawing.sizeX + Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
+                Drawing.drawing.fillOutOfBoundsGround(drawing.sizeX, drawing.sizeY);
             }
 
             for (IDrawable d: this.drawables[i])
@@ -2136,8 +2153,34 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         }
     }
 
+    private void beginWorldOverlayDraw()
+    {
+        int viewportY = 0;
+        if (Game.game.window.absoluteHeight > 0)
+            viewportY = (int) Math.round(Drawing.drawing.statsHeight * Game.game.window.frameBufferHeight / (double) Game.game.window.absoluteHeight);
+
+        Game.game.window.currentCamera = Game.game.window.baseCamera;
+        Game.game.window.loadPerspective();
+        Game.game.window.setViewport(0, viewportY, Game.game.window.frameBufferWidth,
+                Math.max(1, Game.game.window.frameBufferHeight - viewportY));
+    }
+
+    private void endWorldOverlayDraw()
+    {
+        int viewportY = 0;
+        if (Game.game.window.absoluteHeight > 0)
+            viewportY = (int) Math.round(Drawing.drawing.statsHeight * Game.game.window.frameBufferHeight / (double) Game.game.window.absoluteHeight);
+
+        Game.game.window.currentCamera = Game.game.window.interfaceCamera;
+        Game.game.window.loadPerspective();
+        Game.game.window.setViewport(0, viewportY, Game.game.window.frameBufferWidth,
+                Math.max(1, Game.game.window.frameBufferHeight - viewportY));
+    }
+
     public void drawUI()
     {
+        this.beginWorldOverlayDraw();
+
         if (Level.isDark())
             Drawing.drawing.setColor(255, 255, 255, 64);
         else
@@ -2246,6 +2289,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
             }
         }
 
+        this.endWorldOverlayDraw();
+
         if (currentMode == EditorMode.camera && !paused)
         {
             Drawing.drawing.setColor(0, 0, 0, 127);
@@ -2289,6 +2334,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
         if ((currentMode == EditorMode.select || symmetrySelectMode || specialBuildTool()) && !this.paused)
         {
+            this.beginWorldOverlayDraw();
+
             double lowX = Math.min(selectX1, selectX2);
             double highX = Math.max(selectX1, selectX2);
             double lowY = Math.min(selectY1, selectY2);
@@ -2298,6 +2345,8 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
                 previewSelection(lowX, highX, lowY, highY, extra);
             else
                 previewShape(lowX, highX, lowY, highY);
+
+            this.endWorldOverlayDraw();
         }
 
         buttons.draw();
@@ -2306,7 +2355,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         {
             Drawing.drawing.setColor(127, 178, 228, 64);
             //Drawing.drawing.setColor(0, 0, 0, 127);
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+            Drawing.drawing.fillInterfaceViewportRect();
         }
 
         if (!paused && showControls)
@@ -2895,6 +2944,18 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
     public double getOffsetY()
     {
         return offsetY - Game.currentSizeY * Game.tile_size / 2 + (Panel.windowHeight - Drawing.drawing.statsHeight) / Drawing.drawing.scale / 2;
+    }
+
+    @Override
+    public double getCameraX(double visibleWidth, double visibleHeight)
+    {
+        return Game.currentSizeX * Game.tile_size / 2 - this.offsetX;
+    }
+
+    @Override
+    public double getCameraY(double visibleWidth, double visibleHeight)
+    {
+        return Game.currentSizeY * Game.tile_size / 2 - this.offsetY;
     }
 
     @Override

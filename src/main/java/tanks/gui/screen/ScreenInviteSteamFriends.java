@@ -87,7 +87,11 @@ public class ScreenInviteSteamFriends extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         friends.draw();
         back.draw();
 
@@ -100,5 +104,5 @@ public class ScreenInviteSteamFriends extends Screen
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "You don't have any online friends :(");
         }
-    }
+        }
 }

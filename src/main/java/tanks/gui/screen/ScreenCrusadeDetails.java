@@ -244,10 +244,16 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
             Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
             Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+            Drawing.drawing.fillInterfaceViewportRect();
         }
         else
             this.drawDefaultBackground();
+
+    }
+
+    @Override
+    public void drawUI()
+    {
 
         Drawing.drawing.setColor(0, 0, 0, 255);
 

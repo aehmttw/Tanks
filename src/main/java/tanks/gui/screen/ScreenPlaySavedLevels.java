@@ -123,7 +123,11 @@ public class ScreenPlaySavedLevels extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         this.levels.draw();
         this.search.draw();
         this.quit.draw();
@@ -148,7 +152,7 @@ public class ScreenPlaySavedLevels extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, this.title);
-    }
+        }
 
     @Override
     public void setupLayoutParameters()

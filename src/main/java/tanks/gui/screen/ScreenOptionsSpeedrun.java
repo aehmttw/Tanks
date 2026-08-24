@@ -111,7 +111,11 @@ public class ScreenOptionsSpeedrun extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         back.draw();
         deterministic.draw();
         timer.draw();
@@ -120,5 +124,5 @@ public class ScreenOptionsSpeedrun extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Speedrunning options");
-    }
+        }
 }

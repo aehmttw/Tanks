@@ -119,7 +119,11 @@ public class ScreenOptionsFramerate extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (Game.framework != Game.Framework.libgdx)
             unlimited.draw();
         else
@@ -149,5 +153,5 @@ public class ScreenOptionsFramerate extends Screen
         else
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Maximum framerate: \u00A7000100200255unlimited");
 
-    }
+        }
 }

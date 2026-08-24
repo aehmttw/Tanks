@@ -35,7 +35,11 @@ public class ScreenWaiting extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (age > 50)
         {
             Drawing.drawing.setColor(0, 0, 0, Math.min(255, (age / 100) * 255 - 50));
@@ -47,7 +51,7 @@ public class ScreenWaiting extends Screen
         drawSpinny(100, 4, 0.3, 45 * size, 1 * size);
         drawSpinny(99, 3, 0.5, 30 * size2, 0.75 * size2);
         drawSpinny(100, 2, 0.7, 15 * size3, 0.5 * size3);
-    }
+        }
 
     public void drawSpinny(int max, int parts, double speed, double size, double dotSize)
     {

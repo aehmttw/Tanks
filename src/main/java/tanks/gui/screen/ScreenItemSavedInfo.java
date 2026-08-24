@@ -33,7 +33,11 @@ public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScree
     {
         Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         this.quit.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
@@ -43,5 +47,5 @@ public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScree
         else
             Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace, "Item saved to templates!");
-    }
+        }
 }

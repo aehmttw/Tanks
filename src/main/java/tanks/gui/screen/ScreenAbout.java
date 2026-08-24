@@ -146,6 +146,11 @@ public class ScreenAbout extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         changelogs.draw();
         link.draw();
         libraries.draw();
@@ -174,5 +179,5 @@ public class ScreenAbout extends Screen
             else
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "%d extension loaded", extensions);
         }
-    }
+        }
 }

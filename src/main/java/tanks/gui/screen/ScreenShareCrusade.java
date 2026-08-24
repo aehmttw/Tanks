@@ -111,7 +111,11 @@ public class ScreenShareCrusade extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         crusades.draw();
         search.draw();
         quit.draw();
@@ -129,7 +133,7 @@ public class ScreenShareCrusade extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "Share crusade");
-    }
+        }
 
     @Override
     public void setupLayoutParameters()

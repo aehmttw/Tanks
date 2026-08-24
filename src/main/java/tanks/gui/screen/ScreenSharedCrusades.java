@@ -55,14 +55,18 @@ public class ScreenSharedCrusades extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         quit.draw();
         sharedCrusades.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Shared crusades");
-    }
+        }
 
     @Override
     public void setupLayoutParameters()

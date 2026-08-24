@@ -127,6 +127,11 @@ public class ScreenOptions extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
         miscOptions.draw();
         multiplayerOptions.draw();
@@ -179,7 +184,7 @@ public class ScreenOptions extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize * 0.65);
         Drawing.drawing.setColor(80, 80, 80);
         Drawing.drawing.displayInterfaceText(personalize.posX, personalize.posY - personalize.sizeY * 0.3, "My profile");
-    }
+        }
 
     public static void initOptions(String homedir)
     {

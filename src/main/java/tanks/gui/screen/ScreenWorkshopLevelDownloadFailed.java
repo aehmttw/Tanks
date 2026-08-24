@@ -142,7 +142,11 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (confirmingDelete)
         {
             Drawing.drawing.setColor(0, 0, 0, 127);
@@ -202,5 +206,5 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
                 more.draw();
             }
         }
-    }
+        }
 }

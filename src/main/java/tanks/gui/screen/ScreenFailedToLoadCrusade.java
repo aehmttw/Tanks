@@ -85,6 +85,11 @@ public class ScreenFailedToLoadCrusade extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         quit.draw();
 
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Tanks failed to load the crusade!");
@@ -108,5 +113,5 @@ public class ScreenFailedToLoadCrusade extends Screen
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
                 "If this is your crusade, it may be corrupted!");
         }
-    }
+        }
 }

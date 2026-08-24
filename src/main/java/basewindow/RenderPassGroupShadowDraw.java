@@ -1,6 +1,6 @@
 package basewindow;
 
-import lwjglwindow.FrameBuffer;
+import basewindow.transformation.ScaleAboutPoint;
 
 public class RenderPassGroupShadowDraw
 {
@@ -55,8 +55,9 @@ public class RenderPassGroupShadowDraw
             this.depthFrameBuffer.free();
         }
 
-        this.depthFrameBuffer = new FrameBuffer();
+        this.depthFrameBuffer = this.window.createFrameBuffer();
         this.depthFrameBuffer.createDepthTexture(this.size, this.size);
+        this.depthFrameBuffer.bindDepthTexture(this.window, "depth");
         this.depthFrameBuffer.initialize();
     }
 
@@ -67,6 +68,38 @@ public class RenderPassGroupShadowDraw
 
         if (s > 0 && s != this.size)
             this.createFrameBuffer();
+
+        Camera.Bounds bounds = this.window.baseCamera.getBoundsAtDepth(0);
+        double left = bounds.left;
+        double right = bounds.right;
+        double top = bounds.top;
+        double bottom = bounds.bottom;
+
+        if (this.window.lightBaseTransformation.length > 0 && this.window.lightBaseTransformation[0] instanceof ScaleAboutPoint)
+        {
+            ScaleAboutPoint scale = (ScaleAboutPoint) this.window.lightBaseTransformation[0];
+
+            double centerX = (left + right) / 2.0;
+            double centerY = (top + bottom) / 2.0;
+            double halfWidth = (right - left) / (2.0 * Math.max(0.0001, scale.x));
+            double halfHeight = (bottom - top) / (2.0 * Math.max(0.0001, scale.y));
+
+            left = centerX - halfWidth;
+            right = centerX + halfWidth;
+            top = centerY - halfHeight;
+            bottom = centerY + halfHeight;
+        }
+
+        this.window.shadowCamera.setProjectionType(Camera.Projection.orthographic);
+        this.window.shadowCamera.resetToBounds(left, right, top, bottom, this.window.absoluteDepth);
+        // The shadow camera is positioned at absoluteDepth. This covers the same
+        // world-space z range as the legacy shadow glOrtho(-absoluteDepth, absoluteDepth).
+        this.window.shadowCamera.setClipPlanes(this.window.absoluteDepth * 0.1, this.window.absoluteDepth * 2);
+        this.window.shadowCamera.posX = this.window.baseCamera.posX;
+        this.window.shadowCamera.posY = this.window.baseCamera.posY;
+        this.window.shadowCamera.posZ = this.window.absoluteDepth;
+        this.window.shadowCamera.updateView();
+        this.window.currentCamera = this.window.shadowCamera;
 
         this.window.loadPerspective();
         this.depthFrameBuffer.bind();

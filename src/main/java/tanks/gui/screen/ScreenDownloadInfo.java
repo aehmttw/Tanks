@@ -25,7 +25,11 @@ public class ScreenDownloadInfo extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(0, 0, 0);
 
         SteamUGC.ItemDownloadInfo i = new SteamUGC.ItemDownloadInfo();
@@ -53,5 +57,5 @@ public class ScreenDownloadInfo extends Screen
         Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5,
             1.0 * i.getBytesDownloaded() / i.getBytesTotal());
 
-    }
+        }
 }

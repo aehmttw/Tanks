@@ -55,6 +55,11 @@ public class ScreenConnecting extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
 
@@ -84,7 +89,7 @@ public class ScreenConnecting extends Screen
         }
 
         back.draw();
-    }
+        }
 
     public void drawSpinny(int max, int parts, double speed, double size, double dotSize)
     {

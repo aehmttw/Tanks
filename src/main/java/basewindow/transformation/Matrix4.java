@@ -204,6 +204,35 @@ public class Matrix4
         m[3][3] = 0.0;
     }
 
+    public void setOrtho(double left, double right, double bottom, double top, double near, double far)
+    {
+        double width = right - left;
+        double height = top - bottom;
+        double depth = far - near;
+
+        double[][] m = this.values;
+
+        m[0][0] = 2.0 / width;
+        m[0][1] = 0.0;
+        m[0][2] = 0.0;
+        m[0][3] = -(right + left) / width;
+
+        m[1][0] = 0.0;
+        m[1][1] = 2.0 / height;
+        m[1][2] = 0.0;
+        m[1][3] = -(top + bottom) / height;
+
+        m[2][0] = 0.0;
+        m[2][1] = 0.0;
+        m[2][2] = -2.0 / depth;
+        m[2][3] = -(far + near) / depth;
+
+        m[3][0] = 0.0;
+        m[3][1] = 0.0;
+        m[3][2] = 0.0;
+        m[3][3] = 1.0;
+    }
+
     @Override
     public String toString()
     {

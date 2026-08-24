@@ -195,7 +195,11 @@ public class ScreenCrusades extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         crusadesList.draw();
 
         if (ScreenPartyHost.isServer)
@@ -227,7 +231,7 @@ public class ScreenCrusades extends Screen
             Drawing.drawing.setInterfaceFontSize(16);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.75 + crusadesList.noPageOffY, "Drag and drop crusades here to import them");
         }
-    }
+        }
 
     @Override
     public void onFilesDropped(String... filePaths)

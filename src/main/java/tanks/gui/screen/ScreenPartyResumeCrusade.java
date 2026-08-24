@@ -58,6 +58,11 @@ public class ScreenPartyResumeCrusade extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         resume.draw();
         selectOtherCrusade.draw();
         quit.draw();
@@ -71,7 +76,7 @@ public class ScreenPartyResumeCrusade extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 1.5, "Crusade: %s", Crusade.currentCrusade.name.replace("_", " "));
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2, "Battle: %d", (Crusade.currentCrusade.currentLevel + 1));
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.5, "Players alive: %d", players);
-    }
+        }
 
     public void setupLayoutParameters()
     {

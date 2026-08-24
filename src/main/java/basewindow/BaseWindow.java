@@ -98,6 +98,13 @@ public abstract class BaseWindow
     public double zOffset = 0;
 
     public Camera baseCamera;
+    public Camera shadowCamera;
+    public Camera screenCamera;
+    public Camera interfaceCamera;
+    public Camera currentCamera;
+    public double interfaceCameraLogicalWidth;
+    public double interfaceCameraLogicalHeight;
+    public double interfaceCameraHeightOffset;
 
     public Transformation[] baseTransformations = new Transformation[]
         {
@@ -151,7 +158,14 @@ public abstract class BaseWindow
         this.windowHandler = w;
         this.showMouseOnLaunch = showMouse;
 
-        this.baseCamera = new Camera(0, x, 0, y, this.absoluteDepth);
+        this.baseCamera = new Camera("base", 0, x, 0, y, this.absoluteDepth);
+        this.shadowCamera = new Camera("shadow", 0, x, 0, y, this.absoluteDepth);
+        this.screenCamera = new Camera("screen", 0, x, 0, y, this.absoluteDepth);
+        this.interfaceCamera = new Camera("interface", 0, 1400, 0, 900, this.absoluteDepth);
+        this.currentCamera = this.baseCamera;
+        this.interfaceCameraLogicalWidth = 1400;
+        this.interfaceCameraLogicalHeight = 900;
+        this.interfaceCameraHeightOffset = 0;
 
         if (System.getProperties().toString().contains("Mac OS X"))
             mac = true;

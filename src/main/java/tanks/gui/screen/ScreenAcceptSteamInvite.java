@@ -40,6 +40,11 @@ public class ScreenAcceptSteamInvite extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         connect.draw();
         quit.draw();
 

@@ -6,6 +6,7 @@ import basewindow.BaseWindow;
 import org.lwjgl.opengl.GL13;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import static org.lwjgl.opengl.ARBTextureFloat.GL_RGB16F_ARB;
@@ -236,6 +237,15 @@ public class FrameBuffer extends BaseFrameBuffer
                     format,
                     t == Type.FLOAT ? GL_FLOAT : GL_UNSIGNED_BYTE,
                     (ByteBuffer) null);
+
+            if (type == Type.DEPTH)
+            {
+                FloatBuffer borderColor = org.lwjgl.BufferUtils.createFloatBuffer(4);
+                borderColor.put(1f).put(1f).put(1f).put(1f);
+                borderColor.flip();
+                glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+            }
+
             glBindTexture(GL_TEXTURE_2D, 0);
         }
 

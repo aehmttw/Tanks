@@ -137,7 +137,11 @@ public class ScreenSavedLevels extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         savedLevelsList.draw();
 
         if (savedLevelsList.buttons.size() <= 0)
@@ -173,7 +177,7 @@ public class ScreenSavedLevels extends Screen
                 "Drag and drop levels here to import them");
         }
 
-    }
+        }
 
     /**
      * After running <code>validation</code> (validation is successful if it doesn't crash),

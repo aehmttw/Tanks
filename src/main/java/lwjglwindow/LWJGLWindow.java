@@ -385,8 +385,15 @@ public class LWJGLWindow extends BaseWindow
         glfwGetCursorPos(window, mx, my);
         absoluteMouseX = mx[0];
         absoluteMouseY = my[0];
-//        this.baseCamera.setAspectRatio(this.absoluteWidth / this.absoluteHeight);
+
         this.baseCamera.updateSize(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
+        this.shadowCamera.updateSize(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
+        this.screenCamera.resetToBounds(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
+        this.screenCamera.setProjectionType(basewindow.Camera.Projection.orthographic);
+
+        this.interfaceCamera.resetToBounds(0, this.interfaceCameraLogicalWidth, 0, this.interfaceCameraLogicalHeight, absoluteDepth);
+        double usableHeight = Math.max(1, absoluteHeight - this.interfaceCameraHeightOffset);
+        this.interfaceCamera.setAspectRatio(absoluteWidth / usableHeight);
 
         focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
 
@@ -736,24 +743,7 @@ public class LWJGLWindow extends BaseWindow
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        double m = clipMultiplier;
-
-        if (this.mainRenderPasses.drawingShadow)
-            glOrtho(0, absoluteWidth, absoluteHeight, 0, -absoluteDepth, absoluteDepth);
-        else
-        {
-            if (this.orthographic)
-                glOrtho(-absoluteWidth / 2, absoluteWidth / 2, absoluteHeight / 2, -absoluteHeight / 2, -absoluteDepth * m, absoluteDepth * m);
-            else
-                glMultMatrixf(this.baseCamera.projection.toOpenGL());
-//                glFrustum(
-//                    -absoluteWidth / (absoluteDepth * 2.0) * m,
-//                    absoluteWidth / (absoluteDepth * 2.0) * m,
-//                    absoluteHeight / (absoluteDepth * 2.0) * m,
-//                    -absoluteHeight / (absoluteDepth * 2.0) * m,
-//                    m, absoluteDepth * m * clipDistMultiplier);
-
-        }
+        glMultMatrixf(this.currentCamera.projection.toOpenGL());
 
         this.angled = false;
 
@@ -799,19 +789,29 @@ public class LWJGLWindow extends BaseWindow
     public void loadPerspective()
     {
         setUpPerspective();
+//        glMatrixMode(GL_MODELVIEW);
+//        glLoadIdentity();
 
         if (this.mainRenderPasses.drawingShadow)
         {
             applyShadowTransformations();
+            glMultMatrixf(this.currentCamera.view.toOpenGL());
 
-            for (Transformation t: this.lightBaseTransformation)
+            for (int i = 0; i < this.lightBaseTransformation.length; i++)
+            {
+                Transformation t = this.lightBaseTransformation[i];
+
+                if (i == 0 && t instanceof basewindow.transformation.ScaleAboutPoint)
+                    continue;
+
                 t.apply();
+            }
         }
         else
         {
             applyTransformations();
 
-            glMultMatrixf(this.baseCamera.view.toOpenGL());
+            glMultMatrixf(this.currentCamera.view.toOpenGL());
 //            for (Transformation t: this.baseTransformations)
 //                t.apply();
         }

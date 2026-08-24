@@ -330,6 +330,11 @@ public class ScreenJoinParty extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         join.draw();
         ip.draw();
         back.draw();
@@ -352,5 +357,5 @@ public class ScreenJoinParty extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.displayInterfaceText(this.ip.posX, this.ip.posY - this.objYSpace * 1.25, "Join by IP");
-    }
+        }
 }

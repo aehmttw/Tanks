@@ -56,7 +56,11 @@ public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundS
     {
         Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setInterfaceFontSize(this.textSize);
 
         if (Level.isDark())
@@ -68,5 +72,5 @@ public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundS
 
         this.replace.draw();
         this.quit.draw();
-    }
+        }
 }

@@ -121,7 +121,11 @@ public class ScreenCrusadeOptions extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         double extraHeight = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
         double width = Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale;
 
@@ -143,7 +147,7 @@ public class ScreenCrusadeOptions extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade options");
-    }
+        }
 
     @Override
     public void onAttemptClose()

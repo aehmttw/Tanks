@@ -467,15 +467,14 @@ public class Hotbar
 
         this.itemBar.drawCircle();
 
-        if (this.enabledAmmunitionBar)
-        {
-            drawBullets();
-            drawMines();
-            drawShields();
-        }
-
         double mx = Drawing.drawing.getInterfaceMouseX();
         double my = Drawing.drawing.getInterfaceMouseY();
+
+        if (this.enabledAmmunitionBar)
+            drawBullets();
+
+        Game.game.window.currentCamera = Game.game.window.baseCamera;
+        Game.game.window.loadPerspective();
 
         double z = Game.tile_size / 2 + Game.playerTank.posZ;
         if (!Game.enable3d)
@@ -531,6 +530,15 @@ public class Hotbar
                 Drawing.drawing.drawText(Game.playerTank.posX + healthSize / 2 - thickness / 4, Game.playerTank.posY, z, shields + "", false);
             }
         }
+
+        if (this.enabledAmmunitionBar)
+        {
+            drawMines();
+            drawShields();
+        }
+
+        Game.game.window.currentCamera = Game.game.window.interfaceCamera;
+        Game.game.window.loadPerspective();
 
         if (Game.currentLevel instanceof Minigame)
             ((Minigame) Game.currentLevel).drawCircleHotbar();

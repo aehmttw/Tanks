@@ -59,9 +59,13 @@ public class ScreenOverlayOnline extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(127, 178, 228, 64);
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+        Drawing.drawing.fillInterfaceViewportRect();
 
         double lowest = -1;
         for (int i = 0; i < max_button_count; i++)
@@ -84,5 +88,5 @@ public class ScreenOverlayOnline extends Screen
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, lowest - this.objYSpace, title);
-    }
+        }
 }

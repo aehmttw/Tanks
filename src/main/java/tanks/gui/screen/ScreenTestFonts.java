@@ -54,7 +54,7 @@ public class ScreenTestFonts extends Screen
     public void draw()
     {
         Drawing.drawing.setColor(0, 0, 0);
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+        Drawing.drawing.fillInterfaceViewportRect();
 
         Drawing.drawing.setColor(255, 255, 255);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

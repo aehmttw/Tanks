@@ -2,6 +2,7 @@ package tanks.rendering;
 
 import basewindow.BaseShapeBatchRenderer;
 import basewindow.IBatchRenderableObject;
+import basewindow.Camera.Bounds;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;
@@ -96,6 +97,8 @@ public class TrackRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
+        Bounds bounds = Game.game.window.baseCamera.getBoundsAtDepth(0);
+
         for (RegionRenderer s: renderers.values())
         {
             double x = xOffset * Game.tile_size * Game.currentSizeX;
@@ -103,28 +106,12 @@ public class TrackRenderer
             double z = 0;
             double sc = 1;
 
-            boolean in = false;
-            int c = 3;
-            outer:
-            for (int i = 0; i < c; i++)
-            {
-                for (int j = 0; j < c; j++)
-                {
-                    double x1 = Drawing.drawing.gameToAbsoluteX(x + (s.posX + i / (c - 1.0)) * section_size, 0);
-                    double y1 = Drawing.drawing.gameToAbsoluteY(y + (s.posY + j / (c - 1.0)) * section_size, 0);
-
-                    if (!Drawing.drawing.isOutOfBounds(x1, y1))
-                    {
-                        in = true;
-                        break outer;
-                    }
-                }
-            }
+            boolean in = true;
 
             s.renderer.hidden = !in;
             s.renderer.settings(true, false, false);
-            s.renderer.setPosition(Drawing.drawing.gameToAbsoluteX(x, 0), Drawing.drawing.gameToAbsoluteY(y, 0), z * Drawing.drawing.scale);
-            s.renderer.setScale(Drawing.drawing.scale * sc, Drawing.drawing.scale * sc, Drawing.drawing.scale * sc);
+            s.renderer.setPosition(0, 0, 0);
+            s.renderer.setScale(sc, sc, sc);
             s.renderer.draw();
         }
     }

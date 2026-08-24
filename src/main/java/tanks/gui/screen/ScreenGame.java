@@ -2585,10 +2585,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             {
                 double frac = Obstacle.draw_size / Game.tile_size;
                 Drawing.drawing.setColor(174 * frac + Level.currentColor.red * (1 - frac), 92 * frac + Level.currentColor.green * (1 - frac), 16 * frac + Level.currentColor.blue * (1 - frac));
-                Drawing.drawing.fillForcedBox(drawing.sizeX / 2, -Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(drawing.sizeX / 2, Drawing.drawing.sizeY + Game.tile_size / 2, 0, drawing.sizeX + Game.tile_size * 2, Game.tile_size, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(-Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
-                Drawing.drawing.fillForcedBox(drawing.sizeX + Game.tile_size / 2, drawing.sizeY / 2, 0, Game.tile_size, drawing.sizeY, Obstacle.draw_size, (byte) 0);
+                Drawing.drawing.fillOutOfBoundsGround(drawing.sizeX, drawing.sizeY);
             }
 
             if (i == 9 && this.tutorial != null)
@@ -2688,16 +2685,13 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         if (Panel.darkness > 0)
         {
             Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+            Drawing.drawing.fillInterfaceViewportRect();
         }
 
         drawSpectateOverlay();
 
         if (!(paused && screenshotMode) && Game.player.hotbar.enabledItemBar)
             Game.player.hotbar.itemBar.drawOverlay();
-
-        if (!this.showDefaultMouse)
-            Panel.panel.drawMouseTarget(true);
 
         Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
@@ -2798,7 +2792,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             if (shopScreen || buildsScreen)
             {
                 Drawing.drawing.setColor(127, 178, 228, 64);
-                Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+                Drawing.drawing.fillInterfaceViewportRect();
 
                 Drawing.drawing.setColor(0, 0, 0, 127);
                 Drawing.drawing.drawPopup(this.centerX, this.centerY + shopOffset + 50, 1200, 600);
@@ -3100,7 +3094,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             }
 
             Drawing.drawing.setColor(127, 178, 228, 64);
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+            Drawing.drawing.fillInterfaceViewportRect();
 
             if (ScreenPartyLobby.isClient)
             {
@@ -3284,6 +3278,42 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public double getOffsetY()
     {
         return Drawing.drawing.getPlayerOffsetY();
+    }
+
+    @Override
+    public double getCameraX(double visibleWidth, double visibleHeight)
+    {
+        double margin = Obstacle.draw_size / Game.tile_size *
+                Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeX * Game.tile_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
+
+        double worldWidth = Drawing.drawing.sizeX;
+        double playerX = Drawing.drawing.getTrackedPlayerX();
+
+        if (Game.followingCam)
+            return playerX;
+
+        if (visibleWidth >= worldWidth + margin * 2)
+            return worldWidth / 2;
+
+        return Math.max(visibleWidth / 2 - margin, Math.min(worldWidth - visibleWidth / 2 + margin, playerX));
+    }
+
+    @Override
+    public double getCameraY(double visibleWidth, double visibleHeight)
+    {
+        double margin = Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeY * Game.tile_size *
+                Drawing.drawing.scale - (Panel.windowHeight - Drawing.drawing.statsHeight))) / 2;
+
+        double worldHeight = Drawing.drawing.sizeY;
+        double playerY = Drawing.drawing.getTrackedPlayerY();
+
+        if (Game.followingCam)
+            return playerY;
+
+        if (visibleHeight >= worldHeight + margin * 2)
+            return worldHeight / 2;
+
+        return Math.max(visibleHeight / 2 - margin, Math.min(worldHeight - visibleHeight / 2 + margin, playerY));
     }
 
     @Override

@@ -84,7 +84,11 @@ public class ScreenTankLoadOverwrite extends Screen implements IBlankBackgroundS
     {
         Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "A tank with this name already exists in the level!");
@@ -107,5 +111,5 @@ public class ScreenTankLoadOverwrite extends Screen implements IBlankBackgroundS
         Drawing.drawing.setInterfaceFontSize(this.textSize * 3);
         Drawing.drawing.setColor(255, 0, 0);
         Drawing.drawing.drawInterfaceText(this.oldTankButton.posX, this.oldTankButton.posY - 8, "x");
-    }
+        }
 }

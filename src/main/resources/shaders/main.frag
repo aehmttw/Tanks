@@ -55,11 +55,20 @@ void main(void)
     {
         vec4 lightNDCPosition = lightBiasedClipPosition / lightBiasedClipPosition.w;
 
-        vec4 depthVec = texture2D(depthTexture, lightNDCPosition.xy);
-
         if (depthtest)
         {
-            lit = depthVec.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
+            bool inShadowMap = lightNDCPosition.x >= 0.0 && lightNDCPosition.x <= 1.0
+                && lightNDCPosition.y >= 0.0 && lightNDCPosition.y <= 1.0
+                && lightNDCPosition.z >= 0.0 && lightNDCPosition.z <= 1.0;
+
+            if (inShadowMap)
+            {
+                vec4 depthVec = texture2D(depthTexture, lightNDCPosition.xy);
+                lit = depthVec.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
+            }
+            else
+                lit = true;
+
             glowValue = glow;
         }
     }

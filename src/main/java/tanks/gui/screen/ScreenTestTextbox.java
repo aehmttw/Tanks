@@ -42,6 +42,11 @@ public class ScreenTestTextbox extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - 150, "Text box test");
@@ -50,5 +55,5 @@ public class ScreenTestTextbox extends Screen
         uuidBox.draw();
 
         back.draw();
-    }
+        }
 }

@@ -35,6 +35,11 @@ public class ScreenPendingJoinParty extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         confirm.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
@@ -43,5 +48,5 @@ public class ScreenPendingJoinParty extends Screen
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2 / 3, "You will be let in when the game finishes");
 
-    }
+        }
 }

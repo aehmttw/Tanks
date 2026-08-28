@@ -136,5 +136,5 @@ public class ScreenOptionsMisc extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 3.5, "Miscellaneous options");
-        }
+    }
 }

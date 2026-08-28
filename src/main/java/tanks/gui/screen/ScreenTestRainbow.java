@@ -74,5 +74,5 @@ public class ScreenTestRainbow extends Screen
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.drawRect(this.centerX - 6, this.centerY - 25, 1000, 75);
-        }
+    }
 }

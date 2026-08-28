@@ -140,7 +140,7 @@ public class ScreenChangelog extends Screen
                 Drawing.drawing.drawInterfaceText(this.centerX - 400, this.centerY + (-(pageContents.length - 1) / 2.0 + i) * this.objYSpace / 2 - this.objYSpace, s, false);
             }
         }
-        }
+    }
 
     public static class Changelog
     {

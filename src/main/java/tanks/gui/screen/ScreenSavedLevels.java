@@ -177,7 +177,7 @@ public class ScreenSavedLevels extends Screen
                 "Drag and drop levels here to import them");
         }
 
-        }
+    }
 
     /**
      * After running <code>validation</code> (validation is successful if it doesn't crash),

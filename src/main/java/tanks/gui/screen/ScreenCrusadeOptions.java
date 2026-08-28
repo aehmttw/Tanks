@@ -147,7 +147,7 @@ public class ScreenCrusadeOptions extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + titleOffset, "Crusade options");
-        }
+    }
 
     @Override
     public void onAttemptClose()

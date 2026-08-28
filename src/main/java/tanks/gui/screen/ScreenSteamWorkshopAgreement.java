@@ -56,5 +56,5 @@ public class ScreenSteamWorkshopAgreement extends Screen
 
         agree.draw();
         back.draw();
-        }
+    }
 }

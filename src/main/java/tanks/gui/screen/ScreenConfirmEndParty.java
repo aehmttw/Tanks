@@ -65,5 +65,5 @@ public class ScreenConfirmEndParty extends Screen
         {
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4 / 3, "All players will be disconnected!");
         }
-        }
+    }
 }

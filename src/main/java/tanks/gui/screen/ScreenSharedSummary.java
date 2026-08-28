@@ -140,5 +140,5 @@ public class ScreenSharedSummary extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 0.5, "Shared crusades");
 
         quit.draw();
-        }
+    }
 }

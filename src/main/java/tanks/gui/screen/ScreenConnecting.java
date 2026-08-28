@@ -89,7 +89,7 @@ public class ScreenConnecting extends Screen
         }
 
         back.draw();
-        }
+    }
 
     public void drawSpinny(int max, int parts, double speed, double size, double dotSize)
     {

@@ -133,7 +133,7 @@ public class ScreenShareCrusade extends Screen
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "Share crusade");
-        }
+    }
 
     @Override
     public void setupLayoutParameters()

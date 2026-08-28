@@ -61,5 +61,5 @@ public class ScreenCrusadeEditWarning extends Screen
 
         confirm.draw();
         back.draw();
-        }
+    }
 }

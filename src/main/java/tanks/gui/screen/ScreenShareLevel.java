@@ -132,7 +132,7 @@ public class ScreenShareLevel extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "Share level");
 
         this.sort.draw();
-        }
+    }
 
     @Override
     public void setupLayoutParameters()

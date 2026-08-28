@@ -124,5 +124,5 @@ public class ScreenLanguage extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 4.5, "Languages");
         Drawing.drawing.setInterfaceFontSize(18);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY + this.objYSpace * 2.75 + languages.noPageOffY * 2.75, "Extended Fonts may be required to render some characters and languages");
-        }
+    }
 }

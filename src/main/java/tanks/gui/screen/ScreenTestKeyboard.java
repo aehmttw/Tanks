@@ -41,5 +41,5 @@ public class ScreenTestKeyboard extends Screen
             Drawing.drawing.drawInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "" + Game.game.window.validPressedKeys.get(0));
 
         back.draw();
-        }
+    }
 }

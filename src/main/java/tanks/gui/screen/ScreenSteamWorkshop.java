@@ -84,5 +84,5 @@ public class ScreenSteamWorkshop extends Screen
         myLevels.draw();
         downloadLevel.draw();
         uploadLevel.draw();
-        }
+    }
 }

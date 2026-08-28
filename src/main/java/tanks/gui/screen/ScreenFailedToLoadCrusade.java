@@ -113,5 +113,5 @@ public class ScreenFailedToLoadCrusade extends Screen
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
                 "If this is your crusade, it may be corrupted!");
         }
-        }
+    }
 }

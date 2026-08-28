@@ -179,7 +179,8 @@ public class ScreenIntro extends Screen
         Game.game.window.interfaceCameraLogicalWidth = Drawing.drawing.baseInterfaceSizeX;
         Game.game.window.interfaceCameraLogicalHeight = Drawing.drawing.baseInterfaceSizeY;
         Game.game.window.interfaceCameraHeightOffset = previousStatsHeight;
-        Game.game.window.interfaceCamera.resetToBounds(0, Game.game.window.interfaceCameraLogicalWidth, 0, Game.game.window.interfaceCameraLogicalHeight, Game.game.window.absoluteDepth);
+        Game.game.window.interfaceCamera.resetToBounds(0, Game.game.window.interfaceCameraLogicalWidth,
+                0, Game.game.window.interfaceCameraLogicalHeight, Game.game.window.absoluteDepth);
         Game.game.window.interfaceCamera.setAspectRatio(Game.game.window.absoluteWidth / Math.max(1, Game.game.window.absoluteHeight - previousStatsHeight));
         Game.game.window.currentCamera = Game.game.window.interfaceCamera;
         Game.game.window.loadPerspective();

@@ -357,5 +357,5 @@ public class ScreenJoinParty extends Screen
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.displayInterfaceText(this.ip.posX, this.ip.posY - this.objYSpace * 1.25, "Join by IP");
-        }
+    }
 }

@@ -659,8 +659,8 @@ public class Drawing
 
     public boolean isWorldRenderPath()
     {
-        return Game.game.window.currentCamera == Game.game.window.baseCamera
-                || Game.game.window.currentCamera == Game.game.window.shadowCamera;
+        return Game.game.window.currentCamera == Game.game.window.baseCamera ||
+                Game.game.window.currentCamera == Game.game.window.shadowCamera;
     }
 
     public double getWorldDrawSize(double value)

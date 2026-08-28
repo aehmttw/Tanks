@@ -107,5 +107,5 @@ public class ScreenTankSaveOverwrite extends Screen implements IBlankBackgroundS
         Drawing.drawing.setInterfaceFontSize(this.textSize * 3);
         Drawing.drawing.setColor(255, 0, 0);
         Drawing.drawing.drawInterfaceText(this.oldTankButton.posX, this.oldTankButton.posY - 8, "x");
-        }
+    }
 }

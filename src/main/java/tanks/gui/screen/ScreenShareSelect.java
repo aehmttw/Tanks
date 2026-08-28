@@ -49,5 +49,5 @@ public class ScreenShareSelect extends Screen
         level.draw();
         crusade.draw();
         quit.draw();
-        }
+    }
 }

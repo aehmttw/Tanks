@@ -253,5 +253,5 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
             prevNotCopiedPage.draw();
             nextNotCopiedPage.draw();
         }
-        }
+    }
 }

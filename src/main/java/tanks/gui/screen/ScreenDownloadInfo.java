@@ -57,5 +57,5 @@ public class ScreenDownloadInfo extends Screen
         Drawing.drawing.fillInterfaceProgressRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 + 30, 500, 5,
             1.0 * i.getBytesDownloaded() / i.getBytesTotal());
 
-        }
+    }
 }

@@ -179,5 +179,5 @@ public class ScreenAbout extends Screen
             else
                 Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "%d extension loaded", extensions);
         }
-        }
+    }
 }

@@ -72,5 +72,5 @@ public class ScreenItemSaveOverwrite extends Screen implements IBlankBackgroundS
 
         this.replace.draw();
         this.quit.draw();
-        }
+    }
 }

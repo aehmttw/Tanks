@@ -104,5 +104,5 @@ public class ScreenInviteSteamFriends extends Screen
             Drawing.drawing.setInterfaceFontSize(this.textSize);
             Drawing.drawing.displayInterfaceText(this.centerX, this.centerY, "You don't have any online friends :(");
         }
-        }
+    }
 }

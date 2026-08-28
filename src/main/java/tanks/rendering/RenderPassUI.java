@@ -1,9 +1,9 @@
 package tanks.rendering;
 
 import basewindow.RenderPass;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
-import tanks.Drawing;
 
 public class RenderPassUI extends RenderPass
 {

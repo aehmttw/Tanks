@@ -72,5 +72,5 @@ public class ScreenTestDebug extends Screen
         rainbowTest.draw();
 
         back.draw();
-        }
+    }
 }

@@ -471,7 +471,7 @@ public class ScreenPartyHost extends Screen
                 }
             }
         }
-        }
+    }
 
     public void updateButtonText()
     {

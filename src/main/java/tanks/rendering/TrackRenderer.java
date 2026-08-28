@@ -1,8 +1,8 @@
 package tanks.rendering;
 
 import basewindow.BaseShapeBatchRenderer;
-import basewindow.IBatchRenderableObject;
 import basewindow.Camera.Bounds;
+import basewindow.IBatchRenderableObject;
 import tanks.Drawing;
 import tanks.Game;
 import tanks.gui.screen.ScreenGame;

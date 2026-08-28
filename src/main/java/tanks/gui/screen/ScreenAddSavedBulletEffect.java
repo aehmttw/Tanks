@@ -250,7 +250,7 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 5, "My bullet effect templates");
-        }
+    }
 
     @Override
     public void onAttemptClose()

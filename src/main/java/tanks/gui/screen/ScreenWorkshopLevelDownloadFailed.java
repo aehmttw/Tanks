@@ -206,5 +206,5 @@ public class ScreenWorkshopLevelDownloadFailed extends Screen
                 more.draw();
             }
         }
-        }
+    }
 }

@@ -88,5 +88,5 @@ public class ScreenOverlayOnline extends Screen
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.drawInterfaceText(this.centerX, lowest - this.objYSpace, title);
-        }
+    }
 }

@@ -50,5 +50,5 @@ public class ScreenPartyKick extends Screen
 
         cancel.draw();
         kick.draw();
-        }
+    }
 }

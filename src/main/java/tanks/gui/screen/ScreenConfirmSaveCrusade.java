@@ -68,7 +68,7 @@ public class ScreenConfirmSaveCrusade extends Screen implements IBlankBackground
         saveExit.draw();
         noSaveExit.draw();
         cancel.draw();
-        }
+    }
 
     @Override
     public void onAttemptClose()

@@ -60,5 +60,5 @@ public class ScreenConfirmDeleteCrusade extends Screen
 
         confirmDelete.draw();
         cancelDelete.draw();
-        }
+    }
 }

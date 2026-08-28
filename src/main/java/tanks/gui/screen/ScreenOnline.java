@@ -131,7 +131,7 @@ public class ScreenOnline extends Screen implements IOnlineScreen
 
         for (int i: this.textboxKeys)
             this.textboxes.get(i).draw();
-        }
+    }
 
     public void addButton(int id, Button b)
     {

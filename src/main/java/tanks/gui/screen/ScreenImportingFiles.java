@@ -60,5 +60,5 @@ public class ScreenImportingFiles extends Screen
         Drawing.drawing.fillInterfaceRect(this.centerX, this.centerY + this.objYSpace / 2, 500, 5);
         Drawing.drawing.setColor(255, 127, 80);
         Drawing.drawing.fillInterfaceProgressRect(this.centerX, this.centerY + 30, 500, 5, numberCompleted * 1.0 / numberTotal);
-        }
+    }
 }

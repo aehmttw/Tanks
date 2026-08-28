@@ -112,5 +112,5 @@ public class ScreenFailedToLoadLevel extends Screen
         {
             Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, "If this is your level, it may be corrupted!");
         }
-        }
+    }
 }

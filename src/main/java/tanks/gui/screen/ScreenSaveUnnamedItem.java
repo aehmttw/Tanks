@@ -167,5 +167,5 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
         this.amount.draw();
         this.cooldown.draw();
         this.image.draw();
-        }
+    }
 }

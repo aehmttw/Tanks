@@ -121,5 +121,5 @@ public class ScreenJoinOnlineServer extends Screen
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2.5, "The official online server is not yet available.");
         Drawing.drawing.displayInterfaceText(this.centerX, this.centerY - this.objYSpace * 2, "However, you can join a 3rd party online server.");
 
-        }
+    }
 }

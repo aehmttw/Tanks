@@ -100,5 +100,5 @@ public class ScreenTestShapes extends Screen
         radius.draw();
         bWidth.draw();
         back.draw();
-        }
+    }
 }

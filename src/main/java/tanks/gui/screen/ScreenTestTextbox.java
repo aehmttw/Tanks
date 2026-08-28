@@ -55,5 +55,5 @@ public class ScreenTestTextbox extends Screen
         uuidBox.draw();
 
         back.draw();
-        }
+    }
 }

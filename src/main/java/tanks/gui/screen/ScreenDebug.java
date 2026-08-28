@@ -76,5 +76,5 @@ public class ScreenDebug extends Screen
 
         debugButtons.draw();
         back.draw();
-        }
+    }
 }

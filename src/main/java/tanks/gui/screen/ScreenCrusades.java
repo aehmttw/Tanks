@@ -195,7 +195,11 @@ public class ScreenCrusades extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         crusadesList.draw();
 
         if (ScreenPartyHost.isServer)

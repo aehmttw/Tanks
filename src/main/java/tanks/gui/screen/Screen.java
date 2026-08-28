@@ -1,5 +1,6 @@
 package tanks.gui.screen;
 
+import basewindow.Camera;
 import basewindow.IBatchRenderableObject;
 import tanks.*;
 import tanks.gui.ScreenIntro;
@@ -123,6 +124,8 @@ public abstract class Screen implements IBatchRenderableObject
             Drawing.drawing.fillBackgroundRect(this, Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
         }
 
+        this.setBasePerspective();
+
         Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
 
         if (stageOnly && Drawing.drawing.terrainRenderer instanceof StaticTerrainRenderer)
@@ -134,12 +137,66 @@ public abstract class Screen implements IBatchRenderableObject
             Drawing.drawing.trackRenderer.draw();
 
         if (this.drawDarkness && drawBgRect)
-        {
-            Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
-        }
+            this.drawWorldDarknessOverlay();
 
         this.lastObsSize = Obstacle.draw_size;
+    }
+
+    /** Draws darkness in world space so it always matches the active game viewport. */
+    public void drawWorldDarknessOverlay()
+    {
+        if (Game.game.window.mainRenderPasses.drawingShadow || Panel.darkness <= 0)
+            return;
+
+        Camera.Bounds bounds = Game.game.window.currentCamera.getBoundsAtDepth(0);
+        Drawing.drawing.setColor(0, 0, 0, Panel.darkness);
+        Game.game.window.shapeRenderer.fillRect(bounds.left, bounds.top, 0,
+                bounds.right - bounds.left + 1, bounds.bottom - bounds.top + 1, false);
+    }
+
+    public void setBasePerspective()
+    {
+        double usableHeight = Math.max(1, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+        double targetScale = Math.max(0.0001, Drawing.drawing.scale);
+        double worldWidth = Drawing.drawing.sizeX;
+        double worldHeight = Drawing.drawing.sizeY;
+        boolean orthographic = Game.game.window.orthographic;
+        Camera activeCamera = Game.game.window.baseCamera;
+
+        if (Game.game.window.mainRenderPasses.drawingShadow)
+        {
+            activeCamera = Game.game.window.shadowCamera;
+            Game.game.window.currentCamera = activeCamera;
+            return;
+        }
+
+        if (orthographic)
+        {
+            activeCamera.setProjectionType(Camera.Projection.orthographic);
+            activeCamera.updateSize(0, Game.game.window.absoluteWidth, 0, usableHeight, Game.game.window.absoluteDepth);
+            activeCamera.setAspectRatio(Game.game.window.absoluteWidth / usableHeight);
+            activeCamera.setZoom(targetScale);
+            activeCamera.posZ = Game.game.window.absoluteDepth / 2.0;
+        }
+        else
+        {
+            activeCamera.setProjectionType(Camera.Projection.perspective);
+            activeCamera.updateSize(0, Game.game.window.absoluteWidth, 0, usableHeight, Game.game.window.absoluteDepth);
+            activeCamera.setAspectRatio(Game.game.window.absoluteWidth / usableHeight);
+            activeCamera.setZoom(targetScale);
+        }
+
+        double visibleWidth = activeCamera.getVisibleSizeX(0);
+        double visibleHeight = activeCamera.getVisibleSizeY(0);
+        double centeredVisibleWidth = Game.screen.enableMargins ? Math.min(visibleWidth, worldWidth) : visibleWidth;
+        double centeredVisibleHeight = Game.screen.enableMargins ? Math.min(visibleHeight, worldHeight) : visibleHeight;
+
+        activeCamera.posX = this.getCameraX(centeredVisibleWidth, centeredVisibleHeight);
+        activeCamera.posY = this.getCameraY(centeredVisibleWidth, centeredVisibleHeight);
+        activeCamera.updateView();
+
+        Game.game.window.currentCamera = activeCamera;
+        Game.game.window.loadPerspective();
     }
 
     public double getOffsetX()
@@ -150,6 +207,16 @@ public abstract class Screen implements IBatchRenderableObject
     public double getOffsetY()
     {
         return 0;
+    }
+
+    public double getCameraX(double visibleWidth, double visibleHeight)
+    {
+        return -this.getOffsetX() + visibleWidth / 2;
+    }
+
+    public double getCameraY(double visibleWidth, double visibleHeight)
+    {
+        return -this.getOffsetY() + visibleHeight / 2;
     }
 
     public double getScale()
@@ -199,6 +266,8 @@ public abstract class Screen implements IBatchRenderableObject
 
     public void drawPointLights()
     {
+        this.setBasePerspective();
+
         if ((this instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) this).isOverlayEnabled()) || this instanceof IBlankBackgroundScreen)
             return;
 

@@ -121,7 +121,11 @@ public class ScreenCrusadeOptions extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         double extraHeight = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
         double width = Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale;
 

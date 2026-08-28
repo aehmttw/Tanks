@@ -896,12 +896,15 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             if (!Game.game.window.mainRenderPasses.drawingShadow)
                 Game.game.window.clearDepth();
 
-            Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+            this.drawWorldDarknessOverlay();
         }
         else
             this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         this.drawTopBar(Math.min(120, this.age * 10));
         this.drawBottomBar(Math.min(120, this.age * 10));
 

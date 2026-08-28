@@ -14,7 +14,10 @@ public class Matrix4
 
     public Matrix4()
     {
-
+        values[0][0] = 1;
+        values[1][1] = 1;
+        values[2][2] = 1;
+        values[3][3] = 1;
     }
 
     public Matrix4(double[] values)
@@ -150,6 +153,86 @@ public class Matrix4
         return new Matrix4(inv);
     }
 
+    public void identity()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                this.values[i][j] = (i == j) ? 1 : 0;
+            }
+        }
+    }
+
+    public void translate(double x, double y, double z)
+    {
+        this.values[0][3] += x;
+        this.values[1][3] += y;
+        this.values[2][3] += z;
+    }
+
+    public void setFrustum(double left, double right, double bottom, double top, double near, double far)
+    {
+        double width = right - left;
+        double height = top - bottom;
+        double depth = far - near;
+
+        double[][] m = this.values;
+
+        // Row 0
+        m[0][0] = (2.0 * near) / width;
+        m[0][1] = 0.0;
+        m[0][2] = (right + left) / width;
+        m[0][3] = 0.0;
+
+        // Row 1
+        m[1][0] = 0.0;
+        m[1][1] = (2.0 * near) / height;
+        m[1][2] = (top + bottom) / height;
+        m[1][3] = 0.0;
+
+        // Row 2
+        m[2][0] = 0.0;
+        m[2][1] = 0.0;
+        m[2][2] = -(far + near) / depth;
+        m[2][3] = -(2.0 * far * near) / depth;
+
+        // Row 3
+        m[3][0] = 0.0;
+        m[3][1] = 0.0;
+        m[3][2] = -1.0;
+        m[3][3] = 0.0;
+    }
+
+    public void setOrtho(double left, double right, double bottom, double top, double near, double far)
+    {
+        double width = right - left;
+        double height = top - bottom;
+        double depth = far - near;
+
+        double[][] m = this.values;
+
+        m[0][0] = 2.0 / width;
+        m[0][1] = 0.0;
+        m[0][2] = 0.0;
+        m[0][3] = -(right + left) / width;
+
+        m[1][0] = 0.0;
+        m[1][1] = 2.0 / height;
+        m[1][2] = 0.0;
+        m[1][3] = -(top + bottom) / height;
+
+        m[2][0] = 0.0;
+        m[2][1] = 0.0;
+        m[2][2] = -2.0 / depth;
+        m[2][3] = -(far + near) / depth;
+
+        m[3][0] = 0.0;
+        m[3][1] = 0.0;
+        m[3][2] = 0.0;
+        m[3][3] = 1.0;
+    }
+
     @Override
     public String toString()
     {
@@ -188,5 +271,4 @@ public class Matrix4
 
         return openGLMatrix;
     }
-
 }

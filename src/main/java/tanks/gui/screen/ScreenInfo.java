@@ -52,7 +52,7 @@ public class ScreenInfo extends Screen implements IConditionalOverlayScreen, IDa
             this.previous.draw();
 
         Drawing.drawing.setColor(0, 0, 0, 64);
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+        Drawing.drawing.fillInterfaceViewportRect();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 700 * this.objWidth / 350, 400 * this.objHeight / 40);

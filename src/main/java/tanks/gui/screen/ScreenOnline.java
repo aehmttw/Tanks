@@ -113,7 +113,11 @@ public class ScreenOnline extends Screen implements IOnlineScreen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         for (int i: this.shapeKeys)
             this.shapes.get(i).draw();
 

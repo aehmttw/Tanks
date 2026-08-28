@@ -55,7 +55,11 @@ public class ScreenSharedCrusades extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         quit.draw();
         sharedCrusades.draw();
 

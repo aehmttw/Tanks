@@ -123,7 +123,11 @@ public class ScreenPlaySavedLevels extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         this.levels.draw();
         this.search.draw();
         this.quit.draw();

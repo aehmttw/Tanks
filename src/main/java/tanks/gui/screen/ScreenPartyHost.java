@@ -324,7 +324,11 @@ public class ScreenPartyHost extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         partyOptions.draw();
         options.draw();
         myLevels.draw();

@@ -30,6 +30,11 @@ public class ScreenUsernamePrompt extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         gotoOptions.draw();
         quit.draw();
 

@@ -32,11 +32,18 @@ public class RenderPassPostLights extends RenderPass
     {
         super.draw();
 
+        int viewportY = 0;
+        if (this.window.absoluteHeight > 0)
+            viewportY = (int) Math.round(this.window.interfaceCameraHeightOffset * this.window.frameBufferHeight / this.window.absoluteHeight);
+
+        int viewportHeight = Math.max(1, this.window.frameBufferHeight - viewportY);
+
         Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
 
         this.lightsFrameBuffer.resizeToWindow(this.window);
         this.lightsFrameBuffer.bind();
+        this.window.setViewport(0, 0, this.window.frameBufferWidth, this.window.frameBufferHeight);
         this.window.clearColor();
 
         this.window.setShader(lightsShader);
@@ -78,9 +85,13 @@ public class RenderPassPostLights extends RenderPass
         Game.game.window.mainRenderPasses.drawPass.drawFrameBuffer.bindColorTexture(1, 2);
         Game.game.window.mainRenderPasses.drawPass.drawFrameBuffer.bindColorTexture(2, 3);
 
-        Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "image", false);
-        // Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "lights", false);
+        Game.game.window.currentCamera = Game.game.window.screenCamera;
+        Game.game.window.transformations.clear();
+        Game.game.window.loadPerspective();
 
+        this.window.setViewport(0, viewportY, this.window.frameBufferWidth, viewportHeight);
+        Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "image", false);
+//         Game.game.window.shapeRenderer.drawImage(0, Game.game.window.absoluteHeight, Game.game.window.absoluteWidth, -Game.game.window.absoluteHeight, "lights", false);
     }
 
     public void drawLight(IDrawableLightSource l, double posX, double posY, double posZ, double size)

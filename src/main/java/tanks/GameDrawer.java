@@ -11,6 +11,7 @@ public class GameDrawer implements IDrawer
     public boolean initialized = false;
     public RenderPassPostLights lightsPass;
     public RenderPassUI uiPass;
+    public ShaderShadowDepthDebug shadowDepthDebugShader;
 
     public void initialize()
     {
@@ -33,6 +34,8 @@ public class GameDrawer implements IDrawer
             this.uiPass = new RenderPassUI();
             this.uiPass.shaderUI = new ShaderUIDefault(uiPass);
             this.uiPass.shaderUI.initialize();
+            this.shadowDepthDebugShader = new ShaderShadowDepthDebug();
+            this.shadowDepthDebugShader.initialize();
 
             Firework.shader = new ShaderFireworkExplosion();
             Firework.trailShader = new ShaderFireworkExplosionTrail();
@@ -53,6 +56,10 @@ public class GameDrawer implements IDrawer
             if (!initialized)
                 this.initialize();
 
+            Game.game.window.interfaceCameraHeightOffset = Drawing.drawing.statsHeight;
+            // The shadow pass derives its orthographic bounds from baseCamera, so
+            // refresh it before the shadow map is generated rather than afterward.
+            Game.screen.setBasePerspective();
             Game.game.window.mainRenderPasses.drawToFramebuffer = Game.fancyLights;
             Game.game.window.mainRenderPasses.draw();
 

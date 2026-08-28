@@ -56,7 +56,11 @@ public class ScreenSharedLevels extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         quit.draw();
         sharedLevels.draw();
 

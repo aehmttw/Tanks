@@ -1,6 +1,7 @@
 package tanks.gui;
 
 import basewindow.BaseFile;
+import basewindow.Camera;
 import basewindow.transformation.Translation;
 import tanks.*;
 import tanks.gui.screen.*;
@@ -24,7 +25,9 @@ public class ScreenIntro extends Screen
         this.music = "menu_1.ogg";
 
         zoomTranslation.window = Game.game.window;
-        zoomTranslation.applyAsShadow = true;
+        // This is a presentation-only nudge.  Applying it to the shadow pass
+        // shifts geometry after the shadow projection has been captured.
+        zoomTranslation.applyAsShadow = false;
 
         if (Game.fancyTerrain && Game.enable3d)
             introAnimationTime = 1000;
@@ -99,38 +102,126 @@ public class ScreenIntro extends Screen
         Game.game.window.clipDistMultiplier = 50;
 
         double frac = Math.min(1, ((lastTime - startTime - introTime) / introAnimationTime));
+        int previousStatsHeight = Drawing.drawing.statsHeight;
 
         if (Game.enable3d && Game.fancyTerrain)
         {
             zoomTranslation.z = -0.08 * (1 - frac);
             Game.game.window.transformations.add(zoomTranslation);
             Game.game.window.loadPerspective();
+            Game.game.window.transformations.remove(zoomTranslation);
         }
-
-        Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
-        Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, Game.game.window.absoluteWidth * 1.2 / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight * 1.2 / Drawing.drawing.interfaceScale);
 
         if (lastTime - startTime >= introTime && Game.fancyTerrain)
         {
             Obstacle.draw_size = frac * Game.tile_size;
             Game.screen.drawDefaultBackground(frac);
+
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
+            {
+                Camera.Bounds bounds = Game.game.window.currentCamera.getBoundsAtDepth(-1);
+                Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
+
+                // The intro backdrop is a presentation layer, not a shadow receiver.
+                Game.game.window.shaderDefault.shaderBase.shadow.set(false);
+                Drawing.drawing.fillRect(
+                        (bounds.left + bounds.right) / 2,
+                        (bounds.top + bounds.bottom) / 2,
+                        -1,
+                        bounds.right - bounds.left + Game.tile_size * 4,
+                        bounds.bottom - bounds.top + Game.tile_size * 4,
+                        true
+                );
+                Game.game.window.shaderDefault.shaderBase.shadow.set(Game.game.window.mainRenderPasses.shadowsEnabled);
+            }
         }
 
         if (!(nextScreen instanceof ScreenGame))
         {
-            zoomTranslation.z = (1 - frac);
-            Game.game.window.transformations.add(zoomTranslation);
-            Game.game.window.loadPerspective();
+            nextScreen.setupLayoutParameters();
 
-            nextScreen.draw();
+            zoomTranslation.z = (1 - frac) * 2;
+            Game.game.window.transformations.add(zoomTranslation);
+            // Match the title's normal world pass: its camera and viewport must use
+            // the same usable height while the intro previews its movables.
+            nextScreen.setBasePerspective();
+
+            if (nextScreen instanceof ISeparateBackgroundScreen)
+                ((ISeparateBackgroundScreen) nextScreen).drawWithoutBackground();
+            else
+                nextScreen.draw();
+
         }
 
         Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
-
-        Panel.panel.drawBar((1 - frac) * 40);
+        Drawing.drawing.statsHeight = previousStatsHeight;
 
         Game.game.window.clipMultiplier = 100;
         Game.game.window.clipDistMultiplier = 0.5;
+    }
+
+    @Override
+    public void drawUI()
+    {
+        double frac = Math.min(1, ((lastTime - startTime - introTime) / introAnimationTime));
+        double barOffset = (1 - frac) * 40;
+
+        int previousStatsHeight = Drawing.drawing.statsHeight;
+        int previewViewportY = 0;
+        if (Game.game.window.absoluteHeight > 0)
+            previewViewportY = (int) Math.round(previousStatsHeight * Game.game.window.frameBufferHeight / (double) Game.game.window.absoluteHeight);
+
+        int previewViewportHeight = Math.max(1, Game.game.window.frameBufferHeight - previewViewportY);
+
+        Drawing.drawing.statsHeight = previousStatsHeight;
+
+        Game.game.window.interfaceCameraLogicalWidth = Drawing.drawing.baseInterfaceSizeX;
+        Game.game.window.interfaceCameraLogicalHeight = Drawing.drawing.baseInterfaceSizeY;
+        Game.game.window.interfaceCameraHeightOffset = previousStatsHeight;
+        Game.game.window.interfaceCamera.resetToBounds(0, Game.game.window.interfaceCameraLogicalWidth,
+                0, Game.game.window.interfaceCameraLogicalHeight, Game.game.window.absoluteDepth);
+        Game.game.window.interfaceCamera.setAspectRatio(Game.game.window.absoluteWidth / Math.max(1, Game.game.window.absoluteHeight - previousStatsHeight));
+        Game.game.window.currentCamera = Game.game.window.interfaceCamera;
+        Game.game.window.loadPerspective();
+        Game.game.window.setViewport(0, previewViewportY, Game.game.window.frameBufferWidth, previewViewportHeight);
+
+        // No terrain is drawn during the short intro delay, so provide the same
+        // level-colored backdrop that the terrain will replace once it begins.
+        if (lastTime - startTime < introTime || !Game.fancyTerrain)
+        {
+            Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
+            Drawing.drawing.fillInterfaceViewportRect();
+        }
+
+        if (!(nextScreen instanceof ScreenGame))
+        {
+            nextScreen.setupLayoutParameters();
+            zoomTranslation.z = (1 - frac) * 2;
+            Game.game.window.transformations.add(zoomTranslation);
+            Game.game.window.loadPerspective();
+            nextScreen.drawUI();
+            Game.game.window.transformations.clear();
+            Game.game.window.loadPerspective();
+        }
+
+        Game.game.window.currentCamera = Game.game.window.screenCamera;
+        Game.game.window.loadPerspective();
+        Game.game.window.setViewport(0, 0, Game.game.window.frameBufferWidth, Game.game.window.frameBufferHeight);
+
+        if (Drawing.drawing.enableStats)
+        {
+            Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
+            Game.game.window.shapeRenderer.fillRect(0, Game.game.window.absoluteHeight - 40, Game.game.window.absoluteWidth, 40);
+            Panel.panel.drawBar(barOffset);
+        }
+
+        Drawing.drawing.statsHeight = previousStatsHeight;
+        Game.game.window.transformations.clear();
+        // Panel draws the cursor after this method returns.  Leave the normal UI
+        // camera and its reduced viewport active so its mouse coordinates match.
+        Game.game.window.currentCamera = Game.game.window.interfaceCamera;
+        Game.game.window.loadPerspective();
+        Game.game.window.setViewport(0, previewViewportY, Game.game.window.frameBufferWidth, previewViewportHeight);
     }
 }

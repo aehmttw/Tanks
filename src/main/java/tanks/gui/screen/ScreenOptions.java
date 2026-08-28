@@ -127,6 +127,11 @@ public class ScreenOptions extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
         miscOptions.draw();
         multiplayerOptions.draw();

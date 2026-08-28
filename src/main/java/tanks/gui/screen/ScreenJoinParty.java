@@ -330,6 +330,11 @@ public class ScreenJoinParty extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         join.draw();
         ip.draw();
         back.draw();

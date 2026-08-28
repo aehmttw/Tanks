@@ -87,7 +87,11 @@ public class ScreenInviteSteamFriends extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         friends.draw();
         back.draw();
 

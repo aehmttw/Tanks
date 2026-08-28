@@ -350,7 +350,7 @@ public class Panel
         Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
         Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
         Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
-        Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
+        Game.game.window.absoluteDepth = Game.absoluteDepthBase;
 
         if (Game.deterministicMode && Game.deterministic30Fps)
             Panel.frameFrequency = 100.0 / 30;
@@ -818,7 +818,7 @@ public class Panel
                 Drawing.drawing.scale = Game.screen.getScale();
                 Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28,
                     (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
-                Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
+                Game.game.window.absoluteDepth = Game.absoluteDepthBase;
             }
 
             if (!(Game.screen instanceof ScreenExit))
@@ -829,8 +829,8 @@ public class Panel
                 else
                     Drawing.drawing.setColor(174, 92, 16);
 
-                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
-                    Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
+//                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
+//                    Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
             }
 
             Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity, Level.currentLightColor);
@@ -927,7 +927,18 @@ public class Panel
         if (!(Game.screen instanceof ScreenExit || Game.screen instanceof ScreenIntro))
         {
             Drawing.drawing.terrainRenderer.allowPartialLoading = true;
+            int viewportY = 0;
+            if (Game.game.window.absoluteHeight > 0)
+                viewportY = (int) Math.round(Drawing.drawing.statsHeight * Game.game.window.frameBufferHeight / Game.game.window.absoluteHeight);
+
+            int viewportHeight = Math.max(1, Game.game.window.frameBufferHeight - viewportY);
+            Game.game.window.currentCamera = Game.game.window.screenCamera;
+            Game.game.window.loadPerspective();
+            Game.game.window.setViewport(0, 0, Game.game.window.frameBufferWidth, Game.game.window.frameBufferHeight);
             this.drawBar();
+            Game.game.window.currentCamera = Game.game.window.interfaceCamera;
+            Game.game.window.loadPerspective();
+            Game.game.window.setViewport(0, viewportY, Game.game.window.frameBufferWidth, viewportHeight);
         }
 
         if (Game.recordEventData && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
@@ -965,11 +976,49 @@ public class Panel
 
         Drawing.drawing.tooltip = null;
 
-        if (Game.screen.showDefaultMouse)
-            this.drawMouseTarget();
+        boolean forceGameMouseTarget = Game.screen instanceof ScreenGame && !Game.screen.showDefaultMouse;
+        if (Game.screen.showDefaultMouse || forceGameMouseTarget)
+        {
+            // The bar occupies the excluded interface viewport, so draw the cursor
+            // in full-screen coordinates after all UI and bar content.
+            Game.game.window.currentCamera = Game.game.window.screenCamera;
+            Game.game.window.loadPerspective();
+            Game.game.window.setViewport(0, 0, Game.game.window.frameBufferWidth, Game.game.window.frameBufferHeight);
+            this.drawMouseTarget(forceGameMouseTarget, true);
+
+            int viewportY = 0;
+            if (Game.game.window.absoluteHeight > 0)
+                viewportY = (int) Math.round(Drawing.drawing.statsHeight * Game.game.window.frameBufferHeight / (double) Game.game.window.absoluteHeight);
+
+            Game.game.window.currentCamera = Game.game.window.interfaceCamera;
+            Game.game.window.loadPerspective();
+            Game.game.window.setViewport(0, viewportY, Game.game.window.frameBufferWidth, Math.max(1, Game.game.window.frameBufferHeight - viewportY));
+        }
 
         if (!Game.screen.drawDebugInternally)
             DebugKeybinds.renderDebugging();
+
+//        if (Game.debug && Game.game.window.mainRenderPasses.shadowsEnabled)
+//        {
+//            double size = 240;
+//            double padding = 20;
+//            double x = Drawing.drawing.interfaceSizeX - size / 2 - padding;
+//            double y = size / 2 + padding;
+//
+//            Drawing.drawing.setColor(0, 0, 0, 180);
+//            Drawing.drawing.fillInterfaceRect(x, y, size + 12, size + 36);
+//
+//            Drawing.drawing.setColor(255, 255, 255);
+//            Drawing.drawing.setInterfaceFontSize(16);
+//            Drawing.drawing.drawInterfaceText(x, y - size / 2 - 10, "Shadow depth");
+//
+//            double drawX = Drawing.drawing.getInterfacePointX(x - size / 2);
+//            double drawY = Drawing.drawing.getInterfacePointY(y - size / 2);
+//            double drawSize = Drawing.drawing.getInterfaceDrawSize(size);
+//            Game.game.window.setShader(Game.drawer.shadowDepthDebugShader);
+//            Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSize, drawSize, "shadow_depth", false);
+//            Game.game.window.setShader(Game.drawer.uiPass.shaderUI);
+//        }
 
         Drawing.drawing.setColor(255, 255, 255);
         Game.screen.drawPostMouse();
@@ -982,11 +1031,17 @@ public class Panel
 
     public void drawMouseTarget(boolean force)
     {
+        drawMouseTarget(force, false);
+    }
+
+    /** Draws the cursor in either interface coordinates or absolute screen coordinates. */
+    public void drawMouseTarget(boolean force, boolean screenCoordinates)
+    {
         if (Game.game.window.touchscreen)
             return;
 
-        double mx = Drawing.drawing.getInterfaceMouseX();
-        double my = Drawing.drawing.getInterfaceMouseY();
+        double mx = screenCoordinates ? Game.game.window.absoluteMouseX : Drawing.drawing.getInterfaceMouseX();
+        double my = screenCoordinates ? Game.game.window.absoluteMouseY : Drawing.drawing.getInterfaceMouseY();
 
         if (showMouseTarget || force)
         {
@@ -1030,6 +1085,9 @@ public class Panel
             }
             Drawing.drawing.drawInterfaceImage("cursor.png", mx, my, 48, 48);
         }
+
+        if (screenCoordinates)
+            return;
 
         if (Game.enable3d && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && !((ScreenGame) Game.screen).shopScreen && Game.playerTank != null) ||
             Game.screen instanceof ScreenLevelEditor) && Panel.showMouseTargetHeight)

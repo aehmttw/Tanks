@@ -32,7 +32,11 @@ public class ScreenControlsCamera extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         toggleZoom.draw();
         zoomOut.draw();
         zoomIn.draw();

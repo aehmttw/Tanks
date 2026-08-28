@@ -104,6 +104,11 @@ public class ScreenJoinOnlineServer extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         ip.draw();
         join.draw();
         back.draw();

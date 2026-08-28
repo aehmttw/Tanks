@@ -207,7 +207,11 @@ public class ScreenAddSavedBulletEffect extends Screen implements IBlankBackgrou
     {
         Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         effects.draw();
         quit.draw();
 //        search.draw();

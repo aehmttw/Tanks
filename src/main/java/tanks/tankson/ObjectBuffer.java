@@ -20,6 +20,7 @@ public class ObjectBuffer
         FALSE((byte) 0x10),
         TRUE((byte) 0x11),
         INF((byte) 0xFF),
+        NINF((byte) 0xFE),
 
         // Integers
         CHAR((byte) 0xA1),

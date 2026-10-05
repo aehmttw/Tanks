@@ -249,13 +249,7 @@ public final class Serializer
 
     public static String toTanksON(Object o)
     {
-        System.out.println("REF: " + toMap(o));
-        System.out.println("OBJBUF: " + toMap(fromObjBuf(toObjBuf(o))));
         String shebang = "/*TANKSON v" + TANKSON_VERSION + "*/";
-        System.out.println(Base64.getEncoder().encodeToString(ObjectBuffer.toBytes(toNumericalMap(o))));
-        // toMap first: TanksON.toString falls back to toString() for objects it doesn't know, and the
-        // toString() of Item, Mine, Tank etc. calls back into toTanksON, which recurses until the stack dies
-        System.out.println(TanksON.toString(toMap(parseNumericalObject(ObjectBuffer.parse(ObjectBuffer.toBytes(toNumericalMap(o)))))));
         return shebang + TanksON.toString(toMap(o));
     }
 

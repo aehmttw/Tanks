@@ -146,228 +146,6 @@ public final class Serializer
         }
     }
 
-    /** The map implementations TanksON can rebuild, as written to {@code map_class}. */
-    public static String getMapClass(Map<?, ?> m)
-    {
-        if (m instanceof NamedList)
-            return "named_list";
-        else if (m instanceof LinkedHashMap)
-            return "linked_hash_map";
-        else if (m instanceof HashMap)
-            return "hash_map";
-        else
-            throw new RuntimeException("Unsupported map type for serialization: " + m.getClass().getName());
-    }
-
-    /** The counterpart of {@link #getMapClass}: an empty map of the implementation that was written. */
-    public static Map<Object, Object> newMap(String mapClass)
-    {
-        if ("named_list".equals(mapClass))
-            return (Map<Object, Object>) (Map) new NamedList<>();
-        else if ("linked_hash_map".equals(mapClass))
-            return new LinkedHashMap<>();
-        else if ("hash_map".equals(mapClass))
-            return new HashMap<>();
-        else
-            throw new RuntimeException("Unsupported map type: " + mapClass);
-    }
-
-    /**
-     * The tag written to {@code key_type} / {@code value_type}. TanksON reads every number back as a
-     * double and every character back as a string, so the original type has to travel with the map:
-     * a subclassed map like {@link NamedList} doesn't expose K and V through the field's generics.
-     */
-    public static String getEntryType(Object o, boolean key)
-    {
-        if (o == null)
-            return "null";
-        else if (o instanceof String)
-            return "string";
-        else if (o instanceof Character)
-            return "character";
-        else if (o instanceof Boolean)
-            return "boolean";
-        else if (o instanceof Byte)
-            return "byte";
-        else if (o instanceof Short)
-            return "short";
-        else if (o instanceof Integer)
-            return "integer";
-        else if (o instanceof Long)
-            return "long";
-        else if (o instanceof Float)
-            return "float";
-        else if (o instanceof Double)
-            return "double";
-        else if (key)
-            throw new RuntimeException("Map keys must be primitives or Strings, got: " + o.getClass().getName());
-        else if (o instanceof Map || isTanksONable(o))
-            return "object";
-        else if (o instanceof ArrayList)
-            return "list";
-        else
-            throw new RuntimeException("Unsupported map value type: " + o.getClass().getName());
-    }
-
-    /** Serializes a map itself, tagged with everything {@link #parseMap} needs to rebuild it. */
-    public static Map<String, Object> serializeMap(Map<?, ?> m)
-    {
-        // Linked, so the envelope keys come out in a fixed order and level files stay diffable.
-        LinkedHashMap<String, Object> p = new LinkedHashMap<>();
-        p.put("obj_type", "map");
-        p.put("map_class", getMapClass(m));
-
-        ArrayList<Object> keys = new ArrayList<>(m.size());
-        ArrayList<Object> vals = new ArrayList<>(m.size());
-        String keyType = null;
-        String valType = null;
-
-        for (Map.Entry<?, ?> e: m.entrySet())
-        {
-            String kt = getEntryType(e.getKey(), true);
-            String vt = getEntryType(e.getValue(), false);
-
-            if (keyType == null)
-                keyType = kt;
-            else if (!keyType.equals(kt))
-                throw new RuntimeException("Map keys must all be of one type, got " + keyType + " and " + kt);
-
-            // A null fits alongside any value type, so it never decides the tag.
-            if (!"null".equals(vt))
-            {
-                if (valType == null)
-                    valType = vt;
-                else if (!valType.equals(vt))
-                    throw new RuntimeException("Map values must all be of one type, got " + valType + " and " + vt);
-            }
-
-            keys.add(e.getKey() instanceof Character ? e.getKey().toString() : e.getKey());
-            vals.add(serializeValue(e.getValue()));
-        }
-
-        p.put("key_type", keyType == null ? "string" : keyType);
-        p.put("value_type", valType == null ? "null" : valType);
-        p.put("keys", keys);
-        p.put("values", vals);
-        return p;
-    }
-
-    /** One map entry value, written the way a {@code @Property} field of the same type would be. */
-    public static Object serializeValue(Object o)
-    {
-        if (o == null)
-            return null;
-        else if (o instanceof Map)
-            return serializeMap((Map<?, ?>) o);
-        else if (isTanksONable(o))
-            return toMap(o);
-        else if (o instanceof Character)
-            return o.toString();
-        else if (o instanceof ArrayList)
-        {
-            ArrayList<Object> els = new ArrayList<>(((ArrayList<?>) o).size());
-            for (Object el: (ArrayList<?>) o)
-                els.add(serializeValue(el));
-            return els;
-        }
-        else
-            return o;
-    }
-
-    /** Rebuilds a map written by {@link #serializeMap}. */
-    public static Map<Object, Object> parseMap(Map<String, Object> m)
-    {
-        Map<Object, Object> r = newMap((String) m.get("map_class"));
-        String keyType = (String) m.get("key_type");
-        String valType = (String) m.get("value_type");
-        ArrayList<?> keys = (ArrayList<?>) m.get("keys");
-        ArrayList<?> vals = (ArrayList<?>) m.get("values");
-
-        for (int i = 0; i < keys.size(); i++)
-            r.put(restoreType(keyType, keys.get(i)), parseValue(valType, vals.get(i)));
-
-        return r;
-    }
-
-    /** Puts a scalar back in the type it was written as; see {@link #getEntryType}. */
-    public static Object restoreType(String type, Object o)
-    {
-        if (o == null || type == null)
-            return o;
-
-        if (o instanceof Number)
-        {
-            double d = ((Number) o).doubleValue();
-            if ("byte".equals(type))
-                return (byte) d;
-            else if ("short".equals(type))
-                return (short) d;
-            else if ("integer".equals(type))
-                return (int) d;
-            else if ("long".equals(type))
-                return (long) d;
-            else if ("float".equals(type))
-                return (float) d;
-        }
-        else if ("character".equals(type) && o instanceof String && ((String) o).length() == 1)
-            return ((String) o).charAt(0);
-
-        return o;
-    }
-
-    /** The counterpart of {@link #serializeValue}. */
-    public static Object parseValue(String type, Object o)
-    {
-        if (o == null)
-            return null;
-        else if (o instanceof Map)
-        {
-            // Both nested maps and TanksONable objects arrive tagged; anything else is a plain value.
-            if (((Map<?, ?>) o).containsKey("obj_type"))
-                return parseObject((Map<String, Object>) o);
-            return o;
-        }
-        else if (o instanceof ArrayList)
-        {
-            ArrayList<Object> els = new ArrayList<>(((ArrayList<?>) o).size());
-            for (Object el: (ArrayList<?>) o)
-                els.add(parseValue(null, el));
-            return els;
-        }
-        else
-            return restoreType(type, o);
-    }
-
-    /** Reads a map field, accepting the two shapes written before TanksON 1.2 as well. */
-    public static Map<Object, Object> parseMapField(Object o3, Object current)
-    {
-        if (o3 == null)
-            return null;
-
-        if (o3 instanceof Map && "map".equals(((Map<?, ?>) o3).get("obj_type")))
-            return parseMap((Map<String, Object>) o3);
-
-        // Older files carry no map type, so it has to come from the field's own default value.
-        Map<Object, Object> r = current instanceof Map ? newMap(getMapClass((Map<?, ?>) current)) : new LinkedHashMap<>();
-
-        if (o3 instanceof ArrayList)
-        {
-            ArrayList<?> keys = (ArrayList<?>) ((ArrayList<?>) o3).get(0);
-            ArrayList<?> vals = (ArrayList<?>) ((ArrayList<?>) o3).get(1);
-            for (int i = 0; i < keys.size(); i++)
-                r.put(keys.get(i), parseValue(null, vals.get(i)));
-        }
-        else if (o3 instanceof Map)
-        {
-            for (Map.Entry<?, ?> e: ((Map<?, ?>) o3).entrySet())
-                r.put(e.getKey(), parseValue(null, e.getValue()));
-        }
-        else
-            throw new RuntimeException("Could not read a map from: " + o3);
-
-        return r;
-    }
-
     public static Map<String, Object> toMap(Object o)
     {
         if (isTanksONable(o))
@@ -418,8 +196,6 @@ public final class Serializer
                                 p.put(getid(f), f.get(o));
                             }
                         }
-                        else if (o2 instanceof Map)
-                            p.put(getid(f), serializeMap((Map<?, ?>) o2));
                         else if (o2 instanceof Enum)
                             p.put(getid(f), ((Enum) o2).name());
                         else
@@ -552,8 +328,6 @@ public final class Serializer
     {
         if (m == null)
             return null;
-        if ("map".equals(m.get("obj_type")))
-            return parseMap(m);
 
         if (!(m.get("obj_type") instanceof String))
             throw new RuntimeException("Not a TanksON object, it declares no obj_type: " + m.keySet());
@@ -712,8 +486,6 @@ public final class Serializer
 
 
                     }
-                    else if (Map.class.isAssignableFrom(f.getType()))
-                        f.set(o, parseMapField(m.get(getid(f)), o2));
                     else if (o2 instanceof Color)
                     {
                         ArrayList<Double> objs = (ArrayList) m.get(getid(f));

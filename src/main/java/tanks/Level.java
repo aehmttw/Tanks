@@ -27,7 +27,7 @@ public class Level
      * [[(X),(Y),(Name),(Angle),(Team)]*]
      *
      * */
-    @Property(id = "tank_pos", name = "Tank Positions")
+    @Property(id = "tank_pos", name = "Tank positions")
     public ArrayList<ArrayList<String>> tanksIR;
 
     public ArrayList<Tank> tanks;
@@ -65,7 +65,7 @@ public class Level
 
     @Property(id = "color", name = "Color")
     public Color color = new Color(235, 207, 166);
-    @Property(id = "color_var", name = "Color Variation")
+    @Property(id = "color_var", name = "Color variation")
     public Color colorVar = new Color(20, 20, 20);
 
     public int tilesRandomSeed = (int) (Math.random() * Integer.MAX_VALUE);
@@ -74,7 +74,7 @@ public class Level
     public double light = 1.0;
     @Property(id = "shadow", name = "Shadow")
     public double shadow = 0.5;
-    @Property(id = "light_color", name = "Light Color")
+    @Property(id = "light_color", name = "Light color")
     public Color lightColor = new Color(255, 255, 255);
 
     @Property(id = "teams", name = "Teams")
@@ -93,9 +93,9 @@ public class Level
     public int startingCoins;
     @Property(id = "Shop", name = "Shop")
     public ArrayList<Item.ShopItem> shop = new ArrayList<>();
-    @Property(id = "items", name = "Starting Items")
+    @Property(id = "items", name = "Starting items")
     public ArrayList<Item.ItemStack<?>> startingItems = new ArrayList<>();
-    @Property(id = "builds", name = "Player Builds")
+    @Property(id = "builds", name = "Player builds")
     public ArrayList<TankPlayer.ShopTankBuild> playerBuilds = new ArrayList<>();
 
     // Saved on the client to keep track of what each item is
@@ -103,7 +103,7 @@ public class Level
     public ArrayList<Item.ShopItem> clientShop = new ArrayList<>();
     public ArrayList<Item.ItemStack<?>> clientStartingItems = new ArrayList<>();
 
-    @Property(id = "custom_tanks", name = "Custom Tanks")
+    @Property(id = "custom_tanks", name = "Custom tanks")
     public ArrayList<TankAIControlled> customTanks;
 
     public LinkedHashMap<String, Integer> itemNumbers = new LinkedHashMap<>();
@@ -124,354 +124,6 @@ public class Level
 
         this.remote = false;
         this.disableFriendlyFire = false;
-    }
-
-    public Level(String level)
-    {
-        this(level, false);
-    }
-
-    public Level(String level, boolean remote)
-    {
-        this(level, new ArrayList<>(), remote, ScreenPartyHost.isServer && Game.disablePartyFriendlyFire);
-    }
-
-    public Level(String level, ArrayList<TankAIControlled> customTanks)
-    {
-        this(level, customTanks, false, ScreenPartyHost.isServer && Game.disablePartyFriendlyFire);
-    }
-
-    /**
-     * A level string is structured like this:<br>
-     * (parentheses signify required parameters, and square brackets signify optional parameters.<br>
-     * Asterisks indicate that the parameter can be repeated, separated by commas.
-     * Do not include these in the level string.)<br>
-     * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
-     */
-    public Level(String level, ArrayList<TankAIControlled> customTanks, boolean remote, boolean disableFriendlyFire)
-    {
-        obstacles = new ArrayList<>();
-        this.tanks = new ArrayList<>();
-        this.obstaclesIR = new ArrayList<>();
-        this.tanksIR = new ArrayList<>();
-
-        this.disableFriendlyFire = disableFriendlyFire;
-        this.remote = remote;
-
-        this.customTanks = customTanks;
-        String[] preset = new String[0];
-        String[] screen = new String[0];
-        String[] obstaclesPos = new String[0];
-        String[] tanks = new String[0];
-        String[] teams;
-
-        // Levels from before teams existed leave them out of the level string;
-        // their tanks are given the default teams below so that the rest of the
-        // game can assume every level has teams.
-        boolean teamsDeclared = false;
-
-        this.levelString = level.replaceAll("\u0000", "");
-
-        //Look Ahead Split (keeping the delimiter with the associated block)
-        String[] blocks = this.levelString.split("(?=(level|items|shop|coins|tanks|builds)\n)");
-
-        for (String s: blocks)
-        {
-            if (s.isEmpty())
-            {
-                // do nothing
-            }
-            else if (s.startsWith("items\n"))
-            {
-                s = s.substring("items\n".length());
-                ArrayList<String> objects = getJsonObjects(s);
-                for (String o: objects)
-                    this.startingItems.add(Item.ItemStack.fromString(null, o));
-            }
-            else if (s.startsWith("shop\n"))
-            {
-                s = s.substring("shop\n".length());
-                ArrayList<String> objects = getJsonObjects(s);
-                for (String o: objects)
-                {
-                    this.shop.add(Item.ShopItem.fromString(o));
-                }
-            }
-            else if (s.startsWith("coins\n"))
-            {
-                s = s.substring("coins\n".length());
-                this.startingCoins = (int) Double.parseDouble(s.trim());
-            }
-            else if (s.startsWith("tanks\n"))
-            {
-                s = s.substring("tanks\n".length());
-                ArrayList<String> objects = getJsonObjects(s);
-                for (String o: objects)
-                {
-                    TankAIControlled t = TankAIControlled.fromString(o);
-                    if (t != null)
-                        this.customTanks.add(t);
-                }
-            }
-            else if (s.startsWith("builds\n"))
-            {
-                s = s.substring("builds\n".length());
-                ArrayList<String> objects = getJsonObjects(s);
-                for (String o: objects)
-                {
-                    TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(o);
-                    t.enableTertiaryColor = true;
-                    this.playerBuilds.add(t);
-                }
-            }
-            else
-            {
-                if (s.startsWith("level\n"))
-                {
-                    s = s.substring("level\n".length());
-                }
-                preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
-                screen = preset[0].split(",");
-                obstaclesPos = preset[1].split(",");
-                tanks = preset[2].split(",");
-
-                if (preset.length >= 4)
-                {
-                    teamsDeclared = true;
-                    teams = preset[3].split(",");
-                    tankTeams = new Team[teams.length];
-
-                    for (int i = 0; i < teams.length; i++)
-                    {
-                        String[] t = teams[i].split("-");
-
-                        if (t.length >= 5)
-                            tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
-                        else if (t.length >= 2)
-                            tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
-                        else
-                            tankTeams[i] = new Team(t[0]);
-
-                        if (disableFriendlyFire)
-                            tankTeams[i].friendlyFire = false;
-
-                        teamsMap.put(t[0], tankTeams[i]);
-                    }
-                }
-                else
-                {
-                    if (disableFriendlyFire)
-                    {
-                        teamsMap.put("ally", Game.playerTeamNoFF);
-                        teamsMap.put("enemy", Game.enemyTeamNoFF);
-                    }
-                    else
-                    {
-                        teamsMap.put("ally", Game.playerTeam);
-                        teamsMap.put("enemy", Game.enemyTeam);
-                    }
-                }
-
-                if (screen[0].startsWith("*"))
-                {
-                    editable = false;
-                    screen[0] = screen[0].substring(1);
-                }
-            }
-        }
-
-        if (TankModels.tank != null && playerBuilds.isEmpty())
-        {
-            TankPlayer.ShopTankBuild tp = new TankPlayer.ShopTankBuild();
-            playerBuilds.add(tp);
-        }
-
-        sizeX = (int) Double.parseDouble(screen[0]);
-        sizeY = (int) Double.parseDouble(screen[1]);
-
-        if (screen.length >= 5)
-        {
-            color.set((int) Double.parseDouble(screen[2]), (int) Double.parseDouble(screen[3]), (int) Double.parseDouble(screen[4]));
-
-            if (screen.length >= 8)
-            {
-                int colorVarR = Math.min(255 - (int) color.red, (int) Double.parseDouble(screen[5]));
-                int colorVarG = Math.min(255 - (int) color.green, (int) Double.parseDouble(screen[6]));
-                int colorVarB = Math.min(255 - (int) color.blue, (int) Double.parseDouble(screen[7]));
-                colorVar.set(colorVarR, colorVarG, colorVarB);
-            }
-        }
-
-        if (screen.length >= 9)
-        {
-            int length = (int) Double.parseDouble(screen[8]) * 100;
-
-            if (length > 0)
-                this.timer = length;
-        }
-
-        if (screen.length >= 11)
-        {
-            light = (int) Double.parseDouble(screen[9]) / 100.0;
-            shadow = (int) Double.parseDouble(screen[10]) / 100.0;
-        }
-
-        if (screen.length >= 14)
-            lightColor.set(Double.parseDouble(screen[11]), Double.parseDouble(screen[12]), Double.parseDouble(screen[13]));
-
-        if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
-        {
-            for (String obstaclesPo: obstaclesPos)
-            {
-                String[] obs = obstaclesPo.split("-");
-
-                ArrayList<String> obsIR = new ArrayList<>();
-                obsIR.add(obs[0].replace("...", ":")); //X Coordinate (in sliced notation)
-                obsIR.add(obs[1].replace("...", ":")); //Y Coordinate (in sliced notation)
-                if (obs.length >= 3)
-                    obsIR.add(obs[2]); //Name
-                if (obs.length >= 4)
-                    obsIR.add(obs[3]); //Metadata
-                obstaclesIR.add(obsIR);
-
-
-
-                String[] xPos = obs[0].split("\\.\\.\\.");
-
-                double startX;
-                double endX;
-
-                startX = Double.parseDouble(xPos[0]);
-                endX = startX;
-
-                if (xPos.length > 1)
-                    endX = Double.parseDouble(xPos[1]);
-
-                String[] yPos = obs[1].split("\\.\\.\\.");
-
-                double startY;
-                double endY;
-
-                startY = Double.parseDouble(yPos[0]);
-                endY = startY;
-
-                if (yPos.length > 1)
-                    endY = Double.parseDouble(yPos[1]);
-
-                String name = "normal";
-
-                if (obs.length >= 3)
-                    name = obs[2];
-
-                String meta = null;
-
-                if (obs.length >= 4)
-                    meta = obs[3];
-
-                for (double x = startX; x <= endX; x++)
-                {
-                    for (double y = startY; y <= endY; y++)
-                    {
-                        Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
-
-                        if (meta != null)
-                            o.setMetadata(meta);
-
-                        if (o instanceof ObstacleBeatBlock)
-                        {
-                            this.synchronizeMusic = true;
-                            this.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
-                        }
-
-                        obstacles.add(o);
-                    }
-                }
-            }
-        }
-
-        int currentCrusadeID = 0;
-        LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
-        for (TankAIControlled t: this.customTanks)
-            customTanksMap.put(t.name, t);
-
-        tanksToRemove = new ArrayList<>();
-
-        if (!preset[2].isEmpty())
-        {
-            for (String s: tanks)
-            {
-                String[] tank = s.split("-");
-
-                if (!teamsDeclared)
-                    tank = withDefaultTeam(tank);
-
-                ArrayList<String> tankIR = new ArrayList<>();
-                tankIR.add(tank[0]); //X Coordinate
-                tankIR.add(tank[1]); //Y Coordinate
-                tankIR.add(tank[2]); //Name
-                tankIR.add(tank[3]); //Angle
-                tankIR.add(tank[4]); //Team
-                tanksIR.add(tankIR);
-
-                double x = Game.tile_size * (0.5 + Double.parseDouble(tank[0]));
-                double y = Game.tile_size * (0.5 + Double.parseDouble(tank[1]));
-                String type = tank[2].toLowerCase();
-                double angle = 0;
-
-                StringBuilder metadata = new StringBuilder();
-                for (int i = 3; i < tank.length; i++)
-                {
-                    metadata.append(tank[i]);
-                    if (i < tank.length - 1)
-                        metadata.append("-");
-                }
-
-                if (tank.length >= 4)
-                    angle = (Math.PI / 2 * Double.parseDouble(tank[3]));
-
-                Team team = null;
-
-                if (tank.length >= 5)
-                    team = teamsMap.get(tank[4]);
-
-                Tank t;
-                if (type.equals("player"))
-                {
-                    this.playerSpawnsX.add(x);
-                    this.playerSpawnsY.add(y);
-                    this.playerSpawnsAngle.add(angle);
-                    this.playerSpawnsTeam.add(team);
-
-                    continue;
-                }
-
-                if (customTanksMap.get(type) != null)
-                    t = customTanksMap.get(type).instantiate(type, x, y, angle);
-                else
-                    t = Game.registryTank.getEntry(type).getTank(x, y, angle);
-
-                t.crusadeID = currentCrusadeID;
-                currentCrusadeID++;
-
-                Level l = Game.currentLevel;
-                Game.currentLevel = this;
-                if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks && Crusade.currentCrusade.retry && !Crusade.currentCrusade.livingTankIDs.contains(t.crusadeID))
-                    tanksToRemove.add(t);
-                else
-                    t.setMetadata(metadata.toString());
-                Game.currentLevel = l;
-
-                if (remote)
-                    this.tanks.add(new TankRemote(t));
-                else
-                {
-                    this.tanks.add(t);
-                    setSolidTank((int) Double.parseDouble(tank[0]), (int) Double.parseDouble(tank[1]), true);
-                }
-            }
-        }
-
-        this.commonInit();
     }
 
     /**
@@ -560,25 +212,6 @@ public class Level
 
         // A TanksON level opens with a key, while a legacy level opens with its dimensions
         return i < level.length() && level.charAt(i) == '"';
-    }
-
-    /**
-     * Gives a legacy tank entry, from a level string with no teams section, the team it would
-     * have been put on before levels could name their own teams.
-     */
-    protected static String[] withDefaultTeam(String[] tank)
-    {
-        if (tank.length >= 5)
-            return tank;
-
-        String[] out = new String[5];
-        System.arraycopy(tank, 0, out, 0, tank.length);
-
-        if (tank.length < 4)
-            out[3] = "0";
-
-        out[4] = tank[2].equalsIgnoreCase("player") ? "ally" : "enemy";
-        return out;
     }
 
     /**
@@ -1572,5 +1205,374 @@ public class Level
 
         this.levelString = Serializer.toTanksON(this);
         return this.levelString;
+    }
+
+    // Legacy level strings, from before levels were saved as TanksON
+
+    public Level(String level)
+    {
+        this(level, false);
+    }
+
+    public Level(String level, boolean remote)
+    {
+        this(level, new ArrayList<>(), remote, ScreenPartyHost.isServer && Game.disablePartyFriendlyFire);
+    }
+
+    public Level(String level, ArrayList<TankAIControlled> customTanks)
+    {
+        this(level, customTanks, false, ScreenPartyHost.isServer && Game.disablePartyFriendlyFire);
+    }
+
+    /**
+     * A level string is structured like this:<br>
+     * (parentheses signify required parameters, and square brackets signify optional parameters.<br>
+     * Asterisks indicate that the parameter can be repeated, separated by commas.
+     * Do not include these in the level string.)<br>
+     * {(SizeX),(SizeY),[(Red),(Green),(Blue)],[(RedNoise),(GreenNoise),(BlueNoise)]|[(ObstacleX)-(ObstacleY)-[ObstacleMetadata]]*|[(TankX)-(TankY)-(TankType)-[TankAngle]-[TeamName]]*|[(TeamName)-[FriendlyFire]-[(Red)-(Green)-(Blue)]]*}
+     */
+    public Level(String level, ArrayList<TankAIControlled> customTanks, boolean remote, boolean disableFriendlyFire)
+    {
+        obstacles = new ArrayList<>();
+        this.tanks = new ArrayList<>();
+        this.obstaclesIR = new ArrayList<>();
+        this.tanksIR = new ArrayList<>();
+
+        this.disableFriendlyFire = disableFriendlyFire;
+        this.remote = remote;
+
+        this.customTanks = customTanks;
+        String[] preset = new String[0];
+        String[] screen = new String[0];
+        String[] obstaclesPos = new String[0];
+        String[] tanks = new String[0];
+        String[] teams;
+
+        // Levels from before teams existed leave them out of the level string;
+        // their tanks are given the default teams below so that the rest of the
+        // game can assume every level has teams.
+        boolean teamsDeclared = false;
+
+        this.levelString = level.replaceAll("\u0000", "");
+
+        //Look Ahead Split (keeping the delimiter with the associated block)
+        String[] blocks = this.levelString.split("(?=(level|items|shop|coins|tanks|builds)\n)");
+
+        for (String s: blocks)
+        {
+            if (s.isEmpty())
+            {
+                // do nothing
+            }
+            else if (s.startsWith("items\n"))
+            {
+                s = s.substring("items\n".length());
+                ArrayList<String> objects = getJsonObjects(s);
+                for (String o: objects)
+                    this.startingItems.add(Item.ItemStack.fromString(null, o));
+            }
+            else if (s.startsWith("shop\n"))
+            {
+                s = s.substring("shop\n".length());
+                ArrayList<String> objects = getJsonObjects(s);
+                for (String o: objects)
+                {
+                    this.shop.add(Item.ShopItem.fromString(o));
+                }
+            }
+            else if (s.startsWith("coins\n"))
+            {
+                s = s.substring("coins\n".length());
+                this.startingCoins = (int) Double.parseDouble(s.trim());
+            }
+            else if (s.startsWith("tanks\n"))
+            {
+                s = s.substring("tanks\n".length());
+                ArrayList<String> objects = getJsonObjects(s);
+                for (String o: objects)
+                {
+                    TankAIControlled t = TankAIControlled.fromString(o);
+                    if (t != null)
+                        this.customTanks.add(t);
+                }
+            }
+            else if (s.startsWith("builds\n"))
+            {
+                s = s.substring("builds\n".length());
+                ArrayList<String> objects = getJsonObjects(s);
+                for (String o: objects)
+                {
+                    TankPlayer.ShopTankBuild t = TankPlayer.ShopTankBuild.fromString(o);
+                    t.enableTertiaryColor = true;
+                    this.playerBuilds.add(t);
+                }
+            }
+            else
+            {
+                if (s.startsWith("level\n"))
+                {
+                    s = s.substring("level\n".length());
+                }
+                preset = s.substring(s.indexOf('{') + 1, s.indexOf('}')).split("\\|");
+                screen = preset[0].split(",");
+                obstaclesPos = preset[1].split(",");
+                tanks = preset[2].split(",");
+
+                if (preset.length >= 4)
+                {
+                    teamsDeclared = true;
+                    teams = preset[3].split(",");
+                    tankTeams = new Team[teams.length];
+
+                    for (int i = 0; i < teams.length; i++)
+                    {
+                        String[] t = teams[i].split("-");
+
+                        if (t.length >= 5)
+                            tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]), Double.parseDouble(t[2]), Double.parseDouble(t[3]), Double.parseDouble(t[4]));
+                        else if (t.length >= 2)
+                            tankTeams[i] = new Team(t[0], Boolean.parseBoolean(t[1]));
+                        else
+                            tankTeams[i] = new Team(t[0]);
+
+                        if (disableFriendlyFire)
+                            tankTeams[i].friendlyFire = false;
+
+                        teamsMap.put(t[0], tankTeams[i]);
+                    }
+                }
+                else
+                {
+                    if (disableFriendlyFire)
+                    {
+                        teamsMap.put("ally", Game.playerTeamNoFF);
+                        teamsMap.put("enemy", Game.enemyTeamNoFF);
+                    }
+                    else
+                    {
+                        teamsMap.put("ally", Game.playerTeam);
+                        teamsMap.put("enemy", Game.enemyTeam);
+                    }
+                }
+
+                if (screen[0].startsWith("*"))
+                {
+                    editable = false;
+                    screen[0] = screen[0].substring(1);
+                }
+            }
+        }
+
+        if (TankModels.tank != null && playerBuilds.isEmpty())
+        {
+            TankPlayer.ShopTankBuild tp = new TankPlayer.ShopTankBuild();
+            playerBuilds.add(tp);
+        }
+
+        sizeX = (int) Double.parseDouble(screen[0]);
+        sizeY = (int) Double.parseDouble(screen[1]);
+
+        if (screen.length >= 5)
+        {
+            color.set((int) Double.parseDouble(screen[2]), (int) Double.parseDouble(screen[3]), (int) Double.parseDouble(screen[4]));
+
+            if (screen.length >= 8)
+            {
+                int colorVarR = Math.min(255 - (int) color.red, (int) Double.parseDouble(screen[5]));
+                int colorVarG = Math.min(255 - (int) color.green, (int) Double.parseDouble(screen[6]));
+                int colorVarB = Math.min(255 - (int) color.blue, (int) Double.parseDouble(screen[7]));
+                colorVar.set(colorVarR, colorVarG, colorVarB);
+            }
+        }
+
+        if (screen.length >= 9)
+        {
+            int length = (int) Double.parseDouble(screen[8]) * 100;
+
+            if (length > 0)
+                this.timer = length;
+        }
+
+        if (screen.length >= 11)
+        {
+            light = (int) Double.parseDouble(screen[9]) / 100.0;
+            shadow = (int) Double.parseDouble(screen[10]) / 100.0;
+        }
+
+        if (screen.length >= 14)
+            lightColor.set(Double.parseDouble(screen[11]), Double.parseDouble(screen[12]), Double.parseDouble(screen[13]));
+
+        if (!((obstaclesPos.length == 1 && obstaclesPos[0].isEmpty()) || obstaclesPos.length == 0))
+        {
+            for (String obstaclesPo: obstaclesPos)
+            {
+                String[] obs = obstaclesPo.split("-");
+
+                ArrayList<String> obsIR = new ArrayList<>();
+                obsIR.add(obs[0].replace("...", ":")); //X Coordinate (in sliced notation)
+                obsIR.add(obs[1].replace("...", ":")); //Y Coordinate (in sliced notation)
+                if (obs.length >= 3)
+                    obsIR.add(obs[2]); //Name
+                if (obs.length >= 4)
+                    obsIR.add(obs[3]); //Metadata
+                obstaclesIR.add(obsIR);
+
+
+
+                String[] xPos = obs[0].split("\\.\\.\\.");
+
+                double startX;
+                double endX;
+
+                startX = Double.parseDouble(xPos[0]);
+                endX = startX;
+
+                if (xPos.length > 1)
+                    endX = Double.parseDouble(xPos[1]);
+
+                String[] yPos = obs[1].split("\\.\\.\\.");
+
+                double startY;
+                double endY;
+
+                startY = Double.parseDouble(yPos[0]);
+                endY = startY;
+
+                if (yPos.length > 1)
+                    endY = Double.parseDouble(yPos[1]);
+
+                String name = "normal";
+
+                if (obs.length >= 3)
+                    name = obs[2];
+
+                String meta = null;
+
+                if (obs.length >= 4)
+                    meta = obs[3];
+
+                for (double x = startX; x <= endX; x++)
+                {
+                    for (double y = startY; y <= endY; y++)
+                    {
+                        Obstacle o = Game.registryObstacle.getEntry(name).getObstacle(x, y);
+
+                        if (meta != null)
+                            o.setMetadata(meta);
+
+                        if (o instanceof ObstacleBeatBlock)
+                        {
+                            this.synchronizeMusic = true;
+                            this.beatBlocks |= (int) ((ObstacleBeatBlock) o).beatFrequency;
+                        }
+
+                        obstacles.add(o);
+                    }
+                }
+            }
+        }
+
+        int currentCrusadeID = 0;
+        LinkedHashMap<String, TankAIControlled> customTanksMap = new LinkedHashMap<>();
+        for (TankAIControlled t: this.customTanks)
+            customTanksMap.put(t.name, t);
+
+        tanksToRemove = new ArrayList<>();
+
+        if (!preset[2].isEmpty())
+        {
+            for (String s: tanks)
+            {
+                String[] tank = s.split("-");
+
+                if (!teamsDeclared)
+                    tank = withDefaultTeam(tank);
+
+                ArrayList<String> tankIR = new ArrayList<>();
+                tankIR.add(tank[0]); //X Coordinate
+                tankIR.add(tank[1]); //Y Coordinate
+                tankIR.add(tank[2]); //Name
+                tankIR.add(tank[3]); //Angle
+                tankIR.add(tank[4]); //Team
+                tanksIR.add(tankIR);
+
+                double x = Game.tile_size * (0.5 + Double.parseDouble(tank[0]));
+                double y = Game.tile_size * (0.5 + Double.parseDouble(tank[1]));
+                String type = tank[2].toLowerCase();
+                double angle = 0;
+
+                StringBuilder metadata = new StringBuilder();
+                for (int i = 3; i < tank.length; i++)
+                {
+                    metadata.append(tank[i]);
+                    if (i < tank.length - 1)
+                        metadata.append("-");
+                }
+
+                if (tank.length >= 4)
+                    angle = (Math.PI / 2 * Double.parseDouble(tank[3]));
+
+                Team team = null;
+
+                if (tank.length >= 5)
+                    team = teamsMap.get(tank[4]);
+
+                Tank t;
+                if (type.equals("player"))
+                {
+                    this.playerSpawnsX.add(x);
+                    this.playerSpawnsY.add(y);
+                    this.playerSpawnsAngle.add(angle);
+                    this.playerSpawnsTeam.add(team);
+
+                    continue;
+                }
+
+                if (customTanksMap.get(type) != null)
+                    t = customTanksMap.get(type).instantiate(type, x, y, angle);
+                else
+                    t = Game.registryTank.getEntry(type).getTank(x, y, angle);
+
+                t.crusadeID = currentCrusadeID;
+                currentCrusadeID++;
+
+                Level l = Game.currentLevel;
+                Game.currentLevel = this;
+                if (Crusade.crusadeMode && !Crusade.currentCrusade.respawnTanks && Crusade.currentCrusade.retry && !Crusade.currentCrusade.livingTankIDs.contains(t.crusadeID))
+                    tanksToRemove.add(t);
+                else
+                    t.setMetadata(metadata.toString());
+                Game.currentLevel = l;
+
+                if (remote)
+                    this.tanks.add(new TankRemote(t));
+                else
+                {
+                    this.tanks.add(t);
+                    setSolidTank((int) Double.parseDouble(tank[0]), (int) Double.parseDouble(tank[1]), true);
+                }
+            }
+        }
+
+        this.commonInit();
+    }
+
+    /**
+     * Gives a legacy tank entry, from a level string with no teams section, the team it would
+     * have been put on before levels could name their own teams.
+     */
+    protected static String[] withDefaultTeam(String[] tank)
+    {
+        if (tank.length >= 5)
+            return tank;
+
+        String[] out = new String[5];
+        System.arraycopy(tank, 0, out, 0, tank.length);
+
+        if (tank.length < 4)
+            out[3] = "0";
+
+        out[4] = tank[2].equalsIgnoreCase("player") ? "ally" : "enemy";
+        return out;
     }
 }

@@ -7,6 +7,7 @@ import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.*;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
@@ -195,7 +196,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                     bytes = new byte[ttfBuffer.remaining()];
                     int originalPos = ttfBuffer.position();
                     ttfBuffer.get(bytes);
-                    ttfBuffer.position(originalPos);
+                    ((Buffer) ttfBuffer).position(originalPos);
                 }
 
                 rawFont = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, new java.io.ByteArrayInputStream(bytes));
@@ -373,7 +374,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                     la.put((byte) 0xFF);
                     la.put((byte) a);
                 }
-                la.flip();
+                ((Buffer) la).flip();
 
                 int[] slot = allocAtlasRect(bw, bh);   // {pageTex, x, y}
                 glBindTexture(GL_TEXTURE_2D, slot[0]);
@@ -601,7 +602,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
                 out.write(chunk, 0, n);
             byte[] bytes = out.toByteArray();
             ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length);
-            buffer.put(bytes).flip();
+            ((Buffer) buffer.put(bytes)).flip();
             return buffer;
         }
     }
@@ -649,7 +650,7 @@ public class TruetypeFontRenderer extends BaseFontRenderer
     {
         byte[] bytes = Files.readAllBytes(Paths.get(filePath));
         ByteBuffer buffer = BufferUtils.createByteBuffer(bytes.length);
-        buffer.put(bytes).flip();
+        ((Buffer) buffer.put(bytes)).flip();
         return buffer;
     }
 

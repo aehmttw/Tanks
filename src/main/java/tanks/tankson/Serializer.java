@@ -3,13 +3,16 @@ package tanks.tankson;
 import basewindow.Color;
 import tanks.Game;
 import tanks.Team;
-import tanks.bullet.*;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletEffect;
+import tanks.bullet.Trail;
 import tanks.item.Item;
 import tanks.tank.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +36,14 @@ public final class Serializer
             version = m.group(1);
 
         return version;
+    }
+
+    public static String getVersion(byte[] b)
+    {
+        ByteBuffer buf = ByteBuffer.wrap(b);
+        long v = buf.getLong();
+        String[] version = new String[]{Integer.toString((int) (v >> 32)), Integer.toString((int) (v & 0xFFFFFFFF))};
+        return version[0] + "." + version[1];
     }
 
     public static Class<?> getCorrectClass(Object o)
@@ -172,6 +183,70 @@ public final class Serializer
         return null;
     }
 
+    public static Map<Long, Object> toNumericalMap(Object o)
+    {
+        if (isTanksONable(o))
+        {
+            HashMap<Long, Object> p = new HashMap<>();
+            p.put(ObjectBuffer.hash("obj_type"), getAnnotation(o, TanksONable.class).value());
+            if (o instanceof Item)
+                try
+                {
+                    p.put(ObjectBuffer.hash("item_type"), ((Item) o).getClass().getField("item_class_name").get(null));
+                }
+                catch (Exception ignore)
+                {
+                }
+            else if (o instanceof Bullet)
+                p.put(ObjectBuffer.hash("bullet_type"), ((Bullet) o).typeName);
+
+
+            for (Field f: o.getClass().getFields())
+            {
+                try
+                {
+                    if (f.isAnnotationPresent(Property.class) && (!(o instanceof Tank || o instanceof Bullet || o instanceof Mine || o instanceof Explosion ||
+                        o instanceof Trail) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
+                    {
+                        Object o2 = f.get(o);
+                        if (o2 != null && isTanksONable(f))
+                        {
+                            p.put(ObjectBuffer.hash(getid(f)), toNumericalMap(o2));
+                        }
+                        else if (o2 instanceof ArrayList)
+                        {
+                            if (!((ArrayList) o2).isEmpty() && isTanksONable(((ArrayList) o2).get(0)))
+                            {
+                                ArrayList<Map<Long, Object>> o3s = new ArrayList<>();
+                                for (Object o3: ((ArrayList) o2))
+                                {
+                                    o3s.add(toNumericalMap(o3));
+                                }
+                                p.put(ObjectBuffer.hash(getid(f)), o3s);
+                            }
+                            else
+                            {
+                                p.put(ObjectBuffer.hash(getid(f)), f.get(o));
+                            }
+                        }
+                        else if (o2 instanceof Enum)
+                            p.put(ObjectBuffer.hash(getid(f)), ((Enum) o2).name());
+                        else if (o2 instanceof Serializable)
+                            p.put(ObjectBuffer.hash(getid(f)), ((Serializable) o2).serialize());
+                        else
+                            p.put(ObjectBuffer.hash(getid(f)), f.get(o));
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }
+            return p;
+        }
+        return null;
+    }
+
     public static String toTanksON(Object o)
     {
         String shebang = "/*TANKSON v" + TANKSON_VERSION + "*/";
@@ -192,6 +267,32 @@ public final class Serializer
         else
         {
             throw new RuntimeException("Unknown TanksON Version " + getVersion(s) + ". You may be running an older version of Tanks with a newer game file.");
+        }
+    }
+
+    public static byte[] toObjBuf(Object o)
+    {
+        String[] version = TANKSON_VERSION.split("\\.");
+        byte[] b = ObjectBuffer.toBytes(toNumericalMap(o));
+        ByteBuffer buf = ByteBuffer.allocate(8 + b.length);
+        buf.putLong(Integer.valueOf(version[0]) << 32 | Integer.valueOf(version[1]));
+        buf.put(b);
+        return buf.array();
+    }
+
+    public static Object fromObjBuf(byte[] b)
+    {
+        if (Game.compareVersions(getVersion(b), TANKSON_VERSION) <= 0)
+        {
+            Object o = ObjectBuffer.parse(Arrays.copyOfRange(b, 8, b.length));
+            if (o instanceof Map)
+                return parseNumericalObject((Map<Long, Object>) o);
+            else
+                throw new RuntimeException("Unexpected type of object: " + o.toString());
+        }
+        else
+        {
+            throw new RuntimeException("Unknown TanksON Version " + getVersion(b) + ". You may be running an older version of Tanks with a newer game file.");
         }
     }
 
@@ -505,6 +606,224 @@ public final class Serializer
             }
         }
 
+
+        return o;
+    }
+
+    public static Object parseNumericalObject(Map<Long, Object> m)
+    {
+        if (m == null)
+            return null;
+        Object o = null;
+        Set<Long> processed = new HashSet<>();
+        processed.add(ObjectBuffer.hash("obj_type"));
+        switch ((String) m.get(ObjectBuffer.hash("obj_type")))
+        {
+            case "tank":
+                o = new TankAIControlled("", 0, 0, 50, 0, 0, 0, 0, TankAIControlled.ShootAI.none);
+                break;
+            case "player_tank":
+                o = new TankPlayer();
+                break;
+            case "bullet":
+            {
+                try
+                {
+                    processed.add(ObjectBuffer.hash("bullet_type"));
+                    o = Game.registryBullet.getEntry((String) m.get(ObjectBuffer.hash("bullet_type"))).bullet.newInstance();
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
+                break;
+            }
+            case "mine":
+                o = new Mine();
+                break;
+            case "item":
+            {
+                try
+                {
+                    processed.add(ObjectBuffer.hash("item_type"));
+                    o = Game.registryItem.getEntry((String) m.get(ObjectBuffer.hash("item_type"))).item.getConstructor().newInstance();
+                }
+                catch (Exception e)
+                {
+                    throw new RuntimeException(e);
+                }
+                break;
+            }
+            case "item_stack":
+            {
+                processed.add(ObjectBuffer.hash("item"));
+                Item i = (Item) parseNumericalObject((Map<Long, Object>) m.get(ObjectBuffer.hash("item")));
+                o = (i.getStack(null));
+                break;
+            }
+            case "shop_item":
+                o = new Item.ShopItem();
+                break;
+            case "crusade_shop_item":
+                o = new Item.CrusadeShopItem();
+                break;
+            case "shop_build":
+                o = new TankPlayer.ShopTankBuild();
+                break;
+            case "crusade_shop_build":
+                o = new TankPlayer.CrusadeShopTankBuild();
+                break;
+            case "explosion":
+                o = new Explosion();
+                break;
+            case "spawned_tank":
+                processed.add(ObjectBuffer.hash("tank"));
+                processed.add(ObjectBuffer.hash("weight"));
+                o = new TankAIControlled.SpawnedTankEntry((ITankField) parseNumericalObject((Map<Long, Object>) m.get(ObjectBuffer.hash("tank"))),
+                    (Double) m.get(ObjectBuffer.hash("weight")));
+                break;
+            case "tank_ref":
+                processed.add(ObjectBuffer.hash("tank"));
+                o = new TankReference((String) m.get(ObjectBuffer.hash("tank")));
+                break;
+            case "trail":
+                o = new Trail();
+                break;
+            case "bullet_effect":
+                o = new BulletEffect();
+                break;
+            case "item_icon":
+                o = Game.registryItemIcon.getItemIcon((String) m.get(ObjectBuffer.hash("id"))).getCopy();
+                if (o == null)
+                    throw new RuntimeException("Couldn't find item icon for " + m.get(ObjectBuffer.hash("id")));
+                break;
+            case "team":
+                o = new Team();
+                break;
+            default:
+                throw new RuntimeException("Bad object type: " + (String) m.get(ObjectBuffer.hash("obj_type")));
+        }
+
+        ArrayList<Field> conversions = new ArrayList<>();
+        ArrayList<Object> conversionTargets = new ArrayList<>();
+        for (Field f: o.getClass().getFields())
+        {
+            if (!f.isAnnotationPresent(Property.class))
+                continue;
+
+            long h = ObjectBuffer.hash(getid(f));
+            if (!m.containsKey(h))
+                continue;
+
+            processed.add(h);
+            try
+            {
+                Object o2 = f.get(o);
+                Object v = m.get(h);
+                if (v == null)
+                    f.set(o, null);
+                else if (isTanksONable(f))
+                {
+                    try
+                    {
+                        f.set(o, parseNumericalObject((Map<Long, Object>) v));
+                    }
+                    catch (ClassCastException | IllegalArgumentException e)
+                    {
+                        conversions.add(f);
+                        conversionTargets.add(v);
+                    }
+                }
+                else if (o2 instanceof ArrayList)
+                {
+                    ArrayList arr = (ArrayList) v;
+                    if (!arr.isEmpty() && (arr.get(0) instanceof Map))
+                    {
+                        ArrayList o3s = new ArrayList();
+                        for (Map o3: ((ArrayList<Map>) arr))
+                        {
+                            o3s.add(parseNumericalObject(o3));
+                        }
+                        f.set(o, o3s);
+                    }
+                    else
+                        f.set(o, arr);
+                }
+                else if (o2 instanceof HashSet)
+                    f.set(o, new HashSet<>((ArrayList) v));
+                else if (o2 instanceof Enum)
+                    f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) v));
+                else if (o2 instanceof Serializable)
+                    f.set(o, ((Serializable) o2).deserialize((String) v));
+                else if (o2 instanceof Integer)
+                    f.set(o, ((Number) v).intValue());
+                else
+                    f.set(o, v);
+            }
+            catch (Exception e)
+            {
+                System.err.println(f + " " + getid(f));
+                throw new RuntimeException(e);
+            }
+        }
+
+
+        for (int i = 0; i < conversions.size(); i++)
+        {
+            Field f = conversions.get(i);
+            Object o3 = conversionTargets.get(i);
+            try
+            {
+                f.set(o, Compatibility.convert(f, o, o3));
+            }
+            catch (Exception e)
+            {
+                System.out.println(getid(f));
+                throw new RuntimeException(e);
+            }
+        }
+
+        Set<Long> unused = new HashSet<>(m.keySet());
+        unused.removeAll(processed);
+
+        for (long h: unused)
+        {
+            String k = Compatibility.unhash(h);
+            if (k == null)
+            {
+                System.out.println("Unconvertable field found! Unknown id hash " + Long.toHexString(h));
+                continue;
+            }
+
+            if (Compatibility.unused_table.containsKey(k))
+            {
+                Compatibility.unused_table.get(k).accept(o, m.get(h));
+                continue;
+            }
+
+            try
+            {
+                Field f = o.getClass().getField(Compatibility.convert(k));
+                f.set(o, Compatibility.compatibility_table.get(k).apply(o, m.get(h)));
+            }
+            catch (ClassCastException e)
+            {
+                try
+                {
+                    Field f = o.getClass().getField(Compatibility.convert(k));
+                    f.set(o, Compatibility.convert(f, o, m.get(h)));
+                }
+                catch (NoSuchFieldException | IllegalAccessException f)
+                {
+                    throw new RuntimeException(f);
+                }
+            }
+            catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
+            {
+                System.out.println("Unconvertable field found! " + k);
+                e.printStackTrace();
+            }
+        }
 
         return o;
     }

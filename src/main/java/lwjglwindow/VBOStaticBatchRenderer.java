@@ -215,24 +215,24 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         if (this.staged)
             return;
 
-        this.vertices.flip();
+        ((Buffer) this.vertices).flip();
         this.window.vertexBufferData(this.vertVBO, this.vertices);
 
         if (colVBO >= 0)
         {
-            this.colors.flip();
+            ((Buffer) this.colors).flip();
             this.window.vertexBufferData(this.colVBO, this.colors);
         }
 
         if (texVBO >= 0)
         {
-            this.texCoords.flip();
+            ((Buffer) this.texCoords).flip();
             this.window.vertexBufferData(this.texVBO, this.texCoords);
         }
 
         if (normVBO >= 0)
         {
-            this.normals.flip();
+            ((Buffer) this.normals).flip();
             this.window.vertexBufferData(this.normVBO, this.normals);
         }
 
@@ -240,7 +240,7 @@ public class VBOStaticBatchRenderer extends BaseShapeBatchRenderer
         {
             AttributeProperty prop = attributeProperties.get(i);
             Buffer b = prop.buffer;
-            b.flip();
+            ((Buffer) b).flip();
 
             this.window.vertexBufferData(prop.vboId, b);
         }

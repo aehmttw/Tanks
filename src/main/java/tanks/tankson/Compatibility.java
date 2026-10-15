@@ -216,6 +216,28 @@ public class Compatibility
         }
     }
 
+    /** Reverse of {@link ObjectBuffer#hash(String)}, over every field id this class knows about. */
+    private static final HashMap<Long, String> hash_table = new HashMap<>();
+
+    /** Number of entries {@link #hash_table} was last built from, so late additions to the tables are picked up. */
+    private static int hashed = -1;
+
+    /** Recovers the field id behind an ObjectBuffer hash, or null if no table knows it. */
+    public static String unhash(long h)
+    {
+        int n = compatibility_table.size() + unused_table.size() + field_table.size();
+        if (n != hashed)
+        {
+            hash_table.clear();
+            for (String s: compatibility_table.keySet()) hash_table.put(ObjectBuffer.hash(s), s);
+            for (String s: unused_table.keySet()) hash_table.put(ObjectBuffer.hash(s), s);
+            for (String s: field_table.keySet()) hash_table.put(ObjectBuffer.hash(s), s);
+            hashed = n;
+        }
+
+        return hash_table.get(h);
+    }
+
     public static <V> void addGeneralCase(Class<V> cls, BiFunction<Field, V, Object> func)
     {
         //noinspection unchecked

@@ -10,6 +10,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.lang.reflect.Method;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -271,7 +272,7 @@ public class SteamNetworkHandler
             {
                 SteamID steamIDSender = new SteamID();
 
-                packetReadBuffer.clear();
+                ((Buffer) packetReadBuffer).clear();
 
                 if (networking.readP2PPacket(steamIDSender, packetReadBuffer, defaultChannel) > 0)
                 {
@@ -354,7 +355,7 @@ public class SteamNetworkHandler
                 sendBuf.getBytes(0, bytes);
                 packetSendBuffer.put(bytes);
 
-                packetSendBuffer.flip(); // limit=pos, pos=0
+                ((Buffer) packetSendBuffer).flip(); // limit=pos, pos=0
 
                 networking.sendP2PPacket(steamIDReceiver, packetSendBuffer, type, defaultChannel);
                 return steamIDReceiver;

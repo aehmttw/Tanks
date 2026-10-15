@@ -1,15 +1,13 @@
 package tanks.tankson;
 
 import basewindow.Color;
-import tanks.Game;
-import tanks.Team;
+import tanks.*;
 import tanks.bullet.*;
 import tanks.item.Item;
 import tanks.tank.*;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,9 +15,11 @@ import java.util.regex.Pattern;
 public final class Serializer
 {
 
-    public static String TANKSON_VERSION = "1.1";
+    public static String TANKSON_VERSION = "1.2";
 
     public static HashMap<Class<?>, Object> defaults = new HashMap<>();
+
+    public static HashMap<Class<?>, Field> nameFields = new HashMap<>();
 
     public static HashMap<String, Tank> userTanks = new HashMap<>();
 
@@ -108,6 +108,44 @@ public final class Serializer
         return f.getAnnotation(Property.class).id();
     }
 
+    /** The {@code @Property(id = "name")} field of a class, or null if it declares none. */
+    public static Field getNameField(Class<?> c)
+    {
+        if (nameFields.containsKey(c))
+            return nameFields.get(c);
+
+        Field name = null;
+        for (Field f: c.getFields())
+        {
+            if (f.isAnnotationPresent(Property.class) && getid(f).equals("name"))
+            {
+                name = f;
+                break;
+            }
+        }
+
+        nameFields.put(c, name);
+        return name;
+    }
+
+    /** An object's own name, as {@link NamedList} keys it by. */
+    public static String getName(Object o)
+    {
+        Field f = getNameField(o.getClass());
+
+        if (f == null)
+            throw new RuntimeException("No @Property(id = \"name\") field on: " + o.getClass().getName());
+
+        try
+        {
+            return (String) f.get(o);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new RuntimeException("Could not read the name of: " + o, e);
+        }
+    }
+
     public static Map<String, Object> toMap(Object o)
     {
         if (isTanksONable(o))
@@ -134,7 +172,11 @@ public final class Serializer
                         o instanceof Trail) || !Objects.equals(f.get(getDefault(getCorrectClass(o))), f.get(o))))
                     {
                         Object o2 = f.get(o);
-                        if (o2 != null && isTanksONable(f))
+                        // A Serializable says how it wants to be written, so it wins over both the
+                        // annotation and the type checks below.
+                        if (o2 instanceof Serializable)
+                            p.put(getid(f), ((Serializable) o2).serialize());
+                        else if (o2 != null && isTanksONable(f))
                         {
                             p.put(getid(f), toMap(o2));
                         }
@@ -156,8 +198,6 @@ public final class Serializer
                         }
                         else if (o2 instanceof Enum)
                             p.put(getid(f), ((Enum) o2).name());
-                        else if (o2 instanceof Serializable)
-                            p.put(getid(f), ((Serializable) o2).serialize());
                         else
                             p.put(getid(f), f.get(o));
                     }
@@ -288,6 +328,10 @@ public final class Serializer
     {
         if (m == null)
             return null;
+
+        if (!(m.get("obj_type") instanceof String))
+            throw new RuntimeException("Not a TanksON object, it declares no obj_type: " + m.keySet());
+
         Object o = null;
         Set<String> processed = new HashSet<>();
         processed.add("obj_type");
@@ -373,6 +417,9 @@ public final class Serializer
             case "team":
                 o = new Team();
                 break;
+            case "level":
+                o = new Level();
+                break;
             default:
                 throw new RuntimeException("Bad object type: " + (String) m.get("obj_type"));
         }
@@ -387,7 +434,9 @@ public final class Serializer
                 try
                 {
                     Object o2 = f.get(o);
-                    if (isTanksONable(f))
+                    if (o2 instanceof Serializable)
+                        f.set(o, ((Serializable) o2).deserialize(m.get(getid(f))));
+                    else if (isTanksONable(f))
                     {
                         Object o3 = m.get(getid(f));
                         try
@@ -403,8 +452,16 @@ public final class Serializer
                     else if (o2 instanceof ArrayList)
                     {
                         ParameterizedType pt = (ParameterizedType) f.getGenericType();
+                        Type t = pt.getActualTypeArguments()[0];
+                        Class elem;
+                        if (t instanceof Class)
+                            elem = (Class<?>) t;
+                        else if (t instanceof ParameterizedType)
+                            elem = (Class<?>) ((ParameterizedType) t).getRawType();
+                        else
+                            elem = (Class<?>) t;
                         ArrayList arr = (ArrayList) m.get(getid(f));
-                        if (!arr.isEmpty() && (arr.get(0) instanceof Map))
+                        if (!arr.isEmpty() && isTanksONable(elem))
                         {
                             ArrayList o3s = new ArrayList();
                             for (Map o3: ((ArrayList<Map>) m.get(getid(f))))
@@ -413,7 +470,7 @@ public final class Serializer
                             }
                             f.set(o, o3s);
                         }
-                        else if (pt.getActualTypeArguments()[0] == Color.class)
+                        else if (elem == Color.class)
                         {
                             ArrayList<Color> colors = new ArrayList<>();
                             ArrayList<ArrayList<Double>> els = (ArrayList<ArrayList<Double>>) m.get(getid(f));
@@ -438,8 +495,6 @@ public final class Serializer
                         f.set(o, new HashSet<>((ArrayList) m.get(getid(f))));
                     else if (o2 instanceof Enum)
                         f.set(o, Enum.valueOf((Class<? extends Enum>) f.getType(), (String) m.get(getid(f))));
-                    else if (o2 instanceof Serializable)
-                        f.set(o, ((Serializable) o2).deserialize((String) m.get(getid(f))));
                     else if (o2 instanceof Integer)
                         f.set(o, ((Double) m.get(getid(f))).intValue());
                     else if (o2 instanceof Boolean)
@@ -466,7 +521,7 @@ public final class Serializer
             }
             catch (Exception e)
             {
-                System.out.println(getid(f));
+                System.err.println(getid(f));
                 throw new RuntimeException(e);
             }
         }
@@ -500,7 +555,7 @@ public final class Serializer
             }
             catch (NoSuchFieldException | NullPointerException | IllegalAccessException e)
             {
-                System.out.println("Unconvertable field found! " + k);
+                System.err.println("Unconvertable field found! " + k);
                 e.printStackTrace();
             }
         }

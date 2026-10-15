@@ -29,7 +29,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
     Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
     {
-        Level level = new Level(Game.currentLevelString);
+        Level level = Level.fromString(Game.currentLevelString);
         level.loadLevel();
         Game.screen = new ScreenGame();
     }
@@ -47,7 +47,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
 
     Button replayHigherPos = new Button(this.centerX, this.centerY - this.objYSpace / 2, this.objWidth, this.objHeight, "Replay level", () ->
     {
-        Level level = new Level(Game.currentLevelString);
+        Level level = Level.fromString(Game.currentLevelString);
         level.loadLevel();
         Game.screen = new ScreenGame();
     }
@@ -90,7 +90,7 @@ public class ScreenPartyInterlevel extends Screen implements IDarkScreen
     Button save = new Button(0, 0, this.objHeight * 1.5, this.objHeight * 1.5, "", () ->
     {
         ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", Game.currentLevelString, Game.screen, true);
-        Level lev = new Level(Game.currentLevelString);
+        Level lev = Level.fromString(Game.currentLevelString);
         lev.preview = true;
         lev.loadLevel(sc);
         Game.screen = sc;

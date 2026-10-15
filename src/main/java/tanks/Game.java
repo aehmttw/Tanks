@@ -1379,7 +1379,7 @@ public class Game
                 line.append(f.nextLine()).append("\n");
             }
 
-            Level l = new Level(line.substring(0, line.length() - 1));
+            Level l = Level.fromString(line.substring(0, line.length() - 1));
             l.loadLevel(s);
 
             f.stopReading();

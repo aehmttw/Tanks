@@ -5,7 +5,6 @@ import tanks.gui.screen.leveleditor.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class SelectorTeam extends SelectorChoice<Team>
 {
@@ -51,7 +50,7 @@ public class SelectorTeam extends SelectorChoice<Team>
         updateDefaultChoices(editor, o);
 
         selectedIndex += add;
-        if (Game.currentLevel.enableTeams && editor == null)
+        if (editor == null)
             setChoice(editor, o, -1);
         else
             setChoice(editor, o, selectedIndex);
@@ -61,12 +60,8 @@ public class SelectorTeam extends SelectorChoice<Team>
     {
         if (editor != null)
             this.choices = editor.teams;
-        else if (Game.currentLevel.enableTeams)
-            this.choices = new ArrayList<>(Game.currentLevel.teamsMap.values());
-        else if (!Game.currentLevel.disableFriendlyFire)
-            this.choices = new ArrayList<>(Arrays.asList(Game.playerTeam, Game.enemyTeam));
         else
-            this.choices = new ArrayList<>(Arrays.asList(Game.playerTeamNoFF, Game.enemyTeamNoFF));
+            this.choices = new ArrayList<>(Game.currentLevel.teamsMap.values());
 
         this.selectedIndex = this.choices.indexOf(this.getMetadata(o));
         this.selectedChoice = (Team) this.getMetadata(o);

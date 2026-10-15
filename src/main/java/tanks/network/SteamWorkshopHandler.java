@@ -323,7 +323,7 @@ public class SteamWorkshopHandler
                 if (downloadFile.getOwnerID().equals(Game.steamNetworkHandler.playerID))
                     sc.showDelete = true;
 
-                Level l = new Level(s.toString());
+                Level l = Level.fromString(s.toString());
                 l.preview = true;
 
                 if (!l.isLarge())

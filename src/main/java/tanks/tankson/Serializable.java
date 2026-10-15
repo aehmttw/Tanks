@@ -2,7 +2,9 @@ package tanks.tankson;
 
 public interface Serializable
 {
-    String serialize();
+    /** Any value TanksON can write: a string, a number, a list, or a map. */
+    Object serialize();
 
-    Serializable deserialize(String s);
+    /** The value {@link #serialize()} wrote, as TanksON read it back. */
+    Serializable deserialize(Object o);
 }

@@ -4,7 +4,7 @@ import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
-import tanks.tank.TankAIControlled;
+import tanks.tankson.Serializer;
 
 import java.util.Date;
 
@@ -21,7 +21,7 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
 
     Button replay = new Button(this.centerX, this.centerY, this.objWidth, this.objHeight, "Replay level", () ->
     {
-        Level level = new Level(Game.currentLevelString);
+        Level level = Level.fromString(Game.currentLevelString);
         level.loadLevel();
         Game.screen = new ScreenGame();
     }
@@ -83,16 +83,15 @@ public class ScreenInterlevel extends Screen implements IDarkScreen
     {
         String ls = Game.currentLevelString;
 
-        StringBuilder tanks = new StringBuilder("\ntanks\n");
         if (Crusade.crusadeMode && Crusade.currentCrusade.customTanks.size() > 0)
         {
-            for (TankAIControlled t: Crusade.currentCrusade.customTanks)
-                tanks.append(t.toString()).append("\n");
-
-            ls = ls + tanks;
+            // A crusade keeps its custom tanks on the crusade, so fold them into the saved level
+            Level l = Level.parse(ls);
+            l.customTanks.addAll(Crusade.currentCrusade.customTanks);
+            ls = Serializer.toTanksON(l);
         }
 
-        Level lev = new Level(ls);
+        Level lev = Level.fromString(ls);
 
         ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen, true);
 

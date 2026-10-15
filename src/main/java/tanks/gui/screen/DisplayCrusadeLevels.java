@@ -89,7 +89,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         Game.cleanUp();
 
-        l.level = new Level(l.levelString, l.tanks);
+        l.level = Level.fromString(l.levelString, l.tanks);
 
         if (!l.isTransition)
             addTransitionLevels(l);

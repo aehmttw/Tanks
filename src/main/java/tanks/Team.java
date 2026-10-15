@@ -1,8 +1,7 @@
 package tanks;
 
 import basewindow.Color;
-import tanks.tankson.Property;
-import tanks.tankson.TanksONable;
+import tanks.tankson.*;
 
 @TanksONable("team")
 public class Team

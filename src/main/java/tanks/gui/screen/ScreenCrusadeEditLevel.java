@@ -6,6 +6,7 @@ import tanks.gui.Button;
 import tanks.gui.TextBox;
 import tanks.obstacle.Obstacle;
 import tanks.tank.*;
+import tanks.tankson.Serializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             Crusade.CrusadeLevel level = previous2.crusade.levels.remove(insertionIndex + 1);
 
             ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, insertionIndex + 2, previous2);
-            Level l = new Level(level.levelString, level.tanks);
+            Level l = Level.fromString(level.levelString, level.tanks);
             l.loadLevel(s);
             Game.screen = s;
         }
@@ -126,7 +127,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
             Crusade.CrusadeLevel level = previous2.crusade.levels.remove(insertionIndex - 1);
 
             ScreenCrusadeEditLevel s = new ScreenCrusadeEditLevel(level, insertionIndex, previous2);
-            Level l = new Level(level.levelString, level.tanks);
+            Level l = Level.fromString(level.levelString, level.tanks);
             l.loadLevel(s);
             Game.screen = s;
         }
@@ -149,23 +150,18 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
                         {
                             file.startWriting();
                             String ls = level.levelString;
-                            StringBuilder tanks = new StringBuilder("\ntanks\n");
-                            if (previous2.crusade.customTanks.size() > 0)
-                            {
-                                for (TankAIControlled t: previous2.crusade.customTanks)
-                                    tanks.append(t.toString()).append("\n");
 
-                                ls = ls + tanks;
-                            }
-                            file.println(ls);
-                            if (!level.buildOverrides.isEmpty())
+                            if (!previous2.crusade.customTanks.isEmpty() || !level.buildOverrides.isEmpty())
                             {
-                                file.println("builds\n");
-                                for (TankPlayer.ShopTankBuild b: level.buildOverrides)
-                                {
-                                    file.println(b.toString() + "\n");
-                                }
+                                // The crusade holds the custom tanks and the build overrides,
+                                // so fold them into the level on its way out of the crusade
+                                Level l = Level.parse(ls);
+                                l.customTanks.addAll(previous2.crusade.customTanks);
+                                l.playerBuilds.addAll(level.buildOverrides);
+                                ls = Serializer.toTanksON(l);
                             }
+
+                            file.println(ls);
                             file.stopWriting();
                             success = true;
                         }

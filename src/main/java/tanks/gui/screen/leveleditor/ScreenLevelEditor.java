@@ -1758,6 +1758,39 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
 
     public void save(String levelName)
     {
+        this.newSave(levelName);
+    }
+
+    public void newSave(String levelName)
+    {
+        String level = this.level.save();
+        Game.currentLevelString = level;
+
+        BaseFile file = Game.game.fileManager.getFile(Game.homedir + Game.levelDir + "/" + levelName);
+        if (file.exists())
+        {
+            if (!this.level.editable)
+            {
+                return;
+            }
+        }
+
+        try
+        {
+            file.create();
+
+            file.startWriting();
+            file.println(level);
+            file.stopWriting();
+        }
+        catch (IOException e)
+        {
+            Game.exitToCrash(e);
+        }
+    }
+
+    public void legacySave(String levelName)
+    {
         StringBuilder level = new StringBuilder("{");
 
         if (!this.level.editable)
@@ -2588,7 +2621,7 @@ public class ScreenLevelEditor extends Screen implements ILevelPreviewScreen
         this.replaceSpawns();
         Game.currentLevel.reloadTiles();
 
-        Game.currentLevel = new Level(Game.currentLevelString);
+        Game.currentLevel = this.level;
         Game.currentLevel.tilesRandomSeed = level.tilesRandomSeed;
         Game.currentLevel.timer = level.timer;
 

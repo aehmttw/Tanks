@@ -1272,7 +1272,7 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
 
     public String getMetadata()
     {
-        if (Game.currentLevel.enableTeams && this.team != null)
+        if (this.team != null)
             return (int) Math.round(this.orientation / Math.PI * 2) + "-" + this.team.name;
         else
             return (int) Math.round(this.orientation / Math.PI * 2) + "";
@@ -1285,14 +1285,7 @@ public abstract class Tank extends Movable implements ISolidObject, IDrawableLig
         if (data.length >= 1)
             this.orientation = Math.PI / 2 * Double.parseDouble(data[0]);
 
-        if (!Game.currentLevel.enableTeams)
-        {
-            if (Game.currentLevel.disableFriendlyFire)
-                this.team = (this instanceof IServerPlayerTank || this instanceof ILocalPlayerTank) ? Game.playerTeamNoFF : Game.enemyTeamNoFF;
-            else
-                this.team = (this instanceof IServerPlayerTank || this instanceof ILocalPlayerTank) ? Game.playerTeam : Game.enemyTeam;
-        }
-        else if (data.length >= 2)
+        if (data.length >= 2)
             this.team = Game.currentLevel.teamsMap.get(data[1]);
         else
             this.team = null;

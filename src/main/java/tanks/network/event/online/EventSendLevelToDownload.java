@@ -44,7 +44,7 @@ public class EventSendLevelToDownload extends PersonalEvent
         if (this.clientID == null)
         {
             ScreenDownloadLevel sc = new ScreenDownloadLevel(this.name, this.level);
-            Level l = new Level(this.level);
+            Level l = Level.fromString(this.level);
             l.preview = true;
             l.loadLevel(sc);
             Game.screen = sc;

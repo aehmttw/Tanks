@@ -63,7 +63,7 @@ public class EventSendOnlineClientDetails extends PersonalEvent implements IOnli
 
         if (this.version != Game.network_protocol)
         {
-            s.sendEventAndClose(new EventKick("You must be using " + Game.version + " to connect to Tanks Online!"));
+            s.sendEventAndClose(new EventKick("You must be using " + Game.version + " (network protocol " + Game.network_protocol + ") to connect to Tanks Online!"));
             return;
         }
 

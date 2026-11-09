@@ -1,9 +1,9 @@
 package main;
 
-import basewindow.ComputerFileManager;
 import lwjglwindow.LWJGLWindow;
 import tanks.*;
 import tanks.extension.Extension;
+import tanks.tankson.TanksFileManager;
 import tanksonline.*;
 
 import java.awt.FlowLayout;
@@ -90,7 +90,7 @@ public class Tanks
                 }
 
                 if (Game.framework == Game.Framework.lwjgl)
-                    Game.game.fileManager = new ComputerFileManager();
+                    Game.game.fileManager = new TanksFileManager(() -> Game.reducedDiskSpace);
 
                 Game.initScript();
 

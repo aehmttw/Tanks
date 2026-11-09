@@ -10,6 +10,7 @@ import io.netty.buffer.ByteBuf;
 public class EventItemDrop extends PersonalEvent
 {
     public int id;
+    @NetworkTanksON
     public String item;
     public double posX;
     public double posY;

@@ -16,6 +16,7 @@ public class EventSetItem extends PersonalEvent
     public UUID playerID;
     public int slot;
 
+    @NetworkTanksON
     public String itemStackString;
 
     public EventSetItem()

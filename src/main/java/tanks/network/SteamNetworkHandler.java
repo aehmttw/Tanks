@@ -8,6 +8,7 @@ import tanks.network.event.INetworkEvent;
 import com.codedisaster.steamworks.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.buffer.UnpooledByteBufAllocator;
 
 import java.lang.reflect.Method;
 import java.nio.Buffer;
@@ -39,7 +40,7 @@ public class SteamNetworkHandler
 
     protected static final int defaultChannel = 1;
 
-    protected static final int readBufferCapacity = MessageReader.max_event_size;
+    protected static final int readBufferCapacity = MessageReader.max_event_size + 4;
 
     public FriendsMixin friends;
     public SteamNetworking networking;
@@ -52,8 +53,6 @@ public class SteamNetworkHandler
     public SteamID playerID = null;
 
     protected ByteBuffer packetReadBuffer = ByteBuffer.allocateDirect(readBufferCapacity);
-
-    public ByteBuf sendBuf = Unpooled.buffer();
 
     public Map<Integer, SteamID> remoteUserIDs = new ConcurrentHashMap<>();
 
@@ -274,32 +273,25 @@ public class SteamNetworkHandler
 
                 ((Buffer) packetReadBuffer).clear();
 
-                if (networking.readP2PPacket(steamIDSender, packetReadBuffer, defaultChannel) > 0)
+                int packetSize = networking.readP2PPacket(steamIDSender, packetReadBuffer, defaultChannel);
+                if (packetSize > 0)
                 {
-                    ByteBuf readBuf = Unpooled.buffer();
-
-                    // register, if unknown
                     registerRemoteSteamID(steamIDSender);
-
-                    int bytesReceived = packetReadBuffer.getInt();
-
-                    if (bytesReceived < 0)
-                        continue;
-
-                    byte[] bytes = new byte[bytesReceived];
-                    packetReadBuffer.get(bytes);
-                    readBuf.writeInt(bytesReceived);
-                    readBuf.writeBytes(bytes);
+                    ((Buffer) packetReadBuffer).position(0).limit(packetSize);
+                    ByteBuf readBuf = Unpooled.copiedBuffer(packetReadBuffer);
 
                     if (ScreenPartyHost.isServer)
                     {
                         ServerHandler h = serverHandlersBySteamID.get(steamIDSender.getAccountID());
-
                         if (h != null)
                             h.channelRead(null, readBuf);
+                        else
+                            readBuf.release();
                     }
                     else if (ScreenPartyLobby.isClient)
                         Client.handler.channelRead(null, readBuf);
+                    else
+                        readBuf.release();
                 }
             }
 
@@ -339,25 +331,18 @@ public class SteamNetworkHandler
         {
             if (steamIDReceiver != null)
             {
-                sendBuf.clear();
-                event.write(sendBuf);
-
-                ByteBuffer packetSendBuffer = ByteBuffer.allocateDirect(sendBuf.readableBytes() + 8);
-                packetSendBuffer.putInt(sendBuf.readableBytes() + 4);
-
-                int i = NetworkEventMap.get(event.getClass());
-                if (i == -1)
-                    throw new RuntimeException("The network event " + event.getClass() + " has not been registered!");
-
-                packetSendBuffer.putInt(i);
-
-                byte[] bytes = new byte[sendBuf.readableBytes()];
-                sendBuf.getBytes(0, bytes);
-                packetSendBuffer.put(bytes);
-
-                ((Buffer) packetSendBuffer).flip(); // limit=pos, pos=0
-
-                networking.sendP2PPacket(steamIDReceiver, packetSendBuffer, type, defaultChannel);
+                ByteBuf frame = NetworkMessage.encode(event, UnpooledByteBufAllocator.DEFAULT);
+                try
+                {
+                    ByteBuffer packet = ByteBuffer.allocateDirect(frame.readableBytes());
+                    frame.getBytes(frame.readerIndex(), packet);
+                    ((Buffer) packet).flip();
+                    networking.sendP2PPacket(steamIDReceiver, packet, type, defaultChannel);
+                }
+                finally
+                {
+                    frame.release();
+                }
                 return steamIDReceiver;
             }
         }
@@ -435,7 +420,6 @@ public class SteamNetworkHandler
                 {
                     ServerHandler s = new ServerHandler(ScreenPartyHost.server);
                     s.steamID = steamIDUser;
-                    s.reader.useQueue = false;
                     serverHandlersBySteamID.put(steamIDUser.getAccountID(), s);
                     s.channelActive(null);
 
@@ -448,7 +432,6 @@ public class SteamNetworkHandler
                 {
                     Client.handler = new ClientHandler(false, Client.connectionID);
                     Client.handler.steamID = steamIDUser;
-                    Client.handler.reader.useQueue = false;
                     Client.handler.channelActive(null);
                 }
                 else

@@ -56,6 +56,9 @@ dependencies {
     // Your other existing dependencies
     api(libs.org.l33tlabs.twl.pngdecoder)
     implementation("io.netty:netty-all:4.1.94.Final")
+    // Java 8 bytecode, with native Zstandard libraries bundled for desktop platforms.
+    implementation("com.github.luben:zstd-jni:1.5.7-6")
+    testImplementation("junit:junit:4.13.2")
 //    implementation("it.unimi.dsi:fastutil-core:8.5.16")
 
     //Steamworks4j (Use files in libs folder until version 10 is available on mavenCentral
@@ -148,6 +151,7 @@ val updatePropertyIds by tasks.registering {
             }
         }
 
+
         val existing = if (propertyIdsFile.exists()) propertyIdsFile.readLines().filter { it.isNotBlank() } else emptyList()
         val known = existing.toHashSet()
         val added = (handWrittenPropertyIds + found).filter { known.add(it) }
@@ -180,6 +184,30 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<Test>().configureEach {
     systemProperty("file.encoding", "UTF-8")
+}
+
+tasks.register<JavaExec>("benchmarkNetwork") {
+    description = "Compares text and ObjectBuffer transfer sizes at Zstandard levels 3 and 4."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("tanks.network.NetworkCompressionBenchmark")
+}
+
+tasks.register<JavaExec>("benchmarkNetworkWire") {
+    description = "Measures complete legacy and ObjectBuffer event frames with and without Zstandard."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("tanks.network.NetworkWireBenchmark")
+}
+
+tasks.register<JavaExec>("benchmarkNetworkZstd") {
+    description = "Compares current ObjectBuffer network frames with Zstandard on and off."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("tanks.network.NetworkZstdBenchmark")
 }
 
 tasks.withType<JavaExec>().configureEach {

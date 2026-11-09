@@ -107,29 +107,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
             return;
         }
 
-        ByteBuf b = ctx.channel().alloc().buffer();
-        int i = NetworkEventMap.get(e.getClass());
-
-        if (i == -1)
-            throw new RuntimeException("The network event " + e.getClass() + " has not been registered!");
-
-        b.writeInt(i);
-        e.write(b);
-
-        ByteBuf b2 = ctx.channel().alloc().buffer();
-        int rb = b.readableBytes();
-        b2.writeInt(rb);
-        MessageReader.upstreamBytes += rb + 4;
-        MessageReader.eventBytes.put(i, MessageReader.eventBytes.getOrDefault(i, 0) + rb + 4);
-        MessageReader.updateLastMessageTime();
-        b2.writeBytes(b);
-
+        ByteBuf frame = NetworkMessage.encode(e, ctx.channel().alloc());
         if (flush)
-            ctx.channel().writeAndFlush(b2);
+            ctx.channel().writeAndFlush(frame);
         else
-            ctx.channel().write(b2);
-
-        ReferenceCountUtil.release(b);
+            ctx.channel().write(frame);
     }
 
     public synchronized void sendEventAndClose(INetworkEvent e)
@@ -164,8 +146,8 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
         Crusade.crusadeMode = false;
         Crusade.currentCrusade = null;
 
-        if (steamID == null)
-            ReferenceCountUtil.release(this.reader.queue);
+        ReferenceCountUtil.safeRelease(this.reader.queue);
+        this.reader.queue = null;
 
         Client.connectionID = null;
     }

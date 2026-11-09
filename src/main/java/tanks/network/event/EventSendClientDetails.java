@@ -5,6 +5,8 @@ import tanks.gui.ChatMessage;
 import tanks.gui.screen.*;
 import tanks.network.*;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.UUID;
 
 public class EventSendClientDetails extends PersonalEvent implements IServerThreadEvent
@@ -23,6 +25,27 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
         this.version = version;
         this.clientID = clientID;
         this.username = username;
+    }
+
+    // Keep the initial handshake readable by older peers so they can reject the protocol version.
+    @Override
+    public void write(ByteBuf b)
+    {
+        b.writeInt(this.version);
+        NetworkUtils.writeString(b, this.clientID == null ? null : this.clientID.toString());
+        NetworkUtils.writeString(b, this.username);
+        NetworkUtils.writeString(b, super.clientID == null ? null : super.clientID.toString());
+    }
+
+    @Override
+    public void read(ByteBuf b)
+    {
+        this.version = b.readInt();
+        String id = NetworkUtils.readString(b);
+        this.clientID = id == null ? null : UUID.fromString(id);
+        this.username = NetworkUtils.readString(b);
+        id = NetworkUtils.readString(b);
+        super.clientID = id == null ? null : UUID.fromString(id);
     }
 
     @Override
@@ -47,7 +70,7 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
 
         if (this.version != Game.network_protocol)
         {
-            s.sendEventAndClose(new EventKick("You must be using " + Game.version + " to join this party!"));
+            s.sendEventAndClose(new EventKick("You must be using " + Game.version + " (network protocol " + Game.network_protocol + ") to join this party!"));
             return;
         }
 

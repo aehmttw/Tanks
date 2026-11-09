@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 public class EventSendLevelToDownload extends PersonalEvent
 {
     public String name;
+    @NetworkTanksON
     public String level;
 
     public EventSendLevelToDownload()
@@ -28,14 +29,14 @@ public class EventSendLevelToDownload extends PersonalEvent
     public void write(ByteBuf b)
     {
         NetworkUtils.writeString(b, this.name);
-        NetworkUtils.writeString(b, this.level);
+        NetworkUtils.writeTanksON(b, this.level);
     }
 
     @Override
     public void read(ByteBuf b)
     {
         this.name = NetworkUtils.readString(b);
-        this.level = NetworkUtils.readString(b);
+        this.level = NetworkUtils.readTanksON(b);
     }
 
     @Override

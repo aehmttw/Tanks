@@ -1,8 +1,8 @@
 package tanksonline;
 
 import tanks.Game;
-import tanks.network.MessageReader;
-import tanks.network.NetworkEventMap;
+import tanks.network.EventObjectBuffer;
+import tanks.network.NetworkMessage;
 import tanks.network.event.*;
 import tanks.network.event.online.IOnlineServerEvent;
 
@@ -13,8 +13,6 @@ import java.util.UUID;
 public class TanksOnlineMessageReader
 {
     public ByteBuf queue;
-    protected boolean reading = false;
-    protected int endpoint;
 
     public boolean queueMessage(ByteBuf m, UUID clientID)
     {
@@ -27,52 +25,24 @@ public class TanksOnlineMessageReader
 
         try
         {
-            queue.writeBytes(m);
-
-            if (queue.readableBytes() >= 4)
+            ByteBuf input = queue;
+            input.writeBytes(m);
+            ByteBuf message;
+            while (input.refCnt() > 0 && (message = NetworkMessage.tryDecode(input)) != null)
             {
-                if (!reading)
+                try
                 {
-                    endpoint = queue.readInt();
-
-                    if (endpoint > MessageReader.max_event_size)
-                    {
-                        if (s != null)
-                        {
-                            s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
-                        }
-
-                        return false;
-                    }
+                    reply = this.readMessage(s, message, clientID) || reply;
                 }
-
-                reading = true;
-
-                while (queue.readableBytes() >= endpoint)
+                finally
                 {
-                    reply = this.readMessage(s, queue, clientID) || reply;
-                    queue.discardReadBytes();
-
-                    reading = false;
-
-                    if (queue.readableBytes() >= 4)
-                    {
-                        endpoint = queue.readInt();
-
-                        if (endpoint > MessageReader.max_event_size)
-                        {
-                            if (s != null)
-                            {
-                                s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
-                            }
-
-                            return false;
-                        }
-
-                        reading = true;
-                    }
+                    message.release();
                 }
+                if (s != null && s.closed)
+                    break;
             }
+            if (input.refCnt() > 0)
+                input.discardReadBytes();
         }
         catch (Exception e)
         {
@@ -80,6 +50,8 @@ public class TanksOnlineMessageReader
             Game.logger.println("A network exception has occurred: " + e.toString());
             e.printStackTrace();
             e.printStackTrace(Game.logger);
+            if (s != null && !s.closed)
+                s.sendEventAndClose(new EventKick("A network exception has occurred: " + e));
         }
 
         return reply;
@@ -87,14 +59,7 @@ public class TanksOnlineMessageReader
 
     public boolean readMessage(TanksOnlineServerHandler s, ByteBuf m, UUID clientID) throws Exception
     {
-        int i = m.readInt();
-        Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
-
-        if (c == null)
-            throw new Exception("Invalid network event: " + i);
-
-        INetworkEvent e = c.getConstructor().newInstance();
-        e.read(m);
+        INetworkEvent e = EventObjectBuffer.decode(m);
 
         if (e instanceof PersonalEvent)
         {

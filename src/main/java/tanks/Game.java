@@ -127,8 +127,9 @@ public class Game
 
     public static boolean customDir = false;
 
-    public static final int network_protocol = 63;
+    public static final int network_protocol = 66;
     public static boolean debug = false;
+    public static boolean reducedDiskSpace = false;
     public static boolean traceAllRays = false;
     public static boolean showNetworkIDs = false;
     public static boolean drawAutoZoom = false;

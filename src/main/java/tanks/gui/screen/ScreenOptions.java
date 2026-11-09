@@ -4,6 +4,7 @@ import basewindow.BaseFile;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.hotbar.Hotbar;
+import tanks.network.NetworkMessage;
 import tanks.network.SteamNetworkHandler;
 import tanks.tank.*;
 import tanks.translation.Translation;
@@ -285,6 +286,8 @@ public class ScreenOptions extends Screen
             f.println("enable_extensions=" + Game.enableExtensions);
             f.println("auto_load_extensions=" + Game.autoLoadExtensions);
             f.println("debug_mode=" + alwaysDebug);
+            f.println("reduced_disk_space=" + Game.reducedDiskSpace);
+            f.println("network_compression=" + NetworkMessage.isCompressionEnabled());
 
             if (!unrecognizedOptions.isEmpty())
             {
@@ -559,6 +562,12 @@ public class ScreenOptions extends Screen
                         alwaysDebug = Boolean.parseBoolean(optionLine[1]);
                         if (alwaysDebug)
                             Game.debug = true;
+                        break;
+                    case "reduced_disk_space":
+                        Game.reducedDiskSpace = Boolean.parseBoolean(optionLine[1]);
+                        break;
+                    case "network_compression":
+                        NetworkMessage.setCompressionEnabled(Boolean.parseBoolean(optionLine[1]));
                         break;
                     default:
                         unrecognizedOptions.put(optionLine[0], optionLine[1]);

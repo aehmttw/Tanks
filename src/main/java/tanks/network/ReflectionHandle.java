@@ -2,6 +2,7 @@ package tanks.network;
 
 import tanks.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.*;
 import java.lang.reflect.*;
 import java.util.*;
@@ -16,6 +17,7 @@ public class ReflectionHandle<S>
 
     public Map<Class<?>, List<FieldHandle>> fieldsInClass = new HashMap<>();
     public Map<Class<?>, TypeHandle<S, ?>> typeHandles = new HashMap<>();
+    public Map<Class<? extends Annotation>, TypeHandle<S, ?>> annotatedHandles = new HashMap<>();
 
     public Function<Field, Boolean> fieldFilter = f -> true;
 
@@ -24,13 +26,29 @@ public class ReflectionHandle<S>
     public void readObject(S stream, Object object)
     {
         for (FieldHandle f: getFieldsInClass(object.getClass()))
-            f.write(object, getTypeHandle(f.field.getType()).read(stream));
+            f.write(object, getFieldHandle(f.field).read(stream));
     }
 
     public void writeObject(S stream, Object object)
     {
         for (FieldHandle f: getFieldsInClass(object.getClass()))
-            getTypeHandle(f.field.getType()).write(stream, f.read(object));
+            getFieldHandle(f.field).write(stream, f.read(object));
+    }
+
+    protected TypeHandle<S, ?> getFieldHandle(Field field)
+    {
+        for (Map.Entry<Class<? extends Annotation>, TypeHandle<S, ?>> entry: annotatedHandles.entrySet())
+        {
+            if (field.isAnnotationPresent(entry.getKey()))
+                return entry.getValue();
+        }
+        return getTypeHandle(field.getType());
+    }
+
+    public <T> ReflectionHandle<S> registerFieldHandle(Class<? extends Annotation> annotation, Class<T> type, Function<S, ?> read, BiConsumer<S, T> write)
+    {
+        annotatedHandles.put(annotation, new TypeHandle<>(type, read, write));
+        return this;
     }
 
     @SuppressWarnings("unchecked")

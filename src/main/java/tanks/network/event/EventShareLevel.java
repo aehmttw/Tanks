@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 
 public class EventShareLevel extends PersonalEvent
 {
+    @NetworkTanksON
     public String level;
     public String name;
     public String username = "";

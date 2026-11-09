@@ -680,19 +680,28 @@ public class Panel
         {
             synchronized (ScreenPartyHost.server.connections)
             {
-                for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
+                // Every connection is sent the same event instances, so each is encoded once for all of them
+                NetworkMessage.beginBroadcast();
+                try
                 {
-                    ServerHandler sh = ScreenPartyHost.server.connections.get(j);
+                    for (int j = 0; j < ScreenPartyHost.server.connections.size(); j++)
+                    {
+                        ServerHandler sh = ScreenPartyHost.server.connections.get(j);
 
-                    if (sh.joined)
-                        sh.addEvents(Game.eventsOut);
-                    else if (sh.pendingJoin != null)
-                        sh.addEvents(Game.eventsOut, true);
+                        if (sh.joined)
+                            sh.addEvents(Game.eventsOut);
+                        else if (sh.pendingJoin != null)
+                            sh.addEvents(Game.eventsOut, true);
 
-                    if (sh.pendingJoin != null && !(Game.screen instanceof IPartyGameScreen))
-                        sh.pendingJoin.execute(sh);
+                        if (sh.pendingJoin != null && !(Game.screen instanceof IPartyGameScreen))
+                            sh.pendingJoin.execute(sh);
 
-                    sh.reply();
+                        sh.reply();
+                    }
+                }
+                finally
+                {
+                    NetworkMessage.endBroadcast();
                 }
             }
 

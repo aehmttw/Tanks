@@ -118,6 +118,53 @@ tasks.register("lint") {
 }
 
 // ---------------------------------------------------------------------------
+// ObjectBuffer property ids
+// ---------------------------------------------------------------------------
+
+// ObjectBuffers write each property id as its line number in this file. Lines are only ever
+// appended: reordering or removing one would change what saved files and other builds decode.
+val propertyIdsFile = file("src/main/resources/tankson/property_ids.txt")
+
+// Keys that Serializer.toMap and parseObject write by hand rather than through a @Property field
+val handWrittenPropertyIds = listOf("obj_type", "item_type", "bullet_type", "item", "tank", "weight", "id")
+
+val updatePropertyIds by tasks.registering {
+    description = "Appends any new @Property ids to the ObjectBuffer property id table."
+    group       = "build"
+
+    val sources = fileTree("src/main/java") { include("**/*.java") }
+    inputs.files(sources)
+    outputs.file(propertyIdsFile)
+
+    doLast {
+        // Annotations can span several lines, and id isn't always their first argument
+        val annotation = Regex("""@Property\(([^)]*)\)""")
+        val idArgument = Regex("""\bid\s*=\s*"([^"]+)"""")
+
+        val found = sortedSetOf<String>()
+        sources.forEach { source ->
+            annotation.findAll(source.readText()).forEach { a ->
+                idArgument.find(a.groupValues[1])?.let { found.add(it.groupValues[1]) }
+            }
+        }
+
+        val existing = if (propertyIdsFile.exists()) propertyIdsFile.readLines().filter { it.isNotBlank() } else emptyList()
+        val known = existing.toHashSet()
+        val added = (handWrittenPropertyIds + found).filter { known.add(it) }
+
+        if (added.isNotEmpty()) {
+            propertyIdsFile.parentFile.mkdirs()
+            propertyIdsFile.writeText((existing + added).joinToString("\n", postfix = "\n"))
+            logger.lifecycle("Added ${added.size} property id(s) to ${propertyIdsFile.name}: ${added.joinToString()}")
+        }
+    }
+}
+
+tasks.processResources {
+    dependsOn(updatePropertyIds)
+}
+
+// ---------------------------------------------------------------------------
 
 group = "com.aehmttw"
 version = rootProject.file("src/main/resources/version.txt").readText().trim()

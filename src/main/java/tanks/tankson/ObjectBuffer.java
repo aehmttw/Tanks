@@ -2,17 +2,35 @@ package tanks.tankson;
 
 import basewindow.Color;
 import basewindow.IModel;
+import tanks.Game;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.AbstractMap.SimpleImmutableEntry;
 
+/**
+ * A compact binary form of the maps {@link Serializer#toMap} builds, for network transfers and saved files.
+ * <br><br>
+ * A buffer opens with a header: the ObjectBuffer {@link #VERSION}, the TanksON version, the size of the
+ * {@link PropertyIds} table it was written with, and an addendum of any property ids that weren't in that
+ * table (such as ones added by extensions), numbered on from the end of it. Then comes a single value.
+ * <br><br>
+ * Every value is a {@link Type} byte followed by its payload. An object is a map with an obj_type key,
+ * and writes its keys as their numbers in the table. Any other map writes its keys as values of their own.
+ * Objects, maps and lists are prefixed with their number of entries, and UTF-8 strings with their length in bytes.
+ */
 public class ObjectBuffer
 {
+    /** Bumped by hand whenever the encoding changes. The property id table versions itself by its size. */
+    public static final int VERSION = 1;
+
+    /** Deeper nesting than this is treated as corrupt rather than risking a stack overflow on network data. */
+    public static final int MAX_DEPTH = 256;
+
     public enum Type
     {
         // Primatives
@@ -38,6 +56,7 @@ public class ObjectBuffer
         ENUM((byte) 0xC0),
         STRING((byte) 0xC1),
         LIST((byte) 0xC2),
+        MAP((byte) 0xC3),
         OBJECT((byte) 0x0B),
 
         //Tanks Specific
@@ -63,484 +82,425 @@ public class ObjectBuffer
                 if (command.code == code)
                     return command;
             }
-            throw new IllegalArgumentException("Unknown command code: " + code);
+            throw new IllegalArgumentException("Unknown type code: 0x" + Integer.toHexString(code & 0xFF));
         }
     }
 
-    public static Type getType(long tag)
+    /** Whether a map is written as an object, with its keys numbered by the property id table. */
+    public static boolean isObject(Map<?, ?> m)
     {
-        return Type.fromByte((byte) (tag & 0xFF));
-    }
+        if (!(m.get("obj_type") instanceof String))
+            return false;
 
-    public static long getId(long tag)
-    {
-        return tag >> 8;
-    }
-
-    public static long getTag(Type type, long id)
-    {
-        return (id << 8) | (type.getCode() & 0xFFL);
-    }
-
-    /** Key for {@link #hash(String)}. Must stay fixed, as hashes are written into serialized files. */
-    private static final long hashKey0 = 0x0706050403020100L;
-    private static final long hashKey1 = 0x0f0e0d0c0b0a0908L;
-
-    /** Reads up to 8 bytes of m, from start (inclusive) to end (exclusive), as a little endian long. */
-    private static long word(byte[] m, int start, int end)
-    {
-        long w = 0;
-        for (int i = end - 1; i >= start; i--)
-            w = (w << 8) | (m[i] & 0xFFL);
-
-        return w;
-    }
-
-    /** SipHash-2-4 of the UTF-8 bytes of the given id. */
-    public static long hash(String id)
-    {
-        byte[] m = id.getBytes(StandardCharsets.UTF_8);
-
-        long v0 = 0x736f6d6570736575L ^ hashKey0;
-        long v1 = 0x646f72616e646f6dL ^ hashKey1;
-        long v2 = 0x6c7967656e657261L ^ hashKey0;
-        long v3 = 0x7465646279746573L ^ hashKey1;
-
-        int blocks = m.length - (m.length % 8);
-
-        for (int i = 0; i < blocks; i += 8)
+        for (Object k: m.keySet())
         {
-            long w = word(m, i, i + 8);
-
-            v3 ^= w;
-            for (int r = 0; r < 2; r++)
-            {
-                // inlined round, as Java has no way to pass these back out of a call
-                v0 += v1;
-                v1 = Long.rotateLeft(v1, 13);
-                v1 ^= v0;
-                v0 = Long.rotateLeft(v0, 32);
-                v2 += v3;
-                v3 = Long.rotateLeft(v3, 16);
-                v3 ^= v2;
-                v0 += v3;
-                v3 = Long.rotateLeft(v3, 21);
-                v3 ^= v0;
-                v2 += v1;
-                v1 = Long.rotateLeft(v1, 17);
-                v1 ^= v2;
-                v2 = Long.rotateLeft(v2, 32);
-            }
-            v0 ^= w;
+            if (!(k instanceof String))
+                return false;
         }
 
-        // the last block is the remaining bytes, padded with zeroes, with the length mod 256 in the top byte
-        long last = word(m, blocks, m.length) | (((long) m.length & 0xFF) << 56);
-
-        v3 ^= last;
-        for (int r = 0; r < 2; r++)
-        {
-            v0 += v1;
-            v1 = Long.rotateLeft(v1, 13);
-            v1 ^= v0;
-            v0 = Long.rotateLeft(v0, 32);
-            v2 += v3;
-            v3 = Long.rotateLeft(v3, 16);
-            v3 ^= v2;
-            v0 += v3;
-            v3 = Long.rotateLeft(v3, 21);
-            v3 ^= v0;
-            v2 += v1;
-            v1 = Long.rotateLeft(v1, 17);
-            v1 ^= v2;
-            v2 = Long.rotateLeft(v2, 32);
-        }
-        v0 ^= last;
-
-        v2 ^= 0xFF;
-        for (int r = 0; r < 4; r++)
-        {
-            v0 += v1;
-            v1 = Long.rotateLeft(v1, 13);
-            v1 ^= v0;
-            v0 = Long.rotateLeft(v0, 32);
-            v2 += v3;
-            v3 = Long.rotateLeft(v3, 16);
-            v3 ^= v2;
-            v0 += v3;
-            v3 = Long.rotateLeft(v3, 21);
-            v3 ^= v0;
-            v2 += v1;
-            v1 = Long.rotateLeft(v1, 17);
-            v1 ^= v2;
-            v2 = Long.rotateLeft(v2, 32);
-        }
-
-        return (v0 ^ v1 ^ v2 ^ v3) << 8 >> 8;
+        return true;
     }
 
     public static byte[] toBytes(Object o)
     {
+        Writer body = new Writer();
+        body.writeValue(o);
+
+        Writer header = new Writer();
+        header.writeVarInt(VERSION);
+
+        String[] tanksONVersion = Serializer.TANKSON_VERSION.split("\\.");
+        header.writeVarInt(Integer.parseInt(tanksONVersion[0]));
+        header.writeVarInt(Integer.parseInt(tanksONVersion[1]));
+
+        header.writeVarInt(body.tableSize);
+        header.writeVarInt(body.addendum.size());
+        for (String id: body.addendum)
+            header.writeString(id);
+
+        byte[] h = header.toByteArray();
+        byte[] b = body.toByteArray();
+        byte[] out = Arrays.copyOf(h, h.length + b.length);
+        System.arraycopy(b, 0, out, h.length, b.length);
+        return out;
+    }
+
+    public static Object parse(byte[] bytes)
+    {
+        try
+        {
+            Reader r = new Reader(bytes);
+
+            int version = r.readVarInt();
+            if (version > VERSION)
+                throw new RuntimeException("Unknown ObjectBuffer version " + version + ". You may be running an older version of Tanks with a newer game file.");
+
+            String tanksONVersion = r.readVarInt() + "." + r.readVarInt();
+            if (Game.compareVersions(tanksONVersion, Serializer.TANKSON_VERSION) > 0)
+                throw new RuntimeException("Unknown TanksON Version " + tanksONVersion + ". You may be running an older version of Tanks with a newer game file.");
+
+            r.tableSize = r.readVarInt();
+            if (r.tableSize > PropertyIds.size())
+                throw new RuntimeException("ObjectBuffer has " + r.tableSize + " property ids, but this version of Tanks only knows " + PropertyIds.size() +
+                    ". You may be running an older version of Tanks with a newer game file.");
+
+            r.addendum = new String[r.readCount()];
+            for (int i = 0; i < r.addendum.length; i++)
+                r.addendum[i] = r.readString();
+
+            Object o = r.readValue(0);
+
+            if (r.buffer.hasRemaining())
+                throw new RuntimeException("ObjectBuffer has " + r.buffer.remaining() + " unread bytes at the end");
+
+            return o;
+        }
+        catch (BufferUnderflowException e)
+        {
+            throw new RuntimeException("ObjectBuffer ended unexpectedly, it may be truncated", e);
+        }
+    }
+
+    protected static class Writer
+    {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         DataOutputStream b = new DataOutputStream(bytes);
 
-        try
+        /** Property ids missing from the table, in the order they were given numbers. */
+        ArrayList<String> addendum = new ArrayList<>();
+        HashMap<String, Integer> addendumNumbers = new HashMap<>();
+
+        int tableSize = PropertyIds.size();
+
+        public byte[] toByteArray()
         {
-            writeTo(b, o);
+            return bytes.toByteArray();
         }
-        catch (IOException e)
+
+        public int getNumber(String id)
         {
-            // a ByteArrayOutputStream never actually throws, but DataOutputStream declares it
-            throw new RuntimeException(e);
-        }
+            int num = PropertyIds.toNumber(id);
+            if (num >= 0)
+                return num;
 
-        return bytes.toByteArray();
-    }
-
-    private static void writeTo(DataOutputStream b, Object o) throws IOException
-    {
-        if (o instanceof HashMap)
-        {
-            HashMap<?, ?> h = (HashMap<?, ?>) o;
-            ArrayList<Long> keys = new ArrayList<>((Collection<? extends Long>) h.keySet());
-            if (keys.remove(hash("name")))
-                keys.add(0, hash("name"));
-
-            if (keys.remove(hash("obj_type")))
-                keys.add(0, hash("obj_type"));
-
-            for (long el: keys)
+            Integer added = addendumNumbers.get(id);
+            if (added == null)
             {
-                Object v = h.get(el);
+                added = tableSize + addendum.size();
+                addendum.add(id);
+                addendumNumbers.put(id, added);
+            }
 
+            return added;
+        }
+
+        public void writeValue(Object v)
+        {
+            try
+            {
                 if (v == null)
-                {
-                    b.writeLong(getTag(Type.NULL, el));
-                }
+                    writeType(Type.NULL);
                 else if (v instanceof Boolean)
-                {
-                    b.writeLong(getTag(((boolean) v) ? Type.TRUE : Type.FALSE, el));
-                }
+                    writeType((boolean) v ? Type.TRUE : Type.FALSE);
                 else if (v instanceof Character)
                 {
-                    b.writeLong(getTag(Type.CHAR, el));
+                    writeType(Type.CHAR);
                     b.writeChar((char) v);
                 }
                 else if (v instanceof Short)
                 {
-                    b.writeLong(getTag(Type.SHORT, el));
+                    writeType(Type.SHORT);
                     b.writeShort((short) v);
                 }
                 else if (v instanceof Integer)
                 {
-                    b.writeLong(getTag(Type.INT, el));
-                    b.writeInt((int) v);
+                    writeType(Type.INT);
+                    writeVarLong(zigzag((int) v));
                 }
                 else if (v instanceof Long)
                 {
-                    b.writeLong(getTag(Type.LONG, el));
-                    b.writeLong((long) v);
+                    writeType(Type.LONG);
+                    writeVarLong(zigzag((long) v));
                 }
                 else if (v instanceof Float)
                 {
-                    b.writeLong(getTag(Type.FLOAT, el));
+                    writeType(Type.FLOAT);
                     b.writeFloat((float) v);
                 }
                 else if (v instanceof Double)
                 {
-                    if (((Double) v).isInfinite())
-                        b.writeLong(getTag(Type.INF, el));
+                    double d = (double) v;
+                    if (d == Double.POSITIVE_INFINITY)
+                        writeType(Type.INF);
+                    else if (d == Double.NEGATIVE_INFINITY)
+                        writeType(Type.NINF);
                     else
                     {
-                        b.writeLong(getTag(Type.DOUBLE, el));
-                        b.writeDouble((double) v);
+                        writeType(Type.DOUBLE);
+                        b.writeDouble(d);
                     }
                 }
                 else if (v instanceof String)
                 {
-                    b.writeLong(getTag(Type.STRING, el));
-                    b.write(((String) v).getBytes(StandardCharsets.UTF_16));
-                    b.writeByte(0);
-                    b.writeByte(0);
+                    writeType(Type.STRING);
+                    writeString((String) v);
                 }
                 else if (v instanceof Enum)
                 {
-                    b.writeLong(getTag(Type.ENUM, el));
-                    b.write(v.toString().getBytes(StandardCharsets.UTF_16));
-                    b.writeByte(0);
-                    b.writeByte(0);
+                    writeType(Type.ENUM);
+                    writeString(((Enum<?>) v).name());
                 }
                 else if (v instanceof IModel)
                 {
-                    b.writeLong(getTag(Type.IModel, el));
-                    b.write(v.toString().getBytes(StandardCharsets.UTF_16));
-                    b.writeLong(0L);
-                }
-                else if (v instanceof AbstractCollection)
-                {
-                    b.writeLong(getTag(Type.LIST, el));
-                    writeTo(b, v);
+                    writeType(Type.IModel);
+                    writeString(v.toString());
                 }
                 else if (v instanceof Color)
                 {
-                    Color c = ((Color) v);
-                    b.writeLong(getTag(Type.COLOR, el));
+                    Color c = (Color) v;
+                    writeType(Type.COLOR);
                     b.writeDouble(c.red);
                     b.writeDouble(c.green);
                     b.writeDouble(c.blue);
                     b.writeDouble(c.alpha);
                 }
-                else if (v instanceof HashMap)
+                else if (v instanceof Map)
                 {
-                    b.writeLong(getTag(Type.OBJECT, el));
-                    writeTo(b, v);
-                }
-            }
-            b.writeLong(0L);
-        }
-        else if (o instanceof AbstractCollection)
-        {
-            AbstractCollection<?> c = (AbstractCollection<?>) o;
-            long counter = 0;
-            for (Object el: c)
-            {
-                if (el == null)
-                {
-                    b.writeLong(getTag(Type.NULL, counter));
-                }
-                else if (el instanceof Boolean)
-                {
-                    b.writeLong(getTag(((boolean) el) ? Type.TRUE : Type.FALSE, counter));
-                }
-                else if (el instanceof Character)
-                {
-                    b.writeLong(getTag(Type.CHAR, counter));
-                    b.writeChar((char) el);
-                }
-                else if (el instanceof Short)
-                {
-                    b.writeLong(getTag(Type.SHORT, counter));
-                    b.writeShort((short) el);
-                }
-                else if (el instanceof Integer)
-                {
-                    b.writeLong(getTag(Type.INT, counter));
-                    b.writeInt((int) el);
-                }
-                else if (el instanceof Long)
-                {
-                    b.writeLong(getTag(Type.LONG, counter));
-                    b.writeLong((long) el);
-                }
-                else if (el instanceof Float)
-                {
-                    b.writeLong(getTag(Type.FLOAT, counter));
-                    b.writeFloat((float) el);
-                }
-                else if (el instanceof Double)
-                {
-                    if (((Double) el).isInfinite())
-                        b.writeLong(getTag(Type.INF, counter));
+                    Map<?, ?> m = (Map<?, ?>) v;
+                    if (isObject(m))
+                    {
+                        writeType(Type.OBJECT);
+                        writeVarInt(m.size());
+                        for (Map.Entry<?, ?> e: m.entrySet())
+                        {
+                            writeVarInt(getNumber((String) e.getKey()));
+                            writeValue(e.getValue());
+                        }
+                    }
                     else
                     {
-                        b.writeLong(getTag(Type.DOUBLE, counter));
-                        b.writeDouble((double) el);
+                        writeType(Type.MAP);
+                        writeVarInt(m.size());
+                        for (Map.Entry<?, ?> e: m.entrySet())
+                        {
+                            writeValue(e.getKey());
+                            writeValue(e.getValue());
+                        }
                     }
                 }
-                else if (el instanceof String)
+                else if (v instanceof Collection)
                 {
-                    b.writeLong(getTag(Type.STRING, counter));
-                    b.write(((String) el).getBytes(StandardCharsets.UTF_16));
-                    b.writeShort(0);
+                    Collection<?> c = (Collection<?>) v;
+                    writeType(Type.LIST);
+                    writeVarInt(c.size());
+                    for (Object el: c)
+                        writeValue(el);
                 }
-                else if (el instanceof Enum)
-                {
-                    b.writeLong(getTag(Type.ENUM, counter));
-                    b.write(el.toString().getBytes(StandardCharsets.UTF_16));
-                    b.writeShort(0);
-                }
-                else if (el instanceof IModel)
-                {
-                    b.writeLong(getTag(Type.IModel, counter));
-                    b.write(el.toString().getBytes(StandardCharsets.UTF_16));
-                    b.writeShort(0);
-                }
-                else if (el instanceof AbstractCollection)
-                {
-                    b.writeLong(getTag(Type.LIST, counter));
-                    writeTo(b, el);
-                }
-                else if (el instanceof Color)
-                {
-                    Color col = ((Color) el);
-                    b.writeLong(getTag(Type.COLOR, counter));
-                    b.writeDouble(col.red);
-                    b.writeDouble(col.green);
-                    b.writeDouble(col.blue);
-                    b.writeDouble(col.alpha);
-                }
-                else if (el instanceof HashMap)
-                {
-                    b.writeLong(getTag(Type.OBJECT, counter));
-                    writeTo(b, el);
-                }
-                counter++;
+                else
+                    throw new RuntimeException("Unable to write an object of type " + v.getClass().getName() + " to an ObjectBuffer: " + v);
             }
-            b.writeLong(0L);
+            catch (IOException e)
+            {
+                // a ByteArrayOutputStream never actually throws, but DataOutputStream declares it
+                throw new RuntimeException(e);
+            }
         }
-        else
+
+        public void writeType(Type t) throws IOException
         {
-            throw new RuntimeException("Unable to convert Object of type: " + o.getClass().getName());
+            b.writeByte(t.getCode());
+        }
+
+        /** UTF-8, as most of what's written (ids, names) is ASCII, which takes a byte per character. */
+        public void writeString(String s)
+        {
+            byte[] utf8 = s.getBytes(StandardCharsets.UTF_8);
+            writeVarInt(utf8.length);
+            bytes.write(utf8, 0, utf8.length);
+        }
+
+        public void writeVarInt(int i)
+        {
+            writeVarLong(i & 0xFFFFFFFFL);
+        }
+
+        /** Unsigned LEB128: seven bits per byte, low bits first, with the top bit set on all but the last byte. */
+        public void writeVarLong(long l)
+        {
+            while ((l & ~0x7FL) != 0)
+            {
+                bytes.write((int) ((l & 0x7F) | 0x80));
+                l >>>= 7;
+            }
+
+            bytes.write((int) l);
+        }
+
+        /** Maps signed numbers to unsigned ones so small negative numbers stay short as varints. */
+        public static long zigzag(long l)
+        {
+            return (l << 1) ^ (l >> 63);
         }
     }
 
-    protected static class ParserState
+    protected static class Reader
     {
         ByteBuffer buffer;
-        int depth;
 
-        public ParserState(byte[] buffer)
+        /** Size of the property id table the buffer was written with, which is where its addendum starts. */
+        int tableSize;
+        String[] addendum;
+
+        public Reader(byte[] bytes)
         {
-            depth = 0;
-            this.buffer = ByteBuffer.wrap(buffer);
+            this.buffer = ByteBuffer.wrap(bytes);
         }
 
-        public static HashMap<Long, Object> parse(ParserState state)
+        public String getId(int num)
         {
-            HashMap<Long, Object> result = new HashMap<>();
-            while (state.buffer.hasRemaining())
-            {
-                Map.Entry<Long, Object> p = state.parse();
-                if (p.getKey() == 0 && p.getValue() == null)
-                    break;
-                result.put(p.getKey(), p.getValue());
-            }
-            return result;
+            if (num < tableSize)
+                return PropertyIds.toId(num);
+
+            if (num - tableSize < addendum.length)
+                return addendum[num - tableSize];
+
+            throw new RuntimeException("Property number " + num + " is in neither the property id table nor the ObjectBuffer's addendum");
         }
 
-        public Map.Entry<Long, Object> parse()
+        public Object readValue(int depth)
         {
-            long tag = buffer.getLong();
-            long id = getId(tag);
-            switch (getType(tag))
+            if (depth > MAX_DEPTH)
+                throw new RuntimeException("ObjectBuffer is nested more than " + MAX_DEPTH + " levels deep");
+
+            Type type = Type.fromByte(buffer.get());
+            switch (type)
             {
                 //Primatives
                 case NULL:
-                {
-                    if (getId(tag) == 0)
-                        depth--;
-                    return new SimpleImmutableEntry<>(id, null);
-                }
+                    return null;
                 case TRUE:
-                    return new SimpleImmutableEntry<>(id, true);
+                    return true;
                 case FALSE:
-                    return new SimpleImmutableEntry<>(id, false);
+                    return false;
                 case INF:
-                    return new SimpleImmutableEntry<>(id, Double.POSITIVE_INFINITY);
+                    return Double.POSITIVE_INFINITY;
+                case NINF:
+                    return Double.NEGATIVE_INFINITY;
 
                 //Integers
                 case CHAR:
-                    return new SimpleImmutableEntry<>(id, buffer.getChar());
+                    return buffer.getChar();
                 case SHORT:
-                    return new SimpleImmutableEntry<>(id, buffer.getShort());
+                    return buffer.getShort();
                 case INT:
-                    return new SimpleImmutableEntry<>(id, buffer.getInt());
+                    return (int) unzigzag(readVarLong());
                 case LONG:
-                    return new SimpleImmutableEntry<>(id, buffer.getLong());
+                    return unzigzag(readVarLong());
 
-                //Float
+                //Floats
                 case FLOAT:
-                    return new SimpleImmutableEntry<>(id, buffer.getFloat());
+                    return buffer.getFloat();
                 case DOUBLE:
-                    return new SimpleImmutableEntry<>(id, buffer.getDouble());
+                    return buffer.getDouble();
 
                 //Variable Length
                 case ENUM:
-                {
-                    StringBuilder sb = new StringBuilder();
-                    while (buffer.hasRemaining())
-                    {
-                        byte b1 = buffer.get();
-                        byte b2 = buffer.get();
-                        if (b1 == 0 && b2 == 0)
-                            break;
-                        sb.append(new String(new byte[]{b1, b2}, StandardCharsets.UTF_16));
-                    }
-                    return new SimpleImmutableEntry<>(id, sb.toString());
-                }
                 case STRING:
+                case IModel:
+                    return readString();
+                case LIST:
                 {
-                    StringBuilder sb = new StringBuilder();
-                    while (buffer.hasRemaining())
+                    int count = readCount();
+                    ArrayList<Object> a = new ArrayList<>(count);
+                    for (int i = 0; i < count; i++)
+                        a.add(readValue(depth + 1));
+
+                    return a;
+                }
+                case MAP:
+                {
+                    int count = readCount();
+                    LinkedHashMap<Object, Object> m = new LinkedHashMap<>();
+                    for (int i = 0; i < count; i++)
                     {
-                        byte b1 = buffer.get();
-                        byte b2 = buffer.get();
-                        if (b1 == 0 && b2 == 0)
-                            break;
-                        sb.append(new String(new byte[]{b1, b2}, StandardCharsets.UTF_16));
+                        Object k = readValue(depth + 1);
+                        m.put(k, readValue(depth + 1));
                     }
-                    return new SimpleImmutableEntry<>(id, sb.toString());
+
+                    return m;
                 }
                 case OBJECT:
                 {
-                    HashMap<Long, Object> h = new HashMap<>();
-                    int target = depth++;
-                    while (depth > target)
+                    int count = readCount();
+                    HashMap<String, Object> m = new HashMap<>();
+                    for (int i = 0; i < count; i++)
                     {
-                        Map.Entry<Long, Object> kv = parse();
-                        long k = kv.getKey();
-                        Object v = kv.getValue();
-                        if (k == 0 && v == null && depth == target)
-                            break;
-                        h.put(k, v);
+                        String k = getId(readVarInt());
+                        m.put(k, readValue(depth + 1));
                     }
-                    return new SimpleImmutableEntry<>(id, h);
-                }
-                case LIST:
-                {
-                    ArrayList<Object> a = new ArrayList<>();
-                    int target = depth++;
-                    while (depth > target)
-                    {
-                        Map.Entry<Long, Object> kv = parse();
-                        long k = kv.getKey();
-                        Object v = kv.getValue();
-                        if (k == 0 && v == null && depth == target)
-                            break;
-                        a.add(kv.getValue());
-                    }
-                    return new SimpleImmutableEntry<>(id, a);
+
+                    return m;
                 }
 
-                //Tanks Specific Objects
+                //Tanks Specific
                 case COLOR:
-                {
-                    Color c = new Color(buffer.getDouble(), buffer.getDouble(), buffer.getDouble(), buffer.getDouble());
-                    return new SimpleImmutableEntry<>(id, c);
-                }
-                case IModel:
-                {
-                    StringBuilder sb = new StringBuilder();
-                    while (buffer.hasRemaining())
-                    {
-                        byte b1 = buffer.get();
-                        byte b2 = buffer.get();
-                        if (b1 == 0 && b2 == 0)
-                            break;
-                        sb.append(new String(new byte[]{b1, b2}, StandardCharsets.UTF_16));
-                    }
-                    return new SimpleImmutableEntry<>(id, sb.toString());
-                }
+                    return new Color(buffer.getDouble(), buffer.getDouble(), buffer.getDouble(), buffer.getDouble());
 
                 default:
-                    throw new RuntimeException("Unknown type: " + getType(tag));
+                    throw new RuntimeException("Unknown type: " + type);
+            }
+        }
+
+        public String readString()
+        {
+            int length = readCount();
+
+            // Decoded whole rather than piece by piece, so multi-byte characters such as emoji stay together
+            byte[] utf8 = new byte[length];
+            buffer.get(utf8);
+            return new String(utf8, StandardCharsets.UTF_8);
+        }
+
+        /**
+         * A length or number of entries. Every entry takes at least a byte, so a count larger than what's left
+         * of the buffer can only come from corrupt data, and is refused before anything is allocated for it.
+         */
+        public int readCount()
+        {
+            int count = readVarInt();
+            if (count < 0 || count > buffer.remaining())
+                throw new RuntimeException("ObjectBuffer is corrupt: a count of " + count + " with only " + buffer.remaining() + " bytes left");
+
+            return count;
+        }
+
+        public int readVarInt()
+        {
+            long l = readVarLong();
+            if (l > 0xFFFFFFFFL)
+                throw new RuntimeException("ObjectBuffer is corrupt: varint too large for an int");
+
+            return (int) l;
+        }
+
+        public long readVarLong()
+        {
+            long l = 0;
+            for (int shift = 0; shift < 64; shift += 7)
+            {
+                byte b = buffer.get();
+                l |= (long) (b & 0x7F) << shift;
+
+                if ((b & 0x80) == 0)
+                    return l;
             }
 
+            throw new RuntimeException("ObjectBuffer is corrupt: varint longer than 10 bytes");
         }
-    }
 
-    public static HashMap<Long, Object> parse(byte[] buffer)
-    {
-        return ParserState.parse(new ParserState(buffer));
+        public static long unzigzag(long l)
+        {
+            return (l >>> 1) ^ -(l & 1);
+        }
     }
 }

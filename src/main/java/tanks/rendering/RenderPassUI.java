@@ -1,12 +1,12 @@
 package tanks.rendering;
 
 import basewindow.RenderPass;
+import tanks.Drawing;
 import tanks.Game;
 import tanks.Panel;
 
 public class RenderPassUI extends RenderPass
 {
-    public boolean initialized = false;
     public ShaderGroupUI shaderUI;
 
     public RenderPassUI()
@@ -21,13 +21,8 @@ public class RenderPassUI extends RenderPass
 
         this.window.setShader(this.shaderUI);
 
-        if (!this.initialized)
-        {
-            this.initialized = true;
-        }
-
-        this.window.loadPerspective();
-        this.window.setViewport(0, 0, this.window.frameBufferWidth, this.window.frameBufferHeight);
+        Drawing.drawing.prepareInterfaceCamera();
+        Drawing.drawing.bindInterfaceCamera();
 
         Panel.panel.drawUI();
     }

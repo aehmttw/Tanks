@@ -4,6 +4,46 @@ public class Matrix4
 {
     public final double[][] values = new double[4][4];
 
+    public Matrix4 setIdentity()
+    {
+        for (int row = 0; row < 4; row++)
+            for (int col = 0; col < 4; col++)
+                this.values[row][col] = row == col ? 1 : 0;
+        return this;
+    }
+
+    public Matrix4 set(Matrix4 other)
+    {
+        for (int row = 0; row < 4; row++)
+            System.arraycopy(other.values[row], 0, this.values[row], 0, 4);
+        return this;
+    }
+
+    /** Sets a translation in the coordinate system in which this matrix is applied. */
+    public Matrix4 setTranslation(double x, double y, double z)
+    {
+        this.setIdentity();
+        this.values[0][3] = x;
+        this.values[1][3] = y;
+        this.values[2][3] = z;
+        return this;
+    }
+
+    /** Sets an X-axis rotation about a pivot expressed in the same units as the input points. */
+    public Matrix4 setRotationAroundX(double angle, double pivotY, double pivotZ)
+    {
+        this.setIdentity();
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        this.values[1][1] = cos;
+        this.values[1][2] = -sin;
+        this.values[2][1] = sin;
+        this.values[2][2] = cos;
+        this.values[1][3] = pivotY - cos * pivotY + sin * pivotZ;
+        this.values[2][3] = pivotZ - sin * pivotY - cos * pivotZ;
+        return this;
+    }
+
     public Matrix4(double[][] values)
     {
         for (int i = 0; i < values.length; i++)
@@ -14,7 +54,10 @@ public class Matrix4
 
     public Matrix4()
     {
-
+        values[0][0] = 1;
+        values[1][1] = 1;
+        values[2][2] = 1;
+        values[3][3] = 1;
     }
 
     public Matrix4(double[] values)
@@ -27,22 +70,36 @@ public class Matrix4
 
     public static Matrix4 fromOpenGLArray(float[] gl)
     {
-        double[][] m = new double[4][4];
+        return fromOpenGLArray(gl, new Matrix4());
+    }
 
+    /** Writes a column-major OpenGL matrix into {@code result}. */
+    public static Matrix4 fromOpenGLArray(float[] gl, Matrix4 result)
+    {
         for (int row = 0; row < 4; row++)
         {
             for (int col = 0; col < 4; col++)
             {
-                m[row][col] = gl[col * 4 + row];
+                result.values[row][col] = gl[col * 4 + row];
             }
         }
 
-        return new Matrix4(m);
+        return result;
     }
 
     public Matrix4 multiply(Matrix4 m)
     {
-        double[][] result = new double[4][4];
+        return this.multiply(m, new Matrix4());
+    }
+
+    /**
+     * Multiplies this matrix by {@code m}, storing the product in {@code result}.
+     * The output matrix must not be either input matrix.
+     */
+    public Matrix4 multiply(Matrix4 m, Matrix4 result)
+    {
+        if (result == this || result == m)
+            throw new IllegalArgumentException("Matrix multiplication output must not be an input matrix");
 
         for (int i = 0; i < 4; i++)
         {
@@ -53,11 +110,11 @@ public class Matrix4
                 {
                     acc += this.values[i][k] * m.values[k][j];
                 }
-                result[i][j] = acc;
+                result.values[i][j] = acc;
             }
         }
 
-        return new Matrix4(result);
+        return result;
     }
 
     public Matrix4 makeCopy()
@@ -67,8 +124,20 @@ public class Matrix4
 
     public Matrix4 inverse()
     {
+        return this.inverse(new Matrix4());
+    }
+
+    /**
+     * Writes this matrix's inverse into {@code result}.
+     * The output matrix must not be this matrix.
+     */
+    public Matrix4 inverse(Matrix4 result)
+    {
+        if (result == this)
+            throw new IllegalArgumentException("Matrix inverse output must not be the input matrix");
+
         double[][] m = this.values;
-        double[][] inv = new double[4][4];
+        double[][] inv = result.values;
 
         inv[0][0] =  m[1][1] * m[2][2] * m[3][3] - m[1][1] * m[2][3] * m[3][2] -
                 m[2][1] * m[1][2] * m[3][3] + m[2][1] * m[1][3] * m[3][2] +
@@ -147,7 +216,87 @@ public class Matrix4
             for (int j = 0; j < 4; j++)
                 inv[i][j] *= det;
 
-        return new Matrix4(inv);
+        return result;
+    }
+
+    public void identity()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                this.values[i][j] = (i == j) ? 1 : 0;
+            }
+        }
+    }
+
+    public void translate(double x, double y, double z)
+    {
+        this.values[0][3] += x;
+        this.values[1][3] += y;
+        this.values[2][3] += z;
+    }
+
+    public void setFrustum(double left, double right, double bottom, double top, double near, double far)
+    {
+        double width = right - left;
+        double height = top - bottom;
+        double depth = far - near;
+
+        double[][] m = this.values;
+
+        // Row 0
+        m[0][0] = (2.0 * near) / width;
+        m[0][1] = 0.0;
+        m[0][2] = (right + left) / width;
+        m[0][3] = 0.0;
+
+        // Row 1
+        m[1][0] = 0.0;
+        m[1][1] = (2.0 * near) / height;
+        m[1][2] = (top + bottom) / height;
+        m[1][3] = 0.0;
+
+        // Row 2
+        m[2][0] = 0.0;
+        m[2][1] = 0.0;
+        m[2][2] = -(far + near) / depth;
+        m[2][3] = -(2.0 * far * near) / depth;
+
+        // Row 3
+        m[3][0] = 0.0;
+        m[3][1] = 0.0;
+        m[3][2] = -1.0;
+        m[3][3] = 0.0;
+    }
+
+    public void setOrtho(double left, double right, double bottom, double top, double near, double far)
+    {
+        double width = right - left;
+        double height = top - bottom;
+        double depth = far - near;
+
+        double[][] m = this.values;
+
+        m[0][0] = 2.0 / width;
+        m[0][1] = 0.0;
+        m[0][2] = 0.0;
+        m[0][3] = -(right + left) / width;
+
+        m[1][0] = 0.0;
+        m[1][1] = 2.0 / height;
+        m[1][2] = 0.0;
+        m[1][3] = -(top + bottom) / height;
+
+        m[2][0] = 0.0;
+        m[2][1] = 0.0;
+        m[2][2] = -2.0 / depth;
+        m[2][3] = -(far + near) / depth;
+
+        m[3][0] = 0.0;
+        m[3][1] = 0.0;
+        m[3][2] = 0.0;
+        m[3][3] = 1.0;
     }
 
     @Override
@@ -188,5 +337,4 @@ public class Matrix4
 
         return openGLMatrix;
     }
-
 }

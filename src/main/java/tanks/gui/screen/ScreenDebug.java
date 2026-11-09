@@ -22,6 +22,7 @@ public class ScreenDebug extends Screen
     Button tankIDs = createToggle("Tank IDs: ", b -> Game.showNetworkIDs = b, () -> Game.showNetworkIDs);
     Button invulnerable = createToggle("Invulnerable: ", b -> Game.invulnerable = b, () -> Game.invulnerable);
     Button fancyLighting = createToggle("Fancy lighting: ", b -> Game.fancyLights = b, () -> Game.fancyLights);
+    Button shadowDepth = createToggle("Shadow depth: ", b -> Game.showShadowDepth = b, () -> Game.showShadowDepth);
     Button destroyCheat = createToggle("Destroy cheat: ", b -> TankPlayer.enableDestroyCheat = b, () -> TankPlayer.enableDestroyCheat);
     Button drawFaces = createToggle("Draw faces: ", b -> Game.drawFaces = b, () -> Game.drawFaces);
     Button drawAutoZoom = createToggle("Draw auto zoom: ", b -> Game.drawAutoZoom = b, () -> Game.drawAutoZoom);
@@ -36,7 +37,7 @@ public class ScreenDebug extends Screen
 
     public ButtonList debugButtons = new ButtonList(new ArrayList<>(Arrays.asList(
         test, traceAllRays, firstPerson, followingCam, destroyCheat, invulnerable,
-        fancyLighting, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles,
+        fancyLighting, shadowDepth, tankIDs, showPathfinding, drawFaces, showUpdatingObstacles,
         drawAutoZoom, immutableFaces, drawAvoidObjects, disableFixes, recordMovableData, recordEventData
     )), 0, 0, -30);
 
@@ -50,6 +51,8 @@ public class ScreenDebug extends Screen
         super(350, 40, 380, 60);
         this.music = "menu_options.ogg";
         this.musicID = "menu";
+
+        shadowDepth.setHoverText("Show the shadow depth map---in the upper-right corner------Requires shadows to be enabled");
 
         debugButtons.setRowsAndColumns(6, 3);
     }
@@ -65,6 +68,11 @@ public class ScreenDebug extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.displayInterfaceText(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 4, "Debug menu");

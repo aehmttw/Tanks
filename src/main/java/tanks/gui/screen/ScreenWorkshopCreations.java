@@ -160,7 +160,11 @@ public class ScreenWorkshopCreations extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         this.creations.draw();
         this.quit.draw();
 

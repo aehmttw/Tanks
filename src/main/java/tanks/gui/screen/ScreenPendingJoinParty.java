@@ -35,6 +35,11 @@ public class ScreenPendingJoinParty extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         confirm.draw();
 
         Drawing.drawing.setColor(0, 0, 0);

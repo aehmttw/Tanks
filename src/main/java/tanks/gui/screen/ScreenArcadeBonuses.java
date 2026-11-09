@@ -234,7 +234,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
                     {
                         Drawing.drawing.setInterfaceFontSize(this.textSize);
                         Bonus b = this.bonuses.get(2 - i);
-                        double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, b.name) / Drawing.drawing.interfaceScale;
+                        double size = Drawing.drawing.getInterfaceTextWidth(b.name);
                         addEffect(this.centerX, this.centerY + (i - 1) * this.objYSpace * 4 / 6, size, this.objHeight, Game.effects, 1 + Math.min(b.value, 1000) / 25.0, -1, 0.5, b.red, b.green, b.blue);
                     }
                 }
@@ -259,7 +259,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             for (int j = 0; j < Game.effectMultiplier * Math.min(1000, bonusPoints) / 2; j++)
             {
                 Drawing.drawing.setInterfaceFontSize(this.textSize);
-                double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+                double size = Drawing.drawing.getInterfaceTextWidth(s);
                 addEffect(this.centerX, this.centerY + this.objYSpace * 2, size, this.objHeight, Game.effects, 1 + Math.min(bonusPoints, 1000) / 40.0, -1, 0.5, 100 + Math.random() * 155, 100 + Math.random() * 155, 100 + Math.random() * 155);
             }
 
@@ -312,7 +312,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
         {
             Drawing drawing = Drawing.drawing;
             drawing.setColor(0, 0, 255);
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+            Drawing.drawing.fillInterfaceViewportRect();
 
             drawing.setColor(255, 255, 255);
             drawing.setInterfaceFontSize(100);
@@ -340,7 +340,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
             drawing.drawInterfaceText(50, 500, Game.homedir.replace("\\", "/") + Game.crashesPath + "lmaothisisnta.crash", false);
 
             Drawing.drawing.setColor(0, 0, 0, Math.max(0, Panel.darkness));
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+            Drawing.drawing.fillInterfaceViewportRect();
         }
 
         double heightFrac = Math.min(1, age / 25);
@@ -453,7 +453,7 @@ public class ScreenArcadeBonuses extends Screen implements IDarkScreen
 
         Drawing.drawing.setInterfaceFontSize(36 * (1 + 0.25 * frac));
         String s = Translation.translate("Score: %d", score);
-        double size = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        double size = Drawing.drawing.getInterfaceTextWidth(s);
         Drawing.drawing.displayInterfaceText(posX - size / 2, posY, false, s);
     }
 

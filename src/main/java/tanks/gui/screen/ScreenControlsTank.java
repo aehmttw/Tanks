@@ -82,7 +82,11 @@ public class ScreenControlsTank extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (page == 0)
         {
             aim.draw();

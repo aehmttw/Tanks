@@ -66,7 +66,6 @@ public class ScreenCrashed extends Screen
         this.openFolder.imageSizeY = imgsize;
         this.openFolder.imageXOffset = -150 * this.chatroom.sizeX / 350;
 
-        Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
     }
 
@@ -113,7 +112,7 @@ public class ScreenCrashed extends Screen
         else if (hmm == 2)
             drawing.setColor(0, 0, 0);
 
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+        Drawing.drawing.fillInterfaceViewportRect();
 
         drawing.setColor(255, 255, 255);
         if (hmm == 1)
@@ -143,8 +142,8 @@ public class ScreenCrashed extends Screen
         drawing.displayInterfaceText(50, 350, false, "Crash details:");
 
         double boxWidth = 1300;
-        double width = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashMessage) / Drawing.drawing.interfaceScale;
-        double width2 = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, Game.crashLine) / Drawing.drawing.interfaceScale;
+        double width = Drawing.drawing.getInterfaceTextWidth(Game.crashMessage);
+        double width2 = Drawing.drawing.getInterfaceTextWidth(Game.crashLine);
 
         double scale = Math.min(1, boxWidth / width);
         double scale2 = Math.min(1, boxWidth / width2);

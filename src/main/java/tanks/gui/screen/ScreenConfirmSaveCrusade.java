@@ -52,10 +52,14 @@ public class ScreenConfirmSaveCrusade extends Screen implements IBlankBackground
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(255, 127, 0, this.opacity);
         this.opacity = Math.max(0, this.opacity - Panel.frameFrequency * 2);
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+        Drawing.drawing.fillInterfaceViewportRect();
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

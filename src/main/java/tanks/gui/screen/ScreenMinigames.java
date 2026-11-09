@@ -83,7 +83,11 @@ public class ScreenMinigames extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         search.draw();
 
         moddedLevelsList.draw();

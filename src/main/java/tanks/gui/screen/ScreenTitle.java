@@ -125,6 +125,19 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
     @Override
     public void update()
     {
+        this.setupLayoutParameters();
+
+        play.posX = this.rCenterX;
+        play.posY = this.rCenterY - this.objYSpace * 1.5;
+        exit.posX = this.rCenterX;
+        exit.posY = this.rCenterY + this.objYSpace * 1.5;
+        options.posX = this.rCenterX;
+        options.posY = this.rCenterY - this.objYSpace * 0.5;
+        about.posX = this.rCenterX;
+        about.posY = this.rCenterY + this.objYSpace * 0.5;
+        debug.posX = this.rCenterX;
+        debug.posY = this.rCenterY + this.objYSpace * 3;
+
         languages.posX = -(Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
             Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale + 50 * Drawing.drawing.interfaceScaleZoom;
         languages.posY = ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 +
@@ -327,7 +340,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
         }
     }
 
-    public void drawGUI()
+    @Override
+    public void drawUI()
     {
         play.draw();
         exit.draw();
@@ -422,8 +436,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
     {
         if (Game.screen == this)
             this.drawDefaultBackground();
-
-        this.drawGUI();
+        else
+            this.drawUI();
 
         this.drawWithoutBackground();
     }
@@ -439,6 +453,8 @@ public class ScreenTitle extends Screen implements ISeparateBackgroundScreen
     @Override
     public void setupLayoutParameters()
     {
+        super.setupLayoutParameters();
+
         this.lCenterX = Drawing.drawing.interfaceSizeX / 2;
         this.lCenterY = Drawing.drawing.interfaceSizeY / 2 - this.objYSpace * 1.5;
 

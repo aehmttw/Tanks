@@ -58,6 +58,11 @@ public class ScreenPartyResumeCrusade extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         resume.draw();
         selectOtherCrusade.draw();
         quit.draw();

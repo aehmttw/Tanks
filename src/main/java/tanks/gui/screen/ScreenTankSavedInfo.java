@@ -183,7 +183,11 @@ public class ScreenTankSavedInfo extends Screen implements IBlankBackgroundScree
     {
         Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setInterfaceFontSize(this.titleSize);
         if (Level.isDark())
             Drawing.drawing.setColor(255, 255, 255);

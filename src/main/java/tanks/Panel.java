@@ -1,6 +1,8 @@
 package tanks;
 
+import basewindow.BaseWindow;
 import basewindow.InputCodes;
+import basewindow.ShaderGroup;
 import lwjglwindow.*;
 import tanks.extension.Extension;
 import tanks.gui.*;
@@ -69,6 +71,10 @@ public class Panel
     public long frameStartTime = System.currentTimeMillis();
 
     public long lastFrameNano = 0;
+
+    public int lastFrameIndex = 0;
+    public long[] lastFrameDurations = new long[1000];
+    public long lastFrameTime = System.currentTimeMillis();
 
     public int lastFPS = 0;
 
@@ -350,7 +356,7 @@ public class Panel
         Drawing.drawing.scale = Math.min(Panel.windowWidth / Game.currentSizeX, (Panel.windowHeight - Drawing.drawing.statsHeight) / Game.currentSizeY) / 50.0;
         Drawing.drawing.unzoomedScale = Drawing.drawing.scale;
         Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28, (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
-        Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
+        Game.game.window.absoluteDepth = Game.absoluteDepthBase;
 
         if (Game.deterministicMode && Game.deterministic30Fps)
             Panel.frameFrequency = 100.0 / 30;
@@ -774,6 +780,14 @@ public class Panel
             !ScreenPartyHost.isServer && !ScreenPartyLobby.isClient)))
             this.age += Panel.frameFrequency;
 
+        if (!Game.game.window.mainRenderPasses.drawingShadow)
+        {
+            long time1 = System.currentTimeMillis();
+            this.lastFrameDurations[this.lastFrameIndex] = time1 - this.lastFrameTime;
+            this.lastFrameIndex = (this.lastFrameIndex + 1) % this.lastFrameDurations.length;
+            this.lastFrameTime = time1;
+        }
+
         while (Panel.panel.pastPlayerTime.size() > 1 && Panel.panel.pastPlayerTime.get(1) < Panel.panel.age - Drawing.drawing.getTrackOffset())
         {
             Panel.panel.pastPlayerX.remove(0);
@@ -818,7 +832,7 @@ public class Panel
                 Drawing.drawing.scale = Game.screen.getScale();
                 Drawing.drawing.interfaceScale = Drawing.drawing.interfaceScaleZoom * Math.min(Panel.windowWidth / 28,
                     (Panel.windowHeight - Drawing.drawing.statsHeight) / 18) / 50.0;
-                Game.game.window.absoluteDepth = Drawing.drawing.interfaceScale * Game.absoluteDepthBase;
+                Game.game.window.absoluteDepth = Game.absoluteDepthBase;
             }
 
             if (!(Game.screen instanceof ScreenExit))
@@ -828,15 +842,9 @@ public class Panel
                         233 * (Level.currentLightIntensity * 0.7));
                 else
                     Drawing.drawing.setColor(174, 92, 16);
-
-                Drawing.drawing.fillInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
-                    Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
             }
 
             Drawing.drawing.setLighting(Level.currentLightIntensity, Level.currentShadowIntensity, Level.currentLightColor);
-
-//            if (Game.fancyLights)
-//                Game.game.window.createLights(this.lights, Drawing.drawing.scale);
 
             if (!Game.game.window.mainRenderPasses.drawingShadow)
             {
@@ -927,7 +935,9 @@ public class Panel
         if (!(Game.screen instanceof ScreenExit || Game.screen instanceof ScreenIntro))
         {
             Drawing.drawing.terrainRenderer.allowPartialLoading = true;
+            Game.game.window.bindCamera(Game.game.window.screenCamera, 0, 0, Game.game.window.frameBufferWidth, Game.game.window.frameBufferHeight);
             this.drawBar();
+            Drawing.drawing.bindInterfaceCamera();
         }
 
         if (Game.recordEventData && (ScreenPartyHost.isServer || ScreenPartyLobby.isClient))
@@ -960,19 +970,61 @@ public class Panel
         if (currentMessage != null)
             currentMessage.draw();
 
+        if (Game.showShadowDepth && Game.game.window.mainRenderPasses.shadowsEnabled)
+            this.drawShadowDepthDebug();
+
         if (Drawing.drawing.tooltip != null)
             Drawing.drawing.drawTooltip(Drawing.drawing.tooltip, Drawing.drawing.getInterfaceMouseX(), Drawing.drawing.getInterfaceMouseY());
 
         Drawing.drawing.tooltip = null;
 
-        if (Game.screen.showDefaultMouse)
-            this.drawMouseTarget();
+        boolean forceGameMouseTarget = Game.screen instanceof ScreenGame && !Game.screen.showDefaultMouse;
+        if (Game.screen.showDefaultMouse || forceGameMouseTarget)
+        {
+            // The bar occupies the excluded interface viewport, so draw the cursor
+            // in full-screen coordinates after all UI and bar content.
+            Game.game.window.bindCamera(Game.game.window.screenCamera, 0, 0, Game.game.window.frameBufferWidth, Game.game.window.frameBufferHeight);
+            this.drawMouseTarget(forceGameMouseTarget, true);
+            Drawing.drawing.bindInterfaceCamera();
+        }
 
         if (!Game.screen.drawDebugInternally)
             DebugKeybinds.renderDebugging();
 
+
         Drawing.drawing.setColor(255, 255, 255);
         Game.screen.drawPostMouse();
+    }
+
+    private void drawShadowDepthDebug()
+    {
+        Drawing drawing = Drawing.drawing;
+        if (!drawing.bindInterfaceCamera())
+            return;
+
+        BaseWindow window = Game.game.window;
+        double size = 240;
+        double left = drawing.getInterfaceEdgeX(true) - size - 20;
+        double top = drawing.getInterfaceEdgeY(false) + 20;
+
+        drawing.setColor(0, 0, 0, 180);
+        drawing.fillInterfaceRect(left + size / 2, top + (size + 28) / 2, size + 16, size + 44);
+        drawing.setColor(255, 255, 255);
+        drawing.setInterfaceFontSize(16);
+        drawing.drawInterfaceText(left + size / 2, top + 10, "Shadow depth");
+
+        window.mainRenderPasses.depthFrameBuffer.bindDepthTexture(window, "shadow_depth");
+        ShaderGroup previousShader = window.currentShaderStage.group;
+        window.setShader(Game.drawer.shadowDepthDebugShader);
+        try
+        {
+            // Framebuffer textures have the opposite vertical orientation to interface coordinates.
+            window.shapeRenderer.drawImage(left, top + 28 + size, size, -size, "shadow_depth", false);
+        }
+        finally
+        {
+            window.setShader(previousShader);
+        }
     }
 
     public void drawMouseTarget()
@@ -982,11 +1034,18 @@ public class Panel
 
     public void drawMouseTarget(boolean force)
     {
+        drawMouseTarget(force, false);
+    }
+
+    /** Draws the cursor in either interface coordinates or absolute screen coordinates. */
+    public void drawMouseTarget(boolean force, boolean screenCoordinates)
+    {
         if (Game.game.window.touchscreen)
             return;
 
-        double mx = Drawing.drawing.getInterfaceMouseX();
-        double my = Drawing.drawing.getInterfaceMouseY();
+        double mx = screenCoordinates ? Game.game.window.absoluteMouseX : Drawing.drawing.getInterfaceMouseX();
+        double my = screenCoordinates ? Game.game.window.absoluteMouseY : Drawing.drawing.getInterfaceMouseY();
+        double scale = screenCoordinates ? Drawing.drawing.interfaceScale : 1;
 
         if (showMouseTarget || force)
         {
@@ -995,7 +1054,10 @@ public class Panel
                 if (Game.glowEnabled)
                 {
                     Drawing.drawing.setColor(0, 0, 0, 128);
-                    Drawing.drawing.fillInterfaceGlow(mx, my, 64, 64, true);
+                    if (screenCoordinates)
+                        Game.game.window.shapeRenderer.fillGlow(mx - 32 * scale, my - 32 * scale, 64 * scale, 64 * scale, true);
+                    else
+                        Drawing.drawing.fillInterfaceGlow(mx, my, 64, 64, true);
                 }
 
                 Drawing.drawing.setColor(255, 255, 255);
@@ -1011,7 +1073,10 @@ public class Panel
                     if (v > 0.05)
                     {
                         Drawing.drawing.setColor(255, 255, 255, 128);
-                        Drawing.drawing.fillInterfaceGlow(mx, my, 64 * v, 64 * v);
+                        if (screenCoordinates)
+                            Game.game.window.shapeRenderer.fillGlow(mx - 32 * v * scale, my - 32 * v * scale, 64 * v * scale, 64 * v * scale);
+                        else
+                            Drawing.drawing.fillInterfaceGlow(mx, my, 64 * v, 64 * v);
                     }
                 }
 
@@ -1024,15 +1089,30 @@ public class Panel
                 if (i == null || i.destroy)
                 {
                     Drawing.drawing.setColor(255, 0, 0);
-                    Drawing.drawing.drawInterfaceImage("cursor_deny.png", mx, my, 48, 48);
+                    this.drawCursorImage("cursor_deny.png", mx, my, scale, screenCoordinates);
                     return;
                 }
             }
-            Drawing.drawing.drawInterfaceImage("cursor.png", mx, my, 48, 48);
+            this.drawCursorImage("cursor.png", mx, my, scale, screenCoordinates);
         }
 
+        if (!screenCoordinates)
+            this.drawMouseTargetHeight();
+    }
+
+    private void drawCursorImage(String image, double x, double y, double scale, boolean screenCoordinates)
+    {
+        if (screenCoordinates)
+            Game.game.window.shapeRenderer.drawImage(x - 24 * scale, y - 24 * scale, 48 * scale, 48 * scale, "/images/" + image, false);
+        else
+            Drawing.drawing.drawInterfaceImage(image, x, y, 48, 48);
+    }
+
+    /** Draws the optional 3D marker at the current world-space mouse target. */
+    public void drawMouseTargetHeight()
+    {
         if (Game.enable3d && ((Game.screen instanceof ScreenGame && !((ScreenGame) Game.screen).paused && !((ScreenGame) Game.screen).shopScreen && Game.playerTank != null) ||
-            Game.screen instanceof ScreenLevelEditor) && Panel.showMouseTargetHeight)
+            Game.screen instanceof ScreenLevelEditor) && Panel.showMouseTargetHeight && !Game.game.window.mainRenderPasses.drawingShadow)
         {
             double c = 127 * Obstacle.draw_size / Game.tile_size;
             double a = 255;
@@ -1048,8 +1128,8 @@ public class Panel
             double height = 100;
             double thickness = 2;
 
-            double x = Drawing.drawing.toGameCoordsX(mx);
-            double y = Drawing.drawing.toGameCoordsY(my);
+            double x = Drawing.drawing.getMouseX();
+            double y = Drawing.drawing.getMouseY();
 
             Game.game.window.shapeRenderer.setBatchMode(false, false, true, true, false);
             Game.game.window.shapeRenderer.setBatchMode(true, true, true, true, false);
@@ -1210,6 +1290,12 @@ public class Panel
             s = "Downstream: " + MessageReader.downstreamBytesPerSec / 1024 + "KB/s";
             Game.game.window.fontRenderer.drawString(Panel.windowWidth - 5 - Game.game.window.fontRenderer.getStringSizeX(0.4, s) - offset,
                 offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, s);
+        }
+
+        for (int i = 0; i < this.lastFrameDurations.length; i++)
+        {
+            Drawing.drawing.setColor(255, 255, 255, 255 - 255.0 * ((this.lastFrameIndex - 1 - i + this.lastFrameDurations.length) % this.lastFrameDurations.length) / this.lastFrameDurations.length);
+            Game.game.window.shapeRenderer.fillRect(500 + i, Panel.windowHeight - this.lastFrameDurations[i], 1, this.lastFrameDurations[i]);
         }
     }
 

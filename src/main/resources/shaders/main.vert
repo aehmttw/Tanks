@@ -1,6 +1,7 @@
 
 uniform mat4 lightViewProjectionMatrix;
 uniform mat4 biasMatrix;
+uniform mat4 inverseModelViewBaseMatrix;
 
 uniform sampler2D depthTexture;
 
@@ -35,7 +36,8 @@ void main(void)
 
     getVertVecs(pos, normal);
     gl_Position = gl_ModelViewProjectionMatrix * pos;
-    lightBiasedClipPosition = biasMatrix * lightViewProjectionMatrix * gl_ModelViewMatrix * pos;
+    mat4 modelMatrix = inverseModelViewBaseMatrix * gl_ModelViewMatrix;
+    lightBiasedClipPosition = biasMatrix * lightViewProjectionMatrix * modelMatrix * pos;
 
     gl_TexCoord[0] = gl_MultiTexCoord0;
 }

@@ -87,7 +87,6 @@ public abstract class BaseWindow
     public IWindowHandler windowHandler;
 
     public boolean orthographic = false;
-    public ArrayList<Transformation> transformations = new ArrayList<>();
 
     public double yaw = 0;
     public double pitch = 0;
@@ -97,15 +96,16 @@ public abstract class BaseWindow
     public double yOffset = 0;
     public double zOffset = 0;
 
+    public Camera screenCamera;
+    public Camera interfaceCamera;
+    /** The camera currently bound for rendering. Render passes own their cameras. */
+    public Camera currentCamera;
+    public double interfaceCameraLogicalWidth;
+    public double interfaceCameraLogicalHeight;
+    public double interfaceCameraHeightOffset;
+    /** Bottom strip excluded from scene presentation, independently of the UI viewport. */
+    public double sceneCameraHeightOffset;
 
-    public Transformation[] baseTransformations = new Transformation[]
-        {
-            new Translation(this, -0.5, -0.5, -1),
-//      new ScaleAboutPoint(this, 1,  Math.sqrt(0.5), 1, 0.5, 0.5, 0.5),
-//      new RotationAboutPoint(this, 0, 0, Math.PI / 4, 0.5, 0.5, 0.5),
-//      new Shear(this, 0, 0, 0, 0, Math.sqrt(0.5), -Math.sqrt(0.5)),
-        };
-    public Transformation[] lightBaseTransformation = new Transformation[]{new ScaleAboutPoint(this, 0.8, 0.8, 0.8, 0.5, 0.5, 0.5), new Shear(this, 0, 0, 0, 0, 0.5, 0.5)};
     public double[] lightVec = new double[]{-0.66666666, 0.66666666, -0.33333333};
 
     public BaseSoundPlayer soundPlayer;
@@ -149,6 +149,12 @@ public abstract class BaseWindow
         this.vsync = vsync;
         this.windowHandler = w;
         this.showMouseOnLaunch = showMouse;
+
+        this.screenCamera = new Camera("screen", 0, x, 0, y, this.absoluteDepth);
+        this.interfaceCamera = new Camera("interface", 0, 1400, 0, 900, this.absoluteDepth);
+        this.interfaceCameraLogicalWidth = 1400;
+        this.interfaceCameraLogicalHeight = 900;
+        this.interfaceCameraHeightOffset = 0;
 
         if (System.getProperties().toString().contains("Mac OS X"))
             mac = true;
@@ -212,13 +218,14 @@ public abstract class BaseWindow
 
     public abstract void setUpPerspective();
 
-    public abstract void applyTransformations();
-
     public abstract void loadPerspective();
 
     public abstract void getProjectionMatrix(float[] proj);
 
     public abstract Matrix4 getProjectionMatrix();
+
+    /** Returns the current OpenGL model-view matrix. */
+    public abstract Matrix4 getModelViewMatrix();
 
     public abstract void clearColor();
 
@@ -261,6 +268,15 @@ public abstract class BaseWindow
     public abstract void stopTexture();
 
     public abstract void setViewport(int x, int y, int w, int h);
+
+    /**
+     * Binds a configured camera and viewport without changing the shader or framebuffer.
+     * Implementations must finish and resume any open immediate geometry batch around
+     * matrix/viewport changes, and may skip binding when the same state is already loaded.
+     * After directly editing camera pose/matrix fields, call updateView()/updateProjection()
+     * before binding so the camera revision reflects those changes.
+     */
+    public abstract void bindCamera(Camera camera, int x, int y, int width, int height);
 
     public abstract BaseFrameBuffer createFrameBuffer();
 

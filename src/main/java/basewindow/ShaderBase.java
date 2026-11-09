@@ -6,6 +6,7 @@ public class ShaderBase extends ShaderProgram implements IBaseShader, IBlendFunc
     public UniformSampler2D depthTexture;
     public UniformMatrix4 biasMatrix;
     public UniformMatrix4 lightViewProjectionMatrix;
+    public UniformMatrix4 inverseModelViewBaseMatrix;
     public Uniform1b depthtest;
     public Uniform1f glow;
     public Uniform1i shadowres;

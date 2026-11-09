@@ -115,6 +115,11 @@ public class ScreenOptionsSound extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
 
         layeredMusic.draw();

@@ -76,6 +76,11 @@ public class ScreenOptionsEffects extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         effectMultiplier.draw();
         effects.draw();
         back.draw();

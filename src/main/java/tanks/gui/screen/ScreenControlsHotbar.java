@@ -82,7 +82,11 @@ public class ScreenControlsHotbar extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (page == 0)
         {
             hotbar5.draw();

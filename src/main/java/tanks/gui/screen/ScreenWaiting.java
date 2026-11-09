@@ -35,7 +35,11 @@ public class ScreenWaiting extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (age > 50)
         {
             Drawing.drawing.setColor(0, 0, 0, Math.min(255, (age / 100) * 255 - 50));

@@ -99,7 +99,11 @@ public class ScreenChangelog extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(centerX, centerY, 1100, 720);
 

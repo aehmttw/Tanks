@@ -461,21 +461,18 @@ public class Hotbar
         if (Game.playerTank == null || Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
-        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);
         Game.game.window.loadPerspective();
 
         this.itemBar.drawCircle();
 
-        if (this.enabledAmmunitionBar)
-        {
-            drawBullets();
-            drawMines();
-            drawShields();
-        }
-
         double mx = Drawing.drawing.getInterfaceMouseX();
         double my = Drawing.drawing.getInterfaceMouseY();
+
+        if (this.enabledAmmunitionBar)
+            drawBullets();
+
+        Game.game.window.currentCamera = Game.game.window.mainRenderPasses.sceneCamera;
+        Game.game.window.loadPerspective();
 
         double z = Game.tile_size / 2 + Game.playerTank.posZ;
         if (!Game.enable3d)
@@ -532,6 +529,15 @@ public class Hotbar
             }
         }
 
+        if (this.enabledAmmunitionBar)
+        {
+            drawMines();
+            drawShields();
+        }
+
+        Game.game.window.currentCamera = Game.game.window.interfaceCamera;
+        Game.game.window.loadPerspective();
+
         if (Game.currentLevel instanceof Minigame)
             ((Minigame) Game.currentLevel).drawCircleHotbar();
 
@@ -554,8 +560,6 @@ public class Hotbar
             Drawing.drawing.drawInterfaceText(mx + 17, my + 17, stackCount + "", true);
         }
 
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
         Game.game.window.loadPerspective();
 
         int enemyCount = 0;

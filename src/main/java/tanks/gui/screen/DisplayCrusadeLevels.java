@@ -1,6 +1,7 @@
 package tanks.gui.screen;
 
-import basewindow.transformation.*;
+import basewindow.Camera;
+import basewindow.transformation.Matrix4;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.StaticTerrainRenderer;
@@ -29,11 +30,10 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
     }
 
     protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[]) (new ArrayList[10]);
-    protected RotationAboutPoint transform = new RotationAboutPoint(Game.game.window, 0, -Math.PI / 4, 0, 0, 0, -1);
-    protected Translation translation = new Translation(Game.game.window, 0, 0, 0);
+    protected final Matrix4 savedAdjustment = new Matrix4();
+    private final double[] modelTranslation = new double[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
     double shadowScaleNum = 0.2;
-    protected ScaleAboutPoint shadowScale = new ScaleAboutPoint(Game.game.window, shadowScaleNum, shadowScaleNum, 1.0, 0.5, 0.5, 0.5);
 
     protected ArrayList<ScreenLevel> levels = new ArrayList<>();
     protected HashMap<Integer, ScreenLevel> levelsPos = new HashMap<>();
@@ -74,8 +74,6 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
         }
 
         this.crusade = c;
-        this.selfBatch = false;
-        this.forceInBounds = true;
         this.minBgWidth = 100;
     }
 
@@ -169,12 +167,14 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
     public void draw()
     {
         TerrainRenderer r = Drawing.drawing.terrainRenderer;
-        Transformation prevShadow = Game.game.window.lightBaseTransformation[0];
-        Game.game.window.lightBaseTransformation[0] = this.shadowScale;
+        double prevShadow = Game.game.window.mainRenderPasses.shadowCoverage;
+        Game.game.window.mainRenderPasses.shadowCoverage = this.shadowScaleNum;
+        Camera camera = Game.game.window.currentCamera;
+        this.savedAdjustment.set(camera.worldAdjustment);
 
-        if (Game.enable3d)
+        if (Game.enable3d && !Game.game.window.mainRenderPasses.drawingShadow)
         {
-            Game.game.window.transformations.add(this.transform);
+            camera.worldAdjustment.setRotationAroundX(Math.PI / 4, 0, -Game.game.window.absoluteDepth);
         }
 
         Game.game.window.loadPerspective();
@@ -268,17 +268,12 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                     if (!o.batchDraw)
                         drawables[o.drawLevel].add(o);
 
-                translation.x = (Drawing.drawing.baseInterfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size) / Game.game.window.absoluteWidth * Drawing.drawing.interfaceScale;
-                translation.y = Game.tile_size * -(i - rem) / Game.game.window.absoluteHeight * Drawing.drawing.scale;
-                translation.applyAsShadow = true;
+                double translationX = Drawing.drawing.baseInterfaceSizeX / 2 - (l.width / 2.0) * Game.tile_size;
+                double translationY = Game.tile_size * -(i - rem);
                 Game.game.window.addMatrix();
-                translation.apply();
-
-                if (Game.game.window.mainRenderPasses.drawingShadow)
-                {
-                    translation.x *= this.shadowScaleNum;
-                    translation.y *= this.shadowScaleNum;
-                }
+                this.modelTranslation[12] = translationX;
+                this.modelTranslation[13] = translationY;
+                Game.game.window.transform(this.modelTranslation);
 
                 for (ArrayList<IDrawable> drawable: this.drawables)
                 {
@@ -300,9 +295,6 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                     drawable.clear();
                 }
 
-                translation.y = 0;
-                translation.z = 0;
-
                 Game.game.window.removeMatrix();
             }
         }
@@ -312,10 +304,9 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
         Game.movables = movables;
         Game.obstacles = obstacles;
 
-        Game.game.window.transformations.remove(this.transform);
-        Game.game.window.transformations.remove(this.translation);
+        camera.worldAdjustment.set(this.savedAdjustment);
         Game.game.window.loadPerspective();
-        Game.game.window.lightBaseTransformation[0] = prevShadow;
+        Game.game.window.mainRenderPasses.shadowCoverage = prevShadow;
     }
 
     @Override

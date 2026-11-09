@@ -19,6 +19,7 @@ import java.util.HashMap;
 public class Drawing
 {
     protected static boolean initialized = false;
+    private final double[] reusableGamePointer = new double[2];
 
     public double sizeX = 1400;
     public double sizeY = 900;
@@ -194,40 +195,42 @@ public class Drawing
 
     public void fillOval(double x, double y, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
     }
 
     public void fillOval(double x, double y, double z, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         this.fillOval(x, y, z, sizeX, sizeY, true, true);
     }
 
     public void fillOval(double x, double y, double z, double sizeX, double sizeY, double oZ)
     {
+        this.bindGameCamera();
+
         this.fillOval(x, y, z, sizeX, sizeY, oZ, true, true);
     }
 
     public void fillOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        double dZ = z * scale;
+        double dZ = z;
 
         if (Game.game.window.angled && facing)
             Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
@@ -237,79 +240,88 @@ public class Drawing
 
     public void fillOval(double x, double y, double z, double sizeX, double sizeY, double oZ, boolean depthTest, boolean facing)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        double dZ = z * scale;
+        double dZ = z;
 
         if (Game.game.window.angled && facing)
-            Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, oZ * scale, depthTest);
+            Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, oZ, depthTest);
         else
             Game.game.window.shapeRenderer.fillOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
     }
 
     public void fillGlow(double x, double y, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         this.fillGlow(x, y, sizeX, sizeY, false);
     }
 
     public void fillGlow(double x, double y, double sizeX, double sizeY, boolean shade)
     {
+        this.bindGameCamera();
+
         this.fillGlow(x, y, sizeX, sizeY, shade, false);
     }
 
     public void fillGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
     }
 
     public void fillGlow(double x, double y, double z, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         this.fillGlow(x, y, z, sizeX, sizeY, true, true, false);
     }
 
     public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean shade)
     {
+        this.bindGameCamera();
+
         this.fillGlow(x, y, z, sizeX, sizeY, true, true, shade);
     }
 
     public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
     {
+        this.bindGameCamera();
+
         this.fillGlow(x, y, z, sizeX, sizeY, depthTest, facing, false);
     }
 
     public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing, boolean shade)
     {
+        this.bindGameCamera();
+
         this.fillGlow(x, y, z, sizeX, sizeY, depthTest, facing, shade, false);
     }
 
     public void fillGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing, boolean shade, boolean light)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        double dZ = z * scale;
+        double dZ = z;
 
         if (Game.game.window.angled && facing)
             Game.game.window.shapeRenderer.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
@@ -319,54 +331,28 @@ public class Drawing
 
     public void fillLargeGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        boolean inBounds = false;
-        for (int i = 0; i < 2; i++)
-        {
-            for (int j = 0; j < 2; j++)
-            {
-                if (!isOutOfBounds(drawX + drawSizeX * i / 2, drawY + drawSizeY * j / 2))
-                {
-                    inBounds = true;
-                }
-            }
-        }
-
-        if (!inBounds)
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
     }
 
     public void fillLargeGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing, boolean shade, boolean light)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        boolean inBounds = false;
-        for (int i = 0; i < 2; i++)
-        {
-            for (int j = 0; j < 2; j++)
-            {
-                if (!isOutOfBounds(drawX + drawSizeX * i / 2, drawY + drawSizeY * j / 2))
-                {
-                    inBounds = true;
-                }
-            }
-        }
-
-        if (!inBounds)
-            return;
-
-        double dZ = z * scale;
+        double dZ = z;
 
         if (Game.game.window.angled && facing)
             Game.game.window.shapeRenderer.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
@@ -376,13 +362,15 @@ public class Drawing
 
     public void fillForcedOval(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double dZ = z * scale;
+        double dZ = z;
 
         if (Game.game.window.angled && facing)
             Game.game.window.shapeRenderer.fillFacingOval(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
@@ -392,37 +380,41 @@ public class Drawing
 
     public void fillForcedOval(double x, double y, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
     }
 
     public void fillPartialInterfaceOval(double x, double y, double sizeX, double sizeY, double start, double end)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-
-        if (isOutOfBounds(drawX, drawY))
+        if (!this.bindInterfaceCamera())
             return;
 
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        double drawX = x - sizeX / 2;
+        double drawY = y - sizeY / 2;
+
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
         Game.game.window.shapeRenderer.fillPartialOval(drawX, drawY, drawSizeX, drawSizeY, start, end);
     }
 
     public void fillForcedGlow(double x, double y, double z, double sizeX, double sizeY, boolean depthTest, boolean facing, boolean shade, boolean light)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double dZ = z * scale;
+        double dZ = z;
 
         if (Game.game.window.angled && facing)
             Game.game.window.shapeRenderer.fillFacingGlow(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest, shade, light);
@@ -432,20 +424,21 @@ public class Drawing
 
     public void drawOval(double x, double y, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.drawOval(drawX, drawY, drawSizeX, drawSizeY);
     }
 
     public void fillRect(double x, double y, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         fillRoundedRect(x, y, sizeX, sizeY, 0);
     }
 
@@ -456,127 +449,105 @@ public class Drawing
 
     public void fillRect(double x, double y, double z, double sizeX, double sizeY, boolean depthTest)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        double dZ = z * scale;
+        double dZ = z;
         Game.game.window.shapeRenderer.fillRect(drawX, drawY, dZ, drawSizeX, drawSizeY, depthTest);
     }
 
     public void fillRoundedRect(double x, double y, double sizeX, double sizeY, double borderRadius)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        Game.game.window.shapeRenderer.fillRoundedRect(drawX, drawY, drawSizeX, drawSizeY, borderRadius * scale);
-    }
-
-    public void fillBackgroundRect(IBatchRenderableObject o, double x, double y, double sizeX, double sizeY)
-    {
-        this.fillBackgroundRect(x, y, sizeX, sizeY);
-    }
-
-    public void fillBackgroundRect(double x, double y, double sizeX, double sizeY)
-    {
-        double drawX = gameToAbsoluteX(x, sizeX);
-        double drawY = gameToAbsoluteY(y, sizeY);
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        Game.game.window.shapeRenderer.setBatchMode(true, true, true, false, false);
-        Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
-        Game.game.window.shapeRenderer.setBatchMode(false, true, true, false, false);
+        Game.game.window.shapeRenderer.fillRoundedRect(drawX, drawY, drawSizeX, drawSizeY, borderRadius);
     }
 
     public void drawImage(String img, double x, double y, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, false);
     }
 
     public void drawImage(double rotation, String img, double x, double y, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, 0);
         double drawY = gameToAbsoluteY(y, 0);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
     }
 
     public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        double drawZ = z * scale;
+        double drawZ = z;
 
         Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, false);
     }
 
     public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY, boolean depth)
     {
+        this.bindGameCamera();
+
         drawImage(img, x, y, z, sizeX, sizeY, depth, 0, 0, 1, 1);
     }
 
     public void drawImage(String img, double x, double y, double z, double sizeX, double sizeY, boolean depth, double u1, double v1, double u2, double v2)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        double drawZ = z * scale;
+        double drawZ = z;
 
         Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, u1, v1, u2, v2, "/images/" + img, false, depth);
     }
 
     public void drawImage(double rotation, String img, double x, double y, double z, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, 0);
         double drawY = gameToAbsoluteY(y, 0);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        double drawZ = z * scale;
+        double drawZ = z;
 
         Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
     }
@@ -584,95 +555,151 @@ public class Drawing
 
     public void fillQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
     {
-        double dX1 = getPointX(x1);
-        double dX2 = getPointX(x2);
-        double dX3 = getPointX(x3);
-        double dX4 = getPointX(x4);
+        this.bindGameCamera();
 
-        double dY1 = getPointY(y1);
-        double dY2 = getPointY(y2);
-        double dY3 = getPointY(y3);
-        double dY4 = getPointY(y4);
+        double dX1 = x1;
+        double dX2 = x2;
+        double dX3 = x3;
+        double dX4 = x4;
+
+        double dY1 = y1;
+        double dY2 = y2;
+        double dY3 = y3;
+        double dY4 = y4;
 
         Game.game.window.shapeRenderer.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
     }
 
     public void fillQuadBox(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z, double sZ)
     {
+        this.bindGameCamera();
+
         fillQuadBox(x1, y1, x2, y2, x3, y3, x4, y4, z, sZ, (byte) 0);
     }
 
     public void fillQuadBox(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z, double sZ, byte options)
     {
-        double dX1 = getPointX(x1);
-        double dX2 = getPointX(x2);
-        double dX3 = getPointX(x3);
-        double dX4 = getPointX(x4);
+        this.bindGameCamera();
 
-        double dY1 = getPointY(y1);
-        double dY2 = getPointY(y2);
-        double dY3 = getPointY(y3);
-        double dY4 = getPointY(y4);
+        double dX1 = x1;
+        double dX2 = x2;
+        double dX3 = x3;
+        double dX4 = x4;
 
-        double dZ = z * scale;
-        double dsZ = sZ * scale;
+        double dY1 = y1;
+        double dY2 = y2;
+        double dY3 = y3;
+        double dY4 = y4;
+
+        double dZ = z;
+        double dsZ = sZ;
 
         Game.game.window.shapeRenderer.fillQuadBox(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4, dZ, dsZ, options);
     }
 
     public void fillInterfaceQuad(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4)
     {
-        double dX1 = getInterfacePointX(x1);
-        double dX2 = getInterfacePointX(x2);
-        double dX3 = getInterfacePointX(x3);
-        double dX4 = getInterfacePointX(x4);
+        if (!this.bindInterfaceCamera())
+            return;
 
-        double dY1 = getInterfacePointY(y1);
-        double dY2 = getInterfacePointY(y2);
-        double dY3 = getInterfacePointY(y3);
-        double dY4 = getInterfacePointY(y4);
+        double dX1 = x1;
+        double dX2 = x2;
+        double dX3 = x3;
+        double dX4 = x4;
+
+        double dY1 = y1;
+        double dY2 = y2;
+        double dY3 = y3;
+        double dY4 = y4;
 
         Game.game.window.shapeRenderer.fillQuad(dX1, dY1, dX2, dY2, dX3, dY3, dX4, dY4);
     }
 
-    public double getPointX(double x)
+    public boolean isGameRenderPath()
     {
-        if (Game.screen.enableMargins)
-            return (scale * (x + Game.screen.getOffsetX()) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
+        return Game.game.window.currentCamera == Game.game.window.mainRenderPasses.sceneCamera ||
+                Game.game.window.currentCamera == Game.game.window.mainRenderPasses.shadowCamera;
+    }
+
+    /** Selects the configured scene camera, or the light camera during shadow rendering. */
+    public void bindGameCamera()
+    {
+        BaseWindow window = Game.game.window;
+        if (window.mainRenderPasses.drawingShadow)
+        {
+            int size = window.mainRenderPasses.getShadowMapSize();
+            window.bindCamera(window.mainRenderPasses.shadowCamera, 0, 0, size, size);
+        }
         else
-            return scale * (x + Game.screen.getOffsetX());
+            this.bindViewportCamera(window.mainRenderPasses.sceneCamera);
     }
 
-    public double getPointY(double y)
+    /** Prepares logical interface coordinates before any scene or UI drawing begins. */
+    public void prepareInterfaceCamera()
     {
-        if (Game.screen.enableMargins)
-            return (scale * (y + Game.screen.getOffsetY()) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
-        else
-            return scale * (y + Game.screen.getOffsetY());
+        BaseWindow window = Game.game.window;
+        window.interfaceCameraLogicalWidth = this.baseInterfaceSizeX;
+        window.interfaceCameraLogicalHeight = this.baseInterfaceSizeY;
+        window.interfaceCameraHeightOffset = this.statsHeight;
+        window.interfaceCamera.clearAdjustments();
+        window.interfaceCamera.getOrientation().setIdentity();
+        window.interfaceCamera.resetToBounds(0, window.interfaceCameraLogicalWidth,
+                0, window.interfaceCameraLogicalHeight, window.absoluteDepth);
+        window.interfaceCamera.setAspectRatio(window.absoluteWidth / Math.max(1, window.absoluteHeight - this.statsHeight));
+        window.interfaceCamera.setViewportBottomExtension(Game.screen.drawBehindInfoBar ?
+                this.statsHeight / Math.max(1, window.absoluteHeight - this.statsHeight) : 0);
     }
 
-    public double getInterfacePointX(double x)
+    /**
+     * Selects the configured interface camera. Returns false during shadow generation,
+     * when callers must skip interface geometry rather than draw it into the shadow map.
+     */
+    public boolean bindInterfaceCamera()
     {
-        return (interfaceScale * (x) + Math.max(0, Panel.windowWidth - this.interfaceSizeX * interfaceScale) / 2);
+        if (Game.game.window.mainRenderPasses.drawingShadow)
+            return false;
+
+        this.bindViewportCamera(Game.game.window.interfaceCamera);
+        return true;
     }
 
-    public double getInterfacePointY(double y)
+    private void bindViewportCamera(Camera camera)
     {
-        return (interfaceScale * (y) + Math.max(0, Panel.windowHeight - statsHeight - this.interfaceSizeY * interfaceScale) / 2);
+        BaseWindow window = Game.game.window;
+        int viewportY = 0;
+        // The offscreen scene is composited into the stats-bar viewport afterward.
+        boolean offscreenScene = window.currentRenderPass == window.mainRenderPasses.drawPass &&
+                window.mainRenderPasses.drawToFramebuffer;
+        if (!offscreenScene && window.absoluteHeight > 0)
+        {
+            double heightOffset = camera == window.mainRenderPasses.sceneCamera ? window.sceneCameraHeightOffset : window.interfaceCameraHeightOffset;
+            if (camera == window.interfaceCamera && Game.screen.drawBehindInfoBar)
+                heightOffset = 0;
+            viewportY = (int) Math.round(heightOffset * window.frameBufferHeight / window.absoluteHeight);
+        }
+
+        window.bindCamera(camera, 0, viewportY, window.frameBufferWidth,
+                Math.max(1, window.frameBufferHeight - viewportY));
     }
 
     public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ)
     {
+        this.bindGameCamera();
+
         fillBox(x, y, z, sizeX, sizeY, sizeZ, (byte) 0, null);
     }
 
     public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, String texture)
     {
+        this.bindGameCamera();
+
         fillBox(x, y, z, sizeX, sizeY, sizeZ, (byte) 0, texture);
     }
 
     public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
     {
+        this.bindGameCamera();
+
         fillBox(x, y, z, sizeX, sizeY, sizeZ, options, null);
     }
 
@@ -692,16 +719,15 @@ public class Drawing
      */
     public void fillBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options, String texture)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
-        double drawZ = z * scale;
+        double drawZ = z;
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = sizeX * scale;
-        double drawSizeY = sizeY * scale;
-        double drawSizeZ = sizeZ * scale;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
+        double drawSizeZ = sizeZ;
 
         if (!Game.followingCam && !Game.angledView && !disableFaceRemoval)
         {
@@ -733,247 +759,330 @@ public class Drawing
 
     public void fillForcedBox(double x, double y, double z, double sizeX, double sizeY, double sizeZ, byte options)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
-        double drawZ = z * scale;
+        double drawZ = z;
 
-        double drawSizeX = sizeX * scale;
-        double drawSizeY = sizeY * scale;
-        double drawSizeZ = sizeZ * scale;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
+        double drawSizeZ = sizeZ;
 
         Game.game.window.shapeRenderer.fillBox(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, options, null);
     }
 
+    /** Draws the flat background outside the play area, rising to z=0 as the level appears. */
+    public void fillLevelBackground(double levelSizeX, double levelSizeY)
+    {
+        this.bindGameCamera();
+
+        Camera.Bounds bounds = Game.game.window.currentCamera.getBoundsAtDepth(0);
+        double padding = Game.tile_size;
+        double backgroundZ = Obstacle.draw_size - Game.tile_size;
+
+        double left = Math.min(-padding, bounds.left - padding);
+        double right = Math.max(levelSizeX + padding, bounds.right + padding);
+        double top = Math.min(-padding, bounds.top - padding);
+        double bottom = Math.max(levelSizeY + padding, bounds.bottom + padding);
+
+        byte topFaceOnly = (byte) (BaseShapeRenderer.hide_neg_z | BaseShapeRenderer.hide_pos_y |
+                BaseShapeRenderer.hide_neg_y | BaseShapeRenderer.hide_neg_x | BaseShapeRenderer.hide_pos_x);
+        this.fillForcedBox((left + right) / 2, top / 2, backgroundZ, right - left, -top, 0, topFaceOnly);
+        this.fillForcedBox((left + right) / 2, (levelSizeY + bottom) / 2, backgroundZ, right - left, bottom - levelSizeY, 0, topFaceOnly);
+        this.fillForcedBox(left / 2, levelSizeY / 2, backgroundZ, -left, levelSizeY, 0, topFaceOnly);
+        this.fillForcedBox((levelSizeX + right) / 2, levelSizeY / 2, backgroundZ, right - levelSizeX, levelSizeY, 0, topFaceOnly);
+    }
+
+    /** Draws the one-tile-wide level perimeter, from z=0 to Obstacle.draw_size. */
+    public void fillLevelBorders(double levelSizeX, double levelSizeY)
+    {
+        this.bindGameCamera();
+
+        double padding = Game.tile_size;
+        double wallHeight = Obstacle.draw_size;
+
+        this.fillForcedBox(levelSizeX / 2, -padding / 2, 0, levelSizeX + padding * 2, padding, wallHeight, (byte) 0);
+        this.fillForcedBox(levelSizeX / 2, levelSizeY + padding / 2, 0, levelSizeX + padding * 2, padding, wallHeight, (byte) 0);
+        this.fillForcedBox(-padding / 2, levelSizeY / 2, 0, padding, levelSizeY, wallHeight, (byte) 0);
+        this.fillForcedBox(levelSizeX + padding / 2, levelSizeY / 2, 0, padding, levelSizeY, wallHeight, (byte) 0);
+    }
+
     public void drawModel(IModel m, double x, double y, double width, double height, double angle)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, 0);
         double drawY = gameToAbsoluteY(y, 0);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = width * scale;
-        double drawSizeY = height * scale;
+        double drawSizeX = width;
+        double drawSizeY = height;
 
         m.draw(drawX, drawY, drawSizeX, drawSizeY, angle);
     }
 
     public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double angle)
     {
+        this.bindGameCamera();
+
         drawModel(m, x, y, z, width, height, depth, angle, true);
     }
 
     public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double angle, boolean depthTest)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, 0);
         double drawY = gameToAbsoluteY(y, 0);
-        double drawZ = z * scale;
+        double drawZ = z;
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = width * scale;
-        double drawSizeY = height * scale;
-        double drawSizeZ = depth * scale;
+        double drawSizeX = width;
+        double drawSizeY = height;
+        double drawSizeZ = depth;
 
         m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, angle, 0, 0, true);
     }
 
     public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw, double pitch, double roll)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, 0);
         double drawY = gameToAbsoluteY(y, 0);
-        double drawZ = z * scale;
+        double drawZ = z;
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = width * scale;
-        double drawSizeY = height * scale;
-        double drawSizeZ = depth * scale;
+        double drawSizeX = width;
+        double drawSizeY = height;
+        double drawSizeZ = depth;
 
         m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, yaw, pitch, roll, true);
     }
 
     public void drawModel(IModel m, double x, double y, double z, double width, double height, double depth, AxisRotation[] axisRotations)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, 0);
         double drawY = gameToAbsoluteY(y, 0);
-        double drawZ = z * scale;
+        double drawZ = z;
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
-
-        double drawSizeX = width * scale;
-        double drawSizeY = height * scale;
-        double drawSizeZ = depth * scale;
+        double drawSizeX = width;
+        double drawSizeY = height;
+        double drawSizeZ = depth;
 
         m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, axisRotations, true);
     }
 
     public void drawInterfaceModel(IModel m, double x, double y, double width, double height, double angle)
     {
-        double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (width * interfaceScale);
-        double drawSizeY = (height * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = x;
+        double drawY = y;
+        double drawSizeX = width;
+        double drawSizeY = height;
 
         m.draw(drawX, drawY, drawSizeX, drawSizeY, angle);
     }
 
     public void drawInterfaceModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         this.drawInterfaceModel(m, x, y, z, width, height, depth, yaw, 0, 0);
     }
 
     public void drawInterfaceModel(IModel m, double x, double y, double z, double width, double height, double depth, double yaw, double pitch, double roll)
     {
-        double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawZ = z * interfaceScale;
+        if (!this.bindInterfaceCamera())
+            return;
 
-        double drawSizeX = (width * interfaceScale);
-        double drawSizeY = (height * interfaceScale);
-        double drawSizeZ = depth * interfaceScale;
+        double drawX = x;
+        double drawY = y;
+        double drawZ = z;
+
+        double drawSizeX = width;
+        double drawSizeY = height;
+        double drawSizeZ = depth;
 
         m.draw(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ, yaw, pitch, roll, true);
     }
 
     public void drawInterfaceModel2D(IModel m, double x, double y, double z, double width, double height, double depth)
     {
-        double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawZ = z * interfaceScale;
+        if (!this.bindInterfaceCamera())
+            return;
 
-        double drawSizeX = (width * interfaceScale);
-        double drawSizeY = (height * interfaceScale);
-        double drawSizeZ = depth * interfaceScale;
+        double drawX = x;
+        double drawY = y;
+        double drawZ = z;
+
+        double drawSizeX = width;
+        double drawSizeY = height;
+        double drawSizeZ = depth;
 
         m.draw2D(drawX, drawY, drawZ, drawSizeX, drawSizeY, drawSizeZ);
     }
 
     public void drawRect(double x, double y, double sizeX, double sizeY)
     {
+        this.bindGameCamera();
+
         drawRect(x, y, sizeX, sizeY, 1, 0);
     }
 
     public void drawRect(double x, double y, double sizeX, double sizeY, double borderWidth)
     {
+        this.bindGameCamera();
+
         drawRect(x, y, sizeX, sizeY, borderWidth, 0);
     }
 
     public void drawRect(double x, double y, double sizeX, double sizeY, double borderWidth, double borderRadius)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
 
-        if (isOutOfBounds(drawX, drawY))
-            return;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
-        double drawSizeX = (sizeX * scale);
-        double drawSizeY = (sizeY * scale);
-
-        double drawBorderWidth = (borderWidth * scale);
-        double drawBorderRadius = (borderRadius * scale);
+        double drawBorderWidth = borderWidth;
+        double drawBorderRadius = borderRadius;
 
         Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY, drawBorderWidth, drawBorderRadius);
     }
 
     public void fillInterfaceOval(double x, double y, double sizeX, double sizeY)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawSizeX, drawSizeY);
     }
 
     public void fillInterfaceOval(double x, double y, double z, double sizeX, double sizeY)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
-        double drawZ = z * interfaceScale;
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
+        double drawZ = z;
 
         Game.game.window.shapeRenderer.fillOval(drawX, drawY, drawZ, drawSizeX, drawSizeY, false);
     }
 
     public void fillInterfacePartialRing(double x, double y, double size, double thickness, double frac)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         fillInterfacePartialRing(x, y, size, thickness, 0, frac);
     }
 
     public void fillInterfacePartialRing(double x, double y, double size, double thickness, double start, double frac)
     {
-        double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSize = (size * interfaceScale);
-        double drawThickness = (thickness * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = x;
+        double drawY = y;
+        double drawSize = size;
+        double drawThickness = thickness;
 
         Game.game.window.shapeRenderer.fillPartialRing(drawX, drawY, drawSize, drawThickness, start, start + frac);
     }
 
     public void fillPartialRing(double x, double y, double z, double size, double thickness, double start, double frac)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, 0);
         double drawY = gameToAbsoluteY(y, 0);
-        double drawZ = z * scale;
-        double drawSize = (size * scale);
-        double drawThickness = (thickness * scale);
+        double drawZ = z;
+        double drawSize = size;
+        double drawThickness = thickness;
 
         Game.game.window.shapeRenderer.fillPartialRing(drawX, drawY, drawZ, drawSize, drawThickness, start, start + frac);
     }
 
     public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY);
     }
 
     public void fillInterfaceGlow(double x, double y, double z, double sizeX, double sizeY)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
-        double drawZ = interfaceScale * z;
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
+        double drawZ = z;
 
         Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawZ, drawSizeX, drawSizeY, false);
     }
 
     public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean shade)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade);
     }
 
     public void fillInterfaceGlow(double x, double y, double sizeX, double sizeY, boolean shade, boolean light)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillGlow(drawX, drawY, drawSizeX, drawSizeY, shade, light);
     }
 
     public void addInterfaceVertexRotated(double x, double y, double z, double ox, double oy, double rot)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         Drawing.drawing.addInterfaceVertex(x + Math.cos(rot) * ox + Math.sin(rot) * oy, y - Math.sin(rot) * ox + Math.cos(rot) * oy, z);
     }
 
     public void fillInterfaceGlowSparkle(double x, double y, double z, double size, double angle)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         double size2 = size * 0.05;
         Game.game.window.shapeRenderer.setBatchMode(true, true, false, true);
 
@@ -1017,67 +1126,86 @@ public class Drawing
 
     public void drawInterfaceOval(double x, double y, double sizeX, double sizeY)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.drawOval(drawX, drawY, drawSizeX, drawSizeY);
     }
 
     public void fillInterfaceRect(double x, double y, double sizeX, double sizeY)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
     }
 
-    public void fillInterfaceRoundedRect(double x, double y, double sizeX, double sizeY, double borderRadius)
+    public void fillInterfaceViewportRect()
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
 
-        Game.game.window.shapeRenderer.fillRoundedRect(drawX, drawY, drawSizeX, drawSizeY, borderRadius * interfaceScale);
+        this.fillInterfaceRect(
+                this.interfaceSizeX / 2,
+                this.interfaceSizeY / 2,
+                Game.game.window.interfaceCamera.getCurrentSizeX() + 1,
+                Game.game.window.interfaceCamera.getCurrentSizeY() + 1
+        );
     }
 
-    public void fillShadedInterfaceRect(double x, double y, double sizeX, double sizeY)
+    public void fillInterfaceRoundedRect(double x, double y, double sizeX, double sizeY, double borderRadius)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
 
-        Game.game.window.shapeRenderer.setBatchMode(true, true, true, false, false);
-        Game.game.window.shapeRenderer.fillBox(drawX, drawY, 0, drawSizeX, drawSizeY, 0, (byte) 61, null);
-        Game.game.window.shapeRenderer.setBatchMode(false, true, true, false, false);
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
+
+        Game.game.window.shapeRenderer.fillRoundedRect(drawX, drawY, drawSizeX, drawSizeY, borderRadius);
     }
 
     public void fillInterfaceProgressRect(double x, double y, double sizeX, double sizeY, double progress)
     {
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale * progress);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
+        double drawSizeX = (sizeX * progress);
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.fillRect(drawX, drawY, drawSizeX, drawSizeY);
     }
 
     public void drawInterfaceImage(ItemIcon img, double x, double y, double sizeX, double sizeY)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         img.drawInterfaceImage(x, y, sizeX, sizeY);
     }
 
     public void drawInterfaceImage(String img, double x, double y, double sizeX, double sizeY)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         boolean text = img.startsWith("text:");
 
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         if (text)
         {
@@ -1086,8 +1214,8 @@ public class Drawing
             sizeY = Game.game.window.fontRenderer.getStringSizeY(drawSizeY / 36, img);
         }
 
-        double drawX = (interfaceScale * (x - sizeX / 2) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+        double drawX = (x - sizeX / 2);
+        double drawY = (y - sizeY / 2);
 
         if (!text)
         {
@@ -1102,59 +1230,80 @@ public class Drawing
 
     public void drawInterfaceImage(double rotation, String img, double x, double y, double sizeX, double sizeY)
     {
-        double drawX = (interfaceScale * (x) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = x;
+        double drawY = y;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
     }
 
     public void drawInterfaceImage(double rotation, String img, double x, double y, double z, double sizeX, double sizeY)
     {
-        double drawX = (interfaceScale * (x) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * (y) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawZ = z * interfaceScale;
-        double drawSizeX = (sizeX * interfaceScale);
-        double drawSizeY = (sizeY * interfaceScale);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = x;
+        double drawY = y;
+        double drawZ = z;
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
 
         Game.game.window.shapeRenderer.drawImage(drawX, drawY, drawZ, drawSizeX, drawSizeY, "/images/" + img, rotation, false);
     }
 
     public void drawInterfaceRect(double x, double y, double sizeX, double sizeY)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         drawInterfaceRect(x, y, sizeX, sizeY, 0, 0);
     }
 
     public void drawInterfaceRect(double x, double y, double sizeX, double sizeY, double lineWidth)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         drawInterfaceRect(x, y, sizeX, sizeY, lineWidth, 0);
     }
 
     public void drawInterfaceRect(double x, double y, double sizeX, double sizeY, double lineWidth, double borderRadius)
     {
-        double drawX = interfaceScale * (x - sizeX / 2 - lineWidth) + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2;
-        double drawY = interfaceScale * (y - sizeY / 2 - lineWidth) + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2;
-        double drawSizeX = sizeX * interfaceScale;
-        double drawSizeY = sizeY * interfaceScale;
+        if (!this.bindInterfaceCamera())
+            return;
 
-        Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY, lineWidth * interfaceScale, borderRadius * interfaceScale);
+        double drawX = (x - sizeX / 2 - lineWidth);
+        double drawY = (y - sizeY / 2 - lineWidth);
+        double drawSizeX = sizeX;
+        double drawSizeY = sizeY;
+
+        Game.game.window.shapeRenderer.drawRect(drawX, drawY, drawSizeX, drawSizeY, lineWidth, borderRadius);
     }
 
     public double getInterfaceTextWidth(String s)
     {
-        return Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        double width = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s);
+
+        return width;
     }
 
     public double getInterfaceTextHeight(String s)
     {
-        return Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        double height = Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, s);
+
+        return height;
     }
 
     public void drawText(double x, double y, String text)
     {
-        double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
-        double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
+        this.bindGameCamera();
+
+        double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
+        double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
 
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
@@ -1164,25 +1313,31 @@ public class Drawing
 
     public void drawText(double x, double y, double z, String text)
     {
+        this.bindGameCamera();
+
         drawText(x, y, z, text, true);
     }
 
     public void drawText(double x, double y, double z, String text, boolean depth)
     {
-        double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
-        double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
+        this.bindGameCamera();
+
+        double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
+        double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
 
         double drawX = gameToAbsoluteX(x, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
-        double drawZ = z * scale;
+        double drawZ = z;
 
         Game.game.window.fontRenderer.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text, depth);
     }
 
     public void drawText(double x, double y, double z, String text, boolean rightAligned, boolean depth)
     {
-        double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / scale;
-        double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text) / scale;
+        this.bindGameCamera();
+
+        double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
+        double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
 
         double offX = sizeX;
 
@@ -1191,18 +1346,21 @@ public class Drawing
 
         double drawX = gameToAbsoluteX(x - offX, sizeX);
         double drawY = gameToAbsoluteY(y, sizeY);
-        double drawZ = z * scale;
+        double drawZ = z;
 
         Game.game.window.fontRenderer.drawString(drawX, drawY, drawZ, this.fontSize, this.fontSize, text, depth);
     }
 
     public void drawInterfaceText(double x, double y, String text)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
         double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
 
-        double drawX = (interfaceScale * x - sizeX / 2 + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+        double drawX = x - sizeX / 2;
+        double drawY = y - sizeY / 2;
 
         Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
 
@@ -1215,6 +1373,9 @@ public class Drawing
 
     public void drawInterfaceText(double x, double y, String text, boolean rightAligned)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         double sizeX = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
         double sizeY = Game.game.window.fontRenderer.getStringSizeY(this.fontSize, text);
 
@@ -1223,51 +1384,65 @@ public class Drawing
         if (!rightAligned)
             offX = 0;
 
-        double drawX = (interfaceScale * x - offX + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * y - sizeY / 2 + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+        double drawX = x - offX;
+        double drawY = y - sizeY / 2;
         Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
     }
 
     public void drawUncenteredInterfaceText(double x, double y, String text)
     {
-        double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        Game.game.window.fontRenderer.drawString(drawX, drawY, this.fontSize, this.fontSize, text);
+        if (!this.bindInterfaceCamera())
+            return;
+
+        Game.game.window.fontRenderer.drawString(x, y, this.fontSize, this.fontSize, text);
     }
 
     public void displayInterfaceText(double x, double y, String text, Object... objects)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         drawInterfaceText(x, y, Translation.translate(text, objects));
     }
 
     public void displayInterfaceText(double x, double y, boolean rightAligned, String text, Object... objects)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         drawInterfaceText(x, y, Translation.translate(text, objects), rightAligned);
     }
 
     public void displayUncenteredInterfaceText(double x, double y, String text, Object... objects)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         drawUncenteredInterfaceText(x, y, Translation.translate(text, objects));
     }
 
     public double getStringWidth(String s)
     {
-        return Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        double width = Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s);
+
+        return width;
     }
 
     public double getStringHeight(String s)
     {
-        return Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale;
+        double height = Game.game.window.fontRenderer.getStringSizeY(Drawing.drawing.fontSize, s);
+
+        return height;
     }
 
     public void setFontSize(double size)
     {
-        this.fontSize = size / 36.0 * scale;
+        this.fontSize = size / 36.0;
     }
 
     public void setInterfaceFontSize(double size)
     {
-        this.fontSize = size / 36.0 * interfaceScale;
+        this.fontSize = size / 36.0;
     }
 
     public void setBoundedInterfaceFontSize(double maxFontSize, double width, String text)
@@ -1276,16 +1451,19 @@ public class Drawing
 
         if (width > 0)
         {
-            double sizeRaw = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text) / Drawing.drawing.interfaceScale;
-            this.setInterfaceFontSize(maxFontSize * Math.min(1, width / sizeRaw));
+            double sizeRaw = Game.game.window.fontRenderer.getStringSizeX(this.fontSize, text);
+            if (sizeRaw > 0)
+                this.setInterfaceFontSize(maxFontSize * Math.min(1, width / sizeRaw));
         }
     }
 
     public void addVertex(double x, double y, double z)
     {
+        this.bindGameCamera();
+
         double drawX = gameToAbsoluteX(x, 0);
         double drawY = gameToAbsoluteY(y, 0);
-        double drawZ = z * scale;
+        double drawZ = z;
 
         if (Game.enable3d)
             Game.game.window.addVertex(drawX, drawY, drawZ);
@@ -1295,9 +1473,12 @@ public class Drawing
 
     public void addInterfaceVertex(double x, double y, double z)
     {
-        double drawX = (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
-        double drawY = (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
-        double drawZ = z * interfaceScale;
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double drawX = x;
+        double drawY = y;
+        double drawZ = z;
 
         if (Game.enable3d)
             Game.game.window.addVertex(drawX, drawY, drawZ);
@@ -1307,19 +1488,14 @@ public class Drawing
 
     public void addFacingVertex(double x, double y, double z, double sX, double sY, double sZ)
     {
-        if (Game.enable3d && Game.screen instanceof ScreenGame && ((ScreenGame) Game.screen).slant != 0)
+        this.bindGameCamera();
+
+        if (Game.enable3d)
         {
-            double angle = ((ScreenGame) Game.screen).slantRotation.pitch;
-
-            double drawX = gameToAbsoluteX(x, 0);
-            double drawY = gameToAbsoluteY(y, 0);
-            double drawZ = z * scale;
-
-            double drawSX = sX * scale;
-            double drawSY = sY * scale * Math.cos(angle) - sZ * scale * Math.sin(angle);
-            double drawSZ = sZ * scale * Math.cos(angle) + sY * scale * Math.sin(angle);
-
-            Game.game.window.addVertex(drawX + drawSX, drawY + drawSY, drawZ + drawSZ);
+            double[][] inverse = Game.game.window.mainRenderPasses.sceneCamera.inverseView.values;
+            addVertex(x + inverse[0][0] * sX + inverse[0][1] * sY + inverse[0][2] * sZ,
+                    y + inverse[1][0] * sX + inverse[1][1] * sY + inverse[1][2] * sZ,
+                    z + inverse[2][0] * sX + inverse[2][1] * sY + inverse[2][2] * sZ);
         }
         else
             addVertex(x + sX, y + sY, z + sZ);
@@ -1347,37 +1523,54 @@ public class Drawing
 
     public void drawTooltip(String[] text)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         this.tooltip = text;
     }
 
     public void drawTooltip(String[] text, double x, double y)
     {
-        int xPadding = 16;
-        int yPadding = 8;
+        if (!this.bindInterfaceCamera())
+            return;
+
+        double xPadding = 16;
+        double yPadding = 8;
 
         setInterfaceFontSize(14);
 
-        int sizeX = 0;
+        double sizeX = 0;
+        double sizeY = 0;
         for (String s: text)
         {
-            sizeX = Math.max(sizeX, (int) Math.round(Game.game.window.fontRenderer.getStringSizeX(fontSize, s) / this.interfaceScale) + xPadding);
+            sizeX = Math.max(sizeX, this.getInterfaceTextWidth(s));
+            sizeY = Math.max(sizeY, this.getInterfaceTextHeight(s));
         }
 
-        double sizeY = 14;
+        double popupWidth = sizeX + xPadding * 2;
+        double popupHeight = sizeY + yPadding * 2 * text.length;
+        double minX = this.getInterfaceEdgeX(false);
+        double maxX = this.getInterfaceEdgeX(true);
+        double minY = this.getInterfaceEdgeY(false);
+        double maxY = this.getInterfaceEdgeY(true);
 
-        double endX = (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
-            Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
-        if (x + sizeX + xPadding * 2 - 14 > endX)
-            x -= x + sizeX + xPadding * 2 - 14 - endX;
+        if (x + popupWidth > maxX)
+            x -= x + popupWidth - maxX;
 
-        if (y + sizeY + yPadding * 2 * text.length > Drawing.drawing.interfaceSizeY)
-            y -= y + sizeY + yPadding * 2 * text.length - Drawing.drawing.interfaceSizeY;
+        if (x < minX)
+            x = minX;
 
-        double drawX = x + sizeX / 2.0 + xPadding;
-        double drawY = y + sizeY / 2.0 + yPadding * text.length;
+        if (y + popupHeight > maxY)
+            y -= y + popupHeight - maxY;
+
+        if (y < minY)
+            y = minY;
+
+        double drawX = x + popupWidth / 2.0;
+        double drawY = y + popupHeight / 2.0;
 
         setColor(0, 0, 0, 127);
-        drawPopup(drawX - 7, drawY, sizeX + xPadding * 2 - 14, sizeY + yPadding * 2 * text.length, 5, 4);
+        drawPopup(drawX, drawY, popupWidth, popupHeight, 5, 4);
 
         setColor(255, 255, 255);
         for (int i = 0; i < text.length; i++)
@@ -1385,25 +1578,31 @@ public class Drawing
             drawUncenteredInterfaceText(x + xPadding, y + yPadding * (2 * i + 1), text[i]);
         }
 
-        //return (y - (drawY / Window.scale + sizeY + yPadding / Window.scale * 2));
     }
 
     public void drawPopup(double x, double y, double sX, double sY)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         this.drawPopup(x, y, sX, sY, 10, 5);
     }
 
     public void drawPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         fillInterfaceRoundedRect(x, y, sX - borderWidth * 2, sY - borderWidth * 2, borderRadius);
         fillInterfaceRoundedRect(x, y, sX, sY, borderRadius);
-//      fillInterfaceRect(x, y, sX, sY, borderRadius);
-//      drawInterfaceRect(x + borderWidth, y + borderWidth, sX, sY, borderWidth, borderRadius);
         Drawing.drawing.setColor(255, 255, 255);
     }
 
     public void drawConcentricPopup(double x, double y, double sX, double sY, double borderWidth, double borderRadius)
     {
+        if (!this.bindInterfaceCamera())
+            return;
+
         fillInterfaceRoundedRect(x, y, sX - borderWidth * 2, sY - borderWidth * 2, borderRadius * (1.0 - (borderWidth / borderRadius)));
         fillInterfaceRoundedRect(x, y, sX, sY, borderRadius);
     }
@@ -1523,38 +1722,60 @@ public class Drawing
     {
         return absoluteToInterfaceX(gameToAbsoluteX(x, 0));
 
-        /*double rawX = (x + getPlayerMouseOffsetX()) * scale;
-        rawX += (Drawing.drawing.interfaceSizeX - sizeX * scale / interfaceScale) / 2 * interfaceScale;
-        double x1 = rawX / interfaceScale;
-
-        if (enableMovingCamera && movingCamera && enableMovingCameraX)
-            x1 -= (Game.game.window.absoluteWidth - interfaceScale * interfaceSizeX) / 2 / interfaceScale;
-
-        return x1;*/
     }
 
     public double gameToInterfaceCoordsY(double y)
     {
         return absoluteToInterfaceY(gameToAbsoluteY(y, 0));
 
-        /*double rawY = (y + getPlayerMouseOffsetY()) * scale;
-        rawY += (Drawing.drawing.interfaceSizeY - sizeY * scale / interfaceScale) / 2 * interfaceScale;
-        double y1 = rawY / interfaceScale;
-
-        if (enableMovingCamera && movingCamera && enableMovingCameraY)
-            y1 -= (Game.game.window.absoluteHeight - interfaceScale * interfaceSizeY - statsHeight) / 2 / interfaceScale;
-
-        return y1;*/
     }
 
     public double getMouseX()
     {
+        if (Game.angledView)
+            return getGameMouseX();
+
         return toGameCoordsX(getInterfaceMouseX());
     }
 
     public double getMouseY()
     {
+        if (Game.angledView)
+            return getGameMouseY();
+
         return toGameCoordsY(getInterfaceMouseY());
+    }
+
+    /** Returns game X at z=0 using window X and the current mouse Y. */
+    public double getGamePointerX(double x)
+    {
+        getGamePointer(x, Game.game.window.absoluteMouseY, this.reusableGamePointer);
+        return this.reusableGamePointer[0];
+    }
+
+    /** Returns game Y at z=0 using window Y and the current mouse X. */
+    public double getGamePointerY(double y)
+    {
+        getGamePointer(Game.game.window.absoluteMouseX, y, this.reusableGamePointer);
+        return this.reusableGamePointer[1];
+    }
+
+    /** Converts both window-pixel pointer coordinates to game coordinates on z=0. */
+    public void getGamePointer(double x, double y, double[] result)
+    {
+        double width = Math.max(1, Game.game.window.absoluteWidth);
+        double height = Math.max(1, Game.game.window.absoluteHeight - statsHeight);
+        Game.game.window.mainRenderPasses.sceneCamera.getWorldPointAtDepth(x / width, y / height, 0, result);
+    }
+
+    public double getGameMouseX()
+    {
+        return getGamePointerX(Game.game.window.absoluteMouseX);
+    }
+
+    public double getGameMouseY()
+    {
+        return getGamePointerY(Game.game.window.absoluteMouseY);
     }
 
     public double getInterfaceMouseX()
@@ -1577,13 +1798,6 @@ public class Drawing
         return (y - Math.max(0, Panel.windowHeight - this.statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale;
     }
 
-    /*public void setScreenSize(int x, int y)
-    {
-        sizeX = x;
-        sizeY = y;
-        this.setSize((int) (x * scale), (int) ((y) * scale));
-    }*/
-
     public void setScreenBounds(double x, double y)
     {
         sizeX = x;
@@ -1597,19 +1811,7 @@ public class Drawing
         if (!enableMovingCameraX && !Game.followingCam)
             return 0;
 
-        double x = playerX;
-
-
-        if (Panel.panel.pastPlayerTime.size() == 1)
-            x = Panel.panel.pastPlayerX.get(0);
-        else if (Panel.panel.pastPlayerTime.size() > 1)
-        {
-            double frac = Math.min(1, (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) /
-                (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
-            x = Panel.panel.pastPlayerX.get(0) * (1 - frac) + Panel.panel.pastPlayerX.get(1) * frac;
-        }
-
-        lastPlayerX = x;
+        double x = this.getTrackedPlayerX();
 
         double result = (x - (Panel.windowWidth) / scale / 2);
 
@@ -1650,18 +1852,7 @@ public class Drawing
         if (!enableMovingCameraY && !Game.followingCam)
             return 0;
 
-        double y = playerY;
-
-        if (Panel.panel.pastPlayerTime.size() == 1)
-            y = Panel.panel.pastPlayerY.get(0);
-        else if (Panel.panel.pastPlayerTime.size() > 1)
-        {
-            double frac = Math.min(1, (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) /
-                (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
-            y = Panel.panel.pastPlayerY.get(0) * (1 - frac) + Panel.panel.pastPlayerY.get(1) * frac;
-        }
-
-        lastPlayerY = y;
+        double y = this.getTrackedPlayerY();
 
         double result = (y - (Panel.windowHeight - statsHeight) / scale / 2);
 
@@ -1697,56 +1888,101 @@ public class Drawing
         //return 0 - result;
     }
 
-    public double getPlayerMouseOffsetX()
+    public double getTrackedPlayerX()
     {
-        if (!enableMovingCamera || !enableMovingCameraX)
-            return 0;
+        double x = playerX;
 
-        return Game.screen.getOffsetX() + (Game.currentSizeX * Drawing.drawing.interfaceScaleZoom / 28.0 - 1) * interfaceSizeX / 2 * scale;
+        if (Panel.panel.pastPlayerTime.size() == 1)
+            x = Panel.panel.pastPlayerX.get(0);
+        else if (Panel.panel.pastPlayerTime.size() > 1)
+        {
+            double frac = Math.min(1, (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) /
+                    (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
+            x = Panel.panel.pastPlayerX.get(0) * (1 - frac) + Panel.panel.pastPlayerX.get(1) * frac;
+        }
+
+        lastPlayerX = x;
+        return x;
     }
 
-    public double getPlayerMouseOffsetY()
+    public double getTrackedPlayerY()
     {
-        if (!enableMovingCamera || !enableMovingCameraY)
-            return 0;
+        double y = playerY;
 
-        return Game.screen.getOffsetY() + (Game.currentSizeY * Drawing.drawing.interfaceScaleZoom / 18.0 - 1) * interfaceSizeY / 2 * scale;
+        if (Panel.panel.pastPlayerTime.size() == 1)
+            y = Panel.panel.pastPlayerY.get(0);
+        else if (Panel.panel.pastPlayerTime.size() > 1)
+        {
+            double frac = Math.min(1, (Panel.panel.age - getTrackOffset() - Panel.panel.pastPlayerTime.get(0)) /
+                    (Panel.panel.pastPlayerTime.get(1) - Panel.panel.pastPlayerTime.get(0)));
+            y = Panel.panel.pastPlayerY.get(0) * (1 - frac) + Panel.panel.pastPlayerY.get(1) * frac;
+        }
+
+        lastPlayerY = y;
+        return y;
     }
 
     public double getHorizontalInterfaceMargin()
     {
-        return (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2;
+        double usableHeight = Math.max(1, Game.game.window.absoluteHeight - statsHeight);
+        double aspect = Game.game.window.absoluteWidth / usableHeight;
+        double baseAspect = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceSizeY;
+
+        if (aspect > baseAspect)
+            return (Drawing.drawing.interfaceSizeY * aspect - Drawing.drawing.interfaceSizeX) / 2;
+
+        return 0;
     }
 
     public double getVerticalInterfaceMargin()
     {
-        return ((Game.game.window.absoluteHeight - statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
+        double usableHeight = Math.max(1, Game.game.window.absoluteHeight - statsHeight);
+        double aspect = Game.game.window.absoluteWidth / usableHeight;
+        double baseAspect = Drawing.drawing.interfaceSizeX / Drawing.drawing.interfaceSizeY;
+
+        if (aspect < baseAspect)
+            return (Drawing.drawing.interfaceSizeX / aspect - Drawing.drawing.interfaceSizeY) / 2;
+
+        return 0;
+    }
+
+    public double getInterfaceScaleFactor()
+    {
+        return Math.min(
+                Game.game.window.absoluteWidth / Drawing.drawing.interfaceSizeX,
+                Math.max(1, Game.game.window.absoluteHeight - statsHeight) / Drawing.drawing.interfaceSizeY
+        );
     }
 
     /** Gets interface coordinate position of left/right edge of screen */
     public double getInterfaceEdgeX(boolean right)
     {
+        double margin = this.getHorizontalInterfaceMargin();
+        double edgeBounds = Game.game.window.getEdgeBounds() / this.getInterfaceScaleFactor();
+
         if (right)
-            return (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
-                Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+            return margin + Drawing.drawing.interfaceSizeX - edgeBounds;
         else
-            return (Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeX) / 2 +
-                Drawing.drawing.interfaceSizeX - Game.game.window.getEdgeBounds() / Drawing.drawing.interfaceScale;
+            return -margin + edgeBounds;
     }
 
     /** Gets interface coordinate position of top/bottom edge of screen */
     public double getInterfaceEdgeY(boolean bottom)
     {
+        double margin = this.getVerticalInterfaceMargin();
+
         if (bottom)
-            return ((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2 +
-                Drawing.drawing.interfaceSizeY;
+            return margin + Drawing.drawing.interfaceSizeY;
         else
-            return -((Game.game.window.absoluteHeight - Drawing.drawing.statsHeight) / Drawing.drawing.interfaceScale - Drawing.drawing.interfaceSizeY) / 2;
+            return -margin;
     }
 
 
     public double gameToAbsoluteX(double x, double sizeX)
     {
+        if (this.isGameRenderPath())
+            return x - sizeX / 2;
+
         if (Game.screen.enableMargins)
             return (scale * (x + Game.screen.getOffsetX() - sizeX / 2) + Math.max(0, Panel.windowWidth - this.sizeX * scale) / 2);
         else
@@ -1755,6 +1991,9 @@ public class Drawing
 
     public double gameToAbsoluteY(double y, double sizeY)
     {
+        if (this.isGameRenderPath())
+            return y - sizeY / 2;
+
         if (Game.screen.enableMargins)
             return (scale * (y + Game.screen.getOffsetY() - sizeY / 2) + Math.max(0, Panel.windowHeight - statsHeight - this.sizeY * scale) / 2);
         else
@@ -1779,63 +2018,22 @@ public class Drawing
 
     public double interfaceToAbsoluteX(double x)
     {
-        return (interfaceScale * x + Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2);
+        return (x + this.getHorizontalInterfaceMargin()) * this.getInterfaceScaleFactor();
     }
 
     public double interfaceToAbsoluteY(double y)
     {
-        return (interfaceScale * y + Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2);
+        return (y + this.getVerticalInterfaceMargin()) * this.getInterfaceScaleFactor();
     }
 
     public double absoluteToInterfaceX(double x)
     {
-        return (x - Math.max(0, Panel.windowWidth - interfaceSizeX * interfaceScale) / 2) / interfaceScale;
+        return x / this.getInterfaceScaleFactor() - this.getHorizontalInterfaceMargin();
     }
 
     public double absoluteToInterfaceY(double y)
     {
-        return (y - Math.max(0, Panel.windowHeight - statsHeight - interfaceSizeY * interfaceScale) / 2) / interfaceScale;
-    }
-
-    public boolean isOutOfBounds(double drawX, double drawY)
-    {
-        if (Game.screen.forceInBounds)
-            return false;
-
-        int dist = 200;
-
-        if (Game.angledView)
-            dist = 300;
-
-        if (!Game.followingCam || !(Game.screen instanceof ScreenGame))
-            return drawX - dist * scale > Panel.windowWidth || drawX + dist * scale < 0 || drawY - dist * scale > Panel.windowHeight || drawY + dist * scale < 0;
-        else
-        {
-//          return (drawX - gameToAbsoluteX(Game.playerTank.posX, 0)) * Math.cos(Game.playerTank.angle)
-//                  + (drawY - gameToAbsoluteY(Game.playerTank.posY, 0)) * Math.sin(Game.playerTank.angle) < -dist;
-            return false;
-        }
-    }
-
-    public boolean isIncluded(double x1, double y1, double x2, double y2)
-    {
-        x1 = gameToAbsoluteX(x1, 0);
-        y1 = gameToAbsoluteY(y1, 0);
-        x2 = gameToAbsoluteX(x2, 0);
-        y2 = gameToAbsoluteY(y2, 0);
-
-        int dist = 200;
-
-        if (Game.angledView)
-            dist = 300;
-
-        int xp1 = (x1 - dist * scale > Panel.windowWidth ? 1 : 0) + (x1 + dist * scale < 0 ? -1 : 0);
-        int yp1 = (y1 - dist * scale > Panel.windowHeight ? 1 : 0) + (y1 + dist * scale < 0 ? -1 : 0);
-        int xp2 = (x2 - dist * scale > Panel.windowWidth ? 1 : 0) + (x2 + dist * scale < 0 ? -1 : 0);
-        int yp2 = (y2 - dist * scale > Panel.windowHeight ? 1 : 0) + (y2 + dist * scale < 0 ? -1 : 0);
-        int xp = xp1 + xp2;
-        int yp = yp1 + yp2;
-        return xp >= -1 && xp <= 1 && yp >= -1 && yp <= 1;
+        return y / this.getInterfaceScaleFactor() - this.getVerticalInterfaceMargin();
     }
 
     public double getTrackOffset()
@@ -1864,21 +2062,21 @@ public class Drawing
                 continue;
             }
 
-            if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, l + " " + s) / Drawing.drawing.interfaceScale <= max)
+            if (Drawing.drawing.getInterfaceTextWidth(l + " " + s) <= max)
             {
                 if (!first)
                     l.append(" ");
 
                 l.append(s);
             }
-            else if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, s) / Drawing.drawing.interfaceScale > max)
+            else if (Drawing.drawing.getInterfaceTextWidth(s) > max)
             {
                 if (!first)
                     l.append(" ");
 
                 for (char c: s.toCharArray())
                 {
-                    if (Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, l.toString() + c) / Drawing.drawing.interfaceScale > max)
+                    if (Drawing.drawing.getInterfaceTextWidth(l.toString() + c) > max)
                     {
                         lines.add(l.toString());
                         l = new StringBuilder();

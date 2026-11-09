@@ -1,11 +1,13 @@
 package basewindow;
 
+import basewindow.transformation.Matrix4;
+
 public class RenderPassDraw extends RenderPass
 {
     public RenderPassGroupShadowDraw passGroup;
 
     public boolean initialized = false;
-    protected float[] projMatrixShadow = new float[16];
+    protected Matrix4 lightViewProjectionMatrix;
 
     public BaseFrameBuffer drawFrameBuffer;
 
@@ -42,17 +44,18 @@ public class RenderPassDraw extends RenderPass
 
         int viewportY = 0;
         if (this.window.absoluteHeight > 0)
-            viewportY = (int) Math.round(this.window.interfaceCameraHeightOffset * this.window.frameBufferHeight / this.window.absoluteHeight);
+            viewportY = (int) Math.round(this.window.sceneCameraHeightOffset * this.window.frameBufferHeight / this.window.absoluteHeight);
 
         int viewportHeight = Math.max(1, this.window.frameBufferHeight - viewportY);
 
         if (this.passGroup.drawToFramebuffer)
         {
             this.drawFrameBuffer.resizeToWindow(this.window);
+            this.drawFrameBuffer.setMultisampling(this.window.antialiasingEnabled ? 4 : 0);
             this.drawFrameBuffer.bind();
         }
 
-        this.window.getProjectionMatrix(projMatrixShadow);
+        this.lightViewProjectionMatrix = this.window.getProjectionMatrix().multiply(this.window.getModelViewMatrix());
 
         this.window.setShader(this.window.shaderDefault);
         this.window.shaderDefault.shaderBase.drawToFramebuffer.set(this.passGroup.drawToFramebuffer);
@@ -62,10 +65,10 @@ public class RenderPassDraw extends RenderPass
         if (!this.initialized)
             this.initialized = true;
 
-        this.window.currentCamera = this.window.baseCamera;
+        this.window.currentCamera = this.passGroup.sceneCamera;
         this.window.loadPerspective();
 
-        this.window.shaderDefault.shaderBase.lightViewProjectionMatrix.set(projMatrixShadow, false);
+        this.window.shaderDefault.shaderBase.lightViewProjectionMatrix.set(this.lightViewProjectionMatrix.toOpenGL(), false);
         this.window.shaderDefault.shaderBase.biasMatrix.set(biasMatrix, false);
 
         this.window.shaderDefault.shaderBase.shadowLight.set((float) this.passGroup.shadow);
@@ -84,6 +87,9 @@ public class RenderPassDraw extends RenderPass
         this.passGroup.depthFrameBuffer.bindDepthTexture(this.window, "shadow_depth");
         this.window.drawer.drawSinglePass(this);
 
+        if (this.passGroup.drawToFramebuffer)
+            this.drawFrameBuffer.resolveMultisampling();
+
         this.window.stopFrameBuffer();
 
         this.window.setShader(this.passGroup.shaderGroup);
@@ -94,7 +100,6 @@ public class RenderPassDraw extends RenderPass
             this.drawFrameBuffer.bindDepthTexture(this.window, "depth");
 
             this.window.currentCamera = this.window.screenCamera;
-            this.window.transformations.clear();
             this.window.loadPerspective();
 
             this.window.setViewport(0, viewportY, this.window.frameBufferWidth, viewportHeight);

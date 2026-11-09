@@ -1,7 +1,6 @@
 package tanks.gui.screen;
 
-import basewindow.transformation.RotationAboutPoint;
-import basewindow.transformation.Translation;
+import basewindow.Camera;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.ButtonList;
@@ -15,9 +14,6 @@ public class ScreenSelectPerspective extends Screen implements ILevelPreviewScre
     ArrayList<TankSpawnMarker> spawns = new ArrayList<>();
 
     public ButtonList viewOptions;
-
-    public RotationAboutPoint slantRotation = new RotationAboutPoint(Game.game.window, 0, -Math.PI / 16, 0, 0, 0.5, -1);
-    public Translation slantTranslation = new Translation(Game.game.window, 0, -0.05, 0);
 
     Button back = new Button(this.centerX, this.centerY + this.objYSpace * 3.5, this.objWidth, this.objHeight, "Back", () ->
     {
@@ -108,18 +104,30 @@ public class ScreenSelectPerspective extends Screen implements ILevelPreviewScre
     }
 
     @Override
+    public void setBasePerspective()
+    {
+        super.setBasePerspective();
+        if (ScreenOptionsGraphics.viewNo == 1 && !Game.game.window.mainRenderPasses.drawingShadow)
+        {
+            Camera camera = Game.game.window.mainRenderPasses.sceneCamera;
+            camera.setZoom(camera.getZoom() * 0.85);
+            double pitch = -Math.PI / 16;
+            double pivotY = Game.game.window.absoluteHeight / 2.0;
+            double pivotZ = -Game.game.window.absoluteDepth;
+            double y = camera.posY - pivotY;
+            double z = camera.posZ - pivotZ;
+            camera.posY = pivotY + Math.cos(pitch) * y - Math.sin(pitch) * z - 175;
+            camera.posZ = pivotZ + Math.sin(pitch) * y + Math.cos(pitch) * z - 60;
+            camera.setRotationAxisAngle(1, 0, 0, pitch);
+        }
+    }
+
+    @Override
     public void draw()
     {
-        if (ScreenOptionsGraphics.viewNo == 1)
-        {
-            Game.game.window.transformations.add(this.slantTranslation);
-            Game.game.window.transformations.add(this.slantRotation);
-        }
+        this.setBasePerspective();
         Game.game.window.loadPerspective();
         level.draw();
-
-        Game.game.window.transformations.clear();
-        Game.game.window.loadPerspective();
     }
 
     @Override

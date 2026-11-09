@@ -57,7 +57,8 @@ public class GameDrawer implements IDrawer
                 this.initialize();
 
             Game.game.window.interfaceCameraHeightOffset = Drawing.drawing.statsHeight;
-            // The shadow pass derives its orthographic bounds from baseCamera, so
+            Drawing.drawing.prepareInterfaceCamera();
+            // The shadow pass derives its orthographic bounds from the scene camera, so
             // refresh it before the shadow map is generated rather than afterward.
             Game.screen.setBasePerspective();
             Game.game.window.mainRenderPasses.drawToFramebuffer = Game.fancyLights;

@@ -1,14 +1,16 @@
 package tanks.rendering;
 
 import basewindow.*;
+import basewindow.transformation.Matrix4;
 import tanks.*;
-import tanks.gui.screen.ScreenGame;
+import tanks.gui.screen.Screen;
 
 public class RenderPassPostLights extends RenderPass
 {
     protected float[] tempLightPos = new float[4];
     protected float[] tempLightColor = new float[3];
     protected float[] lightColor = new float[]{1f, 1f, 1f};
+    protected Matrix4 inverseViewProjection = new Matrix4();
 
     public ShaderPostLights lightsShader;
     public ShaderPostLightingMix mixShader;
@@ -34,11 +36,10 @@ public class RenderPassPostLights extends RenderPass
 
         int viewportY = 0;
         if (this.window.absoluteHeight > 0)
-            viewportY = (int) Math.round(this.window.interfaceCameraHeightOffset * this.window.frameBufferHeight / this.window.absoluteHeight);
+            viewportY = (int) Math.round(this.window.sceneCameraHeightOffset * this.window.frameBufferHeight / this.window.absoluteHeight);
 
         int viewportHeight = Math.max(1, this.window.frameBufferHeight - viewportY);
 
-        Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
 
         this.lightsFrameBuffer.resizeToWindow(this.window);
@@ -52,10 +53,7 @@ public class RenderPassPostLights extends RenderPass
         this.lightsShader.width.set((float) Game.game.window.frameBufferWidth);
         this.lightsShader.height.set((float) Game.game.window.frameBufferHeight);
 
-        if (Game.screen instanceof ScreenGame)
-            this.lightsShader.invProjection.set(((ScreenGame) Game.screen).projection.inverse().toOpenGL(), false);
-        else
-            this.lightsShader.invProjection.set(Game.game.window.getProjectionMatrix().inverse().toOpenGL(), false);
+        this.lightsShader.invViewProjection.set(((Screen) Game.screen).getViewProjection().inverse(this.inverseViewProjection).toOpenGL(), false);
 
         Game.game.window.mainRenderPasses.drawPass.drawFrameBuffer.bindDepthTexture(0);
         this.window.setForceModelGlow(true);
@@ -86,7 +84,6 @@ public class RenderPassPostLights extends RenderPass
         Game.game.window.mainRenderPasses.drawPass.drawFrameBuffer.bindColorTexture(2, 3);
 
         Game.game.window.currentCamera = Game.game.window.screenCamera;
-        Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
 
         this.window.setViewport(0, viewportY, this.window.frameBufferWidth, viewportHeight);

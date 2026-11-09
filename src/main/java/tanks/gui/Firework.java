@@ -577,6 +577,9 @@ public class Firework extends Movable
 
         public void draw()
         {
+            if (!Drawing.drawing.bindInterfaceCamera())
+                return;
+
             this.age += Panel.frameFrequency;
 
             double[] col = Game.getRainbowColor(color + this.colorShift * (1.0 - Math.pow(1.0 - this.age / this.maxAge, 2)));
@@ -596,7 +599,7 @@ public class Firework extends Movable
 
         public void drawTrail()
         {
-            if (!hasTrail)
+            if (!hasTrail || !Drawing.drawing.bindInterfaceCamera())
                 return;
 
             double[] col = Game.getRainbowColor(color + this.colorShift * (1.0 - Math.pow(1.0 - this.age / this.maxAge, 2)));
@@ -615,6 +618,9 @@ public class Firework extends Movable
 
         public void drawGlow()
         {
+            if (!Drawing.drawing.bindInterfaceCamera())
+                return;
+
             double[] col = Game.getRainbowColor(color + this.colorShift * (1.0 - Math.pow(1.0 - this.age / this.maxAge, 2)));
             renderer.settings(false, true, false);
             this.setRendererTransform(this.renderer);
@@ -632,16 +638,9 @@ public class Firework extends Movable
 
         protected void setRendererTransform(BaseShapeBatchRenderer renderer)
         {
-            if (Drawing.drawing.isInterfaceRenderPass())
-            {
-                renderer.setPosition(this.posX, this.posY, this.posZ);
-                renderer.setScale(1, 1, 1);
-            }
-            else
-            {
-                renderer.setPosition(Drawing.drawing.interfaceToAbsoluteX(this.posX), Drawing.drawing.interfaceToAbsoluteY(this.posY), this.posZ * Drawing.drawing.interfaceScale);
-                renderer.setScale(Drawing.drawing.interfaceScale, Drawing.drawing.interfaceScale, Drawing.drawing.interfaceScale);
-            }
+            Drawing.drawing.bindInterfaceCamera();
+            renderer.setPosition(this.posX, this.posY, this.posZ);
+            renderer.setScale(1, 1, 1);
         }
     }
 

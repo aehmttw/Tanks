@@ -45,18 +45,25 @@ public class ComputerFileManager extends BaseFileManager
     {
         String[] cmd;
 
-        String url = "file:///" + path.replace("\\", "/");
+        String url = new File(path).toURI().toString();
         String os = System.getProperty("os.name").toLowerCase(Locale.ROOT);
         if (os.contains("win"))
             cmd = new String[]{"rundll32", "url.dll,FileProtocolHandler", url};
         else if (os.contains("mac"))
-            cmd = new String[]{"open", url};
+            cmd = new String[]{"/usr/bin/open", url};
         else
             cmd = new String[]{"xdg-open", url};
 
         try
         {
-            Runtime.getRuntime().exec(cmd);
+            ProcessBuilder process = new ProcessBuilder(cmd);
+
+            // Steam's overlay can inject an arm64-only dynamic library. Remove it
+            // before launching Apple's arm64e open utility on macOS.
+            if (os.contains("mac"))
+                process.environment().keySet().removeIf(key -> key.startsWith("DYLD_"));
+
+            process.start();
         }
         catch (Exception e)
         {

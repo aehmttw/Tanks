@@ -168,6 +168,7 @@ public class Game
     public static boolean orthographicView = false;
     public static boolean xrayBullets = true;
     public static boolean showPathfinding = false;
+    public static boolean showShadowDepth = false;
     public static boolean showUpdatingObstacles = false;
     public static boolean immutableFaces = false;
     public static boolean disableErrorFixing = false;

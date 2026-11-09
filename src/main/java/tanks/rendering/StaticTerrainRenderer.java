@@ -272,6 +272,7 @@ public class StaticTerrainRenderer extends TerrainRenderer
 
     public void draw()
     {
+        Drawing.drawing.bindGameCamera();
         if (this.freed)
             Game.exitToCrash(new RuntimeException("Renderer was freed"));
 

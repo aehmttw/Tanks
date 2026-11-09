@@ -491,7 +491,8 @@ public class TerrainRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
-        Bounds bounds = Game.game.window.baseCamera.getBoundsAtDepth(0);
+        Drawing.drawing.bindGameCamera();
+        Bounds bounds = Game.game.window.mainRenderPasses.sceneCamera.getBoundsAtDepth(0);
 
         for (RegionRenderer s: renderers.values())
         {
@@ -530,6 +531,7 @@ public class TerrainRenderer
 
     public void draw()
     {
+        Drawing.drawing.bindGameCamera();
         if (!staged)
         {
             this.stageBackground();
@@ -699,7 +701,6 @@ public class TerrainRenderer
                     if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_neg_y;
                     if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_pos_y;
                 }
-
                 double extra = getExtra(x, y);
                 this.addBox(t,
                     x * Game.tile_size,
@@ -736,11 +737,6 @@ public class TerrainRenderer
         }
     }
 
-    public void drawBorders()
-    {
-
-    }
-
     public float getShrubHeight()
     {
         float shrubMod = 0.25f;
@@ -760,8 +756,6 @@ public class TerrainRenderer
 
         if (stagedCount == 0)
             totalObjectsCount = Game.currentSizeX * Game.currentSizeY + Game.obstacles.size();
-
-        drawBorders();
 
         long start = System.currentTimeMillis();
         int x = stagedCount / Game.currentSizeY;

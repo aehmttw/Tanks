@@ -5,7 +5,7 @@ uniform float height;
 
 uniform sampler2D depthTex;
 
-uniform mat4 invProjection;
+uniform mat4 invViewProjection;
 uniform vec4 lightPos;
 uniform vec3 lightColor;
 
@@ -15,10 +15,10 @@ vec3 getWorldPos(vec2 uv)
 
     vec4 clip = vec4(uv.x * 2.0 - 1.0, uv.y * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
 
-    vec4 view = invProjection * clip;
-    view /= view.w;
+    vec4 world = invViewProjection * clip;
+    world /= world.w;
 
-    return view.xyz;
+    return world.xyz;
 }
 
 void main()

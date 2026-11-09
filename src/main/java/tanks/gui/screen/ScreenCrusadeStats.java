@@ -142,7 +142,6 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             p = setupOnlyRecords(screen);
 
         this.player = p;
-        this.forceInBounds = Game.previewCrusades;
 
         Obstacle.draw_size = Game.tile_size;
 
@@ -896,7 +895,7 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
             if (!Game.game.window.mainRenderPasses.drawingShadow)
                 Game.game.window.clearDepth();
 
-            this.drawWorldDarknessOverlay();
+            this.drawGameDarknessOverlay();
         }
         else
             this.drawDefaultBackground();

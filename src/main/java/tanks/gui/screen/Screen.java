@@ -2,6 +2,7 @@ package tanks.gui.screen;
 
 import basewindow.Camera;
 import basewindow.IBatchRenderableObject;
+import basewindow.transformation.Matrix4;
 import tanks.*;
 import tanks.gui.ScreenIntro;
 import tanks.obstacle.Obstacle;
@@ -33,12 +34,14 @@ public abstract class Screen implements IBatchRenderableObject
     public double centerX = Drawing.drawing.interfaceSizeX / 2;
     public double centerY = Drawing.drawing.interfaceSizeY / 2;
 
-    public boolean selfBatch = true;
-    public boolean forceInBounds = false;
+    /** Game view-projection used for deferred-light depth reconstruction this frame. */
+    public Matrix4 viewProjection;
     public int minBgWidth = 0;
     public int minBgHeight = 0;
 
     public boolean drawBgRect = true;
+    /** Extend scene/UI visibility behind the info bar without changing their scale or layout. */
+    public boolean drawBehindInfoBar = false;
     public boolean stageOnly = false;
 
     public double interfaceScaleZoomOverride = -1;
@@ -100,30 +103,6 @@ public abstract class Screen implements IBatchRenderableObject
         if (!(Game.screen instanceof IDarkScreen))
             Panel.darkness = Math.max(Panel.darkness - Panel.frameFrequency * 3, 0);
 
-        double frac = 0;
-
-        if (this instanceof ScreenGame || this instanceof ILevelPreviewScreen || (this instanceof IOverlayScreen &&
-            !(this instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) this).isOverlayEnabled())))
-            frac = Obstacle.draw_size / Game.tile_size;
-
-        if (this.forceInBounds)
-            frac = 0;
-
-        if (drawBgRect && (!(this instanceof ScreenExit) && size >= 1 && (selfBatch || (!Game.fancyTerrain && !Game.enable3d))))
-        {
-            Drawing.drawing.setColor(174 * frac + (1 - frac) * Level.currentColor.red, 92 * frac + (1 - frac) * Level.currentColor.green, 16 * frac + (1 - frac) * Level.currentColor.blue);
-
-            double mul = 1;
-            if (Game.angledView)
-                mul = 2;
-
-            Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
-                mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
-
-            Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue, 255.0 * size);
-            Drawing.drawing.fillBackgroundRect(this, Drawing.drawing.sizeX / 2, Drawing.drawing.sizeY / 2, Drawing.drawing.sizeX, Drawing.drawing.sizeY);
-        }
-
         this.setBasePerspective();
 
         Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
@@ -137,13 +116,13 @@ public abstract class Screen implements IBatchRenderableObject
             Drawing.drawing.trackRenderer.draw();
 
         if (this.drawDarkness && drawBgRect)
-            this.drawWorldDarknessOverlay();
+            this.drawGameDarknessOverlay();
 
         this.lastObsSize = Obstacle.draw_size;
     }
 
-    /** Draws darkness in world space so it always matches the active game viewport. */
-    public void drawWorldDarknessOverlay()
+    /** Draws darkness in game coordinates so it always matches the active game viewport. */
+    public void drawGameDarknessOverlay()
     {
         if (Game.game.window.mainRenderPasses.drawingShadow || Panel.darkness <= 0)
             return;
@@ -158,17 +137,20 @@ public abstract class Screen implements IBatchRenderableObject
     {
         double usableHeight = Math.max(1, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
         double targetScale = Math.max(0.0001, Drawing.drawing.scale);
-        double worldWidth = Drawing.drawing.sizeX;
-        double worldHeight = Drawing.drawing.sizeY;
+        double gameWidth = Drawing.drawing.sizeX;
+        double gameHeight = Drawing.drawing.sizeY;
         boolean orthographic = Game.game.window.orthographic;
-        Camera activeCamera = Game.game.window.baseCamera;
+        Camera activeCamera = Game.game.window.mainRenderPasses.sceneCamera;
 
         if (Game.game.window.mainRenderPasses.drawingShadow)
         {
-            activeCamera = Game.game.window.shadowCamera;
+            activeCamera = Game.game.window.mainRenderPasses.shadowCamera;
             Game.game.window.currentCamera = activeCamera;
             return;
         }
+
+        Game.game.window.sceneCameraHeightOffset = Game.screen.drawBehindInfoBar ? 0 : Drawing.drawing.statsHeight;
+        activeCamera.setViewportBottomExtension((Drawing.drawing.statsHeight - Game.game.window.sceneCameraHeightOffset) / usableHeight);
 
         if (orthographic)
         {
@@ -188,11 +170,14 @@ public abstract class Screen implements IBatchRenderableObject
 
         double visibleWidth = activeCamera.getVisibleSizeX(0);
         double visibleHeight = activeCamera.getVisibleSizeY(0);
-        double centeredVisibleWidth = Game.screen.enableMargins ? Math.min(visibleWidth, worldWidth) : visibleWidth;
-        double centeredVisibleHeight = Game.screen.enableMargins ? Math.min(visibleHeight, worldHeight) : visibleHeight;
+        double centeredVisibleWidth = Game.screen.enableMargins ? Math.min(visibleWidth, gameWidth) : visibleWidth;
+        double centeredVisibleHeight = Game.screen.enableMargins ? Math.min(visibleHeight, gameHeight) : visibleHeight;
 
         activeCamera.posX = this.getCameraX(centeredVisibleWidth, centeredVisibleHeight);
         activeCamera.posY = this.getCameraY(centeredVisibleWidth, centeredVisibleHeight);
+        // Camera modes build their pose from this neutral game view each frame.
+        activeCamera.getOrientation().setIdentity();
+        activeCamera.clearAdjustments();
         activeCamera.updateView();
 
         Game.game.window.currentCamera = activeCamera;
@@ -266,7 +251,8 @@ public abstract class Screen implements IBatchRenderableObject
 
     public void drawPointLights()
     {
-        this.setBasePerspective();
+        Game.game.window.currentCamera = Game.game.window.mainRenderPasses.sceneCamera;
+        Game.game.window.loadPerspective();
 
         if ((this instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) this).isOverlayEnabled()) || this instanceof IBlankBackgroundScreen)
             return;
@@ -293,7 +279,15 @@ public abstract class Screen implements IBatchRenderableObject
                 Game.drawer.lightsPass.drawLight(e, Drawing.drawing.gameToAbsoluteX(e.posX, 0),  Drawing.drawing.gameToAbsoluteY(e.posY, 0), e.posZ * Drawing.drawing.scale, e.getBrightness() * Drawing.drawing.scale);
         }
 
-        Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
+    }
+
+    public Matrix4 getViewProjection()
+    {
+        if (this.viewProjection != null)
+            return this.viewProjection;
+
+        Camera camera = Game.game.window.mainRenderPasses.sceneCamera;
+        return camera.projection.multiply(camera.view);
     }
 }

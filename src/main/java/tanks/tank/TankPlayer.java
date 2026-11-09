@@ -54,6 +54,7 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
 
     public double mouseX;
     public double mouseY;
+    private final double[] gamePointer = new double[2];
 
     public static Color default_primary_color = new Color(0, 150, 255, 255);
     public static Color default_secondary_color = new Color((int) Turret.calculateSecondaryColor(0), (int) Turret.calculateSecondaryColor(150),
@@ -333,24 +334,19 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
                         if (!p.tag.isEmpty() && !p.tag.equals("aim") && !p.tag.equals("shoot"))
                             continue;
 
-                        if (Game.screen instanceof ScreenGame)
-                        {
-                            Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
-                            Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);
-                        }
-                        float[] tp = Game.game.window.getTransformedMouse(p.x, p.y);
-                        if (Game.screen instanceof ScreenGame)
-                        {
-                            Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
-                            Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
-                        }
-                        double px = Drawing.drawing.getInterfacePointerX(tp[0]);
-                        double py = Drawing.drawing.getInterfacePointerY(tp[1]);
+                        double px = Drawing.drawing.getInterfacePointerX(p.x);
+                        double py = Drawing.drawing.getInterfacePointerY(p.y);
 
                         if (!Game.followingCam)
                         {
                             this.mouseX = Drawing.drawing.toGameCoordsX(px);
                             this.mouseY = Drawing.drawing.toGameCoordsY(py);
+                            if (Game.angledView)
+                            {
+                                Drawing.drawing.getGamePointer(p.x, p.y, this.gamePointer);
+                                this.mouseX = this.gamePointer[0];
+                                this.mouseY = this.gamePointer[1];
+                            }
                             this.angle = this.getAngleInDirection(this.mouseX, this.mouseY);
                         }
 

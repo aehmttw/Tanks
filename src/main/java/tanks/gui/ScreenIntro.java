@@ -1,8 +1,8 @@
 package tanks.gui;
 
 import basewindow.BaseFile;
+import basewindow.BaseWindow;
 import basewindow.Camera;
-import basewindow.transformation.Translation;
 import tanks.*;
 import tanks.gui.screen.*;
 import tanks.obstacle.Obstacle;
@@ -15,19 +15,13 @@ public class ScreenIntro extends Screen
     double introTime = 500;
     double introAnimationTime = 500;
 
-    Translation zoomTranslation = new Translation(Game.game.window, 0, 0, 0);
-
     Screen nextScreen;
 
     public ScreenIntro()
     {
         this.musicID = "menu";
         this.music = "menu_1.ogg";
-
-        zoomTranslation.window = Game.game.window;
-        // This is a presentation-only nudge.  Applying it to the shadow pass
-        // shifts geometry after the shadow projection has been captured.
-        zoomTranslation.applyAsShadow = false;
+        this.drawBehindInfoBar = true;
 
         if (Game.fancyTerrain && Game.enable3d)
             introAnimationTime = 1000;
@@ -96,21 +90,22 @@ public class ScreenIntro extends Screen
     }
 
     @Override
+    public void setBasePerspective()
+    {
+        super.setBasePerspective();
+        if (Game.enable3d && Game.fancyTerrain && !Game.game.window.mainRenderPasses.drawingShadow)
+        {
+            double frac = this.getAnimationProgress();
+            Game.game.window.currentCamera.worldAdjustment.setTranslation(0, 0, -0.08 * (1 - frac) * Game.game.window.absoluteDepth);
+            Game.game.window.loadPerspective();
+        }
+    }
+
+    @Override
     public void draw()
     {
-        Game.game.window.clipMultiplier = 2;
-        Game.game.window.clipDistMultiplier = 50;
-
-        double frac = Math.min(1, ((lastTime - startTime - introTime) / introAnimationTime));
-        int previousStatsHeight = Drawing.drawing.statsHeight;
-
-        if (Game.enable3d && Game.fancyTerrain)
-        {
-            zoomTranslation.z = -0.08 * (1 - frac);
-            Game.game.window.transformations.add(zoomTranslation);
-            Game.game.window.loadPerspective();
-            Game.game.window.transformations.remove(zoomTranslation);
-        }
+        this.viewProjection = null;
+        double frac = this.getAnimationProgress();
 
         if (lastTime - startTime >= introTime && Game.fancyTerrain)
         {
@@ -140,88 +135,67 @@ public class ScreenIntro extends Screen
         {
             nextScreen.setupLayoutParameters();
 
-            zoomTranslation.z = (1 - frac) * 2;
-            Game.game.window.transformations.add(zoomTranslation);
-            // Match the title's normal world pass: its camera and viewport must use
-            // the same usable height while the intro previews its movables.
+            // Preserve title framing; only the intro's extra area below it differs.
             nextScreen.setBasePerspective();
+            if (!Game.game.window.mainRenderPasses.drawingShadow)
+                Game.game.window.currentCamera.worldAdjustment.setTranslation(0, 0, (1 - frac) * 2 * Game.game.window.absoluteDepth);
+            Game.game.window.loadPerspective();
 
             if (nextScreen instanceof ISeparateBackgroundScreen)
                 ((ISeparateBackgroundScreen) nextScreen).drawWithoutBackground();
             else
                 nextScreen.draw();
 
+            this.viewProjection = Game.game.window.mainRenderPasses.sceneCamera.projection.multiply(Game.game.window.mainRenderPasses.sceneCamera.view);
         }
+    }
 
-        Game.game.window.transformations.clear();
-        Game.game.window.loadPerspective();
-        Drawing.drawing.statsHeight = previousStatsHeight;
-
-        Game.game.window.clipMultiplier = 100;
-        Game.game.window.clipDistMultiplier = 0.5;
+    private double getAnimationProgress()
+    {
+        return Math.min(1, (lastTime - startTime - introTime) / introAnimationTime);
     }
 
     @Override
     public void drawUI()
     {
-        double frac = Math.min(1, ((lastTime - startTime - introTime) / introAnimationTime));
+        double frac = this.getAnimationProgress();
         double barOffset = (1 - frac) * 40;
-
-        int previousStatsHeight = Drawing.drawing.statsHeight;
-        int previewViewportY = 0;
-        if (Game.game.window.absoluteHeight > 0)
-            previewViewportY = (int) Math.round(previousStatsHeight * Game.game.window.frameBufferHeight / (double) Game.game.window.absoluteHeight);
-
-        int previewViewportHeight = Math.max(1, Game.game.window.frameBufferHeight - previewViewportY);
-
-        Drawing.drawing.statsHeight = previousStatsHeight;
-
-        Game.game.window.interfaceCameraLogicalWidth = Drawing.drawing.baseInterfaceSizeX;
-        Game.game.window.interfaceCameraLogicalHeight = Drawing.drawing.baseInterfaceSizeY;
-        Game.game.window.interfaceCameraHeightOffset = previousStatsHeight;
-        Game.game.window.interfaceCamera.resetToBounds(0, Game.game.window.interfaceCameraLogicalWidth,
-                0, Game.game.window.interfaceCameraLogicalHeight, Game.game.window.absoluteDepth);
-        Game.game.window.interfaceCamera.setAspectRatio(Game.game.window.absoluteWidth / Math.max(1, Game.game.window.absoluteHeight - previousStatsHeight));
-        Game.game.window.currentCamera = Game.game.window.interfaceCamera;
-        Game.game.window.loadPerspective();
-        Game.game.window.setViewport(0, previewViewportY, Game.game.window.frameBufferWidth, previewViewportHeight);
+        BaseWindow window = Game.game.window;
 
         // No terrain is drawn during the short intro delay, so provide the same
         // level-colored backdrop that the terrain will replace once it begins.
         if (lastTime - startTime < introTime || !Game.fancyTerrain)
         {
+            window.bindCamera(window.screenCamera, 0, 0, window.frameBufferWidth, window.frameBufferHeight);
             Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
-            Drawing.drawing.fillInterfaceViewportRect();
+            window.shapeRenderer.fillRect(0, 0, window.absoluteWidth, window.absoluteHeight);
         }
+
+        Drawing.drawing.bindInterfaceCamera();
 
         if (!(nextScreen instanceof ScreenGame))
         {
             nextScreen.setupLayoutParameters();
-            zoomTranslation.z = (1 - frac) * 2;
-            Game.game.window.transformations.add(zoomTranslation);
-            Game.game.window.loadPerspective();
-            nextScreen.drawUI();
-            Game.game.window.transformations.clear();
-            Game.game.window.loadPerspective();
+            window.interfaceCamera.worldAdjustment.setTranslation(0, 0, (1 - frac) * 2 * window.absoluteDepth);
+            window.interfaceCamera.updateView();
+            Drawing.drawing.bindInterfaceCamera();
+            try
+            {
+                nextScreen.drawUI();
+            }
+            finally
+            {
+                window.interfaceCamera.clearAdjustments();
+                Drawing.drawing.bindInterfaceCamera();
+            }
         }
-
-        Game.game.window.currentCamera = Game.game.window.screenCamera;
-        Game.game.window.loadPerspective();
-        Game.game.window.setViewport(0, 0, Game.game.window.frameBufferWidth, Game.game.window.frameBufferHeight);
 
         if (Drawing.drawing.enableStats)
         {
-            Drawing.drawing.setColor(Level.currentColor.red, Level.currentColor.green, Level.currentColor.blue);
-            Game.game.window.shapeRenderer.fillRect(0, Game.game.window.absoluteHeight - 40, Game.game.window.absoluteWidth, 40);
+            window.bindCamera(window.screenCamera, 0, 0, window.frameBufferWidth, window.frameBufferHeight);
             Panel.panel.drawBar(barOffset);
         }
 
-        Drawing.drawing.statsHeight = previousStatsHeight;
-        Game.game.window.transformations.clear();
-        // Panel draws the cursor after this method returns.  Leave the normal UI
-        // camera and its reduced viewport active so its mouse coordinates match.
-        Game.game.window.currentCamera = Game.game.window.interfaceCamera;
-        Game.game.window.loadPerspective();
-        Game.game.window.setViewport(0, previewViewportY, Game.game.window.frameBufferWidth, previewViewportHeight);
+        Drawing.drawing.bindInterfaceCamera();
     }
 }

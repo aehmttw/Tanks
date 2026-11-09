@@ -385,7 +385,7 @@ public class ScreenPartyHost extends Screen
             title = Translation.translate("Party host");
 
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - ipY, title);
-        this.toggleIP.posX = this.centerX + Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
+        this.toggleIP.posX = this.centerX + Drawing.drawing.getInterfaceTextWidth(title) / 2 + 30;
         this.toggleIP.posY = this.centerY - ipY;
 
         if (Game.showIP)

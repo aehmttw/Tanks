@@ -461,8 +461,6 @@ public class Hotbar
         if (Game.playerTank == null || Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
-        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);
         Game.game.window.loadPerspective();
 
         this.itemBar.drawCircle();
@@ -473,7 +471,7 @@ public class Hotbar
         if (this.enabledAmmunitionBar)
             drawBullets();
 
-        Game.game.window.currentCamera = Game.game.window.baseCamera;
+        Game.game.window.currentCamera = Game.game.window.mainRenderPasses.sceneCamera;
         Game.game.window.loadPerspective();
 
         double z = Game.tile_size / 2 + Game.playerTank.posZ;
@@ -562,8 +560,6 @@ public class Hotbar
             Drawing.drawing.drawInterfaceText(mx + 17, my + 17, stackCount + "", true);
         }
 
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
         Game.game.window.loadPerspective();
 
         int enemyCount = 0;

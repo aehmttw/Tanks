@@ -116,9 +116,6 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
         showRecordButton.textColB = 255;
         showRecordButton.fontSize = 22;
 
-        if (Game.previewCrusades)
-            this.forceInBounds = true;
-
         if (c.levels.isEmpty())
         {
             begin.enabled = false;

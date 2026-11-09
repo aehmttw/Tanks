@@ -1,4 +1,4 @@
-#define DEPTH_OFFSET 0.0005
+#define DEPTH_OFFSET 0.002
 
 uniform sampler2D depthTexture;
 
@@ -30,6 +30,21 @@ uniform bool drawToFramebuffer;
 
 uniform int blendFunc;
 
+float shadowCompare(vec2 position, float depth, float bias)
+{
+    return step(depth - bias, texture2D(depthTexture, position).r);
+}
+
+float filteredShadow(vec2 position, float depth, float bias)
+{
+    vec2 halfTexel = vec2(0.5 / float(shadowres));
+    return 0.25 * (
+        shadowCompare(position + vec2(-halfTexel.x, -halfTexel.y), depth, bias) +
+        shadowCompare(position + vec2(halfTexel.x, -halfTexel.y), depth, bias) +
+        shadowCompare(position + vec2(-halfTexel.x, halfTexel.y), depth, bias) +
+        shadowCompare(position + vec2(halfTexel.x, halfTexel.y), depth, bias));
+}
+
 void main(void)
 {
     vec4 color = texture2D(tex, gl_TexCoord[0].st);
@@ -48,7 +63,7 @@ void main(void)
     if (vbo)
         fragColor *= originalColor;
 
-    bool lit = true;
+    float lightAmount = 1.0;
     float glowValue = 1.0;
 
     if (shadow)
@@ -63,11 +78,9 @@ void main(void)
 
             if (inShadowMap)
             {
-                vec4 depthVec = texture2D(depthTexture, lightNDCPosition.xy);
-                lit = depthVec.z >= lightNDCPosition.z - DEPTH_OFFSET * 2048.0 / float(shadowres);
+                float bias = DEPTH_OFFSET * 2048.0 / float(shadowres);
+                lightAmount = filteredShadow(lightNDCPosition.xy, lightNDCPosition.z, bias);
             }
-            else
-                lit = true;
 
             glowValue = glow;
         }
@@ -85,9 +98,9 @@ void main(void)
         else
         {
             gl_FragData[0] = fragColor;
-            vec3 l = glowValue * (float(lit) * (vec3(1.0) - baseLight * lightColor) + (1.0 - float(lit)) * (vec3(1.0) - shadowLight * lightColor));
+            vec3 l = glowValue * (lightAmount * (vec3(1.0) - baseLight * lightColor) + (1.0 - lightAmount) * (vec3(1.0) - shadowLight * lightColor));
             gl_FragData[1] = vec4(fragColor.rgb * l, fragColor.a);
-            gl_FragData[2] = vec4(float(lit), 0.0, 0.0, fragColor.a);
+            gl_FragData[2] = vec4(lightAmount, 0.0, 0.0, fragColor.a);
         }
     }
     else
@@ -101,7 +114,7 @@ void main(void)
         {
             float maxLight = baseLight * (1.0 - glow) + glow;
             float minLight = shadowLight * (1.0 - glow) + glow;
-            gl_FragData[0] = vec4(fragColor.rgb * (lit ? maxLight : minLight), fragColor.a);
+            gl_FragData[0] = vec4(fragColor.rgb * mix(minLight, maxLight, lightAmount), fragColor.a);
         }
     }
 }

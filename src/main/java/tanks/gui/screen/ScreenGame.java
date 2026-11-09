@@ -1,10 +1,8 @@
 package tanks.gui.screen;
 
+import basewindow.Camera;
 import basewindow.InputCodes;
 import basewindow.InputPoint;
-import basewindow.transformation.Matrix4;
-import basewindow.transformation.RotationAboutPoint;
-import basewindow.transformation.Translation;
 import tanks.*;
 import tanks.bullet.Bullet;
 import tanks.generator.LevelGeneratorVersus;
@@ -82,8 +80,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public long introBattleMusicEnd;
     public long introResultsMusicEnd;
 
-    public RotationAboutPoint slantRotation;
-    public Translation slantTranslation;
 
     public Tank spectatingTank = null;
 
@@ -114,8 +110,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
     public boolean zoomScrolled = false;
 
     public boolean playedIntro = false;
-
-    public Matrix4 projection;
 
     protected static String[] ready_musics =
         {
@@ -589,7 +583,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         Effect.timeSinceLastTrack = TrackRenderer.getMaxTrackAge();
         Game.player.hotbar.resetTimers();
         eliminatedPlayers.clear();
-        this.selfBatch = false;
         this.enableMargins = !Game.followingCam;
 
         introMusicEnd = Long.parseLong(Game.game.fileManager.getInternalFileContents("/music/ready_music_intro_length.txt").get(0));
@@ -629,8 +622,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             this.drawables[i] = new ArrayList<>();
         }
 
-        slantRotation = new RotationAboutPoint(Game.game.window, 0, 0, 0, 0, 0.5, -1);
-        slantTranslation = new Translation(Game.game.window, 0, 0, 0);
 
         if (!Crusade.crusadeMode)
         {
@@ -2495,16 +2486,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                     slant = Math.max(0, slant - 0.01 * Panel.frameFrequency);
             }
 
-            this.slantRotation.pitch = this.slant * -Math.PI / 16;
-            this.slantTranslation.y = -this.slant * 0.05;
-
-            if (!Game.followingCam)
-            {
-                Game.game.window.transformations.add(this.slantTranslation);
-                Game.game.window.transformations.add(this.slantRotation);
-            }
-
-            Game.game.window.loadPerspective();
         }
 
         if (Game.followingCam && Game.framework == Game.Framework.lwjgl && !Game.game.window.mainRenderPasses.drawingShadow)
@@ -2514,23 +2495,55 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             Game.game.window.clipMultiplier = 1;
             Game.game.window.clipDistMultiplier = 100;
 
-            if (!Game.firstPerson)
-            {
-                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((Game.playerTank.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
-                Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.1 * frac, 0));
-                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.35 * frac, 0, 0, 0, -1));
-                Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0, 0.5 * frac));
-            }
-            else
-            {
-                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, 0, frac * ((Game.playerTank.angle + Math.PI * 3 / 2) % (Math.PI * 2) - Math.PI), 0, -Drawing.drawing.statsHeight / Game.game.window.absoluteHeight / 2, 0));
-                Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.1 * frac, 0));
-                Game.game.window.transformations.add(new RotationAboutPoint(Game.game.window, 0, -Math.PI * 0.5 * frac, 0, 0, 0, -1));
-                Game.game.window.transformations.add(new Translation(Game.game.window, 0, 0.0575 * frac, 0.9 * frac));
-            }
+            Camera camera = Game.game.window.mainRenderPasses.sceneCamera;
+            double pitch = -(Game.firstPerson ? 0.5 : 0.35) * Math.PI * frac;
+            camera.getOrientation().setAxisAngle(1, 0, 0, pitch);
+            camera.rotateAxisAngle(0, 0, 1, frac * (Game.playerTank.angle - Math.PI / 2));
 
             Game.game.window.loadPerspective();
         }
+    }
+
+    @Override
+    public void setBasePerspective()
+    {
+        super.setBasePerspective();
+
+        if (Game.angledView && !Game.followingCam && !Game.game.window.mainRenderPasses.drawingShadow)
+        {
+            Camera camera = Game.game.window.mainRenderPasses.sceneCamera;
+            camera.setZoom(camera.getZoom() * (1 - this.slant * 0.15));
+
+            double visibleWidth = camera.getVisibleSizeX(0);
+            double visibleHeight = camera.getVisibleSizeY(0);
+            double centeredVisibleWidth = this.enableMargins ? Math.min(visibleWidth, Drawing.drawing.sizeX) : visibleWidth;
+            double centeredVisibleHeight = this.enableMargins ? Math.min(visibleHeight, Drawing.drawing.sizeY) : visibleHeight;
+            camera.posX = this.getCameraX(centeredVisibleWidth, centeredVisibleHeight);
+            camera.posY = this.getCameraY(centeredVisibleWidth, centeredVisibleHeight);
+            this.setAngledCameraPose();
+        }
+    }
+
+    /**
+     * Reproduces the legacy slant transform as a camera pose.  The old transform
+     * rotated around the bottom-center of the viewport, then shifted upward.
+     */
+    private void setAngledCameraPose()
+    {
+        Camera camera = Game.game.window.mainRenderPasses.sceneCamera;
+        double pitch = - this.slant * Math.PI / 16;
+        double pivotY = Game.game.window.absoluteHeight / 2.0;
+        double pivotZ = -Game.game.window.absoluteDepth;
+        double y = camera.posY - pivotY;
+        double z = camera.posZ - pivotZ;
+        double cos = Math.cos(pitch);
+        double sin = Math.sin(pitch);
+
+        camera.posY = pivotY + cos * y - sin * z - this.slant * 175;
+        camera.posZ = pivotZ + sin * y + cos * z - this.slant * 60;
+        camera.getOrientation().setAxisAngle(1, 0, 0, pitch);
+        camera.updateView();
+        Game.game.window.loadPerspective();
     }
 
     @Override
@@ -2539,15 +2552,6 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         this.showDefaultMouse = !(((!this.paused) && this.playing && Game.angledView || Game.firstPerson));
 
         this.setPerspective();
-
-        Drawing.drawing.setColor(174, 92, 16);
-
-        double mul = 1;
-        if (Game.angledView)
-            mul = 2;
-
-        Drawing.drawing.fillShadedInterfaceRect(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2,
-            mul * Game.game.window.absoluteWidth / Drawing.drawing.interfaceScale, mul * Game.game.window.absoluteHeight / Drawing.drawing.interfaceScale);
 
         this.drawDefaultBackground();
 
@@ -2585,7 +2589,8 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             {
                 double frac = Obstacle.draw_size / Game.tile_size;
                 Drawing.drawing.setColor(174 * frac + Level.currentColor.red * (1 - frac), 92 * frac + Level.currentColor.green * (1 - frac), 16 * frac + Level.currentColor.blue * (1 - frac));
-                Drawing.drawing.fillOutOfBoundsGround(drawing.sizeX, drawing.sizeY);
+                drawing.fillLevelBackground(drawing.sizeX, drawing.sizeY);
+                drawing.fillLevelBorders(drawing.sizeX, drawing.sizeY);
             }
 
             if (i == 9 && this.tutorial != null)
@@ -2668,10 +2673,10 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             drawables[i].clear();
         }
 
+        Panel.panel.drawMouseTargetHeight();
         DebugKeybinds.renderDebugging();
 
-        this.projection = Game.game.window.getProjectionMatrix();
-        Game.game.window.transformations.clear();
+        this.viewProjection = Game.game.window.mainRenderPasses.sceneCamera.projection.multiply(Game.game.window.mainRenderPasses.sceneCamera.view);
         Game.game.window.loadPerspective();
     }
 
@@ -2688,12 +2693,14 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
             Drawing.drawing.fillInterfaceViewportRect();
         }
 
+        if (this.tutorial != null)
+            this.tutorial.drawTutorialUI();
+
         drawSpectateOverlay();
 
         if (!(paused && screenshotMode) && Game.player.hotbar.enabledItemBar)
             Game.player.hotbar.itemBar.drawOverlay();
 
-        Game.game.window.transformations.clear();
         Game.game.window.loadPerspective();
 
         if (Game.game.window.touchscreen)
@@ -3286,16 +3293,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         double margin = Obstacle.draw_size / Game.tile_size *
                 Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeX * Game.tile_size * Drawing.drawing.scale - Panel.windowWidth)) / 2;
 
-        double worldWidth = Drawing.drawing.sizeX;
+        double gameWidth = Drawing.drawing.sizeX;
         double playerX = Drawing.drawing.getTrackedPlayerX();
 
         if (Game.followingCam)
             return playerX;
 
-        if (visibleWidth >= worldWidth + margin * 2)
-            return worldWidth / 2;
+        if (visibleWidth >= gameWidth + margin * 2)
+            return gameWidth / 2;
 
-        return Math.max(visibleWidth / 2 - margin, Math.min(worldWidth - visibleWidth / 2 + margin, playerX));
+        return Math.max(visibleWidth / 2 - margin, Math.min(gameWidth - visibleWidth / 2 + margin, playerX));
     }
 
     @Override
@@ -3304,16 +3311,16 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         double margin = Math.max(0, Math.min(Game.tile_size * 2, Game.currentSizeY * Game.tile_size *
                 Drawing.drawing.scale - (Panel.windowHeight - Drawing.drawing.statsHeight))) / 2;
 
-        double worldHeight = Drawing.drawing.sizeY;
+        double gameHeight = Drawing.drawing.sizeY;
         double playerY = Drawing.drawing.getTrackedPlayerY();
 
         if (Game.followingCam)
             return playerY;
 
-        if (visibleHeight >= worldHeight + margin * 2)
-            return worldHeight / 2;
+        if (visibleHeight >= gameHeight + margin * 2)
+            return gameHeight / 2;
 
-        return Math.max(visibleHeight / 2 - margin, Math.min(worldHeight - visibleHeight / 2 + margin, playerY));
+        return Math.max(visibleHeight / 2 - margin, Math.min(gameHeight - visibleHeight / 2 + margin, playerY));
     }
 
     @Override

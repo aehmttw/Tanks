@@ -2,7 +2,6 @@ package lwjglwindow;
 
 import basewindow.*;
 import basewindow.transformation.Matrix4;
-import basewindow.transformation.Transformation;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import de.matthiasmann.twl.utils.PNGDecoder.Format;
@@ -59,6 +58,13 @@ public class LWJGLWindow extends BaseWindow
     public boolean batchGlow = false;
 
     public boolean forceModelGlow = false;
+
+    private Camera loadedCamera;
+    private long loadedCameraRevision;
+    private int viewportX;
+    private int viewportY;
+    private int viewportWidth = -1;
+    private int viewportHeight = -1;
 
     protected boolean upscaleImages = false;
 
@@ -386,8 +392,11 @@ public class LWJGLWindow extends BaseWindow
         absoluteMouseX = mx[0];
         absoluteMouseY = my[0];
 
-        this.baseCamera.updateSize(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
-        this.shadowCamera.updateSize(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
+        if (this.mainRenderPasses != null)
+        {
+            this.mainRenderPasses.sceneCamera.updateSize(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
+            this.mainRenderPasses.shadowCamera.updateSize(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
+        }
         this.screenCamera.resetToBounds(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
         this.screenCamera.setProjectionType(basewindow.Camera.Projection.orthographic);
 
@@ -740,10 +749,14 @@ public class LWJGLWindow extends BaseWindow
 
     public void setUpPerspective()
     {
+        this.loadedCamera = null;
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
         glMultMatrixf(this.currentCamera.projection.toOpenGL());
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
         this.angled = false;
 
@@ -765,56 +778,59 @@ public class LWJGLWindow extends BaseWindow
         this.bbz3 = 1;
     }
 
-    public void applyTransformations()
-    {
-        for (int i = this.transformations.size() - 1; i >= 0; i--)
-        {
-            this.transformations.get(i).apply();
-        }
-    }
-
-    public void applyShadowTransformations()
-    {
-        for (int i = this.transformations.size() - 1; i >= 0; i--)
-        {
-            Transformation t = this.transformations.get(i);
-
-            if (t.applyAsShadow)
-                t.apply();
-            else
-                t.applyToWindow();
-        }
-    }
-
     public void loadPerspective()
     {
         setUpPerspective();
-//        glMatrixMode(GL_MODELVIEW);
-//        glLoadIdentity();
 
-        if (this.mainRenderPasses.drawingShadow)
+        this.currentCamera.updateView();
+        glMultMatrixf(this.currentCamera.view.toOpenGL());
+        // Shadow geometry must face the scene camera just as it does in the color pass.
+        Camera billboardCamera = this.mainRenderPasses.drawingShadow ? this.mainRenderPasses.sceneCamera : this.currentCamera;
+        double[][] inverseView = billboardCamera.inverseView.values;
+        this.bbx1 = inverseView[0][0];
+        this.bby1 = inverseView[1][0];
+        this.bbz1 = inverseView[2][0];
+        this.bbx2 = inverseView[0][1];
+        this.bby2 = inverseView[1][1];
+        this.bbz2 = inverseView[2][1];
+        this.bbx3 = inverseView[0][2];
+        this.bby3 = inverseView[1][2];
+        this.bbz3 = inverseView[2][2];
+        this.angled = this.bby1 != 0 || this.bbz1 != 0 || this.bbx2 != 0 || this.bbz2 != 0;
+
+        if (this.currentShaderStage != null && this.currentShaderStage.shader instanceof ShaderBase)
         {
-            applyShadowTransformations();
-            glMultMatrixf(this.currentCamera.view.toOpenGL());
-
-            for (int i = 0; i < this.lightBaseTransformation.length; i++)
-            {
-                Transformation t = this.lightBaseTransformation[i];
-
-                if (i == 0 && t instanceof basewindow.transformation.ScaleAboutPoint)
-                    continue;
-
-                t.apply();
-            }
+            this.getModelViewMatrix(this.reusableModelViewMatrix);
+            this.reusableModelViewMatrix.inverse(this.reusableInverseModelViewMatrix);
+            ((ShaderBase) this.currentShaderStage.shader).inverseModelViewBaseMatrix.set(this.reusableInverseModelViewMatrix.toOpenGL(), false);
         }
-        else
-        {
-            applyTransformations();
 
-            glMultMatrixf(this.currentCamera.view.toOpenGL());
-//            for (Transformation t: this.baseTransformations)
-//                t.apply();
-        }
+        this.loadedCamera = this.currentCamera;
+        this.loadedCameraRevision = this.currentCamera.getMatrixRevision();
+    }
+
+    @Override
+    public void bindCamera(Camera camera, int x, int y, int width, int height)
+    {
+        if (this.loadedCamera == camera && this.currentCamera == camera &&
+                this.loadedCameraRevision == camera.getMatrixRevision() && this.viewportX == x && this.viewportY == y &&
+                this.viewportWidth == width && this.viewportHeight == height)
+            return;
+
+        boolean resumeBatch = this.batchMode;
+        boolean quads = this.batchQuads;
+        boolean depth = this.batchDepth;
+        boolean glow = this.batchGlow;
+        boolean depthMask = this.batchDepthMask;
+        if (resumeBatch)
+            this.shapeRenderer.setBatchMode(false, quads, depth, glow, depthMask);
+
+        this.currentCamera = camera;
+        this.loadPerspective();
+        this.setViewport(x, y, width, height);
+
+        if (resumeBatch)
+            this.shapeRenderer.setBatchMode(true, quads, depth, glow, depthMask);
     }
 
     @Override
@@ -824,12 +840,27 @@ public class LWJGLWindow extends BaseWindow
     }
 
     float[] proj = new float[16];
+    private final Matrix4 reusableModelViewMatrix = new Matrix4();
+    private final Matrix4 reusableInverseModelViewMatrix = new Matrix4();
 
     @Override
     public Matrix4 getProjectionMatrix()
     {
         glGetFloatv(GL_PROJECTION_MATRIX, proj);
         return Matrix4.fromOpenGLArray(proj);
+    }
+
+    @Override
+    public Matrix4 getModelViewMatrix()
+    {
+        glGetFloatv(GL_MODELVIEW_MATRIX, proj);
+        return Matrix4.fromOpenGLArray(proj);
+    }
+
+    private void getModelViewMatrix(Matrix4 result)
+    {
+        glGetFloatv(GL_MODELVIEW_MATRIX, proj);
+        Matrix4.fromOpenGLArray(proj, result);
     }
 
     @Override
@@ -1066,6 +1097,10 @@ public class LWJGLWindow extends BaseWindow
     public void setViewport(int x, int y, int w, int h)
     {
         glViewport(x, y, w, h);
+        this.viewportX = x;
+        this.viewportY = y;
+        this.viewportWidth = w;
+        this.viewportHeight = h;
     }
 
     @Override
@@ -1100,7 +1135,7 @@ public class LWJGLWindow extends BaseWindow
         if (os.contains("win"))
             cmd = new String[]{"rundll32", "url.dll,FileProtocolHandler", url.toString()};
         else if (os.contains("mac"))
-            cmd = new String[]{"open", url.toString()};
+            cmd = new String[]{"/usr/bin/open", url.toString()};
         else
         {
             String s = url.toString();
@@ -1111,7 +1146,14 @@ public class LWJGLWindow extends BaseWindow
             cmd = new String[]{"xdg-open", s};
         }
 
-        Runtime.getRuntime().exec(cmd);
+        ProcessBuilder process = new ProcessBuilder(cmd);
+
+        // Steam's overlay can inject an arm64-only dynamic library. Remove it
+        // before launching Apple's arm64e open utility on macOS.
+        if (os.contains("mac"))
+            process.environment().keySet().removeIf(key -> key.startsWith("DYLD_"));
+
+        process.start();
     }
 
     @Override

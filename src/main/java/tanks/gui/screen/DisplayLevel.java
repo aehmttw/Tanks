@@ -44,7 +44,8 @@ public class DisplayLevel
             {
                 Drawing drawing = Drawing.drawing;
                 Drawing.drawing.setColor(174, 92, 16);
-                Drawing.drawing.fillOutOfBoundsGround(drawing.sizeX, drawing.sizeY);
+                drawing.fillLevelBackground(drawing.sizeX, drawing.sizeY);
+                drawing.fillLevelBorders(drawing.sizeX, drawing.sizeY);
             }
 
             for (IDrawable d: this.drawables[i])

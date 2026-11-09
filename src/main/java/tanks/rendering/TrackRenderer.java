@@ -97,7 +97,7 @@ public class TrackRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
-        Bounds bounds = Game.game.window.baseCamera.getBoundsAtDepth(0);
+        Bounds bounds = Game.game.window.mainRenderPasses.sceneCamera.getBoundsAtDepth(0);
 
         for (RegionRenderer s: renderers.values())
         {
@@ -124,6 +124,7 @@ public class TrackRenderer
 
     public void draw()
     {
+        Drawing.drawing.bindGameCamera();
         Game.game.window.setShader(this.shader);
 
         float max = (float) getMaxTrackAge();

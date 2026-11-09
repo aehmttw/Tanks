@@ -2005,7 +2005,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
                                     Game.eventsOut.add(e);
 
                                     if (Crusade.currentCrusade.win || Crusade.currentCrusade.lose)
-                                        Game.eventsOut.add(new EventShowCrusadeStats());
+                                        Game.eventsOut.add(EventShowCrusadeStats.fromCurrentCrusade());
 
                                     for (Player p: Game.players)
                                         Game.eventsOut.add(new EventUpdateRemainingLives(p));

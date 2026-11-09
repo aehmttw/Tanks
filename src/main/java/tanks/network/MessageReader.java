@@ -25,10 +25,7 @@ public class MessageReader
     public static int downstreamBytesPerSec;
     public static List<String> eventBytesPerSecText = new ArrayList<>();
 
-    public boolean useQueue = true;
     public ByteBuf queue;
-    protected boolean reading = false;
-    protected int endpoint;
 
     protected int lastID;
 
@@ -46,80 +43,27 @@ public class MessageReader
     {
         try
         {
-            byte[] bytes = new byte[59];
-            m.getBytes(0, bytes);
+            ByteBuf input = queue;
+            input.writeBytes(m);
 
-            if (useQueue)
-                queue.writeBytes(m);
-            else
-                queue = m;
-
-            if (queue.readableBytes() >= 4)
+            ByteBuf message;
+            while (input.refCnt() > 0 && (message = NetworkMessage.tryDecode(input)) != null)
             {
-                if (!reading)
+                try
                 {
-                    endpoint = queue.readInt();
-                    downstreamBytes += endpoint + 4;
-                    updateLastMessageTime();
-
-                    if (endpoint > max_event_size)
-                    {
-                        if (ScreenPartyHost.isServer && s != null)
-                        {
-                            s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
-                        }
-                        else if (ScreenPartyLobby.isClient)
-                        {
-                            EventKick ev = new EventKick("A network exception has occurred: message size " + endpoint + " is too big!");
-                            ev.clientID = null;
-                            Game.eventsIn.add(ev);
-
-                            Client.handler.close();
-                            ScreenPartyLobby.connections.clear();
-                        }
-
-                        return;
-                    }
+                    this.readMessage(s, c, message, clientID);
+                }
+                finally
+                {
+                    message.release();
                 }
 
-                reading = true;
-
-                while (queue.readableBytes() >= endpoint)
-                {
-                    this.readMessage(s, c, queue, clientID);
-                    queue.discardReadBytes();
-
-                    reading = false;
-
-                    if (queue.readableBytes() >= 4)
-                    {
-                        endpoint = queue.readInt();
-                        downstreamBytes += endpoint + 4;
-                        updateLastMessageTime();
-
-                        if (endpoint > MessageReader.max_event_size)
-                        {
-                            if (ScreenPartyHost.isServer && s != null)
-                            {
-                                s.sendEventAndClose(new EventKick("A network exception has occurred: message size " + endpoint + " is too big!"));
-                            }
-                            else if (ScreenPartyLobby.isClient)
-                            {
-                                EventKick ev = new EventKick("A network exception has occurred: message size " + endpoint + " is too big!");
-                                ev.clientID = null;
-                                Game.eventsIn.add(ev);
-
-                                Client.handler.close();
-                                ScreenPartyLobby.connections.clear();
-                            }
-
-                            return;
-                        }
-
-                        reading = true;
-                    }
-                }
+                if (s != null && s.closed)
+                    break;
             }
+
+            if (input.refCnt() > 0)
+                input.discardReadBytes();
         }
         catch (Exception e)
         {
@@ -156,20 +100,12 @@ public class MessageReader
 
     public synchronized void readMessage(ServerHandler s, ClientHandler ch, ByteBuf m, UUID clientID) throws Exception
     {
-        int i = m.readInt();
-        Class<? extends INetworkEvent> c = NetworkEventMap.get(i);
-
-        if (c == null)
-            throw new Exception("Invalid network event: " + i + " (Previous event: " + NetworkEventMap.get(this.lastID) + ")");
-
-        this.lastID = i;
+        INetworkEvent e = EventObjectBuffer.decode(m);
+        Class<? extends INetworkEvent> c = e.getClass();
+        this.lastID = NetworkEventMap.get(c);
 
         try
         {
-            INetworkEvent e = c.getConstructor().newInstance();
-            e.read(m);
-
-
             if (e instanceof PersonalEvent)
                 ((PersonalEvent) e).clientID = clientID;
 
@@ -181,8 +117,11 @@ public class MessageReader
                 ((IClientThreadEvent) e).execute(ch);
             else
             {
-                if (ScreenPartyHost.isServer && s.clientID == null)
+                if (ScreenPartyHost.isServer && s != null && s.clientID == null)
+                {
                     s.sendEventAndClose(new EventKick("Invalid event received. Must send EventSendClientDetails first."));
+                    return;
+                }
 
                 synchronized (Game.eventsIn)
                 {
@@ -190,16 +129,16 @@ public class MessageReader
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception error)
         {
             System.err.println("A network exception has occurred:");
-            e.printStackTrace();
+            error.printStackTrace();
 
             if (s != null)
-                s.sendEventAndClose(new EventKick("A network exception has occurred: " + e.toString()));
+                s.sendEventAndClose(new EventKick("A network exception has occurred: " + error));
             else if (ch != null)
             {
-                EventKick ev = new EventKick("A network exception has occurred: " + e.toString());
+                EventKick ev = new EventKick("A network exception has occurred: " + error);
                 ev.clientID = null;
                 Game.eventsIn.add(ev);
 
@@ -209,7 +148,20 @@ public class MessageReader
         }
     }
 
-    public static void updateLastMessageTime()
+    public static synchronized void recordSent(int id, int size)
+    {
+        upstreamBytes += size;
+        eventBytes.put(id, eventBytes.getOrDefault(id, 0) + size);
+        updateLastMessageTime();
+    }
+
+    public static synchronized void recordReceived(int size)
+    {
+        downstreamBytes += size;
+        updateLastMessageTime();
+    }
+
+    public static synchronized void updateLastMessageTime()
     {
         long time = System.currentTimeMillis() / 1000;
 

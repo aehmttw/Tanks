@@ -7,6 +7,7 @@ import tanks.network.ServerHandler;
 
 public class EventShareCrusade extends PersonalEvent
 {
+    @NetworkTanksON
     public String crusade;
     public String name;
     public String username = "";

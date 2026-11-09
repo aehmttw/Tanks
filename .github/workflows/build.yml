@@ -36,6 +36,14 @@ jobs:
       - name: Build
         run: ./gradlew build -x checkstyleMain -x checkstyleTest
 
+      # The build appends new @Property ids to this table; it has to be committed so every build agrees on the numbers
+      - name: Check property id table is committed
+        run: |
+          if ! git diff --exit-code -- src/main/resources/tankson/property_ids.txt; then
+            echo "::error file=src/main/resources/tankson/property_ids.txt::New property ids were added by the build. Run ./gradlew build locally and commit property_ids.txt."
+            exit 1
+          fi
+
       - name: Determine artifact name
         id: find_artifact
         run: |

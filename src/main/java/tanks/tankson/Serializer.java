@@ -3,7 +3,9 @@ package tanks.tankson;
 import basewindow.Color;
 import tanks.Game;
 import tanks.Team;
-import tanks.bullet.*;
+import tanks.bullet.Bullet;
+import tanks.bullet.BulletEffect;
+import tanks.bullet.Trail;
 import tanks.item.Item;
 import tanks.tank.*;
 
@@ -195,6 +197,21 @@ public final class Serializer
         }
     }
 
+    public static byte[] toObjBuf(Object o)
+    {
+        return ObjectBuffer.toBytes(toMap(o));
+    }
+
+    public static Object fromObjBuf(byte[] b)
+    {
+        // ObjectBuffer.parse checks the versions in the header itself
+        Object o = ObjectBuffer.parse(b);
+        if (o instanceof Map)
+            return parseObject((Map<String, Object>) o);
+        else
+            throw new RuntimeException("Unexpected type of object: " + o);
+    }
+
     public static boolean equivalent(Object a, Object b)
     {
         if (a == null && b == null)
@@ -353,7 +370,7 @@ public final class Serializer
             case "spawned_tank":
                 processed.add("tank");
                 processed.add("weight");
-                o = new TankAIControlled.SpawnedTankEntry((ITankField) parseObject((Map) m.get("tank")), (Double) m.get("weight"));
+                o = new TankAIControlled.SpawnedTankEntry((ITankField) parseObject((Map) m.get("tank")), ((Number) m.get("weight")).doubleValue());
                 break;
             case "tank_ref":
                 processed.add("tank");
@@ -386,8 +403,12 @@ public final class Serializer
                 processed.add(getid(f));
                 try
                 {
+                    // TanksON reads every number back as a Double and every color as a list, while an
+                    // ObjectBuffer gives back the types that were written, so both are accepted below.
                     Object o2 = f.get(o);
-                    if (isTanksONable(f))
+                    if (m.get(getid(f)) == null)
+                        f.set(o, null);
+                    else if (isTanksONable(f))
                     {
                         Object o3 = m.get(getid(f));
                         try
@@ -416,9 +437,15 @@ public final class Serializer
                         else if (pt.getActualTypeArguments()[0] == Color.class)
                         {
                             ArrayList<Color> colors = new ArrayList<>();
-                            ArrayList<ArrayList<Double>> els = (ArrayList<ArrayList<Double>>) m.get(getid(f));
-                            for (ArrayList<Double> o4: els)
+                            for (Object el: (ArrayList<?>) m.get(getid(f)))
                             {
+                                if (el instanceof Color)
+                                {
+                                    colors.add((Color) el);
+                                    continue;
+                                }
+
+                                ArrayList<Double> o4 = (ArrayList<Double>) el;
                                 Color c = new Color(o4.get(0), o4.get(1), o4.get(2), (o4.size() >= 4) ? o4.get(3) : 255);
                                 colors.add(c);
                             }
@@ -431,8 +458,13 @@ public final class Serializer
                     }
                     else if (o2 instanceof Color)
                     {
-                        ArrayList<Double> objs = (ArrayList) m.get(getid(f));
-                        f.set(o, new Color(objs.get(0), objs.get(1), objs.get(2), (objs.size() >= 4) ? objs.get(3) : 255));
+                        if (m.get(getid(f)) instanceof Color)
+                            f.set(o, m.get(getid(f)));
+                        else
+                        {
+                            ArrayList<Double> objs = (ArrayList) m.get(getid(f));
+                            f.set(o, new Color(objs.get(0), objs.get(1), objs.get(2), (objs.size() >= 4) ? objs.get(3) : 255));
+                        }
                     }
                     else if (o2 instanceof HashSet)
                         f.set(o, new HashSet<>((ArrayList) m.get(getid(f))));
@@ -441,7 +473,7 @@ public final class Serializer
                     else if (o2 instanceof Serializable)
                         f.set(o, ((Serializable) o2).deserialize((String) m.get(getid(f))));
                     else if (o2 instanceof Integer)
-                        f.set(o, ((Double) m.get(getid(f))).intValue());
+                        f.set(o, ((Number) m.get(getid(f))).intValue());
                     else if (o2 instanceof Boolean)
                         f.set(o, m.get(getid(f)));
                     else

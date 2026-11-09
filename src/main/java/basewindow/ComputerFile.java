@@ -1,6 +1,7 @@
 package basewindow;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
 
@@ -21,12 +22,11 @@ public class ComputerFile extends BaseFile
     @Override
     public String read()
     {
-        try
+        try (BufferedReader reader = openReader())
         {
             StringBuilder s = new StringBuilder();
-            scanner = new BufferedReader(new FileReader(file));
             String line;
-            while ((line = scanner.readLine()) != null)
+            while ((line = reader.readLine()) != null)
                 s.append(line).append("\n");
             return s.toString();
         }
@@ -77,7 +77,24 @@ public class ComputerFile extends BaseFile
     @Override
     public void startReading() throws FileNotFoundException
     {
-        scanner = new BufferedReader(new FileReader(file));
+        nextLine = null;
+        try
+        {
+            scanner = openReader();
+        }
+        catch (FileNotFoundException e)
+        {
+            throw e;
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    protected BufferedReader openReader() throws IOException
+    {
+        return new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
     }
 
     @Override
@@ -113,7 +130,7 @@ public class ComputerFile extends BaseFile
     @Override
     public void startWriting() throws FileNotFoundException
     {
-        printWriter = new PrintWriter(file);
+        printWriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
     }
 
     @Override

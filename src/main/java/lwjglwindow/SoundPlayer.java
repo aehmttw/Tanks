@@ -85,12 +85,12 @@ public class SoundPlayer extends BaseSoundPlayer
                 if (!buffer.hasRemaining())
                 {
                     ByteBuffer bigger = ByteBuffer.allocateDirect(buffer.capacity() * 2);
-                    buffer.flip();
+                    ((Buffer) buffer).flip();
                     bigger.put(buffer);
                     buffer = bigger;
                 }
             }
-            buffer.flip();
+            ((Buffer) buffer).flip();
             return buffer;
         }
     }

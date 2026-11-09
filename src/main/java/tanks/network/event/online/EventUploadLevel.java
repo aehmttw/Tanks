@@ -11,6 +11,7 @@ import io.netty.buffer.ByteBuf;
 public class EventUploadLevel extends PersonalEvent implements IOnlineServerEvent
 {
     public String name;
+    @NetworkTanksON
     public String level;
 
     public EventUploadLevel()
@@ -61,13 +62,13 @@ public class EventUploadLevel extends PersonalEvent implements IOnlineServerEven
     public void write(ByteBuf b)
     {
         NetworkUtils.writeString(b, this.name);
-        NetworkUtils.writeString(b, this.level);
+        NetworkUtils.writeTanksON(b, this.level);
     }
 
     @Override
     public void read(ByteBuf b)
     {
         this.name = NetworkUtils.readString(b);
-        this.level = NetworkUtils.readString(b);
+        this.level = NetworkUtils.readTanksON(b);
     }
 }

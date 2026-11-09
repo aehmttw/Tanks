@@ -2,7 +2,7 @@ package tanksonline;
 
 import tanks.gui.Button;
 import tanks.gui.screen.ScreenOverlayOnline;
-import tanks.network.NetworkEventMap;
+import tanks.network.NetworkMessage;
 import tanks.network.SynchronizedList;
 import tanks.network.event.INetworkEvent;
 import tanks.network.event.online.EventAddMenuButton;
@@ -60,7 +60,8 @@ public class TanksOnlineServerHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelInactive(ChannelHandlerContext ctx)
     {
-        ReferenceCountUtil.release(this.reader.queue);
+        ReferenceCountUtil.safeRelease(this.reader.queue);
+        this.reader.queue = null;
         server.connections.remove(this);
     }
 
@@ -68,7 +69,10 @@ public class TanksOnlineServerHandler extends ChannelInboundHandlerAdapter
     public void channelRead(ChannelHandlerContext ctx, Object msg)
     {
         if (closed)
+        {
+            ReferenceCountUtil.release(msg);
             return;
+        }
 
         this.ctx = ctx;
         ByteBuf buffy = (ByteBuf) msg;
@@ -111,22 +115,7 @@ public class TanksOnlineServerHandler extends ChannelInboundHandlerAdapter
 
     public void sendEvent(INetworkEvent e)
     {
-        ByteBuf b = ctx.channel().alloc().buffer();
-
-        int i = NetworkEventMap.get(e.getClass());
-
-        if (i == -1)
-            throw new RuntimeException("The network event " + e.getClass() + " has not been registered!");
-
-        b.writeInt(i);
-        e.write(b);
-
-        ByteBuf b2 = ctx.channel().alloc().buffer();
-        b2.writeInt(b.readableBytes());
-        b2.writeBytes(b);
-        ctx.channel().writeAndFlush(b2);
-
-        ReferenceCountUtil.release(b);
+        ctx.channel().writeAndFlush(NetworkMessage.encode(e, ctx.channel().alloc()));
     }
 
     public void sendEventAndClose(INetworkEvent e)

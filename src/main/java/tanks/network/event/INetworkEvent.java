@@ -20,7 +20,8 @@ public interface INetworkEvent extends IEvent
         .registerTypeHandle(boolean.class, Boolean.class, ByteBuf::readBoolean, ByteBuf::writeBoolean)
         .registerTypeHandle(String.class, NetworkUtils::readString, NetworkUtils::writeString)
         .registerTypeHandle(Color.class, INetworkEvent::readColor, NetworkUtils::writeColor)
-        .registerTypeHandle(UUID.class, INetworkEvent::readUUID, INetworkEvent::writeUUID);
+        .registerTypeHandle(UUID.class, INetworkEvent::readUUID, INetworkEvent::writeUUID)
+        .registerFieldHandle(NetworkTanksON.class, String.class, NetworkUtils::readTanksON, NetworkUtils::writeTanksON);
 
     static double readDouble(ByteBuf b)
     {
@@ -34,15 +35,17 @@ public interface INetworkEvent extends IEvent
 
     static UUID readUUID(ByteBuf b)
     {
-        String s = NetworkUtils.readString(b);
-        if (s == null)
-            return null;
-        return UUID.fromString(s);
+        return b.readBoolean() ? new UUID(b.readLong(), b.readLong()) : null;
     }
 
     static void writeUUID(ByteBuf b, UUID uuid)
     {
-        NetworkUtils.writeString(b, uuid != null ? uuid.toString() : null);
+        b.writeBoolean(uuid != null);
+        if (uuid != null)
+        {
+            b.writeLong(uuid.getMostSignificantBits());
+            b.writeLong(uuid.getLeastSignificantBits());
+        }
     }
 
     static Color readColor(ByteBuf b)
@@ -67,6 +70,12 @@ public interface INetworkEvent extends IEvent
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     @interface NetworkIgnored
+    {
+    }
+
+    @Target(ElementType.FIELD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface NetworkTanksON
     {
     }
 }

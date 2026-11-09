@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 public class EventLoadLevel extends PersonalEvent
 {
+    @NetworkTanksON
     public String level;
 
     public double startTime;

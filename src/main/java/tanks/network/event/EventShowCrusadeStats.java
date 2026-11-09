@@ -14,15 +14,18 @@ public class EventShowCrusadeStats extends PersonalEvent
     public String name;
     public String levels;
     public String stats;
+    @NetworkTanksON
     public String crusade;
 
     public EventShowCrusadeStats()
     {
-        if (ScreenPartyLobby.isClient)
-            return;
+    }
 
-        this.name = Crusade.currentCrusade.name;
-        this.crusade = Crusade.currentCrusade.contents;
+    public static EventShowCrusadeStats fromCurrentCrusade()
+    {
+        EventShowCrusadeStats event = new EventShowCrusadeStats();
+        event.name = Crusade.currentCrusade.name;
+        event.crusade = Crusade.currentCrusade.contents;
 
         StringBuilder l = new StringBuilder();
 
@@ -31,7 +34,7 @@ public class EventShowCrusadeStats extends PersonalEvent
             l.append(p.toString()).append("\n");
         }
 
-        this.levels = l.toString();
+        event.levels = l.toString();
 
 
         StringBuilder s = new StringBuilder();
@@ -57,7 +60,8 @@ public class EventShowCrusadeStats extends PersonalEvent
             }
         }
 
-        this.stats = s.toString();
+        event.stats = s.toString();
+        return event;
     }
 
     @Override

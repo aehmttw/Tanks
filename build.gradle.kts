@@ -56,6 +56,9 @@ dependencies {
     // Your other existing dependencies
     api(libs.org.l33tlabs.twl.pngdecoder)
     implementation("io.netty:netty-all:4.1.94.Final")
+    // Java 8 bytecode, with native Zstandard libraries bundled for desktop platforms.
+    implementation("com.github.luben:zstd-jni:1.5.7-6")
+    testImplementation("junit:junit:4.13.2")
 //    implementation("it.unimi.dsi:fastutil-core:8.5.16")
 
     //Steamworks4j (Use files in libs folder until version 10 is available on mavenCentral
@@ -118,6 +121,54 @@ tasks.register("lint") {
 }
 
 // ---------------------------------------------------------------------------
+// ObjectBuffer property ids
+// ---------------------------------------------------------------------------
+
+// ObjectBuffers write each property id as its line number in this file. Lines are only ever
+// appended: reordering or removing one would change what saved files and other builds decode.
+val propertyIdsFile = file("src/main/resources/tankson/property_ids.txt")
+
+// Keys that Serializer.toMap and parseObject write by hand rather than through a @Property field
+val handWrittenPropertyIds = listOf("obj_type", "item_type", "bullet_type", "item", "tank", "weight", "id")
+
+val updatePropertyIds by tasks.registering {
+    description = "Appends any new @Property ids to the ObjectBuffer property id table."
+    group       = "build"
+
+    val sources = fileTree("src/main/java") { include("**/*.java") }
+    inputs.files(sources)
+    outputs.file(propertyIdsFile)
+
+    doLast {
+        // Annotations can span several lines, and id isn't always their first argument
+        val annotation = Regex("""@Property\(([^)]*)\)""")
+        val idArgument = Regex("""\bid\s*=\s*"([^"]+)"""")
+
+        val found = sortedSetOf<String>()
+        sources.forEach { source ->
+            annotation.findAll(source.readText()).forEach { a ->
+                idArgument.find(a.groupValues[1])?.let { found.add(it.groupValues[1]) }
+            }
+        }
+
+
+        val existing = if (propertyIdsFile.exists()) propertyIdsFile.readLines().filter { it.isNotBlank() } else emptyList()
+        val known = existing.toHashSet()
+        val added = (handWrittenPropertyIds + found).filter { known.add(it) }
+
+        if (added.isNotEmpty()) {
+            propertyIdsFile.parentFile.mkdirs()
+            propertyIdsFile.writeText((existing + added).joinToString("\n", postfix = "\n"))
+            logger.lifecycle("Added ${added.size} property id(s) to ${propertyIdsFile.name}: ${added.joinToString()}")
+        }
+    }
+}
+
+tasks.processResources {
+    dependsOn(updatePropertyIds)
+}
+
+// ---------------------------------------------------------------------------
 
 group = "com.aehmttw"
 version = rootProject.file("src/main/resources/version.txt").readText().trim()
@@ -133,6 +184,30 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<Test>().configureEach {
     systemProperty("file.encoding", "UTF-8")
+}
+
+tasks.register<JavaExec>("benchmarkNetwork") {
+    description = "Compares text and ObjectBuffer transfer sizes at Zstandard levels 3 and 4."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("tanks.network.NetworkCompressionBenchmark")
+}
+
+tasks.register<JavaExec>("benchmarkNetworkWire") {
+    description = "Measures complete legacy and ObjectBuffer event frames with and without Zstandard."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("tanks.network.NetworkWireBenchmark")
+}
+
+tasks.register<JavaExec>("benchmarkNetworkZstd") {
+    description = "Compares current ObjectBuffer network frames with Zstandard on and off."
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("tanks.network.NetworkZstdBenchmark")
 }
 
 tasks.withType<JavaExec>().configureEach {

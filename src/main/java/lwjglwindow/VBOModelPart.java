@@ -5,6 +5,7 @@ import basewindow.transformation.*;
 
 import org.lwjgl.BufferUtils;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -223,10 +224,10 @@ public class VBOModelPart extends ModelPart
             }
         }
 
-        vert.flip();
-        color.flip();
-        normals.flip();
-        tex.flip();
+        ((Buffer) vert).flip();
+        ((Buffer) color).flip();
+        ((Buffer) normals).flip();
+        ((Buffer) tex).flip();
 
         this.vertexVBO = window.createVBO();
         this.colorVBO = window.createVBO();

@@ -5,6 +5,7 @@ import tanks.gui.screen.*;
 import tanks.item.Item;
 import tanks.minigames.Minigame;
 import tanks.tank.*;
+import tanks.tankson.Serializer;
 
 import java.util.ArrayList;
 
@@ -26,30 +27,18 @@ public class EventLoadLevel extends PersonalEvent
 
         if (Crusade.crusadeMode)
         {
-            StringBuilder s = new StringBuilder("tanks\n");
+            // A crusade level leaves the shop and the builds to the crusade, so send the
+            // crusade's in their place - the level is sent with them as if they were its own.
+            ArrayList<Item.ShopItem> shop = l.shop;
+            ArrayList<TankPlayer.ShopTankBuild> builds = l.playerBuilds;
 
-            for (TankAIControlled t: l.customTanks)
-            {
-                s.append(t.toString()).append("\n");
-            }
+            l.shop = Crusade.currentCrusade.getShop();
+            l.playerBuilds = Crusade.currentCrusade.getBuildsShop();
 
-            s.append("shop\n");
+            this.level = Serializer.toTanksON(l);
 
-            for (Item.ShopItem i: Crusade.currentCrusade.getShop())
-            {
-                s.append(i.toString()).append("\n");
-            }
-
-            s.append("builds\n");
-
-            for (TankPlayer.ShopTankBuild i: Crusade.currentCrusade.getBuildsShop())
-            {
-                s.append(i.toString()).append("\n");
-            }
-
-            s.append("level\n");
-
-            this.level = s + level;
+            l.shop = shop;
+            l.playerBuilds = builds;
         }
 
         this.startTime = l.startTime;
@@ -77,7 +66,7 @@ public class EventLoadLevel extends PersonalEvent
             if (level.startsWith("minigame="))
                 Game.currentLevel = Game.registryMinigame.minigames.get(level.substring(level.indexOf("=") + 1)).getConstructor().newInstance();
             else
-                Game.currentLevel = new Level(level, new ArrayList<>(), true, disableFriendlyFire);
+                Game.currentLevel = Level.fromString(level, new ArrayList<>(), true, disableFriendlyFire);
 
             Game.currentLevel.startTime = startTime;
             Game.currentLevel.loadLevel();

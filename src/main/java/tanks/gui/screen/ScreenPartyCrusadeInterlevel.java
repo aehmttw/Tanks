@@ -3,7 +3,7 @@ package tanks.gui.screen;
 import tanks.*;
 import tanks.gui.Button;
 import tanks.gui.SpeedrunTimer;
-import tanks.tank.TankAIControlled;
+import tanks.tankson.Serializer;
 
 public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
 {
@@ -110,17 +110,16 @@ public class ScreenPartyCrusadeInterlevel extends Screen implements IDarkScreen
     {
         String ls = Game.currentLevelString;
 
-        StringBuilder tanks = new StringBuilder("\ntanks\n");
         if (Crusade.crusadeMode && Crusade.currentCrusade.customTanks.size() > 0)
         {
-            for (TankAIControlled t: Crusade.currentCrusade.customTanks)
-                tanks.append(t.toString()).append("\n");
-
-            ls = ls + tanks;
+            // A crusade keeps its custom tanks on the crusade, so fold them into the saved level
+            Level l = Level.parse(ls);
+            l.customTanks.addAll(Crusade.currentCrusade.customTanks);
+            ls = Serializer.toTanksON(l);
         }
 
         ScreenSaveLevel sc = new ScreenSaveLevel(System.currentTimeMillis() + "", ls, Game.screen, true);
-        Level lev = new Level(ls);
+        Level lev = Level.fromString(ls);
 
         lev.preview = true;
         lev.loadLevel(sc);

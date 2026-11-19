@@ -81,15 +81,15 @@ public class TankModels
         }
 
         @Override
-        public String serialize()
+        public Object serialize()
         {
             return this.name;
         }
 
         @Override
-        public Serializable deserialize(String s)
+        public Serializable deserialize(Object o)
         {
-            return Game.registryModelTank.tankSkins.get(s);
+            return Game.registryModelTank.tankSkins.get((String) o);
         }
     }
 

@@ -35,7 +35,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
             String level = crusade.levels.get(index + 1).levelString;
 
             ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, index + 1, previous);
-            Level l = new Level(level, crusade.customTanks);
+            Level l = Level.fromString(level, crusade.customTanks);
             l.loadLevel(s);
             Game.screen = s;
         }
@@ -51,7 +51,7 @@ public class ScreenCrusadePreviewLevel extends Screen implements ILevelPreviewSc
             String level = crusade.levels.get(index - 1).levelString;
 
             ScreenCrusadePreviewLevel s = new ScreenCrusadePreviewLevel(crusade, level, index - 1, previous);
-            Level l = new Level(level, crusade.customTanks);
+            Level l = Level.fromString(level, crusade.customTanks);
             l.loadLevel(s);
             Game.screen = s;
         }

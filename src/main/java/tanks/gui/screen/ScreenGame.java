@@ -281,7 +281,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
 
         if (!(Game.currentLevel instanceof Minigame))
         {
-            Level level = new Level(Game.currentLevelString);
+            Level level = Level.fromString(Game.currentLevelString);
             level.loadLevel();
 
             ScreenGame s = new ScreenGame();
@@ -373,7 +373,7 @@ public class ScreenGame extends Screen implements IHiddenChatboxScreen, IPartyGa
         System.gc();
         Panel.panel.zoomTimer = 0;
 
-        Level level = new Level(Game.currentLevelString);
+        Level level = Level.fromString(Game.currentLevelString);
         level.loadLevel(ScreenInterlevel.fromQuickPlay);
         Game.screen = (Screen) ScreenInterlevel.fromQuickPlay;
         Chunk.populateChunks(level, true);

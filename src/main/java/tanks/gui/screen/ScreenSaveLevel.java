@@ -103,7 +103,7 @@ public class ScreenSaveLevel extends Screen implements ILevelPreviewScreen
         ArrayList<Obstacle> obstacles = new ArrayList<>(Game.obstacles);
         Game.cleanUp();
 
-        Level l = new Level(this.level);
+        Level l = Level.fromString(this.level);
         l.loadLevel();
         Obstacle.draw_size = Game.tile_size;
 

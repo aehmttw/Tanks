@@ -75,7 +75,7 @@ public class ScreenSharedSummary extends Screen
             buttons2.add(new Button(0, 0, this.objWidth, this.objHeight, l.name.replace("_", " "), () ->
             {
                 ScreenSaveLevel sc = new ScreenSaveLevel(l.name, l.level, Game.screen);
-                Level lev = new Level(l.level);
+                Level lev = Level.fromString(l.level);
                 lev.preview = true;
                 lev.loadLevel(sc);
                 Game.screen = sc;

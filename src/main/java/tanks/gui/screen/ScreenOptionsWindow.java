@@ -197,6 +197,11 @@ public class ScreenOptionsWindow extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.textSize);

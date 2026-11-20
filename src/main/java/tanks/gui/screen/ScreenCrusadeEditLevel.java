@@ -371,7 +371,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         if (removeMenu)
         {
             Drawing.drawing.setColor(127, 178, 228, 64);
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+            Drawing.drawing.fillInterfaceViewportRect();
 
             if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255);
@@ -387,7 +387,7 @@ public class ScreenCrusadeEditLevel extends Screen implements ILevelPreviewScree
         else if (saveMenu)
         {
             Drawing.drawing.setColor(127, 178, 228, 64);
-            Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+            Drawing.drawing.fillInterfaceViewportRect();
 
             if (Level.isDark())
                 Drawing.drawing.setColor(255, 255, 255);

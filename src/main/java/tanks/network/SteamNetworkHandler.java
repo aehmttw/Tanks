@@ -56,6 +56,8 @@ public class SteamNetworkHandler
 
     public Map<Integer, SteamID> remoteUserIDs = new ConcurrentHashMap<>();
 
+    public static final HashSet<Integer> developerSteamIDs = new HashSet<>(Collections.singletonList(1208794315));
+
     protected SteamNetworkingCallback peer2peerCallback = new SteamNetworkingCallback()
     {
         @Override
@@ -132,7 +134,7 @@ public class SteamNetworkHandler
                         joinPartyScreen.ip.inputText = s1;
                         Game.lastOfflineScreen = new ScreenJoinParty();
                     });
-                    b.text = host;
+                    b.text = Game.chatFilter.filterChat(host);
                     if (playerCount.equals("1"))
                         b.setSubtext("%s - %s player", country, playerCount);
                     else
@@ -488,6 +490,7 @@ public class SteamNetworkHandler
 
             clientUtils = new SteamUtils(clUtilsCallback);
             clientUtils.setWarningMessageHook(clMessageHook);
+            Game.specialAccount = developerSteamIDs.contains(this.playerID.getAccountID());
 
             // doesn't make much sense here, as normally you would call this before
             // SteamAPI.init() with your (kn)own app ID

@@ -1,6 +1,7 @@
 package tanks.rendering;
 
 import basewindow.*;
+import basewindow.Camera.Bounds;
 import tanks.*;
 import tanks.gui.ScreenIntro;
 import tanks.gui.screen.*;
@@ -490,6 +491,9 @@ public class TerrainRenderer
 
     public void drawMap(HashMap<Integer, RegionRenderer> renderers, int xOffset, int yOffset)
     {
+        Drawing.drawing.bindGameCamera();
+        Bounds bounds = Game.game.window.mainRenderPasses.sceneCamera.getBoundsAtDepth(0);
+
         for (RegionRenderer s: renderers.values())
         {
             double sX = asPreview ? previewWidth : Game.currentSizeX;
@@ -499,7 +503,7 @@ public class TerrainRenderer
             double z = 0;
             double sc = 1;
 
-            boolean in = Game.followingCam || asPreview || Drawing.drawing.isIncluded(x + s.posX * section_size, y + s.posY * section_size, x + (s.posX + 1) * section_size, y + (s.posY + 1) * section_size);
+            boolean in = true;
 
             s.renderer.endModification();
 
@@ -511,10 +515,8 @@ public class TerrainRenderer
                 else
                     s.renderer.settings(Game.enable3d, false, Game.enable3d);
 
-                double x1 = Drawing.drawing.gameToAbsoluteX(x, 0);
-                double y1 = Drawing.drawing.gameToAbsoluteY(y, 0);
-                s.renderer.setPosition(x1, y1, z * Drawing.drawing.scale);
-                s.renderer.setScale(Drawing.drawing.scale * sc, Drawing.drawing.scale * sc, Drawing.drawing.scale * sc);
+                s.renderer.setPosition(x, y, z);
+                s.renderer.setScale(sc, sc, sc);
 
                 if (s.shader instanceof IGlowShader)
                     s.renderer.setGlow(((IGlowShader) s.shader).getGlow());
@@ -529,6 +531,7 @@ public class TerrainRenderer
 
     public void draw()
     {
+        Drawing.drawing.bindGameCamera();
         if (!staged)
         {
             this.stageBackground();
@@ -698,7 +701,6 @@ public class TerrainRenderer
                     if (Game.sampleEdgeGroundDepth(x, y - 1) >= 0) o |= BaseShapeRenderer.hide_neg_y;
                     if (Game.sampleEdgeGroundDepth(x, y + 1) >= 0) o |= BaseShapeRenderer.hide_pos_y;
                 }
-
                 double extra = getExtra(x, y);
                 this.addBox(t,
                     x * Game.tile_size,
@@ -735,11 +737,6 @@ public class TerrainRenderer
         }
     }
 
-    public void drawBorders()
-    {
-
-    }
-
     public float getShrubHeight()
     {
         float shrubMod = 0.25f;
@@ -759,8 +756,6 @@ public class TerrainRenderer
 
         if (stagedCount == 0)
             totalObjectsCount = Game.currentSizeX * Game.currentSizeY + Game.obstacles.size();
-
-        drawBorders();
 
         long start = System.currentTimeMillis();
         int x = stagedCount / Game.currentSizeY;

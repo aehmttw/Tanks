@@ -77,9 +77,15 @@ public class TankPlayerController extends TankPlayer implements ILocalPlayerTank
     public void action(boolean right)
     {
         if (!right)
+        {
             this.action1 = true;
+            Game.player.hotbar.timeSinceBulletChange = 0;
+        }
         else
+        {
             this.action2 = true;
+            Game.player.hotbar.timeSinceMineChange = 0;
+        }
 
         Item.ItemStack<?> p = this.getPrimaryAbility();
     }

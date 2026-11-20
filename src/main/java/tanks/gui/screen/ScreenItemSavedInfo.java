@@ -33,7 +33,11 @@ public class ScreenItemSavedInfo extends Screen implements IBlankBackgroundScree
     {
         Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         this.quit.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

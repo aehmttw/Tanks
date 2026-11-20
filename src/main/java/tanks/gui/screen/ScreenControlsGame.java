@@ -36,7 +36,11 @@ public class ScreenControlsGame extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         screenshot.draw();
         fullscreen.draw();
         hidePause.draw();

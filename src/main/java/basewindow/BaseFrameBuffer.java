@@ -89,4 +89,13 @@ public abstract class BaseFrameBuffer
      */
     public abstract void bindColorTexture(BaseWindow w, int which, String name);
 
+    /**
+     * Configures the number of samples used while drawing to this framebuffer.
+     * Multisampled output must be resolved before its textures can be sampled.
+     */
+    public abstract void setMultisampling(int samples);
+
+    /** Resolves a multisampled draw target into this framebuffer's textures. */
+    public abstract void resolveMultisampling();
+
 }

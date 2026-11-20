@@ -25,6 +25,11 @@ public class ScreenAntialiasingWarning extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
 
         String s = "disabled";

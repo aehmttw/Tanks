@@ -163,7 +163,11 @@ public class ScreenControlsEditor extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (page == 0)
         {
             redo.draw();

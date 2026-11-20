@@ -190,7 +190,17 @@ public class ScreenOptionsPlayerColor extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+        preview.color.set(Game.player.color);
+        preview.secondaryColor.set(Game.player.color2);
+        preview.tertiaryColor.set(Game.player.color3);
+        preview.enableTertiaryColor = Game.player.enableTertiaryColor;
 
+        preview.draw();
+    }
+
+    @Override
+    public void drawUI()
+    {
         addColor.enabled = !Game.player.enableTertiaryColor;
         removeColor.enabled = Game.player.enableSecondaryColor;
         resetColor.posX = removeColor.posX;
@@ -215,13 +225,6 @@ public class ScreenOptionsPlayerColor extends Screen
             resetColor.draw();
         else
             removeColor.draw();
-
-        preview.color.set(Game.player.color);
-        preview.secondaryColor.set(Game.player.color2);
-        preview.tertiaryColor.set(Game.player.color3);
-        preview.enableTertiaryColor = Game.player.enableTertiaryColor;
-
-        preview.draw();
 
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

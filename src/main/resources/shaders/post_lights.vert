@@ -5,7 +5,7 @@ uniform float height;
 
 uniform sampler2D depthTex;
 
-uniform mat4 invProjection;
+uniform mat4 invViewProjection;
 uniform vec4 lightPos;
 uniform vec3 lightColor;
 

@@ -119,7 +119,11 @@ public class ScreenOptionsFramerate extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (Game.framework != Game.Framework.libgdx)
             unlimited.draw();
         else

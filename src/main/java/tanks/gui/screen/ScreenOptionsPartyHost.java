@@ -143,6 +143,11 @@ public class ScreenOptionsPartyHost extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
         anticheat.draw();
         disableFriendlyFire.draw();

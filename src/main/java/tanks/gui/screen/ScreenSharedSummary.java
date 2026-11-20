@@ -119,6 +119,11 @@ public class ScreenSharedSummary extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         sharedLevels.draw();
         sharedCrusades.draw();
 

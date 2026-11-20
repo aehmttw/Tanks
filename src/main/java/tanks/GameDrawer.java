@@ -1,9 +1,10 @@
 package tanks;
 
-import basewindow.IDrawer;
-import basewindow.RenderPass;
+import basewindow.*;
 import tanks.extension.Extension;
 import tanks.gui.Firework;
+import tanks.gui.screen.DisplayCrusadeLevels;
+import tanks.gui.screen.ICrusadePreviewScreen;
 import tanks.rendering.*;
 
 public class GameDrawer implements IDrawer
@@ -11,6 +12,7 @@ public class GameDrawer implements IDrawer
     public boolean initialized = false;
     public RenderPassPostLights lightsPass;
     public RenderPassUI uiPass;
+    public ShaderShadowDepthDebug shadowDepthDebugShader;
 
     public void initialize()
     {
@@ -33,6 +35,8 @@ public class GameDrawer implements IDrawer
             this.uiPass = new RenderPassUI();
             this.uiPass.shaderUI = new ShaderUIDefault(uiPass);
             this.uiPass.shaderUI.initialize();
+            this.shadowDepthDebugShader = new ShaderShadowDepthDebug();
+            this.shadowDepthDebugShader.initialize();
 
             Firework.shader = new ShaderFireworkExplosion();
             Firework.trailShader = new ShaderFireworkExplosionTrail();
@@ -53,11 +57,29 @@ public class GameDrawer implements IDrawer
             if (!initialized)
                 this.initialize();
 
-            Game.game.window.mainRenderPasses.drawToFramebuffer = Game.fancyLights;
-            Game.game.window.mainRenderPasses.draw();
+            this.uiPass.prepareCamera();
+            // The shadow pass derives its orthographic bounds from the scene camera, so
+            // refresh it before the shadow map is generated rather than afterward.
+            Game.screen.setBasePerspective();
+            RenderPassGroupShadowDraw passes = Game.game.window.mainRenderPasses;
+            Camera sceneCamera = passes.sceneCamera;
+            DisplayCrusadeLevels preview = Game.previewCrusades && Game.screen instanceof ICrusadePreviewScreen ?
+                    ((ICrusadePreviewScreen) Game.screen).getCrusadePreview() : null;
+            if (preview != null)
+                passes.sceneCamera = preview.prepareCamera();
 
-            if (Game.fancyLights)
-                this.lightsPass.draw();
+            try
+            {
+                passes.drawToFramebuffer = Game.fancyLights;
+                passes.draw();
+
+                if (Game.fancyLights)
+                    this.lightsPass.draw();
+            }
+            finally
+            {
+                passes.sceneCamera = sceneCamera;
+            }
 
             this.uiPass.draw();
         }

@@ -111,6 +111,11 @@ public class ScreenOptionsMultiplayer extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
         autoReady.draw();
         hostOptions.draw();

@@ -25,6 +25,11 @@ public class ScreenUsernameWarning extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
 
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

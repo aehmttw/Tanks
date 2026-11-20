@@ -75,6 +75,11 @@ public class ScreenOptionsShadows extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         shadowQuality.draw();
         shadows.draw();
         back.draw();

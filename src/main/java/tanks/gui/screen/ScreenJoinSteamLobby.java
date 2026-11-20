@@ -44,7 +44,11 @@ public class ScreenJoinSteamLobby extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         parties.draw();
         back.draw();
 

@@ -110,7 +110,11 @@ public class ScreenLanguage extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         languages.draw();
 
         quit.draw();

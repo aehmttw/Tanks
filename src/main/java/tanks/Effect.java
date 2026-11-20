@@ -137,7 +137,10 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
         else if (type == EffectType.trail)
             this.maxAge = 50;
         else if (type == EffectType.ray)
+        {
             this.maxAge = 20;
+            this.glowColor.set(255, 255, 255);
+        }
         else if (type == EffectType.blockMarker)
             this.maxAge = 20;
         else if (type == EffectType.circleMarker)
@@ -1065,7 +1068,7 @@ public class Effect extends Movable implements IDrawableWithGlow, IBatchRenderab
     public double getBrightness()
     {
         if (this.type == EffectType.explosionLight)
-            return this.radius * 3;
+            return this.radius * 2;
 
         return 0;
     }

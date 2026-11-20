@@ -71,7 +71,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
             if (online)
                 this.sendEvent(new EventSendOnlineClientDetails(Game.network_protocol, Game.clientID, Game.player.username, Game.computerID));
             else
-                this.sendEvent(new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username));
+                this.sendEvent(new EventSendClientDetails(Game.getNetworkProtocol(), Game.clientID, Game.player.username));
         }
 
         ScreenPartyLobby.muted = false;
@@ -163,6 +163,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 
         Crusade.crusadeMode = false;
         Crusade.currentCrusade = null;
+        Panel.menuMusicStartTime = -1;
 
         if (steamID == null)
             ReferenceCountUtil.release(this.reader.queue);

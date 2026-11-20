@@ -111,7 +111,11 @@ public class ScreenShareCrusade extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         crusades.draw();
         search.draw();
         quit.draw();

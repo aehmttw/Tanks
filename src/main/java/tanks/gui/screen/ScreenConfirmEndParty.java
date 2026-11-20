@@ -22,6 +22,7 @@ public class ScreenConfirmEndParty extends Screen
 
         Game.players.clear();
         Game.players.add(Game.player);
+        Panel.menuMusicStartTime = -1;
 
         ScreenPartyHost.disconnectedPlayers.clear();
     }
@@ -44,7 +45,11 @@ public class ScreenConfirmEndParty extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         back.draw();
         confirm.draw();
 

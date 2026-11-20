@@ -461,21 +461,18 @@ public class Hotbar
         if (Game.playerTank == null || Game.game.window.mainRenderPasses.drawingShadow)
             return;
 
-        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.add(((ScreenGame) Game.screen).slantRotation);
         Game.game.window.loadPerspective();
 
         this.itemBar.drawCircle();
 
-        if (this.enabledAmmunitionBar)
-        {
-            drawBullets();
-            drawMines();
-            drawShields();
-        }
-
         double mx = Drawing.drawing.getInterfaceMouseX();
         double my = Drawing.drawing.getInterfaceMouseY();
+
+        if (this.enabledAmmunitionBar)
+            drawBullets();
+
+        Game.game.window.currentCamera = Game.game.window.mainRenderPasses.sceneCamera;
+        Game.game.window.loadPerspective();
 
         double z = Game.tile_size / 2 + Game.playerTank.posZ;
         if (!Game.enable3d)
@@ -532,6 +529,14 @@ public class Hotbar
             }
         }
 
+        if (this.enabledAmmunitionBar)
+        {
+            drawMines();
+            drawShields();
+        }
+
+        Drawing.drawing.bindInterfaceCamera();
+
         if (Game.currentLevel instanceof Minigame)
             ((Minigame) Game.currentLevel).drawCircleHotbar();
 
@@ -554,8 +559,6 @@ public class Hotbar
             Drawing.drawing.drawInterfaceText(mx + 17, my + 17, stackCount + "", true);
         }
 
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantTranslation);
-        Game.game.window.transformations.remove(((ScreenGame) Game.screen).slantRotation);
         Game.game.window.loadPerspective();
 
         int enemyCount = 0;
@@ -854,6 +857,7 @@ public class Hotbar
                     mcooldown = p.mineCooldownBase;
             }
 
+
             ItemMine.ItemStackMine m = null;
 
             if (Game.playerTank.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
@@ -873,6 +877,9 @@ public class Hotbar
 
                     if (m.item.mine.maxLiveMines == 0)
                         mines = -1;
+
+                    if (m.item.cooldownBase > mcooldown)
+                        mcooldown = m.item.cooldownBase;
                 }
 
                 if (m.stackSize > 0)
@@ -963,7 +970,11 @@ public class Hotbar
             if (s != null)
             {
                 if (!clientPlaying)
+                {
                     cooldownFrac2 = s.cooldown / s.item.cooldownBase;
+                    if (s.item.cooldownBase > mcooldown)
+                        mcooldown = s.item.cooldownBase;
+                }
 
                 remainingItems = s.stackSize;
             }

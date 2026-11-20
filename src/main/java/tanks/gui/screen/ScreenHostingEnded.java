@@ -48,6 +48,11 @@ public class ScreenHostingEnded extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
         Drawing.drawing.drawInterfaceText(this.centerX, this.centerY - this.objYSpace, this.reason);

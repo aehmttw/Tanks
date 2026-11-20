@@ -122,7 +122,11 @@ public class ScreenOptionsMisc extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         back.draw();
         previewCrusades.draw();
         fullStats.draw();

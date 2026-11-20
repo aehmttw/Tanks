@@ -215,7 +215,8 @@ public class SoundPlayer extends BaseSoundPlayer
 
         if (continueID != null && continueID.equals(this.musicID))
         {
-            alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, alGetSourcef(prevMusic, EXTOffset.AL_SEC_OFFSET));
+            if (prevMusic != -1)
+                this.seekMusicSource(sourcePointer, alGetSourcef(prevMusic, EXTOffset.AL_SEC_OFFSET));
             alSourcef(sourcePointer, AL_GAIN, 0);
             alSourcef(sourcePointer, AL_PITCH, musicSpeed);
 
@@ -274,8 +275,8 @@ public class SoundPlayer extends BaseSoundPlayer
         alSourcei(sourcePointer, AL_BUFFER, bufferPointer);
         alSourcei(sourcePointer, AL_LOOPING, loop);
         alSourcef(sourcePointer, AL_PITCH, musicSpeed);
-        float pos = alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET);
-        alSourcef(sourcePointer, EXTOffset.AL_SEC_OFFSET, pos);
+        if (currentMusic != -1)
+            this.seekMusicSource(sourcePointer, alGetSourcef(currentMusic, EXTOffset.AL_SEC_OFFSET));
         this.syncedTracks.put(path, sourcePointer);
 
         if (fadeTime <= 0)
@@ -342,12 +343,42 @@ public class SoundPlayer extends BaseSoundPlayer
     @Override
     public void setMusicPos(float pos)
     {
-        alSourcef(this.currentMusic, EXTOffset.AL_SEC_OFFSET, pos);
-        alSourcef(this.prevMusic, EXTOffset.AL_SEC_OFFSET, pos);
+        if (!Float.isFinite(pos) || pos < 0)
+            return;
+
+        this.seekMusicSource(this.currentMusic, pos);
+        this.seekMusicSource(this.prevMusic, pos);
         this.musicStart = System.currentTimeMillis() - (long) (pos * 1000);
 
         for (int i: this.syncedTracks.values())
-            alSourcef(i, EXTOffset.AL_SEC_OFFSET, pos);
+            this.seekMusicSource(i, pos);
+    }
+
+    private void seekMusicSource(int source, float pos)
+    {
+        if (source <= 0)
+            return;
+
+        int buffer = alGetSourcei(source, AL_BUFFER);
+        if (buffer == 0)
+            return;
+
+        double bitsPerSecond = (double) alGetBufferi(buffer, AL_BITS) * alGetBufferi(buffer, AL_CHANNELS) * alGetBufferi(buffer, AL_FREQUENCY);
+        int bytes = alGetBufferi(buffer, AL_SIZE);
+        if (bitsPerSecond <= 0 || bytes <= 0)
+            return;
+
+        double duration = bytes * 8.0 / bitsPerSecond;
+        if (alGetSourcei(source, AL_LOOPING) == AL_TRUE)
+        {
+            pos = (float) (pos % duration);
+            if (pos >= duration)
+                pos = 0;
+        }
+        else if (pos >= duration)
+            return;
+
+        alSourcef(source, EXTOffset.AL_SEC_OFFSET, pos);
     }
 
     @Override

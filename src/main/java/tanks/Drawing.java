@@ -52,6 +52,7 @@ public class Drawing
 
     public int statsHeight = 0;
     public boolean enableStats = false;
+    public boolean showFrameGraph = false;
 
     public boolean movingCamera = true;
 
@@ -631,23 +632,7 @@ public class Drawing
             window.bindCamera(window.mainRenderPasses.shadowCamera, 0, 0, size, size);
         }
         else
-            this.bindViewportCamera(window.mainRenderPasses.sceneCamera);
-    }
-
-    /** Prepares logical interface coordinates before any scene or UI drawing begins. */
-    public void prepareInterfaceCamera()
-    {
-        BaseWindow window = Game.game.window;
-        window.interfaceCameraLogicalWidth = this.baseInterfaceSizeX;
-        window.interfaceCameraLogicalHeight = this.baseInterfaceSizeY;
-        window.interfaceCameraHeightOffset = this.statsHeight;
-        window.interfaceCamera.clearAdjustments();
-        window.interfaceCamera.getOrientation().setIdentity();
-        window.interfaceCamera.resetToBounds(0, window.interfaceCameraLogicalWidth,
-                0, window.interfaceCameraLogicalHeight, window.absoluteDepth);
-        window.interfaceCamera.setAspectRatio(window.absoluteWidth / Math.max(1, window.absoluteHeight - this.statsHeight));
-        window.interfaceCamera.setViewportBottomExtension(Game.screen.drawBehindInfoBar ?
-                this.statsHeight / Math.max(1, window.absoluteHeight - this.statsHeight) : 0);
+            this.bindSceneCamera(window);
     }
 
     /**
@@ -656,29 +641,19 @@ public class Drawing
      */
     public boolean bindInterfaceCamera()
     {
-        if (Game.game.window.mainRenderPasses.drawingShadow)
-            return false;
-
-        this.bindViewportCamera(Game.game.window.interfaceCamera);
-        return true;
+        return Game.drawer.uiPass.bindCamera();
     }
 
-    private void bindViewportCamera(Camera camera)
+    private void bindSceneCamera(BaseWindow window)
     {
-        BaseWindow window = Game.game.window;
         int viewportY = 0;
         // The offscreen scene is composited into the stats-bar viewport afterward.
         boolean offscreenScene = window.currentRenderPass == window.mainRenderPasses.drawPass &&
                 window.mainRenderPasses.drawToFramebuffer;
         if (!offscreenScene && window.absoluteHeight > 0)
-        {
-            double heightOffset = camera == window.mainRenderPasses.sceneCamera ? window.sceneCameraHeightOffset : window.interfaceCameraHeightOffset;
-            if (camera == window.interfaceCamera && Game.screen.drawBehindInfoBar)
-                heightOffset = 0;
-            viewportY = (int) Math.round(heightOffset * window.frameBufferHeight / window.absoluteHeight);
-        }
+            viewportY = (int) Math.round(window.sceneCameraHeightOffset * window.frameBufferHeight / window.absoluteHeight);
 
-        window.bindCamera(camera, 0, viewportY, window.frameBufferWidth,
+        window.bindCamera(window.mainRenderPasses.sceneCamera, 0, viewportY, window.frameBufferWidth,
                 Math.max(1, window.frameBufferHeight - viewportY));
     }
 
@@ -1158,8 +1133,8 @@ public class Drawing
         this.fillInterfaceRect(
                 this.interfaceSizeX / 2,
                 this.interfaceSizeY / 2,
-                Game.game.window.interfaceCamera.getCurrentSizeX() + 1,
-                Game.game.window.interfaceCamera.getCurrentSizeY() + 1
+                Game.drawer.uiPass.interfaceCamera.getCurrentSizeX() + 1,
+                Game.drawer.uiPass.interfaceCamera.getCurrentSizeY() + 1
         );
     }
 

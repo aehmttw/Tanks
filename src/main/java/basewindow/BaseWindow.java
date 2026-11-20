@@ -97,12 +97,8 @@ public abstract class BaseWindow
     public double zOffset = 0;
 
     public Camera screenCamera;
-    public Camera interfaceCamera;
     /** The camera currently bound for rendering. Render passes own their cameras. */
     public Camera currentCamera;
-    public double interfaceCameraLogicalWidth;
-    public double interfaceCameraLogicalHeight;
-    public double interfaceCameraHeightOffset;
     /** Bottom strip excluded from scene presentation, independently of the UI viewport. */
     public double sceneCameraHeightOffset;
 
@@ -151,10 +147,6 @@ public abstract class BaseWindow
         this.showMouseOnLaunch = showMouse;
 
         this.screenCamera = new Camera("screen", 0, x, 0, y, this.absoluteDepth);
-        this.interfaceCamera = new Camera("interface", 0, 1400, 0, 900, this.absoluteDepth);
-        this.interfaceCameraLogicalWidth = 1400;
-        this.interfaceCameraLogicalHeight = 900;
-        this.interfaceCameraHeightOffset = 0;
 
         if (System.getProperties().toString().contains("Mac OS X"))
             mac = true;

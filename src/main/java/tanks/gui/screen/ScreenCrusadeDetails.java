@@ -229,6 +229,12 @@ public class ScreenCrusadeDetails extends Screen implements ICrusadePreviewScree
     }
 
     @Override
+    public DisplayCrusadeLevels getCrusadePreview()
+    {
+        return this.background;
+    }
+
+    @Override
     public void draw()
     {
         if (Game.previewCrusades)

@@ -535,8 +535,7 @@ public class Hotbar
             drawShields();
         }
 
-        Game.game.window.currentCamera = Game.game.window.interfaceCamera;
-        Game.game.window.loadPerspective();
+        Drawing.drawing.bindInterfaceCamera();
 
         if (Game.currentLevel instanceof Minigame)
             ((Minigame) Game.currentLevel).drawCircleHotbar();
@@ -858,6 +857,7 @@ public class Hotbar
                     mcooldown = p.mineCooldownBase;
             }
 
+
             ItemMine.ItemStackMine m = null;
 
             if (Game.playerTank.getSecondaryAbility() instanceof ItemMine.ItemStackMine)
@@ -877,6 +877,9 @@ public class Hotbar
 
                     if (m.item.mine.maxLiveMines == 0)
                         mines = -1;
+
+                    if (m.item.cooldownBase > mcooldown)
+                        mcooldown = m.item.cooldownBase;
                 }
 
                 if (m.stackSize > 0)
@@ -967,7 +970,11 @@ public class Hotbar
             if (s != null)
             {
                 if (!clientPlaying)
+                {
                     cooldownFrac2 = s.cooldown / s.item.cooldownBase;
+                    if (s.item.cooldownBase > mcooldown)
+                        mcooldown = s.item.cooldownBase;
+                }
 
                 remainingItems = s.stackSize;
             }

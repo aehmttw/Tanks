@@ -546,6 +546,11 @@ public class TankPlayer extends TankPlayable implements ILocalPlayerTank, IServe
         if (Game.bulletLocked || this.destroy)
             return;
 
+        if (right)
+            Game.player.hotbar.timeSinceMineChange = 0;
+        else
+            Game.player.hotbar.timeSinceBulletChange = 0;
+
         if (Game.player.hotbar.itemBar.getSelectedAction(right) != this.lastItem && this.bufferCooldown > 0)
             return;
 

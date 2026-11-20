@@ -886,6 +886,12 @@ public class ScreenCrusadeStats extends Screen implements IDarkScreen, IHiddenCh
     }
 
     @Override
+    public DisplayCrusadeLevels getCrusadePreview()
+    {
+        return this.background;
+    }
+
+    @Override
     public void draw()
     {
         if (Game.previewCrusades)

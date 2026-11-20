@@ -1,7 +1,8 @@
 package tanks.gui.screen;
 
+import basewindow.BaseWindow;
 import basewindow.Camera;
-import basewindow.transformation.Matrix4;
+import basewindow.RenderPassGroupShadowDraw;
 import tanks.*;
 import tanks.obstacle.Obstacle;
 import tanks.rendering.StaticTerrainRenderer;
@@ -30,10 +31,8 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
     }
 
     protected ArrayList<IDrawable>[] drawables = (ArrayList<IDrawable>[]) (new ArrayList[10]);
-    protected final Matrix4 savedAdjustment = new Matrix4();
+    private final Camera previewCamera;
     private final double[] modelTranslation = new double[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-
-    double shadowScaleNum = 0.2;
 
     protected ArrayList<ScreenLevel> levels = new ArrayList<>();
     protected HashMap<Integer, ScreenLevel> levelsPos = new HashMap<>();
@@ -75,6 +74,9 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
         this.crusade = c;
         this.minBgWidth = 100;
+        Drawing drawing = Drawing.drawing;
+        this.previewCamera = new Camera("crusade preview", 0, drawing.baseInterfaceSizeX,
+                0, drawing.baseInterfaceSizeY, Game.game.window.absoluteDepth);
     }
 
     public void initialize(ScreenLevel l)
@@ -108,11 +110,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
         TerrainRenderer r = Drawing.drawing.terrainRenderer;
         Drawing.drawing.terrainRenderer = l.renderer;
 
-        this.drawBgRect = false;
-        this.stageOnly = true;
-        this.drawDefaultBackground();
-        this.drawBgRect = true;
-        this.stageOnly = false;
+        l.renderer.stage();
 
         Drawing.drawing.terrainRenderer = r;
 
@@ -158,33 +156,58 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
 
     public double getLevelPos(double i)
     {
-        if (allLoaded)
-            return (i + index * 10) % index;
-        else
+        if (!allLoaded)
             return i;
+
+        double pos = i % index;
+        return pos < 0 ? pos + index : pos;
     }
 
+    /** Set up once before drawing so the light pass can frame the same scrolling scene. */
+    public Camera prepareCamera()
+    {
+        BaseWindow window = Game.game.window;
+        Drawing drawing = Drawing.drawing;
+        double depth = window.absoluteDepth;
+        double usableHeight = Math.max(1, window.absoluteHeight - drawing.statsHeight);
+        this.previewCamera.resetToBounds(0, drawing.baseInterfaceSizeX, 0, drawing.baseInterfaceSizeY, depth);
+        this.previewCamera.setAspectRatio(Math.max(1, window.absoluteWidth) / usableHeight);
+        if (Game.enable3d)
+        {
+            // Tilt around the visible ground, keeping the horizon above even tall windows.
+            double pitch = Math.min(Math.PI / 4, Math.atan2(depth, this.previewCamera.getHalfHeightAtDepth(0)) * 0.65);
+            this.previewCamera.worldAdjustment.setRotationAroundX(pitch, this.previewCamera.posY, 0);
+        }
+        else
+            this.previewCamera.worldAdjustment.setIdentity();
+        this.previewCamera.updateView();
+        this.age += Panel.frameFrequency;
+        return this.previewCamera;
+    }
+
+    @Override
     public void draw()
     {
+        RenderPassGroupShadowDraw passes = Game.game.window.mainRenderPasses;
         TerrainRenderer r = Drawing.drawing.terrainRenderer;
-        double prevShadow = Game.game.window.mainRenderPasses.shadowCoverage;
-        Game.game.window.mainRenderPasses.shadowCoverage = this.shadowScaleNum;
-        Camera camera = Game.game.window.currentCamera;
-        this.savedAdjustment.set(camera.worldAdjustment);
-
-        if (Game.enable3d && !Game.game.window.mainRenderPasses.drawingShadow)
-        {
-            camera.worldAdjustment.setRotationAroundX(Math.PI / 4, 0, -Game.game.window.absoluteDepth);
-        }
-
-        Game.game.window.loadPerspective();
-
-        if (Game.game.window.mainRenderPasses.currentPassNumber == 0)
-            this.age += Panel.frameFrequency;
-
         ArrayList<Movable> movables = Game.movables;
         ArrayList<Obstacle> obstacles = Game.obstacles;
+        try
+        {
+            Drawing.drawing.bindGameCamera();
+            this.drawLevels(movables, obstacles, passes.drawingShadow);
+        }
+        finally
+        {
+            Drawing.drawing.terrainRenderer = r;
+            Game.movables = movables;
+            Game.obstacles = obstacles;
+            Drawing.drawing.bindGameCamera();
+        }
+    }
 
+    private void drawLevels(ArrayList<Movable> movables, ArrayList<Obstacle> obstacles, boolean drawingShadow)
+    {
         if (!initialized)
         {
             ScreenLevel l0 = new ScreenLevel();
@@ -204,15 +227,18 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
             l.levelString = "{28,18||10000-0-player}";
         }
 
-        double indexStart = getLevelPos(this.age / 10);
+        double indexStart = this.age / 10;
         int iindexStart = (int) indexStart;
         double rem = indexStart - iindexStart;
 
         this.initialized = true;
 
-        for (int i = -28; i <= 28 * 2; i++)
+        Camera.Bounds bounds = this.previewCamera.getBoundsAtDepth(0);
+        int firstRow = (int) Math.floor(rem - bounds.bottom / Game.tile_size) - 1;
+        int lastRow = (int) Math.ceil(rem - bounds.top / Game.tile_size) + 2;
+        for (int i = firstRow; i <= lastRow; i++)
         {
-            if (i == 28 * 2 || this.levelsPos.get((int) getLevelPos(i + iindexStart)) != null)
+            if (i == firstRow || i == lastRow || this.levelsPos.get((int) getLevelPos(i + iindexStart)) != null)
             {
                 int j = (int) getLevelPos(i + iindexStart);
                 ScreenLevel l;
@@ -243,9 +269,6 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                             allLoaded = true;
                     }
                 }
-
-                if (l == null)
-                    break;
 
                 Drawing.drawing.terrainRenderer = l.renderer;
 
@@ -283,7 +306,7 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
                             d.draw();
                     }
 
-                    if (Game.glowEnabled)
+                    if (Game.glowEnabled && !drawingShadow)
                     {
                         for (IDrawable d: drawable)
                         {
@@ -299,14 +322,6 @@ public class DisplayCrusadeLevels extends Screen implements ILevelPreviewScreen
             }
         }
 
-        Drawing.drawing.terrainRenderer = r;
-
-        Game.movables = movables;
-        Game.obstacles = obstacles;
-
-        camera.worldAdjustment.set(this.savedAdjustment);
-        Game.game.window.loadPerspective();
-        Game.game.window.mainRenderPasses.shadowCoverage = prevShadow;
     }
 
     @Override

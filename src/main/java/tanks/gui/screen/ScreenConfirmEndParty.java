@@ -22,6 +22,7 @@ public class ScreenConfirmEndParty extends Screen
 
         Game.players.clear();
         Game.players.add(Game.player);
+        Panel.menuMusicStartTime = -1;
 
         ScreenPartyHost.disconnectedPlayers.clear();
     }

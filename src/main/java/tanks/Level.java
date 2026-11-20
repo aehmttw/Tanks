@@ -479,6 +479,7 @@ public class Level
 
     public void loadLevel(ILevelPreviewScreen sc)
     {
+        Panel.menuMusicStartTime = -1;
         Game.playerTank = null;
         Game.currentLevel = this;
         Game.currentLevelString = this.levelString;

@@ -115,8 +115,6 @@ public class RenderPassGroupShadowDraw
 
         this.shadowCamera.setProjectionType(Camera.Projection.orthographic);
         this.shadowCamera.resetToBounds(left, right, top, bottom, this.window.absoluteDepth);
-        // The shadow camera is positioned at absoluteDepth. This covers the same
-        // world-space z range as the legacy shadow glOrtho(-absoluteDepth, absoluteDepth).
         this.shadowCamera.setClipPlanes(this.window.absoluteDepth * 0.1, this.window.absoluteDepth * 2);
         this.shadowCamera.posZ = this.window.absoluteDepth;
         this.shadowCamera.updateView();

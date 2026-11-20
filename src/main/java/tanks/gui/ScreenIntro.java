@@ -176,8 +176,9 @@ public class ScreenIntro extends Screen
         if (!(nextScreen instanceof ScreenGame))
         {
             nextScreen.setupLayoutParameters();
-            window.interfaceCamera.worldAdjustment.setTranslation(0, 0, (1 - frac) * 2 * window.absoluteDepth);
-            window.interfaceCamera.updateView();
+            Camera interfaceCamera = Game.drawer.uiPass.interfaceCamera;
+            interfaceCamera.worldAdjustment.setTranslation(0, 0, (1 - frac) * 2 * window.absoluteDepth);
+            interfaceCamera.updateView();
             Drawing.drawing.bindInterfaceCamera();
             try
             {
@@ -185,7 +186,7 @@ public class ScreenIntro extends Screen
             }
             finally
             {
-                window.interfaceCamera.clearAdjustments();
+                interfaceCamera.clearAdjustments();
                 Drawing.drawing.bindInterfaceCamera();
             }
         }

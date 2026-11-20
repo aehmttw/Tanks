@@ -136,7 +136,6 @@ public abstract class Screen implements IBatchRenderableObject
     public void setBasePerspective()
     {
         double usableHeight = Math.max(1, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
-        double targetScale = Math.max(0.0001, Drawing.drawing.scale);
         double gameWidth = Drawing.drawing.sizeX;
         double gameHeight = Drawing.drawing.sizeY;
         boolean orthographic = Game.game.window.orthographic;
@@ -152,21 +151,11 @@ public abstract class Screen implements IBatchRenderableObject
         Game.game.window.sceneCameraHeightOffset = Game.screen.drawBehindInfoBar ? 0 : Drawing.drawing.statsHeight;
         activeCamera.setViewportBottomExtension((Drawing.drawing.statsHeight - Game.game.window.sceneCameraHeightOffset) / usableHeight);
 
+        activeCamera.setProjectionType(orthographic ? Camera.Projection.orthographic : Camera.Projection.perspective);
+        activeCamera.updateSize(0, Game.game.window.absoluteWidth, 0, usableHeight, Game.game.window.absoluteDepth);
+        activeCamera.setZoom(Drawing.drawing.scale);
         if (orthographic)
-        {
-            activeCamera.setProjectionType(Camera.Projection.orthographic);
-            activeCamera.updateSize(0, Game.game.window.absoluteWidth, 0, usableHeight, Game.game.window.absoluteDepth);
-            activeCamera.setAspectRatio(Game.game.window.absoluteWidth / usableHeight);
-            activeCamera.setZoom(targetScale);
             activeCamera.posZ = Game.game.window.absoluteDepth / 2.0;
-        }
-        else
-        {
-            activeCamera.setProjectionType(Camera.Projection.perspective);
-            activeCamera.updateSize(0, Game.game.window.absoluteWidth, 0, usableHeight, Game.game.window.absoluteDepth);
-            activeCamera.setAspectRatio(Game.game.window.absoluteWidth / usableHeight);
-            activeCamera.setZoom(targetScale);
-        }
 
         double visibleWidth = activeCamera.getVisibleSizeX(0);
         double visibleHeight = activeCamera.getVisibleSizeY(0);
@@ -257,11 +246,13 @@ public abstract class Screen implements IBatchRenderableObject
         if ((this instanceof IConditionalOverlayScreen && !((IConditionalOverlayScreen) this).isOverlayEnabled()) || this instanceof IBlankBackgroundScreen)
             return;
 
+        // Light positions and sizes use the same game units as the reconstructed scene depth.
         for (Obstacle o: Game.obstacles)
         {
             if (o instanceof IDrawableLightSource && ((IDrawableLightSource) o).lit())
             {
-                Game.drawer.lightsPass.drawLight((IDrawableLightSource) o, Drawing.drawing.gameToAbsoluteX(o.posX, 0),  Drawing.drawing.gameToAbsoluteY(o.posY, 0), (o.posZ + Game.tile_size / 2) * Drawing.drawing.scale, ((IDrawableLightSource) o).getBrightness() * Drawing.drawing.scale);
+                IDrawableLightSource light = (IDrawableLightSource) o;
+                Game.drawer.lightsPass.drawLight(light, o.posX, o.posY, o.posZ + Game.tile_size / 2, light.getBrightness());
             }
         }
 
@@ -269,14 +260,15 @@ public abstract class Screen implements IBatchRenderableObject
         {
             if (m instanceof IDrawableLightSource && ((IDrawableLightSource) m).lit())
             {
-                Game.drawer.lightsPass.drawLight((IDrawableLightSource) m, Drawing.drawing.gameToAbsoluteX(m.posX, 0),  Drawing.drawing.gameToAbsoluteY(m.posY, 0), m.posZ * Drawing.drawing.scale, ((IDrawableLightSource) m).getBrightness() * Drawing.drawing.scale);
+                IDrawableLightSource light = (IDrawableLightSource) m;
+                Game.drawer.lightsPass.drawLight(light, m.posX, m.posY, m.posZ, light.getBrightness());
             }
         }
 
         for (Effect e: Game.effects)
         {
             if (e.lit())
-                Game.drawer.lightsPass.drawLight(e, Drawing.drawing.gameToAbsoluteX(e.posX, 0),  Drawing.drawing.gameToAbsoluteY(e.posY, 0), e.posZ * Drawing.drawing.scale, e.getBrightness() * Drawing.drawing.scale);
+                Game.drawer.lightsPass.drawLight(e, e.posX, e.posY, e.posZ, e.getBrightness());
         }
 
         Game.game.window.loadPerspective();

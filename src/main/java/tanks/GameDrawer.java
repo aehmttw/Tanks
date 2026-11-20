@@ -1,9 +1,10 @@
 package tanks;
 
-import basewindow.IDrawer;
-import basewindow.RenderPass;
+import basewindow.*;
 import tanks.extension.Extension;
 import tanks.gui.Firework;
+import tanks.gui.screen.DisplayCrusadeLevels;
+import tanks.gui.screen.ICrusadePreviewScreen;
 import tanks.rendering.*;
 
 public class GameDrawer implements IDrawer
@@ -56,16 +57,29 @@ public class GameDrawer implements IDrawer
             if (!initialized)
                 this.initialize();
 
-            Game.game.window.interfaceCameraHeightOffset = Drawing.drawing.statsHeight;
-            Drawing.drawing.prepareInterfaceCamera();
+            this.uiPass.prepareCamera();
             // The shadow pass derives its orthographic bounds from the scene camera, so
             // refresh it before the shadow map is generated rather than afterward.
             Game.screen.setBasePerspective();
-            Game.game.window.mainRenderPasses.drawToFramebuffer = Game.fancyLights;
-            Game.game.window.mainRenderPasses.draw();
+            RenderPassGroupShadowDraw passes = Game.game.window.mainRenderPasses;
+            Camera sceneCamera = passes.sceneCamera;
+            DisplayCrusadeLevels preview = Game.previewCrusades && Game.screen instanceof ICrusadePreviewScreen ?
+                    ((ICrusadePreviewScreen) Game.screen).getCrusadePreview() : null;
+            if (preview != null)
+                passes.sceneCamera = preview.prepareCamera();
 
-            if (Game.fancyLights)
-                this.lightsPass.draw();
+            try
+            {
+                passes.drawToFramebuffer = Game.fancyLights;
+                passes.draw();
+
+                if (Game.fancyLights)
+                    this.lightsPass.draw();
+            }
+            finally
+            {
+                passes.sceneCamera = sceneCamera;
+            }
 
             this.uiPass.draw();
         }

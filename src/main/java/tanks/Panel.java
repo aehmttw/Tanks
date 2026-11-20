@@ -43,6 +43,7 @@ public class Panel
     public static Panel panel;
 
     public static boolean forceRefreshMusic;
+    public static long menuMusicStartTime = -1;
 
     public static String winlose = "";
     public static boolean win = false;
@@ -724,7 +725,15 @@ public class Panel
             if (Game.stringsEqual(prevScreen.musicID, Game.screen.musicID))
                 this.playScreenMusic(500);
             else
+            {
                 this.playScreenMusic(0);
+                if (menuMusicStartTime < 0 && "menu".equals(Game.screen.musicID))
+                {
+                    Panel.menuMusicStartTime = System.currentTimeMillis();
+                    if (!(ScreenPartyHost.isServer && !Game.syncPartyMusic))
+                        Game.eventsOut.add(new EventSyncMusic());
+                }
+            }
         }
 
         forceRefreshMusic = false;
@@ -771,7 +780,15 @@ public class Panel
         if (Game.screen.music == null)
             Drawing.drawing.stopMusic();
         else if (Panel.panel.startMusicPlayed)
+        {
             Drawing.drawing.playMusic(Game.screen.music, Game.musicVolume, true, Game.screen.musicID, fadeTime);
+            if (Game.game.window.soundsEnabled && Game.musicEnabled &&
+                    "menu".equals(Game.screen.musicID) && menuMusicStartTime > 0)
+            {
+                float elapsed = Math.max(0L, System.currentTimeMillis() - menuMusicStartTime) / 1000f;
+                Game.game.window.soundPlayer.setMusicPos(elapsed);
+            }
+        }
     }
 
     public void draw()
@@ -1292,10 +1309,13 @@ public class Panel
                 offset + (int) (Panel.windowHeight - 40 + 22), 0.4, 0.4, s);
         }
 
-        for (int i = 0; i < this.lastFrameDurations.length; i++)
+        if (Drawing.drawing.showFrameGraph)
         {
-            Drawing.drawing.setColor(255, 255, 255, 255 - 255.0 * ((this.lastFrameIndex - 1 - i + this.lastFrameDurations.length) % this.lastFrameDurations.length) / this.lastFrameDurations.length);
-            Game.game.window.shapeRenderer.fillRect(500 + i, Panel.windowHeight - this.lastFrameDurations[i], 1, this.lastFrameDurations[i]);
+            for (int i = 0; i < this.lastFrameDurations.length; i++)
+            {
+                Drawing.drawing.setColor(255, 255, 255, 255 - 255.0 * ((this.lastFrameIndex - 1 - i + this.lastFrameDurations.length) % this.lastFrameDurations.length) / this.lastFrameDurations.length);
+                Game.game.window.shapeRenderer.fillRect(500 + i, Panel.windowHeight - this.lastFrameDurations[i], 1, this.lastFrameDurations[i]);
+            }
         }
     }
 

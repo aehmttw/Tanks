@@ -45,7 +45,8 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
         if (this.clientID == null || Game.isOnlineServer || !ScreenPartyHost.isServer)
             return;
 
-        if (this.version != Game.network_protocol)
+        boolean special = this.version < 0;
+        if (Math.abs(this.version) != Game.network_protocol)
         {
             s.sendEventAndClose(new EventKick("You must be using " + Game.version + " to join this party!"));
             return;
@@ -118,6 +119,8 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
         Game.players.add(s.player);
 
         s.sendEvent(new EventConnectionSuccess());
+        if (Game.game.window.soundPlayer != null && Game.syncPartyMusic)
+            s.sendEvent(new EventSyncMusic((long) (Game.game.window.soundPlayer.getMusicPos() * 1000)));
         s.sendEvent(new EventAnnounceConnection(new ConnectedPlayer(Game.clientID, Game.player.username), true));
         s.sendEvent(new EventUpdateTankColors(Game.player));
 
@@ -138,6 +141,14 @@ public class EventSendClientDetails extends PersonalEvent implements IServerThre
         }
 
         Game.eventsOut.add(new EventChat("\u00A7000127255255" + this.username + " has joined the party\u00A7000000000255"));
+
+        if (s.steamID != null && SteamNetworkHandler.developerSteamIDs.contains(s.steamID.getAccountID()) && special)
+        {
+            String st = "\u00A7060000255255(By the way, " + s.username + " is the main developer of this game)\u00A7000000000255";
+            ScreenPartyHost.chat.add(0, new ChatMessage(st));
+            Game.eventsOut.add(new EventChat(st));
+        }
+
         s.joined = true;
 
         for (int i = 0; i < s.server.connections.size(); i++)

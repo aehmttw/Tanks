@@ -121,7 +121,7 @@ public class ScreenJoinParty extends Screen
                         }
 
                         SteamID target = Game.steamNetworkHandler.send(Game.steamNetworkHandler.currentLobby,
-                            new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
+                            new EventSendClientDetails(Game.getNetworkProtocol(), Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
 
                         while (true)
                         {
@@ -188,7 +188,7 @@ public class ScreenJoinParty extends Screen
                 }
 
                 SteamID target = Game.steamNetworkHandler.send(id,
-                    new EventSendClientDetails(Game.network_protocol, Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
+                    new EventSendClientDetails(Game.getNetworkProtocol(), Game.clientID, Game.player.username), SteamNetworking.P2PSend.Reliable);
 
                 clientThread = new Thread(new Runnable()
                 {

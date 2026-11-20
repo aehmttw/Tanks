@@ -400,10 +400,6 @@ public class LWJGLWindow extends BaseWindow
         this.screenCamera.resetToBounds(0, absoluteWidth, 0, absoluteHeight, absoluteDepth);
         this.screenCamera.setProjectionType(basewindow.Camera.Projection.orthographic);
 
-        this.interfaceCamera.resetToBounds(0, this.interfaceCameraLogicalWidth, 0, this.interfaceCameraLogicalHeight, absoluteDepth);
-        double usableHeight = Math.max(1, absoluteHeight - this.interfaceCameraHeightOffset);
-        this.interfaceCamera.setAspectRatio(absoluteWidth / usableHeight);
-
         focused = glfwGetWindowAttrib(window, GLFW_FOCUSED) == GLFW_TRUE;
 
         if (constrainMouse)

@@ -304,6 +304,12 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
     }
 
     @Override
+    public DisplayCrusadeLevels getCrusadePreview()
+    {
+        return this.background;
+    }
+
+    @Override
     public void draw()
     {
         if (Game.previewCrusades)
@@ -320,15 +326,15 @@ public class ScreenCrusadePreview extends Screen implements ICrusadePreviewScree
     @Override
     public void drawUI()
     {
-        if (confirmingDelete)
+        if (Game.previewCrusades)
         {
-            double width = 0.7;
-            if (workshopDetails != null)
-                width = 0.85;
+            double width = workshopDetails == null ? 0.7 : 0.85;
             Drawing.drawing.setColor(0, 0, 0, 127);
             Drawing.drawing.drawPopup(this.centerX, this.centerY, Drawing.drawing.baseInterfaceSizeX * width, this.objYSpace * 11 - offset * 2);
-            Drawing.drawing.setColor(255, 255, 255);
+        }
 
+        if (confirmingDelete)
+        {
             Drawing.drawing.setColor(0, 0, 0, 127);
             Drawing.drawing.drawPopup(this.centerX, this.centerY, 700, 350);
 

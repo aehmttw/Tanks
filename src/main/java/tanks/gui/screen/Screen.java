@@ -149,7 +149,8 @@ public abstract class Screen implements IBatchRenderableObject
         }
 
         Game.game.window.sceneCameraHeightOffset = Game.screen.drawBehindInfoBar ? 0 : Drawing.drawing.statsHeight;
-        activeCamera.setViewportBottomExtension((Drawing.drawing.statsHeight - Game.game.window.sceneCameraHeightOffset) / usableHeight);
+        activeCamera.setViewportExtensions(0, 0, 0,
+                (Drawing.drawing.statsHeight - Game.game.window.sceneCameraHeightOffset) / usableHeight);
 
         activeCamera.setProjectionType(orthographic ? Camera.Projection.orthographic : Camera.Projection.perspective);
         activeCamera.updateSize(0, Game.game.window.absoluteWidth, 0, usableHeight, Game.game.window.absoluteDepth);

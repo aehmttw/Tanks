@@ -31,18 +31,19 @@ public class FrameBuffer extends BaseFrameBuffer
     protected int lastWindowSizeX = -1;
     protected int lastWindowSizeY = -1;
     protected int multisampleSamples = 0;
+    private int[] drawAttachments;
 
     public FrameBuffer()
     {
         this.framebuffer = glGenFramebuffersEXT();
     }
 
-    public void createDepthTexture(int sizeX, int sizeY)
+    public void createDepthTexture(int sizeX, int sizeY, boolean linearFiltering)
     {
         if (this.initialized)
             throw new AssertionError("Can't add textures to already initialized frame buffer!");
 
-        this.depthTexture = new FrameBufferTexture(sizeX, sizeY, 1, FrameBufferTexture.Type.DEPTH);
+        this.depthTexture = new FrameBufferTexture(sizeX, sizeY, 1, FrameBufferTexture.Type.DEPTH, linearFiltering);
     }
 
     @Override
@@ -82,7 +83,8 @@ public class FrameBuffer extends BaseFrameBuffer
             this.framebuffer = glGenFramebuffersEXT();
 
             if (depthTexture != null)
-                this.depthTexture = new FrameBufferTexture(w.frameBufferWidth, w.frameBufferHeight, 1, FrameBufferTexture.Type.DEPTH);
+                this.depthTexture = new FrameBufferTexture(w.frameBufferWidth, w.frameBufferHeight, 1,
+                        FrameBufferTexture.Type.DEPTH, this.depthTexture.linearFiltering);
 
             for (int i = 0; i < colorTextures.size(); i++)
             {
@@ -96,6 +98,8 @@ public class FrameBuffer extends BaseFrameBuffer
             this.lastWindowSizeX = w.frameBufferWidth;
             this.lastWindowSizeY = w.frameBufferHeight;
         }
+        else if (!this.initialized)
+            this.initialize();
     }
 
     public void initialize()
@@ -107,17 +111,14 @@ public class FrameBuffer extends BaseFrameBuffer
             glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, depthTexture.texture, 0);
 
 
-        int[] bufs = new int[colorTextures.size()];
+        this.drawAttachments = new int[colorTextures.size()];
         for (int i = 0; i < colorTextures.size(); i++)
         {
             glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + i, GL_TEXTURE_2D, colorTextures.get(i).texture, 0);
-            bufs[i] = GL_COLOR_ATTACHMENT0_EXT + i;
+            this.drawAttachments[i] = GL_COLOR_ATTACHMENT0_EXT + i;
         }
 
-        if (colorTextures.size() > 0)
-            glDrawBuffers(bufs);
-        else
-            glDrawBuffer(GL_NONE);
+        this.restoreDrawAttachments();
 
         int fboStatus = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
@@ -220,14 +221,7 @@ public class FrameBuffer extends BaseFrameBuffer
             glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, this.multisampleDepthBuffer);
         }
 
-        int[] bufs = new int[this.colorTextures.size()];
-        for (int i = 0; i < bufs.length; i++)
-            bufs[i] = GL_COLOR_ATTACHMENT0_EXT + i;
-
-        if (bufs.length > 0)
-            glDrawBuffers(bufs);
-        else
-            glDrawBuffer(GL_NONE);
+        this.restoreDrawAttachments();
 
         int fboStatus = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
         if (fboStatus != GL_FRAMEBUFFER_COMPLETE_EXT)
@@ -256,6 +250,11 @@ public class FrameBuffer extends BaseFrameBuffer
     @Override
     public void resolveMultisampling()
     {
+        this.resolveMultisampling(true);
+    }
+
+    private void resolveMultisampling(boolean resolveDepth)
+    {
         if (this.multisampleFramebuffer < 0)
             return;
 
@@ -272,10 +271,36 @@ public class FrameBuffer extends BaseFrameBuffer
             glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
         }
 
-        if (this.depthTexture != null)
+        if (resolveDepth && this.depthTexture != null)
             glBlitFramebufferEXT(0, 0, width, height, 0, 0, width, height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
+        // Resolving each texture selects one destination; subsequent draws may write to all of them.
+        this.restoreDrawAttachments();
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this.framebuffer);
+    }
+
+    private void restoreDrawAttachments()
+    {
+        if (this.drawAttachments.length > 0)
+            glDrawBuffers(this.drawAttachments);
+        else
+            glDrawBuffer(GL_NONE);
+    }
+
+    @Override
+    public void blitColorToWindow()
+    {
+        this.resolveMultisampling(false);
+
+        // Resolve to a matching texture first; the window can have a different color format.
+        FrameBufferTexture color = this.colorTextures.get(0);
+        glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, this.framebuffer);
+        glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
+        glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+        glBlitFramebufferEXT(0, 0, color.width, color.height, 0, 0, color.width, color.height,
+                GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glReadBuffer(GL_NONE);
+        glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, 0);
     }
 
     public static class FrameBufferTexture
@@ -288,8 +313,14 @@ public class FrameBuffer extends BaseFrameBuffer
         protected int width;
         protected int height;
         protected int internalFormat;
+        private final boolean linearFiltering;
 
         public FrameBufferTexture(int sizeX, int sizeY, int channels, Type t)
+        {
+            this(sizeX, sizeY, channels, t, t != Type.DEPTH);
+        }
+
+        private FrameBufferTexture(int sizeX, int sizeY, int channels, Type t, boolean linearFiltering)
         {
             if (channels > 4 || channels <= 0)
                 throw new RuntimeException("Texture channel count must be between 1 and 4! Got " + channels);
@@ -298,9 +329,10 @@ public class FrameBuffer extends BaseFrameBuffer
             this.channels = channels;
             this.width = sizeX;
             this.height = sizeY;
+            this.linearFiltering = linearFiltering;
             this.texture = glGenTextures();
             glBindTexture(GL_TEXTURE_2D, this.texture);
-            int filter = t == Type.DEPTH ? GL_NEAREST : GL_LINEAR;
+            int filter = linearFiltering ? GL_LINEAR : GL_NEAREST;
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);

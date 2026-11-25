@@ -3,6 +3,11 @@ package basewindow;
 import basewindow.transformation.Matrix4;
 import basewindow.transformation.Quaternion;
 
+/**
+ * World points reach clip space as {@code projection * view * worldPoint}, with
+ * {@code view = cameraAdjustment * inversePose * worldAdjustment}.
+ * The model transform, if any, runs before the view; the perspective divide runs after projection.
+ */
 public class Camera
 {
     public enum Projection
@@ -77,21 +82,31 @@ public class Camera
 
     private double nearClip = 1.0;
     private double farClip = 10000.0;
+    private double viewportLeftExtension;
+    private double viewportRightExtension;
+    private double viewportTopExtension;
     private double viewportBottomExtension;
 
     /**
-     * Adds visible space below the nominal viewport, as a fraction of its height.
-     * Drawing into the correspondingly taller viewport preserves the original pixel
-     * scale and top edge. Nominal size/zoom queries remain unchanged; bounds include
-     * the extension through unprojection.
+     * Extends each side by a fraction of the nominal viewport width (left and right)
+     * or height (top and bottom). Negative extensions are treated as zero.
+     * The caller must grow the pixel viewport by the same amounts on the same sides
+     * to preserve pixel positions and scale. Nominal size and zoom remain unchanged.
      */
-    public void setViewportBottomExtension(double extension)
+    public void setViewportExtensions(double left, double right, double top, double bottom)
     {
-        double value = Math.max(0, extension);
-        if (this.viewportBottomExtension == value)
+        left = Math.max(0, left);
+        right = Math.max(0, right);
+        top = Math.max(0, top);
+        bottom = Math.max(0, bottom);
+        if (this.viewportLeftExtension == left && this.viewportRightExtension == right &&
+                this.viewportTopExtension == top && this.viewportBottomExtension == bottom)
             return;
 
-        this.viewportBottomExtension = value;
+        this.viewportLeftExtension = left;
+        this.viewportRightExtension = right;
+        this.viewportTopExtension = top;
+        this.viewportBottomExtension = bottom;
         this.updateProjection();
     }
 
@@ -107,7 +122,10 @@ public class Camera
     public String name;
     private long matrixRevision;
 
-    /** Changes to public pose/adjustment fields take effect after updateView(). */
+    /**
+     * Lets renderers detect when the camera matrices need to be rebound.
+     * Direct pose or adjustment edits only register after {@link #updateView()}.
+     */
     public long getMatrixRevision()
     {
         return this.matrixRevision;
@@ -284,13 +302,21 @@ public class Camera
             );
         }
 
-        if (this.viewportBottomExtension > 0)
-        {
-            double scale = 1 / (1 + this.viewportBottomExtension);
-            for (int col = 0; col < 4; col++)
-                this.projection.values[1][col] = scale * this.projection.values[1][col] +
-                        (1 - scale) * this.projection.values[3][col];
-        }
+        this.extendProjectionAxis(0, this.viewportLeftExtension, this.viewportRightExtension);
+        this.extendProjectionAxis(1, this.viewportBottomExtension, this.viewportTopExtension);
+    }
+
+    private void extendProjectionAxis(int axis, double negativeSide, double positiveSide)
+    {
+        if (negativeSide == 0 && positiveSide == 0)
+            return;
+
+        // Offset in clip space by a multiple of W so the shift is constant after division.
+        double scale = 1 / (1 + negativeSide + positiveSide);
+        double shift = (negativeSide - positiveSide) * scale;
+        for (int col = 0; col < 4; col++)
+            this.projection.values[axis][col] = scale * this.projection.values[axis][col] +
+                    shift * this.projection.values[3][col];
     }
 
     public double getCurrentSizeX()
@@ -367,8 +393,11 @@ public class Camera
 
         double halfWidth = this.getHalfWidthAtDepth(worldZ);
         double halfHeight = this.getHalfHeightAtDepth(worldZ);
-        return this.reusableBounds.set(this.posX - halfWidth, this.posX + halfWidth,
-                this.posY - halfHeight, this.posY + halfHeight * (1 + 2 * this.viewportBottomExtension));
+        return this.reusableBounds.set(
+                this.posX - halfWidth * (1 + 2 * this.viewportLeftExtension),
+                this.posX + halfWidth * (1 + 2 * this.viewportRightExtension),
+                this.posY - halfHeight * (1 + 2 * this.viewportTopExtension),
+                this.posY + halfHeight * (1 + 2 * this.viewportBottomExtension));
     }
 
     /**

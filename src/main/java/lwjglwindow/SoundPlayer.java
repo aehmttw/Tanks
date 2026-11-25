@@ -354,21 +354,30 @@ public class SoundPlayer extends BaseSoundPlayer
             this.seekMusicSource(i, pos);
     }
 
-    private void seekMusicSource(int source, float pos)
+    /** Returns the duration in seconds, or zero if the source has no usable buffer. */
+    private double getSourceDuration(int source)
     {
         if (source <= 0)
-            return;
+            return 0;
 
         int buffer = alGetSourcei(source, AL_BUFFER);
         if (buffer == 0)
-            return;
+            return 0;
 
         double bitsPerSecond = (double) alGetBufferi(buffer, AL_BITS) * alGetBufferi(buffer, AL_CHANNELS) * alGetBufferi(buffer, AL_FREQUENCY);
         int bytes = alGetBufferi(buffer, AL_SIZE);
         if (bitsPerSecond <= 0 || bytes <= 0)
+            return 0;
+
+        return bytes * 8.0 / bitsPerSecond;
+    }
+
+    private void seekMusicSource(int source, float pos)
+    {
+        double duration = this.getSourceDuration(source);
+        if (duration <= 0)
             return;
 
-        double duration = bytes * 8.0 / bitsPerSecond;
         if (alGetSourcei(source, AL_LOOPING) == AL_TRUE)
         {
             pos = (float) (pos % duration);

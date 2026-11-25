@@ -10,6 +10,7 @@ public class RenderPassDraw extends RenderPass
     protected Matrix4 lightViewProjectionMatrix;
 
     public BaseFrameBuffer drawFrameBuffer;
+    private BaseFrameBuffer multisampleScene;
 
     float[] biasMatrix = new float[]
     {
@@ -48,11 +49,36 @@ public class RenderPassDraw extends RenderPass
 
         int viewportHeight = Math.max(1, this.window.frameBufferHeight - viewportY);
 
+        int samples = this.window.antialiasingSupported && this.window.antialiasingEnabled ? 4 : 0;
+        boolean useMultisampleScene = !this.passGroup.drawToFramebuffer && samples > 0;
+        if (!useMultisampleScene && this.multisampleScene != null)
+        {
+            this.multisampleScene.free();
+            this.multisampleScene = null;
+        }
+
         if (this.passGroup.drawToFramebuffer)
         {
             this.drawFrameBuffer.resizeToWindow(this.window);
-            this.drawFrameBuffer.setMultisampling(this.window.antialiasingEnabled ? 4 : 0);
+            this.drawFrameBuffer.setMultisampling(samples);
             this.drawFrameBuffer.bind();
+        }
+        else
+        {
+            this.drawFrameBuffer.setMultisampling(0);
+            if (useMultisampleScene)
+            {
+                if (this.multisampleScene == null)
+                {
+                    this.multisampleScene = this.window.createFrameBuffer();
+                    this.multisampleScene.addColorTexture(this.window, 3, false);
+                    this.multisampleScene.createDepthTexture(this.window);
+                }
+
+                this.multisampleScene.resizeToWindow(this.window);
+                this.multisampleScene.setMultisampling(samples);
+                this.multisampleScene.bind();
+            }
         }
 
         this.lightViewProjectionMatrix = this.window.getProjectionMatrix().multiply(this.window.getModelViewMatrix());
@@ -89,6 +115,8 @@ public class RenderPassDraw extends RenderPass
 
         if (this.passGroup.drawToFramebuffer)
             this.drawFrameBuffer.resolveMultisampling();
+        else if (useMultisampleScene)
+            this.multisampleScene.blitColorToWindow();
 
         this.window.stopFrameBuffer();
 

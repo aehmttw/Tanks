@@ -287,19 +287,17 @@ public class ScreenOptionsGraphics extends Screen
         public void run()
         {
             Game.antialiasing = !Game.antialiasing;
+            Game.game.window.antialiasingEnabled = Game.antialiasing;
 
             if (!Game.antialiasing)
                 antialiasing.setText(antialiasingText, ScreenOptions.offText);
             else
                 antialiasing.setText(antialiasingText, ScreenOptions.onText);
 
-            if (Game.antialiasing != Game.game.window.antialiasingEnabled)
-                Game.screen = new ScreenAntialiasingWarning();
-
             ScreenOptions.saveOptions(Game.homedir);
         }
     },
-        "May fix flickering in thin edges---at the cost of performance------Requires restarting the game---to take effect");
+        "May fix flickering in thin edges at the cost of performance");
 
     Button tankTextures = new Button(this.centerX - this.objXSpace / 2, this.centerY + this.objYSpace * 1.5, this.objWidth, this.objHeight, "", new Runnable()
     {
@@ -359,17 +357,6 @@ public class ScreenOptionsGraphics extends Screen
         maxFPS.update();
 
         back.update();
-
-        if (Game.antialiasing != Game.game.window.antialiasingEnabled)
-        {
-            antialiasing.bgColG = 238;
-            antialiasing.bgColB = 220;
-        }
-        else
-        {
-            antialiasing.bgColG = 255;
-            antialiasing.bgColB = 255;
-        }
     }
 
     @Override

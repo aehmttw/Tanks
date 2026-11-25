@@ -30,7 +30,7 @@ public class RenderPassUI extends RenderPass
         this.interfaceCamera.getOrientation().setIdentity();
         this.interfaceCamera.resetToBounds(0, drawing.baseInterfaceSizeX, 0, drawing.baseInterfaceSizeY, this.window.absoluteDepth);
         this.interfaceCamera.setAspectRatio(this.window.absoluteWidth / usableHeight);
-        this.interfaceCamera.setViewportBottomExtension(drawBehindBar ? drawing.statsHeight / usableHeight : 0);
+        this.interfaceCamera.setViewportExtensions(0, 0, 0, drawBehindBar ? drawing.statsHeight / usableHeight : 0);
 
         this.viewportY = drawBehindBar || this.window.absoluteHeight <= 0 ? 0 :
                 (int) Math.round(drawing.statsHeight * this.window.frameBufferHeight / this.window.absoluteHeight);

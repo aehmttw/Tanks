@@ -1,4 +1,4 @@
-#define DEPTH_OFFSET 0.002
+#define DEPTH_OFFSET 0.0005
 
 uniform sampler2D depthTexture;
 
@@ -37,12 +37,13 @@ float shadowCompare(vec2 position, float depth, float bias)
 
 float filteredShadow(vec2 position, float depth, float bias)
 {
-    vec2 halfTexel = vec2(0.5 / float(shadowres));
-    return 0.25 * (
-        shadowCompare(position + vec2(-halfTexel.x, -halfTexel.y), depth, bias) +
-        shadowCompare(position + vec2(halfTexel.x, -halfTexel.y), depth, bias) +
-        shadowCompare(position + vec2(-halfTexel.x, halfTexel.y), depth, bias) +
-        shadowCompare(position + vec2(halfTexel.x, halfTexel.y), depth, bias));
+//    vec2 halfTexel = vec2(0.5 / float(shadowres));
+//    return 0.25 * (
+//        shadowCompare(position + vec2(-halfTexel.x, -halfTexel.y), depth, bias) +
+//        shadowCompare(position + vec2(halfTexel.x, -halfTexel.y), depth, bias) +
+//        shadowCompare(position + vec2(-halfTexel.x, halfTexel.y), depth, bias) +
+//        shadowCompare(position + vec2(halfTexel.x, halfTexel.y), depth, bias));
+    return shadowCompare(position + vec2(0, 0), depth, bias);
 }
 
 void main(void)

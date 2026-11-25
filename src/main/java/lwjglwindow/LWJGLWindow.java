@@ -21,6 +21,7 @@ import javax.imageio.ImageIO;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.EXTFramebufferMultisample.GL_MAX_SAMPLES_EXT;
 import static org.lwjgl.opengl.EXTFramebufferObject.GL_FRAMEBUFFER_EXT;
 import static org.lwjgl.opengl.EXTFramebufferObject.glBindFramebufferEXT;
 import static org.lwjgl.opengl.GL11.*;
@@ -109,8 +110,6 @@ public class LWJGLWindow extends BaseWindow
         this.os = System.getProperty("os.name").toLowerCase();
 
         this.shapeDrawer = new ImmediateModeModelPart.ImmediateModeShapeDrawer(this);
-
-        this.antialiasingSupported = true;
     }
 
     public long getWindow()
@@ -147,9 +146,8 @@ public class LWJGLWindow extends BaseWindow
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-        if (antialiasingEnabled)
-            glfwWindowHint(GLFW_SAMPLES, 4);
-
+        // Only offscreen framebuffers use multisampling.
+        glfwWindowHint(GLFW_SAMPLES, 0);
         window = glfwCreateWindow((int) this.absoluteWidth, (int) this.absoluteHeight, this.name, NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
@@ -333,7 +331,11 @@ public class LWJGLWindow extends BaseWindow
 
     protected void loop()
     {
-        GL.createCapabilities();
+        GLCapabilities capabilities = GL.createCapabilities();
+        this.antialiasingSupported = capabilities.GL_EXT_framebuffer_multisample && capabilities.GL_EXT_framebuffer_blit &&
+                glGetInteger(GL_MAX_SAMPLES_EXT) > 1;
+        this.antialiasingEnabled &= this.antialiasingSupported;
+        glEnable(GL_MULTISAMPLE);
 
         this.setUpShaders();
 

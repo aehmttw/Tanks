@@ -67,7 +67,7 @@ public class RenderPassGroupShadowDraw
         }
 
         this.depthFrameBuffer = this.window.createFrameBuffer();
-        this.depthFrameBuffer.createDepthTexture(this.size, this.size);
+        this.depthFrameBuffer.createDepthTexture(this.size, this.size, true);
         this.depthFrameBuffer.bindDepthTexture(this.window, "depth");
         this.depthFrameBuffer.initialize();
     }

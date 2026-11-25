@@ -12,7 +12,13 @@ public abstract class BaseFrameBuffer
      * @param sizeX
      * @param sizeY
      */
-    public abstract void createDepthTexture(int sizeX, int sizeY);
+    public void createDepthTexture(int sizeX, int sizeY)
+    {
+        this.createDepthTexture(sizeX, sizeY, false);
+    }
+
+    /** Creates a depth texture with linear filtering when requested, or nearest filtering otherwise. */
+    public abstract void createDepthTexture(int sizeX, int sizeY, boolean linearFiltering);
 
     /**
      * Set the framebuffer to capture depth information into a texture with the same size as the window
@@ -88,5 +94,17 @@ public abstract class BaseFrameBuffer
      * @param name Texture name to bind to
      */
     public abstract void bindColorTexture(BaseWindow w, int which, String name);
+
+    /**
+     * Configures the number of samples used while drawing to this framebuffer.
+     * Multisampled output must be resolved before its textures can be sampled.
+     */
+    public abstract void setMultisampling(int samples);
+
+    /** Resolves a multisampled draw target into this framebuffer's textures. */
+    public abstract void resolveMultisampling();
+
+    /** Resolves if needed and copies the first color attachment to the window at native size. */
+    public abstract void blitColorToWindow();
 
 }

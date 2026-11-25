@@ -146,6 +146,11 @@ public class ScreenAbout extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         changelogs.draw();
         link.draw();
         libraries.draw();

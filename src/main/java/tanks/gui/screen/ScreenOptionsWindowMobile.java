@@ -54,7 +54,11 @@ public class ScreenOptionsWindowMobile extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         back.draw();
         showStats.draw();
 

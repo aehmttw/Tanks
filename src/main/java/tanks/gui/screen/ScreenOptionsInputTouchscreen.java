@@ -168,6 +168,11 @@ public class ScreenOptionsInputTouchscreen extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
+
+    @Override
+    public void drawUI()
+    {
         back.draw();
         vibrations.draw();
         snap.draw();

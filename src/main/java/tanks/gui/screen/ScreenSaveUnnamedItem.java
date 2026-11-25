@@ -147,7 +147,11 @@ public class ScreenSaveUnnamedItem extends Screen implements IBlankBackgroundScr
     {
         Drawing.drawing.setLightingUI();
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         if (Level.isDark())
             Drawing.drawing.setColor(255, 255, 255);
         else

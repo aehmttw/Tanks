@@ -137,6 +137,7 @@ public class Game
     public static boolean recordMovableData = false;
     public static boolean recordEventData = false;
     public static final boolean cinematic = false;
+    public static boolean specialAccount = false;
 
     public static long steamLobbyInvite = -1;
 
@@ -160,7 +161,7 @@ public class Game
 
     public static boolean vsync = true;
     public static int maxFPS = 0;
-    public static int networkRate = 20;
+    public static int networkRate = 60;
 
     public static boolean enable3d = true;
     public static boolean enable3dBg = true;
@@ -168,6 +169,7 @@ public class Game
     public static boolean orthographicView = false;
     public static boolean xrayBullets = true;
     public static boolean showPathfinding = false;
+    public static boolean showShadowDepth = false;
     public static boolean showUpdatingObstacles = false;
     public static boolean immutableFaces = false;
     public static boolean disableErrorFixing = false;
@@ -181,6 +183,8 @@ public class Game
 
     public static boolean soundsEnabled = true;
     public static boolean musicEnabled = true;
+
+    public static boolean syncPartyMusic = false;
 
     public static boolean antialiasing = false;
 
@@ -455,6 +459,7 @@ public class Game
         NetworkEventMap.register(EventUploadLevel.class);
         NetworkEventMap.register(EventSendLevelToDownload.class);
         NetworkEventMap.register(EventCleanUp.class);
+        NetworkEventMap.register(EventSyncMusic.class);
     }
 
     public static void registerObstacle(Class<? extends Obstacle> obstacle, String name)
@@ -1497,6 +1502,13 @@ public class Game
         {
             return "";
         }
+    }
+
+    public static int getNetworkProtocol()
+    {
+        if (specialAccount)
+            return -network_protocol;
+        return network_protocol;
     }
 
     public static boolean isOrdered(double a, double b, double c)

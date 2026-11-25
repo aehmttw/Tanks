@@ -85,7 +85,11 @@ public class ScreenPartyLobby extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(0, 0, 0);
         Drawing.drawing.setInterfaceFontSize(this.textSize);
 
@@ -97,7 +101,7 @@ public class ScreenPartyLobby extends Screen
         if (!Game.showIP)
             title = Translation.translate("Connected to party");
 
-        this.toggleIP.posX = this.centerX + Game.game.window.fontRenderer.getStringSizeX(Drawing.drawing.fontSize, title) / Drawing.drawing.interfaceScale / 2 + 30;
+        this.toggleIP.posX = this.centerX + Drawing.drawing.getInterfaceTextWidth(title) / 2 + 30;
         this.toggleIP.posY = this.centerY - 270;
 
         if (Game.showIP)

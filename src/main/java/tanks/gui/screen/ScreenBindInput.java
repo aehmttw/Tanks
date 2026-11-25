@@ -97,12 +97,16 @@ public class ScreenBindInput extends Screen
     @Override
     public void draw()
     {
-        //this.drawDefaultBackground();
-
         previous.draw();
+    }
+
+    @Override
+    public void drawUI()
+    {
+        previous.drawUI();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth, Game.game.window.absoluteHeight - Drawing.drawing.statsHeight);
+        Drawing.drawing.fillInterfaceViewportRect();
 
         Drawing.drawing.setColor(0, 0, 0, 127);
         Drawing.drawing.drawPopup(Drawing.drawing.interfaceSizeX / 2, Drawing.drawing.interfaceSizeY / 2, 800 * this.objWidth / 350, 400 * this.objHeight / 40);

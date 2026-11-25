@@ -59,7 +59,7 @@ public class OverlayConfirmSave extends ScreenLevelEditorOverlay
 
         Drawing.drawing.setColor(255, 127, 0, this.opacity);
         this.opacity = Math.max(0, this.opacity - Panel.frameFrequency * 2);
-        Game.game.window.shapeRenderer.fillRect(0, 0, Game.game.window.absoluteWidth + 1, Game.game.window.absoluteHeight + 1);
+        Drawing.drawing.fillInterfaceViewportRect();
 
         Drawing.drawing.setColor(this.editor.fontBrightness, this.editor.fontBrightness, this.editor.fontBrightness);
         Drawing.drawing.setInterfaceFontSize(this.titleSize);

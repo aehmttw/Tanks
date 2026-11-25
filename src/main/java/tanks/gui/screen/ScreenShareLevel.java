@@ -110,7 +110,11 @@ public class ScreenShareLevel extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         levels.draw();
         search.draw();
         quit.draw();

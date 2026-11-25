@@ -70,7 +70,11 @@ public class ScreenTestShapes extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         Drawing.drawing.setColor(50, 50, 50, 128);
         Drawing.drawing.drawRect(this.centerX - this.objXSpace / 2 - 10, this.centerY - this.objYSpace * 2 + 20, length, width, borderWidth, borderRadius);
         Drawing.drawing.fillRoundedRect(this.centerX + this.objXSpace / 2 + 10, this.centerY - this.objYSpace * 2 + 20, length, width, borderRadius);

@@ -25,7 +25,9 @@ public class FontRenderer extends BaseFontRenderer
 
             for (int i = 0; i < chars.length(); i++)
             {
-                charIndexMap.put(chars.charAt(i), i);
+                // Some atlas entries repeat a character; retain its first, canonical glyph.
+                if (!charIndexMap.containsKey(chars.charAt(i)))
+                    charIndexMap.put(chars.charAt(i), i);
             }
         }
     }
@@ -52,12 +54,15 @@ public class FontRenderer extends BaseFontRenderer
                     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 2, 5, 5, 5, 5,
                     7, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5,
                     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 5, 3, 5, 5,
-                    2, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5,
+                    1, 5, 5, 5, 5, 5, 4, 5, 5, 1, 5, 4, 2, 5, 5, 5,
                     5, 5, 5, 5, 3, 5, 5, 5, 5, 5, 5, 4, 1, 4, 6, 2,
                     5, 5, 5, 5, 3, 5, 5, 7, 5, 5, 5, 5, 3, 5, 7, 5,
                     5, 5, 5, 5, 5, 3, 5, 5, 3, 5, 5, 5, 5
                 });
 
+        // The later apostrophe is left-aligned like the lowercase glyphs; the
+        // punctuation-row copy has an extra four pixels of leading padding.
+        defaultFont.charIndexMap.put('\'', defaultFont.chars.lastIndexOf('\''));
         fontInfos.add(defaultFont);
     }
 

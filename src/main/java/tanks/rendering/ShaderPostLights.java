@@ -12,7 +12,7 @@ public class ShaderPostLights extends ShaderGroupSingleStage
     public Uniform4f lightPos;
     public Uniform3f lightColor;
 
-    public UniformMatrix4 invProjection;
+    public UniformMatrix4 invViewProjection;
 
     public UniformSampler2D depthTex;
 

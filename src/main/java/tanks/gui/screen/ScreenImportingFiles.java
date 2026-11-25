@@ -46,7 +46,11 @@ public class ScreenImportingFiles extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         cancel.draw();
 
         Drawing.drawing.setColor(0, 0, 0);

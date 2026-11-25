@@ -1,13 +1,16 @@
 package basewindow;
 
+import basewindow.transformation.Matrix4;
+
 public class RenderPassDraw extends RenderPass
 {
     public RenderPassGroupShadowDraw passGroup;
 
     public boolean initialized = false;
-    protected float[] projMatrixShadow = new float[16];
+    protected Matrix4 lightViewProjectionMatrix;
 
     public BaseFrameBuffer drawFrameBuffer;
+    private BaseFrameBuffer multisampleScene;
 
     float[] biasMatrix = new float[]
     {
@@ -40,13 +43,45 @@ public class RenderPassDraw extends RenderPass
     {
         super.draw();
 
+        int viewportY = 0;
+        if (this.window.absoluteHeight > 0)
+            viewportY = (int) Math.round(this.window.sceneCameraHeightOffset * this.window.frameBufferHeight / this.window.absoluteHeight);
+
+        int viewportHeight = Math.max(1, this.window.frameBufferHeight - viewportY);
+
+        int samples = this.window.antialiasingSupported && this.window.antialiasingEnabled ? 4 : 0;
+        boolean useMultisampleScene = !this.passGroup.drawToFramebuffer && samples > 0;
+        if (!useMultisampleScene && this.multisampleScene != null)
+        {
+            this.multisampleScene.free();
+            this.multisampleScene = null;
+        }
+
         if (this.passGroup.drawToFramebuffer)
         {
             this.drawFrameBuffer.resizeToWindow(this.window);
+            this.drawFrameBuffer.setMultisampling(samples);
             this.drawFrameBuffer.bind();
         }
+        else
+        {
+            this.drawFrameBuffer.setMultisampling(0);
+            if (useMultisampleScene)
+            {
+                if (this.multisampleScene == null)
+                {
+                    this.multisampleScene = this.window.createFrameBuffer();
+                    this.multisampleScene.addColorTexture(this.window, 3, false);
+                    this.multisampleScene.createDepthTexture(this.window);
+                }
 
-        this.window.getProjectionMatrix(projMatrixShadow);
+                this.multisampleScene.resizeToWindow(this.window);
+                this.multisampleScene.setMultisampling(samples);
+                this.multisampleScene.bind();
+            }
+        }
+
+        this.lightViewProjectionMatrix = this.window.getProjectionMatrix().multiply(this.window.getModelViewMatrix());
 
         this.window.setShader(this.window.shaderDefault);
         this.window.shaderDefault.shaderBase.drawToFramebuffer.set(this.passGroup.drawToFramebuffer);
@@ -56,22 +91,32 @@ public class RenderPassDraw extends RenderPass
         if (!this.initialized)
             this.initialized = true;
 
+        this.window.currentCamera = this.passGroup.sceneCamera;
         this.window.loadPerspective();
 
-        this.window.shaderDefault.shaderBase.lightViewProjectionMatrix.set(projMatrixShadow, false);
+        this.window.shaderDefault.shaderBase.lightViewProjectionMatrix.set(this.lightViewProjectionMatrix.toOpenGL(), false);
         this.window.shaderDefault.shaderBase.biasMatrix.set(biasMatrix, false);
 
         this.window.shaderDefault.shaderBase.shadowLight.set((float) this.passGroup.shadow);
         this.window.shaderDefault.shaderBase.baseLight.set((float) this.passGroup.light);
         this.window.shaderDefault.shaderBase.lightColor.set(this.passGroup.lightColor);
 
-        this.window.setViewport(0, 0, this.window.frameBufferWidth, this.window.frameBufferHeight);
+        if (this.passGroup.drawToFramebuffer)
+            this.window.setViewport(0, 0, this.window.frameBufferWidth, this.window.frameBufferHeight);
+        else
+            this.window.setViewport(0, viewportY, this.window.frameBufferWidth, viewportHeight);
 
         this.window.clearDepth();
         this.window.clearColor();
 
         this.passGroup.depthFrameBuffer.bindDepthTexture(1);
+        this.passGroup.depthFrameBuffer.bindDepthTexture(this.window, "shadow_depth");
         this.window.drawer.drawSinglePass(this);
+
+        if (this.passGroup.drawToFramebuffer)
+            this.drawFrameBuffer.resolveMultisampling();
+        else if (useMultisampleScene)
+            this.multisampleScene.blitColorToWindow();
 
         this.window.stopFrameBuffer();
 
@@ -82,14 +127,12 @@ public class RenderPassDraw extends RenderPass
             this.drawFrameBuffer.bindColorTexture(this.window, 0, "image");
             this.drawFrameBuffer.bindDepthTexture(this.window, "depth");
 
+            this.window.currentCamera = this.window.screenCamera;
+            this.window.loadPerspective();
+
+            this.window.setViewport(0, viewportY, this.window.frameBufferWidth, viewportHeight);
             this.window.setColor(255, 255, 255);
             this.window.shapeRenderer.drawImage(0, window.absoluteHeight, window.absoluteWidth, -window.absoluteHeight, "image", false);
         }
-
-        // Debug code: draw the depth texture
-        /* this.window.textures.put("depth", this.window.defaultShadowPass.depthFrameBuffer.depthTexture.texture);
-        this.window.setColor(255, 255, 255);
-        this.window.shapeRenderer.drawImage(100, 200, 500, 500, "depth", false);
-         */
     }
 }

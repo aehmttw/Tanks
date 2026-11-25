@@ -137,7 +137,11 @@ public class ScreenSavedLevels extends Screen
     public void draw()
     {
         this.drawDefaultBackground();
+    }
 
+    @Override
+    public void drawUI()
+    {
         savedLevelsList.draw();
 
         if (savedLevelsList.buttons.size() <= 0)
